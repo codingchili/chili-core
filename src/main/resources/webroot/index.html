@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <script src="script/jquery-2.2.1.min.js"></script>
+    <script src="script/application.js"></script>
+    <script src="script/game.js"></script>
+    <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
+    <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <link rel="import" href="elements/game-login.html">
+    <link rel="import" href="elements/game-view.html">
+    <link rel="import" href="elements/start-page.html">
+    <link rel="import" href="elements/start-game.html">
+    <link rel="import" href="elements/toolbar.html">
+    <link rel="import" href="elements/footer.html">
+    <link rel="import" href="style/theme.html">
+    <link rel="stylesheet" href="style/style.css">
+    <title></title>
+</head>
+<body class="layout vertical layout-start">
+<header-toolbar id="header" class="layout vertical fit">
+</header-toolbar>
+
+
+<div id="page">
+    <start-game class="layout horizontal center-justified">
+    </start-game>
+
+    <start-page class="layout horizontal center-justified">
+    </start-page>
+</div>
+
+<div id="game-login">
+    <game-login class="layout horizontal center-justified">
+    </game-login>
+</div>
+
+<div id="game-view" style="width: 100%; height: 100%;">
+    <game-view>
+    </game-view>
+</div>
+
+<footer-template id="footer">
+</footer-template>
+</body>
+</html>

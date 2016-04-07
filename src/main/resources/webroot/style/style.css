@@ -1,0 +1,22 @@
+/**
+* @author Robin Duda
+*
+* Polymer custom elements styling.
+**/
+
+body, html {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+paper-input {
+    margin-left: 16px;
+    margin-right: 16px;
+}
+
+paper-button {
+    margin: 0 auto auto;
+    width: 100%;
+}
