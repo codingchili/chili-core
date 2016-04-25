@@ -1,0 +1,154 @@
+{
+  "name": "hunter",
+  "description": "Knowing of their environment and the creatures lurking in it, none shall escape their true aim.",
+  "weapon": ["bow"],
+  "keywords": ["Damage", "Traps"],
+  "spells":[
+    {
+      "name": "Archery",
+      "description": "Gains Wounding aim and Hawkeye.",
+      "passive": true,
+      "affliction": [
+        {
+          "name": "Wounding aim",
+          "everlasting": true
+        },
+        {
+          "name": "Hawkeye",
+          "everlasting": true
+        }
+      ]
+    },
+    {
+      "name": "Hunting",
+      "description": "Consecutive hits heals and grants haste.",
+      "passive": true,
+      "affliction": [
+        {
+          "name": "hunting",
+          "everlasting": true
+        }
+      ]
+    },
+    {
+      "name": "Quick Draw",
+      "description": "Fire arrows in a cone.",
+      "target": "cone",
+      "modifier": [
+        {
+          "modifies": "health",
+          "attribute": "attack",
+          "value": 1.0
+        }
+      ],
+      "cooldown": 8
+    },
+    {
+      "name": "Precise aim",
+      "description": "Slows and curses the target.",
+      "target": "missile",
+      "modifier": [
+        {
+          "modifies": "health",
+          "attribute": "attack",
+          "value": 1.0
+        }
+      ],
+      "affliction": [
+        {
+          "name": "slow",
+          "duration": 4.0
+        },
+        {
+          "name": "curse",
+          "duration": 12
+        }
+      ],
+      "cooldown": 12
+    },
+    {
+      "name": "Trap",
+      "description": "Trap creatures in area, stunning and slowing them.",
+      "target": "trap",
+      "trigger": [
+        {
+          "on": "hit",
+          "affliction": [
+            {
+              "name": "stun",
+              "duration": 3.0
+            },
+            {
+              "name": "slow",
+              "duration": 6.0
+            }
+          ]
+        }
+      ],
+      "duration": 20,
+      "cooldown": 8
+    },
+    {
+      "name": "Wilderness",
+      "description": "Move to a stunned target deals double damage and heals for triple.",
+      "target": "selected",
+      "special": "teleport",
+      "trigger": [
+        {
+          "on": "hit",
+          "modifies": "health",
+          "attribute": "attack",
+          "value": 6.0,
+          "heal": true
+        }
+      ],
+      "modifier": [
+        {
+          "modifies": "health",
+          "attribute": "attack",
+          "value": 3.0
+        }
+      ],
+      "cooldown": 12
+    },
+    {
+      "name": "Deadly aim",
+      "description": "Deals double damage and bonus damage based on targets current health.",
+      "modifier": [
+        {
+          "modifies": "health",
+          "attribute": "attack",
+          "value": 2.0
+        },
+        {
+          "modifies": "health",
+          "attribute": "health",
+          "value": 0.05
+        }
+      ],
+      "cooldown": 6
+    },
+    {
+      "name": "Untrapped",
+      "description": "Removes any slow and stun effects and heals for 10%.",
+      "modifier": [
+        {
+          "modifies": "health",
+          "attribute": "health",
+          "value": 0.10
+        }
+      ],
+      "affliction": [
+        {
+          "name": "slow",
+          "duration": null
+        },
+        {
+          "name": "stun",
+          "duration": null
+        }
+      ],
+      "cooldown": 12
+    }
+  ]
+}

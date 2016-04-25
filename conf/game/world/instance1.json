@@ -1,0 +1,14 @@
+{
+  "name": "instance 1",
+  "limit": "50",
+  "size": {
+    "width": 3000,
+    "height": 3000
+  },
+  "portals": [
+  ],
+  "nodes": [
+  ],
+  "npc": [
+  ]
+}

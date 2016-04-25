@@ -1,0 +1,49 @@
+{
+  "name": "assassin",
+  "description": "Sneaking in the shadows the short blade of their dagger stabs their victims, often to death.",
+  "weapon": ["dagger"],
+  "keywords": [
+    "damage",
+    "stealth"
+  ],
+  "spells": [
+    {
+      "name": "",
+      "description": ""
+    },
+    {
+      "name": "",
+      "description": ""
+    },
+    {
+      "name": "",
+      "description": "",
+      "cooldown": 0
+    },
+    {
+      "name": "",
+      "description": "",
+      "cooldown": 0
+    },
+    {
+      "name": "",
+      "description": "",
+      "cooldown": 0
+    },
+    {
+      "name": "",
+      "description": "",
+      "cooldown": 0
+    },
+    {
+      "name": "",
+      "description": "",
+      "cooldown": 0
+    },
+    {
+      "name": "",
+      "description": "",
+      "cooldown": 0
+    }
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "name": "slayer",
+  "description": "A ferocious murderer feeding on the fear of their victims sliced by their battleaxe.",
+  "weapon": ["battleaxe"],
+  "keywords": [
+    "Damage",
+    "Tank"
+  ],
+  "spells": [
+    {
+      "name": "bloodlust",
+      "description": "Gain bloodlust.",
+      "passive": true,
+      "modifies": [
+        {
+          "afflictions": [
+            {
+              "name": "bloodlust",
+              "everlasting": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "bleeding strike",
+      "description": "Gain bleeding strikes.",
+      "passive": true,
+      "modifies": [
+        {
+          "afflictions": [
+            {
+              "name": "bloodlust",
+              "everlasting": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "murder",
+      "description": "Deals 3x attack damage when target below 50% HP.",
+      "target": "selected",
+      "modifies": [
+        {
+          "attribute": "health",
+          "using": {
+            "source": "caster",
+            "attribute": {
+              "name": "attack",
+              "value": -3.0
+            },
+            "condition": {
+              "attribute": {
+                "name": "health",
+                "using": "current",
+                "matches": "less",
+                "threshold": 0.5
+              }
+            }
+          }
+        }
+      ],
+      "cost": {
+        "modifies": "energy",
+        "value": 25
+      },
+      "cooldown": 6
+    },
+    {
+      "name": "berserk",
+      "description": "Enrage: gain haste for 6s and remove any slowing effects.",
+      "target": "caster",
+      "modifies": [
+        {
+          "afflictions": [
+            {
+              "name": "slow",
+              "cancel": true
+            },
+            {
+              "name": "haste",
+              "duration": 6.0
+            }
+          ]
+        }
+      ],
+      "cooldown": 12
+    },
+    {
+      "name": "blood strike",
+      "description": "Consume 15% of current HP and deal 100% to target.",
+      "target": "selected",
+      "modifier": {
+        "modifies": "health",
+        "attribute": "health",
+        "value": 0.15
+      },
+      "cost": {
+        "modifies": "health",
+        "value": 0.15
+      },
+      "cooldown": 6
+    },
+    {
+      "name": "maiming strike",
+      "description": "Slow nearby enemies for 6s and inflict wounds 6s.",
+      "target": "cone",
+      "range": 150,
+      "afflictions": [
+        {
+          "name": "slow",
+          "duration": 6
+        },
+        {
+          "name": "wounds",
+          "duration": 6
+        }
+      ],
+      "cooldown": 20
+    },
+    {
+      "name": "break armor",
+      "description": "Sunder targets armor for 6s.",
+      "target": "selected",
+      "afflictions": [
+        {
+          "name": "Armor break",
+          "duration": 6
+        }
+      ],
+      "cooldown": 12
+    },
+    {
+      "name": "blood rage",
+      "description": "Heal for 15% of missing health.",
+      "modifier": {
+        "modifies": "health",
+        "attribute": "missing-health",
+        "value": 0.15,
+        "heal": true
+      },
+      "cost": {
+        "modifies": "energy",
+        "value": 20
+      },
+      "cooldown": 12
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+{
+  "name": "necromancer",
+  "description": "Death and dark magics is only fit for such a tainted soul, swings two-handed swords of pure evil.",
+  "weapon": ["sword"],
+  "keywords": ["Damage", "Tank", "Magic"],
+  "spells":[
+    {
+      "name": "touch of death",
+      "description": "Attacks inflicts soulless.",
+      "passive": true,
+      "affliction": [
+        {
+          "name": "soulless",
+          "everlasting": true
+        }
+      ]
+    },
+    {
+      "name": "deathbringer",
+      "description": "Gains deathbringer on nearby death.",
+      "passive": true,
+      "affliction": [
+        {
+          "name": "Deathbringer",
+          "everlasting": true
+        }
+      ]
+    },
+    {
+      "name": "drain",
+      "description": "Drains the life of all in an area and heals the caster.",
+      "target": "area",
+      "trigger": [
+        {
+          "on": "hit",
+          "modifier": {
+            "modifies": "health",
+            "attribute": "damage",
+            "value": 0.5
+          }
+        }
+      ],
+      "modifier": [
+        {
+          "modifies": "health",
+          "attribute": "spell",
+          "value": 2.0
+        }
+      ],
+      "affliction": [
+        {
+          "name": "slow",
+          "duration": 3
+        }
+      ],
+      "cooldown": 8
+    },
+    {
+      "name": "necrotic bolt",
+      "description": "Deals spell damage and inflicts poison.",
+      "target": "missile",
+      "modifier": [
+        {
+          "modifies": "health",
+          "attribute": "spell",
+          "value": 1.0
+        }
+      ],
+      "affliction": [
+        {
+          "name": "poison",
+          "duration": 6
+        }
+      ],
+      "cooldown": 6
+    },
+    {
+      "name": "necrotic prayer",
+      "description": "Deals spell damage and stuns nearby.",
+      "target": "host",
+      "modifier": [
+        {
+          "modifies": "health",
+          "attribute": "spell",
+          "value": 3.0
+        }
+      ],
+      "affliction": [
+        {
+          "name": "stun",
+          "duration": 4
+        }
+      ],
+      "cooldown": 12
+    },
+    {
+      "name": "soul contract",
+      "description": "Turns energy into health.",
+      "modifier": [
+        {
+          "modifies": "health",
+          "attribute": "health",
+          "value": 0.15
+        }
+      ],
+      "cost": {
+        "modifies": "energy",
+        "value": 25
+      },
+      "cooldown": 8
+    },
+    {
+      "name": "deaths emissary",
+      "description": "Deals damage based on targets missing health.",
+      "target": "selected",
+      "modifier": [
+        {
+          "modifies": "health",
+          "attribute": "health-missing",
+          "value": 0.15
+        }
+      ],
+      "cooldown": 8
+    },
+    {
+      "name": "consuming bolt",
+      "description": "Conjure a bolt that restores energy on hit",
+      "target": "missile",
+      "trigger": [
+        {
+          "on": "hit",
+          "modifier": {
+            "modifies": "energy",
+            "attribute": "energy",
+            "value": 0.1
+          }
+        }
+      ],
+      "cooldown": 6
+    }
+  ]
+}

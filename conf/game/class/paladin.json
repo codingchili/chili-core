@@ -1,0 +1,170 @@
+{
+  "name": "paladin",
+  "description": "A holy priest enforcing the law with a hammer of justice, possesses blessings of protection.",
+  "weapon": ["hammer"],
+  "keywords": [
+    "Healer",
+    "Tank",
+    "Magic"
+  ],
+  "spells": [
+    {
+      "name": "holy aura",
+      "description": "Gains protected every 6 seconds.",
+      "passive": true,
+      "modifier": [
+        {
+          "modifies": "caster",
+          "affliction": [
+            {
+              "name": "holy aura",
+              "everlasting": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "holy blessing",
+      "description": "Incoming damage is converted to energy.",
+      "passive": true,
+      "modifier": [
+        {
+          "modifies": "caster",
+          "affliction": [
+            {
+              "name": "holy blessing",
+              "everlasting": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "holy shield",
+      "description": "Creates a shield of 15% HP for 25% energy.",
+      "target": "caster",
+      "modifier": [
+        {
+          "modifies": "caster",
+          "attribute": "shield",
+          "using": {
+            "source": "caster",
+            "attribute": "health",
+            "as": "max",
+            "value": 0.15
+          }
+        }
+      ],
+      "cost": {
+        "requires": "energy",
+        "value": 25
+      },
+      "cooldown": 12
+    },
+    {
+      "name": "holy prayer",
+      "description": "Heal an area based on spell damage.",
+      "target": "area",
+      "modifier": [
+        {
+          "modifies": "target",
+          "attribute": "health",
+          "using": {
+            "source": "caster",
+            "attribute": "spell",
+            "value": 3.0
+          }
+        }
+      ],
+      "cost": {
+        "requires": "energy",
+        "value": 20
+      },
+      "cooldown": 8,
+      "casting": 2.5
+    },
+    {
+      "name": "spirit hammer",
+      "description": "Stuns all in a ray from caster and deals spell damage.",
+      "target": "ray",
+      "modifier": [
+        {
+          "modifies": "target",
+          "attribute": "health",
+          "using": {
+            "source": "caster",
+            "attribute": "spell",
+            "value": -1.0
+          },
+          "affliction": [
+            {
+              "name": "stun",
+              "duration": 3
+            }
+          ]
+        }
+      ],
+      "cooldown": 12,
+      "casting": 2.5
+    },
+    {
+      "name": "smite",
+      "description": "Targets in cone suffer spell damage.",
+      "target": "cone",
+      "modifier": [
+        {
+          "modifies": "target",
+          "attribute": "health",
+          "using": {
+            "source": "caster",
+            "attribute": "spell",
+            "value": -1.0
+          }
+        }
+      ],
+      "cooldown": 4,
+      "casttime": 1.0
+    },
+    {
+      "name": "holy power",
+      "description": "Sprint and empower for a short period.",
+      "target": "caster",
+      "modifier": [
+        {
+          "modifies": "target",
+          "affliction": [
+            {
+              "name": "empower",
+              "duration": 6.0
+            },
+            {
+              "name": "sprint",
+              "duration": 6.0
+            }
+          ]
+        }
+      ],
+      "cooldown": 12
+    },
+    {
+      "name": "blinding light",
+      "description": "Interrupt all casting.",
+      "target": "cone",
+      "modifier": [
+        {
+          "modifies": "target",
+          "attribute": "casting",
+          "using": {
+            "cancel": true
+          }
+        }
+      ],
+      "cost": {
+        "requires": "energy",
+        "value": 15
+      },
+      "cooldown": 12
+    }
+  ]
+}

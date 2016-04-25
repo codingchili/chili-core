@@ -1,0 +1,148 @@
+{
+  "name": "druid",
+  "description": "Restores the balance of all things nature with their staff, aids their allies with magic buffs.",
+  "weapon": ["staff"],
+  "keywords": [
+    "Healer",
+    "Buffs",
+    "Magic"
+  ],
+  "spells": [
+    {
+      "name": "natures blessing",
+      "description": "Reduces chance to be affected by negative effects.",
+      "passive": true,
+      "affliction": [
+        {
+          "name": "natures blessing",
+          "everlasting": true
+        }
+      ]
+    },
+    {
+      "name": "divine sight",
+      "description": "Periodically chance to reveal stealth.",
+      "passive": true,
+      "affliction": [
+        {
+          "name": "divine sight",
+          "everlasting": true
+        }
+      ]
+    },
+    {
+      "name": "empower",
+      "description": "Empower an area with haste and increased attributes.",
+      "target": "area",
+      "modifier": [
+        {
+          "modifies": "health",
+          "attribute": "spell",
+          "value": 2.0
+        }
+      ],
+      "affliction": [
+        {
+          "name": "empower",
+          "duration": 30
+        },
+        {
+          "name": "haste",
+          "duration": 30
+        }
+      ],
+      "cost": {
+        "modifies": "energy",
+        "value": 20
+      },
+      "cooldown": 12
+    },
+    {
+      "name": "regeneration",
+      "description": "Area gains regeneration.",
+      "affliction": [
+        {
+          "name": "regeneration",
+          "duration": 30
+        }
+      ],
+      "cost": {
+        "modifies": "energy",
+        "value": 20
+      },
+      "cooldown": 12
+    },
+    {
+      "name": "banish",
+      "description": "Deals spell damage and slows.",
+      "target": "ray",
+      "modifier": [
+        {
+          "modifies": "health",
+          "attribute": "spell",
+          "value": 2.0
+        }
+      ],
+      "affliction": [
+        {
+          "name": "slow",
+          "duration": "4"
+        }
+      ],
+      "cooldown": 6
+    },
+    {
+      "name": "ensnare",
+      "description": "Ensnares targets in area.",
+      "target": "area",
+      "modifier": [
+        {
+          "modifies": "health",
+          "attribute": "spell",
+          "value": 2.0
+        }
+      ],
+      "affliction": [
+        {
+          "name": "stun",
+          "duration": 3.0
+        }
+      ],
+      "cooldown": 8
+    },
+    {
+      "name": "restoration",
+      "description": "Heals a target for their current health, requires less than 50% HP.",
+      "target": "selected",
+      "modifier": [
+        {
+          "modifies": "health",
+          "attribute": "health",
+          "value": 1.0,
+          "heal": true
+        }
+      ],
+      "condition": {
+        "attribute": "health",
+        "max": 0.5
+      },
+      "cost": {
+        "modifies": "energy",
+        "value": 30
+      },
+      "cooldown": 30
+    },
+    {
+      "name": "curse",
+      "description": "Curses everyone in an area.",
+      "target": "area",
+      "affliction": [
+        {
+          "name": "curse",
+          "duration": 4
+        }
+      ],
+      "cooldown": 8
+    }
+  ]
+}
