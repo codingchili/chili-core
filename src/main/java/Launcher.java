@@ -1,10 +1,6 @@
-import Authentication.Controller.AuthenticationServer;
-import Configuration.Configuration;
-import Game.GameServer;
-import Logging.LogServer;
+import Configuration.Config;
 import Utilities.DefaultLogger;
 import Utilities.Logger;
-import Website.WebServer;
 import io.vertx.core.*;
 
 /**
@@ -15,18 +11,17 @@ public class Launcher extends AbstractVerticle {
     private Logger logger;
 
     public void init(Vertx vertx, Context context) {
-        Configuration.Load(context.config());
         this.vertx = vertx;
+        Config.Load();
     }
 
     public void start(final Future<Void> future) {
         Future<Void> logging = Future.future();
-        startServer(logging, new LogServer());
+        startServer(logging, new Logging.Server());
 
         logging.setHandler(result -> {
             if (result.succeeded()) {
                 logger = new DefaultLogger(vertx, this.getClass().getSimpleName());
-                logger.configuration(Configuration.getSource());
                 startAll(future);
             } else
                 future.fail(result.cause());
@@ -45,9 +40,9 @@ public class Launcher extends AbstractVerticle {
                 future.fail(result.cause());
         });
 
-        startServer(web, new WebServer());
-        startServer(authentication, new AuthenticationServer());
-        startServer(game, new GameServer());
+        startServer(web, new Website.Server());
+        startServer(authentication, new Authentication.Server());
+        startServer(game, new Game.Server());
     }
 
     private void startServer(Future<Void> future, Verticle verticle) {

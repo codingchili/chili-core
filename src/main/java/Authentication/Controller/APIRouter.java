@@ -1,8 +1,8 @@
 package Authentication.Controller;
 
+import Configuration.Config;
 import Protocol.*;
 import Authentication.Model.*;
-import Configuration.Configuration.Security;
 import Utilities.Serializer;
 import Utilities.Token;
 import Utilities.TokenFactory;
@@ -17,7 +17,7 @@ import io.vertx.ext.web.RoutingContext;
  *         <p>
  *         Router for the view-api.
  */
-class APIRouter {
+public class APIRouter {
     private AsyncAccountStore accounts;
     private TokenFactory clientToken;
 
@@ -30,7 +30,7 @@ class APIRouter {
     public void register(Router router, AsyncAccountStore accounts) {
         this.accounts = accounts;
 
-        clientToken = new TokenFactory(Security.secret);
+        clientToken = new TokenFactory(Config.Authentication.SECRET);
 
         router.post("/api/register").handler(this::register);
         router.post("/api/authenticate").handler(this::authenticate);

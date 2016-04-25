@@ -28,7 +28,7 @@ public abstract class Serializer {
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
             return mapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error parsing POJO.");
+            throw new RuntimeException(e);
         }
     }
 
@@ -45,7 +45,7 @@ public abstract class Serializer {
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             return mapper.readValue(json.encode(), format);
         } catch (IOException e) {
-            throw new RuntimeException(e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 
