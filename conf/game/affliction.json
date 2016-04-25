@@ -139,12 +139,11 @@
   {
     "name": "bleeding strike",
     "description": "Attacks inflict bleeding.",
-    "target": "target",
     "trigger": [
       {
         "on": "hit",
         "spell": "basic",
-        "target": "target",
+        "target": "affected",
         "affliction": [
           {
             "name": "bleeding",
@@ -212,7 +211,7 @@
       {
         "on": "hit",
         "spell": "basic",
-        "target": "target",
+        "modifies": "target",
         "affliction": [
           {
             "name": "poison",
@@ -229,7 +228,7 @@
       {
         "on": "hit",
         "spell": "basic",
-        "target": "target",
+        "modifies": "target",
         "affliction": [
           {
             "name": "wounds",

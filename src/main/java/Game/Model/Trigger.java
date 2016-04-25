@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Trigger {
     private Event on;
     private String spell;
-    private Target target;
+    private Target modifies;
     private ArrayList<Modifier> modifier;
     private ArrayList<Affliction> affliction;
 
@@ -28,12 +28,12 @@ public class Trigger {
         this.spell = spell;
     }
 
-    public Target getTarget() {
-        return target;
+    public Target getModifies() {
+        return modifies;
     }
 
-    public void setTarget(Target target) {
-        this.target = target;
+    public void setModifies(Target modifies) {
+        this.modifies = modifies;
     }
 
     public ArrayList<Modifier> getModifier() {

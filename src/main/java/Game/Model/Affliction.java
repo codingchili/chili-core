@@ -8,13 +8,13 @@ import java.util.ArrayList;
 public class Affliction {
     private String name;
     private String description;
-    private ArrayList<Modifier> modifier;
-    private ArrayList<Trigger> trigger;
     private Target target;
     private Double rate;
     private Double chance;
     private Double duration;
     private Boolean everlasting;
+    private ArrayList<Modifier> modifier;
+    private ArrayList<Trigger> trigger;
     private ArrayList<Affliction> affliction;
 
     public Boolean getEverlasting() {

@@ -36,9 +36,13 @@
       "target": "area",
       "modifier": [
         {
-          "modifies": "health",
-          "attribute": "spell",
-          "value": 2.0
+          "attribute": "health",
+          "target": "affected",
+          "using": {
+            "source": "caster",
+            "attribute": "spell",
+            "value": 2.0
+          }
         }
       ],
       "affliction": [
