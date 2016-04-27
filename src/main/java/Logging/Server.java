@@ -26,28 +26,29 @@ public class Server implements Verticle {
     public void init(Vertx vertx, Context context) {
         Config.Load();
         this.vertx = vertx;
+        this.logger = new DefaultLogger(vertx, "Logserver");
+
     }
 
     @Override
     public void start(Future<Void> start) throws Exception {
-        vertx.createHttpServer().websocketHandler(websocket -> {
+        vertx.createHttpServer().websocketHandler(connection -> {
 
-            websocket.handler(data -> {
+            connection.handler(data -> {
                 System.out.println(data.toString());
             });
 
-            websocket.endHandler(end -> {
-                System.out.println();
+            connection.endHandler(end -> {
             });
-
         }).listen(Config.Logging.PORT);
 
-        logger = new DefaultLogger(vertx, "Logserver");
+        logger.onServerStarted();
         start.complete();
     }
 
     @Override
     public void stop(Future<Void> stop) throws Exception {
+        logger.onServerStopped();
         stop.complete();
     }
 }

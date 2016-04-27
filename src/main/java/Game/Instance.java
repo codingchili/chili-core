@@ -1,27 +1,31 @@
 package Game;
 
 import Configuration.Config;
-import Game.Model.RealmSettings;
+import Game.Model.InstanceSettings;
 import Utilities.DefaultLogger;
-import Utilities.JsonFileReader;
 import Utilities.Logger;
-import Utilities.Serializer;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-
-import java.util.ArrayList;
 
 /**
- * Created by Robin on 2016-04-07.
+ * Created by Robin on 2016-04-27.
  * <p>
- * Root game server, starts realm servers.
+ * Handles players in a world.
  */
-public class Server implements Verticle {
+public class Instance implements Verticle {
     private Logger logger;
     private Vertx vertx;
+    private InstanceSettings instance;
+    private String realm;
+
+    public Instance(InstanceSettings instance, String realm) {
+        this.instance = instance;
+        this.realm = realm;
+    }
+
+    // todo on full create a new volatile instance based on the current instance that will shutdown on players = 0
 
     @Override
     public Vertx getVertx() {
@@ -37,20 +41,12 @@ public class Server implements Verticle {
 
     @Override
     public void start(Future<Void> start) throws Exception {
-        ArrayList<JsonObject> realms = JsonFileReader.readDirectoryObjects("conf/realm/");
-
-        for (JsonObject realm : realms) {
-            RealmSettings settings = (RealmSettings) Serializer.unpack(realm, RealmSettings.class);
-            vertx.deployVerticle(new Realm(settings));
-        }
-
-        logger.onServerStarted();
+        logger.onInstanceStarted(instance);
         start.complete();
     }
 
     @Override
     public void stop(Future<Void> stop) throws Exception {
-        logger.onServerStopped();
         stop.complete();
     }
 }

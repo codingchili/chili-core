@@ -1,0 +1,7 @@
+{
+  "client.port": 5505,
+  "realm.port": 5105,
+  "remote": "localhost",
+  "client.secret": "wJZwECZSeaZxyl23aIbWXz3hA5Ujz4N0vDyvE5RWgK3ARDNnt0JWWL4aVeZRyNWd",
+  "server.secret": "UIldiuahwd8a9w70da23njn<KJndw234234NLkjnwldawd87821l23jkbalk2jdn"
+}

@@ -1,14 +1,18 @@
 package Protocol;
 
 import Authentication.Model.Account;
+import Game.Model.RealmSettings;
 import Utilities.Token;
+
+import java.util.ArrayList;
 
 /**
  * @author Robin Duda
- *
- * An authentication message from the server to the view.
+ *         <p>
+ *         An authentication message from the server to the view.
  */
 public class Authentication {
+    private ArrayList<RealmSettings> realms = new ArrayList<>();
     private Token token;
     private Account account;
     private boolean registered;
@@ -16,10 +20,19 @@ public class Authentication {
     public Authentication() {
     }
 
-    public Authentication(Account account, Token token, boolean registered) {
+    public Authentication(Account account, Token token, boolean registered, ArrayList<RealmSettings> realms) {
         this.account = account;
         this.token = token;
         this.registered = registered;
+        this.realms = realms;
+    }
+
+    public ArrayList<RealmSettings> getRealms() {
+        return realms;
+    }
+
+    public void setRealms(ArrayList<RealmSettings> realms) {
+        this.realms = realms;
     }
 
     public Token getToken() {

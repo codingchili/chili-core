@@ -8,7 +8,6 @@ import io.vertx.core.*;
  */
 public class Launcher extends AbstractVerticle {
     private Vertx vertx;
-    private Logger logger;
 
     public void init(Vertx vertx, Context context) {
         this.vertx = vertx;
@@ -21,7 +20,6 @@ public class Launcher extends AbstractVerticle {
 
         logging.setHandler(result -> {
             if (result.succeeded()) {
-                logger = new DefaultLogger(vertx, this.getClass().getSimpleName());
                 startAll(future);
             } else
                 future.fail(result.cause());

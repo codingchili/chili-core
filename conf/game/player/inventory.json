@@ -1,0 +1,9 @@
+{
+  "slots": [
+    "head",
+    "weapon"
+  ],
+  "bag": {
+    "slots": 56
+  }
+}

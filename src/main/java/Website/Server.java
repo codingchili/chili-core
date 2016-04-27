@@ -29,7 +29,7 @@ public class Server implements Verticle {
     public void init(Vertx vertx, Context context) {
         Config.Load();
         this.vertx = vertx;
-        this.logger = new DefaultLogger(vertx, this.getClass().getSimpleName());
+        this.logger = new DefaultLogger(vertx, "Webserver");
     }
 
     @Override
@@ -41,6 +41,7 @@ public class Server implements Verticle {
         setCatchAll(router);
 
         vertx.createHttpServer().requestHandler(router::accept).listen(Web.PORT);
+        logger.onServerStarted();
         start.complete();
     }
 
@@ -60,6 +61,7 @@ public class Server implements Verticle {
 
     @Override
     public void stop(Future<Void> stop) throws Exception {
+        logger.onServerStopped();
         stop.complete();
     }
 }

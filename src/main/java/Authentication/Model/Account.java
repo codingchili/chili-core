@@ -1,11 +1,16 @@
 package Authentication.Model;
 
+import Game.Model.Character;
+
+import java.util.ArrayList;
+
 /**
  * @author Robin Duda
- *
- * Holds account data for an user used to communicate with the view.
+ *         <p>
+ *         Holds account data for an user used to communicate with the view.
  */
 public class Account {
+    private ArrayList<Character> characters = new ArrayList<>();
     private String username;
     private String password;
     private String email;
@@ -16,6 +21,14 @@ public class Account {
     public Account(AccountMapping account) {
         this.username = account.getUsername();
         this.email = account.getEmail();
+    }
+
+    public ArrayList<Character> getCharacters() {
+        return characters;
+    }
+
+    public void setCharacters(ArrayList<Character> characters) {
+        this.characters = characters;
     }
 
     public String getUsername() {

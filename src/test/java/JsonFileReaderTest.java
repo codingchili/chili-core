@@ -57,6 +57,7 @@ public class JsonFileReaderTest {
     }
 
     // todo not currently passing.
+    // todo spellfactory, classfactory, attributefactory, mapping attributes with hashmaps, attributes no enum
     @Test
     public void testReadPlayerClasses() throws IOException {
         ArrayList<JsonObject> classes = JsonFileReader.readDirectoryObjects("conf/game/class/");

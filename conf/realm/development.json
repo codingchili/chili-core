@@ -1,13 +1,11 @@
 {
   "name": "Development 1",
   "version": 1.0,
-  "rate": 1.0,
   "size": 500,
   "type": "normal",
   "lifetime": "weekly",
-  "leveling": {
-    "max": 25,
-    "dual.class": 30,
-    "exp.curve": 1.15
-  }
+  "drop": 1.0,
+  "leveling": 1.15,
+  "port": "9601",
+  "remote": "localhost"
 }

@@ -49,20 +49,20 @@ var application = {
 
 
 $(document).ready(function () {
-    /* $('#game-view').hide();
-     $('#game-login').hide();
+    $('#game-view').hide();
+    $('#game-login').hide();
 
-     application.subscribe("game-login", function () {
-     $('#page').hide();
-     $('#game-login').show();
-     });
-     */
-
-    setTimeout(function () {
-        $('#game-login').hide();
+    application.subscribe("game-login", function () {
         $('#page').hide();
-        //application.publish("game-login", {});
-        application.authenticated({account: {username: "spinx"}});
-    }, 500);
+        $('#game-login').show();
+    });
 
+
+    /* setTimeout(function () {
+     $('#game-login').hide();
+     $('#page').hide();
+     //application.publish("game-login", {});
+     application.authenticated({account: {username: "spinx"}});
+     }, 500);
+     */
 });
