@@ -2,7 +2,7 @@ package Authentication;
 
 import Authentication.Controller.ClientHandler;
 import Authentication.Controller.RealmHandler;
-import Configuration.Config;
+import Utilities.Config;
 import Utilities.DefaultLogger;
 import Utilities.Logger;
 import io.vertx.core.Context;
@@ -26,7 +26,7 @@ public class Server implements Verticle {
     public void init(Vertx vertx, Context context) {
         Config.Load();
         this.vertx = vertx;
-        this.logger = new DefaultLogger(vertx, "Authserver");
+        this.logger = new DefaultLogger(vertx, Config.Authentication.LOGTOKEN);
 
         new ClientHandler(vertx, logger, new RealmHandler(vertx, logger));
     }

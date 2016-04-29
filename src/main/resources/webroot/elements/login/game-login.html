@@ -1,10 +1,10 @@
-<link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
-<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
-<link rel="import" href="../bower_components/neon-animation/animations/scale-up-animation.html">
-<link rel="import" href="../bower_components/neon-animation/animations/fade-out-animation.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/scale-up-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
 
 <!--
     @author Robin Duda
@@ -12,8 +12,8 @@
  -->
 
 <dom-module id="game-login">
-    <link rel="import" href="../style/theme.css" type="css">
-    <link rel="import" href="../style/style.css" type="css">
+    <link rel="import" href="../../style/theme.css" type="css">
+    <link rel="import" href="../../style/style.css" type="css">
     <template>
         <style>
             :host {
@@ -90,7 +90,7 @@
 
                 $.ajax({
                     type: "POST",
-                    url: "http://localhost:5505/api/authenticate",
+                    url: configuration.api("authenticate"),
                     dataType: "json",
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify({
@@ -123,7 +123,7 @@
                 else
                     $.ajax({
                         type: "POST",
-                        url: "http://localhost:5505/api/register",
+                        url: configuration.api("register"),
                         dataType: "json",
                         contentType: "application/json; charset=utf-8",
                         data: JSON.stringify({

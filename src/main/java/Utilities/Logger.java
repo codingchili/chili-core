@@ -28,4 +28,6 @@ public interface Logger {
     void onRealmDeregistered(RealmSettings realm);
 
     void onRealmUpdated(RealmSettings realm);
+
+    void onRealmRejected(RealmSettings realm);
 }

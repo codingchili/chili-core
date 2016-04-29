@@ -1,0 +1,306 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../bower_components/paper-ripple/paper-ripple.html">
+<link rel="import" href="../../bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/scale-up-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
+
+
+<!--
+    @author Robin Duda
+    Polymer element for a simple admin-panel using iron-pages.
+ -->
+
+<dom-module id="realm-list">
+    <link rel="import" href="../../style/theme.css" type="css">
+    <link rel="import" href="../../style/style.css" type="css">
+    <template>
+        <style>
+            :host {
+                display: inline-block;
+                margin-top: 4%;
+            }
+
+            paper-button {
+                text-align: left;
+            }
+
+            .container {
+                margin-top: 64px;
+                width: 80%;
+            }
+
+            .titles {
+                width: 100%;
+                margin-top: 12px;
+            }
+
+            .name-title {
+                margin-left: 8px;
+                width: 30%;
+                float: left;
+            }
+
+            .name {
+                margin-left: 20px;
+                width: 30%;
+                float: left;
+                margin-top: 4px;
+            }
+
+            .type {
+                width: 22%;
+                float: left;
+                margin-top: 4px;
+            }
+
+            .reset {
+                width: 15%;
+                float: left;
+                margin-top: 4px;
+            }
+
+            .players {
+                width: 15%;
+                float: left;
+                margin-top: 4px;
+            }
+
+            .ping {
+                width: 14%;
+                float: left;
+                margin-top: 4px;
+            }
+
+            .item {
+                position: relative;
+                display: inline-block;
+                width: 100%;
+            }
+
+            .status {
+                position: relative;
+                height: 24px;
+                width: 100%;
+                margin-top: -2px;
+            }
+
+            .margin-top {
+                margin-top: 64px;
+            }
+
+            .details {
+                padding: 20px;
+                width: 100%;
+                margin-left: 42px;
+            }
+
+            .stats {
+                position: absolute;
+                text-align: left;
+                left: 85%;
+                font-size: smaller;
+                top: 42px;
+            }
+
+            .classes {
+                margin-top: 8px;
+                font-size: smaller;
+            }
+
+            .description {
+                width: 65%;
+            }
+
+            .red {
+                color: rgba(255, 87, 34, 1)
+            }
+
+            .orange {
+                color: rgba(239, 108, 0, 1)
+            }
+
+            .yellow {
+                color: rgba(255, 214, 0, 1);
+            }
+
+            .green {
+                color: rgba(85, 139, 47, 1);
+            }
+
+        </style>
+
+        <div class="container">
+
+            <paper-material elevation="3">
+
+                <paper-tabs selected="{{page}}" no-slide>
+                    <paper-tab on-tap="trusted">Public</paper-tab>
+                    <paper-tab on-tap="untrusted">Private</paper-tab>
+                </paper-tabs>
+
+                <div class="titles">
+                    <paper-button class="name-title">Name</paper-button>
+                    <paper-button class="type">Type</paper-button>
+                    <paper-button class="reset">Reset</paper-button>
+                    <paper-button class="players">Players</paper-button>
+                    <paper-button class="ping">Ping (ms)</paper-button>
+                </div>
+
+                <iron-pages selected="0" class="margin-top">
+                    <div>
+                        <paper-material elevation="0">
+                            <template is="dom-repeat" items="{{realms}}" as="realm">
+
+                                <div class="item" hidden="{{realm.hidden}}">
+                                    <div on-tap="toggle" class="status">
+                                        <paper-ripple></paper-ripple>
+                                        <div class="name">{{realm.name}}
+                                        </div>
+                                        <div class="type">{{realm.type}}</div>
+                                        <div class="reset">{{realm.lifetime}}</div>
+                                        <div class$="players {{realm.populationColor}}">
+                                            {{realm.online}}/{{realm.size}}
+                                        </div>
+                                        <div class$="ping {{realm.pingColor}}">{{realm.ping}}</div>
+                                    </div>
+
+                                    <iron-collapse opened="{{item.state}}">
+                                        <div class="details">
+                                            <div class="description">{{realm.description}}</div>
+                                            <div class="classes"><i>Classes enabled: Paladin, Slayer, Necromancer</i>
+                                            </div>
+                                            <div class="stats">Experience x{{realm.leveling}}</div>
+                                            <div class="stats" style="margin-top: 16px">Droprate x{{realm.drop}}
+                                            </div>
+                                        </div>
+                                    </iron-collapse>
+                                </div>
+                            </template>
+                        </paper-material>
+                    </div>
+                </iron-pages>
+
+            </paper-material>
+        </div>
+
+    </template>
+    <script>
+        Polymer({
+            is: 'realm-list',
+
+            ready: function () {
+                this.page = 0;
+                this.trustedservers = true;
+
+                application.onAuthentication((function (authentication) {
+                    this.load(authentication.realms);
+                    setInterval(this.update.bind(this), 5 * 1000);
+                }).bind(this));
+            },
+
+            update: function () {
+                var self = this;
+
+                $.ajax({
+                    type: "GET",
+                    url: configuration.api("realmlist"),
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: (function (data) {
+                        this.load(data);
+                    }).bind(self)
+                });
+            },
+
+            load: function (realms) {
+
+                for (var i = 0; i < realms.length; i++) {
+                    realms[i].ping = "-";
+                    this.ping(realms[i]);
+                }
+
+                this.set("realms", realms);
+                this.applyAll();
+            },
+
+            trusted: function () {
+                this.trustedservers = true;
+                this.applyAll();
+            },
+
+            untrusted: function () {
+                this.trustedservers = false;
+                this.applyAll();
+            },
+
+            applyAll: function () {
+                for (var i = 0; i < this.realms.length; i++) {
+                    this.apply(i);
+                }
+            },
+
+            apply: function (i) {
+                this.set("realms." + i + ".hidden", this.hidden(this.realms[i]));
+                this.set("realms." + i + ".populationColor", this.populationColor(this.realms[i]));
+                this.set("realms." + i + ".pingColor", this.pingColor(this.realms[i]));
+            },
+
+            pingColor: function (realm) {
+                if (realm.ping < 50)
+                    return "green";
+                if (realm.ping < 80)
+                    return "yellow";
+                if (realm.ping < 100)
+                    return "orange";
+                if (realm.ping >= 100)
+                    return "red";
+
+                return "";
+            },
+
+            populationColor: function (realm) {
+                var index = realm.players / realm.size;
+
+                if (index > 0.9)
+                    return "red";
+                if (index > 0.8)
+                    return "orange";
+                if (index > 0.3)
+                    return "yellow";
+
+                return "green";
+            },
+
+            hidden: function (realm) {
+                return !(realm.trusted == this.trustedservers);
+            },
+
+            ping: function (realm) {
+                var ws = new WebSocket("ws://" + realm.remote + ":" + realm.port);
+                var start = performance.now();
+
+                ws.onopen = (function () {
+                    var ping = parseInt(performance.now() - start, 10);
+                    var realms = this.get("realms");
+
+                    for (var i = 0; i < realms.length; i++) {
+                        if (realms[i].name == realm.name) {
+                            this.set("realms." + i + ".ping", ping);
+                            this.apply(i);
+                        }
+                    }
+                }).bind(this);
+            },
+
+            toggle: function (event) {
+                event.currentTarget.parentElement.querySelector('iron-collapse').toggle();
+            }
+        })
+        ;
+    </script>
+</dom-module>

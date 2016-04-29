@@ -1,4 +1,4 @@
-package Authentication.Protocol;
+package Protocol;
 
 import Game.Model.RealmSettings;
 import Protocol.Header;

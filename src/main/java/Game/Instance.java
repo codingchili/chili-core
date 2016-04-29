@@ -1,7 +1,7 @@
 package Game;
 
-import Configuration.Config;
 import Game.Model.InstanceSettings;
+import Utilities.Config;
 import Utilities.DefaultLogger;
 import Utilities.Logger;
 import io.vertx.core.Context;
@@ -34,9 +34,8 @@ public class Instance implements Verticle {
 
     @Override
     public void init(Vertx vertx, Context context) {
-        Config.Load();
         this.vertx = vertx;
-        this.logger = new DefaultLogger(vertx, "Gameserver");
+        this.logger = new DefaultLogger(vertx, Config.Gameserver.LOGTOKEN);
     }
 
     @Override

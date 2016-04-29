@@ -3,7 +3,11 @@
  *
  * Used to pass application-level events between components.
  */
-
+var configuration = {
+    api: function (method) {
+        return "http://localhost:5505/api/" + method;
+    }
+};
 
 var application = {
     authentication: null,
@@ -15,9 +19,7 @@ var application = {
         this.authentication = authentication;
         $('#game-login').hide();
         $('#page').hide();
-        $('#header').hide();
-        $('#footer').hide();
-        $('#game-view').show();
+        $('#realm-list').show();
 
         this.publish('onAuthentication', authentication);
     },
@@ -29,6 +31,7 @@ var application = {
     logout: function () {
         $('#game-login').show();
         $('#game-view').hide();
+        $('#realm-list').hide();
 
         this.publish('onLogout', {});
     },
@@ -51,6 +54,7 @@ var application = {
 $(document).ready(function () {
     $('#game-view').hide();
     $('#game-login').hide();
+    $('#realm-list').hide();
 
     application.subscribe("game-login", function () {
         $('#page').hide();

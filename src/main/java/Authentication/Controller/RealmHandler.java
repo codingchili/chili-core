@@ -1,9 +1,9 @@
 package Authentication.Controller;
 
-import Authentication.Protocol.RegisterRealm;
-import Configuration.Config;
 import Game.Model.RealmSettings;
 import Protocol.Packet;
+import Protocol.RegisterRealm;
+import Utilities.Config;
 import Utilities.Logger;
 import Utilities.Serializer;
 import Utilities.TokenFactory;
@@ -25,7 +25,7 @@ public class RealmHandler {
     private Logger logger;
 
     public RealmHandler(Vertx vertx, Logger logger) {
-        this.tokenFactory = new TokenFactory(Config.Authentication.SERVER_SECRET);
+        this.tokenFactory = new TokenFactory(Config.Authentication.REALM_SECRET);
         this.vertx = vertx;
         this.logger = logger;
 
@@ -36,17 +36,25 @@ public class RealmHandler {
     private void registerHandlers() {
         handlers.put(RegisterRealm.ACTION, (data, connection) -> {
             RegisterRealm request = (RegisterRealm) Serializer.unpack(data, RegisterRealm.class);
+            RealmSettings realm = request.getRealm();
 
-            if (tokenFactory.verifyToken(request.getToken())) {
-
+            if (authorize(request)) {
                 if (realms.containsKey(connection))
-                    logger.onRealmUpdated(request.getRealm());
+                    logger.onRealmUpdated(realm);
                 else
-                    logger.onRealmRegistered(request.getRealm());
+                    logger.onRealmRegistered(realm);
 
-                realms.put(connection, request.getRealm());
+                realm.setTrusted(Config.Authentication.isPublicRealm(realm.getName()));
+
+                realms.put(connection, realm);
+            } else {
+                logger.onRealmRejected(realm);
             }
         });
+    }
+
+    private boolean authorize(RegisterRealm request) {
+        return tokenFactory.verifyToken(request.getToken()) && (request.getToken().getDomain().equals(request.getRealm().getName()));
     }
 
     private void startServer() {

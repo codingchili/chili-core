@@ -1,5 +1,5 @@
-<link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 
 <!--
     @author Robin Duda
@@ -7,8 +7,8 @@
  -->
 
 <dom-module id="game-view">
-    <link rel="import" href="../style/theme.css" type="css">
-    <link rel="import" href="../style/style.css" type="css">
+    <link rel="import" href="../../style/theme.css" type="css">
+    <link rel="import" href="../../style/style.css" type="css">
     <template>
         <style>
             :host {
@@ -50,10 +50,10 @@
             ready: function () {
                 var self = this;
 
-                application.onAuthentication(function () {
-                    game.initialize(document.getElementById('game'));
-                    self.update();
-                });
+                /*application.onAuthentication(function () {
+                 game.initialize(document.getElementById('game'));
+                 self.update();
+                 });*/
 
                 this.update();
                 $(window).resize(this.update);

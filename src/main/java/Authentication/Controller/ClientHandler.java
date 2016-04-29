@@ -1,6 +1,6 @@
 package Authentication.Controller;
 
-import Configuration.Config;
+import Utilities.Config;
 import Protocol.*;
 import Authentication.Model.*;
 import Utilities.Logger;
@@ -34,7 +34,7 @@ public class ClientHandler {
         this.realms = realms;
         this.clientToken = new TokenFactory(Config.Authentication.CLIENT_SECRET);
         this.accounts = new AccountDB(
-                MongoClient.createShared(vertx, Config.Database.CONFIGURATION));
+                MongoClient.createShared(vertx, Config.Authentication.DATABASE));
 
         startServer();
     }
@@ -54,6 +54,7 @@ public class ClientHandler {
 
         router.post("/api/register").handler(this::register);
         router.post("/api/authenticate").handler(this::authenticate);
+        router.get("/api/realmlist").handler(this::realmlist);
 
         vertx.createHttpServer().requestHandler(router::accept).listen(Config.Authentication.CLIENT_PORT);
     }
@@ -121,5 +122,10 @@ public class ClientHandler {
             logger.onRegistered(account, context.request().remoteAddress().host());
         else
             logger.onAuthenticated(account, context.request().remoteAddress().host());
+    }
+
+    private void realmlist(RoutingContext context) {
+        HttpServerResponse response = context.response();
+        response.setStatusCode(HttpResponseStatus.OK.code()).end(Serializer.pack(realms.getList()));
     }
 }

@@ -1,6 +1,20 @@
 {
   "port": 6109,
-  "remote": "localhost",
-  "name": "server.1",
-  "secret": "UIldiuahwd8a9w70da23njn<KJndw234234NLkjnwldawd87821l23jkbalk2jdn"
+  "secret": "awdbwDAJWhbk3j4n4bmNB3bnkijhbADG73691873469ygiadb3bah3dja3a8fca03hakk",
+  "elastic": {
+    "remote": "localhost",
+    "port": 9200,
+    "index": "log50"
+  },
+  "logserver": {
+    "remote": "localhost",
+    "port": 6109,
+    "host": "server.1",
+    "system": "logserver",
+    "token": {
+      "key": "60D689218E9F519EC309E98F105D0C3E6838CDFE07C1E2F69E1DEB0250D4397AD2238A9AC630B06E8AE4178AEC33A20FF7E67A66A3FD262C72C5EC4CF1B8A2D1",
+      "expiry": 1464604338,
+      "domain": "logsys1"
+    }
+  }
 }

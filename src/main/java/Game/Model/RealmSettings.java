@@ -5,6 +5,7 @@ package Game.Model;
  */
 public class RealmSettings {
     private String name;
+    private String description;
     private String remote;
     private double version;
     private int size;
@@ -13,6 +14,23 @@ public class RealmSettings {
     private double drop;
     private double leveling;
     private int port;
+    private Boolean trusted;
+
+    public Boolean getTrusted() {
+        return trusted;
+    }
+
+    public void setTrusted(Boolean trusted) {
+        this.trusted = trusted;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public String getRemote() {
         return remote;

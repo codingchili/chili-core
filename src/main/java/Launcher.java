@@ -1,6 +1,3 @@
-import Configuration.Config;
-import Utilities.DefaultLogger;
-import Utilities.Logger;
 import io.vertx.core.*;
 
 /**
@@ -11,7 +8,6 @@ public class Launcher extends AbstractVerticle {
 
     public void init(Vertx vertx, Context context) {
         this.vertx = vertx;
-        Config.Load();
     }
 
     public void start(final Future<Void> future) {

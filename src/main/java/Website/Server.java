@@ -1,7 +1,7 @@
 package Website;
 
-import Configuration.Config;
-import Configuration.Config.*;
+import Utilities.Config;
+import Utilities.Config.Web;
 import Utilities.DefaultLogger;
 import Utilities.Logger;
 import io.vertx.core.Context;
@@ -29,7 +29,7 @@ public class Server implements Verticle {
     public void init(Vertx vertx, Context context) {
         Config.Load();
         this.vertx = vertx;
-        this.logger = new DefaultLogger(vertx, "Webserver");
+        this.logger = new DefaultLogger(vertx, Web.LOGTOKEN);
     }
 
     @Override

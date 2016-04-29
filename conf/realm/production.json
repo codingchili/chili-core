@@ -1,0 +1,23 @@
+{
+  "realm": {
+    "name": "production realm",
+    "description": "Test realm currently on daily reset, it will contain features from the mainline that are past testing.",
+    "version": 1.0,
+    "size": 500,
+    "type": "normal",
+    "lifetime": "weekly",
+    "drop": 1.0,
+    "leveling": 1.0,
+    "port": 9602,
+    "remote": "localhost"
+  },
+  "authentication": {
+    "remote": "localhost",
+    "port": 5105,
+    "token": {
+      "key": "E426F50864A7EF3991F4F25C60246A6549529130F0824C57E8B0A9E0C47B766C323CDD3D68193E97ADC06F459500CC2D9965719E0055D458F401771B8C40D884",
+      "expiry": 1464619738,
+      "domain": "production realm"
+    }
+  }
+}

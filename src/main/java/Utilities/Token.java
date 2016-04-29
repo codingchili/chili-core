@@ -4,12 +4,12 @@ import java.time.Instant;
 
 /**
  * @author Robin Duda
- * <p/>
- * Used to request authentication by token.
+ *         <p>
+ *         Used to request authentication by token.
  */
 public class Token {
     private String key;
-    private Long expiry;
+    private long expiry;
     private String domain;
 
     public Token() {
@@ -18,7 +18,7 @@ public class Token {
     public Token(TokenFactory factory, String domain) {
         try {
             this.domain = domain;
-            this.expiry = Instant.now().getEpochSecond() + 900;
+            this.expiry = Instant.now().getEpochSecond() + 3600 * 24 * 31;
             this.key = factory.signToken(domain, this.expiry);
         } catch (Throwable e) {
             throw new RuntimeException("Token factory failed to generate token.");
@@ -33,11 +33,11 @@ public class Token {
         this.key = key;
     }
 
-    public Long getExpiry() {
+    public long getExpiry() {
         return expiry;
     }
 
-    public void setExpiry(Long expiry) {
+    public void setExpiry(long expiry) {
         this.expiry = expiry;
     }
 

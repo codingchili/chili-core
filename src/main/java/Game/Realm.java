@@ -1,9 +1,9 @@
 package Game;
 
-import Authentication.Protocol.RegisterRealm;
-import Configuration.Config;
-import Game.Model.InstanceSettings;
+import Protocol.RegisterRealm;
 import Game.Model.RealmSettings;
+import Utilities.Config;
+import Game.Model.InstanceSettings;
 import Utilities.*;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
@@ -26,13 +26,14 @@ import java.util.HashMap;
 public class Realm implements Verticle {
     private static final int REALM_UPDATE = 15000;
     private HashMap<String, ServerWebSocket> connections = new HashMap<>();
-    private TokenFactory tokenFactory;
+    private RemoteAuthentication authserver;
+    private RealmSettings realm;
     private Logger logger;
     private Vertx vertx;
-    private RealmSettings realm;
 
-    public Realm(RealmSettings realm) {
+    public Realm(RealmSettings realm, RemoteAuthentication authserver) {
         this.realm = realm;
+        this.authserver = authserver;
     }
 
     @Override
@@ -42,10 +43,8 @@ public class Realm implements Verticle {
 
     @Override
     public void init(Vertx vertx, Context context) {
-        Config.Load();
         this.vertx = vertx;
-        this.logger = new DefaultLogger(vertx, "Gameserver");
-        this.tokenFactory = new TokenFactory(Config.Gameserver.SECRET);
+        this.logger = new DefaultLogger(vertx, Config.Gameserver.LOGTOKEN);
     }
 
     @Override
@@ -63,7 +62,7 @@ public class Realm implements Verticle {
      * The registration event will then periodically trigger to update its state.
      */
     private void authenticateRealm() {
-        vertx.createHttpClient().websocket(Config.Authentication.REALM_PORT, Config.Authentication.REMOTE, "", handler -> {
+        vertx.createHttpClient().websocket(authserver.getPort(), authserver.getRemote(), "", handler -> {
             registerRealm(handler);
 
             vertx.setPeriodic(REALM_UPDATE, event -> {
@@ -74,7 +73,7 @@ public class Realm implements Verticle {
     }
 
     private void registerRealm(WebSocket handler) {
-        RegisterRealm request = new RegisterRealm(realm, new Token(tokenFactory, realm.getName()));
+        RegisterRealm request = new RegisterRealm(realm, authserver.getToken());
         handler.write(Buffer.buffer(Serializer.pack(request)));
     }
 
@@ -83,7 +82,7 @@ public class Realm implements Verticle {
 
         for (JsonObject instance : instances) {
             InstanceSettings configuration = (InstanceSettings) Serializer.unpack(instance, InstanceSettings.class);
-            vertx.deployVerticle(new Instance(configuration, realm.getName()));
+            vertx.deployVerticle(new Game.Instance(configuration, realm.getName()));
         }
     }
 

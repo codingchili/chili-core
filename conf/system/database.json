@@ -1,4 +1,0 @@
-{
-  "db_name": "dungeon",
-  "connection_string": "mongodb://localhost:27017/"
-}

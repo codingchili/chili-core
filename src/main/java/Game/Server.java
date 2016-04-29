@@ -1,11 +1,7 @@
 package Game;
 
-import Configuration.Config;
+import Utilities.*;
 import Game.Model.RealmSettings;
-import Utilities.DefaultLogger;
-import Utilities.JsonFileReader;
-import Utilities.Logger;
-import Utilities.Serializer;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
@@ -32,16 +28,17 @@ public class Server implements Verticle {
     public void init(Vertx vertx, Context context) {
         Config.Load();
         this.vertx = vertx;
-        this.logger = new DefaultLogger(vertx, "Gameserver");
+        this.logger = new DefaultLogger(vertx, Config.Gameserver.LOGTOKEN);
     }
 
     @Override
     public void start(Future<Void> start) throws Exception {
         ArrayList<JsonObject> realms = JsonFileReader.readDirectoryObjects("conf/realm/");
 
-        for (JsonObject realm : realms) {
-            RealmSettings settings = (RealmSettings) Serializer.unpack(realm, RealmSettings.class);
-            vertx.deployVerticle(new Realm(settings));
+        for (JsonObject settings : realms) {
+            RealmSettings realm = (RealmSettings) Serializer.unpack(settings.getJsonObject("realm"), RealmSettings.class);
+            RemoteAuthentication authentication = (RemoteAuthentication) Serializer.unpack(settings.getJsonObject("authentication"), RemoteAuthentication.class);
+            vertx.deployVerticle(new Game.Realm(realm, authentication));
         }
 
         logger.onServerStarted();
