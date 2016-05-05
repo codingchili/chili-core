@@ -1,25 +1,22 @@
 {
-  "client.port": 5505,
-  "realm.port": 5105,
-  "client.secret": "wJZwECZSeaZxyl23aIbWXz3hA5Ujz4N0vDyvE5RWgK3ARDNnt0JWWL4aVeZRyNWd",
-  "realm.secret": "UIldiuahwd8a9w70da23njn<KJndw234234NLkjnwldawd87821l23jkbalk2jdn",
-  "realms": [
-    "development",
-    "production realm"
-  ],
-  "logserver": {
-    "remote": "localhost",
-    "port": 6109,
-    "host": "server.1",
-    "system": "authentication",
-    "token": {
-      "key": "60D689218E9F519EC309E98F105D0C3E6838CDFE07C1E2F69E1DEB0250D4397AD2238A9AC630B06E8AE4178AEC33A20FF7E67A66A3FD262C72C5EC4CF1B8A2D1",
-      "expiry": 1464604338,
-      "domain": "logsys1"
+  "logserver" : {
+    "system" : "authserver",
+    "host" : "server.1",
+    "remote" : "localhost",
+    "port" : 6109,
+    "token" : {
+      "key" : "63E44A628F9305A51782E0BA3D2F79629A3CEDF6576A9F053D291C4D74A7041F05ABC252A22FBE6B563ACE5BE2911D2B2BCF8F7FD176FBA15F3C0CF7204ACE53",
+      "expiry" : 1465132161,
+      "domain" : "authserver"
     }
   },
-  "database": {
-    "db_name": "dungeon",
-    "connection_string": "mongodb://localhost:27017/"
-  }
+  "clientSecret" : "9/b1Z+IV88xSBPdZUSrX48q6foMNwU2d6Q7Bl78BGIidFcRrEq8J9ccbqH8tqkFiGaOIgzXInhpgibh6HPWQ3g==",
+  "realmSecret" : "FgPSuaZNJd32MP1YShbMLspyIinsYtwuBS+0vw/lpxYJp9KQLIk6kfIFHUc/19f8qkzp2YfX0a6xFtRoAr7XHw==",
+  "realmPort" : 5105,
+  "clientPort" : 5505,
+  "database" : {
+    "remote" : "mongodb://localhost:27017/",
+    "name" : "dungeon"
+  },
+  "realms" : [ "Angel Oak", "Cherry Pine", "Coastal Redwood", "Dragonblood", "Eucalyptus", "Red Maple", "Wisteria", "Development - Nightly", "Development - Stable" ]
 }

@@ -1,7 +1,7 @@
 package Website;
 
-import Utilities.Config;
-import Utilities.Config.Web;
+import Configuration.Config;
+import Configuration.WebServerSettings;
 import Utilities.DefaultLogger;
 import Utilities.Logger;
 import io.vertx.core.Context;
@@ -19,6 +19,7 @@ import io.vertx.ext.web.handler.StaticHandler;
 public class Server implements Verticle {
     private Vertx vertx;
     private Logger logger;
+    private WebServerSettings settings;
 
     @Override
     public Vertx getVertx() {
@@ -27,9 +28,9 @@ public class Server implements Verticle {
 
     @Override
     public void init(Vertx vertx, Context context) {
-        Config.Load();
+        this.settings = Config.instance().getWebServerSettings();
         this.vertx = vertx;
-        this.logger = new DefaultLogger(vertx, Web.LOGTOKEN);
+        this.logger = new DefaultLogger(vertx, settings.getLogserver());
     }
 
     @Override
@@ -37,10 +38,11 @@ public class Server implements Verticle {
         Router router = Router.router(vertx);
 
         router.route().handler(BodyHandler.create());
+        setLogging(router);
         setResources(router);
         setCatchAll(router);
 
-        vertx.createHttpServer().requestHandler(router::accept).listen(Web.PORT);
+        vertx.createHttpServer().requestHandler(router::accept).listen(settings.getPort());
         logger.onServerStarted();
         start.complete();
     }
@@ -48,6 +50,13 @@ public class Server implements Verticle {
     private void setResources(Router router) {
         router.route("/*").handler(StaticHandler.create()
                 .setCachingEnabled(true));
+    }
+
+    private void setLogging(Router router) {
+        router.route("/").handler(context -> {
+            logger.onPageLoaded(context.request());
+            context.next();
+        });
     }
 
     private void setCatchAll(Router router) {

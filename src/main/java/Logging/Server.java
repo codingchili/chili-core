@@ -1,7 +1,9 @@
 package Logging;
 
 
+import Configuration.LogServerSettings;
 import Utilities.*;
+import Configuration.Config;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
@@ -12,6 +14,7 @@ import io.vertx.core.json.JsonObject;
  * Created by Robin on 2016-04-07.
  */
 public class Server implements Verticle {
+    private LogServerSettings settings;
     private TokenFactory tokenFactory;
     private Vertx vertx;
     private Logger logger;
@@ -23,10 +26,10 @@ public class Server implements Verticle {
 
     @Override
     public void init(Vertx vertx, Context context) {
-        Config.Load();
         this.vertx = vertx;
-        this.logger = new DefaultLogger(vertx, Config.Logging.LOGTOKEN);
-        this.tokenFactory = new TokenFactory(Config.Logging.SECRET);
+        this.settings = Config.instance().getLogSettings();
+        this.logger = new DefaultLogger(vertx, settings.getLogserver());
+        this.tokenFactory = new TokenFactory(settings.getSecret());
     }
 
     @Override
@@ -43,9 +46,9 @@ public class Server implements Verticle {
                     logdata.remove("token");
 
                     vertx.createHttpClient().post(
-                            Config.Logging.ES_PORT,
-                            Config.Logging.ES_REMOTE,
-                            Config.Logging.ES_INDEX + "/all/", response -> {
+                            settings.getElastic().getPort(),
+                            settings.getElastic().getRemote(),
+                            settings.getElastic().getIndex() + "/all/", response -> {
 
                                 response.handler(event -> {
                                     System.out.println(event.toString());
@@ -57,24 +60,23 @@ public class Server implements Verticle {
                 }
 
             });
-        }).listen(Config.Logging.PORT);
+        }).listen(settings.getPort());
 
         logger.onServerStarted();
         start.complete();
     }
 
     private void createIndex() {
-        vertx.createHttpClient().put(Config.Logging.ES_PORT, Config.Logging.ES_REMOTE, Config.Logging.ES_INDEX, connection -> {
-            connection.handler(data -> {
-                System.out.println(data.toString());
-            });
-        })
-                .end(new JsonObject()
-                        .put("mappings", new JsonObject()
-                                .put(Config.Logging.ES_INDEX, new JsonObject()
-                                        .put("properties",
-                                                new JsonObject().put("time",
-                                                        new JsonObject().put("type", "date"))))).encode());
+        vertx.createHttpClient().put(
+                settings.getElastic().getPort(),
+                settings.getElastic().getRemote(),
+                settings.getElastic().getIndex(), connection -> {
+
+                    connection.handler(data -> {
+                        System.out.println(data.toString());
+                    });
+                })
+                .end(settings.getElastic().getTemplate().toString());
     }
 
     @Override

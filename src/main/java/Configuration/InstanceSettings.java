@@ -1,25 +1,28 @@
-package Game.Model;
+package Configuration;
+
+import Game.Model.Node;
+import Game.Model.Npc;
+import Game.Model.Portal;
 
 import java.util.ArrayList;
 
 /**
- * Created by Robin on 2016-04-27.
+ * Created by Robin on 2016-05-05.
  */
 public class InstanceSettings {
+    private ArrayList<Portal> portals;
+    private ArrayList<Node> nodes;
+    private ArrayList<Npc> npc;
     private String name;
     private int limit;
     private int width;
     private int height;
-    private ArrayList<Portal> portals;
-    private ArrayList<Node> nodes;
-    private ArrayList<Npc> npc;
-
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    protected void setName(String name) {
         this.name = name;
     }
 
@@ -27,7 +30,7 @@ public class InstanceSettings {
         return limit;
     }
 
-    public void setLimit(int limit) {
+    protected void setLimit(int limit) {
         this.limit = limit;
     }
 
@@ -35,7 +38,7 @@ public class InstanceSettings {
         return width;
     }
 
-    public void setWidth(int width) {
+    protected void setWidth(int width) {
         this.width = width;
     }
 
@@ -43,7 +46,7 @@ public class InstanceSettings {
         return height;
     }
 
-    public void setHeight(int height) {
+    protected void setHeight(int height) {
         this.height = height;
     }
 
@@ -51,7 +54,7 @@ public class InstanceSettings {
         return portals;
     }
 
-    public void setPortals(ArrayList<Portal> portals) {
+    protected void setPortals(ArrayList<Portal> portals) {
         this.portals = portals;
     }
 
@@ -59,7 +62,7 @@ public class InstanceSettings {
         return nodes;
     }
 
-    public void setNodes(ArrayList<Node> nodes) {
+    protected void setNodes(ArrayList<Node> nodes) {
         this.nodes = nodes;
     }
 
@@ -67,7 +70,7 @@ public class InstanceSettings {
         return npc;
     }
 
-    public void setNpc(ArrayList<Npc> npc) {
+    protected void setNpc(ArrayList<Npc> npc) {
         this.npc = npc;
     }
 }

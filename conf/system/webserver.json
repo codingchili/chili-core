@@ -1,14 +1,14 @@
 {
-  "port": 8080,
-  "logserver": {
-    "remote": "localhost",
-    "port": 6109,
-    "host": "server.1",
-    "system": "webserver",
-    "token": {
-      "key" : "60D689218E9F519EC309E98F105D0C3E6838CDFE07C1E2F69E1DEB0250D4397AD2238A9AC630B06E8AE4178AEC33A20FF7E67A66A3FD262C72C5EC4CF1B8A2D1",
-      "expiry" : 1464604338,
-      "domain" : "logsys1"
+  "logserver" : {
+    "system" : "webserver",
+    "host" : "server.1",
+    "remote" : "localhost",
+    "port" : 6109,
+    "token" : {
+      "key" : "B0A4473939F4AF6322260F2162E0CA550EB2811A407F1CD364968881FA73EA1F48C396ACBEBBABC6F960A1EA3A61D7B7D1DC161F620F41E8486B815B7A5393E7",
+      "expiry" : 1465132161,
+      "domain" : "webserver"
     }
-  }
+  },
+  "port" : 8080
 }

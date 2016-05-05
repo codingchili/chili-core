@@ -14,8 +14,6 @@ var application = {
     handlers: {},
 
     authenticated: function (authentication) {
-        console.log(authentication);
-
         this.authentication = authentication;
         $('#game-login').hide();
         $('#page').hide();
@@ -60,7 +58,6 @@ $(document).ready(function () {
         $('#page').hide();
         $('#game-login').show();
     });
-
 
     /* setTimeout(function () {
      $('#game-login').hide();

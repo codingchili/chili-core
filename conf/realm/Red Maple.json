@@ -1,0 +1,21 @@
+{
+  "authentication" : {
+    "remote" : "localhost",
+    "port" : 5105,
+    "token" : {
+      "key" : "7F8DCA3CBC4B91C020CBEFC832766E70369F60358D90B2C5DFF789681DAF516667F713E72D02F77D97A5ED35467F09F84B5C9FA68144AB22BC1ED8A962926B30",
+      "expiry" : 1465132161,
+      "domain" : "Red Maple"
+    }
+  },
+  "name" : "Red Maple",
+  "description" : "Stable realm, PvP Aggressive.",
+  "remote" : "localhost",
+  "version" : 1.0,
+  "size" : 500,
+  "type" : "PvP",
+  "lifetime" : "weekly",
+  "drop" : 1.0,
+  "leveling" : 1.0,
+  "port" : 9601
+}

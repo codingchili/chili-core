@@ -1,6 +1,7 @@
 package Authentication.Controller;
 
-import Utilities.Config;
+import Configuration.AuthServerSettings;
+import Configuration.Config;
 import Protocol.*;
 import Authentication.Model.*;
 import Utilities.Logger;
@@ -11,6 +12,7 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
@@ -22,6 +24,7 @@ import io.vertx.ext.web.handler.BodyHandler;
  *         Router for the view-api.
  */
 public class ClientHandler {
+    private AuthServerSettings settings;
     private RealmHandler realms;
     private AsyncAccountStore accounts;
     private TokenFactory clientToken;
@@ -32,9 +35,12 @@ public class ClientHandler {
         this.vertx = vertx;
         this.logger = logger;
         this.realms = realms;
-        this.clientToken = new TokenFactory(Config.Authentication.CLIENT_SECRET);
+        this.settings = Config.instance().getAuthSettings();
+        this.clientToken = new TokenFactory(settings.getClientSecret());
         this.accounts = new AccountDB(
-                MongoClient.createShared(vertx, Config.Authentication.DATABASE));
+                MongoClient.createShared(vertx, new JsonObject()
+                        .put("db_name", settings.getDatabase().getName())
+                        .put("connection_string", settings.getDatabase().getRemote())));
 
         startServer();
     }
@@ -44,7 +50,8 @@ public class ClientHandler {
         router.route().handler(BodyHandler.create());
 
         router.options("/*").handler(context -> {
-            allowCors(context).end();
+            allowCors(context);
+            context.response().setStatusCode(HttpResponseStatus.OK.code()).end();
         });
 
         router.route("/*").handler(context -> {
@@ -56,7 +63,7 @@ public class ClientHandler {
         router.post("/api/authenticate").handler(this::authenticate);
         router.get("/api/realmlist").handler(this::realmlist);
 
-        vertx.createHttpServer().requestHandler(router::accept).listen(Config.Authentication.CLIENT_PORT);
+        vertx.createHttpServer().requestHandler(router::accept).listen(settings.getClientPort());
     }
 
     private HttpServerResponse allowCors(RoutingContext context) {

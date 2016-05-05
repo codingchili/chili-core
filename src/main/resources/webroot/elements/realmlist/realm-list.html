@@ -32,6 +32,7 @@
             .container {
                 margin-top: 64px;
                 width: 80%;
+                max-width: 825px;
             }
 
             .titles {
@@ -100,16 +101,17 @@
             }
 
             .stats {
-                position: absolute;
                 text-align: left;
-                left: 85%;
+                margin-left: 75%;
                 font-size: smaller;
-                top: 42px;
+                margin-top: -16px
             }
 
             .classes {
                 margin-top: 8px;
                 font-size: smaller;
+                float: left;
+                padding-bottom: 16px;
             }
 
             .description {
@@ -132,29 +134,41 @@
                 color: rgba(85, 139, 47, 1);
             }
 
+            .mod-warning {
+                text-align: center;
+                width: 100%;
+                margin-top: 16px;
+            }
+
         </style>
 
         <div class="container">
 
             <paper-material elevation="3">
 
-                <paper-tabs selected="{{page}}" no-slide>
+                <paper-tabs id="tabs" selected="{{page}}" no-slide link>
                     <paper-tab on-tap="trusted">Public</paper-tab>
                     <paper-tab on-tap="untrusted">Private</paper-tab>
                 </paper-tabs>
 
+                <div hidden="{{trustedservers}}" class="mod-warning">
+                    <h5><span class="red"> Warning:</span> These servers may contain resources and code not
+                        provided by &trade;.</h5>
+                </div>
+
+
                 <div class="titles">
-                    <paper-button class="name-title">Name</paper-button>
-                    <paper-button class="type">Type</paper-button>
-                    <paper-button class="reset">Reset</paper-button>
-                    <paper-button class="players">Players</paper-button>
-                    <paper-button class="ping">Ping (ms)</paper-button>
+                    <paper-button class="name-title" on-tap="order" data-args="name">Name</paper-button>
+                    <paper-button class="type" on-tap="order" data-args="type">Type</paper-button>
+                    <paper-button class="reset" on-tap="order" data-args="lifetime">Reset</paper-button>
+                    <paper-button class="players" on-tap="order" data-args="players">Players</paper-button>
+                    <paper-button class="ping" on-tap="order" data-args="ping">Ping (ms)</paper-button>
                 </div>
 
                 <iron-pages selected="0" class="margin-top">
                     <div>
                         <paper-material elevation="0">
-                            <template is="dom-repeat" items="{{realms}}" as="realm">
+                            <template is="dom-repeat" items="{{realms}}" as="realm" sort="{{sort}}">
 
                                 <div class="item" hidden="{{realm.hidden}}">
                                     <div on-tap="toggle" class="status">
@@ -164,18 +178,18 @@
                                         <div class="type">{{realm.type}}</div>
                                         <div class="reset">{{realm.lifetime}}</div>
                                         <div class$="players {{realm.populationColor}}">
-                                            {{realm.online}}/{{realm.size}}
+                                            {{realm.players}}/{{realm.size}}
                                         </div>
                                         <div class$="ping {{realm.pingColor}}">{{realm.ping}}</div>
                                     </div>
 
-                                    <iron-collapse opened="{{item.state}}">
+                                    <iron-collapse opened="{{realm.state}}">
                                         <div class="details">
                                             <div class="description">{{realm.description}}</div>
                                             <div class="classes"><i>Classes enabled: Paladin, Slayer, Necromancer</i>
                                             </div>
                                             <div class="stats">Experience x{{realm.leveling}}</div>
-                                            <div class="stats" style="margin-top: 16px">Droprate x{{realm.drop}}
+                                            <div class="stats" style="margin-top: 6px">Droprate x{{realm.drop}}
                                             </div>
                                         </div>
                                     </iron-collapse>
@@ -196,11 +210,65 @@
             ready: function () {
                 this.page = 0;
                 this.trustedservers = true;
+                this.sort = this.nameSort;
 
                 application.onAuthentication((function (authentication) {
                     this.load(authentication.realms);
-                    setInterval(this.update.bind(this), 5 * 1000);
+                    setInterval(this.update.bind(this), 5000);
+
+                    // SelectionBar - force recalculations and redraw the bar, stays invisible if not.
+                    window.dispatchEvent(new Event('resize'));
                 }).bind(this));
+            },
+
+            order: function (data) {
+                switch (data.target.dataset.args) {
+                    case "name":
+                        this.set("sort", this.nameSort);
+                        break;
+                    case "type":
+                        this.set("sort", this.typeSort);
+                        break;
+                    case "lifetime":
+                        this.set("sort", this.lifetimeSort);
+                        break;
+                    case "players":
+                        this.set("sort", this.playerSort);
+                        break;
+                    case "ping":
+                        this.set("sort", this.pingSort);
+                        break;
+                }
+            },
+
+            nameSort: function (a, b) {
+                if (a.name === b.name)
+                    return 0;
+                return a.name < b.name ? -1 : 1;
+            },
+
+            typeSort: function (a, b) {
+                if (a.type === b.type)
+                    return 0;
+                return a.type < b.type ? -1 : 1;
+            },
+
+            lifetimeSort: function (a, b) {
+                if (a.lifetime === b.lifetime)
+                    return 0;
+                return a.lifetime < b.lifetime ? -1 : 1;
+            },
+
+            playerSort: function (a, b) {
+                if (a.players === b.players)
+                    return 0;
+                return a.players < b.players ? -1 : 1;
+            },
+
+            pingSort: function (a, b) {
+                if (a.ping === b.ping)
+                    return 0;
+                return a.ping < b.ping ? -1 : 1;
             },
 
             update: function () {
@@ -217,15 +285,52 @@
                 });
             },
 
-            load: function (realms) {
+            load: function (realmlist) {
+                if (!this.realms)
+                    this.realms = [];
 
-                for (var i = 0; i < realms.length; i++) {
-                    realms[i].ping = "-";
-                    this.ping(realms[i]);
+                this.refresh(realmlist);
+                this.purge(realmlist);
+                this.pingAll();
+
+                this.set("realms", this.realms);
+            },
+
+            refresh: function (realmlist) {
+
+                for (var i = 0; i < realmlist.length; i++) {
+                    var exists = false;
+
+                    for (var j = 0; j < this.realms.length; j++) {
+
+                        if (realmlist[i].name == this.realms[j].name) {
+                            realmlist[i].ping = this.realms[j].ping;
+                            realmlist[i].state = this.realms[j].state;
+                            this.set("realms." + j, realmlist[i]);
+                            this.apply(j);
+                            exists = true;
+                        }
+                    }
+
+                    if (!exists)
+                        this.push("realms", realmlist[i]);
                 }
+            },
 
-                this.set("realms", realms);
-                this.applyAll();
+            purge: function (realmlist) {
+                for (var i = 0; i < this.realms.length - 1; i++) {
+                    var removed = true;
+
+                    for (var j = 0; j < realmlist.length; j++) {
+                        if (this.realms[i].name == realmlist[j].name)
+                            removed = false;
+                    }
+
+                    if (removed) {
+                        this.splice("realms", i, 1);
+                        i -= 1;
+                    }
+                }
             },
 
             trusted: function () {
@@ -245,9 +350,15 @@
             },
 
             apply: function (i) {
+                if (!this.realms[i].ping)
+                    this.realms[i].ping = '-';
+
                 this.set("realms." + i + ".hidden", this.hidden(this.realms[i]));
                 this.set("realms." + i + ".populationColor", this.populationColor(this.realms[i]));
                 this.set("realms." + i + ".pingColor", this.pingColor(this.realms[i]));
+                var tmp = this.sort;
+                this.set("sort", null);
+                this.set("sort", tmp);
             },
 
             pingColor: function (realm) {
@@ -280,27 +391,39 @@
                 return !(realm.trusted == this.trustedservers);
             },
 
+            pingAll: function () {
+                for (var i = 0; i < this.realms.length; i++)
+                    this.ping(this.realms[i]);
+            },
+
             ping: function (realm) {
-                var ws = new WebSocket("ws://" + realm.remote + ":" + realm.port);
                 var start = performance.now();
 
-                ws.onopen = (function () {
-                    var ping = parseInt(performance.now() - start, 10);
-                    var realms = this.get("realms");
+                console.log(realm);
 
-                    for (var i = 0; i < realms.length; i++) {
-                        if (realms[i].name == realm.name) {
-                            this.set("realms." + i + ".ping", ping);
-                            this.apply(i);
-                        }
+                $.ajax({
+                    type: "POST",
+                    url: "http://" + realm.remote + ":" + realm.port,
+                    dataType: "json",
+                    contentType: "text/plain",
+                    statusCode: {
+                        200: (function (data) {
+                            var ping = parseInt(performance.now() - start, 10);
+
+                            for (var i = 0; i < this.realms.length; i++) {
+                                if (this.realms[i].name == realm.name) {
+                                    this.set("realms." + i + ".ping", ping);
+                                    this.apply(i);
+                                }
+                            }
+                        }).bind(this)
                     }
-                }).bind(this);
+                });
             },
 
             toggle: function (event) {
                 event.currentTarget.parentElement.querySelector('iron-collapse').toggle();
             }
-        })
-        ;
+        });
     </script>
 </dom-module>

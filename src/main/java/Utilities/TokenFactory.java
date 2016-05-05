@@ -49,13 +49,13 @@ public class TokenFactory {
         return (verifyToken(token.getKey(), token.getDomain(), token.getExpiry()));
     }
 
-    private byte[] generateToken(String username, Long expiry) throws NoSuchAlgorithmException, InvalidKeyException {
+    private byte[] generateToken(String domain, Long expiry) throws NoSuchAlgorithmException, InvalidKeyException {
         Mac mac = Mac.getInstance(ALGORITHM);
 
         SecretKeySpec key = new SecretKeySpec(secret, ALGORITHM);
         mac.init(key);
 
-        mac.update(username.getBytes());
+        mac.update(domain.getBytes());
         mac.update(expiry.toString().getBytes());
 
         return mac.doFinal();

@@ -1,22 +1,29 @@
 package Game;
 
+import Configuration.GameServerSettings;
+import Configuration.InstanceSettings;
+import Configuration.RealmSettings;
 import Protocol.RegisterRealm;
-import Game.Model.RealmSettings;
-import Utilities.Config;
-import Game.Model.InstanceSettings;
-import Utilities.*;
+import Utilities.DefaultLogger;
+import Utilities.Logger;
+import Utilities.RemoteAuthentication;
+import Utilities.Serializer;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.http.WebSocket;
-import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.BodyHandler;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 /**
  * Created by Robin on 2016-04-27.
@@ -26,14 +33,14 @@ import java.util.HashMap;
 public class Realm implements Verticle {
     private static final int REALM_UPDATE = 15000;
     private HashMap<String, ServerWebSocket> connections = new HashMap<>();
-    private RemoteAuthentication authserver;
-    private RealmSettings realm;
+    private RealmSettings settings;
+    private GameServerSettings game;
     private Logger logger;
     private Vertx vertx;
 
-    public Realm(RealmSettings realm, RemoteAuthentication authserver) {
-        this.realm = realm;
-        this.authserver = authserver;
+    public Realm(GameServerSettings game, RealmSettings settings) {
+        this.settings = settings;
+        this.game = game;
     }
 
     @Override
@@ -44,7 +51,7 @@ public class Realm implements Verticle {
     @Override
     public void init(Vertx vertx, Context context) {
         this.vertx = vertx;
-        this.logger = new DefaultLogger(vertx, Config.Gameserver.LOGTOKEN);
+        this.logger = new DefaultLogger(vertx, game.getLogserver());
     }
 
     @Override
@@ -53,7 +60,7 @@ public class Realm implements Verticle {
         startRealm();
         authenticateRealm();
 
-        logger.onRealmStarted(realm);
+        logger.onRealmStarted(settings);
         start.complete();
     }
 
@@ -62,7 +69,9 @@ public class Realm implements Verticle {
      * The registration event will then periodically trigger to update its state.
      */
     private void authenticateRealm() {
-        vertx.createHttpClient().websocket(authserver.getPort(), authserver.getRemote(), "", handler -> {
+        RemoteAuthentication authentication = settings.getAuthentication();
+
+        vertx.createHttpClient().websocket(authentication.getPort(), authentication.getRemote(), "", handler -> {
             registerRealm(handler);
 
             vertx.setPeriodic(REALM_UPDATE, event -> {
@@ -73,21 +82,30 @@ public class Realm implements Verticle {
     }
 
     private void registerRealm(WebSocket handler) {
-        RegisterRealm request = new RegisterRealm(realm, authserver.getToken());
-        handler.write(Buffer.buffer(Serializer.pack(request)));
+        handler.write(Buffer.buffer(Serializer.pack(new RegisterRealm(settings))));
     }
 
     private void startInstances() throws IOException {
-        ArrayList<JsonObject> instances = JsonFileReader.readDirectoryObjects("conf/game/world/");
 
-        for (JsonObject instance : instances) {
-            InstanceSettings configuration = (InstanceSettings) Serializer.unpack(instance, InstanceSettings.class);
-            vertx.deployVerticle(new Game.Instance(configuration, realm.getName()));
+        for (InstanceSettings instance : settings.getInstance()) {
+            vertx.deployVerticle(new Game.Instance(game, settings, instance));
         }
     }
 
+
     private void startRealm() {
-        vertx.createHttpServer().websocketHandler(connection -> {
+        Router router = Router.router(vertx);
+        router.route().handler(BodyHandler.create());
+
+        router.route("/*").handler(context -> {
+            allowCors(context);
+
+            vertx.setTimer(new Random().nextInt(1)+1, event -> {
+                context.response().setStatusCode(HttpResponseStatus.OK.code()).end();
+            });
+        });
+
+        vertx.createHttpServer().requestHandler(router::accept).websocketHandler(connection -> {
 
             connection.handler(event -> {
                 // on authenticated
@@ -108,8 +126,17 @@ public class Realm implements Verticle {
                 connections.remove("accname");
             });
 
-        }).listen(realm.getPort());
+        }).listen(settings.getPort());
     }
+
+    private HttpServerResponse allowCors(RoutingContext context) {
+        return context.response()
+                .putHeader("Access-Control-Allow-Origin", "*")
+                .putHeader("Access-Control-Allow-Methods", "POST, GET")
+                .putHeader("Access-Control-Allow-Headers",
+                        "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+    }
+
 
     @Override
     public void stop(Future<Void> stop) throws Exception {

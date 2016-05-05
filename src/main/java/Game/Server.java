@@ -1,14 +1,13 @@
 package Game;
 
+import Configuration.GameServerSettings;
+import Configuration.RealmSettings;
 import Utilities.*;
-import Game.Model.RealmSettings;
+import Configuration.Config;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-
-import java.util.ArrayList;
 
 /**
  * Created by Robin on 2016-04-07.
@@ -16,6 +15,7 @@ import java.util.ArrayList;
  * Root game server, starts realm servers.
  */
 public class Server implements Verticle {
+    private GameServerSettings settings;
     private Logger logger;
     private Vertx vertx;
 
@@ -26,19 +26,16 @@ public class Server implements Verticle {
 
     @Override
     public void init(Vertx vertx, Context context) {
-        Config.Load();
         this.vertx = vertx;
-        this.logger = new DefaultLogger(vertx, Config.Gameserver.LOGTOKEN);
+        this.settings = Config.instance().getGameServerSettings();
+        this.logger = new DefaultLogger(vertx, settings.getLogserver());
     }
 
     @Override
     public void start(Future<Void> start) throws Exception {
-        ArrayList<JsonObject> realms = JsonFileReader.readDirectoryObjects("conf/realm/");
 
-        for (JsonObject settings : realms) {
-            RealmSettings realm = (RealmSettings) Serializer.unpack(settings.getJsonObject("realm"), RealmSettings.class);
-            RemoteAuthentication authentication = (RemoteAuthentication) Serializer.unpack(settings.getJsonObject("authentication"), RemoteAuthentication.class);
-            vertx.deployVerticle(new Game.Realm(realm, authentication));
+        for (RealmSettings realm : settings.getRealms()) {
+            vertx.deployVerticle(new Game.Realm(settings, realm));
         }
 
         logger.onServerStarted();

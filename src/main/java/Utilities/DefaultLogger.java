@@ -1,16 +1,16 @@
 package Utilities;
 
 import Authentication.Model.Account;
-import Game.Model.InstanceSettings;
-import Game.Model.RealmSettings;
+import Configuration.Config;
+import Configuration.InstanceSettings;
+import Configuration.RealmSettings;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonObject;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by Robin on 2016-04-07.
@@ -53,24 +53,25 @@ public class DefaultLogger implements Logger {
 
     @Override
     public void onServerStarted() {
-        log(event("server.started"));
+        log(event("server.start"));
     }
 
     @Override
     public void onServerStopped() {
-        log(event("server.stopped"));
+        log(event("server.stop"));
     }
 
     @Override
-    public void onInstanceStarted(InstanceSettings instance) {
+    public void onInstanceStarted(RealmSettings realm, InstanceSettings instance) {
         log(event("instance.start")
-                .put("name", instance.getName()));
+                .put("instance", instance.getName())
+                .put("realm", realm.getName()));
     }
 
     @Override
     public void onRealmStarted(RealmSettings realm) {
         log(event("realm.start")
-                .put("name", realm.getName()));
+                .put("realm", realm.getName()));
     }
 
     @Override
@@ -89,33 +90,41 @@ public class DefaultLogger implements Logger {
 
     @Override
     public void onRegistered(Account account, String host) {
-        log(event("account.registered")
+        log(event("account.register")
                 .put("username", account.getUsername())
                 .put("remote", host));
     }
 
     @Override
     public void onRealmRegistered(RealmSettings realm) {
-        log(event("realm.registered")
-                .put("name", realm.getName()));
+        log(event("realm.register")
+                .put("realm", realm.getName()));
     }
 
     @Override
     public void onRealmDeregistered(RealmSettings realm) {
-        log(event("realm.deregistered")
-                .put("name", realm.getName()));
+        log(event("realm.deregister")
+                .put("realm", realm.getName()));
     }
 
     @Override
     public void onRealmUpdated(RealmSettings realm) {
         log(event("realm.update")
-                .put("name", realm.getName()));
+                .put("realm", realm.getName()));
     }
 
     @Override
     public void onRealmRejected(RealmSettings realm) {
         log(event("realm.rejected")
-                .put("name", realm.getName()));
+                .put("realm", realm.getName()));
+    }
+
+    @Override
+    public void onPageLoaded(HttpServerRequest request) {
+        log(event("page-load")
+                .put("agent", request.getHeader("user-agent"))
+                .put("origin", request.getHeader("origin"))
+                .put("uri", request.uri()));
     }
 
     private JsonObject event(String name) {

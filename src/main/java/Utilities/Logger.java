@@ -1,8 +1,10 @@
 package Utilities;
 
 import Authentication.Model.Account;
-import Game.Model.InstanceSettings;
-import Game.Model.RealmSettings;
+import Configuration.InstanceSettings;
+import Configuration.RealmSettings;
+import io.vertx.core.http.HttpServerRequest;
+
 
 /**
  * Created by Robin on 2016-04-07.
@@ -13,7 +15,7 @@ public interface Logger {
 
     void onServerStopped();
 
-    void onInstanceStarted(InstanceSettings instance);
+    void onInstanceStarted(RealmSettings realm, InstanceSettings instance);
 
     void onRealmStarted(RealmSettings realm);
 
@@ -30,4 +32,6 @@ public interface Logger {
     void onRealmUpdated(RealmSettings realm);
 
     void onRealmRejected(RealmSettings realm);
+
+    void onPageLoaded(HttpServerRequest request);
 }

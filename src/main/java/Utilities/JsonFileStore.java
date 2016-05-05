@@ -5,15 +5,17 @@ import io.vertx.core.json.JsonObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
 /**
  * Created by Robin on 2016-04-25.
  */
-public abstract class JsonFileReader {
+public abstract class JsonFileStore {
 
     public static JsonObject readObject(String path) throws IOException {
         return new JsonObject(readFile(path));
@@ -49,6 +51,15 @@ public abstract class JsonFileReader {
 
     private static String readFile(String path) throws IOException {
         return new String(Files.readAllBytes(FileSystems.getDefault().getPath(currentPath() + "\\" + path)));
+    }
+
+    public static void writeObject(JsonObject json, String path) {
+        Path file = Paths.get(path);
+        try {
+            Files.write(file, json.encodePrettily().getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static String currentPath() {

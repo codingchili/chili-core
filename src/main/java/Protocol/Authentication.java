@@ -1,7 +1,7 @@
 package Protocol;
 
 import Authentication.Model.Account;
-import Game.Model.RealmSettings;
+import Configuration.RealmSettings;
 import Utilities.Token;
 
 import java.util.ArrayList;

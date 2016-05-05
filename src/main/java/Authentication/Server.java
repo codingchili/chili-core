@@ -2,7 +2,8 @@ package Authentication;
 
 import Authentication.Controller.ClientHandler;
 import Authentication.Controller.RealmHandler;
-import Utilities.Config;
+import Configuration.AuthServerSettings;
+import Configuration.Config;
 import Utilities.DefaultLogger;
 import Utilities.Logger;
 import io.vertx.core.Context;
@@ -16,6 +17,11 @@ import io.vertx.core.Vertx;
 public class Server implements Verticle {
     private Vertx vertx;
     private Logger logger;
+    private AuthServerSettings settings;
+
+    public Server() {
+        this.settings = Config.instance().getAuthSettings();
+    }
 
     @Override
     public Vertx getVertx() {
@@ -24,9 +30,8 @@ public class Server implements Verticle {
 
     @Override
     public void init(Vertx vertx, Context context) {
-        Config.Load();
         this.vertx = vertx;
-        this.logger = new DefaultLogger(vertx, Config.Authentication.LOGTOKEN);
+        this.logger = new DefaultLogger(vertx, settings.getLogserver());
 
         new ClientHandler(vertx, logger, new RealmHandler(vertx, logger));
     }

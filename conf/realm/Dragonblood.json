@@ -1,0 +1,21 @@
+{
+  "authentication" : {
+    "remote" : "localhost",
+    "port" : 5105,
+    "token" : {
+      "key" : "ADF50C5DB48378DA8B2D68552B5A284B3B2310C3915C42879FF030FEB348F9BBE5558A7A1EBCC44B1B8A718D7998F1EA8874058A5DDB5AA5BA655D36F77A0E67",
+      "expiry" : 1465132161,
+      "domain" : "Dragonblood"
+    }
+  },
+  "name" : "Dragonblood",
+  "description" : "Stable realm, PvP Aggressive.",
+  "remote" : "localhost",
+  "version" : 1.0,
+  "size" : 500,
+  "type" : "PvP",
+  "lifetime" : "weekly",
+  "drop" : 1.0,
+  "leveling" : 1.0,
+  "port" : 9601
+}

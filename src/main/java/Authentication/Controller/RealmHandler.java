@@ -1,11 +1,13 @@
 package Authentication.Controller;
 
-import Game.Model.RealmSettings;
+import Configuration.AuthServerSettings;
+import Configuration.RealmSettings;
 import Protocol.Packet;
 import Protocol.RegisterRealm;
-import Utilities.Config;
+import Configuration.Config;
 import Utilities.Logger;
 import Utilities.Serializer;
+import Utilities.Token;
 import Utilities.TokenFactory;
 import io.vertx.core.Vertx;
 
@@ -20,12 +22,14 @@ import java.util.HashMap;
 public class RealmHandler {
     private HashMap<String, RealmMethod> handlers = new HashMap<>();
     private HashMap<String, RealmSettings> realms = new HashMap<>();
+    private AuthServerSettings settings;
     private TokenFactory tokenFactory;
     private Vertx vertx;
     private Logger logger;
 
     public RealmHandler(Vertx vertx, Logger logger) {
-        this.tokenFactory = new TokenFactory(Config.Authentication.REALM_SECRET);
+        this.settings = Config.instance().getAuthSettings();
+        this.tokenFactory = new TokenFactory(settings.getRealmSecret());
         this.vertx = vertx;
         this.logger = logger;
 
@@ -44,7 +48,7 @@ public class RealmHandler {
                 else
                     logger.onRealmRegistered(realm);
 
-                realm.setTrusted(Config.Authentication.isPublicRealm(realm.getName()));
+                realm.setTrusted(settings.isPublicRealm(realm.getName()));
 
                 realms.put(connection, realm);
             } else {
@@ -54,7 +58,8 @@ public class RealmHandler {
     }
 
     private boolean authorize(RegisterRealm request) {
-        return tokenFactory.verifyToken(request.getToken()) && (request.getToken().getDomain().equals(request.getRealm().getName()));
+        Token token = request.getRealm().getAuthentication().getToken();
+        return tokenFactory.verifyToken(token) && (token.getDomain().equals(request.getRealm().getName()));
     }
 
     private void startServer() {
@@ -69,7 +74,7 @@ public class RealmHandler {
                 unregister(connection.textHandlerID());
             });
 
-        }).listen(Config.Authentication.REALM_PORT);
+        }).listen(settings.getRealmPort());
     }
 
     private void unregister(String connection) {

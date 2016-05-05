@@ -1,7 +1,8 @@
 package Game;
 
-import Game.Model.InstanceSettings;
-import Utilities.Config;
+import Configuration.GameServerSettings;
+import Configuration.InstanceSettings;
+import Configuration.RealmSettings;
 import Utilities.DefaultLogger;
 import Utilities.Logger;
 import io.vertx.core.Context;
@@ -15,14 +16,16 @@ import io.vertx.core.Vertx;
  * Handles players in a world.
  */
 public class Instance implements Verticle {
-    private Logger logger;
     private Vertx vertx;
-    private InstanceSettings instance;
-    private String realm;
+    private InstanceSettings settings;
+    private RealmSettings realm;
+    private GameServerSettings game;
+    private Logger logger;
 
-    public Instance(InstanceSettings instance, String realm) {
-        this.instance = instance;
+    public Instance(GameServerSettings game, RealmSettings realm, InstanceSettings settings) {
+        this.game = game;
         this.realm = realm;
+        this.settings = settings;
     }
 
     // todo on full create a new volatile instance based on the current instance that will shutdown on players = 0
@@ -35,12 +38,12 @@ public class Instance implements Verticle {
     @Override
     public void init(Vertx vertx, Context context) {
         this.vertx = vertx;
-        this.logger = new DefaultLogger(vertx, Config.Gameserver.LOGTOKEN);
+        this.logger = new DefaultLogger(vertx, game.getLogserver());
     }
 
     @Override
     public void start(Future<Void> start) throws Exception {
-        logger.onInstanceStarted(instance);
+        logger.onInstanceStarted(realm, settings);
         start.complete();
     }
 
