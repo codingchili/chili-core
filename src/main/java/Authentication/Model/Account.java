@@ -1,8 +1,9 @@
 package Authentication.Model;
 
-import Game.Model.Character;
+import Game.Model.PlayerCharacter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * @author Robin Duda
@@ -10,7 +11,7 @@ import java.util.ArrayList;
  *         Holds account data for an user used to communicate with the view.
  */
 public class Account {
-    private ArrayList<Character> characters = new ArrayList<>();
+    private HashMap<String, ArrayList<PlayerCharacter>> characters = new HashMap<>();
     private String username;
     private String password;
     private String email;
@@ -23,11 +24,11 @@ public class Account {
         this.email = account.getEmail();
     }
 
-    public ArrayList<Character> getCharacters() {
+    public HashMap<String, ArrayList<PlayerCharacter>> getCharacters() {
         return characters;
     }
 
-    public void setCharacters(ArrayList<Character> characters) {
+    public void setCharacters(HashMap<String, ArrayList<PlayerCharacter>> characters) {
         this.characters = characters;
     }
 

@@ -1,10 +1,11 @@
 {
-  "name": "slayer",
-  "description": "A ferocious murderer feeding on the fear of their victims sliced by their battleaxe.",
-  "weapon": ["battleaxe"],
+  "name": "Slayer",
+  "description": "A ferocious murderer feeding on the fear and blood of their victims, melee fighting with health-based damage.",
+  "weapons": ["battleaxe"],
   "keywords": [
-    "Damage",
-    "Tank"
+    "bleeding",
+    "self-healing",
+    "anti-armor"
   ],
   "spells": [
     {
@@ -43,20 +44,17 @@
       "target": "selected",
       "modifies": [
         {
+          "modifies": "target",
           "attribute": "health",
           "using": {
             "source": "caster",
-            "attribute": {
-              "name": "attack",
-              "value": -3.0
-            },
+            "attribute": "attack",
+            "value": -3.0,
             "condition": {
-              "attribute": {
-                "name": "health",
-                "using": "current",
-                "matches": "less",
-                "threshold": 0.5
-              }
+              "attribute": "health",
+              "as": "current",
+              "matches": "less",
+              "value": 0.5
             }
           }
         }
@@ -91,11 +89,17 @@
       "name": "blood strike",
       "description": "Consume 15% of current HP and deal 100% to target.",
       "target": "selected",
-      "modifier": {
-        "modifies": "health",
-        "attribute": "health",
-        "value": 0.15
-      },
+      "modifier": [
+        {
+          "modifies": "target",
+          "attribute": "health",
+          "using": {
+            "source": "caster",
+            "attribute": "health",
+            "value": -0.15
+          }
+        }
+      ],
       "cost": {
         "modifies": "health",
         "value": 0.15
@@ -134,12 +138,18 @@
     {
       "name": "blood rage",
       "description": "Heal for 15% of missing health.",
-      "modifier": {
-        "modifies": "health",
-        "attribute": "missing-health",
-        "value": 0.15,
-        "heal": true
-      },
+      "modifier": [
+        {
+          "modifies": "target",
+          "attribute": "health",
+          "using": {
+            "source": "caster",
+            "attribute": "health",
+            "as": "missing",
+            "value": 0.15
+          }
+        }
+      ],
       "cost": {
         "modifies": "energy",
         "value": 20

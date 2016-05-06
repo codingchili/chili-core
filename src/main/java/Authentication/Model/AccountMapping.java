@@ -1,11 +1,17 @@
 package Authentication.Model;
 
+import Game.Model.PlayerCharacter;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
  * @author Robin Duda
- *         <p/>
+ *         <p>
  *         Database object not shared outside storage.
  */
 class AccountMapping {
+    private HashMap<String, ArrayList<PlayerCharacter>> characters = new HashMap<>();
     private String username;
     private String email;
     private String salt;
@@ -19,6 +25,13 @@ class AccountMapping {
         this.email = account.getEmail();
     }
 
+    public HashMap<String, ArrayList<PlayerCharacter>> getCharacters() {
+        return characters;
+    }
+
+    public void setCharacters(HashMap<String, ArrayList<PlayerCharacter>> characters) {
+        this.characters = characters;
+    }
 
     public String getSalt() {
         return salt;

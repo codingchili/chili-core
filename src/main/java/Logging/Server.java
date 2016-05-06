@@ -51,12 +51,12 @@ public class Server implements Verticle {
                             settings.getElastic().getIndex() + "/all/", response -> {
 
                                 response.handler(event -> {
-                                    System.out.println(event.toString());
                                 });
 
                             }).end(logdata.encode());
 
-                    System.out.println(data.toString());
+                    if (settings.getConsole())
+                        System.out.println(data.toString());
                 }
 
             });

@@ -3,6 +3,7 @@ package Utilities;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -26,7 +27,7 @@ public abstract class JsonFileStore {
     }
 
     public static ArrayList<JsonObject> readDirectoryObjects(String path) throws IOException {
-        File[] files = new File(path).listFiles();
+        File[] files = new File(path).listFiles(file -> !file.isDirectory());
         ArrayList<JsonObject> objects = new ArrayList<>();
 
         if (files != null) {

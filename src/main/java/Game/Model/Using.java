@@ -8,8 +8,17 @@ public class Using {
     private Attribute attribute;
     private Double value;
     private Boolean cancel;
+    private Condition condition;
 
-    public Boolean isCancel() {
+    public Condition getCondition() {
+        return condition;
+    }
+
+    public void setCondition(Condition condition) {
+        this.condition = condition;
+    }
+
+    public Boolean getCancel() {
         return cancel;
     }
 

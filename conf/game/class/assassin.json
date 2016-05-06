@@ -1,48 +1,49 @@
 {
-  "name": "assassin",
+  "name": "Assassin",
   "description": "Sneaking in the shadows the short blade of their dagger stabs their victims, often to death.",
-  "weapon": ["dagger"],
+  "weapons": ["throwing/dagger"],
   "keywords": [
-    "damage",
-    "stealth"
+    "stealth",
+    "mobility",
+    "poison"
   ],
   "spells": [
     {
-      "name": "",
-      "description": ""
+      "name": "backstabber",
+      "description": "Deals 3x attack when attacking from stealth & stuns the target."
     },
     {
-      "name": "",
-      "description": ""
+      "name": "poison strikes",
+      "description": "Basic attacks inflicts poison."
     },
     {
-      "name": "",
-      "description": "",
+      "name": "front stab",
+      "description": "Attacks targets in cone inflicting 2x attack and breaking armor.",
       "cooldown": 0
     },
     {
-      "name": "",
-      "description": "",
+      "name": "corrupting venom",
+      "description": "Interrupts all regeneration and deal 1x attack.",
       "cooldown": 0
     },
     {
-      "name": "",
-      "description": "",
+      "name": "ice venom",
+      "description": "Turns poison duration into slow on target.",
       "cooldown": 0
     },
     {
-      "name": "",
-      "description": "",
+      "name": "shadow step",
+      "description": "Move through the shadows and gain a short time of stealth.",
       "cooldown": 0
     },
     {
-      "name": "",
-      "description": "",
+      "name": "shadow escape",
+      "description": "Gain stealth and Regeneration and removes negative effects.",
       "cooldown": 0
     },
     {
-      "name": "",
-      "description": "",
+      "name": "potent venom",
+      "description": "Consumes poison duration and deals direct damage, re-applies poison for 12s.",
       "cooldown": 0
     }
   ]

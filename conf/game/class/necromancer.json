@@ -1,9 +1,13 @@
 {
-  "name": "necromancer",
+  "name": "Necromancer",
   "description": "Death and dark magics is only fit for such a tainted soul, swings two-handed swords of pure evil.",
-  "weapon": ["sword"],
-  "keywords": ["Damage", "Tank", "Magic"],
-  "spells":[
+  "weapons": ["2h-sword"],
+  "keywords": [
+    "self-healing",
+    "anti-tank",
+    "anti-healing"
+  ],
+  "spells": [
     {
       "name": "touch of death",
       "description": "Attacks inflicts soulless.",
@@ -34,17 +38,25 @@
         {
           "on": "hit",
           "modifier": {
-            "modifies": "health",
-            "attribute": "damage",
-            "value": 0.5
+            "modifies": "caster",
+            "attribute": "health",
+            "using": {
+              "source": "caster",
+              "attribute": "health",
+              "value": 0.05
+            }
           }
         }
       ],
       "modifier": [
         {
-          "modifies": "health",
-          "attribute": "spell",
-          "value": 2.0
+          "modifies": "target",
+          "attribute": "health",
+          "using": {
+            "source": "caster",
+            "attribute": "spell",
+            "value": -1.0
+          }
         }
       ],
       "affliction": [
@@ -61,9 +73,13 @@
       "target": "missile",
       "modifier": [
         {
-          "modifies": "health",
-          "attribute": "spell",
-          "value": 1.0
+          "modifies": "target",
+          "attribute": "health",
+          "using": {
+            "source": "caster",
+            "attribute": "spell",
+            "value": -1.0
+          }
         }
       ],
       "affliction": [
@@ -80,9 +96,13 @@
       "target": "host",
       "modifier": [
         {
-          "modifies": "health",
-          "attribute": "spell",
-          "value": 3.0
+          "modifies": "target",
+          "attribute": "health",
+          "using": {
+            "source": "caster",
+            "attribute": "spell",
+            "value": -3.0
+          }
         }
       ],
       "affliction": [
@@ -98,9 +118,13 @@
       "description": "Turns energy into health.",
       "modifier": [
         {
-          "modifies": "health",
+          "modifies": "caster",
           "attribute": "health",
-          "value": 0.15
+          "using": {
+            "source": "caster",
+            "attribute": "energy",
+            "value": 0.10
+          }
         }
       ],
       "cost": {
@@ -115,9 +139,14 @@
       "target": "selected",
       "modifier": [
         {
-          "modifies": "health",
-          "attribute": "health-missing",
-          "value": 0.15
+          "modifies": "target",
+          "attribute": "health",
+          "using": {
+            "source": "target",
+            "attribute": "health",
+            "as": "missing",
+            "value": -0.15
+          }
         }
       ],
       "cooldown": 8
@@ -130,9 +159,13 @@
         {
           "on": "hit",
           "modifier": {
-            "modifies": "energy",
+            "modifies": "target",
             "attribute": "energy",
-            "value": 0.1
+            "using": {
+              "source": "target",
+              "attribute": "energy",
+              "value": -0.1
+            }
           }
         }
       ],

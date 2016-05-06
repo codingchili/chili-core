@@ -1,0 +1,65 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/scale-up-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
+
+<!--
+    @author Robin Duda
+    Polymer element for use as a login box.
+ -->
+
+<dom-module id="error-dialog">
+    <link rel="import" href="../../style/theme.css" type="css">
+    <link rel="import" href="../../style/style.css" type="css">
+    <template>
+        <style>
+            :host {
+                display: inline-block;
+                width: 100%;
+            }
+
+            .buttons {
+                padding: 32px 0 0 0;
+            }
+
+            .box {
+                width: 100%;
+                max-width: 325px;
+            }
+        </style>
+
+
+        <paper-dialog id="dialog" class="box" modal>
+            <h2>Error</h2>
+            <paper-dialog-scrollable>
+                {{text}}
+            </paper-dialog-scrollable>
+
+            <div class="buttons">
+                <paper-button raised class="primary flex" on-tap="close" dialog-dismiss>Confirm</paper-button>
+            </div>
+        </paper-dialog>
+
+    </template>
+    <script>
+        Polymer({
+            is: 'error-dialog',
+
+            ready: function () {
+                this.set("text", "No error defined.");
+
+                application.onError((function (error) {
+                    this.set("text", error.text);
+                    this.callback = error.callback;
+                    this.$.dialog.open();
+
+                }).bind(this));
+            },
+
+            close: function () {
+                this.callback();
+            }
+        });
+    </script>
+</dom-module>

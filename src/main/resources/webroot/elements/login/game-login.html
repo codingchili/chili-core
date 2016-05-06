@@ -18,7 +18,6 @@
         <style>
             :host {
                 display: inline-block;
-                margin-top: 16%;
             }
 
             .title {
@@ -90,16 +89,17 @@
 
                 $.ajax({
                     type: "POST",
-                    url: configuration.api("authenticate"),
+                    url: api.authentication("authenticate"),
                     dataType: "json",
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify({
                         username: this.username,
                         password: this.password
                     }),
-                    success: function (data) {
+                    success: (function (data) {
+                        this.resetForm();
                         application.authenticated(data);
-                    },
+                    }).bind(this),
                     statusCode: {
                         404: function () {
                             self.$['toast-missing'].open();
@@ -111,6 +111,13 @@
                             self.password = "";
                             self.$['password'].focus();
                         }
+                    },
+                    error: function (code) {
+                        if (code.status != 401 && code.status != 404)
+                            application.error({
+                                text: "Connection Failure [Authentication]",
+                                callback: application.showLogin
+                            })
                     }
                 });
             },
@@ -123,7 +130,7 @@
                 else
                     $.ajax({
                         type: "POST",
-                        url: configuration.api("register"),
+                        url: api.authentication("register"),
                         dataType: "json",
                         contentType: "application/json; charset=utf-8",
                         data: JSON.stringify({
@@ -131,16 +138,31 @@
                             password: this.password,
                             email: this.email
                         }),
-                        success: function (data) {
+                        success: (function (data) {
+                            this.resetForm();
                             application.authenticated(data);
-                        },
+                        }).bind(this),
                         statusCode: {
                             409: function () {
                                 self.$['toast-conflict'].open();
                                 self.$['username'].focus();
                             }
+                        },
+                        error: function (code) {
+                            if (code.status != 409)
+                                application.error({
+                                    text: "Connection Failure [Authentication]",
+                                    callback: application.showLogin
+                                })
                         }
                     });
+            },
+
+            resetForm: function () {
+                this.password = "";
+                this["password-repeat"] = "";
+                this.email = "";
+                this.showLoginForm();
             },
 
             showLoginForm: function () {

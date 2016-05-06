@@ -1,9 +1,13 @@
 {
-  "name": "hunter",
+  "name": "Hunter",
   "description": "Knowing of their environment and the creatures lurking in it, none shall escape their true aim.",
-  "weapon": ["bow"],
-  "keywords": ["Damage", "Traps"],
-  "spells":[
+  "weapons": ["bow"],
+  "keywords": [
+    "traps",
+    "mobility",
+    "anti-healing"
+  ],
+  "spells": [
     {
       "name": "Archery",
       "description": "Gains Wounding aim and Hawkeye.",
@@ -36,9 +40,13 @@
       "target": "cone",
       "modifier": [
         {
-          "modifies": "health",
-          "attribute": "attack",
-          "value": 1.0
+          "modifies": "target",
+          "attribute": "health",
+          "using": {
+            "source": "caster",
+            "attribute": "attack",
+            "value": -2.0
+          }
         }
       ],
       "cooldown": 8
@@ -49,9 +57,13 @@
       "target": "missile",
       "modifier": [
         {
-          "modifies": "health",
-          "attribute": "attack",
-          "value": 1.0
+          "modifies": "target",
+          "attribute": "health",
+          "using": {
+            "source": "caster",
+            "attribute": "attack",
+            "value": -2.0
+          }
         }
       ],
       "affliction": [
@@ -90,23 +102,30 @@
     },
     {
       "name": "Wilderness",
-      "description": "Move to a stunned target deals double damage and heals for triple.",
+      "description": "Move to a stunned target deals triple damage and heals for double.",
       "target": "selected",
       "special": "teleport",
       "trigger": [
         {
           "on": "hit",
-          "modifies": "health",
-          "attribute": "attack",
-          "value": 6.0,
-          "heal": true
+          "modifies": "caster",
+          "attribute": "health",
+          "using": {
+            "source": "caster",
+            "attribute": "attack",
+            "value": 6.0
+          }
         }
       ],
       "modifier": [
         {
-          "modifies": "health",
-          "attribute": "attack",
-          "value": 3.0
+          "modifies": "target",
+          "attribute": "health",
+          "using": {
+            "source": "caster",
+            "attribute": "attack",
+            "value": 3.0
+          }
         }
       ],
       "cooldown": 12
@@ -116,14 +135,22 @@
       "description": "Deals double damage and bonus damage based on targets current health.",
       "modifier": [
         {
-          "modifies": "health",
-          "attribute": "attack",
-          "value": 2.0
+          "modifies": "target",
+          "attribute": "health",
+          "using": {
+            "source": "caster",
+            "attribute": "attack",
+            "value": -2.0
+          }
         },
         {
-          "modifies": "health",
+          "modifies": "target",
           "attribute": "health",
-          "value": 0.05
+          "using": {
+            "source": "target",
+            "attribute": "health",
+            "value": 0.05
+          }
         }
       ],
       "cooldown": 6
@@ -133,9 +160,14 @@
       "description": "Removes any slow and stun effects and heals for 10%.",
       "modifier": [
         {
-          "modifies": "health",
+          "modifies": "caster",
           "attribute": "health",
-          "value": 0.10
+          "using": {
+            "source": "caster",
+            "attribute": "health",
+            "as": "max",
+            "value": 0.10
+          }
         }
       ],
       "affliction": [

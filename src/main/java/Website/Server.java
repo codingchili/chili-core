@@ -4,6 +4,8 @@ import Configuration.Config;
 import Configuration.WebServerSettings;
 import Utilities.DefaultLogger;
 import Utilities.Logger;
+import Utilities.Serializer;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
@@ -39,6 +41,7 @@ public class Server implements Verticle {
 
         router.route().handler(BodyHandler.create());
         setLogging(router);
+        setApi(router);
         setResources(router);
         setCatchAll(router);
 
@@ -47,9 +50,29 @@ public class Server implements Verticle {
         start.complete();
     }
 
-    private void setResources(Router router) {
-        router.route("/*").handler(StaticHandler.create()
-                .setCachingEnabled(true));
+    private void setApi(Router router) {
+        router.get("/api/news").handler(context -> {
+            context.response().setStatusCode(HttpResponseStatus.OK.code())
+                    .putHeader("Content-Type", "application/json")
+                    .end(Serializer.pack(settings.getNews()));
+        });
+
+        router.get("/api/authserver").handler(context -> {
+            context.response().end(Serializer.pack(settings.getAuthserver()));
+        });
+
+        router.get("/api/gameinfo").handler(context -> {
+            context.response().setStatusCode(HttpResponseStatus.OK.code())
+                    .putHeader("Content-Type", "application/json")
+                    .end(Serializer.pack(settings.getInfo()));
+        });
+
+        router.get("/api/patchnotes").handler(context -> {
+            context.response()
+                    .putHeader("Content-Type", "application/json")
+                    .setStatusCode(HttpResponseStatus.OK.code())
+                    .end(Serializer.pack(settings.getPatch()));
+        });
     }
 
     private void setLogging(Router router) {
@@ -57,6 +80,11 @@ public class Server implements Verticle {
             logger.onPageLoaded(context.request());
             context.next();
         });
+    }
+
+    private void setResources(Router router) {
+        router.route("/*").handler(StaticHandler.create()
+                .setCachingEnabled(true));
     }
 
     private void setCatchAll(Router router) {

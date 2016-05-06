@@ -20,3 +20,15 @@ paper-button {
     margin: 0 auto auto;
     width: 100%;
 }
+
+iron-icon {
+    color: #4a148c;
+}
+
+iron-icon:hover {
+    color: purple;
+}
+
+paper-tooltip {
+    --paper-tooltip-background: black;
+}

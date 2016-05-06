@@ -22,37 +22,48 @@
             }
 
             .title {
-                text-align: center;
+                text-align: left;
                 padding-top: 16px;
             }
 
+            .title {
+                padding-top: 16px;
+                margin-left: 16px;
+            }
+
             .text {
-                padding: 12px;
+                margin-left: 32px;
+                padding-bottom: 24px;
+            }
+
+            .item {
+                margin-bottom: 32px;
+                margin-top: 32px;
             }
         </style>
 
         <div class="container">
             <paper-material elevation="0">
-                <div class="title">
-                    <h4>Game manual</h4>
-                </div>
 
-                <div class="text">
-                    <p>
-                    <h4>Combat</h4>
-                    Fight your enemy.
-                    </p>
+                <template id="t" is="dom-bind">
 
-                    <p>
-                    <h4>Gathering</h4>
-                    Gather the ore.
-                    </p>
+                    <iron-ajax url="/api/gameinfo" last-response="{{data}}" auto></iron-ajax>
 
-                    <p>
-                    <h4>Crafting</h4>
-                    Craft the stuff.
-                    </p>
-                </div>
+                    <paper-material elevation="1" class="item">
+                        <div class="title">
+                            <h4>{{data.title}}</h4>
+                        </div>
+
+                        <div class="text">
+                            <p>
+                                {{data.content}}
+                            </p>
+                        </div>
+
+
+                    </paper-material>
+
+                </template>
 
             </paper-material>
         </div>

@@ -1,16 +1,16 @@
 {
-  "name": "druid",
-  "description": "Restores the balance of all things nature with their staff, aids their allies with magic buffs.",
-  "weapon": ["staff"],
+  "name": "Druid",
+  "description": "The Druid has a strong attunement with nature, with access to spells to aid their allies or curse their foes.",
+  "weapons": ["staff"],
   "keywords": [
-    "Healer",
-    "Buffs",
-    "Magic"
+    "healing",
+    "buffs",
+    "anti-mobility"
   ],
   "spells": [
     {
       "name": "natures blessing",
-      "description": "Reduces chance to be affected by negative effects.",
+      "description": "Reduces the chance of being inflicted with negative effects by half..",
       "passive": true,
       "affliction": [
         {
@@ -21,7 +21,7 @@
     },
     {
       "name": "divine sight",
-      "description": "Periodically chance to reveal stealth.",
+      "description": "Periodically dispels stealth of nearby creatures.",
       "passive": true,
       "affliction": [
         {
@@ -32,12 +32,12 @@
     },
     {
       "name": "empower",
-      "description": "Empower an area with haste and increased attributes.",
+      "description": "Heal by 2x spell and empower & haste in area.",
       "target": "area",
       "modifier": [
         {
+          "modifies": "target",
           "attribute": "health",
-          "target": "affected",
           "using": {
             "source": "caster",
             "attribute": "spell",
@@ -63,7 +63,7 @@
     },
     {
       "name": "regeneration",
-      "description": "Area gains regeneration.",
+      "description": "Creatures in area of effect gains regeneration.",
       "affliction": [
         {
           "name": "regeneration",
@@ -78,13 +78,17 @@
     },
     {
       "name": "banish",
-      "description": "Deals spell damage and slows.",
+      "description": "Deals 2x spell damage and slows targets in a ray.",
       "target": "ray",
       "modifier": [
         {
-          "modifies": "health",
-          "attribute": "spell",
-          "value": 2.0
+          "modifies": "target",
+          "attribute": "health",
+          "using": {
+            "source": "caster",
+            "attribute": "spell",
+            "value": -2.0
+          }
         }
       ],
       "affliction": [
@@ -97,13 +101,17 @@
     },
     {
       "name": "ensnare",
-      "description": "Ensnares targets in area.",
+      "description": "Ensnares targets in area and deals 2x spell damage.",
       "target": "area",
       "modifier": [
         {
-          "modifies": "health",
-          "attribute": "spell",
-          "value": 2.0
+          "modifies": "target",
+          "attribute": "health",
+          "using": {
+            "source": "caster",
+            "attribute": "spell",
+            "value": -2.0
+          }
         }
       ],
       "affliction": [
@@ -116,20 +124,19 @@
     },
     {
       "name": "restoration",
-      "description": "Heals a target for their current health, requires less than 50% HP.",
+      "description": "Heals a target 3x spell.",
       "target": "selected",
       "modifier": [
         {
-          "modifies": "health",
+          "modifies": "target",
           "attribute": "health",
-          "value": 1.0,
-          "heal": true
+          "using": {
+            "source": "caster",
+            "attribute": "spell",
+            "value": 3.0
+          }
         }
       ],
-      "condition": {
-        "attribute": "health",
-        "max": 0.5
-      },
       "cost": {
         "modifies": "energy",
         "value": 30
@@ -138,12 +145,12 @@
     },
     {
       "name": "curse",
-      "description": "Curses everyone in an area.",
+      "description": "Curses creatures in an area.",
       "target": "area",
       "affliction": [
         {
           "name": "curse",
-          "duration": 4
+          "duration": 6
         }
       ],
       "cooldown": 8

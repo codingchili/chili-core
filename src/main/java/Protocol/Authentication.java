@@ -12,7 +12,7 @@ import java.util.ArrayList;
  *         An authentication message from the server to the view.
  */
 public class Authentication {
-    private ArrayList<RealmSettings> realms = new ArrayList<>();
+    private ArrayList<RealmMetaData> realms = new ArrayList<>();
     private Token token;
     private Account account;
     private boolean registered;
@@ -20,18 +20,18 @@ public class Authentication {
     public Authentication() {
     }
 
-    public Authentication(Account account, Token token, boolean registered, ArrayList<RealmSettings> realms) {
+    public Authentication(Account account, Token token, boolean registered, ArrayList<RealmMetaData> realms) {
         this.account = account;
         this.token = token;
         this.registered = registered;
         this.realms = realms;
     }
 
-    public ArrayList<RealmSettings> getRealms() {
+    public ArrayList<RealmMetaData> getRealms() {
         return realms;
     }
 
-    public void setRealms(ArrayList<RealmSettings> realms) {
+    public void setRealms(ArrayList<RealmMetaData> realms) {
         this.realms = realms;
     }
 

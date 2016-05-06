@@ -3,35 +3,109 @@
  *
  * Used to pass application-level events between components.
  */
-var configuration = {
-    api: function (method) {
-        return "http://localhost:5505/api/" + method;
+var api = {
+    remote: "",
+    port: null,
+
+    webserver: function (method) {
+        return "/api/" + method;
+    },
+    authentication: function (method) {
+        return this.remote + ":" + this.port + "/api/" + method;
+    },
+    realm: function (realm) {
+        return "http://" + realm.remote + ":" + realm.port;
+    },
+    load: function () {
+        $.ajax({
+            type: "GET",
+            url: api.webserver("authserver"),
+            dataType: "json",
+            contentType: "text/plain",
+            statusCode: {
+                200: (function (authserver) {
+                    this.remote = authserver.remote;
+                    this.port = authserver.port;
+                }).bind(this)
+            },
+            error: function () {
+                application.error({
+                    text: "Connection failure. [Authentication]",
+                    callback: application.showLogin
+                });
+            }
+        });
     }
 };
 
 var application = {
+    views: ["realm-list", "page", "game-view", "game-login", "character-list", "error-dialog"],
     authentication: null,
     handlers: {},
 
     authenticated: function (authentication) {
-        this.authentication = authentication;
-        $('#game-login').hide();
-        $('#page').hide();
-        $('#realm-list').show();
-
-        this.publish('onAuthentication', authentication);
+        application.authentication = authentication;
+        application.view("realm-list");
+        application.publish('onAuthentication', authentication);
     },
 
-    onAuthentication: function (callback) {
-        this.subscribe('onAuthentication', callback);
+    error: function (error) {
+        application.view("error-dialog");
+        application.publish('onError', error);
+    },
+
+    selectRealm: function (realm) {
+        application.realm = realm;
+
+        application.publish("onRealmSelect", realm);
+        application.view("character-list");
     },
 
     logout: function () {
-        $('#game-login').show();
-        $('#game-view').hide();
-        $('#realm-list').hide();
+        application.publish('onLogout', {});
+        application.showLogin();
+    },
 
-        this.publish('onLogout', {});
+    realmLoaded: function (event) {
+        application.publish('onRealmLoaded', event);
+    },
+
+    onAuthentication: function (callback) {
+        application.subscribe('onAuthentication', callback);
+    },
+
+    onRealmSelect: function (callback) {
+        application.subscribe('onRealmSelect', callback);
+    },
+
+    onError: function (callback) {
+        application.subscribe('onError', callback);
+    },
+
+    onLogout: function (callback) {
+        application.subscribe('onLogout', callback);
+    },
+
+    onRealmLoaded: function (callback) {
+        application.subscribe('onRealmLoaded', callback);
+    },
+
+    showLogin: function () {
+        application.view("game-login");
+    },
+
+    showRealms: function () {
+        application.view("realm-list");
+        application.authenticated(application.authentication);
+    },
+
+    view: function (view) {
+        for (var i = 0; i < this.views.length; i++) {
+            if (this.views[i] == view)
+                $('#' + this.views[i]).show();
+            else
+                $('#' + this.views[i]).hide();
+        }
     },
 
     subscribe: function (event, callback) {
@@ -48,22 +122,7 @@ var application = {
     }
 };
 
-
 $(document).ready(function () {
-    $('#game-view').hide();
-    $('#game-login').hide();
-    $('#realm-list').hide();
-
-    application.subscribe("game-login", function () {
-        $('#page').hide();
-        $('#game-login').show();
-    });
-
-    /* setTimeout(function () {
-     $('#game-login').hide();
-     $('#page').hide();
-     //application.publish("game-login", {});
-     application.authenticated({account: {username: "spinx"}});
-     }, 500);
-     */
+    api.load();
+    application.view("game-login");
 });

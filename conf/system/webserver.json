@@ -1,14 +1,56 @@
 {
-  "logserver" : {
-    "system" : "webserver",
-    "host" : "server.1",
-    "remote" : "localhost",
-    "port" : 6109,
-    "token" : {
-      "key" : "B0A4473939F4AF6322260F2162E0CA550EB2811A407F1CD364968881FA73EA1F48C396ACBEBBABC6F960A1EA3A61D7B7D1DC161F620F41E8486B815B7A5393E7",
-      "expiry" : 1465132161,
-      "domain" : "webserver"
+  "authserver": {
+    "remote": "http://192.168.1.67",
+    "port": 5505
+  },
+  "logserver": {
+    "system": "webserver",
+    "host": "server.1",
+    "remote": "localhost",
+    "port": 6109,
+    "token": {
+      "key": "B0A4473939F4AF6322260F2162E0CA550EB2811A407F1CD364968881FA73EA1F48C396ACBEBBABC6F960A1EA3A61D7B7D1DC161F620F41E8486B815B7A5393E7",
+      "expiry": 1465132161,
+      "domain": "webserver"
     }
   },
-  "port" : 8080
+  "patch": {
+    "name": "Redwood",
+    "version": "Build 0.1a",
+    "date": "2016-05-05",
+    "changes": [
+      {
+        "title": "Backend.",
+        "list": [
+          "Updated configuration loader.",
+          "Added support for private servers.",
+          "Added support for ping."
+        ]
+      },
+      {
+        "title": "Webserver",
+        "list": [
+          "Updated the interface.",
+          "Added dynamic content from JSON."
+        ]
+      }
+    ]
+  },
+  "news": [
+    {
+      "title": "The website is live.",
+      "content": "Log in to try the beta now.",
+      "date": "2016-05-04"
+    },
+    {
+      "title": "Project started.",
+      "content": "The project has started, the beta is underway.",
+      "date": "2016-05-04"
+    }
+  ],
+  "info": {
+    "title": "The title.",
+    "content": "Nothing here yet."
+  },
+  "port": 8080
 }

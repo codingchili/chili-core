@@ -3,6 +3,8 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/scale-up-animation.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
 
@@ -22,28 +24,54 @@
             }
 
             .title {
-                text-align: center;
                 padding-top: 16px;
+                margin-left: 16px;
             }
 
             .text {
-                padding: 12px;
+                margin-left: 32px;
+                padding-bottom: 8px;
+            }
+
+            .item {
+                margin-bottom: 32px;
+                margin-top: 32px;
+            }
+
+            .date {
+                width: 100%;
+                text-align: center;
+                font-size: smaller;
+                padding-bottom: 24px;
             }
         </style>
 
         <div class="container">
-            <paper-material elevation="0">
-                <div class="title">
-                    <h4>2016-04-07</h4>
-                </div>
 
-                <div class="text">
-                    <p>
-                        The game system is under development.
-                    </p>
-                </div>
+            <template id="t" is="dom-bind">
 
-            </paper-material>
+                <iron-ajax url="/api/news" last-response="{{data}}" auto></iron-ajax>
+
+                <template is="dom-repeat" items="{{data}}">
+                    <paper-material elevation="1" class="item">
+                        <div class="title">
+                            <h4>{{item.title}}</h4>
+                        </div>
+
+                        <div class="text">
+                            <p>
+                                {{item.content}}
+                            </p>
+                        </div>
+
+                        <div class="date">
+                            {{item.date}}
+                        </div>
+
+                    </paper-material>
+                </template>
+            </template>
+
         </div>
 
     </template>
@@ -51,6 +79,7 @@
         Polymer({
             is: 'page-news',
             ready: function () {
+
             }
         });
     </script>

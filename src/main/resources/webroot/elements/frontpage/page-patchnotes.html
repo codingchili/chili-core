@@ -22,30 +22,86 @@
             }
 
             .title {
+                padding-bottom: 32px;
                 text-align: center;
-                padding-top: 16px;
+            }
+
+            .caption {
+                margin-left: 64px;
+                font-size: medium;
             }
 
             .text {
-                padding: 12px;
+                margin-left: 32px;
+                padding-bottom: 8px;
+            }
+
+            .item {
+                margin-bottom: 32px;
+                margin-top: 32px;
+            }
+
+            .date {
+                width: 100%;
+                text-align: center;
+                font-size: smaller;
+                padding-bottom: 24px;
+                padding-top: 32px;
+            }
+
+            .version {
+                margin-right: 16px;
+                margin-top: 4px;
+                font-size: smaller;
+                float: right;
+                display: inline-block;
+            }
+
+            .list {
+                margin-left: 64px;
             }
         </style>
 
         <div class="container">
             <paper-material elevation="0">
-                <div class="title">
-                    <h4>Patch 0.1a</h4>
-                </div>
 
-                <div class="text">
-                    <ul>
-                        <li>Added the website</li>
-                        <li>Added game signup</li>
-                        <li>Added new system</li>
-                        <li>Added the game</li>
 
-                    </ul>
-                </div>
+                <template id="t" is="dom-bind">
+
+                    <iron-ajax url="/api/patchnotes" last-response="{{data}}" auto></iron-ajax>
+
+                    <paper-material elevation="1" class="item">
+
+                        <div class="version">
+                            {{data.version}}
+                        </div>
+
+                        <div class="title">
+                            <h4>{{data.name}}</h4>
+                        </div>
+
+                        <template is="dom-repeat" items="{{data.changes}}">
+
+                            <div class="caption">
+                                {{item.title}}
+                            </div>
+
+                            <ul class="list">
+                                <template is="dom-repeat" items="{{item.list}}" as="change">
+                                    <li class="text">
+                                        {{change}}
+                                    </li>
+                                </template>
+                            </ul>
+
+                        </template>
+
+                        <div class="date">
+                            {{data.date}}
+                        </div>
+
+                    </paper-material>
+                </template>
 
             </paper-material>
         </div>

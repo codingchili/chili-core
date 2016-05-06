@@ -11,6 +11,7 @@
   "name" : "Development - Nightly",
   "description" : "Development realm in unstable mode. This realm is not recommended for non-developers. ",
   "remote" : "localhost",
+  "resources": "http://localhost:8080/resources/",
   "version" : 1.0,
   "size" : 500,
   "type" : "Beta",

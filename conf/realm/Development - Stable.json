@@ -11,6 +11,7 @@
   "name" : "Development - Stable",
   "description" : "Test realm currently on daily reset, it will contain features from the mainline that are somewhat stable.",
   "remote" : "localhost",
+  "resources": "http://localhost:8080/resources/",
   "version" : 1.0,
   "size" : 500,
   "type" : "Beta",

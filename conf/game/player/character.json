@@ -1,4 +1,5 @@
 {
+  "level": 1,
   "attributes": {
     "stamina": 5,
     "power": 5,
@@ -7,9 +8,32 @@
     "resistance": 0,
     "defence": 0
   },
-  "added": 5,
   "regeneration": {
     "health": 0.01,
     "energy": 1
+  },
+  "inventory": {
+    "crystals": 1,
+    "slots": [
+      "head",
+      "weapon",
+      "chest",
+      "legs",
+      "ring"
+    ],
+    "space": 64,
+    "items": [
+      {
+        "name": "Newbie Manual",
+        "description": "Good for starting out."
+      }
+    ],
+    "equipped": {
+      "head": null,
+      "weapon": null,
+      "chest": null,
+      "legs": null,
+      "ring": null
+    }
   }
 }

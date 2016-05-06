@@ -13,6 +13,7 @@ public class LogServerSettings implements Configurable {
     private ElasticSettings elastic;
     private byte[] secret;
     private Integer port;
+    private Boolean console;
 
 
     @Override
@@ -23,6 +24,14 @@ public class LogServerSettings implements Configurable {
     @Override
     public String getName() {
         return logserver.getSystem();
+    }
+
+    public Boolean getConsole() {
+        return console;
+    }
+
+    public void setConsole(Boolean console) {
+        this.console = console;
     }
 
     public Integer getPort() {

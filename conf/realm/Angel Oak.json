@@ -11,6 +11,7 @@
   "name" : "Angel Oak",
   "description" : "Stable realm, PvP Aggressive.",
   "remote" : "localhost",
+  "resources": "http://localhost:8080/resources/",
   "version" : 1.0,
   "size" : 500,
   "type" : "PvP",

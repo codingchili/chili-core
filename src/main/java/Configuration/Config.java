@@ -40,10 +40,6 @@ public class Config {
         return instance;
     }
 
-    protected static RemoteAuthentication LoadLogToken(JsonObject configuration) {
-        return (RemoteAuthentication) Serializer.unpack(configuration.getJsonObject("logserver"), RemoteAuthentication.class);
-    }
-
     public static class Address {
         public final static String LOGS = "LOGGING";
     }

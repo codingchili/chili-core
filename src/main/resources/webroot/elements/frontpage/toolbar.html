@@ -18,17 +18,21 @@
             }
 
             paper-toolbar {
-                background-color: #4a148c;
-            }
-
-            paper-fab {
-                margin: -12px 12px 2px 2px;
+                background-color: #000000;
             }
 
             paper-button {
                 width: 100px;
                 margin: 0;
                 padding: 0;
+            }
+
+            .logout {
+                width: 32px;
+                height: 32px;
+                display: inline-block;
+                margin-top: -6px;
+                margin-right: 12px;
             }
 
             .menu {
@@ -46,8 +50,9 @@
                     <span class="title"><paper-button on-tap="mainpage">Dungeon</paper-button></span>
 
                 <span class="menu">
-                    <paper-fab mini primary icon="icons:highlight-off" hidden$="{{hidelogout}}" on-click="logout"
-                               title="Log out"></paper-fab>
+                    <iron-icon primary class="logout" icon="icons:highlight-off" hidden$="{{hidelogout}}"
+                               on-click="logout"
+                               title="Log out"></iron-icon>
                 </span>
                 </p>
             </paper-toolbar>

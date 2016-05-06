@@ -6,6 +6,7 @@
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../../bower_components/paper-ripple/paper-ripple.html">
 <link rel="import" href="../../bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/scale-up-animation.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
 
@@ -50,31 +51,37 @@
                 margin-left: 20px;
                 width: 30%;
                 float: left;
-                margin-top: 4px;
+                margin-top: 12px;
             }
 
             .type {
-                width: 22%;
+                width: 16%;
                 float: left;
-                margin-top: 4px;
+                margin-top: 12px;
             }
 
             .reset {
-                width: 15%;
+                width: 14%;
                 float: left;
-                margin-top: 4px;
+                margin-top: 12px;
             }
 
             .players {
-                width: 15%;
+                width: 18%;
                 float: left;
-                margin-top: 4px;
+                margin-top: 12px;
             }
 
             .ping {
-                width: 14%;
+                width: 7%;
                 float: left;
-                margin-top: 4px;
+                margin-top: 12px;
+            }
+
+            .info {
+                width: 8%;
+                float: left;
+                margin-top: 6px;
             }
 
             .item {
@@ -85,9 +92,8 @@
 
             .status {
                 position: relative;
-                height: 24px;
+                height: 32px;
                 width: 100%;
-                margin-top: -2px;
             }
 
             .margin-top {
@@ -138,6 +144,11 @@
                 text-align: center;
                 width: 100%;
                 margin-top: 16px;
+                padding-bottom: 6px;
+            }
+
+            #tabs {
+                background-color: #000;
             }
 
         </style>
@@ -162,16 +173,15 @@
                     <paper-button class="type" on-tap="order" data-args="type">Type</paper-button>
                     <paper-button class="reset" on-tap="order" data-args="lifetime">Reset</paper-button>
                     <paper-button class="players" on-tap="order" data-args="players">Players</paper-button>
-                    <paper-button class="ping" on-tap="order" data-args="ping">Ping (ms)</paper-button>
+                    <paper-button class="ping" on-tap="order" data-args="ping">Ping</paper-button>
                 </div>
 
                 <iron-pages selected="0" class="margin-top">
                     <div>
-                        <paper-material elevation="0">
-                            <template is="dom-repeat" items="{{realms}}" as="realm" sort="{{sort}}">
-
+                        <template is="dom-repeat" items="{{realms}}" as="realm" sort="{{sort}}">
+                            <paper-material elevation="1">
                                 <div class="item" hidden="{{realm.hidden}}">
-                                    <div on-tap="toggle" class="status">
+                                    <div on-tap="select" class="status">
                                         <paper-ripple></paper-ripple>
                                         <div class="name">{{realm.name}}
                                         </div>
@@ -181,9 +191,11 @@
                                             {{realm.players}}/{{realm.size}}
                                         </div>
                                         <div class$="ping {{realm.pingColor}}">{{realm.ping}}</div>
+                                        <iron-icon class="info" on-mouseover="toggle" on-mouseout="untoggle"
+                                                   icon="icons:info-outline"></iron-icon>
                                     </div>
 
-                                    <iron-collapse opened="{{realm.state}}">
+                                    <iron-collapse opened="{{realm.state}}" noAnimation="true">
                                         <div class="details">
                                             <div class="description">{{realm.description}}</div>
                                             <div class="classes"><i>Classes enabled: Paladin, Slayer, Necromancer</i>
@@ -194,8 +206,8 @@
                                         </div>
                                     </iron-collapse>
                                 </div>
-                            </template>
-                        </paper-material>
+                            </paper-material>
+                        </template>
                     </div>
                 </iron-pages>
 
@@ -214,10 +226,12 @@
 
                 application.onAuthentication((function (authentication) {
                     this.load(authentication.realms);
-                    setInterval(this.update.bind(this), 5000);
-
-                    // SelectionBar - force recalculations and redraw the bar, stays invisible if not.
+                    this.timer = setInterval(this.update.bind(this), 1000);
                     window.dispatchEvent(new Event('resize'));
+                }).bind(this));
+
+                application.onLogout((function () {
+                    clearInterval(this.timer);
                 }).bind(this));
             },
 
@@ -276,12 +290,16 @@
 
                 $.ajax({
                     type: "GET",
-                    url: configuration.api("realmlist"),
+                    url: api.authentication("realmlist"),
                     dataType: "json",
                     contentType: "application/json; charset=utf-8",
                     success: (function (data) {
                         this.load(data);
-                    }).bind(self)
+                    }).bind(self),
+                    error: (function () {
+                        clearInterval(this.timer);
+                        application.error({text: "Connection Failed.", callback: application.showLogin})
+                    }).bind(this)
                 });
             },
 
@@ -364,11 +382,11 @@
             pingColor: function (realm) {
                 if (realm.ping < 50)
                     return "green";
-                if (realm.ping < 80)
-                    return "yellow";
                 if (realm.ping < 100)
+                    return "yellow";
+                if (realm.ping < 150)
                     return "orange";
-                if (realm.ping >= 100)
+                if (realm.ping >= 150 || realm.ping == "?")
                     return "red";
 
                 return "";
@@ -399,30 +417,43 @@
             ping: function (realm) {
                 var start = performance.now();
 
-                console.log(realm);
-
                 $.ajax({
                     type: "POST",
-                    url: "http://" + realm.remote + ":" + realm.port,
+                    url: api.realm(realm),
                     dataType: "json",
                     contentType: "text/plain",
                     statusCode: {
-                        200: (function (data) {
+                        200: (function () {
                             var ping = parseInt(performance.now() - start, 10);
-
-                            for (var i = 0; i < this.realms.length; i++) {
-                                if (this.realms[i].name == realm.name) {
-                                    this.set("realms." + i + ".ping", ping);
-                                    this.apply(i);
-                                }
-                            }
+                            this.setPing(realm, ping)
                         }).bind(this)
-                    }
+                    },
+                    error: (function () {
+                        this.setPing(realm, "?");
+                    }).bind(this)
                 });
             },
 
+            setPing: function (realm, ping) {
+                for (var i = 0; i < this.realms.length; i++) {
+                    if (this.realms[i].name == realm.name) {
+                        this.set("realms." + i + ".ping", ping);
+                        this.apply(i);
+                    }
+                }
+            },
+
             toggle: function (event) {
-                event.currentTarget.parentElement.querySelector('iron-collapse').toggle();
+                event.currentTarget.parentElement.parentElement.querySelector('iron-collapse').show();
+            },
+
+            untoggle: function (event) {
+                event.currentTarget.parentElement.parentElement.querySelector('iron-collapse').hide();
+            },
+
+            select: function (event) {
+                clearInterval(this.timer);
+                application.selectRealm(event.model.realm);
             }
         });
     </script>

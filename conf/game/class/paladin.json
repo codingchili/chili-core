@@ -1,11 +1,12 @@
 {
-  "name": "paladin",
+  "name": "Paladin",
   "description": "A holy priest enforcing the law with a hammer of justice, possesses blessings of protection.",
-  "weapon": ["hammer"],
+  "weapons": ["hammer"],
   "keywords": [
-    "Healer",
-    "Tank",
-    "Magic"
+    "healing",
+    "protection",
+    "stun",
+    "interrupt"
   ],
   "spells": [
     {

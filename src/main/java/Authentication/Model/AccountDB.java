@@ -1,15 +1,19 @@
 package Authentication.Model;
 
+import Game.Model.PlayerCharacter;
 import Utilities.HashHelper;
 import Utilities.Serializer;
 import io.vertx.core.Future;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
 
+import java.util.ArrayList;
+
 /**
  * @author Robin Duda
- * <p/>
- * Implementation of asynchronous account store.
+ *         <p>
+ *         Implementation of asynchronous account store.
  */
 public class AccountDB implements AsyncAccountStore {
     private static final String COLLECTION = "accounts";
@@ -55,6 +59,44 @@ public class AccountDB implements AsyncAccountStore {
                 future.fail(new AccountExistsException());
             }
 
+        });
+    }
+
+    @Override
+    public void addCharacter(Future<Void> future, String realm, String account, PlayerCharacter player) {
+        JsonObject query = new JsonObject().put("username", account);
+        JsonObject character = new JsonObject().put("$push",
+                new JsonObject().put("characters." + realm, Serializer.json(player)));
+
+        client.update(COLLECTION, query, character, result -> {
+            if (result.succeeded())
+                future.complete();
+            else {
+                future.fail(result.cause());
+            }
+        });
+    }
+
+    @Override
+    public void findCharacters(Future<ArrayList<PlayerCharacter>> future, String realm, String username) {
+        JsonObject query = new JsonObject()
+                .put("username", username);
+        JsonObject fields = new JsonObject()
+                .put("characters." + realm, 1);
+
+        client.findOne(COLLECTION, query, fields, search -> {
+            if (search.succeeded() && search.result() != null) {
+                JsonArray characters = search.result().getJsonObject("characters").getJsonArray(realm);
+                ArrayList<PlayerCharacter> list = new ArrayList<>();
+
+                if (characters != null)
+                    for (int i = 0; i < characters.size(); i++)
+                        list.add((PlayerCharacter) Serializer.unpack(characters.getJsonObject(i), PlayerCharacter.class));
+
+                future.complete(list);
+            } else {
+                future.fail(search.cause());
+            }
         });
     }
 
