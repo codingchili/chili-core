@@ -133,9 +133,15 @@
 
             .character-name {
                 position: absolute;
-                top: 32px;
+                top: 16px;
                 left: 148px;
                 width: 225px;
+            }
+
+            paper-toast {
+                position: absolute;
+                right: 0px;
+                bottom: -124px;
             }
 
 
@@ -150,7 +156,7 @@
                                icon="icons:reply"></iron-icon>
                 </div>
 
-                <div class="list">
+                <div class="list select">
                     <template is="dom-repeat" items="{{realm.classes}}" as="class">
                         <paper-material elevation="3" class="character-class" on-tap="select">
                             <paper-ripple></paper-ripple>
@@ -201,11 +207,19 @@
                     <paper-material elevation="3" class="character-class">
                         <img src="{{classImage}}" class="class-image">
 
-                        <paper-input id="name" class="character-name" value="{{characterName}}" label="Name"
+                        <paper-input id="name" class="character-name" value="{{characterName}}"
+                                     label="Name"
                                      on-keydown="createCharacter"></paper-input>
 
                         <iron-icon on-tap="createCharacter" class="create-button"
                                    icon="icons:send"></iron-icon>
+
+                        <paper-toast class="toast-success" id="toast-exists"
+                                     text="Character already exists."></paper-toast>
+                        <paper-toast class="toast-error" id="toast-name"
+                                     text="Character name is required."></paper-toast>
+                        <paper-toast class="toast-error" id="toast-creating"
+                                     text="Creating character.."></paper-toast>
                     </paper-material>
                 </div>
             </div>
@@ -247,34 +261,46 @@
             createCharacter: function (e) {
                 if (e.type == "tap" || e.keyCode == 13) {
 
-                    $.ajax({
-                        type: "POST",
-                        url: api.authentication("createcharacter"),
-                        dataType: "json",
-                        contentType: "text/plain",
-                        data: JSON.stringify({
-                            token: this.token,
-                            realm: this.realm.name,
-                            className: this.selected.name,
-                            name: this.characterName
-                        }),
-                        statusCode: {
-                            200: (function () {
-                                application.publish("character-create", {});
-                                this.characterName = "";
-                                this.showSelect();
-                            }).bind(this)
-                        },
-                        error: function (code) {
-                            console.log(code);
-
-                            application.error({
-                                text: "Failed to create character.",
-                                callback: application.showRealms
-                            });
-                        }
-                    });
+                    if (this.characterName.length == 0)
+                        this.$["toast-name"].open();
+                    else if (this.hasCharacter(this.characterName))
+                        this.$["toast-exists"].open();
+                    else {
+                        this.$["toast-creating"].open();
+                        $.ajax({
+                            type: "POST",
+                            url: api.authentication("character-create"),
+                            contentType: "text/plain",
+                            data: JSON.stringify({
+                                token: this.token,
+                                realm: this.realm.name,
+                                className: this.selected.name,
+                                name: this.characterName
+                            }),
+                            statusCode: {
+                                200: (function () {
+                                    application.publish("character-create", {});
+                                    this.characterName = "";
+                                    this.showSelect();
+                                }).bind(this)
+                            },
+                            error: function () {
+                                application.error({
+                                    text: "Failed to connect to the authentication server for character creation.",
+                                    callback: application.showRealms
+                                });
+                            }
+                        });
+                    }
                 }
+            },
+
+            hasCharacter: function (name) {
+                for (var i = 0; i < this.realm.characters.length; i++)
+                    if (this.realm.characters[i].name === name)
+                        return true;
+
+                return false;
             },
 
             realmlist: function () {

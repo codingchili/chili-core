@@ -42,10 +42,28 @@ public interface AsyncAccountStore {
     void addCharacter(Future<Void> future, String realm, String account, PlayerCharacter character);
 
     /**
+     * Finds all characters associated with an account on specified realm.
      *
-     * @param future
-     * @param realm
-     * @param accountName
+     * @param realm       the realm of which to search for the characters.
+     * @param accountName the name of the account the characters belong to.
      */
     void findCharacters(Future<ArrayList<PlayerCharacter>> future, String realm, String accountName);
+
+    /**
+     * Finds a single character.
+     *
+     * @param realm    the realm of which to search for the character.
+     * @param username the name of the account the character belongs to.
+     * @param name     the name of the character to find.
+     */
+    void findCharacter(Future<PlayerCharacter> future, String realm, String username, String name);
+
+    /**
+     * Finds and removes a character from specified realm by its character name.
+     *
+     * @param realm     the realm of which the character resides.
+     * @param username  the name of the owning account.
+     * @param character the name of the character.
+     */
+    void removeCharacter(Future<Void> future, String realm, String username, String character);
 }

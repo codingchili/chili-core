@@ -23,6 +23,7 @@ paper-button {
 
 iron-icon {
     color: #4a148c;
+    cursor: pointer;
 }
 
 iron-icon:hover {
@@ -31,4 +32,22 @@ iron-icon:hover {
 
 paper-tooltip {
     --paper-tooltip-background: black;
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+
+.select {
+    cursor: pointer;
+}
+
+.tooltip-text {
+    font-size: 14px;
 }

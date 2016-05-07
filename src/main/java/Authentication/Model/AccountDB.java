@@ -63,16 +63,57 @@ public class AccountDB implements AsyncAccountStore {
     }
 
     @Override
-    public void addCharacter(Future<Void> future, String realm, String account, PlayerCharacter player) {
-        JsonObject query = new JsonObject().put("username", account);
-        JsonObject character = new JsonObject().put("$push",
-                new JsonObject().put("characters." + realm, Serializer.json(player)));
+    public void addCharacter(Future<Void> future, String realm, String username, PlayerCharacter player) {
+        JsonObject query = new JsonObject().put("username", username);
+        JsonObject character = new JsonObject().put("$set",
+                new JsonObject().put("characters." + realm + "." + player.getName(), Serializer.json(player)));
 
         client.update(COLLECTION, query, character, result -> {
             if (result.succeeded())
                 future.complete();
             else {
                 future.fail(result.cause());
+            }
+        });
+    }
+
+    @Override
+    public void removeCharacter(Future<Void> future, String realm, String username, String character) {
+        Future<ArrayList<PlayerCharacter>> find = Future.future();
+
+        find.setHandler(found -> {
+            JsonObject query = new JsonObject()
+                    .put("username", username);
+            JsonObject field = new JsonObject()
+                    .put("$unset",
+                            new JsonObject().put("characters." + realm + "." + character, ""));
+
+            client.update(COLLECTION, query, field, remove -> {
+
+                if (remove.succeeded())
+                    future.complete();
+                else
+                    future.fail(remove.cause());
+            });
+
+        });
+        findCharacters(find, realm, username);
+    }
+
+    @Override
+    public void findCharacter(Future<PlayerCharacter> future, String realm, String username, String name) {
+        JsonObject query = new JsonObject()
+                .put("username", username);
+        JsonObject fields = new JsonObject()
+                .put("characters." + realm + "." + name, 1)
+                .put("_id", 0);
+
+        client.findOne(COLLECTION, query, fields, search -> {
+            if (search.succeeded() && search.result() != null) {
+                JsonObject json = search.result().getJsonObject("characters").getJsonObject(realm).getJsonObject(name);
+                future.complete((PlayerCharacter) Serializer.unpack(json, PlayerCharacter.class));
+            } else {
+                future.fail(new CharacterMissingException());
             }
         });
     }
@@ -86,16 +127,16 @@ public class AccountDB implements AsyncAccountStore {
 
         client.findOne(COLLECTION, query, fields, search -> {
             if (search.succeeded() && search.result() != null) {
-                JsonArray characters = search.result().getJsonObject("characters").getJsonArray(realm);
-                ArrayList<PlayerCharacter> list = new ArrayList<>();
+                JsonObject characters = search.result().getJsonObject("characters").getJsonObject(realm);
+                ArrayList<PlayerCharacter> result = new ArrayList<>();
 
                 if (characters != null)
-                    for (int i = 0; i < characters.size(); i++)
-                        list.add((PlayerCharacter) Serializer.unpack(characters.getJsonObject(i), PlayerCharacter.class));
+                    for (String key : characters.fieldNames())
+                        result.add((PlayerCharacter) Serializer.unpack(characters.getJsonObject(key), PlayerCharacter.class));
 
-                future.complete(list);
+                future.complete(result);
             } else {
-                future.fail(search.cause());
+                future.fail(new AccountMissingException());
             }
         });
     }
@@ -106,7 +147,9 @@ public class AccountDB implements AsyncAccountStore {
 
         client.findOne(COLLECTION, query, null, result -> {
             if (result.succeeded() && result.result() != null) {
+
                 AccountMapping account = (AccountMapping) Serializer.unpack(result.result(), AccountMapping.class);
+
                 if (authenticate(account, unauthenticated)) {
                     future.complete(filter(account));
                 } else

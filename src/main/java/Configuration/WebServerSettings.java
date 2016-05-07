@@ -17,6 +17,7 @@ public class WebServerSettings implements Configurable {
     private ArrayList<NewsItem> news;
     private GameInfo info;
     private Integer port;
+    private String keyPath;
 
     @Override
     public String getPath() {

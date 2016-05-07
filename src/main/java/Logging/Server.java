@@ -8,6 +8,7 @@ import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonObject;
 
 /**
@@ -36,7 +37,7 @@ public class Server implements Verticle {
     public void start(Future<Void> start) throws Exception {
         createIndex();
 
-        vertx.createHttpServer().websocketHandler(connection -> {
+        vertx.createHttpServer(new HttpServerOptions().setCompressionSupported(true)).websocketHandler(connection -> {
 
             connection.handler(data -> {
                 Token token = (Token) Serializer.unpack(data.toJsonObject().getJsonObject("token"), Token.class);

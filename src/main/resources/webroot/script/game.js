@@ -2,6 +2,7 @@
  * Created by Robin on 2016-04-07.
  */
 
+var resources = {};
 
 var game = {
     initialize: function (_canvas) {

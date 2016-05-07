@@ -11,7 +11,7 @@ import java.util.HashMap;
  *         Holds account data for an user used to communicate with the view.
  */
 public class Account {
-    private HashMap<String, ArrayList<PlayerCharacter>> characters = new HashMap<>();
+    private HashMap<String, HashMap<String, PlayerCharacter>> characters = new HashMap<>();
     private String username;
     private String password;
     private String email;
@@ -22,13 +22,14 @@ public class Account {
     public Account(AccountMapping account) {
         this.username = account.getUsername();
         this.email = account.getEmail();
+        this.characters = account.getCharacters();
     }
 
-    public HashMap<String, ArrayList<PlayerCharacter>> getCharacters() {
+    public HashMap<String, HashMap<String, PlayerCharacter>> getCharacters() {
         return characters;
     }
 
-    public void setCharacters(HashMap<String, ArrayList<PlayerCharacter>> characters) {
+    public void setCharacters(HashMap<String, HashMap<String, PlayerCharacter>> characters) {
         this.characters = characters;
     }
 

@@ -1,10 +1,10 @@
-package Protocol;
+package Protocol.Authentication;
 
 import Authentication.Model.Account;
-import Configuration.RealmSettings;
 import Utilities.Token;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * @author Robin Duda
@@ -13,6 +13,7 @@ import java.util.ArrayList;
  */
 public class Authentication {
     private ArrayList<RealmMetaData> realms = new ArrayList<>();
+    private HashMap<String, Integer> favourites = new HashMap<>();
     private Token token;
     private Account account;
     private boolean registered;
@@ -21,10 +22,28 @@ public class Authentication {
     }
 
     public Authentication(Account account, Token token, boolean registered, ArrayList<RealmMetaData> realms) {
+
+        // Extract the names of the realms where the account has characers.
+        for (String realm : account.getCharacters().keySet()) {
+            if (!account.getCharacters().get(realm).isEmpty())
+                favourites.put(realm, account.getCharacters().get(realm).size());
+        }
+
+        //Remove the list of characters as they are not needed yet.
+        account.setCharacters(null);
+
         this.account = account;
         this.token = token;
         this.registered = registered;
         this.realms = realms;
+    }
+
+    public HashMap<String, Integer> getFavourites() {
+        return favourites;
+    }
+
+    public void setFavourites(HashMap<String, Integer> favourites) {
+        this.favourites = favourites;
     }
 
     public ArrayList<RealmMetaData> getRealms() {

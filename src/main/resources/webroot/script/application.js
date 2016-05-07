@@ -16,6 +16,9 @@ var api = {
     realm: function (realm) {
         return "http://" + realm.remote + ":" + realm.port;
     },
+    realmWebSocket: function (realm) {
+        return "ws://" + realm.remote + ":" + realm.port;
+    },
     load: function () {
         $.ajax({
             type: "GET",
@@ -56,9 +59,7 @@ var application = {
 
     selectRealm: function (realm) {
         application.realm = realm;
-
-        application.publish("onRealmSelect", realm);
-        application.view("character-list");
+        application.showCharacters();
     },
 
     logout: function () {
@@ -97,6 +98,11 @@ var application = {
     showRealms: function () {
         application.view("realm-list");
         application.authenticated(application.authentication);
+    },
+
+    showCharacters: function () {
+        application.publish("onRealmSelect", application.realm);
+        application.view("character-list");
     },
 
     view: function (view) {

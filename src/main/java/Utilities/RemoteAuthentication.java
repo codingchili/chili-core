@@ -46,7 +46,8 @@ public class RemoteAuthentication {
         return token;
     }
 
-    public void setToken(Token token) {
+    public RemoteAuthentication setToken(Token token) {
         this.token = token;
+        return this;
     }
 }

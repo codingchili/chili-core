@@ -10,7 +10,9 @@ import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.net.PemKeyCertOptions;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
@@ -45,7 +47,9 @@ public class Server implements Verticle {
         setResources(router);
         setCatchAll(router);
 
-        vertx.createHttpServer().requestHandler(router::accept).listen(settings.getPort());
+        vertx.createHttpServer(new HttpServerOptions()
+                .setCompressionSupported(true))
+                .requestHandler(router::accept).listen(settings.getPort());
         logger.onServerStarted();
         start.complete();
     }

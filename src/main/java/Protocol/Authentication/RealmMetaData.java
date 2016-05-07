@@ -1,11 +1,15 @@
-package Protocol;
+package Protocol.Authentication;
 
 import Configuration.RealmSettings;
+import Game.Model.PlayerClass;
+
+import java.util.ArrayList;
 
 /**
  * Created by Robin on 2016-05-06.
  */
 public class RealmMetaData {
+    private ArrayList<String> classes = new ArrayList<>();
     private String name;
     private String description;
     private String remote;
@@ -34,8 +38,18 @@ public class RealmMetaData {
         this.port = settings.getPort();
         this.players = settings.getPlayers();
         this.trusted = settings.getTrusted();
+
+        for (PlayerClass pc : settings.getClasses())
+            classes.add(pc.getName());
     }
 
+    public ArrayList<String> getClasses() {
+        return classes;
+    }
+
+    public void setClasses(ArrayList<String> classes) {
+        this.classes = classes;
+    }
 
     public String getName() {
         return name;

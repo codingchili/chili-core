@@ -1,6 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/scale-up-animation.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
 
@@ -27,17 +29,40 @@
                 width: 100%;
                 max-width: 325px;
             }
+
+            .error-icon {
+                width: 96px;
+                left: 86px;
+                height: 96px
+            }
+
+            .error-text {
+                display: inline-block;
+            }
+
+            .tooltip {
+                width: 80%;
+                margin: auto;
+            }
+
         </style>
 
 
         <paper-dialog id="dialog" class="box" modal>
-            <h2>Error</h2>
-            <paper-dialog-scrollable>
+            <div>
+                <iron-icon icon="icons:error-outline" class="error-icon">
+                </iron-icon>
+                <paper-tooltip animation-delay="0" class="tooltip">
+                    <div class="tooltip-text">Error generated a bug report.</div>
+                </paper-tooltip>
+            </div>
+
+            <paper-dialog-scrollable class="error-text">
                 {{text}}
             </paper-dialog-scrollable>
 
             <div class="buttons">
-                <paper-button raised class="primary flex" on-tap="close" dialog-dismiss>Confirm</paper-button>
+                <paper-button raised class="primary flex" on-tap="close" dialog-dismiss>close</paper-button>
             </div>
         </paper-dialog>
 
@@ -52,14 +77,16 @@
                 application.onError((function (error) {
                     this.set("text", error.text);
                     this.callback = error.callback;
-                    this.$.dialog.open();
+
+                    if (!this.$.dialog.opened)
+                        this.$.dialog.open();
 
                 }).bind(this));
             },
 
             close: function () {
                 this.callback();
-            }
+            },
         });
     </script>
 </dom-module>

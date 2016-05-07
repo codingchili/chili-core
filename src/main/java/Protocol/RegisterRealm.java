@@ -2,6 +2,7 @@ package Protocol;
 
 
 import Configuration.RealmSettings;
+import Protocol.Header;
 import Utilities.Token;
 
 /**
@@ -35,15 +36,15 @@ public class RegisterRealm {
         return realm;
     }
 
-    public void setRealm(RealmSettings realm) {
-        this.realm = realm;
-    }
-
     public Token getToken() {
         return token;
     }
 
     public void setToken(Token token) {
         this.token = token;
+    }
+
+    public void setRealm(RealmSettings realm) {
+        this.realm = realm;
     }
 }

@@ -32,6 +32,16 @@ public abstract class Serializer {
         }
     }
 
+    public static Object unpack(String data, Class format) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            return mapper.readValue(data, format);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * Deserializes a JSON string into an object.
      *
@@ -40,13 +50,7 @@ public abstract class Serializer {
      * @return an unpacked object.
      */
     public static Object unpack(JsonObject json, Class format) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            return mapper.readValue(json.encode(), format);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return unpack(json.encode(), format);
     }
 
     public static JsonObject json(Object object) {

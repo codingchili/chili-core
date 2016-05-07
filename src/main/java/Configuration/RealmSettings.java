@@ -116,12 +116,14 @@ public class RealmSettings {
         return players;
     }
 
-    public void setPlayers(int players) {
+    public RealmSettings setPlayers(int players) {
         this.players = players;
+        return this;
     }
 
-    protected void setAuthentication(RemoteAuthentication authentication) {
+    public RealmSettings setAuthentication(RemoteAuthentication authentication) {
         this.authentication = authentication;
+        return this;
     }
 
     public RemoteAuthentication getAuthentication() {

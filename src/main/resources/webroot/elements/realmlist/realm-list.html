@@ -43,19 +43,20 @@
 
             .name-title {
                 margin-left: 8px;
-                width: 30%;
+                width: 34%;
                 float: left;
+                margin-top: 12px;
             }
 
             .name {
                 margin-left: 20px;
-                width: 30%;
+                width: 34%;
                 float: left;
                 margin-top: 12px;
             }
 
             .type {
-                width: 16%;
+                width: 12%;
                 float: left;
                 margin-top: 12px;
             }
@@ -151,6 +152,13 @@
                 background-color: #000;
             }
 
+            .realm-favorite {
+                float: left;
+                padding-right: 8px;
+                margin-top: -4px;
+                width: 14px;
+            }
+
         </style>
 
         <div class="container">
@@ -167,7 +175,6 @@
                         provided by &trade;.</h5>
                 </div>
 
-
                 <div class="titles">
                     <paper-button class="name-title" on-tap="order" data-args="name">Name</paper-button>
                     <paper-button class="type" on-tap="order" data-args="type">Type</paper-button>
@@ -180,10 +187,17 @@
                     <div>
                         <template is="dom-repeat" items="{{realms}}" as="realm" sort="{{sort}}">
                             <paper-material elevation="1">
-                                <div class="item" hidden="{{realm.hidden}}">
+                                <div class="item noselect" hidden="{{realm.hidden}}">
                                     <div on-tap="select" class="status">
                                         <paper-ripple></paper-ripple>
-                                        <div class="name">{{realm.name}}
+                                        <div class="name">
+
+                                            <template is="dom-if" if="{{favourite(realm.name)}}">
+                                                <iron-icon icon="icons:favorite-border" class="realm-favorite">
+                                                </iron-icon>
+                                            </template>
+
+                                            {{realm.name}}
                                         </div>
                                         <div class="type">{{realm.type}}</div>
                                         <div class="reset">{{realm.lifetime}}</div>
@@ -198,7 +212,10 @@
                                     <iron-collapse opened="{{realm.state}}" noAnimation="true">
                                         <div class="details">
                                             <div class="description">{{realm.description}}</div>
-                                            <div class="classes"><i>Classes enabled: Paladin, Slayer, Necromancer</i>
+                                            <div class="classes">
+                                                <template is="dom-repeat" items="{{realm.classes}}" as="name">
+                                                    <i> {{name}}&nbsp; </i>
+                                                </template>
                                             </div>
                                             <div class="stats">Experience x{{realm.leveling}}</div>
                                             <div class="stats" style="margin-top: 6px">Droprate x{{realm.drop}}
@@ -222,11 +239,16 @@
             ready: function () {
                 this.page = 0;
                 this.trustedservers = true;
-                this.sort = this.nameSort;
+                this.set("sort", this.favoriteSort.bind(this));
 
                 application.onAuthentication((function (authentication) {
-                    this.load(authentication.realms);
-                    this.timer = setInterval(this.update.bind(this), 1000);
+                    this.set("favourites", authentication.favourites);
+                    this.set("realms", authentication.realms);
+                    this.applyAll();
+
+                    this.pingAll();
+                    this.timer = setInterval(this.update.bind(this), 6000);
+
                     window.dispatchEvent(new Event('resize'));
                 }).bind(this));
 
@@ -253,6 +275,20 @@
                         this.set("sort", this.pingSort);
                         break;
                 }
+            },
+
+            favourite: function (realm) {
+                return this.favourites[realm];
+            },
+
+            favoriteSort: function (a, b) {
+                if (this.favourite(a.name) && !this.favourite(b.name))
+                    return -1;
+
+                if (!this.favourite(a.name) && this.favourite(b.name))
+                    return 1;
+
+                return this.nameSort(a, b);
             },
 
             nameSort: function (a, b) {
@@ -286,8 +322,6 @@
             },
 
             update: function () {
-                var self = this;
-
                 $.ajax({
                     type: "GET",
                     url: api.authentication("realmlist"),
@@ -295,10 +329,13 @@
                     contentType: "application/json; charset=utf-8",
                     success: (function (data) {
                         this.load(data);
-                    }).bind(self),
+                    }).bind(this),
                     error: (function () {
                         clearInterval(this.timer);
-                        application.error({text: "Connection Failed.", callback: application.showLogin})
+                        application.error({
+                            text: "Failed to retrieve realm list from authentication server.",
+                            callback: application.showLogin
+                        })
                     }).bind(this)
                 });
             },
@@ -410,28 +447,34 @@
             },
 
             pingAll: function () {
-                for (var i = 0; i < this.realms.length; i++)
-                    this.ping(this.realms[i]);
+                for (var i = 0; i < this.realms.length; i++) {
+
+                    setTimeout((function (index) {
+                        return (function () {
+                            this.ping(this.realms[index]);
+                        }).bind(this);
+                    }).bind(this)(i), i * 200);
+
+                }
             },
 
             ping: function (realm) {
                 var start = performance.now();
-
                 $.ajax({
-                    type: "POST",
+                    type: "GET",
                     url: api.realm(realm),
                     dataType: "json",
                     contentType: "text/plain",
                     statusCode: {
                         200: (function () {
-                            var ping = parseInt(performance.now() - start, 10);
+                            var ping = parseInt((performance.now() - start), 10);
                             this.setPing(realm, ping)
                         }).bind(this)
                     },
                     error: (function () {
                         this.setPing(realm, "?");
                     }).bind(this)
-                });
+                })
             },
 
             setPing: function (realm, ping) {

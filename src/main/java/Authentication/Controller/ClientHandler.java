@@ -3,8 +3,8 @@ package Authentication.Controller;
 import Configuration.AuthServerSettings;
 import Configuration.Config;
 import Game.Model.PlayerCharacter;
-import Protocol.*;
 import Authentication.Model.*;
+import Protocol.Authentication.Authentication;
 import Utilities.Logger;
 import Utilities.Serializer;
 import Utilities.Token;
@@ -12,8 +12,8 @@ import Utilities.TokenFactory;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpServerResponse;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.web.Router;
@@ -35,16 +35,13 @@ public class ClientHandler {
     private Vertx vertx;
     private Logger logger;
 
-    public ClientHandler(Vertx vertx, Logger logger, RealmHandler realms) {
+    public ClientHandler(Vertx vertx, Logger logger, AsyncAccountStore accounts, RealmHandler realms) {
         this.vertx = vertx;
         this.logger = logger;
-        this.realms = realms;
         this.settings = Config.instance().getAuthSettings();
         this.clientToken = new TokenFactory(settings.getClientSecret());
-        this.accounts = new AccountDB(
-                MongoClient.createShared(vertx, new JsonObject()
-                        .put("db_name", settings.getDatabase().getName())
-                        .put("connection_string", settings.getDatabase().getRemote())));
+        this.realms = realms;
+        this.accounts = accounts;
 
         startServer();
     }
@@ -63,15 +60,17 @@ public class ClientHandler {
             context.next();
         });
 
-
         router.post("/api/realmtoken").handler(this::realmtoken);
-        router.post("/api/characterlist").handler(this::characterlist);
-        router.post("/api/createcharacter").handler(this::createCharacter);
+        router.post("/api/character-list").handler(this::characterlist);
+        router.post("/api/character-create").handler(this::createCharacter);
+        router.post("/api/character-remove").handler(this::removeCharacter);
         router.post("/api/register").handler(this::register);
         router.post("/api/authenticate").handler(this::authenticate);
         router.get("/api/realmlist").handler(this::realmlist);
 
-        vertx.createHttpServer().requestHandler(router::accept).listen(settings.getClientPort());
+        vertx.createHttpServer(new HttpServerOptions()
+                .setCompressionSupported(true))
+                .requestHandler(router::accept).listen(settings.getClientPort());
     }
 
     private HttpServerResponse allowCors(RoutingContext context) {
@@ -153,6 +152,24 @@ public class ClientHandler {
             }
         }
     }
+
+    private void removeCharacter(RoutingContext context) {
+
+        if (verifyRealm(context)) {
+            String name = context.getBodyAsJson().getString("name");
+            Future<Void> future = Future.future();
+
+            future.setHandler(remove -> {
+                if (remove.succeeded())
+                    context.response().end();
+                else
+                    context.response().setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code()).end();
+            });
+
+            accounts.removeCharacter(future, getRealm(context), getAccountName(context), name);
+        }
+    }
+
 
     private boolean verifyRealm(RoutingContext context) {
         boolean verified = realms.verifyToken(getRealm(context), getToken(context));

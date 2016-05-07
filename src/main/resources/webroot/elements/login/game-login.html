@@ -73,6 +73,10 @@
                              text="The selected username is already taken."></paper-toast>
                 <paper-toast class="toast-error" id="toast-validation-failed"
                              text="Passwords must match and be at least 9 characters."></paper-toast>
+                <paper-toast class="toast-success" id="toast-login"
+                             text="Logging in.."></paper-toast>
+                <paper-toast class="toast-success" id="toast-register"
+                             text="Registering account.."></paper-toast>
             </paper-material>
         </div>
 
@@ -85,7 +89,7 @@
             },
 
             authenticate: function (e) {
-                var self = this;
+                this.$['toast-login'].open();
 
                 $.ajax({
                     type: "POST",
@@ -101,21 +105,21 @@
                         application.authenticated(data);
                     }).bind(this),
                     statusCode: {
-                        404: function () {
-                            self.$['toast-missing'].open();
-                            self.showRegisterForm();
-                            self.$['password-repeat'].focus();
-                        },
-                        401: function () {
-                            self.$['toast-password'].open();
-                            self.password = "";
-                            self.$['password'].focus();
-                        }
+                        404: (function () {
+                            this.$['toast-missing'].open();
+                            this.showRegisterForm();
+                            this.$['password-repeat'].focus();
+                        }).bind(this),
+                        401: (function () {
+                            this.$['toast-password'].open();
+                            this.password = "";
+                            this.$['password'].focus();
+                        }).bind(this)
                     },
                     error: function (code) {
                         if (code.status != 401 && code.status != 404)
                             application.error({
-                                text: "Connection Failure [Authentication]",
+                                text: "Failed to establish a connection to the authentication server.",
                                 callback: application.showLogin
                             })
                     }
@@ -123,10 +127,10 @@
             },
 
             register: function (e) {
-                var self = this;
+                this.$['toast-register'].open();
 
                 if (this.password != this["password-repeat"] || this.password.length < 8)
-                    self.$['toast-validation-failed'].open();
+                    this.$['toast-validation-failed'].open();
                 else
                     $.ajax({
                         type: "POST",
@@ -143,15 +147,15 @@
                             application.authenticated(data);
                         }).bind(this),
                         statusCode: {
-                            409: function () {
-                                self.$['toast-conflict'].open();
-                                self.$['username'].focus();
-                            }
+                            409: (function () {
+                                this.$['toast-conflict'].open();
+                                this.$['username'].focus();
+                            }).bind(this)
                         },
                         error: function (code) {
                             if (code.status != 409)
                                 application.error({
-                                    text: "Connection Failure [Authentication]",
+                                    text: "Failed to establish a connection to the authentication server.",
                                     callback: application.showLogin
                                 })
                         }

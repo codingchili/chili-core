@@ -2,6 +2,7 @@ package Game;
 
 import Configuration.GameServerSettings;
 import Configuration.RealmSettings;
+import Game.Controller.Realm;
 import Utilities.*;
 import Configuration.Config;
 import io.vertx.core.Context;
@@ -35,7 +36,7 @@ public class Server implements Verticle {
     public void start(Future<Void> start) throws Exception {
 
         for (RealmSettings realm : settings.getRealms()) {
-            vertx.deployVerticle(new Game.Realm(settings, realm));
+            vertx.deployVerticle(new Realm(settings, realm));
         }
 
         logger.onServerStarted();
