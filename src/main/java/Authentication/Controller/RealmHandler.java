@@ -57,7 +57,7 @@ public class RealmHandler {
             realm.getAuthentication().setToken(token);
 
             if (authorize(realm)) {
-                if (realms.containsKey(connection.textHandlerID()))
+                if (realms.containsKey(realm.getName()))
                     logger.onRealmUpdated(realm);
                 else
                     logger.onRealmRegistered(realm);
@@ -75,7 +75,7 @@ public class RealmHandler {
     private boolean authorize(RealmSettings realm) {
         Token token = realm.getAuthentication().getToken();
 
-        return tokenFactory.verifyToken(token)&& (token.getDomain().equals(realm.getName()));
+        return tokenFactory.verifyToken(token) && (token.getDomain().equals(realm.getName()));
     }
 
     private void handleCharacterRequest() {

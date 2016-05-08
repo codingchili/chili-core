@@ -102,7 +102,6 @@ public class Realm implements Verticle {
                 .requestHandler(router::accept).websocketHandler(socket -> {
 
             Connection connection = new Connection(vertx, socket);
-            connections.put(socket.textHandlerID(), connection);
 
             socket.handler(event -> {
                 Packet packet = (Packet) Serializer.unpack(event.toString(), Packet.class);
@@ -129,6 +128,7 @@ public class Realm implements Verticle {
         if (tokenFactory.verifyToken(login.getToken())) {
             connection.setAuthenticated(true);
             connection.sendAuthenticationSuccess();
+            connections.put(connection.getAddress(), connection);
 
             sendAuthServer(login);
         } else {

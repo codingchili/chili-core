@@ -110,7 +110,8 @@ public class DefaultLogger implements Logger {
     @Override
     public void onRealmUpdated(RealmSettings realm) {
         log(event("realm.update")
-                .put("realm", realm.getName()));
+                .put("realm", realm.getName())
+                .put("players", realm.getPlayers()));
     }
 
     @Override
@@ -123,8 +124,7 @@ public class DefaultLogger implements Logger {
     public void onPageLoaded(HttpServerRequest request) {
         log(event("page-load")
                 .put("agent", request.getHeader("user-agent"))
-                .put("origin", request.getHeader("origin"))
-                .put("uri", request.uri()));
+                .put("origin", request.getHeader("origin")));
     }
 
     private JsonObject event(String name) {

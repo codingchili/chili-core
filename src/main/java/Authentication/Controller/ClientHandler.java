@@ -41,6 +41,7 @@ public class ClientHandler {
         this.settings = Config.instance().getAuthSettings();
         this.clientToken = new TokenFactory(settings.getClientSecret());
         this.realms = realms;
+
         this.accounts = accounts;
 
         startServer();
