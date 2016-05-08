@@ -42,6 +42,7 @@ var api = {
 };
 
 var application = {
+    version: "Etherbloom build 0.1.1",
     views: ["realm-list", "page", "game-view", "game-login", "character-list", "error-dialog"],
     authentication: null,
     handlers: {},
