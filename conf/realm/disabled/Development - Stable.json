@@ -1,0 +1,22 @@
+{
+  "authentication" : {
+    "remote" : "localhost",
+    "port" : 5105,
+    "token" : {
+      "key" : "2DE6DDBBD93A4EBCF1EE627AEFDA377D9E7A3E414DE539DDA7A0801FC54B01EF75DF277D26CD8939972466C93831DB822FF4AA5F7F4D05C65A47E9ECEE626404",
+      "expiry" : 1465132161,
+      "domain" : "Development - Stable"
+    }
+  },
+  "name" : "Development - Stable",
+  "description" : "Test realm currently on daily reset, it will contain features from the mainline that are somewhat stable.",
+  "remote" : "localhost",
+  "resources": "http://localhost:8080/resources/",
+  "version" : 1.0,
+  "size" : 500,
+  "type" : "Beta",
+  "lifetime" : "daily",
+  "drop" : 1.0,
+  "leveling" : 1.0,
+  "port" : 9603
+}

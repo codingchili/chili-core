@@ -1,0 +1,22 @@
+{
+  "authentication" : {
+    "remote" : "localhost",
+    "port" : 5105,
+    "token" : {
+      "key" : "D9212E3C30D6956B05F37DF723664CA79AA90265486733444C2146EEAA7BA3AC0FD02CD70E1DFD20AA2B3F8B5FD130CDF05A4657D7A9D231064968472DC4D175",
+      "expiry" : 1465132161,
+      "domain" : "Baobab"
+    }
+  },
+  "name" : "Baobab",
+  "description" : "Stable realm, PvP Aggressive.",
+  "remote" : "localhost",
+  "resources": "http://localhost:8080/resources/",
+  "version" : 1.0,
+  "size" : 500,
+  "type" : "PvP",
+  "lifetime" : "weekly",
+  "drop" : 1.0,
+  "leveling" : 3.0,
+  "port" : 9601
+}

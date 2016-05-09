@@ -1,0 +1,22 @@
+{
+  "authentication" : {
+    "remote" : "localhost",
+    "port" : 5105,
+    "token" : {
+      "key" : "CBB3C53B4DD12F3367C9AF89F1B85B9889381B0B4DEB9223DDF2F0D14D88CB6D9E974DDCB696485402DC2017887F94CFAB7A6AE1F768A7C8E7D2F0D8658D3304",
+      "expiry" : 1465132161,
+      "domain" : "Eucalyptus"
+    }
+  },
+  "name" : "Eucalyptus",
+  "description" : "Stable realm, PvP Aggressive.",
+  "remote" : "localhost",
+  "resources": "http://localhost:8080/resources/",
+  "version" : 1.0,
+  "size" : 500,
+  "type" : "PvP",
+  "lifetime" : "weekly",
+  "drop" : 1.0,
+  "leveling" : 1.0,
+  "port" : 9601
+}

@@ -1,0 +1,22 @@
+{
+  "authentication" : {
+    "remote" : "localhost",
+    "port" : 5105,
+    "token" : {
+      "key" : "6ACB1399710C3B695F3D3D147436985F59302C476F6E87161ACC4293F1A899ADA81EE5B2238F6A36B5A18859166948C0E19F588659A314D075095BD5F871E165",
+      "expiry" : 1465132161,
+      "domain" : "Development - Nightly"
+    }
+  },
+  "name" : "Development - Nightly",
+  "description" : "Development realm in unstable mode. This realm is not recommended for non-developers. ",
+  "remote" : "localhost",
+  "resources": "http://localhost:8080/resources/",
+  "version" : 1.0,
+  "size" : 500,
+  "type" : "Beta",
+  "lifetime" : "build",
+  "drop" : 1.0,
+  "leveling" : 1.0,
+  "port" : 9602
+}
