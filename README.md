@@ -36,11 +36,16 @@ java -jar <filename>.jar run Website.Server
 
 To run the application in production mode you must generate secrets for authentication.
 ```
-java -cp <filename>.jar run Utilites.GenerateTokens
+java -cp <filename>.jar run Utilites.GenerateTokens regenerate
 ```
 The authentication tokens are stored in **/conf/system/{component}.json**
 
 When components are started they read the configuration files in conf/system/{authserver,gameserver,logserer,webserver} if the port numbers or addresses are to be changed, check these example configuration files.
+
+The webserver requires dependencies in **src/main/resources/webroot** run the following in this directory,
+```
+bower install
+```
 
 ## Background
 The purpose of the project is to provide a stable core for game development. There are many aspects of creating games, backend architecture, user interfaces, game resources (graphics, sounds) and then the design which includes the story/quests etc. The core is designed to be easily integrated with and modified in each of these aspects. In order to provide this, the core includes somewhat complete subsystems for each of these points. Additionally the core will be delivered as a "complete" game, to further increase the availability/modability and broaden the audience. As such it is the aim of the project to be complete enough both in documentation and code so that it may be used as a learning platform. 
