@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties({"path", "name"})
 public class AuthServerSettings implements Configurable {
-    protected static final String AUTHSERVER_PATH = "./conf/system/authserver.json";
+    protected static final String AUTHSERVER_PATH = "conf/system/authserver.json";
     private RemoteAuthentication logserver;
     private byte[] clientSecret;
     private byte[] realmSecret;

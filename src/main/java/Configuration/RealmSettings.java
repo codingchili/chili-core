@@ -20,10 +20,10 @@ import java.util.List;
  */
 @JsonIgnoreProperties({"instance"})
 public class RealmSettings {
-    private static final String INSTANCE_PATH = "./conf/game/world";
-    private static final String CLASSES_PATH = "./conf/game/class";
-    private static final String AFFLICTION_PATH = "./conf/game/player/affliction.json";
-    private static final String PLAYER_TEMPLATE_PATH = "./conf/game/player/character.json";
+    private static final String INSTANCE_PATH = "conf/game/world";
+    private static final String CLASSES_PATH = "conf/game/class";
+    private static final String AFFLICTION_PATH = "conf/game/player/affliction.json";
+    private static final String PLAYER_TEMPLATE_PATH = "conf/game/player/character.json";
     private ArrayList<InstanceSettings> instances = new ArrayList<>();
     private ArrayList<PlayerClass> classes = new ArrayList<>();
     private ArrayList<Affliction> afflictions = new ArrayList<>();

@@ -41,14 +41,14 @@ public class JsonFileStoreTest {
 
     @Test
     public void testReadPaladin() throws IOException {
-        JsonObject paladin = JsonFileStore.readObject("/conf/game/class/paladin.json");
+        JsonObject paladin = JsonFileStore.readObject("conf/game/class/paladin.json");
         PlayerClass playerclass = (PlayerClass) Serializer.unpack(paladin, PlayerClass.class);
         System.out.println(Serializer.json(playerclass).encodePrettily());
     }
 
     @Test
     public void testReadAfflictions() throws IOException {
-        JsonArray afflictions = JsonFileStore.readList("/conf/game/player/affliction.json");
+        JsonArray afflictions = JsonFileStore.readList("conf/game/player/affliction.json");
 
         for (int i = 0; i < afflictions.size(); i++) {
             Affliction affliction = (Affliction) Serializer.unpack(afflictions.getJsonObject(i), Affliction.class);

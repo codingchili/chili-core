@@ -10,7 +10,7 @@ import java.util.ArrayList;
  */
 @JsonIgnoreProperties({"path", "name"})
 public class WebServerSettings implements Configurable {
-    protected static final String WEBSERVER_PATH = "./conf/system/webserver.json";
+    protected static final String WEBSERVER_PATH = "conf/system/webserver.json";
     private RemoteAuthentication logserver;
     private RemoteAuthentication authserver;
     private PatchNotes patch;
