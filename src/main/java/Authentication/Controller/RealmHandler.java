@@ -119,7 +119,7 @@ public class RealmHandler {
     }
 
 
-    public ArrayList<RealmMetaData> getMetadataList() {
+    ArrayList<RealmMetaData> getMetadataList() {
         ArrayList<RealmMetaData> list = new ArrayList<>();
 
         for (RealmSettings realm : realms.values()) {
@@ -129,7 +129,7 @@ public class RealmHandler {
         return list;
     }
 
-    public Token signToken(String realm, String domain) {
+    Token signToken(String realm, String domain) {
         return new Token(getTokenFactory(realm), domain);
     }
 
@@ -137,15 +137,15 @@ public class RealmHandler {
         return new TokenFactory(realms.get(realm).getAuthentication().getToken().getKey().getBytes());
     }
 
-    public boolean verifyToken(String realm, Token token) {
+    boolean verifyToken(String realm, Token token) {
         return getTokenFactory(realm).verifyToken(token);
     }
 
-    public RealmSettings getRealm(String realm) {
+    RealmSettings getRealm(String realm) {
         return realms.get(realm);
     }
 
-    public PlayerCharacter createCharacter(String realmName, String name, String className) throws PlayerClassDisabledException {
+    PlayerCharacter createCharacter(String realmName, String name, String className) throws PlayerClassDisabledException {
         RealmSettings realm = realms.get(realmName);
         boolean enabled = false;
 

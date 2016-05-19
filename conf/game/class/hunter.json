@@ -9,7 +9,7 @@
   ],
   "spells": [
     {
-      "name": "Archery",
+      "name": "archery",
       "description": "Gains Wounding aim and Hawkeye.",
       "passive": true,
       "affliction": [
@@ -24,7 +24,7 @@
       ]
     },
     {
-      "name": "Hunting",
+      "name": "hunting",
       "description": "Consecutive hits heals and grants haste.",
       "passive": true,
       "affliction": [
@@ -35,7 +35,7 @@
       ]
     },
     {
-      "name": "Quick Draw",
+      "name": "quick draw",
       "description": "Fire arrows in a cone.",
       "target": "cone",
       "modifier": [
@@ -52,7 +52,7 @@
       "cooldown": 8
     },
     {
-      "name": "Precise aim",
+      "name": "precise aim",
       "description": "Slows and curses the target.",
       "target": "missile",
       "modifier": [
@@ -79,7 +79,7 @@
       "cooldown": 12
     },
     {
-      "name": "Trap",
+      "name": "trap",
       "description": "Trap creatures in area, stunning and slowing them.",
       "target": "trap",
       "trigger": [
@@ -101,7 +101,7 @@
       "cooldown": 8
     },
     {
-      "name": "Wilderness",
+      "name": "wilderness",
       "description": "Move to a stunned target deals triple damage and heals for double.",
       "target": "selected",
       "special": "teleport",
@@ -131,7 +131,7 @@
       "cooldown": 12
     },
     {
-      "name": "Deadly aim",
+      "name": "deadly aim",
       "description": "Deals double damage and bonus damage based on targets current health.",
       "modifier": [
         {
@@ -156,7 +156,7 @@
       "cooldown": 6
     },
     {
-      "name": "Untrapped",
+      "name": "untrapped",
       "description": "Removes any slow and stun effects and heals for 10%.",
       "modifier": [
         {
