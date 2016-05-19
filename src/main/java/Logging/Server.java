@@ -46,18 +46,19 @@ public class Server implements Verticle {
                     JsonObject logdata = data.toJsonObject();
                     logdata.remove("token");
 
-                    vertx.createHttpClient().post(
-                            settings.getElastic().getPort(),
-                            settings.getElastic().getRemote(),
-                            settings.getElastic().getIndex() + "/all/", response -> {
+                    if (settings.getElastic().getEnabled())
+                        vertx.createHttpClient().post(
+                                settings.getElastic().getPort(),
+                                settings.getElastic().getRemote(),
+                                settings.getElastic().getIndex() + "/all/", response -> {
 
-                                response.handler(event -> {
-                                });
+                                    response.handler(event -> {
+                                    });
 
-                            }).end(logdata.encode());
+                                }).end(logdata.encode());
 
                     if (settings.getConsole())
-                        System.out.println(data.toString());
+                        System.out.println(logdata);
                 }
 
             });

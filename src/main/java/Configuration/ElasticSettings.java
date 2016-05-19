@@ -10,6 +10,15 @@ public class ElasticSettings {
     private String index;
     private Integer port;
     private JsonNode template;
+    private Boolean enabled;
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
 
     public String getRemote() {
         return remote;

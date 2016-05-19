@@ -14,6 +14,7 @@
     "remote" : "localhost",
     "index" : "the_def_index",
     "port" : 9200,
+    "enabled": false,
     "template" : {
       "mappings" : {
         "the_def_index" : {
@@ -28,5 +29,5 @@
   },
   "secret" : "2z0YD4pQWPGklkz0yHFg3SoWKnGS3oxwpCt861L8EMzpnXHaBklg46imP96ZRjsV7ZBzqHNSCosZKk513cYtBQ==",
   "port" : 6109,
-  "console" : false
+  "console" : true
 }
