@@ -12,6 +12,11 @@ To install chili-core clone this repository with **git**,
 git clone https://github.com/codingchili/chili-core.git
 ```
 
+The webserver requires dependencies in **src/main/resources/webroot** run the following in that directory,
+```
+bower install
+```
+
 Create a standalone JAR in the project root (also runs the tests)
 ```
 mvn package
@@ -36,7 +41,7 @@ java -jar <filename>.jar run Website.Server
 
 To run the application in production mode you must generate secrets for authentication.
 ```
-java -cp <filename>.jar run Utilites.GenerateTokens
+java -cp <filename>.jar run Utilites.GenerateTokens regenerate
 ```
 The authentication tokens are stored in **/conf/system/{component}.json**
 
