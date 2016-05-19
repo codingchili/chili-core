@@ -32,6 +32,7 @@
     "iron-collapse": "PolymerElements/iron-collapse#^1.0.8",
     "paper-ripple": "PolymerElements/paper-ripple#^1.0.5",
     "paper-spinner": "PolymerElements/paper-spinner#^1.1.1",
-    "paper-tooltip": "PolymerElements/paper-tooltip#^1.1.2"
+    "paper-tooltip": "PolymerElements/paper-tooltip#^1.1.2",
+    "iron-ajax": "PolymerElements/iron-ajax#^1.2.0"
   }
 }
