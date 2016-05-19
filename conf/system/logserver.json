@@ -12,11 +12,11 @@
   },
   "elastic": {
     "remote": "localhost",
-    "index": "the_index-0110",
+    "index": "the_def_index",
     "port": 9200,
     "template": {
       "mappings": {
-        "the_index-0110": {
+        "the_def_index": {
           "properties": {
             "time": {
               "type": "date"

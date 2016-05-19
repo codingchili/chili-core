@@ -80,6 +80,7 @@ public class Config {
         TokenFactory factory = new TokenFactory(authentication.getRealmSecret());
 
         for (RealmSettings realm : gameserver.getRealms()) {
+            System.out.println(realm.getName());
             RemoteAuthentication remote = realm.getAuthentication();
             remote.setToken(new Token(factory, realm.getName()));
             realm.setAuthentication(remote);

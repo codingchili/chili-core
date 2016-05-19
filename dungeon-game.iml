@@ -7,10 +7,27 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/.git" />
       <excludeFolder url="file://$MODULE_DIR$/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/.vertx" />
+      <excludeFolder url="file://$MODULE_DIR$/Authentication" />
+      <excludeFolder url="file://$MODULE_DIR$/Configuration" />
+      <excludeFolder url="file://$MODULE_DIR$/Game" />
+      <excludeFolder url="file://$MODULE_DIR$/Logging" />
+      <excludeFolder url="file://$MODULE_DIR$/META-INF" />
+      <excludeFolder url="file://$MODULE_DIR$/Protocol" />
+      <excludeFolder url="file://$MODULE_DIR$/Utilities" />
+      <excludeFolder url="file://$MODULE_DIR$/Website" />
+      <excludeFolder url="file://$MODULE_DIR$/conf" />
+      <excludeFolder url="file://$MODULE_DIR$/file-uploads" />
       <excludeFolder url="file://$MODULE_DIR$/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/maven-archiver" />
+      <excludeFolder url="file://$MODULE_DIR$/maven-status" />
+      <excludeFolder url="file://$MODULE_DIR$/out" />
+      <excludeFolder url="file://$MODULE_DIR$/surefire-reports" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
+      <excludeFolder url="file://$MODULE_DIR$/test-classes" />
+      <excludeFolder url="file://$MODULE_DIR$/webroot" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -22,7 +22,7 @@ public class JsonFileStoreTest {
 
     @Test
     public void testReadList() throws IOException {
-        JsonArray json = JsonFileStore.readList("conf/game/affliction.json");
+        JsonArray json = JsonFileStore.readList("conf/game/player/affliction.json");
     }
 
     @Test
@@ -48,7 +48,7 @@ public class JsonFileStoreTest {
 
     @Test
     public void testReadAfflictions() throws IOException {
-        JsonArray afflictions = JsonFileStore.readList("/conf/game/affliction.json");
+        JsonArray afflictions = JsonFileStore.readList("/conf/game/player/affliction.json");
 
         for (int i = 0; i < afflictions.size(); i++) {
             Affliction affliction = (Affliction) Serializer.unpack(afflictions.getJsonObject(i), Affliction.class);

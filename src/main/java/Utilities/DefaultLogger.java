@@ -122,7 +122,7 @@ public class DefaultLogger implements Logger {
 
     @Override
     public void onPageLoaded(HttpServerRequest request) {
-        log(event("page-load")
+        log(event("page.load")
                 .put("agent", request.getHeader("user-agent"))
                 .put("origin", request.getHeader("origin")));
     }

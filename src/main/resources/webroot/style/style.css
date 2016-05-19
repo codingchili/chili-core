@@ -51,3 +51,18 @@ paper-tooltip {
 .tooltip-text {
     font-size: 14px;
 }
+
+.center-box {
+    position: absolute;;
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+
+    -webkit-box-shadow: -1px 3px 39px -3px rgba(0, 0, 0, 0.54);
+    -moz-box-shadow: -1px 3px 39px -3px rgba(0, 0, 0, 0.54);
+    box-shadow: -1px 3px 39px -3px rgba(0, 0, 0, 0.54);
+}
