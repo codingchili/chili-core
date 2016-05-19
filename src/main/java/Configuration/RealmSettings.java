@@ -14,7 +14,6 @@ import io.vertx.core.json.JsonObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Robin on 2016-05-05.
@@ -221,5 +220,13 @@ public class RealmSettings {
 
     public ArrayList<InstanceSettings> getInstance() {
         return instances;
+    }
+
+    public String getRemote() {
+        return binding.getRemote();
+    }
+
+    public int getPort() {
+        return binding.getPort();
     }
 }
