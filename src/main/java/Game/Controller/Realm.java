@@ -17,6 +17,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.http.WebSocket;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -35,6 +36,7 @@ public class Realm implements Verticle {
     private HashMap<String, Connection> connections = new HashMap<>();
     private HashMap<String, ClientPacketHandler> clientHandlers = new HashMap<>();
     private HashMap<String, AuthPacketHandler> authHandlers = new HashMap<>();
+    private WebSocket authserver;
     private RealmSettings settings;
     private GameServerSettings game;
     private TokenFactory tokenFactory;
@@ -137,7 +139,7 @@ public class Realm implements Verticle {
     }
 
     private void sendAuthServer(Object object) {
-        vertx.eventBus().send(AUTH_ADDRESS, Serializer.pack(object));
+        authserver.write(Buffer.buffer(Serializer.pack(object)));
     }
 
 
@@ -150,10 +152,7 @@ public class Realm implements Verticle {
         logger.onRealmStarted(settings);
 
         vertx.createHttpClient().websocket(authentication.getPort(), authentication.getRemote(), "", socket -> {
-
-            vertx.eventBus().consumer(AUTH_ADDRESS).handler(message -> {
-                socket.write(Buffer.buffer(message.body().toString()));
-            });
+            authserver = socket;
 
             socket.handler(message -> {
                 Packet packet = (Packet) Serializer.unpack(message.toString(), Packet.class);
@@ -172,7 +171,7 @@ public class Realm implements Verticle {
     }
 
     private void registerRealm() {
-        sendAuthServer(new RegisterRealm(settings.setPlayers(connections.size())));
+        sendAuthServer(new RegisterRealm(settings));
 
         vertx.setPeriodic(REALM_UPDATE, event -> {
             sendAuthServer(new RegisterRealm(settings.setPlayers(connections.size())));

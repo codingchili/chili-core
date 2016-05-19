@@ -5,6 +5,7 @@ import io.vertx.core.json.JsonObject;
 
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 
 /**
  * Created by Robin on 2016-04-07.
@@ -60,7 +61,7 @@ public class Config {
         return authentication;
     }
 
-    public void generateAuthSecret() {
+    void generateAuthSecret() {
         authentication.setRealmSecret(getRandomString());
         authentication.setClientSecret(getRandomString());
     }
@@ -72,27 +73,28 @@ public class Config {
         return secret;
     }
 
-    public void generateLoggingSecret() {
+    void generateLoggingSecret() {
         logging.setSecret(getRandomString());
     }
 
-    public void generateRealmTokens() {
+    void generateRealmTokens() throws IOException {
         TokenFactory factory = new TokenFactory(authentication.getRealmSecret());
+        ArrayList<JsonObject> realms = JsonFileStore.readDirectoryObjects("conf/realm/");
 
-        for (RealmSettings realm : gameserver.getRealms()) {
-            System.out.println(realm.getName());
-            RemoteAuthentication remote = realm.getAuthentication();
-            remote.setToken(new Token(factory, realm.getName()));
-            realm.setAuthentication(remote);
-            JsonFileStore.writeObject(Serializer.json(realm), getRealmPath(realm));
+        for (JsonObject realm : realms) {
+            JsonObject remote = realm.getJsonObject("authentication");
+            String name = realm.getString("name");
+            remote.put("token", Serializer.json(new Token(factory, name)));
+            realm.put("authentication", remote);
+            JsonFileStore.writeObject(realm, getRealmPath(name));
         }
     }
 
-    private String getRealmPath(RealmSettings realm) {
-        return GameServerSettings.REALM_PATH + realm.getName() + ".json";
+    private String getRealmPath(String name) {
+        return GameServerSettings.REALM_PATH + name + ".json";
     }
 
-    public void generateLoggingTokens() {
+    void generateLoggingTokens() {
         Configurable[] classes = {authentication, logging, webserver, gameserver};
         TokenFactory factory = new TokenFactory(logging.getSecret());
 
@@ -106,7 +108,7 @@ public class Config {
         }
     }
 
-    public String getConfigPath(String name) {
+    private String getConfigPath(String name) {
         return "conf/system/" + name + ".json";
     }
 }

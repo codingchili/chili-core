@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties({"path", "name"})
 public class AuthServerSettings implements Configurable {
-    protected static final String AUTHSERVER_PATH = "conf/system/authserver.json";
+    static final String AUTHSERVER_PATH = "conf/system/authserver.json";
     private RemoteAuthentication logserver;
     private byte[] clientSecret;
     private byte[] realmSecret;
@@ -83,7 +83,7 @@ public class AuthServerSettings implements Configurable {
         return realmSecret;
     }
 
-    protected void setRealmSecret(byte[] realmSecret) {
+    void setRealmSecret(byte[] realmSecret) {
         this.realmSecret = realmSecret;
     }
 
@@ -91,7 +91,7 @@ public class AuthServerSettings implements Configurable {
         return clientSecret;
     }
 
-    protected void setClientSecret(byte[] clientSecret) {
+    void setClientSecret(byte[] clientSecret) {
         this.clientSecret = clientSecret;
     }
 }

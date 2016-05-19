@@ -43,6 +43,7 @@ public class RealmSettings {
     private int port;
     private int players = 0;
     private Boolean trusted;
+    private Boolean secure;
 
     public RealmSettings() throws IOException {
         readInstances();
@@ -78,6 +79,14 @@ public class RealmSettings {
 
     private void readTemplate() throws IOException {
         this.template = (PlayerCharacter) Serializer.unpack(JsonFileStore.readObject(PLAYER_TEMPLATE_PATH), PlayerCharacter.class);
+    }
+
+    public Boolean getSecure() {
+        return secure;
+    }
+
+    public void setSecure(Boolean secure) {
+        this.secure = secure;
     }
 
     public PlayerCharacter getTemplate() {

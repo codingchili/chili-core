@@ -197,6 +197,11 @@
                                                 </iron-icon>
                                             </template>
 
+                                            <template is="dom-if" if="{{realm.secure}}">
+                                                <iron-icon icon="icons:lock-outline" class="realm-favorite">
+                                                </iron-icon>
+                                            </template>
+
                                             {{realm.name}}
                                         </div>
                                         <div class="type">{{realm.type}}</div>

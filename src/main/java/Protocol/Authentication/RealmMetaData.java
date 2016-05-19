@@ -23,6 +23,7 @@ public class RealmMetaData {
     private int port;
     private int players = 0;
     private Boolean trusted;
+    private Boolean secure;
 
     public RealmMetaData(RealmSettings settings) {
         this.name = settings.getName();
@@ -38,9 +39,18 @@ public class RealmMetaData {
         this.port = settings.getPort();
         this.players = settings.getPlayers();
         this.trusted = settings.getTrusted();
+        this.secure = settings.getSecure();
 
         for (PlayerClass pc : settings.getClasses())
             classes.add(pc.getName());
+    }
+
+    public Boolean getSecure() {
+        return secure;
+    }
+
+    public void setSecure(Boolean secure) {
+        this.secure = secure;
     }
 
     public ArrayList<String> getClasses() {

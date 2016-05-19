@@ -173,7 +173,7 @@
                 }).bind(this));
 
                 application.subscribe("character-create", (function () {
-                    this.showCharacters()
+                    this.showCharacters();
                     this.loadCharacters();
                 }).bind(this));
 
@@ -181,6 +181,8 @@
 
             realmtoken: function (realm) {
                 this.showLoading("Authenticating..");
+
+                console.log('create token for realm ' + this.realm.name);
 
                 $.ajax({
                     type: "POST",
@@ -195,6 +197,7 @@
                     ),
                     statusCode: {
                         200: (function (data) {
+                            console.log(data);
                             this.token = data;
                             this.loadCharacters();
                         }).bind(this),
@@ -306,6 +309,7 @@
                 var ws = new WebSocket(api.realmWebSocket(this.realm));
 
                 ws.onopen = (function (event) {
+
                     ws.send(JSON.stringify({
                         token: this.token,
                         name: e.model.character.name,
@@ -315,7 +319,6 @@
 
                 ws.onmessage = (function (event) {
                     var packet = JSON.parse(event.data);
-                    console.log(event);
 
                     if (!packet.success) {
                         ws.close();
@@ -345,7 +348,6 @@
                 }).bind(this);
 
                 ws.onclose = (function (event) {
-                    console.log(event);
 
                     if (!event.wasClean)
                         application.error({

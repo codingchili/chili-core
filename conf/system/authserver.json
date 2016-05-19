@@ -5,18 +5,18 @@
     "remote" : "localhost",
     "port" : 6109,
     "token" : {
-      "key" : "63E44A628F9305A51782E0BA3D2F79629A3CEDF6576A9F053D291C4D74A7041F05ABC252A22FBE6B563ACE5BE2911D2B2BCF8F7FD176FBA15F3C0CF7204ACE53",
-      "expiry" : 1465132161,
+      "key" : "E18E6E9D7B1460DBDDAC92F683F9C1AF374077E96DC1368EBA8AA15B00DE2BC3780730F533F2F0E864AF46F2986004FF08EDD1443B260C5E246B0951A8F45348",
+      "expiry" : 1466360998,
       "domain" : "authserver"
     }
   },
-  "clientSecret" : "9/b1Z+IV88xSBPdZUSrX48q6foMNwU2d6Q7Bl78BGIidFcRrEq8J9ccbqH8tqkFiGaOIgzXInhpgibh6HPWQ3g==",
-  "realmSecret" : "FgPSuaZNJd32MP1YShbMLspyIinsYtwuBS+0vw/lpxYJp9KQLIk6kfIFHUc/19f8qkzp2YfX0a6xFtRoAr7XHw==",
+  "clientSecret" : "DjytHBKKGTlOd57df/xvCbQDZxKHLj0TiMxRzUHszhL/Pw77lwILHNgHH7OnEFBo6+BLNQjW4VPB0IBN8eWXUA==",
+  "realmSecret" : "7c8zPO3pew1CjQTsN0SsCcZeOqsFXXlABwAXkYKht/b01jHlMmtKyumNCjdWMe9WhjcfB0/Z0B/9EVeGnMwf1w==",
   "realmPort" : 5105,
   "clientPort" : 5505,
   "database" : {
     "remote" : "mongodb://localhost:27017/",
     "name" : "dungeon"
   },
-  "realms" : [ "Angel Oak", "Cherry Pine", "Coastal Redwood", "Dragonblood", "Eucalyptus", "Red Maple", "Wisteria", "Development - Nightly", "Development - Stable" ]
+  "realms" : [ "Angel Oak", "Developer Realm", "Iron Oak", "Staging Realm", "Wisteria", "Red Maple" ]
 }

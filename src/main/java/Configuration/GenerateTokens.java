@@ -17,7 +17,7 @@ public class GenerateTokens {
         }
     }
 
-    public GenerateTokens regenerate() {
+    private GenerateTokens regenerate() {
         System.out.print("Generating secrets..");
         configuration.generateAuthSecret();
         configuration.generateLoggingSecret();
@@ -25,7 +25,7 @@ public class GenerateTokens {
         return this;
     }
 
-    public GenerateTokens sign() {
+    private GenerateTokens sign() throws IOException {
         System.out.print("Generating tokens..");
         configuration.generateRealmTokens();
         configuration.generateLoggingTokens();
