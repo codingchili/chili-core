@@ -46,7 +46,7 @@ public class Server implements Verticle {
                     JsonObject logdata = data.toJsonObject();
                     logdata.remove("token");
 
-                    if (settings.getElastic().getEnabled())
+                    if (settings.getElastic().getEnabled()) {
                         vertx.createHttpClient().post(
                                 settings.getElastic().getPort(),
                                 settings.getElastic().getRemote(),
@@ -56,6 +56,7 @@ public class Server implements Verticle {
                                     });
 
                                 }).end(logdata.encode());
+                    }
 
                     if (settings.getConsole())
                         System.out.println(logdata);
