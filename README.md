@@ -1,15 +1,15 @@
-# dungeon-core
+# chili-core
 
-**DungeonCore** is a **lightweight architecture** for creating online games with focus on **modularity**, **security** and **scalability**. The backend uses **Vert.x** and the current frontend is based on **HTML5**, **websockets** and **Polymer**. 
+**ChiliCore** is a **lightweight architecture** for creating online games with focus on **modularity**, **security** and **scalability**. The backend uses **Vert.x** and the current frontend is based on **HTML5**, **websockets** and **Polymer**. 
 
-For full documentation and tutorials visit [the website](https://codingchili.com/dungeoncore/).
+For full documentation and tutorials visit [the website](https://codingchili.com/chilicore/).
 
 
 
 ## Installation
-To install dungeon-core clone this repository with **git**,
+To install chili-core clone this repository with **git**,
 ```
-git clone https://github.com/codingchili/dungeon-core.git
+git clone https://github.com/codingchili/chili-core.git
 ```
 
 Create a standalone JAR in the project root (also runs the tests)
@@ -165,8 +165,8 @@ Brief introduction on how the core may be modified to fit your needs.
 Game and resource mods may be applied to systems which runs the authentication server with 3rd party server support. Or to a new system with the bundled game.
 
 Example mod cases
-* Mod an existing game you like which uses the dungeon-core and publish it as a 3rd party server on their server.
-* Mod the dungeon core bundled game and start your own authentication server, or publish on the official server.
+* Mod an existing game you like which uses the chili-core and publish it as a 3rd party server on their server.
+* Mod the chili core bundled game and start your own authentication server, or publish on the official server.
 * Play the offical bundled game on the official server, request a PR or add an issue to this repository.
 
 ## Contributing
