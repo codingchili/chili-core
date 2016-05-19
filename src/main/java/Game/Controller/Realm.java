@@ -119,7 +119,7 @@ public class Realm implements Verticle {
                 connections.remove(socket.textHandlerID());
             });
 
-        }).listen(settings.getPort());
+        }).listen(settings.getBinding().getPort());
     }
 
 

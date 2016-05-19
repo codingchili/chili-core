@@ -1,6 +1,7 @@
 package Configuration;
 
 import Game.Model.Affliction;
+import Game.Model.Binding;
 import Game.Model.PlayerCharacter;
 import Game.Model.PlayerClass;
 import Utilities.JsonFileStore;
@@ -30,9 +31,9 @@ public class RealmSettings {
     private PlayerCharacter template;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private RemoteAuthentication authentication = new RemoteAuthentication();
+    private Binding binding;
     private String name;
     private String description;
-    private String remote;
     private String resources;
     private double version;
     private int size;
@@ -40,7 +41,6 @@ public class RealmSettings {
     private String lifetime;
     private double drop;
     private double leveling;
-    private int port;
     private int players = 0;
     private Boolean trusted;
     private Boolean secure;
@@ -79,6 +79,14 @@ public class RealmSettings {
 
     private void readTemplate() throws IOException {
         this.template = (PlayerCharacter) Serializer.unpack(JsonFileStore.readObject(PLAYER_TEMPLATE_PATH), PlayerCharacter.class);
+    }
+
+    public Binding getBinding() {
+        return binding;
+    }
+
+    public void setBinding(Binding binding) {
+        this.binding = binding;
     }
 
     public Boolean getSecure() {
@@ -155,14 +163,6 @@ public class RealmSettings {
         this.description = description;
     }
 
-    public String getRemote() {
-        return remote;
-    }
-
-    protected void setRemote(String remote) {
-        this.remote = remote;
-    }
-
     public double getVersion() {
         return version;
     }
@@ -209,14 +209,6 @@ public class RealmSettings {
 
     protected void setLeveling(double leveling) {
         this.leveling = leveling;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    protected void setPort(int port) {
-        this.port = port;
     }
 
     public Boolean getTrusted() {

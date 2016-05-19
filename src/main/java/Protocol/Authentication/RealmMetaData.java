@@ -28,7 +28,8 @@ public class RealmMetaData {
     public RealmMetaData(RealmSettings settings) {
         this.name = settings.getName();
         this.description = settings.getDescription();
-        this.remote = settings.getRemote();
+        this.remote = settings.getBinding().getRemote();
+        this.port = settings.getBinding().getProxy();
         this.resources = settings.getResources();
         this.version = settings.getVersion();
         this.size = settings.getSize();
@@ -36,7 +37,6 @@ public class RealmMetaData {
         this.lifetime = settings.getLifetime();
         this.drop = settings.getDrop();
         this.leveling = settings.getLeveling();
-        this.port = settings.getPort();
         this.players = settings.getPlayers();
         this.trusted = settings.getTrusted();
         this.secure = settings.getSecure();
