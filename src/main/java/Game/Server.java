@@ -11,9 +11,8 @@ import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
 
 /**
- * Created by Robin on 2016-04-07.
- * <p>
- * Root game server, starts realm servers.
+ * @author Robin Duda
+ *         root game server, deploys realm servers.
  */
 public class Server implements Verticle {
     private GameServerSettings settings;
@@ -36,7 +35,7 @@ public class Server implements Verticle {
     public void start(Future<Void> start) throws Exception {
 
         for (RealmSettings realm : settings.getRealms()) {
-            vertx.deployVerticle(new Realm(settings, realm));
+            vertx.deployVerticle(new Realm(settings, realm.load()));
         }
 
         logger.onServerStarted();

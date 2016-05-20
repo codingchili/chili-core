@@ -3,7 +3,8 @@ package Game.Model;
 import java.util.ArrayList;
 
 /**
- * Created by Robin on 2016-04-25.
+ * @author Robin Duda
+ *         Model for player classes.
  */
 public class PlayerClass {
     private String name;

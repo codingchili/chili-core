@@ -1,7 +1,8 @@
 package Protocol;
 
 /**
- * Created by Robin on 2016-04-27.
+ * @author Robin Duda
+ *         packet model contains a header only, used for partial unpacking.
  */
 public class Packet {
     private Header header;

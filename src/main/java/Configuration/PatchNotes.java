@@ -3,7 +3,8 @@ package Configuration;
 import java.util.ArrayList;
 
 /**
- * Created by Robin on 2016-05-05.
+ * @author Robin Duda
+ *         Contains a list of patch notes, version and name for the website.
  */
 public class PatchNotes {
     private String version;

@@ -1,11 +1,11 @@
 package Game.Model;
 
 /**
- * Created by Robin on 2016-04-24.
+ * @author Robin Duda
  *
  * base stats for a character and may be used in items too.
  */
-public class Attributes {
+class Attributes {
     private int power;
     private int attack;
     private int spell;

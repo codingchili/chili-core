@@ -23,14 +23,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Created by Robin on 2016-04-27.
- * <p>
- * handles the connections to realms.
+ * @author Robin Duda
+ *         Router used to authenticate realms and generate realm lists.
  */
 public class RealmHandler {
     private HashMap<String, RealmPacketHandler> handlers = new HashMap<>();
     private HashMap<String, RealmSettings> realms = new HashMap<>();
-    private HashMap<String, String> registrations = new HashMap<>();
+    private HashMap<String, String> connections = new HashMap<>();
     private AsyncAccountStore accounts;
     private AuthServerSettings settings;
     private TokenFactory tokenFactory;
@@ -51,23 +50,17 @@ public class RealmHandler {
 
     private void handleRegister() {
         handlers.put(RegisterRealm.ACTION, (connection, data) -> {
-            JsonObject json = new JsonObject(data);
-            RealmSettings realm = (RealmSettings) Serializer.unpack(json.getJsonObject("realm"), RealmSettings.class);
-            Token token = (Token) Serializer.unpack(json.getJsonObject("token"), Token.class);
-            realm.getAuthentication().setToken(token);
+            RegisterRealm register = (RegisterRealm) Serializer.unpack(new JsonObject(data), RegisterRealm.class);
+            RealmSettings realm = register.getRealm();
 
             if (authorize(realm)) {
-                if (realms.containsKey(realm.getName()))
-                    logger.onRealmUpdated(realm);
-                else
-                    logger.onRealmRegistered(realm);
-
                 realm.setTrusted(settings.isPublicRealm(realm.getName()));
-
-                registrations.put(connection.textHandlerID(), realm.getName());
+                connections.put(connection.textHandlerID(), realm.getName());
                 realms.put(realm.getName(), realm);
+
+                connection.write(Buffer.buffer(Serializer.pack(new RegisterRealm(true))));
             } else {
-                logger.onRealmRejected(realm);
+                connection.write(Buffer.buffer(Serializer.pack(new RegisterRealm(false))));
             }
         });
     }
@@ -81,7 +74,7 @@ public class RealmHandler {
     private void handleCharacterRequest() {
         handlers.put(CharacterRequest.ACTION, (connection, data) -> {
             CharacterRequest request = (CharacterRequest) Serializer.unpack(data, CharacterRequest.class);
-            String realm = registrations.get(connection.textHandlerID());
+            String realm = connections.get(connection.textHandlerID());
             Future<PlayerCharacter> find = Future.future();
 
             find.setHandler(result -> {
@@ -109,8 +102,8 @@ public class RealmHandler {
             });
 
             connection.endHandler(event -> {
-                RealmSettings realm = realms.get(registrations.get(connection.textHandlerID()));
-                registrations.remove(connection.textHandlerID());
+                RealmSettings realm = realms.get(connections.get(connection.textHandlerID()));
+                connections.remove(connection.textHandlerID());
                 realms.remove(realm.getName());
                 logger.onRealmDeregistered(realm);
             });
@@ -135,10 +128,6 @@ public class RealmHandler {
 
     private TokenFactory getTokenFactory(String realm) {
         return new TokenFactory(realms.get(realm).getAuthentication().getToken().getKey().getBytes());
-    }
-
-    boolean verifyToken(String realm, Token token) {
-        return getTokenFactory(realm).verifyToken(token);
     }
 
     RealmSettings getRealm(String realm) {

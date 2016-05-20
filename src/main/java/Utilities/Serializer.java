@@ -11,8 +11,7 @@ import java.io.IOException;
 
 /**
  * @author Robin Duda
- * <p/>
- * Serializes objects to JSON and back.
+ *         serializes objects to JSON and back.
  */
 public abstract class Serializer {
 
@@ -32,6 +31,13 @@ public abstract class Serializer {
         }
     }
 
+    /**
+     * Deserializes a json-string into an object.
+     *
+     * @param data   json-encoded string.
+     * @param format the class to instantiate.
+     * @return an Object of the specified class.
+     */
     public static Object unpack(String data, Class format) {
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -53,6 +59,13 @@ public abstract class Serializer {
         return unpack(json.encode(), format);
     }
 
+
+    /**
+     * Converts an object into a json object.
+     *
+     * @param object object to be converted.
+     * @return JsonObject
+     */
     public static JsonObject json(Object object) {
         return new JsonObject(pack(object));
     }

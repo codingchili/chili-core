@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Created by Robin on 2016-04-24.
+ * @author Robin Duda
+ *         Represents a characters inventory.
  */
-public class Inventory {
+class Inventory {
     private HashMap<String, Item> equipped;
     private ArrayList<String> slots;
     private ArrayList<Item> items;

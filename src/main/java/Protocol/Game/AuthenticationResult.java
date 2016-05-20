@@ -3,7 +3,8 @@ package Protocol.Game;
 import Protocol.Header;
 
 /**
- * Created by Robin on 2016-05-07.
+ * @author Robin Duda
+ *         Contains the result of an authentication attempt.
  */
 public class AuthenticationResult {
     public static final String ACTION = "authentication.result";

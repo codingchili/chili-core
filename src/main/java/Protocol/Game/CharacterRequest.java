@@ -4,7 +4,8 @@ import Protocol.Header;
 import Utilities.Token;
 
 /**
- * Created by Robin on 2016-05-07.
+ * @author Robin Duda
+ *         Character download request from game->authentication server.
  */
 public class CharacterRequest {
     public final static String ACTION = "character.request";

@@ -12,7 +12,8 @@ import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonObject;
 
 /**
- * Created by Robin on 2016-04-07.
+ * @author Robin Duda
+ *         Receives logging data from the other components and writes it to an elasticsearch cluster or console.
  */
 public class Server implements Verticle {
     private LogServerSettings settings;

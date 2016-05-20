@@ -1,7 +1,16 @@
 package Game.Model;
 
 /**
- * Created by Robin on 2016-04-25.
+ * @author Robin Duda
+ *         Defines how a attribute/value modifier is interpreted.
+ *
+ *         max - the max value
+ *         current - the current value
+ *
+ *         example:
+ *
+ *         modify: health, as [current], value -0.01
+ *
  */
 public enum As {
     max, current

@@ -4,8 +4,13 @@ import Game.Model.Connection;
 import io.vertx.core.json.JsonObject;
 
 /**
- * Created by Robin on 2016-05-07.
+ * @author Robin Duda
+ *         Handles packets from clients.
  */
-public interface ClientPacketHandler {
-    public void handle(Connection connection, String packet);
+interface ClientPacketHandler {
+    /**
+     * @param connection the connection id for writing to.
+     * @param packet the raw data.
+     */
+    void handle(Connection connection, String packet);
 }

@@ -8,22 +8,21 @@ import java.util.HashMap;
 
 /**
  * @author Robin Duda
- *         <p>
- *         An authentication message from the server to the view.
+ *         an authentication message from the server to the view.
  */
-public class Authentication {
+public class ClientAuthentication {
     private ArrayList<RealmMetaData> realms = new ArrayList<>();
     private HashMap<String, Integer> favourites = new HashMap<>();
     private Token token;
     private Account account;
     private boolean registered;
 
-    public Authentication() {
+    public ClientAuthentication() {
     }
 
-    public Authentication(Account account, Token token, boolean registered, ArrayList<RealmMetaData> realms) {
+    public ClientAuthentication(Account account, Token token, boolean registered, ArrayList<RealmMetaData> realms) {
 
-        // Extract the names of the realms where the account has characers.
+        // Extract the names of the realms where the account has characters.
         for (String realm : account.getCharacters().keySet()) {
             if (!account.getCharacters().get(realm).isEmpty())
                 favourites.put(realm, account.getCharacters().get(realm).size());

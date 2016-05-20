@@ -5,10 +5,8 @@ import Game.Model.Binding;
 import Game.Model.PlayerCharacter;
 import Game.Model.PlayerClass;
 import Utilities.JsonFileStore;
-import Utilities.RemoteAuthentication;
 import Utilities.Serializer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -16,7 +14,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Created by Robin on 2016-05-05.
+ * @author Robin Duda
+ *
+ * Contains the settings for a realm.
  */
 @JsonIgnoreProperties({"instance"})
 public class RealmSettings {
@@ -28,9 +28,8 @@ public class RealmSettings {
     private ArrayList<PlayerClass> classes = new ArrayList<>();
     private ArrayList<Affliction> afflictions = new ArrayList<>();
     private PlayerCharacter template;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private RemoteAuthentication authentication = new RemoteAuthentication();
-    private Binding binding;
+    private Binding binding = new Binding();
     private String name;
     private String description;
     private String resources;
@@ -44,11 +43,12 @@ public class RealmSettings {
     private Boolean trusted;
     private Boolean secure;
 
-    public RealmSettings() throws IOException {
+    public RealmSettings load() throws IOException {
         readInstances();
         readPlayerClasses();
         readAfflictions();
         readTemplate();
+        return this;
     }
 
     private void readInstances() throws IOException {

@@ -1,7 +1,8 @@
 package Authentication.Model;
 
 /**
- * Created by Robin on 2016-05-07.
+ * @author Robin Duda
+ *         Thrown when a selected character is missing.
  */
 public class CharacterMissingException extends Throwable {
 }

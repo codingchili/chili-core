@@ -2,8 +2,7 @@ package Utilities;
 
 /**
  * @author Robin Duda
- *
- * Throw when a TokenFactory has failed to process a token.
+ *         throw when a TokenFactory has failed to process a token.
  */
-public class TokenException extends Exception {
+class TokenException extends Exception {
 }

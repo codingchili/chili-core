@@ -1,9 +1,10 @@
 package Configuration;
 
 /**
- * Created by Robin on 2016-05-05.
+ * @author Robin Duda
+ * Configuration file holds content and title of the website.
  */
-public class GameInfo {
+class GameInfo {
     private String content;
     private String title;
 

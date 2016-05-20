@@ -16,15 +16,22 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
 
 /**
- * Created by Robin on 2016-04-07.
+ * @author Robin Duda
+ *         Starts up the client handler and the realm handler.
  */
 public class Server implements Verticle {
     private Vertx vertx;
     private Logger logger;
     private AuthServerSettings settings;
+    private AsyncAccountStore accounts;
 
     public Server() {
         this.settings = Config.instance().getAuthSettings();
+    }
+
+    public Server(AsyncAccountStore accounts) {
+        this();
+        this.accounts = accounts;
     }
 
     @Override
@@ -36,16 +43,18 @@ public class Server implements Verticle {
     public void init(Vertx vertx, Context context) {
         this.vertx = vertx;
         this.logger = new DefaultLogger(vertx, settings.getLogserver());
-        AsyncAccountStore accounts = new AccountDB(
-                MongoClient.createShared(vertx, new JsonObject()
-                        .put("db_name", settings.getDatabase().getName())
-                        .put("connection_string", settings.getDatabase().getRemote())));
 
-        new ClientHandler(vertx, logger, accounts, new RealmHandler(vertx, logger, accounts));
+        if (accounts == null) {
+            accounts = new AccountDB(
+                    MongoClient.createShared(vertx, new JsonObject()
+                            .put("db_name", settings.getDatabase().getName())
+                            .put("connection_string", settings.getDatabase().getRemote())));
+        }
     }
 
     @Override
     public void start(Future<Void> start) throws Exception {
+        new ClientHandler(vertx, logger, accounts, new RealmHandler(vertx, logger, accounts));
         logger.onServerStarted();
         start.complete();
     }

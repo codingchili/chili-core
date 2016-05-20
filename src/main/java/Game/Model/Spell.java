@@ -3,9 +3,10 @@ package Game.Model;
 import java.util.ArrayList;
 
 /**
- * Created by Robin on 2016-04-25.
+ * @author Robin Duda
+ *         A spell that may be cast by a player or NPC.
  */
-public class Spell {
+class Spell {
     private String name;
     private String description;
     private Target target;

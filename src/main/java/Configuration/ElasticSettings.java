@@ -3,7 +3,8 @@ package Configuration;
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
- * Created by Robin on 2016-05-05.
+ * @author Robin Duda
+ *         Contains configuration for the ElasticSearch cluster when logging is enabled.
  */
 public class ElasticSettings {
     private String remote;

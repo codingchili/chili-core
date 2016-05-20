@@ -1,7 +1,8 @@
 package Game.Model;
 
 /**
- * Created by Robin on 2016-04-24.
+ * @author Robin Duda
+ *         Model for player characters.
  */
 public class PlayerCharacter {
     private String name;
@@ -51,8 +52,9 @@ public class PlayerCharacter {
         return name;
     }
 
-    public void setName(String name) {
+    public PlayerCharacter setName(String name) {
         this.name = name;
+        return this;
     }
 
     public Inventory getInventory() {

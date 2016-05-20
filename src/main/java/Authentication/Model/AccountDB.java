@@ -4,7 +4,6 @@ import Game.Model.PlayerCharacter;
 import Utilities.HashHelper;
 import Utilities.Serializer;
 import io.vertx.core.Future;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;
 
@@ -13,7 +12,7 @@ import java.util.ArrayList;
 /**
  * @author Robin Duda
  *         <p>
- *         Implementation of asynchronous account store.
+ *         Implementation of asynchronous account store using MongoDb.
  */
 public class AccountDB implements AsyncAccountStore {
     private static final String COLLECTION = "accounts";
@@ -63,7 +62,7 @@ public class AccountDB implements AsyncAccountStore {
     }
 
     @Override
-    public void addCharacter(Future<Void> future, String realm, String username, PlayerCharacter player) {
+    public void addCharacter(Future future, String realm, String username, PlayerCharacter player) {
         JsonObject query = new JsonObject().put("username", username);
         JsonObject character = new JsonObject().put("$set",
                 new JsonObject().put("characters." + realm + "." + player.getName(), Serializer.json(player)));

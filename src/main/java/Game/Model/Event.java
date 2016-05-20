@@ -1,7 +1,8 @@
 package Game.Model;
 
 /**
- * Created by Robin on 2016-04-25.
+ * @author Robin Duda
+ *         events may be used with triggers.
  */
 public enum Event {
     hit, damaged, affliction, heal, death

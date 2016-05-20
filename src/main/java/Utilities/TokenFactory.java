@@ -9,8 +9,7 @@ import java.time.Instant;
 
 /**
  * @author Robin Duda
- * <p>
- * Verifies and generates tokens for access.
+ *         berifies and generates tokens for access.
  */
 public class TokenFactory {
     private byte[] secret;
@@ -23,9 +22,9 @@ public class TokenFactory {
     /**
      * Checks if a token and its parameters is valid against the secret.
      *
-     * @param token    hex encoded token to be verified.
-     * @param domain   context name of the requestor.
-     * @param expiry   the unix epoch time in which it is expired.
+     * @param token  hex encoded token to be verified.
+     * @param domain context name of the requestor.
+     * @param expiry the unix epoch time in which it is expired.
      * @return true if the token is accepted.
      */
     public boolean verifyToken(String token, String domain, Long expiry) {
@@ -64,8 +63,8 @@ public class TokenFactory {
     /**
      * Generates a new token from a given username.. be careful..
      *
-     * @param domain   the token should be signed with.
-     * @param expiry   indicates when the token expires.
+     * @param domain the token should be signed with.
+     * @param expiry indicates when the token expires.
      * @return a signed token as a base64 string.
      */
     public String signToken(String domain, long expiry) throws TokenException {

@@ -1,23 +1,22 @@
 package Configuration;
 
-import Utilities.RemoteAuthentication;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.ArrayList;
 
 /**
- * Created by Robin on 2016-05-05.
+ * @author Robin Duda
+ *         Contains settings for the webserver.
  */
 @JsonIgnoreProperties({"path", "name"})
 public class WebServerSettings implements Configurable {
-    protected static final String WEBSERVER_PATH = "conf/system/webserver.json";
+    static final String WEBSERVER_PATH = "conf/system/webserver.json";
     private RemoteAuthentication logserver;
     private RemoteAuthentication authserver;
     private PatchNotes patch;
     private ArrayList<NewsItem> news;
     private GameInfo info;
     private Integer port;
-    private String keyPath;
 
     @Override
     public String getPath() {

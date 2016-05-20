@@ -4,7 +4,8 @@ import Game.Model.PlayerCharacter;
 import Protocol.Header;
 
 /**
- * Created by Robin on 2016-05-08.
+ * @author Robin Duda
+ *         Response containing a character from the authentication server.
  */
 public class CharacterResponse {
     public static final String ACTION = "character.response";

@@ -1,8 +1,13 @@
 package Game.Controller;
 
 /**
- * Created by Robin on 2016-05-07.
+ * @author Robin Duda
+ * Template for handling packets from the authentication server.
  */
-public interface AuthPacketHandler {
-    public void handle(String connection, String packet);
+interface AuthPacketHandler {
+    /**
+     * @param connection connection id for writing to.
+     * @param packet raw message data.
+     */
+    void handle(String connection, String packet);
 }

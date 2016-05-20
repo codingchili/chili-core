@@ -6,7 +6,8 @@ import Game.Model.PlayerClass;
 import java.util.ArrayList;
 
 /**
- * Created by Robin on 2016-05-06.
+ * @author Robin Duda
+ *         Contains realm metadata used in the realm-list.
  */
 public class RealmMetaData {
     private ArrayList<String> classes = new ArrayList<>();

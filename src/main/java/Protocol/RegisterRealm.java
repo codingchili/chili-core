@@ -6,13 +6,14 @@ import Protocol.Header;
 import Utilities.Token;
 
 /**
- * Created by Robin on 2016-04-27.
+ * @author Robin Duda
+ * A request to register a realm on the authentication server.
  */
 public class RegisterRealm {
     public static final String ACTION = "register.realm";
     private Header header;
     private RealmSettings realm;
-    private Token token;
+    private Boolean registered;
 
     public RegisterRealm() {
         this.header = new Header(ACTION);
@@ -21,7 +22,11 @@ public class RegisterRealm {
     public RegisterRealm(RealmSettings realm) {
         this();
         this.realm = realm;
-        this.token = realm.getAuthentication().getToken();
+    }
+
+    public RegisterRealm(boolean registered) {
+        this();
+        this.registered = registered;
     }
 
     public Header getHeader() {
@@ -36,15 +41,16 @@ public class RegisterRealm {
         return realm;
     }
 
-    public Token getToken() {
-        return token;
-    }
-
-    public void setToken(Token token) {
-        this.token = token;
-    }
 
     public void setRealm(RealmSettings realm) {
         this.realm = realm;
+    }
+
+    public Boolean getRegistered() {
+        return registered;
+    }
+
+    public void setRegistered(Boolean registered) {
+        this.registered = registered;
     }
 }

@@ -10,19 +10,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Created by Robin on 2016-04-25.
+ * @author Robin Duda
+ *         tests the loading of json files used for configuration storage.
  */
 
 public class JsonFileStoreTest {
 
     @Test
-    public void testReadObject() throws IOException {
-        JsonObject json = JsonFileStore.readObject("conf/game/class/paladin.json");
-    }
-
-    @Test
     public void testReadList() throws IOException {
-        JsonArray json = JsonFileStore.readList("conf/game/player/affliction.json");
+        JsonFileStore.readList("conf/game/player/affliction.json");
     }
 
     @Test
@@ -36,14 +32,13 @@ public class JsonFileStoreTest {
 
     @Test
     public void readDirectoryObjects() throws IOException {
-        ArrayList<JsonObject> objects = JsonFileStore.readDirectoryObjects("conf/game/class/");
+        JsonFileStore.readDirectoryObjects("conf/game/class/");
     }
 
     @Test
     public void testReadPaladin() throws IOException {
         JsonObject paladin = JsonFileStore.readObject("conf/game/class/paladin.json");
-        PlayerClass playerclass = (PlayerClass) Serializer.unpack(paladin, PlayerClass.class);
-        System.out.println(Serializer.json(playerclass).encodePrettily());
+        Serializer.unpack(paladin, PlayerClass.class);
     }
 
     @Test
@@ -51,21 +46,16 @@ public class JsonFileStoreTest {
         JsonArray afflictions = JsonFileStore.readList("conf/game/player/affliction.json");
 
         for (int i = 0; i < afflictions.size(); i++) {
-            Affliction affliction = (Affliction) Serializer.unpack(afflictions.getJsonObject(i), Affliction.class);
-            System.out.println(Serializer.json(affliction).encodePrettily());
+            Serializer.unpack(afflictions.getJsonObject(i), Affliction.class);
         }
     }
 
-    // todo not currently passing.
-    // todo spellfactory, classfactory, attributefactory, mapping attributes with hashmaps, attributes no enum
     @Test
     public void testReadPlayerClasses() throws IOException {
         ArrayList<JsonObject> classes = JsonFileStore.readDirectoryObjects("conf/game/class/");
 
         for (JsonObject player : classes) {
-            PlayerClass playerclass = (PlayerClass) Serializer.unpack(player, PlayerClass.class);
-            System.out.println("packing " + player.getString("name"));
-            System.out.println(Serializer.pack(playerclass));
+            Serializer.unpack(player, PlayerClass.class);
         }
     }
 }

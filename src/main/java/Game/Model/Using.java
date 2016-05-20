@@ -1,7 +1,9 @@
 package Game.Model;
 
 /**
- * Created by Robin on 2016-04-25.
+ * @author Robin Duda
+ *         Allows modification of one players stats by the stats of another players.
+ *         Use case: dealing damage, healing, applying afflictions
  */
 public class Using {
     private Target source = Target.caster;

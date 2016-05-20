@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 /**
  * @author Robin Duda
- *         <p>
  *         Asynchronous account store.
  */
 public interface AsyncAccountStore {
@@ -39,7 +38,7 @@ public interface AsyncAccountStore {
      * @param account   the name of the account the character is added to.
      * @param character the character to be added.
      */
-    void addCharacter(Future<Void> future, String realm, String account, PlayerCharacter character);
+    void addCharacter(Future future, String realm, String account, PlayerCharacter character);
 
     /**
      * Finds all characters associated with an account on specified realm.

@@ -8,9 +8,9 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 
 /**
- * Created by Robin on 2016-04-07.
+ * @author Robin Duda
+ *         Handles loading and parsing of the configuration files.
  */
-
 public class Config {
     private static final int SECRET_SIZE = 64;
     private static Config instance = new Config();

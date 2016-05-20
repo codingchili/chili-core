@@ -1,9 +1,10 @@
 package Configuration;
 
 /**
- * Created by Robin on 2016-05-05.
+ * @author Robin Duda
+ *         Contains configuration data for a news object on the website.
  */
-public class NewsItem {
+class NewsItem {
     private String title;
     private String content;
     private String date;

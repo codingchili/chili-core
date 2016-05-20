@@ -1,8 +1,9 @@
 package Game.Model;
 
 /**
- * Created by Robin on 2016-05-06.
+ * @author Robin Duda
+ *         Used with conditions on an attribute.
  */
-public enum Matches {
+enum Matches {
     less, more
 }

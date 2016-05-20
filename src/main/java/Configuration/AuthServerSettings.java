@@ -1,11 +1,8 @@
 package Configuration;
 
-import Utilities.RemoteAuthentication;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-/**
- * Created by Robin on 2016-05-05.
- */
+
 @JsonIgnoreProperties({"path", "name"})
 public class AuthServerSettings implements Configurable {
     static final String AUTHSERVER_PATH = "conf/system/authserver.json";

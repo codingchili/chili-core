@@ -7,10 +7,10 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.ServerWebSocket;
 
 /**
- * Created by Robin on 2016-05-07.
+ * @author Robin Duda
+ *         Provides helper methods for writing and identifying websockets.
  */
 public class Connection {
-    private Vertx vertx;
     private ServerWebSocket connection;
     private String address;
     private Boolean authenticated = false;
@@ -23,9 +23,8 @@ public class Connection {
         send(new AuthenticationResult(false));
     }
 
-    public Connection(Vertx vertx, ServerWebSocket connection) {
+    public Connection(ServerWebSocket connection) {
         this.connection = connection;
-        this.vertx = vertx;
         this.address = connection.textHandlerID();
     }
 

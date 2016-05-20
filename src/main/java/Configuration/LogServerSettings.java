@@ -1,14 +1,14 @@
 package Configuration;
 
-import Utilities.RemoteAuthentication;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- * Created by Robin on 2016-05-05.
+ * @author Robin Duda
+ *         Contains settings for the logserver.
  */
 @JsonIgnoreProperties({"path", "name"})
 public class LogServerSettings implements Configurable {
-    protected static final String LOGSERVER_PATH = "conf/system/logserver.json";
+    static final String LOGSERVER_PATH = "conf/system/logserver.json";
     private RemoteAuthentication logserver;
     private ElasticSettings elastic;
     private byte[] secret;
@@ -46,7 +46,7 @@ public class LogServerSettings implements Configurable {
         return secret;
     }
 
-    protected void setSecret(byte[] secret) {
+    void setSecret(byte[] secret) {
         this.secret = secret;
     }
 

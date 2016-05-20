@@ -1,7 +1,8 @@
 package Game.Model;
 
 /**
- * Created by Robin on 2016-05-06.
+ * @author Robin Duda
+ *         Contains item data.
  */
 public class Item {
     private String name;

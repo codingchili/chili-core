@@ -11,9 +11,8 @@ import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
 
 /**
- * Created by Robin on 2016-04-27.
- * <p>
- * Handles players in a world.
+ * @author Robin Duda
+ *         Handles players in a map.
  */
 public class Instance implements Verticle {
     private Vertx vertx;
@@ -27,8 +26,6 @@ public class Instance implements Verticle {
         this.realm = realm;
         this.settings = settings;
     }
-
-    // todo on full create a new volatile instance based on the current instance that will shutdown on players = 0
 
     @Override
     public Vertx getVertx() {

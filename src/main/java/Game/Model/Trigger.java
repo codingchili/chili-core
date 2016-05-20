@@ -3,9 +3,10 @@ package Game.Model;
 import java.util.ArrayList;
 
 /**
- * Created by Robin on 2016-04-25.
+ * @author Robin Duda
+ * A trigger is executed on a specific event and may apply afflictions or modifiers.
  */
-public class Trigger {
+class Trigger {
     private Event on;
     private String spell;
     private Target modifies;

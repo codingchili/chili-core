@@ -4,8 +4,7 @@ import java.time.Instant;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Used to request authentication by token.
+ *         used to request authentication by token.
  */
 public class Token {
     private String key;

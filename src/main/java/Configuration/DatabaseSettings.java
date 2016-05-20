@@ -1,7 +1,8 @@
 package Configuration;
 
 /**
- * Created by Robin on 2016-05-05.
+ * @author Robin Duda
+ *         Sets the database name and its connection string.
  */
 public class DatabaseSettings {
     private String remote;

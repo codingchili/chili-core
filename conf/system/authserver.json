@@ -16,7 +16,7 @@
   "clientPort" : 5505,
   "database" : {
     "remote" : "mongodb://localhost:27017/",
-    "name" : "dungeon"
+    "name" : "chili"
   },
   "realms" : [ "Angel Oak", "Developer Realm", "Iron Oak", "Staging Realm", "Wisteria", "Red Maple" ]
 }

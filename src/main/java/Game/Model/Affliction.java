@@ -3,7 +3,10 @@ package Game.Model;
 import java.util.ArrayList;
 
 /**
- * Created by Robin on 2016-04-24.
+ * @author Robin Duda
+ *         Describes an affliction, loaded from configurations.
+ *
+ *         Afflictions affects a character by modifying their attributes temporarily.
  */
 public class Affliction {
     private String name;

@@ -4,7 +4,7 @@ import Configuration.AuthServerSettings;
 import Configuration.Config;
 import Game.Model.PlayerCharacter;
 import Authentication.Model.*;
-import Protocol.Authentication.Authentication;
+import Protocol.Authentication.ClientAuthentication;
 import Utilities.Logger;
 import Utilities.Serializer;
 import Utilities.Token;
@@ -15,7 +15,6 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -24,8 +23,7 @@ import java.util.ArrayList;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Router for the view-api.
+ *         Router used to authenticate users and create/delete characters.
  */
 public class ClientHandler {
     private AuthServerSettings settings;
@@ -62,7 +60,7 @@ public class ClientHandler {
         });
 
         router.post("/api/realmtoken").handler(this::realmtoken);
-        router.post("/api/character-list").handler(this::characterlist);
+        router.post("/api/character-list").handler(this::realmdata);
         router.post("/api/character-create").handler(this::createCharacter);
         router.post("/api/character-remove").handler(this::removeCharacter);
         router.post("/api/register").handler(this::register);
@@ -83,11 +81,8 @@ public class ClientHandler {
     }
 
     private void realmtoken(RoutingContext context) {
-
-        if (verifyClient(context)) {
+        if (verifyClient(context))
             context.response().end(Serializer.pack(realms.signToken(getRealm(context), getAccountName(context))));
-        } else
-            context.response().setStatusCode(HttpResponseStatus.UNAUTHORIZED.code()).end();
     }
 
     private boolean verifyClient(RoutingContext context) {
@@ -111,15 +106,20 @@ public class ClientHandler {
         return getToken(context).getDomain();
     }
 
-    private void characterlist(RoutingContext context) {
+    private void realmdata(RoutingContext context) {
 
-        if (verifyRealm(context)) {
+        if (verifyClient(context)) {
             Future<ArrayList<PlayerCharacter>> future = Future.future();
 
             future.setHandler(result -> {
                 if (result.succeeded()) {
-                    context.response().end(new JsonObject().put("characters", result.result())
-                            .put("realm", Serializer.json(realms.getRealm(getRealm(context)))).encode());
+                    JsonObject realm = Serializer.json(realms.getRealm(getRealm(context)));
+                    realm.remove("authentication");
+
+                    context.response().end(new JsonObject()
+                            .put("characters", result.result())
+                            .put("realm", realm)
+                            .encode());
                 } else
                     context.response().setStatusCode(HttpResponseStatus.NOT_FOUND.code()).end();
             });
@@ -129,34 +129,47 @@ public class ClientHandler {
     }
 
     private void createCharacter(RoutingContext context) {
+        if (verifyClient(context)) {
+            Future<PlayerCharacter> find = Future.future();
+            String characterName = context.getBodyAsJson().getString("name");
 
-        if (verifyRealm(context)) {
-            JsonObject data = context.getBodyAsJson();
-            try {
-                PlayerCharacter character = realms.createCharacter(
-                        getRealm(context),
-                        data.getString("name"),
-                        data.getString("className"));
-                Future<Void> insert = Future.future();
-
-                insert.setHandler(result -> {
-                    if (result.succeeded())
-                        context.response().end();
-                    else
-                        context.response().setStatusCode(HttpResponseStatus.UNAUTHORIZED.code()).end();
-                });
-
-                accounts.addCharacter(insert, getRealm(context), getAccountName(context), character);
-
-            } catch (PlayerClassDisabledException e) {
-                context.response().setStatusCode(HttpResponseStatus.NOT_FOUND.code()).end();
-            }
+            find.setHandler(found -> {
+                if (found.succeeded()) {
+                    context.response().setStatusCode(HttpResponseStatus.CONFLICT.code()).end();
+                } else {
+                    upsertCharacter(context);
+                }
+            });
+            accounts.findCharacter(find, getRealm(context), getAccountName(context), characterName);
         }
     }
 
-    private void removeCharacter(RoutingContext context) {
+    private void upsertCharacter(RoutingContext context) {
+        try {
+            PlayerCharacter character = createCharacterFromTemplate(context);
 
-        if (verifyRealm(context)) {
+            accounts.addCharacter(Future.future().setHandler(creation -> {
+                if (creation.succeeded()) {
+                    context.response().setStatusCode(HttpResponseStatus.OK.code()).end();
+                } else {
+                    context.response().setStatusCode(HttpResponseStatus.UNAUTHORIZED.code()).end();
+                }
+            }), getRealm(context), getAccountName(context), character);
+        } catch (PlayerClassDisabledException e) {
+            context.response().setStatusCode(HttpResponseStatus.NOT_FOUND.code()).end();
+        }
+    }
+
+
+    private PlayerCharacter createCharacterFromTemplate(RoutingContext context) throws PlayerClassDisabledException {
+        JsonObject data = context.getBodyAsJson();
+        String name = data.getString("name");
+        String className = data.getString("className");
+        return realms.createCharacter(getRealm(context), name, className);
+    }
+
+    private void removeCharacter(RoutingContext context) {
+        if (verifyClient(context)) {
             String name = context.getBodyAsJson().getString("name");
             Future<Void> future = Future.future();
 
@@ -169,16 +182,6 @@ public class ClientHandler {
 
             accounts.removeCharacter(future, getRealm(context), getAccountName(context), name);
         }
-    }
-
-
-    private boolean verifyRealm(RoutingContext context) {
-        boolean verified = realms.verifyToken(getRealm(context), getToken(context));
-
-        if (!verified)
-            context.response().setStatusCode(HttpResponseStatus.UNAUTHORIZED.code()).end();
-
-        return verified;
     }
 
     private void register(RoutingContext context) {
@@ -229,8 +232,7 @@ public class ClientHandler {
     private void sendAuthentication(Account account, RoutingContext context, boolean registered) {
         Token token = new Token(clientToken, account.getUsername());
         context.response()
-                .setStatusCode(HttpResponseStatus.OK.code())
-                .end(Serializer.pack(new Authentication(account, token, registered, realms.getMetadataList())));
+                .end(Serializer.pack(new ClientAuthentication(account, token, registered, realms.getMetadataList())));
 
         if (registered)
             logger.onRegistered(account, context.request().remoteAddress().host());
@@ -239,7 +241,6 @@ public class ClientHandler {
     }
 
     private void realmlist(RoutingContext context) {
-        HttpServerResponse response = context.response();
-        response.setStatusCode(HttpResponseStatus.OK.code()).end(Serializer.pack(realms.getMetadataList()));
+        context.response().end(Serializer.pack(realms.getMetadataList()));
     }
 }

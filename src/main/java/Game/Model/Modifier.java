@@ -3,9 +3,10 @@ package Game.Model;
 import java.util.ArrayList;
 
 /**
- * Created by Robin on 2016-04-24.
+ * @author Robin Duda
+ *         Modifies an attribute of a character.
  */
-public class Modifier {
+class Modifier {
     private ArrayList<Affliction> affliction;
     private Target modifies = Target.caster;
     private Attribute attribute;

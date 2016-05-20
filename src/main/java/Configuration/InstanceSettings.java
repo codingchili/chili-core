@@ -7,7 +7,8 @@ import Game.Model.Portal;
 import java.util.ArrayList;
 
 /**
- * Created by Robin on 2016-05-05.
+ * @author Robin Duda
+ *         Contains settings for an instance of a map.
  */
 public class InstanceSettings {
     private ArrayList<Portal> portals;

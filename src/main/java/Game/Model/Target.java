@@ -1,8 +1,9 @@
 package Game.Model;
 
 /**
- * Created by Robin on 2016-04-25.
+ * @author Robin Duda
+ *         Required for spellcasting.
  */
-public enum Target {
+enum Target {
     caster, area, ray, cone, selected, missile, trap, host, target
 }

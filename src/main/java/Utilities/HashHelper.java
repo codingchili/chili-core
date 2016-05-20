@@ -7,10 +7,8 @@ import java.util.Base64;
 
 /**
  * @author Robin Duda
- * <p/>
  * Handles the hashing of passwords and the generation
  * of the salts used in the hashing.
- * <p/>
  * reference: https://crackstation.net/hashing-security.htm#javasourcecode
  */
 

@@ -3,7 +3,8 @@ package Configuration;
 import java.io.IOException;
 
 /**
- * Created by Robin on 2016-04-28.
+ * @author Robin Duda
+ *         Generates new tokens and optionally secrets and writes them to the configuration files.
  */
 public class GenerateTokens {
     private Config configuration = Config.instance();

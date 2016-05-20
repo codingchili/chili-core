@@ -18,7 +18,8 @@ import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 
 /**
- * Created by Robin on 2016-04-07.
+ * @author Robin Duda
+ *         website and resource server.
  */
 public class Server implements Verticle {
     private Vertx vertx;

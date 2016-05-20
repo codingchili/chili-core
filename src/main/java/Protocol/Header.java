@@ -1,7 +1,8 @@
 package Protocol;
 
 /**
- * Created by Robin on 2016-04-27.
+ * @author Robin Duda
+ *         defines the type of a package.
  */
 public class Header {
     private String action;

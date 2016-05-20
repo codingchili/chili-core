@@ -1,9 +1,10 @@
 package Game.Model;
 
 /**
- * Created by Robin on 2016-04-24.
+ * @author Robin Duda
+ *         Defines regeneration for a characters main attributes.
  */
-public class Regeneration {
+class Regeneration {
     private Double health;
     private Double energy;
 

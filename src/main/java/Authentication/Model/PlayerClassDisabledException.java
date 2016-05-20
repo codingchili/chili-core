@@ -1,7 +1,8 @@
 package Authentication.Model;
 
 /**
- * Created by Robin on 2016-05-06.
+ * @author Robin Duda
+ *         Thrown when a selected player class is disabled.
  */
 public class PlayerClassDisabledException extends Throwable {
 }

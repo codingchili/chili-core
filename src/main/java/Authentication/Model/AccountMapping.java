@@ -7,8 +7,7 @@ import java.util.HashMap;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Database object not shared outside storage.
+ *         Database mapping not shared outside storage.
  */
 class AccountMapping {
     private HashMap<String, HashMap<String, PlayerCharacter>> characters = new HashMap<>();

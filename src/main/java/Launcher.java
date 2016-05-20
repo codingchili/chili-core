@@ -1,7 +1,8 @@
 import io.vertx.core.*;
 
 /**
- * Created by Robin on 2016-04-07.
+ * @author Robin Duda
+ *         Launches all the components of the system on a single host.
  */
 public class Launcher extends AbstractVerticle {
     private Vertx vertx;

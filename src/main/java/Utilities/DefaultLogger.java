@@ -4,6 +4,7 @@ import Authentication.Model.Account;
 import Configuration.Config;
 import Configuration.InstanceSettings;
 import Configuration.RealmSettings;
+import Configuration.RemoteAuthentication;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
@@ -13,7 +14,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 
 /**
- * Created by Robin on 2016-04-07.
+ * @author Robin Duda
+ * Default logging implementation.
  */
 public class DefaultLogger implements Logger {
     private ArrayList<String> buffer = new ArrayList<>();

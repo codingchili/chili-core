@@ -12,7 +12,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 /**
- * Created by Robin on 2016-04-25.
+ * @author Robin Duda
+ *         handles the loading/writing of json objects and lists to/from disk.
  */
 public abstract class JsonFileStore {
 

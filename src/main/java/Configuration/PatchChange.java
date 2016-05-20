@@ -3,9 +3,10 @@ package Configuration;
 import java.util.ArrayList;
 
 /**
- * Created by Robin on 2016-05-06.
+ * @author Robin Duda
+ *         Contains a changelist displayed on the website.
  */
-public class PatchChange {
+class PatchChange {
     private String title;
     private ArrayList<String> list;
 

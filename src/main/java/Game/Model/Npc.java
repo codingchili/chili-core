@@ -1,7 +1,8 @@
 package Game.Model;
 
 /**
- * Created by Robin on 2016-04-27.
+ * @author Robin Duda
+ * Contains questgiver details, dialog and AI.
  */
 public class Npc {
 }

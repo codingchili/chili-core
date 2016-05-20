@@ -1,7 +1,6 @@
 package Configuration;
 
 import Utilities.JsonFileStore;
-import Utilities.RemoteAuthentication;
 import Utilities.Serializer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.vertx.core.json.JsonObject;
@@ -10,7 +9,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Created by Robin on 2016-05-05.
+ * @author Robin Duda
+ *         Contains settings for the game server container.
  */
 @JsonIgnoreProperties({"realms", "path", "name"})
 public class GameServerSettings implements Configurable {

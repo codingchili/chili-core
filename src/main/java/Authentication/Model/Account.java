@@ -2,14 +2,8 @@ package Authentication.Model;
 
 import Game.Model.PlayerCharacter;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
-/**
- * @author Robin Duda
- *         <p>
- *         Holds account data for an user used to communicate with the view.
- */
 public class Account {
     private HashMap<String, HashMap<String, PlayerCharacter>> characters = new HashMap<>();
     private String username;

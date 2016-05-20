@@ -3,6 +3,7 @@ package Game.Controller;
 import Configuration.GameServerSettings;
 import Configuration.InstanceSettings;
 import Configuration.RealmSettings;
+import Configuration.RemoteAuthentication;
 import Game.Model.Connection;
 import Protocol.Game.CharacterRequest;
 import Protocol.Game.CharacterResponse;
@@ -21,21 +22,22 @@ import io.vertx.core.http.WebSocket;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
+import sun.rmi.runtime.Log;
 
 import java.io.IOException;
 import java.util.HashMap;
 
 /**
- * Created by Robin on 2016-04-27.
- * <p>
- * handles players on a realm.
+ * @author Robin Duda
+ *         Handles client connections on a higher level than instances.
+ *         Authentication, Map travel, Trading, Private chat etc.
  */
 public class Realm implements Verticle {
     private static final int REALM_UPDATE = 6000;
-    private static final String AUTH_ADDRESS = "authentication.server";
     private HashMap<String, Connection> connections = new HashMap<>();
     private HashMap<String, ClientPacketHandler> clientHandlers = new HashMap<>();
     private HashMap<String, AuthPacketHandler> authHandlers = new HashMap<>();
+    private Boolean registered = false;
     private WebSocket authserver;
     private RealmSettings settings;
     private GameServerSettings game;
@@ -48,6 +50,11 @@ public class Realm implements Verticle {
         this.game = game;
     }
 
+    public Realm(GameServerSettings game, RealmSettings settings, Logger logger) {
+        this(game, settings);
+        this.logger = logger;
+    }
+
     @Override
     public Vertx getVertx() {
         return vertx;
@@ -56,7 +63,10 @@ public class Realm implements Verticle {
     @Override
     public void init(Vertx vertx, Context context) {
         this.vertx = vertx;
-        this.logger = new DefaultLogger(vertx, game.getLogserver());
+
+        if (logger == null)
+            this.logger = new DefaultLogger(vertx, game.getLogserver());
+
         this.tokenFactory = new TokenFactory(settings.getAuthentication().getToken().getKey().getBytes());
     }
 
@@ -103,7 +113,7 @@ public class Realm implements Verticle {
                 .setCompressionSupported(true))
                 .requestHandler(router::accept).websocketHandler(socket -> {
 
-            Connection connection = new Connection(vertx, socket);
+            Connection connection = new Connection(socket);
 
             socket.handler(event -> {
                 Packet packet = (Packet) Serializer.unpack(event.toString(), Packet.class);
@@ -167,6 +177,21 @@ public class Realm implements Verticle {
         authHandlers.put(CharacterResponse.ACTION, (connection, data) -> {
             CharacterResponse response = (CharacterResponse) Serializer.unpack(data, CharacterResponse.class);
             connections.get(response.getConnection()).sendCharacterResponse(response);
+        });
+
+        authHandlers.put(RegisterRealm.ACTION, (connection, data) -> {
+            RegisterRealm response = (RegisterRealm) Serializer.unpack(data, RegisterRealm.class);
+
+            if (response.getRegistered()) {
+                if (!registered) {
+                    logger.onRealmRegistered(settings);
+                } else {
+                    logger.onRealmUpdated(settings);
+                }
+                registered = true;
+            } else {
+                logger.onRealmRejected(settings);
+            }
         });
     }
 
