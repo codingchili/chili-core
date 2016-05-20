@@ -1,4 +1,4 @@
-# chili-core
+# chili-core [![Build Status](https://travis-ci.org/codingchili/chili-core.svg?branch=master)](https://travis-ci.org/codingchili/chili-core)
 
 **ChiliCore** is a **lightweight architecture** for creating online games with focus on **modularity**, **security** and **scalability**. The backend uses **Vert.x** and the current frontend is based on **HTML5**, **websockets** and **Polymer**. 
 
@@ -67,10 +67,11 @@ The complete feature list may change during development.
 
 ###### Game
 * Multiplayer enabled
- * In-game chat
- * 2D-movement & spells
+* 2D-movement & spells
+* AI enabled for npcs.
 * Inventory, trading & looting system
 * Crafting system (to be continued)
+* In-game chat
 * Player classes and spells 
  * Programming knowledge not required to create/edit 
  * Configuration-based using JSON
@@ -90,6 +91,7 @@ The complete feature list may change during development.
  * Server authorized model
 * Logging system for data analysis
  * JSON output, ElasticSearch & Kibana ready.
+* Basic website with JSON templates for news/changelist
 * Highly performant backend
  * Variable tickrate, uses time & vectors for collisions.
  * Concurrency using the actor model
