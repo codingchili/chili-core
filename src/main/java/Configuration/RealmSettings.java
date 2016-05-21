@@ -15,8 +15,8 @@ import java.util.ArrayList;
 
 /**
  * @author Robin Duda
- *
- * Contains the settings for a realm.
+ *         <p>
+ *         Contains the settings for a realm.
  */
 @JsonIgnoreProperties({"instance"})
 public class RealmSettings {
@@ -228,5 +228,9 @@ public class RealmSettings {
 
     public int getPort() {
         return binding.getPort();
+    }
+
+    public int getProxy() {
+        return binding.getProxy();
     }
 }
