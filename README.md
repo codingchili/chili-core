@@ -39,10 +39,12 @@ java -jar <filename>.jar run Logging.Server
 java -jar <filename>.jar run Website.Server
 ```
 
-To run the application in production mode you must generate secrets for authentication.
+To run the application in production mode the following commands must be executed,
 ```
 java -cp <filename>.jar run Utilites.GenerateTokens regenerate
+java -cp <filename>.jar run Utilites.GeneratePatch
 ```
+
 The authentication tokens are stored in **/conf/system/{component}.json**
 
 When components are started they read the configuration files in conf/system/{authserver,gameserver,logserer,webserver} if the port numbers or addresses are to be changed, check these example configuration files.
