@@ -44,8 +44,7 @@ To run the application in production mode the following commands must be execute
 java -cp <filename>.jar run Utilites.GenerateTokens regenerate
 java -cp <filename>.jar run Utilites.GeneratePatch
 ```
-
-The authentication tokens are stored in **/conf/system/{component}.json**
+The authentication tokens are stored in **/conf/system/{component}.json**. It is highly recommended to use a reverse proxy with TLS, see **/conf/system/proxy** for example configurations using NGINX and LetsEncrypt.
 
 When components are started they read the configuration files in conf/system/{authserver,gameserver,logserer,webserver} if the port numbers or addresses are to be changed, check these example configuration files.
 
