@@ -76,7 +76,7 @@
 
                 application.onError((function (error) {
                     this.set("text", error.text);
-                    this.callback = error.callback;
+                    this.set("callback", error.callback);
 
                     if (!this.$.dialog.opened)
                         this.$.dialog.open();
@@ -86,7 +86,7 @@
 
             close: function () {
                 this.callback();
-            },
+            }
         });
     </script>
 </dom-module>

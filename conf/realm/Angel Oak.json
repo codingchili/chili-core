@@ -15,7 +15,7 @@
   },
   "name" : "Angel Oak",
   "description" : "Stable realm, PvP Aggressive.",
-  "resources" : "/resources/",
+  "resources" : "/resources",
   "version" : 1.0,
   "size" : 500,
   "type" : "PvP",

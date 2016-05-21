@@ -100,17 +100,23 @@ public class AccountDB implements AsyncAccountStore {
     }
 
     @Override
-    public void findCharacter(Future<PlayerCharacter> future, String realm, String username, String name) {
+    public void findCharacter(Future<PlayerCharacter> future, String realmName, String username, String name) {
         JsonObject query = new JsonObject()
                 .put("username", username);
         JsonObject fields = new JsonObject()
-                .put("characters." + realm + "." + name, 1)
+                .put("characters." + realmName + "." + name, 1)
                 .put("_id", 0);
 
         client.findOne(COLLECTION, query, fields, search -> {
             if (search.succeeded() && search.result() != null) {
-                JsonObject json = search.result().getJsonObject("characters").getJsonObject(realm).getJsonObject(name);
-                future.complete((PlayerCharacter) Serializer.unpack(json, PlayerCharacter.class));
+                JsonObject characters = search.result().getJsonObject("characters");
+                JsonObject realm = characters.getJsonObject(realmName);
+
+                if (realm != null && realm.containsKey(name)) {
+                    future.complete((PlayerCharacter) Serializer.unpack(realm.getJsonObject(name), PlayerCharacter.class));
+                } else {
+                    future.fail(new CharacterMissingException());
+                }
             } else {
                 future.fail(new CharacterMissingException());
             }

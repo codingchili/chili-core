@@ -126,7 +126,7 @@ public class DefaultLogger implements Logger {
     public void onPageLoaded(HttpServerRequest request) {
         log(event("page.load")
                 .put("agent", request.getHeader("user-agent"))
-                .put("origin", request.getHeader("origin")));
+                .put("origin", request.remoteAddress().host()));
     }
 
     private JsonObject event(String name) {

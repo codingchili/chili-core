@@ -4,27 +4,27 @@
  * Used to pass application-level events between components.
  */
 var api = {
-    remote: "",
+    remote: '',
     port: null,
 
     webserver: function (method) {
-        return "/api/" + method;
+        return '/api/' + method;
     },
     authentication: function (method) {
-        return this.remote + ":" + this.port + "/api/" + method;
+        return this.remote + ':' + this.port + '/api/' + method;
     },
     realm: function (realm) {
-        return (realm.secure === true ? 'https://' : 'http://') + realm.remote + ":" + realm.port;
+        return (realm.secure === true ? 'https://' : 'http://') + realm.remote + ':' + realm.port;
     },
     realmWebSocket: function (realm) {
-        return (realm.secure === true ? 'wss://' : 'ws://') + realm.remote + ":" + realm.port;
+        return (realm.secure === true ? 'wss://' : 'ws://') + realm.remote + ':' + realm.port;
     },
     load: function () {
         $.ajax({
-            type: "GET",
-            url: api.webserver("authserver"),
-            dataType: "json",
-            contentType: "text/plain",
+            type: 'GET',
+            url: api.webserver('authserver'),
+            dataType: 'json',
+            contentType: 'text/plain',
             statusCode: {
                 200: (function (authserver) {
                     this.remote = authserver.remote;
@@ -33,7 +33,7 @@ var api = {
             },
             error: function () {
                 application.error({
-                    text: "Connection failure. [Authentication]",
+                    text: 'Connection failure. [Authentication]',
                     callback: application.showLogin
                 });
             }
@@ -43,20 +43,21 @@ var api = {
 
 
 var application = {
-    version: "Etherbloom build 0.1.1",
-    views: ["realm-list", "page", "game-view", "game-login", "character-list", "error-dialog"],
+    version: 'Etherbloom build 0.1.1',
+    views: ['realm-list', 'page', 'game-view', 'game-login', 'character-list', 'patch-download', 'error-dialog'],
     authentication: null,
     handlers: {},
 
     authenticated: function (authentication) {
         application.authentication = authentication;
-        application.view("realm-list");
+        application.view('realm-list');
         application.publish('onAuthentication', authentication);
     },
 
     error: function (error) {
-        application.view("error-dialog");
-        application.publish('onError', error);
+        application.publish('onLogout', {});
+        application.view('error-dialog');
+        application.publish('onError', {text: error, callback: application.showLogin});
     },
 
     selectRealm: function (realm) {
@@ -71,6 +72,16 @@ var application = {
 
     realmLoaded: function (event) {
         application.publish('onRealmLoaded', event);
+    },
+
+    update: function (event) {
+        application.publish('onBeginUpdate', event);
+        application.showPatcher();
+    },
+
+    updateComplete: function (event) {
+        application.publish('onCompleteUpdate', event);
+        application.showGame();
     },
 
     onAuthentication: function (callback) {
@@ -93,18 +104,35 @@ var application = {
         application.subscribe('onRealmLoaded', callback);
     },
 
+    onUpdate: function (callback) {
+        application.subscribe('onBeginUpdate', callback);
+    },
+    
+    onGameStart: function (callback) {
+        application.subscribe('onGameStart', callback);
+    },
+
     showLogin: function () {
-        application.view("game-login");
+        application.view('game-login');
     },
 
     showRealms: function () {
-        application.view("realm-list");
+        application.view('realm-list');
         application.authenticated(application.authentication);
     },
 
     showCharacters: function () {
-        application.publish("onRealmSelect", application.realm);
-        application.view("character-list");
+        application.publish('onRealmSelect', application.realm);
+        application.view('character-list');
+    },
+
+    showPatcher: function () {
+        application.view('patch-download');
+    },
+
+    showGame: function () {
+        application.view('game-view');
+        application.publish('onGameStart', {});
     },
 
     view: function (view) {
@@ -132,5 +160,5 @@ var application = {
 
 $(document).ready(function () {
     api.load();
-    application.view("game-login");
+    application.view('game-login');
 });

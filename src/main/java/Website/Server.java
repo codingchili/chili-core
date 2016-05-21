@@ -5,14 +5,11 @@ import Configuration.WebServerSettings;
 import Utilities.DefaultLogger;
 import Utilities.Logger;
 import Utilities.Serializer;
-import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerOptions;
-import io.vertx.core.http.HttpServerResponse;
-import io.vertx.core.net.PemKeyCertOptions;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
@@ -51,14 +48,16 @@ public class Server implements Verticle {
         vertx.createHttpServer(new HttpServerOptions()
                 .setCompressionSupported(true))
                 .requestHandler(router::accept).listen(settings.getPort());
+
         logger.onServerStarted();
         start.complete();
     }
 
     private void setApi(Router router) {
         router.get("/api/news").handler(context -> {
-            context.response().setStatusCode(HttpResponseStatus.OK.code())
+            context.response()
                     .putHeader("Content-Type", "application/json")
+                    .putHeader("Content-Length", "1111")
                     .end(Serializer.pack(settings.getNews()));
         });
 
@@ -67,7 +66,7 @@ public class Server implements Verticle {
         });
 
         router.get("/api/gameinfo").handler(context -> {
-            context.response().setStatusCode(HttpResponseStatus.OK.code())
+            context.response()
                     .putHeader("Content-Type", "application/json")
                     .end(Serializer.pack(settings.getInfo()));
         });
@@ -75,7 +74,6 @@ public class Server implements Verticle {
         router.get("/api/patchnotes").handler(context -> {
             context.response()
                     .putHeader("Content-Type", "application/json")
-                    .setStatusCode(HttpResponseStatus.OK.code())
                     .end(Serializer.pack(settings.getPatch()));
         });
     }
@@ -94,10 +92,10 @@ public class Server implements Verticle {
 
     private void setCatchAll(Router router) {
         router.route().handler(context -> {
-            HttpServerResponse response = context.response();
-            response.setStatusCode(404);
-            response.putHeader("content-type", "application/json");
-            response.end("{\"page\" : 404}");
+            context.response()
+                    .setStatusCode(404)
+                    .putHeader("content-type", "application/json")
+                    .end("{\"page\" : 404}");
         });
     }
 

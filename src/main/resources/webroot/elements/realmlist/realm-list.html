@@ -337,10 +337,7 @@
                     }).bind(this),
                     error: (function () {
                         clearInterval(this.timer);
-                        application.error({
-                            text: "Failed to retrieve realm list from authentication server.",
-                            callback: application.showLogin
-                        })
+                        application.error("Failed to retrieve realm list from authentication server.")
                     }).bind(this)
                 });
             },

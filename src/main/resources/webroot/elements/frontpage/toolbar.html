@@ -74,6 +74,10 @@
                 application.onAuthentication(function (account) {
                     self.hidelogout = false;
                 });
+
+                application.onError(function () {
+                    self.hidelogout = true;
+                });
             },
 
             logout: function () {
@@ -89,4 +93,3 @@
     </script>
 </dom-module>
 
-</style>

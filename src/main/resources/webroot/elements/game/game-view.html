@@ -37,7 +37,7 @@
 
         <div id="interface">
             <!-- todo add gridster and elements here. -->
-            <paper-button class="primary" raised>clickme</paper-button>
+            <paper-button class="primary" on-tap="characters" raised>CHARACTERS</paper-button>
         </div>
 
         <canvas id="game">
@@ -50,10 +50,10 @@
             ready: function () {
                 var self = this;
 
-                /*application.onAuthentication(function () {
-                 game.initialize(document.getElementById('game'));
-                 self.update();
-                 });*/
+                application.onGameStart(function () {
+                    game.initialize(document.getElementById('game'));
+                    self.update();
+                });
 
                 this.update();
                 $(window).resize(this.update);
@@ -64,6 +64,10 @@
                 var container = $('#game');
                 canvas.width = container.width();
                 canvas.height = container.height();
+            },
+
+            characters: function (e) {
+                application.showCharacters();
             }
         })
         ;

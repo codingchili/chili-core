@@ -119,10 +119,7 @@
                     },
                     error: function (code) {
                         if (code.status != 401 && code.status != 404)
-                            application.error({
-                                text: "Failed to establish a connection to the authentication server.",
-                                callback: application.showLogin
-                            })
+                            application.error( "Failed to establish a connection to the authentication server.")
                     }
                 });
             },
@@ -155,10 +152,7 @@
                         },
                         error: function (code) {
                             if (code.status != 409)
-                                application.error({
-                                    text: "Failed to establish a connection to the authentication server.",
-                                    callback: application.showLogin
-                                })
+                                application.error("Failed to establish a connection to the authentication server.")
                         }
                     });
             },
