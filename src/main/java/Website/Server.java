@@ -46,7 +46,7 @@ public class Server implements Verticle {
         setCatchAll(router);
 
         vertx.createHttpServer(new HttpServerOptions()
-                .setCompressionSupported(true))
+                .setCompressionSupported(settings.getCompress()))
                 .requestHandler(router::accept).listen(settings.getPort());
 
         logger.onServerStarted();
@@ -57,7 +57,6 @@ public class Server implements Verticle {
         router.get("/api/news").handler(context -> {
             context.response()
                     .putHeader("Content-Type", "application/json")
-                    .putHeader("Content-Length", "1111")
                     .end(Serializer.pack(settings.getNews()));
         });
 
@@ -86,6 +85,9 @@ public class Server implements Verticle {
     }
 
     private void setResources(Router router) {
+        router.route("/resources/*").handler(StaticHandler.create("resources/")
+                .setCachingEnabled(settings.getCache()));
+
         router.route("/*").handler(StaticHandler.create()
                 .setCachingEnabled(true));
     }

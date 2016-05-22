@@ -13,8 +13,8 @@ import java.nio.file.attribute.BasicFileAttributes;
  * @author Robin Duda
  */
 public class GeneratePatch {
-    private static String resourcePath = Paths.get("src/main/resources/webroot/resources/game/").toString();
-    private static String outputPath = Paths.get("src/main/resources/webroot/resources/patch.json").toString();
+    private static String resourcePath = Paths.get("resources/game/").toString();
+    private static String outputPath = Paths.get("resources/patch.json").toString();
 
     public static void main(String[] args) throws IOException {
         GeneratePatch.generate();
@@ -42,7 +42,7 @@ public class GeneratePatch {
                 File file = path.toFile();
 
                 files.add(new JsonObject()
-                        .put("path", "/game" + path.toString().replace(resourcePath, ""))
+                        .put("path", path.toString())
                         .put("size", file.length())
                         .put("modified", file.lastModified()));
                 return FileVisitResult.CONTINUE;

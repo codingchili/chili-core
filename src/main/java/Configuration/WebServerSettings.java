@@ -17,6 +17,8 @@ public class WebServerSettings implements Configurable {
     private ArrayList<NewsItem> news;
     private GameInfo info;
     private Integer port;
+    private Boolean cache;
+    private Boolean compress;
 
     @Override
     public String getPath() {
@@ -26,6 +28,22 @@ public class WebServerSettings implements Configurable {
     @Override
     public String getName() {
         return logserver.getSystem();
+    }
+
+    public Boolean getCompress() {
+        return compress;
+    }
+
+    public void setCompress(Boolean compress) {
+        this.compress = compress;
+    }
+
+    public Boolean getCache() {
+        return cache;
+    }
+
+    public void setCache(Boolean cache) {
+        this.cache = cache;
     }
 
     public RemoteAuthentication getAuthserver() {
