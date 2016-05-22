@@ -23,7 +23,7 @@ mvn package
 ```
 If the tests do not pass, either fix them yourself or checkout the (if exists) stable branch. The prepackaged jar file in the repository may also be used for testing out the project.
 
-If you do not have a local **MongoDB server** running on the default port, localhost:27017 install latest version of MongoDB from [Website](https://www.mongodb.com/).
+If you do not have a local **MongoDB server** running on the default port, localhost:27017 install latest build of MongoDB from [Website](https://www.mongodb.com/).
 
 To start the packaged JAR run
 ```

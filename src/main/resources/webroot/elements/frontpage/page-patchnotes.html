@@ -49,7 +49,7 @@
                 padding-top: 32px;
             }
 
-            .version {
+            .build {
                 margin-right: 16px;
                 margin-top: 4px;
                 font-size: smaller;
@@ -63,45 +63,35 @@
         </style>
 
         <div class="container">
-            <paper-material elevation="0">
+            <paper-material elevation="1" class="item">
 
+                <div class="build">
+                    {{patch.build}}
+                </div>
 
-                <template id="t" is="dom-bind">
+                <div class="title">
+                    <h4>{{patch.name}}</h4>
+                </div>
 
-                    <iron-ajax url="/api/patchnotes" last-response="{{data}}" auto></iron-ajax>
+                <template is="dom-repeat" items="{{data.changes}}">
 
-                    <paper-material elevation="1" class="item">
+                    <div class="caption">
+                        {{item.title}}
+                    </div>
 
-                        <div class="version">
-                            {{data.version}}
-                        </div>
-
-                        <div class="title">
-                            <h4>{{data.name}}</h4>
-                        </div>
-
-                        <template is="dom-repeat" items="{{data.changes}}">
-
-                            <div class="caption">
-                                {{item.title}}
-                            </div>
-
-                            <ul class="list">
-                                <template is="dom-repeat" items="{{item.list}}" as="change">
-                                    <li class="text">
-                                        {{change}}
-                                    </li>
-                                </template>
-                            </ul>
-
+                    <ul class="list">
+                        <template is="dom-repeat" items="{{item.list}}" as="change">
+                            <li class="text">
+                                {{change}}
+                            </li>
                         </template>
+                    </ul>
 
-                        <div class="date">
-                            {{data.date}}
-                        </div>
-
-                    </paper-material>
                 </template>
+
+                <div class="date">
+                    {{patch.date}}
+                </div>
 
             </paper-material>
         </div>
@@ -110,7 +100,25 @@
     <script>
         Polymer({
             is: 'page-patchnotes',
+            patch: {},
+
             ready: function () {
+
+                $.ajax({
+                    type: "GET",
+                    url: api.webserver('/patchnotes'),
+                    contentType: "application/json",
+
+                    success: (function (data) {
+                        this.set('patch', data);
+                        application.loadedVersion({name: data.name, build: data.build});
+                    }).bind(this),
+
+                    error: function () {
+                        application.error("Failed to load application version.");
+                    }
+                });
+
             }
         });
     </script>

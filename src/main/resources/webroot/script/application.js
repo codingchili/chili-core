@@ -43,7 +43,6 @@ var api = {
 
 
 var application = {
-    version: 'Etherbloom build 0.1.1',
     views: ['realm-list', 'page', 'game-view', 'game-login', 'character-list', 'patch-download', 'error-dialog'],
     authentication: null,
     handlers: {},
@@ -84,6 +83,10 @@ var application = {
         application.showGame();
     },
 
+    loadedVersion: function (event) {
+        application.publish('onVersion', event);
+    },
+
     onAuthentication: function (callback) {
         application.subscribe('onAuthentication', callback);
     },
@@ -107,9 +110,13 @@ var application = {
     onUpdate: function (callback) {
         application.subscribe('onBeginUpdate', callback);
     },
-    
+
     onGameStart: function (callback) {
         application.subscribe('onGameStart', callback);
+    },
+
+    onVersion: function (callback) {
+        application.subscribe('onVersion', callback);
     },
 
     showLogin: function () {

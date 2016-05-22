@@ -15,9 +15,9 @@
     "port" : 5505
   },
   "patch" : {
-    "version" : "Build 0.1a",
+    "build" : "0.1.1a",
     "name" : "Redwood",
-    "date" : "2016-05-05",
+    "date" : "2016-05-22",
     "changes" : [ {
       "title" : "Backend.",
       "list" : [ "Updated configuration loader.", "Added support for private servers.", "Added support for ping." ]

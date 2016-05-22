@@ -29,7 +29,7 @@
             <paper-material elevation="3">
                 <p>
                 <h6>
-                    {{version}}
+                    {{build}}
                 </h6>
                 </p>
             </paper-material>
@@ -41,7 +41,11 @@
             is: 'footer-template',
 
             ready: function () {
-                this.set("version", application.version);
+
+                application.onVersion((function (version) {
+                    this.set('build', version.name + ' ' + version.build);
+                }).bind(this));
+
             }
         });
     </script>

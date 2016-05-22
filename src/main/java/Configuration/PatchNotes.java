@@ -4,20 +4,20 @@ import java.util.ArrayList;
 
 /**
  * @author Robin Duda
- *         Contains a list of patch notes, version and name for the website.
+ *         Contains a list of patch notes, build and name for the website.
  */
 public class PatchNotes {
-    private String version;
+    private String build;
     private String name;
     private String date;
     private ArrayList<PatchChange> changes;
 
-    public String getVersion() {
-        return version;
+    public String getBuild() {
+        return build;
     }
 
-    protected void setVersion(String version) {
-        this.version = version;
+    protected void setBuild(String build) {
+        this.build = build;
     }
 
     public String getName() {
