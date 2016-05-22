@@ -2,7 +2,7 @@
 
 **ChiliCore** is a **lightweight architecture** for creating online games with focus on **modularity**, **security** and **scalability**. The backend uses **Vert.x** and the current frontend is based on **HTML5**, **websockets** and **Polymer**. 
 
-For full documentation and tutorials visit [the website](https://codingchili.com/).
+For full documentation and tutorials visit [the website](https://codingchili.com/), for a live demo visit [demo](https://beta.codingchili.com/).
 
 
 
@@ -44,8 +44,7 @@ To run the application in production mode the following commands must be execute
 java -cp <filename>.jar run Utilites.GenerateTokens regenerate
 java -cp <filename>.jar run Utilites.GeneratePatch
 ```
-
-The authentication tokens are stored in **/conf/system/{component}.json**
+The authentication tokens are stored in **/conf/system/{component}.json**. It is highly recommended to use a reverse proxy with TLS, see **/conf/system/proxy** for example configurations using NGINX and LetsEncrypt.
 
 When components are started they read the configuration files in conf/system/{authserver,gameserver,logserer,webserver} if the port numbers or addresses are to be changed, check these example configuration files.
 
