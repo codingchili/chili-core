@@ -114,10 +114,14 @@ The resources may be server from the webserver if desired.
 All communication within the system uses a text-protocol based on JSON for simplicity.
 
 ## Configuration
-The configuration directory **'conf' must be in the same directory as the jar file**.
+The configuration directory **'conf' & 'resources' must be in the same directory as the jar file**.
 
 The configuration structure
 ```
+├── resources/
+|   ├── patch.json
+|   ├── game/
+|   ├── gui/
 ├── config/
 │   ├── system/
 │   │   ├── authserver.json
@@ -151,15 +155,17 @@ The configuration structure
 │   │   ├── world/
 │   │   │   ├── {name}.json
 ```
-Files in **conf/system/** sets up the bindings between the components with host/port numbers, logging and authentication tokens between the components. 
+**resources/patch.json** contains the patch data, subfolders **game** contains the game files and **gui** contains graphics used in character list/create.
 
-Configuration files in **conf/realm/** each represents a realm/server to be registered to the master authentication server. Each of these must have a valid authentication signed by the authentication servers secret key. The name of the realm file must also correspond to the "name" attribute in the configuration file.
+**conf/system/** sets up the bindings between the components with host/port numbers, logging and authentication tokens between the components. 
 
-Files in **conf/game** directly relates to game logic, such as player classes, items, npcs, quests and the game world (maps). 
+**conf/realm/** each represents a realm/server to be registered to the master authentication server. Each of these must have a valid authentication signed by the authentication servers secret key. The name of the realm file must also correspond to the "name" attribute in the configuration file.
 
-Files in **conf/game/class** must have the same name as the "name" attribute within them. 
+**conf/game** directly relates to game logic, such as player classes, items, npcs, quests and the game world (maps). 
 
-Files in **conf/game/items** may have any name, preferrably names describing the type of items within the configuration file, splitting the files in this folder only provides structure.
+**conf/game/class** must have the same name as the "name" attribute within them. 
+
+**conf/game/items** may have any name, preferrably names describing the type of items within the configuration file, splitting the files in this folder only provides structure.
 
 All configuration files are loaded by their respective component on startup. Minimally the files in **/conf/system** must exist for the component that is to be run. For the gameserver the **/conf/game configuration** files must also exist.
 
