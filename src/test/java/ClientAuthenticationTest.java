@@ -15,6 +15,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
@@ -86,14 +87,11 @@ public class ClientAuthenticationTest {
     @Test
     public void authenticateAccount(TestContext context) {
         Async async = context.async();
-        Account account = new Account()
-                .setUsername(USERNAME)
-                .setPassword(PASSWORD);
 
         postRequest(response -> {
             context.assertEquals(response.statusCode(), HttpResponseStatus.OK.code());
             async.complete();
-        }, "/api/authenticate").end(Serializer.pack(account));
+        }, "/api/authenticate").end(getAccount(USERNAME, PASSWORD));
     }
 
     private HttpClientRequest postRequest(Handler<HttpClientResponse> handler, String resource) {
@@ -103,53 +101,45 @@ public class ClientAuthenticationTest {
     @Test
     public void failtoAuthenticateAccountWithWrongPassword(TestContext context) {
         Async async = context.async();
-        Account account = new Account()
-                .setUsername(USERNAME)
-                .setPassword(PASSWORD_WRONG);
 
         postRequest(response -> {
             context.assertEquals(response.statusCode(), HttpResponseStatus.UNAUTHORIZED.code());
             async.complete();
-        }, "/api/authenticate").end(Serializer.pack(account));
+        }, "/api/authenticate").end(getAccount(USERNAME, PASSWORD_WRONG));
     }
 
     @Test
     public void failtoAuthenticateAccountWithMissing(TestContext context) {
         Async async = context.async();
-        Account account = new Account()
-                .setUsername(USERNAME_MISSING)
-                .setPassword(PASSWORD);
 
         postRequest(response -> {
             context.assertEquals(response.statusCode(), HttpResponseStatus.NOT_FOUND.code());
             async.complete();
-        }, "/api/authenticate").end(Serializer.pack(account));
+        }, "/api/authenticate").end(getAccount(USERNAME_MISSING, PASSWORD));
     }
 
     @Test
     public void registerAccount(TestContext context) {
         Async async = context.async();
-        Account account = new Account()
-                .setUsername(USERNAME_NEW)
-                .setPassword(PASSWORD);
 
         postRequest(response -> {
             context.assertEquals(response.statusCode(), HttpResponseStatus.OK.code());
             async.complete();
-        }, "/api/register").end(Serializer.pack(account));
+        }, "/api/register").end(getAccount(USERNAME_NEW, PASSWORD));
+    }
+
+    private String getAccount(String username, String password) {
+        return new JsonObject().put("account", new JsonObject().put("username", username).put("password", password)).encode();
     }
 
     @Test
     public void failRegisterAccountExists(TestContext context) {
         Async async = context.async();
-        Account account = new Account()
-                .setUsername(USERNAME)
-                .setPassword(PASSWORD);
 
         postRequest(response -> {
             context.assertEquals(response.statusCode(), HttpResponseStatus.CONFLICT.code());
             async.complete();
-        }, "/api/register").end(Serializer.pack(account));
+        }, "/api/register").end(getAccount(USERNAME, PASSWORD));
     }
 
     @Test
@@ -189,7 +179,7 @@ public class ClientAuthenticationTest {
             context.assertEquals(HttpResponseStatus.OK.code(), response.statusCode());
             async.complete();
         }, "/api/character-remove").end(new JsonObject()
-                .put("name", CHARACTER_NAME_DELETED)
+                .put("character", CHARACTER_NAME_DELETED)
                 .put("token", Serializer.json(getClientToken()))
                 .put("realm", realmconfig.getName()).encode());
     }
@@ -206,7 +196,7 @@ public class ClientAuthenticationTest {
             context.assertEquals(HttpResponseStatus.UNAUTHORIZED.code(), response.statusCode());
             async.complete();
         }, "/api/character-remove").end(new JsonObject()
-                .put("name", CHARACTER_NAME)
+                .put("character", CHARACTER_NAME)
                 .put("token", Serializer.json(getInvalidClientToken()))
                 .put("realm", realmconfig.getName()).encode());
     }
@@ -219,7 +209,7 @@ public class ClientAuthenticationTest {
             context.assertEquals(HttpResponseStatus.INTERNAL_SERVER_ERROR.code(), response.statusCode());
             async.complete();
         }, "/api/character-remove").end(new JsonObject()
-                .put("name", CHARACTER_NAME + ".MISSING")
+                .put("character", CHARACTER_NAME + ".MISSING")
                 .put("token", Serializer.json(getClientToken()))
                 .put("realm", realmconfig.getName()).encode());
     }
@@ -236,7 +226,7 @@ public class ClientAuthenticationTest {
             context.assertEquals(HttpResponseStatus.OK.code(), response.statusCode());
             async.complete();
         }, "/api/character-create").end(new JsonObject()
-                .put("name", CHARACTER_NAME + ".NEW")
+                .put("character", CHARACTER_NAME + ".NEW")
                 .put("className", realmconfig.getClasses().get(0).getName())
                 .put("token", Serializer.json(getClientToken()))
                 .put("realm", realmconfig.getName()).encode());
@@ -261,7 +251,7 @@ public class ClientAuthenticationTest {
             context.assertEquals(HttpResponseStatus.CONFLICT.code(), response.statusCode());
             async.complete();
         }, "/api/character-create").end(new JsonObject()
-                .put("name", CHARACTER_NAME)
+                .put("character", CHARACTER_NAME)
                 .put("token", Serializer.json(getClientToken()))
                 .put("realm", realmconfig.getName()).encode());
     }

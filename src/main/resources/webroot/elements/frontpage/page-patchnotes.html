@@ -22,7 +22,10 @@
             }
 
             .title {
-                padding-bottom: 32px;
+                position: absolute;
+                left: 0;
+                right: 0;
+                font-size: 26px;
                 text-align: center;
             }
 
@@ -50,15 +53,19 @@
             }
 
             .build {
-                margin-right: 16px;
-                margin-top: 4px;
-                font-size: smaller;
-                float: right;
-                display: inline-block;
+                position: absolute;
+                left: 0;
+                right: 0;
+                text-align: center;
+                top: 26px;
             }
 
             .list {
                 margin-left: 64px;
+            }
+
+            .changes {
+                padding-top: 96px;
             }
         </style>
 
@@ -73,21 +80,23 @@
                     <h4>{{patch.name}}</h4>
                 </div>
 
-                <template is="dom-repeat" items="{{data.changes}}">
+                <div class="changes">
+                    <template is="dom-repeat" items="{{patch.changes}}">
 
-                    <div class="caption">
-                        {{item.title}}
-                    </div>
+                        <div class="caption">
+                            {{item.title}}
+                        </div>
 
-                    <ul class="list">
-                        <template is="dom-repeat" items="{{item.list}}" as="change">
-                            <li class="text">
-                                {{change}}
-                            </li>
-                        </template>
-                    </ul>
+                        <ul class="list">
+                            <template is="dom-repeat" items="{{item.list}}" as="change">
+                                <li class="text">
+                                    {{change}}
+                                </li>
+                            </template>
+                        </ul>
 
-                </template>
+                    </template>
+                </div>
 
                 <div class="date">
                     {{patch.date}}

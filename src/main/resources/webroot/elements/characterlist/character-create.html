@@ -58,13 +58,6 @@
                 max-height: 128px;
             }
 
-            .title {
-                font-size: large;
-                width: 100%;
-                text-align: center;
-                padding-bottom: 24px;
-            }
-
             .container {
                 padding-bottom: 16px;
             }
@@ -140,7 +133,7 @@
 
             paper-toast {
                 position: absolute;
-                right: 0px;
+                right: 0;
                 bottom: -124px;
             }
 
@@ -275,7 +268,7 @@
                                 token: application.authentication.token,
                                 realm: this.realm.name,
                                 className: this.selected.name,
-                                name: this.characterName
+                                character: this.characterName
                             }),
                             statusCode: {
                                 200: (function () {

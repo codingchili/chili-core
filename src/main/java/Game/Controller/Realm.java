@@ -7,8 +7,10 @@ import Configuration.RemoteAuthentication;
 import Game.Model.Connection;
 import Protocol.Game.CharacterRequest;
 import Protocol.Game.CharacterResponse;
+import Protocol.Header;
 import Protocol.Packet;
-import Protocol.RegisterRealm;
+import Protocol.RealmRegister;
+import Protocol.RealmUpdate;
 import Utilities.*;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Context;
@@ -22,7 +24,6 @@ import io.vertx.core.http.WebSocket;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
-import sun.rmi.runtime.Log;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -166,7 +167,9 @@ public class Realm implements Verticle {
 
             socket.handler(message -> {
                 Packet packet = (Packet) Serializer.unpack(message.toString(), Packet.class);
-                authHandlers.get(packet.getAction()).handle(socket.textHandlerID(), message.toString());
+
+                if (authHandlers.containsKey(packet.getAction()))
+                    authHandlers.get(packet.getAction()).handle(socket.textHandlerID(), message.toString());
             });
 
             registerRealm();
@@ -179,8 +182,8 @@ public class Realm implements Verticle {
             connections.get(response.getConnection()).sendCharacterResponse(response);
         });
 
-        authHandlers.put(RegisterRealm.ACTION, (connection, data) -> {
-            RegisterRealm response = (RegisterRealm) Serializer.unpack(data, RegisterRealm.class);
+        authHandlers.put(RealmRegister.ACTION, (connection, data) -> {
+            RealmRegister response = (RealmRegister) Serializer.unpack(data, RealmRegister.class);
 
             if (response.getRegistered()) {
                 if (!registered) {
@@ -196,10 +199,10 @@ public class Realm implements Verticle {
     }
 
     private void registerRealm() {
-        sendAuthServer(new RegisterRealm(settings));
+        sendAuthServer(new RealmRegister(settings));
 
         vertx.setPeriodic(REALM_UPDATE, event -> {
-            sendAuthServer(new RegisterRealm(settings.setPlayers(connections.size())));
+            sendAuthServer(new RealmUpdate(connections.size()));
         });
     }
 

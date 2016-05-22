@@ -16,6 +16,6 @@ public class Packet {
     }
 
     public String getAction() {
-        return header.getAction();
+        return (header == null) ? null : header.getAction();
     }
 }

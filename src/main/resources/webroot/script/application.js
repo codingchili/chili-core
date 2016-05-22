@@ -167,5 +167,5 @@ var application = {
 
 $(document).ready(function () {
     api.load();
-    application.view('game-login');
+    application.view('page');
 });

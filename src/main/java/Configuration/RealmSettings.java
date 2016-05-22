@@ -43,6 +43,27 @@ public class RealmSettings {
     private Boolean trusted;
     private Boolean secure;
 
+    public RealmSettings removeAuthentication() {
+        return new RealmSettings()
+                .setClasses(classes)
+                .setAfflictions(afflictions)
+                .setTemplate(template)
+                .setBinding(binding)
+                .setName(name)
+                .setDescription(description)
+                .setResources(resources)
+                .setVersion(version)
+                .setSize(size)
+                .setType(type)
+                .setLifetime(lifetime)
+                .setDrop(drop)
+                .setLeveling(leveling)
+                .setPlayers(players)
+                .setTrusted(trusted)
+                .setSecure(secure)
+                .setAuthentication(null);
+    }
+
     public RealmSettings load() throws IOException {
         readInstances();
         readPlayerClasses();
@@ -84,48 +105,54 @@ public class RealmSettings {
         return binding;
     }
 
-    public void setBinding(Binding binding) {
+    public RealmSettings setBinding(Binding binding) {
         this.binding = binding;
+        return this;
     }
 
     public Boolean getSecure() {
         return secure;
     }
 
-    public void setSecure(Boolean secure) {
+    public  RealmSettings setSecure(Boolean secure) {
         this.secure = secure;
+        return this;
     }
 
     public PlayerCharacter getTemplate() {
         return template;
     }
 
-    public void setTemplate(PlayerCharacter template) {
+    public RealmSettings setTemplate(PlayerCharacter template) {
         this.template = template;
+        return this;
     }
 
     public ArrayList<Affliction> getAfflictions() {
         return afflictions;
     }
 
-    public void setAfflictions(ArrayList<Affliction> afflictions) {
+    public RealmSettings setAfflictions(ArrayList<Affliction> afflictions) {
         this.afflictions = afflictions;
+        return this;
     }
 
     public ArrayList<PlayerClass> getClasses() {
         return classes;
     }
 
-    public void setClasses(ArrayList<PlayerClass> classes) {
+    public RealmSettings setClasses(ArrayList<PlayerClass> classes) {
         this.classes = classes;
+        return this;
     }
 
     public String getResources() {
         return resources;
     }
 
-    public void setResources(String resources) {
+    public RealmSettings setResources(String resources) {
         this.resources = resources;
+        return this;
     }
 
     public int getPlayers() {
@@ -150,72 +177,81 @@ public class RealmSettings {
         return name;
     }
 
-    protected void setName(String name) {
+    protected RealmSettings setName(String name) {
         this.name = name;
+        return this;
     }
 
     public String getDescription() {
         return description;
     }
 
-    protected void setDescription(String description) {
+    protected RealmSettings setDescription(String description) {
         this.description = description;
+        return this;
     }
 
     public double getVersion() {
         return version;
     }
 
-    protected void setVersion(double version) {
+    protected RealmSettings setVersion(double version) {
         this.version = version;
+        return this;
     }
 
     public int getSize() {
         return size;
     }
 
-    protected void setSize(int size) {
+    protected RealmSettings setSize(int size) {
         this.size = size;
+        return this;
     }
 
     public String getType() {
         return type;
     }
 
-    protected void setType(String type) {
+    protected RealmSettings setType(String type) {
         this.type = type;
+        return this;
     }
 
     public String getLifetime() {
         return lifetime;
     }
 
-    protected void setLifetime(String lifetime) {
+    protected RealmSettings setLifetime(String lifetime) {
         this.lifetime = lifetime;
+        return this;
     }
 
     public double getDrop() {
         return drop;
     }
 
-    protected void setDrop(double drop) {
+    protected RealmSettings setDrop(double drop) {
         this.drop = drop;
+        return this;
     }
 
     public double getLeveling() {
         return leveling;
     }
 
-    protected void setLeveling(double leveling) {
+    protected RealmSettings setLeveling(double leveling) {
         this.leveling = leveling;
+        return this;
     }
 
     public Boolean getTrusted() {
         return trusted;
     }
 
-    public void setTrusted(Boolean trusted) {
+    public RealmSettings setTrusted(Boolean trusted) {
         this.trusted = trusted;
+        return this;
     }
 
     public ArrayList<InstanceSettings> getInstance() {

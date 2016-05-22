@@ -98,8 +98,10 @@
                     dataType: "json",
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify({
-                        username: this.username,
-                        password: this.password
+                        account: {
+                            username: this.username,
+                            password: this.password
+                        }
                     }),
                     success: (function (data) {
                         this.resetForm();
@@ -119,7 +121,7 @@
                     },
                     error: function (code) {
                         if (code.status != 401 && code.status != 404)
-                            application.error( "Failed to establish a connection to the authentication server.")
+                            application.error("Failed to establish a connection to the authentication server.")
                     }
                 });
             },
@@ -136,9 +138,11 @@
                         dataType: "json",
                         contentType: "application/json; charset=utf-8",
                         data: JSON.stringify({
-                            username: this.username,
-                            password: this.password,
-                            email: this.email
+                            account: {
+                                username: this.username,
+                                password: this.password,
+                                email: this.email
+                            }
                         }),
                         success: (function (data) {
                             this.resetForm();

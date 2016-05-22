@@ -17,7 +17,9 @@ public class GeneratePatch {
     private static String outputPath = Paths.get("resources/patch.json").toString();
 
     public static void main(String[] args) throws IOException {
+        System.out.print("Generating patch data..");
         GeneratePatch.generate();
+        System.out.println(" Done.");
     }
 
     public static void generate() throws IOException {
@@ -42,7 +44,7 @@ public class GeneratePatch {
                 File file = path.toFile();
 
                 files.add(new JsonObject()
-                        .put("path", path.toString())
+                        .put("path", path.toString().replace("resources", ""))
                         .put("size", file.length())
                         .put("modified", file.lastModified()));
                 return FileVisitResult.CONTINUE;

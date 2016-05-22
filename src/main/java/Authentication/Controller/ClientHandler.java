@@ -1,23 +1,19 @@
 package Authentication.Controller;
 
+import Authentication.Model.*;
 import Configuration.AuthServerSettings;
 import Configuration.Config;
+import Configuration.RealmSettings;
 import Game.Model.PlayerCharacter;
-import Authentication.Model.*;
+import Game.Model.PlayerClass;
+import Protocol.Authentication.CharacterList;
 import Protocol.Authentication.ClientAuthentication;
 import Utilities.Logger;
 import Utilities.Serializer;
 import Utilities.Token;
 import Utilities.TokenFactory;
-import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Future;
-import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpServerOptions;
-import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.web.Router;
-import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.BodyHandler;
 
 import java.util.ArrayList;
 
@@ -26,221 +22,172 @@ import java.util.ArrayList;
  *         Router used to authenticate users and create/delete characters.
  */
 public class ClientHandler {
-    private AuthServerSettings settings;
     private RealmHandler realms;
     private AsyncAccountStore accounts;
     private TokenFactory clientToken;
-    private Vertx vertx;
     private Logger logger;
 
-    public ClientHandler(Vertx vertx, Logger logger, AsyncAccountStore accounts, RealmHandler realms) {
-        this.vertx = vertx;
+    public ClientHandler(ClientProtocol protocol, RealmHandler realms, AsyncAccountStore accounts, Logger logger) {
+        AuthServerSettings settings = Config.instance().getAuthSettings();
         this.logger = logger;
-        this.settings = Config.instance().getAuthSettings();
         this.clientToken = new TokenFactory(settings.getClientSecret());
         this.realms = realms;
-
         this.accounts = accounts;
 
-        startServer();
+        protocol.use(ClientProtocol.CHARACTERLIST, this::characterList)
+                .use(ClientProtocol.CHARACTERCREATE, this::characterCreate)
+                .use(ClientProtocol.CHARACTERREMOVE, this::characterRemove)
+                .use(ClientProtocol.AUTHENTICATE, this::authenticate)
+                .use(ClientProtocol.REGISTER, this::register)
+                .use(ClientProtocol.REALMTOKEN, this::realmtoken)
+                .use(ClientProtocol.REALMLIST, this::realmlist);
     }
 
-    private void startServer() {
-        Router router = Router.router(vertx);
-        router.route().handler(BodyHandler.create());
-
-        router.options("/*").handler(context -> {
-            allowCors(context);
-            context.response().setStatusCode(HttpResponseStatus.OK.code()).end();
-        });
-
-        router.route("/*").handler(context -> {
-            allowCors(context);
-            context.next();
-        });
-
-        router.post("/api/realmtoken").handler(this::realmtoken);
-        router.post("/api/character-list").handler(this::realmdata);
-        router.post("/api/character-create").handler(this::createCharacter);
-        router.post("/api/character-remove").handler(this::removeCharacter);
-        router.post("/api/register").handler(this::register);
-        router.post("/api/authenticate").handler(this::authenticate);
-        router.get("/api/realmlist").handler(this::realmlist);
-
-        vertx.createHttpServer(new HttpServerOptions()
-                .setCompressionSupported(true))
-                .requestHandler(router::accept).listen(settings.getClientPort());
+    private void realmtoken(ClientRequest request) {
+        if (verify(request))
+            request.write(realms.signToken(request.realm(), request.account()));
     }
 
-    private HttpServerResponse allowCors(RoutingContext context) {
-        return context.response()
-                .putHeader("Access-Control-Allow-Origin", "*")
-                .putHeader("Access-Control-Allow-Methods", "POST, GET")
-                .putHeader("Access-Control-Allow-Headers",
-                        "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
-    }
-
-    private void realmtoken(RoutingContext context) {
-        if (verifyClient(context))
-            context.response().end(Serializer.pack(realms.signToken(getRealm(context), getAccountName(context))));
-    }
-
-    private boolean verifyClient(RoutingContext context) {
-        boolean verified = clientToken.verifyToken(getToken(context));
+    private boolean verify(ClientRequest request) {
+        boolean verified = clientToken.verifyToken(request.token());
 
         if (!verified)
-            context.response().setStatusCode(HttpResponseStatus.UNAUTHORIZED.code()).end();
+            request.unauthorized();
 
         return verified;
     }
 
-    private Token getToken(RoutingContext context) {
-        return (Token) Serializer.unpack(context.getBodyAsJson().getJsonObject("token"), Token.class);
-    }
+    private void characterList(ClientRequest request) {
 
-    private String getRealm(RoutingContext context) {
-        return context.getBodyAsJson().getString("realm");
-    }
-
-    private String getAccountName(RoutingContext context) {
-        return getToken(context).getDomain();
-    }
-
-    private void realmdata(RoutingContext context) {
-
-        if (verifyClient(context)) {
+        if (verify(request)) {
             Future<ArrayList<PlayerCharacter>> future = Future.future();
 
             future.setHandler(result -> {
                 if (result.succeeded()) {
-                    JsonObject realm = Serializer.json(realms.getRealm(getRealm(context)));
-                    realm.remove("authentication");
-
-                    context.response().end(new JsonObject()
-                            .put("characters", result.result())
-                            .put("realm", realm)
-                            .encode());
+                    request.write(new CharacterList(realms.getRealm(request.realm()), result.result()));
                 } else
-                    context.response().setStatusCode(HttpResponseStatus.NOT_FOUND.code()).end();
+                    request.missing();
             });
 
-            accounts.findCharacters(future, getRealm(context), getAccountName(context));
+            accounts.findCharacters(future, request.realm(), request.account());
         }
     }
 
-    private void createCharacter(RoutingContext context) {
-        if (verifyClient(context)) {
+    private void characterCreate(ClientRequest request) {
+        if (verify(request)) {
             Future<PlayerCharacter> find = Future.future();
-            String characterName = context.getBodyAsJson().getString("name");
 
             find.setHandler(found -> {
                 if (found.succeeded()) {
-                    context.response().setStatusCode(HttpResponseStatus.CONFLICT.code()).end();
+                    request.conflict();
                 } else {
-                    upsertCharacter(context);
+                    upsertCharacter(request);
                 }
             });
-            accounts.findCharacter(find, getRealm(context), getAccountName(context), characterName);
+            accounts.findCharacter(find, request.realm(), request.account(), request.character());
         }
     }
 
-    private void upsertCharacter(RoutingContext context) {
+    private void upsertCharacter(ClientRequest request) {
         try {
-            PlayerCharacter character = createCharacterFromTemplate(context);
+            PlayerCharacter character = createCharacterFromTemplate(request);
 
             accounts.addCharacter(Future.future().setHandler(creation -> {
                 if (creation.succeeded()) {
-                    context.response().setStatusCode(HttpResponseStatus.OK.code()).end();
+                    request.accept();
                 } else {
-                    context.response().setStatusCode(HttpResponseStatus.UNAUTHORIZED.code()).end();
+                    request.unauthorized();
                 }
-            }), getRealm(context), getAccountName(context), character);
+            }), request.realm(), request.account(), character);
+
         } catch (PlayerClassDisabledException e) {
-            context.response().setStatusCode(HttpResponseStatus.NOT_FOUND.code()).end();
+            request.missing();
         }
     }
 
 
-    private PlayerCharacter createCharacterFromTemplate(RoutingContext context) throws PlayerClassDisabledException {
-        JsonObject data = context.getBodyAsJson();
-        String name = data.getString("name");
-        String className = data.getString("className");
-        return realms.createCharacter(getRealm(context), name, className);
+    private PlayerCharacter createCharacterFromTemplate(ClientRequest request) throws PlayerClassDisabledException {
+        return readTemplate(realms.getRealm(request.realm()), request.character(), request.className());
     }
 
-    private void removeCharacter(RoutingContext context) {
-        if (verifyClient(context)) {
-            String name = context.getBodyAsJson().getString("name");
-            Future<Void> future = Future.future();
+    private PlayerCharacter readTemplate(RealmSettings realm, String characterName, String className) throws PlayerClassDisabledException {
+        boolean enabled = false;
 
-            future.setHandler(remove -> {
+        for (PlayerClass pc : realm.getClasses()) {
+            if (pc.getName().equals(className))
+                enabled = true;
+        }
+
+        if (enabled) {
+            return new PlayerCharacter(realm.getTemplate(), characterName, className);
+        } else
+            throw new PlayerClassDisabledException();
+    }
+
+
+    private void characterRemove(ClientRequest request) {
+        if (verify(request)) {
+            accounts.removeCharacter(Future.future().setHandler(remove -> {
                 if (remove.succeeded())
-                    context.response().end();
+                    request.accept();
                 else
-                    context.response().setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code()).end();
-            });
-
-            accounts.removeCharacter(future, getRealm(context), getAccountName(context), name);
+                    request.error();
+            }), request.realm(), request.account(), request.character());
         }
     }
 
-    private void register(RoutingContext context) {
-        HttpServerResponse response = context.response();
-        Account account = (Account) Serializer.unpack(context.getBodyAsJson(), Account.class);
+    private void register(ClientRequest request) {
         Future<Account> future = Future.future();
 
         future.setHandler(result -> {
             try {
                 if (future.succeeded()) {
-                    sendAuthentication(result.result(), context, true);
+                    sendAuthentication(result.result(), request, true);
                 } else
                     throw future.cause();
 
             } catch (AccountExistsException e) {
-                response.setStatusCode(HttpResponseStatus.CONFLICT.code()).end();
+                request.conflict();
             } catch (Throwable e) {
-                response.setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code()).end();
+                request.error();
             }
         });
-        accounts.register(future, account);
+        accounts.register(future, request.getAccount());
     }
 
-    private void authenticate(RoutingContext context) {
-        HttpServerResponse response = context.response();
-        Account account = (Account) Serializer.unpack(context.getBodyAsJson(), Account.class);
+    private void authenticate(ClientRequest request) {
         Future<Account> future = Future.future();
 
         future.setHandler(result -> {
             try {
                 if (future.succeeded()) {
-                    sendAuthentication(result.result(), context, false);
+                    sendAuthentication(result.result(), request, false);
                 } else
                     throw future.cause();
 
             } catch (AccountMissingException e) {
-                response.setStatusCode(HttpResponseStatus.NOT_FOUND.code()).end();
+                request.missing();
             } catch (AccountPasswordException e) {
-                logger.onAuthenticationFailure(account, context.request().remoteAddress().host());
-                response.setStatusCode(HttpResponseStatus.UNAUTHORIZED.code()).end();
+                logger.onAuthenticationFailure(request.getAccount(), request.sender());
+                request.unauthorized();
             } catch (Throwable e) {
-                response.setStatusCode(HttpResponseStatus.INTERNAL_SERVER_ERROR.code()).end();
+                request.error();
             }
         });
-        accounts.authenticate(future, account);
+        accounts.authenticate(future, request.getAccount());
     }
 
-    private void sendAuthentication(Account account, RoutingContext context, boolean registered) {
+    private void sendAuthentication(Account account, ClientRequest request, boolean registered) {
         Token token = new Token(clientToken, account.getUsername());
-        context.response()
-                .end(Serializer.pack(new ClientAuthentication(account, token, registered, realms.getMetadataList())));
+        request.write(new ClientAuthentication(account, token, registered, realms.getMetadataList()));
 
         if (registered)
-            logger.onRegistered(account, context.request().remoteAddress().host());
+            logger.onRegistered(account, request.sender());
         else
-            logger.onAuthenticated(account, context.request().remoteAddress().host());
+            logger.onAuthenticated(account, request.sender());
     }
 
-    private void realmlist(RoutingContext context) {
-        context.response().end(Serializer.pack(realms.getMetadataList()));
+    private void realmlist(ClientRequest request) {
+        request.write(realms.getMetadataList());
     }
 }

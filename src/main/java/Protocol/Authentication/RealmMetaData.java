@@ -27,20 +27,21 @@ public class RealmMetaData {
     private Boolean secure;
 
     public RealmMetaData(RealmSettings settings) {
-        this.name = settings.getName();
-        this.description = settings.getDescription();
-        this.remote = settings.getBinding().getRemote();
-        this.port = settings.getBinding().getProxy();
-        this.resources = settings.getResources();
-        this.version = settings.getVersion();
-        this.size = settings.getSize();
-        this.type = settings.getType();
-        this.lifetime = settings.getLifetime();
-        this.drop = settings.getDrop();
-        this.leveling = settings.getLeveling();
-        this.players = settings.getPlayers();
-        this.trusted = settings.getTrusted();
-        this.secure = settings.getSecure();
+
+        this.setName(settings.getName())
+                .setDescription(settings.getDescription())
+                .setRemote(settings.getBinding().getRemote())
+                .setPort(settings.getPort())
+                .setResources(settings.getResources())
+                .setVersion(settings.getVersion())
+                .setSize(settings.getSize())
+                .setType(settings.getType())
+                .setLifetime(settings.getLifetime())
+                .setDrop(settings.getDrop())
+                .setLeveling(settings.getLeveling())
+                .setPlayers(settings.getPlayers())
+                .setTrusted(settings.getTrusted())
+                .setSecure(settings.getSecure());
 
         for (PlayerClass pc : settings.getClasses())
             classes.add(pc.getName());
@@ -50,119 +51,134 @@ public class RealmMetaData {
         return secure;
     }
 
-    public void setSecure(Boolean secure) {
+    public RealmMetaData setSecure(Boolean secure) {
         this.secure = secure;
+        return this;
     }
 
     public ArrayList<String> getClasses() {
         return classes;
     }
 
-    public void setClasses(ArrayList<String> classes) {
+    public RealmMetaData setClasses(ArrayList<String> classes) {
         this.classes = classes;
+        return this;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public RealmMetaData setName(String name) {
         this.name = name;
+        return this;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public RealmMetaData setDescription(String description) {
         this.description = description;
+        return this;
     }
 
     public String getRemote() {
         return remote;
     }
 
-    public void setRemote(String remote) {
+    public RealmMetaData setRemote(String remote) {
         this.remote = remote;
+        return this;
     }
 
     public String getResources() {
         return resources;
     }
 
-    public void setResources(String resources) {
+    public RealmMetaData setResources(String resources) {
         this.resources = resources;
+        return this;
     }
 
     public double getVersion() {
         return version;
     }
 
-    public void setVersion(double version) {
+    public RealmMetaData setVersion(double version) {
         this.version = version;
+        return this;
     }
 
     public int getSize() {
         return size;
     }
 
-    public void setSize(int size) {
+    public RealmMetaData setSize(int size) {
         this.size = size;
+        return this;
     }
 
     public String getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public RealmMetaData setType(String type) {
         this.type = type;
+        return this;
     }
 
     public String getLifetime() {
         return lifetime;
     }
 
-    public void setLifetime(String lifetime) {
+    public RealmMetaData setLifetime(String lifetime) {
         this.lifetime = lifetime;
+        return this;
     }
 
     public double getDrop() {
         return drop;
     }
 
-    public void setDrop(double drop) {
+    public RealmMetaData setDrop(double drop) {
         this.drop = drop;
+        return this;
     }
 
     public double getLeveling() {
         return leveling;
     }
 
-    public void setLeveling(double leveling) {
+    public RealmMetaData setLeveling(double leveling) {
         this.leveling = leveling;
+        return this;
     }
 
     public int getPort() {
         return port;
     }
 
-    public void setPort(int port) {
+    public RealmMetaData setPort(int port) {
         this.port = port;
+        return this;
     }
 
     public int getPlayers() {
         return players;
     }
 
-    public void setPlayers(int players) {
+    public RealmMetaData setPlayers(int players) {
         this.players = players;
+        return this;
     }
 
     public Boolean getTrusted() {
         return trusted;
     }
 
-    public void setTrusted(Boolean trusted) {
+    public RealmMetaData setTrusted(Boolean trusted) {
         this.trusted = trusted;
+        return this;
     }
 }

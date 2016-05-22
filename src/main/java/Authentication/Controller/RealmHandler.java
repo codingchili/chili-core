@@ -1,22 +1,20 @@
 package Authentication.Controller;
 
 import Authentication.Model.AsyncAccountStore;
-import Authentication.Model.PlayerClassDisabledException;
 import Configuration.AuthServerSettings;
 import Configuration.RealmSettings;
 import Game.Model.PlayerCharacter;
-import Game.Model.PlayerClass;
 import Protocol.Authentication.RealmMetaData;
 import Protocol.Game.CharacterRequest;
 import Protocol.Game.CharacterResponse;
 import Protocol.Packet;
 import Configuration.Config;
-import Protocol.RegisterRealm;
+import Protocol.RealmRegister;
+import Protocol.RealmUpdate;
 import Utilities.*;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
@@ -29,7 +27,7 @@ import java.util.HashMap;
 public class RealmHandler {
     private HashMap<String, RealmPacketHandler> handlers = new HashMap<>();
     private HashMap<String, RealmSettings> realms = new HashMap<>();
-    private HashMap<String, String> connections = new HashMap<>();
+    private HashMap<String, RealmConnection> connections = new HashMap<>();
     private AsyncAccountStore accounts;
     private AuthServerSettings settings;
     private TokenFactory tokenFactory;
@@ -43,74 +41,78 @@ public class RealmHandler {
         this.vertx = vertx;
         this.logger = logger;
 
-        handleRegister();
-        handleCharacterRequest();
+        handlers.put(RealmUpdate.ACTION, this.realmUpdate);
+        handlers.put(CharacterRequest.ACTION, this.characterRequest);
+
         startServer();
     }
 
-    private void handleRegister() {
-        handlers.put(RegisterRealm.ACTION, (connection, data) -> {
-            RegisterRealm register = (RegisterRealm) Serializer.unpack(new JsonObject(data), RegisterRealm.class);
-            RealmSettings realm = register.getRealm();
 
-            if (authorize(realm)) {
-                realm.setTrusted(settings.isPublicRealm(realm.getName()));
-                connections.put(connection.textHandlerID(), realm.getName());
-                realms.put(realm.getName(), realm);
+    private RealmPacketHandler realmRegister = (RealmConnection connection, String data) -> {
+        RealmRegister register = (RealmRegister) Serializer.unpack(new JsonObject(data), RealmRegister.class);
+        RealmSettings realm = register.getRealm();
 
-                connection.write(Buffer.buffer(Serializer.pack(new RegisterRealm(true))));
-            } else {
-                connection.write(Buffer.buffer(Serializer.pack(new RegisterRealm(false))));
-            }
-        });
-    }
+        if (authorize(realm)) {
+            realm.setTrusted(settings.isPublicRealm(realm.getName()));
+
+            connections.put(connection.getId(), new RealmConnection(connection, realm.getName()));
+            realms.put(realm.getName(), realm);
+
+            connection.write(Buffer.buffer(Serializer.pack(new RealmRegister(true))));
+        } else {
+            connection.write(Buffer.buffer(Serializer.pack(new RealmRegister(false))));
+        }
+    };
 
     private boolean authorize(RealmSettings realm) {
         Token token = realm.getAuthentication().getToken();
-
         return tokenFactory.verifyToken(token) && (token.getDomain().equals(realm.getName()));
     }
 
-    private void handleCharacterRequest() {
-        handlers.put(CharacterRequest.ACTION, (connection, data) -> {
-            CharacterRequest request = (CharacterRequest) Serializer.unpack(data, CharacterRequest.class);
-            String realm = connections.get(connection.textHandlerID());
-            Future<PlayerCharacter> find = Future.future();
+    private RealmPacketHandler realmUpdate = (RealmConnection connection, String data) -> {
+        RealmUpdate update = (RealmUpdate) Serializer.unpack(new JsonObject(data), RealmUpdate.class);
+        realms.get(connection.realm).setPlayers(update.getPlayers());
+    };
 
-            find.setHandler(result -> {
-                if (result.succeeded()) {
-                    send(connection, new CharacterResponse(result.result(), request));
-                } else
-                    send(connection, new CharacterResponse().setSuccess(false));
-            });
 
-            accounts.findCharacter(find, realm, request.getAccount(), request.getName());
+    private RealmPacketHandler characterRequest = (connection, data) -> {
+        CharacterRequest request = (CharacterRequest) Serializer.unpack(data, CharacterRequest.class);
+        Future<PlayerCharacter> find = Future.future();
+
+        find.setHandler(result -> {
+            if (result.succeeded()) {
+                connection.write(new CharacterResponse(result.result(), request));
+            } else
+                connection.write(new CharacterResponse().setSuccess(false));
         });
-    }
 
-    private void send(ServerWebSocket socket, Object data) {
-        socket.write(Buffer.buffer(Serializer.pack(data)));
-    }
+        accounts.findCharacter(find, connection.realm, request.getAccount(), request.getName());
+
+    };
 
 
     private void startServer() {
-        vertx.createHttpServer().websocketHandler(connection -> {
+        vertx.createHttpServer().websocketHandler(socket -> {
 
-            connection.handler(event -> {
+            socket.handler(event -> {
                 Packet packet = (Packet) Serializer.unpack(event.toString(), Packet.class);
-                handlers.get(packet.getAction()).handle(connection, event.toString());
+
+                // All websocket connections not in connection map are not authenticated.
+                if (connections.get(socket.textHandlerID()) == null) {
+                    realmRegister.handle(new RealmConnection(socket), event.toString());
+                } else
+                    handlers.get(packet.getAction()).handle(connections.get(socket.textHandlerID()), event.toString());
             });
 
-            connection.endHandler(event -> {
-                RealmSettings realm = realms.get(connections.get(connection.textHandlerID()));
-                connections.remove(connection.textHandlerID());
-                realms.remove(realm.getName());
-                logger.onRealmDeregistered(realm);
+            socket.endHandler(event -> {
+                RealmConnection connection = connections.get(socket.textHandlerID());
+                connections.remove(connection.id);
+                RealmSettings removed = realms.remove(connection.realm);
+                logger.onRealmDeregistered(removed);
             });
 
         }).listen(settings.getRealmPort());
     }
-
 
     ArrayList<RealmMetaData> getMetadataList() {
         ArrayList<RealmMetaData> list = new ArrayList<>();
@@ -131,21 +133,6 @@ public class RealmHandler {
     }
 
     RealmSettings getRealm(String realm) {
-        return realms.get(realm);
-    }
-
-    PlayerCharacter createCharacter(String realmName, String name, String className) throws PlayerClassDisabledException {
-        RealmSettings realm = realms.get(realmName);
-        boolean enabled = false;
-
-        for (PlayerClass pc : realm.getClasses()) {
-            if (pc.getName().equals(className))
-                enabled = true;
-        }
-
-        if (enabled) {
-            return new PlayerCharacter(realm.getTemplate(), name, className);
-        } else
-            throw new PlayerClassDisabledException();
+        return realms.get(realm).removeAuthentication();
     }
 }

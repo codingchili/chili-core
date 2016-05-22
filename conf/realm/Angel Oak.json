@@ -3,15 +3,15 @@
     "remote" : "localhost",
     "port" : 5105,
     "token" : {
-      "key" : "38543FF7699EE6AECD30DA739444BC27C106CF8A6F875BE084D75365FB75477F88BE6E24A94F1A05885B572FCBBBA51A81D66796614C364C0399935B15317703",
-      "expiry" : 1466360998,
+      "key" : "8BD29A0A5F80FD3A7A44CBAB615B9348DE24FA58BDB46560BF1E7B6A46B0844455EBA09AF7F004EEA4454F976979FA978DA934658ED7DD4CAFCCB8F6858026CA",
+      "expiry" : 1466608752,
       "domain" : "Angel Oak"
     }
   },
-  "binding": {
-    "remote": "localhost",
-    "port": 9201,
-    "proxy": 9201
+  "binding" : {
+    "remote" : "localhost",
+    "port" : 9201,
+    "proxy" : 9201
   },
   "name" : "Angel Oak",
   "description" : "Stable realm, PvP Aggressive.",
@@ -22,5 +22,5 @@
   "lifetime" : "weekly",
   "drop" : 1.0,
   "leveling" : 1.0,
-  "secure": false
+  "secure" : false
 }

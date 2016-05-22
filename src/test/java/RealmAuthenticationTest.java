@@ -1,6 +1,6 @@
 import Configuration.AuthServerSettings;
 import Configuration.RealmSettings;
-import Protocol.RegisterRealm;
+import Protocol.RealmRegister;
 import Utilities.Serializer;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -20,7 +20,7 @@ class RealmAuthenticationTest {
 
         return Vertx.vertx().createHttpClient().websocket(authserver.getRealmPort(), "localhost", "/", socket -> {
             socket.handler(data -> future.complete());
-            socket.write(Buffer.buffer(Serializer.pack(new RegisterRealm(realm))));
+            socket.write(Buffer.buffer(Serializer.pack(new RealmRegister(realm))));
         });
     }
 }

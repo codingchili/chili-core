@@ -64,5 +64,5 @@ public interface AsyncAccountStore {
      * @param username  the name of the owning account.
      * @param character the name of the character.
      */
-    void removeCharacter(Future<Void> future, String realm, String username, String character);
+    void removeCharacter(Future future, String realm, String username, String character);
 }

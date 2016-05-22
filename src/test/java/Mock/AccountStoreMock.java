@@ -88,7 +88,7 @@ public class AccountStoreMock implements AsyncAccountStore {
     }
 
     @Override
-    public void removeCharacter(Future<Void> future, String realm, String username, String character) {
+    public void removeCharacter(Future future, String realm, String username, String character) {
         HashMap<String, HashMap<String, PlayerCharacter>> characters = accounts.get(username).getCharacters();
 
         if (characters.containsKey(realm) && characters.get(realm).containsKey(character)) {

@@ -1,6 +1,7 @@
 package Authentication;
 
 import Authentication.Controller.ClientHandler;
+import Authentication.Controller.ClientRestProtocol;
 import Authentication.Controller.RealmHandler;
 import Authentication.Model.AccountDB;
 import Authentication.Model.AsyncAccountStore;
@@ -54,7 +55,12 @@ public class Server implements Verticle {
 
     @Override
     public void start(Future<Void> start) throws Exception {
-        new ClientHandler(vertx, logger, accounts, new RealmHandler(vertx, logger, accounts));
+        new ClientHandler(
+                new ClientRestProtocol(vertx, settings),
+                new RealmHandler(vertx, logger, accounts),
+                accounts,
+                logger);
+
         logger.onServerStarted();
         start.complete();
     }

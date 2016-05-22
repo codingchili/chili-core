@@ -77,7 +77,7 @@ public class AccountDB implements AsyncAccountStore {
     }
 
     @Override
-    public void removeCharacter(Future<Void> future, String realm, String username, String character) {
+    public void removeCharacter(Future future, String realm, String username, String character) {
         Future<ArrayList<PlayerCharacter>> find = Future.future();
 
         find.setHandler(found -> {
@@ -100,11 +100,11 @@ public class AccountDB implements AsyncAccountStore {
     }
 
     @Override
-    public void findCharacter(Future<PlayerCharacter> future, String realmName, String username, String name) {
+    public void findCharacter(Future<PlayerCharacter> future, String realmName, String username, String characterName) {
         JsonObject query = new JsonObject()
                 .put("username", username);
         JsonObject fields = new JsonObject()
-                .put("characters." + realmName + "." + name, 1)
+                .put("characters." + realmName + "." + characterName, 1)
                 .put("_id", 0);
 
         client.findOne(COLLECTION, query, fields, search -> {
@@ -112,8 +112,8 @@ public class AccountDB implements AsyncAccountStore {
                 JsonObject characters = search.result().getJsonObject("characters");
                 JsonObject realm = characters.getJsonObject(realmName);
 
-                if (realm != null && realm.containsKey(name)) {
-                    future.complete((PlayerCharacter) Serializer.unpack(realm.getJsonObject(name), PlayerCharacter.class));
+                if (realm != null && realm.containsKey(characterName)) {
+                    future.complete((PlayerCharacter) Serializer.unpack(realm.getJsonObject(characterName), PlayerCharacter.class));
                 } else {
                     future.fail(new CharacterMissingException());
                 }
