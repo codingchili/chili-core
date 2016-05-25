@@ -76,7 +76,7 @@ class ClientRestRequest implements ClientRequest {
     }
 
     @Override
-    public void unauthorized() {
+    public void unauthorize() {
         sendStatus(HttpResponseStatus.UNAUTHORIZED);
     }
 

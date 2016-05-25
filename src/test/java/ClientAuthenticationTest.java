@@ -15,7 +15,6 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
-import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
@@ -53,6 +52,7 @@ public class ClientAuthenticationTest {
         Async async = context.async();
         AsyncAccountStore accounts = new AccountStoreMock();
         vertx = Vertx.vertx();
+
         authconfig = Config.instance().getAuthSettings();
         realmconfig = Config.instance().getGameServerSettings().getRealms().get(0);
 

@@ -9,11 +9,9 @@ import Game.Model.PlayerClass;
 import Protocol.Authentication.CharacterList;
 import Protocol.Authentication.ClientAuthentication;
 import Utilities.Logger;
-import Utilities.Serializer;
 import Utilities.Token;
 import Utilities.TokenFactory;
 import io.vertx.core.Future;
-import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
 
@@ -52,13 +50,13 @@ public class ClientHandler {
         boolean verified = clientToken.verifyToken(request.token());
 
         if (!verified)
-            request.unauthorized();
+            request.unauthorize();
 
         return verified;
     }
 
-    private void characterList(ClientRequest request) {
 
+    private void characterList(ClientRequest request) {
         if (verify(request)) {
             Future<ArrayList<PlayerCharacter>> future = Future.future();
 
@@ -68,7 +66,6 @@ public class ClientHandler {
                 } else
                     request.missing();
             });
-
             accounts.findCharacters(future, request.realm(), request.account());
         }
     }
@@ -96,7 +93,7 @@ public class ClientHandler {
                 if (creation.succeeded()) {
                     request.accept();
                 } else {
-                    request.unauthorized();
+                    request.unauthorize();
                 }
             }), request.realm(), request.account(), character);
 
@@ -169,7 +166,7 @@ public class ClientHandler {
                 request.missing();
             } catch (AccountPasswordException e) {
                 logger.onAuthenticationFailure(request.getAccount(), request.sender());
-                request.unauthorized();
+                request.unauthorize();
             } catch (Throwable e) {
                 request.error();
             }

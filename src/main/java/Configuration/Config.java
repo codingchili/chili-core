@@ -41,6 +41,11 @@ public class Config {
         return instance;
     }
 
+    public static Config reload() {
+        instance = new Config();
+        return instance;
+    }
+
     public static class Address {
         public final static String LOGS = "LOGGING";
     }

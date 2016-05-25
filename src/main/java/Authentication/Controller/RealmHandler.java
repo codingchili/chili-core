@@ -2,19 +2,21 @@ package Authentication.Controller;
 
 import Authentication.Model.AsyncAccountStore;
 import Configuration.AuthServerSettings;
+import Configuration.Config;
 import Configuration.RealmSettings;
 import Game.Model.PlayerCharacter;
 import Protocol.Authentication.RealmMetaData;
 import Protocol.Game.CharacterRequest;
 import Protocol.Game.CharacterResponse;
 import Protocol.Packet;
-import Configuration.Config;
 import Protocol.RealmRegister;
 import Protocol.RealmUpdate;
-import Utilities.*;
+import Utilities.Logger;
+import Utilities.Serializer;
+import Utilities.Token;
+import Utilities.TokenFactory;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
@@ -58,9 +60,9 @@ public class RealmHandler {
             connections.put(connection.getId(), new RealmConnection(connection, realm.getName()));
             realms.put(realm.getName(), realm);
 
-            connection.write(Buffer.buffer(Serializer.pack(new RealmRegister(true))));
+            connection.write(new RealmRegister(true));
         } else {
-            connection.write(Buffer.buffer(Serializer.pack(new RealmRegister(false))));
+            connection.write(new RealmRegister(false));
         }
     };
 
@@ -105,13 +107,22 @@ public class RealmHandler {
             });
 
             socket.endHandler(event -> {
-                RealmConnection connection = connections.get(socket.textHandlerID());
-                connections.remove(connection.id);
-                RealmSettings removed = realms.remove(connection.realm);
-                logger.onRealmDeregistered(removed);
+                remove(socket.textHandlerID());
             });
 
         }).listen(settings.getRealmPort());
+    }
+
+    private void remove(String id) {
+        RealmConnection connection = connections.get(id);
+
+        if (connection != null) {
+            connections.remove(connection.id);
+            RealmSettings removed = realms.remove(connection.realm);
+
+            if (removed != null)
+                logger.onRealmDeregistered(removed);
+        }
     }
 
     ArrayList<RealmMetaData> getMetadataList() {
