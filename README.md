@@ -114,7 +114,7 @@ The resources may be server from the webserver if desired.
 All communication within the system uses a text-protocol based on JSON for simplicity.
 
 ## Configuration
-The configuration directory **'conf' & 'resources' must be in the same directory as the jar file**.
+The configuration directory **'conf' & 'resources' must be in the same directory as the jar file** or **in the classpath**.
 
 The configuration structure
 ```
