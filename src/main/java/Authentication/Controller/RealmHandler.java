@@ -1,6 +1,8 @@
 package Authentication.Controller;
 
+import Authentication.Model.AuthorizationHandler.Access;
 import Authentication.Model.AsyncAccountStore;
+import Authentication.Model.RealmKeeper;
 import Authentication.Model.RealmMissingException;
 import Authentication.Model.Provider;
 import Configuration.AuthServerSettings;
@@ -10,6 +12,7 @@ import Protocol.Game.CharacterRequest;
 import Protocol.Game.CharacterResponse;
 import Protocol.RealmRegister;
 import Protocol.RealmUpdate;
+import Utilities.TokenFactory;
 import io.vertx.core.Future;
 
 /**
@@ -19,16 +22,28 @@ import io.vertx.core.Future;
 public class RealmHandler {
     private AsyncAccountStore accounts;
     private AuthServerSettings settings;
+    private TokenFactory tokens;
 
     public RealmHandler(Provider store) {
         this.accounts = store.getAccountStore();
         this.settings = store.getAuthserverSettings();
+        this.tokens = new TokenFactory(settings.getRealmSecret());
 
         store.realmProtocol(Access.AUTHORIZE)
-                .use(RealmRegister.ACTION, this::register)
                 .use(RealmUpdate.ACTION, this::update)
                 .use(CharacterRequest.ACTION, this::character)
-                .use(RealmProtocol.CLOSE, this::disconnected);
+                .use(RealmProtocol.CLOSE, this::disconnected)
+                .use(RealmRegister.ACTION, this::register, Access.PUBLIC)
+                .use(RealmProtocol.AUTHENTICATE, this::authenticate, Access.PUBLIC);
+    }
+
+    private void authenticate(RealmRequest request) {
+        if (tokens.verifyToken(request.token())) {
+            request.connection().authenticate(request.token().getDomain());
+            request.accept();
+        } else {
+            request.error();
+        }
     }
 
     private void register(RealmRequest request) {

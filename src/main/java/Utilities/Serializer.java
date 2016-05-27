@@ -13,7 +13,7 @@ import java.io.IOException;
  * @author Robin Duda
  *         serializes objects to JSON and back.
  */
-public abstract class Serializer {
+public class Serializer {
 
     /**
      * Serializes an object as JSON.

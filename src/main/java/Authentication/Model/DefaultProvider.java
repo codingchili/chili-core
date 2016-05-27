@@ -1,5 +1,8 @@
 package Authentication.Model;
 
+import Authentication.Controller.Transport.ClientRestProtocol;
+import Authentication.Controller.Transport.RealmWebsocketProtocol;
+import Authentication.Model.AuthorizationHandler.Access;
 import Authentication.Controller.*;
 import Configuration.AuthServerSettings;
 import Configuration.ConfigurationLoader;

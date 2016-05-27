@@ -1,6 +1,6 @@
 package Authentication.Model;
 
-import Authentication.Controller.Access;
+import Authentication.Model.AuthorizationHandler.Access;
 import Authentication.Controller.ClientProtocol;
 import Authentication.Controller.RealmProtocol;
 import Configuration.AuthServerSettings;

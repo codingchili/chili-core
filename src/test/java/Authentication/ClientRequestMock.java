@@ -2,6 +2,7 @@ package Authentication;
 
 import Authentication.Controller.ClientRequest;
 import Authentication.Model.Account;
+import Protocol.Authentication.ClientAuthentication;
 import Utilities.Serializer;
 import Utilities.Token;
 import io.vertx.core.json.JsonObject;
@@ -84,5 +85,12 @@ public class ClientRequestMock implements ClientRequest {
         return (Account) Serializer.unpack(data.getJsonObject("account"), Account.class);
     }
 
-    public enum ResponseStatus {UNAUTHORIZED, MISSING, CONFLICT, ACCEPTED, ERROR};
+    @Override
+    public void authenticate(ClientAuthentication authentication) {
+        listener.handle(Serializer.json(authentication), ResponseStatus.ACCEPTED);
+    }
+
+    enum ResponseStatus {UNAUTHORIZED, MISSING, CONFLICT, ACCEPTED, ERROR}
+
+    ;
 }

@@ -1,6 +1,7 @@
 package Authentication.Controller;
 
 import Authentication.Model.Account;
+import Protocol.Authentication.ClientAuthentication;
 import Protocol.Authentication.RealmMetaData;
 import Utilities.Token;
 
@@ -38,5 +39,5 @@ public interface ClientRequest {
 
     Account getAccount();
 
-    void authenticate(Account account, boolean registered, ArrayList<RealmMetaData> metadataList);
+    void authenticate(ClientAuthentication authentication);
 }

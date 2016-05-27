@@ -1,6 +1,8 @@
-package Authentication.Controller;
+package Authentication.Controller.Transport;
 
+import Authentication.Controller.ClientRequest;
 import Authentication.Model.Account;
+import Protocol.Authentication.ClientAuthentication;
 import Utilities.Serializer;
 import Utilities.Token;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -58,7 +60,8 @@ class ClientRestRequest implements ClientRequest {
 
         if (headers.contains("X-Real-IP"))
             return headers.get("X-Real-IP");
-        else return context.request().remoteAddress().host();
+        else
+            return context.request().remoteAddress().host();
     }
 
     @Override
@@ -107,5 +110,10 @@ class ClientRestRequest implements ClientRequest {
     @Override
     public Account getAccount() {
         return (Account) Serializer.unpack(json.getJsonObject("account"), Account.class);
+    }
+
+    @Override
+    public void authenticate(ClientAuthentication authentication) {
+        response.end(Serializer.pack(authentication));
     }
 }

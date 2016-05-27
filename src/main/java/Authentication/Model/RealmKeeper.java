@@ -1,6 +1,5 @@
-package Authentication.Controller;
+package Authentication.Model;
 
-import Authentication.Model.RealmMissingException;
 import Configuration.RealmSettings;
 import Protocol.Authentication.RealmMetaData;
 import Utilities.Token;
@@ -16,14 +15,14 @@ import java.util.ArrayList;
  *         Shares realm data between the clienthandler and the realmhandler.
  *         Allows the deployment of multiple handlers.
  */
-class RealmKeeper {
+public class RealmKeeper {
     private static LocalMap<String, RealmSettings> realms;
 
     public RealmKeeper(Vertx vertx) {
         realms = vertx.sharedData().getLocalMap("realms");
     }
 
-    static ArrayList<RealmMetaData> getMetadataList() {
+    public static ArrayList<RealmMetaData> getMetadataList() {
         ArrayList<RealmMetaData> list = new ArrayList<>();
 
         for (RealmSettings realm : realms.values()) {
@@ -33,7 +32,7 @@ class RealmKeeper {
         return list;
     }
 
-    static Token signToken(String realm, String domain) {
+    public static Token signToken(String realm, String domain) {
         return new Token(getTokenFactory(realm), domain);
     }
 
@@ -41,7 +40,7 @@ class RealmKeeper {
         return new TokenFactory(realms.get(realm).getAuthentication().getToken().getKey().getBytes());
     }
 
-    static RealmSettings get(String realmName) throws RealmMissingException {
+    public static RealmSettings get(String realmName) throws RealmMissingException {
         RealmSettings realm = realms.get(realmName);
 
         if (realm == null) {
@@ -51,11 +50,11 @@ class RealmKeeper {
         }
     }
 
-    static void put(RealmSettings realm) {
+    public static void put(RealmSettings realm) {
         realms.put(realm.getName(), realm);
     }
 
-    static RealmSettings remove(String realmName) {
+    public static RealmSettings remove(String realmName) {
         return realms.remove(realmName);
     }
 }

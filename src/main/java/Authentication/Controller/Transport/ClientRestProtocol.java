@@ -1,5 +1,12 @@
-package Authentication.Controller;
+package Authentication.Controller.Transport;
 
+import Authentication.Controller.ClientPacketHandler;
+import Authentication.Controller.ClientProtocol;
+import Authentication.Controller.ClientRequest;
+import Authentication.Model.AuthorizationHandler;
+import Authentication.Model.AuthorizationHandler.Access;
+import Authentication.Model.AuthorizationRequired;
+import Authentication.Model.HandlerMissingException;
 import Authentication.Model.Provider;
 import Configuration.AuthServerSettings;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -13,35 +20,40 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 
-import java.util.HashMap;
-
 /**
  * @author Robin Duda
  */
 public class ClientRestProtocol extends AbstractVerticle implements ClientProtocol {
-    private HashMap<String, ClientPacketHandler> handlers = new HashMap<>();
-    private HashMap<String, Access> access = new HashMap<>();
-    private Access accessLevel;
+    private AuthorizationHandler<ClientPacketHandler> handlers;
     private Vertx vertx;
     private AuthServerSettings settings;
 
     public ClientRestProtocol(Provider provider, Access access) {
         this.settings = provider.getAuthserverSettings();
-        this.accessLevel = access;
+        this.handlers = new AuthorizationHandler<>(access);
     }
 
     @Override
     public ClientProtocol use(String action, ClientPacketHandler handler) {
-        return use(action, handler, accessLevel);
+        handlers.use(action, handler);
+        return this;
     }
 
     @Override
-    public ClientProtocol use(String action, ClientPacketHandler handler, Access level) {
-        String method = "/api/" + action;
-
-        handlers.put(method, handler);
-        access.put(method, level);
+    public ClientProtocol use(String action, ClientPacketHandler handler, Access access) {
+        handlers.use(action, handler, access);
         return this;
+    }
+
+    @Override
+    public void handle(String action, ClientRequest request) {
+        try {
+            handlers.get(action, Access.PUBLIC);
+        } catch (AuthorizationRequired e) {
+            request.unauthorize();
+        } catch (HandlerMissingException e) {
+            request.error();
+        }
     }
 
     @Override
@@ -74,12 +86,8 @@ public class ClientRestProtocol extends AbstractVerticle implements ClientProtoc
     }
 
     private void packet(RoutingContext context) {
-        String path = context.request().path();
-
-        if (handlers.containsKey(path))
-            handlers.get(context.request().path()).handle(new ClientRestRequest(context));
-        else
-            context.request().response().setStatusCode(HttpResponseStatus.NOT_IMPLEMENTED.code()).end();
+        String path = context.request().path().replace("/api/", "");
+        handle(path, new ClientRestRequest(context));
     }
 
     private HttpServerResponse allowCors(RoutingContext context) {

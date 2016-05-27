@@ -5,9 +5,13 @@ import Configuration.RealmSettings;
 import Game.Model.PlayerCharacter;
 import Game.Model.PlayerClass;
 import Protocol.Authentication.CharacterList;
+import Protocol.Authentication.ClientAuthentication;
 import Protocol.Authentication.RealmList;
 import Utilities.Logger;
+import Utilities.Token;
+import Utilities.TokenFactory;
 import io.vertx.core.Future;
+import Authentication.Model.AuthorizationHandler.Access;
 
 import java.util.ArrayList;
 
@@ -17,19 +21,21 @@ import java.util.ArrayList;
  */
 public class ClientHandler {
     private AsyncAccountStore accounts;
+    private TokenFactory factory;
     private Logger logger;
 
-    public ClientHandler(Provider store) {
-        this.logger = store.getLogger();
-        this.accounts = store.getAccountStore();
+    public ClientHandler(Provider provider) {
+        this.logger = provider.getLogger();
+        this.accounts = provider.getAccountStore();
+        this.factory = new TokenFactory(provider.getAuthserverSettings().getClientSecret());
 
-        store.clientProtocol(Access.AUTHORIZE)
+        provider.clientProtocol(Access.AUTHORIZE)
                 .use(ClientProtocol.CHARACTERLIST, this::characterList)
                 .use(ClientProtocol.CHARACTERCREATE, this::characterCreate)
                 .use(ClientProtocol.CHARACTERREMOVE, this::characterRemove)
+                .use(ClientProtocol.REALMTOKEN, this::realmtoken)
                 .use(ClientProtocol.AUTHENTICATE, this::authenticate, Access.PUBLIC)
                 .use(ClientProtocol.REGISTER, this::register, Access.PUBLIC)
-                .use(ClientProtocol.REALMTOKEN, this::realmtoken)
                 .use(ClientProtocol.REALMLIST, this::realmlist, Access.PUBLIC);
     }
 
@@ -155,7 +161,12 @@ public class ClientHandler {
     }
 
     private void sendAuthentication(Account account, ClientRequest request, boolean registered) {
-        request.authenticate(account, registered, RealmKeeper.getMetadataList());
+        request.authenticate(
+                new ClientAuthentication(
+                        account,
+                        new Token(factory, account.getUsername()),
+                        registered,
+                        RealmKeeper.getMetadataList()));
 
         if (registered)
             logger.onRegistered(account, request.sender());
