@@ -1,0 +1,357 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-ripple/paper-ripple.html">
+<link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="character-create.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner-lite.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/scale-up-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
+
+
+<!--
+    @author Robin Duda
+    Polymer element for a simple admin-panel using iron-pages.
+ -->
+
+<dom-module id="character-list">
+    <link rel="import" href="../../style/theme.css" type="css">
+    <link rel="import" href="../../style/style.css" type="css">
+    <template>
+        <style>
+            :host {
+                display: inline-block;
+            }
+
+            .container {
+                width: 80%;
+                max-width: 825px;
+            }
+
+            .character {
+                width: 128px;
+                height: 154px;
+                margin-left: 32px;
+                margin-bottom: 48px;
+                float: left;
+            }
+
+            .realm-title {
+                padding-top: 20px;
+                display: block;
+                text-align: center;
+                width: 100%;
+                height: 64px;
+            }
+
+            .loading-box {
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 96px;
+                width: 364px;
+                height: 196px;
+                padding-top: 32px;
+            }
+
+            .spinner {
+                width: 128px;
+                height: 128px;
+                margin: auto;
+                display: block;
+            }
+
+            .loading-text {
+                text-align: center;
+                font-size: smaller;
+                width: 100%;
+                margin-top: 32px;
+            }
+
+            .character-name {
+                font-size: smaller;
+                position: absolute;
+                bottom: 4px;
+                width: 100%;
+                text-align: center;
+            }
+
+            .character-image {
+                max-height: 128px;
+            }
+
+            .container-loading-box {
+                padding-bottom: 128px;
+            }
+
+            .character-list-box {
+                width: 480px;
+                margin: auto;
+            }
+
+            .character-create {
+                width: 100%;
+            }
+
+            .tooltip {
+                width: 148px;
+                text-align: center;
+                margin-top: -6px;
+            }
+
+            .tooltip-text {
+                font-size: 14px;
+            }
+
+            .character-remove {
+                position: absolute;
+                right: 0;
+            }
+        </style>
+
+        <div class="container center-box">
+
+            <paper-material elevation="3">
+
+                <div hidden="{{create}}">
+                    <div class="realm-title">
+                        <h4 style="display: inline-block">{{realm.name}}</h4>
+                        <iron-icon on-tap="realmlist"
+                                   icon="icons:reply"></iron-icon>
+                    </div>
+
+                    <div class="container-loading-box" hidden="{{loaded}}">
+                        <paper-material elevation="2" class="loading-box">
+                            <paper-spinner-lite class="spinner thin" active></paper-spinner-lite>
+
+                            <div class="loading-text">{{status}}</div>
+                        </paper-material>
+                    </div>
+
+
+                    <div class="character-list-box" hidden="{{loading}}">
+
+                        <template is="dom-repeat" items="{{realm.characters}}" as="character">
+                            <paper-material elevation="2" class="character" on-tap="select">
+                                <paper-ripple></paper-ripple>
+                                <paper-tooltip animation-delay="0" class="tooltip">
+                                    <span class="tooltip-text">{{character.className}} Lv.{{character.level}}</span>
+                                </paper-tooltip>
+                                <iron-icon on-tap="removeCharacter"
+                                           icon="icons:close" class="character-remove"></iron-icon>
+                                <img src="{{realm.resources}}/gui/class/{{character.className}}.svg"
+                                     class="class-image">
+
+                                <div class="character-name">{{character.name}}</div>
+                            </paper-material>
+                        </template>
+
+                        <paper-button on-tap="showCreate">Create</paper-button>
+
+                    </div>
+                </div>
+
+                <character-create hidden="{{list}}" class="character-create">
+                </character-create>
+
+            </paper-material>
+        </div>
+
+    </template>
+    <script>
+        Polymer({
+            is: 'character-list',
+
+            ready: function () {
+
+                application.onRealmSelect((function (realm) {
+                    this.set("realm", realm);
+                    this.showCharacters();
+                    this.realmtoken(realm);
+                }).bind(this));
+
+                application.subscribe("cancel-create", (function () {
+                    this.showCharacters();
+                }).bind(this));
+
+                application.subscribe("character-create", (function () {
+                    this.showCharacters();
+                    this.loadCharacters();
+                }).bind(this));
+
+            },
+
+            realmtoken: function (realm) {
+                this.showLoading("Authenticating..");
+
+                $.ajax({
+                    type: "POST",
+                    url: api.authentication("realmtoken"),
+                    dataType: "json",
+                    contentType: "text/plain",
+                    data: JSON.stringify(
+                            {
+                                token: application.authentication.token,
+                                realm: this.realm.name
+                            }
+                    ),
+                    statusCode: {
+                        200: (function (data) {
+                            this.token = data;
+                            this.loadCharacters();
+                        }).bind(this),
+                        401: (function () {
+                            application.error("Authentication server rejected the authentication token when creating a realm token.");
+                        })
+                    },
+                    error: function (code) {
+                        if (code.status != 401)
+                            application.error("Failed to connect to the authentication server to generate realm token.");
+                    }
+                });
+            },
+
+            random: function () {
+                var list = ["necromancer", "paladin", "druid", "assassin", "hunter", "slayer"];
+                return list[Math.floor(Math.random() * 6)];
+            },
+
+            loadCharacters: function () {
+                this.showLoading("Loading characters..");
+
+                $.ajax({
+                    type: "POST",
+                    url: api.authentication("character-list"),
+                    dataType: "json",
+                    contentType: "text/plain",
+                    data: JSON.stringify({token: application.authentication.token, realm: this.realm.name}),
+                    statusCode: {
+                        200: (function (data) {
+                            data.realm.characters = data.characters;
+                            this.set("realm", data.realm);
+
+                            this.showCharacters();
+                            this.hideLoading();
+
+                            application.realmLoaded({realm: data.realm, token: this.token});
+                        }).bind(this),
+                        401: (function () {
+                            application.error("The authentication server rejected the realm token when listing characters.");
+                        }).bind(this)
+                    },
+                    error: function (code) {
+                        if (code.status != 401)
+                            application.error("Failed to connect to the authentication server to list characters.");
+                    }
+                });
+            },
+
+            removeCharacter: function (e) {
+                e.stopPropagation();
+                this.showLoading("Removing character..");
+
+                $.ajax({
+                    type: "POST",
+                    url: api.authentication("character-remove"),
+                    contentType: "text/plain",
+                    data: JSON.stringify({
+                        token: application.authentication.token,
+                        realm: this.realm.name,
+                        character: e.model.character.name
+                    }),
+                    statusCode: {
+                        200: (function () {
+                            this.loadCharacters();
+                        }).bind(this)
+                    },
+                    error: function (code) {
+                        if (code.status != 401)
+                            application.error("Failed to connect to the authentication server to delete a character..");
+                    }
+                });
+            },
+
+            showLoading: function (status) {
+                this.set("status", status);
+                this.set("loaded", false);
+                this.set("loading", true);
+            },
+
+            hideLoading: function () {
+                this.set("loaded", true);
+                this.set("loading", false);
+            },
+
+            showCreate: function () {
+                this.set("list", false);
+                this.set("create", true);
+            },
+
+            showCharacters: function () {
+                this.set("list", true);
+                this.set("create", false);
+            },
+
+            select: function (e) {
+                this.showLoading("Connecting to " + this.realm.name + "..");
+                var ws = new WebSocket(api.realmWebSocket(this.realm));
+
+                ws.onopen = (function () {
+                    this.showLoading("Authenticating..");
+
+                    ws.send(JSON.stringify({
+                        token: this.token,
+                        name: e.model.character.name,
+                        header: {action: "character.request"}
+                    }));
+                }).bind(this);
+
+                ws.onmessage = (function (event) {
+                    var packet = JSON.parse(event.data);
+
+                    if (packet.success) {
+                        switch (packet.header.action) {
+                            case "authentication.result":
+                                this.showLoading("Downloading character..");
+                                break;
+                            case "character.response":
+                                this.showLoading("Checking build..");
+
+                                patcher.check({
+                                    completed: (function () {
+                                        application.update({
+                                            socket: ws,
+                                            realm: this.realm,
+                                            character: packet.character
+                                        })
+                                    }).bind(this),
+                                    resource: this.realm.resources
+                                });
+                                break;
+                        }
+                    }
+                    else {
+                        ws.close();
+
+                        application.error("Failure occured when processing " + packet.header.action + ".");
+                    }
+
+                }).bind(this);
+
+                ws.onerror = (function (event) {
+                    application.error("Error connecting to " + this.realm.name + ".");
+                }).bind(this);
+
+                ws.onclose = (function (event) {
+
+                    if (!event.wasClean)
+                        application.error("The connection to the " + this.realm.name + " server was lost, please retry.");
+                }).bind(this);
+            },
+
+            realmlist: function () {
+                application.showRealms();
+            }
+        })
+        ;
+    </script>
+</dom-module>

@@ -1,0 +1,52 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<style include="iron-flex iron-flex-alignment"></style>
+
+<!--
+    @author Robin Duda
+    Polymer element for use as a footer.
+ -->
+
+<dom-module id="footer-template">
+    <link rel="import" href="../../style/theme.css" type="css">
+    <template>
+        <style>
+            :host {
+                display: inline-block;
+            }
+
+            paper-material {
+                width: 100%;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                text-align: center;
+                background-color: #000000;
+            }
+        </style>
+
+        <div>
+            <paper-material elevation="3">
+                <p>
+                <h6>
+                    {{build}}
+                </h6>
+                </p>
+            </paper-material>
+        </div>
+
+    </template>
+    <script>
+        Polymer({
+            is: 'footer-template',
+
+            ready: function () {
+
+                application.onVersion((function (version) {
+                    this.set('build', version.name + ' ' + version.build);
+                }).bind(this));
+
+            }
+        });
+    </script>
+</dom-module>
