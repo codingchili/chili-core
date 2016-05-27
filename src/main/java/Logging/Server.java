@@ -1,9 +1,9 @@
 package Logging;
 
 
+import Configuration.FileConfiguration;
 import Configuration.LogServerSettings;
 import Utilities.*;
-import Configuration.Config;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
@@ -29,7 +29,7 @@ public class Server implements Verticle {
     @Override
     public void init(Vertx vertx, Context context) {
         this.vertx = vertx;
-        this.settings = Config.instance().getLogSettings();
+        this.settings = FileConfiguration.instance().getLogSettings();
         this.logger = new DefaultLogger(vertx, settings.getLogserver());
         this.tokenFactory = new TokenFactory(settings.getSecret());
     }

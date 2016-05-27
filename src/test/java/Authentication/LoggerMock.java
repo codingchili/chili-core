@@ -1,4 +1,4 @@
-package Mock;
+package Authentication;
 
 import Authentication.Model.Account;
 import Configuration.InstanceSettings;
@@ -7,9 +7,9 @@ import Utilities.Logger;
 import io.vertx.core.http.HttpServerRequest;
 
 /**
- * Mock implementation of a logger to disable logging.
+ * Authentication.Mock implementation of a logger to disable logging.
  */
-public class MockLogger implements Logger {
+public class LoggerMock implements Logger {
     @Override
     public void onServerStarted() {
 

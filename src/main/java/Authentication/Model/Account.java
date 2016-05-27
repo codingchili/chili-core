@@ -53,4 +53,9 @@ public class Account {
         this.email = email;
         return this;
     }
+
+    public void addCharacter(String realmName, PlayerCharacter playerCharacter) {
+        characters.putIfAbsent(realmName, new HashMap<>());
+        characters.get(realmName).put(playerCharacter.getName(), playerCharacter);
+    }
 }

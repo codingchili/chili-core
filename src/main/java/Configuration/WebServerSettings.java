@@ -12,10 +12,6 @@ import java.util.ArrayList;
 public class WebServerSettings implements Configurable {
     static final String WEBSERVER_PATH = "conf/system/webserver.json";
     private RemoteAuthentication logserver;
-    private RemoteAuthentication authserver;
-    private PatchNotes patch;
-    private ArrayList<NewsItem> news;
-    private GameInfo info;
     private Integer port;
     private Boolean cache;
     private Boolean compress;
@@ -46,14 +42,6 @@ public class WebServerSettings implements Configurable {
         this.cache = cache;
     }
 
-    public RemoteAuthentication getAuthserver() {
-        return authserver;
-    }
-
-    public void setAuthserver(RemoteAuthentication authserver) {
-        this.authserver = authserver;
-    }
-
     public RemoteAuthentication getLogserver() {
         return logserver;
     }
@@ -68,29 +56,5 @@ public class WebServerSettings implements Configurable {
 
     protected void setPort(Integer port) {
         this.port = port;
-    }
-
-    public PatchNotes getPatch() {
-        return patch;
-    }
-
-    protected void setPatch(PatchNotes patch) {
-        this.patch = patch;
-    }
-
-    public ArrayList<NewsItem> getNews() {
-        return news;
-    }
-
-    protected void setNews(ArrayList<NewsItem> news) {
-        this.news = news;
-    }
-
-    public GameInfo getInfo() {
-        return info;
-    }
-
-    protected void setInfo(GameInfo info) {
-        this.info = info;
     }
 }

@@ -1,10 +1,11 @@
 package Game;
 
+import Configuration.FileConfiguration;
 import Configuration.GameServerSettings;
 import Configuration.RealmSettings;
 import Game.Controller.Realm;
-import Utilities.*;
-import Configuration.Config;
+import Utilities.DefaultLogger;
+import Utilities.Logger;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
@@ -27,7 +28,7 @@ public class Server implements Verticle {
     @Override
     public void init(Vertx vertx, Context context) {
         this.vertx = vertx;
-        this.settings = Config.instance().getGameServerSettings();
+        this.settings = FileConfiguration.instance().getGameServerSettings();
         this.logger = new DefaultLogger(vertx, settings.getLogserver());
     }
 

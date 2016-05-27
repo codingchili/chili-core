@@ -1,7 +1,11 @@
 package Authentication.Controller;
 
+import Authentication.Model.Provider;
 import Configuration.AuthServerSettings;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Context;
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpServerResponse;
@@ -14,10 +18,39 @@ import java.util.HashMap;
 /**
  * @author Robin Duda
  */
-public class ClientRestProtocol implements ClientProtocol {
+public class ClientRestProtocol extends AbstractVerticle implements ClientProtocol {
     private HashMap<String, ClientPacketHandler> handlers = new HashMap<>();
+    private HashMap<String, Access> access = new HashMap<>();
+    private Access accessLevel;
+    private Vertx vertx;
+    private AuthServerSettings settings;
 
-    public ClientRestProtocol(Vertx vertx, AuthServerSettings settings) {
+    public ClientRestProtocol(Provider provider, Access access) {
+        this.settings = provider.getAuthserverSettings();
+        this.accessLevel = access;
+    }
+
+    @Override
+    public ClientProtocol use(String action, ClientPacketHandler handler) {
+        return use(action, handler, accessLevel);
+    }
+
+    @Override
+    public ClientProtocol use(String action, ClientPacketHandler handler, Access level) {
+        String method = "/api/" + action;
+
+        handlers.put(method, handler);
+        access.put(method, level);
+        return this;
+    }
+
+    @Override
+    public void init(Vertx vertx, Context context) {
+        this.vertx = vertx;
+    }
+
+    @Override
+    public void start(Future<Void> future) {
         Router router = Router.router(vertx);
         router.route().handler(BodyHandler.create());
 
@@ -36,12 +69,8 @@ public class ClientRestProtocol implements ClientProtocol {
         vertx.createHttpServer(new HttpServerOptions()
                 .setCompressionSupported(true))
                 .requestHandler(router::accept).listen(settings.getClientPort());
-    }
 
-    @Override
-    public ClientProtocol use(String action, ClientPacketHandler handler) {
-        handlers.put("/api/" + action, handler);
-        return this;
+        future.complete();
     }
 
     private void packet(RoutingContext context) {

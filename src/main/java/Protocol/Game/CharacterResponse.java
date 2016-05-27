@@ -11,26 +11,26 @@ public class CharacterResponse {
     public static final String ACTION = "character.response";
     private Header header;
     private PlayerCharacter character;
-    private String connection;
+    private String sender;
     private boolean success;
 
-    public CharacterResponse() {
+    private CharacterResponse() {
         this.header = new Header(ACTION);
     }
 
-    public CharacterResponse(PlayerCharacter character, CharacterRequest request) {
+    public CharacterResponse(PlayerCharacter character, String sender) {
         this();
         this.character = character;
-        this.connection = request.getConnection();
+        this.sender = sender;
         this.success = true;
     }
 
     public String getConnection() {
-        return connection;
+        return sender;
     }
 
-    public void setConnection(String connection) {
-        this.connection = connection;
+    public void setConnection(String sender) {
+        this.sender = sender;
     }
 
     public Header getHeader() {

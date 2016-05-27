@@ -4,8 +4,10 @@ package Authentication.Controller;
  * @author Robin Duda
  */
 
-interface ClientProtocol {
+public interface ClientProtocol {
     ClientProtocol use(String action, ClientPacketHandler handler);
+
+    ClientProtocol use(String action, ClientPacketHandler handler, Access access);
 
     String CHARACTERLIST = "character-list";
     String CHARACTERCREATE = "character-create";

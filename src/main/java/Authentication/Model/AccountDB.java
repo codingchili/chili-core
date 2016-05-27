@@ -14,11 +14,11 @@ import java.util.ArrayList;
  *         <p>
  *         Implementation of asynchronous account store using MongoDb.
  */
-public class AccountDB implements AsyncAccountStore {
+class AccountDB implements AsyncAccountStore {
     private static final String COLLECTION = "accounts";
     private MongoClient client;
 
-    public AccountDB(MongoClient client) {
+    AccountDB(MongoClient client) {
         this.client = client;
     }
 

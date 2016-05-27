@@ -1,38 +1,30 @@
 package Authentication;
 
 import Authentication.Controller.ClientHandler;
-import Authentication.Controller.ClientRestProtocol;
+import Authentication.Model.DefaultProvider;
 import Authentication.Controller.RealmHandler;
-import Authentication.Model.AccountDB;
-import Authentication.Model.AsyncAccountStore;
-import Configuration.AuthServerSettings;
-import Configuration.Config;
-import Utilities.DefaultLogger;
+import Authentication.Model.Provider;
 import Utilities.Logger;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.MongoClient;
 
 /**
  * @author Robin Duda
  *         Starts up the client handler and the realm handler.
  */
 public class Server implements Verticle {
+    private Provider store;
     private Vertx vertx;
     private Logger logger;
-    private AuthServerSettings settings;
-    private AsyncAccountStore accounts;
 
     public Server() {
-        this.settings = Config.instance().getAuthSettings();
     }
 
-    public Server(AsyncAccountStore accounts) {
-        this();
-        this.accounts = accounts;
+    public Server(Provider store) {
+        this.store = store;
+        this.logger = store.getLogger();
     }
 
     @Override
@@ -43,23 +35,19 @@ public class Server implements Verticle {
     @Override
     public void init(Vertx vertx, Context context) {
         this.vertx = vertx;
-        this.logger = new DefaultLogger(vertx, settings.getLogserver());
 
-        if (accounts == null) {
-            accounts = new AccountDB(
-                    MongoClient.createShared(vertx, new JsonObject()
-                            .put("db_name", settings.getDatabase().getName())
-                            .put("connection_string", settings.getDatabase().getRemote())));
+        if (store == null) {
+            store = new DefaultProvider(vertx);
         }
     }
 
     @Override
     public void start(Future<Void> start) throws Exception {
-        new ClientHandler(
-                new ClientRestProtocol(vertx, settings),
-                new RealmHandler(vertx, logger, accounts),
-                accounts,
-                logger);
+
+        for (int i = 0; i < 4; i++) {
+            new ClientHandler(store);
+            new RealmHandler(store);
+        }
 
         logger.onServerStarted();
         start.complete();

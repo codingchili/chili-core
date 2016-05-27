@@ -7,7 +7,7 @@ import java.io.IOException;
  *         Generates new tokens and optionally secrets and writes them to the configuration files.
  */
 public class GenerateTokens {
-    private Config configuration = Config.instance();
+    private FileConfiguration configuration = (FileConfiguration) FileConfiguration.instance();
 
     public static void main(String[] args) throws IOException {
 

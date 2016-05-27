@@ -1,10 +1,7 @@
 package Utilities;
 
 import Authentication.Model.Account;
-import Configuration.Config;
-import Configuration.InstanceSettings;
-import Configuration.RealmSettings;
-import Configuration.RemoteAuthentication;
+import Configuration.*;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
@@ -37,7 +34,7 @@ public class DefaultLogger implements Logger {
                 buffer.clear();
             }
 
-            vertx.eventBus().consumer(Config.Address.LOGS, message -> {
+            vertx.eventBus().consumer(ConfigurationLoader.Address.LOGS, message -> {
                 handler.write(Buffer.buffer(message.body().toString()));
             });
 
@@ -137,6 +134,6 @@ public class DefaultLogger implements Logger {
         if (!connected)
             buffer.add(message);
         else
-            vertx.eventBus().send(Config.Address.LOGS, message);
+            vertx.eventBus().send(ConfigurationLoader.Address.LOGS, message);
     }
 }

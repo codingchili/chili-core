@@ -5,5 +5,5 @@ package Authentication.Model;
  *
  * Thrown when an authentication error has occured.
  */
-public class AccountException extends Exception {
+class AccountException extends Exception {
 }

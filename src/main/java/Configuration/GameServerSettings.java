@@ -1,11 +1,7 @@
 package Configuration;
 
-import Utilities.JsonFileStore;
-import Utilities.Serializer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.vertx.core.json.JsonObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -19,15 +15,8 @@ public class GameServerSettings implements Configurable {
     private RemoteAuthentication logserver;
     private ArrayList<RealmSettings> realms = new ArrayList<>();
 
-    public GameServerSettings() throws IOException {
-        this.loadRealms();
-    }
-
-    private void loadRealms() throws IOException {
-        ArrayList<JsonObject> configurations = JsonFileStore.readDirectoryObjects(REALM_PATH);
-
-        for (JsonObject configuration : configurations)
-            realms.add((RealmSettings) Serializer.unpack(configuration, RealmSettings.class));
+    void setRealms(ArrayList<RealmSettings> realms) {
+        this.realms = realms;
     }
 
     public ArrayList<RealmSettings> getRealms() {

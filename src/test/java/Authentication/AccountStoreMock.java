@@ -1,4 +1,4 @@
-package Mock;
+package Authentication;
 
 import Authentication.Model.*;
 import Game.Model.PlayerCharacter;
@@ -12,7 +12,23 @@ import java.util.HashMap;
  *         mock implementation of an account store used for testing.
  */
 public class AccountStoreMock implements AsyncAccountStore {
+    private static final String PASSWORD = "password";
+    private static final String USERNAME = "username";
+    private static final String REALM_NAME = "realm.name";
+    private static final String CHARACTER_NAME = "character";
+    private static final String CHARACTER_NAME_DELETED = "character-deleted";
     private HashMap<String, Account> accounts = new HashMap<>();
+
+    public AccountStoreMock() {
+        Account account = new Account()
+                .setPassword(PASSWORD)
+                .setUsername(USERNAME);
+
+        account.addCharacter(REALM_NAME, new PlayerCharacter().setName(CHARACTER_NAME));
+        account.addCharacter(REALM_NAME, new PlayerCharacter().setName(CHARACTER_NAME_DELETED));
+
+        accounts.put(USERNAME, account);
+    }
 
     @Override
     public void find(Future<Account> future, String username) {

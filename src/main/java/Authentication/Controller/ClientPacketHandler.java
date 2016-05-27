@@ -5,6 +5,8 @@ package Authentication.Controller;
  */
 
 @FunctionalInterface
-interface ClientPacketHandler {
+public interface ClientPacketHandler {
     void handle(ClientRequest request);
+
+    String x = "";
 }

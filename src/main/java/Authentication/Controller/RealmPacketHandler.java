@@ -6,6 +6,6 @@ package Authentication.Controller;
  */
 
 @FunctionalInterface
-interface RealmPacketHandler {
-    void handle(RealmConnection connection, String data);
+public interface RealmPacketHandler {
+    void handle(RealmRequest request);
 }

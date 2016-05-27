@@ -1,5 +1,6 @@
+package Authentication;
+
 import Configuration.AuthServerSettings;
-import Configuration.Config;
 import Configuration.RealmSettings;
 import Protocol.Game.CharacterRequest;
 import Protocol.RealmRegister;
@@ -9,19 +10,16 @@ import Utilities.TokenFactory;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.WebSocket;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
-import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Robin Duda
@@ -31,10 +29,13 @@ import java.io.IOException;
 @RunWith(VertxUnitRunner.class)
 public class RealmAuthenticationTest {
     private Vertx vertx;
-    private AuthServerSettings authconfig;
-    private RealmSettings realmconfig;
+    private AuthServerSettings authconfig = new ConfigMock().getAuthSettings();
+    private RealmSettings realmconfig = new ConfigMock().getRealm();
     private TokenFactory factory;
     private String verticle;
+
+    @Rule
+    public Timeout timeout = new Timeout(2, TimeUnit.SECONDS);
 
     @Before
     public void setUp(TestContext context) {
@@ -42,11 +43,7 @@ public class RealmAuthenticationTest {
         this.vertx = Vertx.vertx();
         factory = new TokenFactory("null".getBytes());
 
-        Config.reload();
-        authconfig = Config.instance().getAuthSettings();
-        realmconfig = Config.instance().getGameServerSettings().getRealms().get(0);
-
-        vertx.deployVerticle(new Authentication.Server(), handler -> {
+        vertx.deployVerticle(new Authentication.Server(new ProviderMock(vertx)), handler -> {
             verticle = handler.result();
             async.complete();
         });
@@ -57,14 +54,6 @@ public class RealmAuthenticationTest {
         vertx.undeploy(verticle, context.asyncAssertSuccess());
     }
 
-    static HttpClient registerRealm(AuthServerSettings authserver, RealmSettings realm, Future<Object> future) throws IOException {
-        realm.load();
-
-        return Vertx.vertx().createHttpClient().websocket(authserver.getRealmPort(), "localhost", "/", socket -> {
-            socket.handler(data -> future.complete());
-            socket.write(Buffer.buffer(Serializer.pack(new RealmRegister(realm))));
-        });
-    }
 
     @Test
     public void shouldRegisterWithRealm(TestContext context) {
@@ -122,6 +111,7 @@ public class RealmAuthenticationTest {
             async.complete();
         });
 
+        // todo requires
         send(new CharacterRequest(), future);
     }
 

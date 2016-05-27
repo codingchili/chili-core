@@ -1,10 +1,9 @@
 package Website;
 
-import Configuration.Config;
+import Configuration.FileConfiguration;
 import Configuration.WebServerSettings;
 import Utilities.DefaultLogger;
 import Utilities.Logger;
-import Utilities.Serializer;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
@@ -30,7 +29,7 @@ public class Server implements Verticle {
 
     @Override
     public void init(Vertx vertx, Context context) {
-        this.settings = Config.instance().getWebServerSettings();
+        this.settings = FileConfiguration.instance().getWebServerSettings();
         this.vertx = vertx;
         this.logger = new DefaultLogger(vertx, settings.getLogserver());
     }
@@ -41,7 +40,6 @@ public class Server implements Verticle {
 
         router.route().handler(BodyHandler.create());
         setLogging(router);
-        setApi(router);
         setResources(router);
         setCatchAll(router);
 
@@ -51,30 +49,6 @@ public class Server implements Verticle {
 
         logger.onServerStarted();
         start.complete();
-    }
-
-    private void setApi(Router router) {
-        router.get("/api/news").handler(context -> {
-            context.response()
-                    .putHeader("Content-Type", "application/json")
-                    .end(Serializer.pack(settings.getNews()));
-        });
-
-        router.get("/api/authserver").handler(context -> {
-            context.response().end(Serializer.pack(settings.getAuthserver()));
-        });
-
-        router.get("/api/gameinfo").handler(context -> {
-            context.response()
-                    .putHeader("Content-Type", "application/json")
-                    .end(Serializer.pack(settings.getInfo()));
-        });
-
-        router.get("/api/patchnotes").handler(context -> {
-            context.response()
-                    .putHeader("Content-Type", "application/json")
-                    .end(Serializer.pack(settings.getPatch()));
-        });
     }
 
     private void setLogging(Router router) {
@@ -88,8 +62,8 @@ public class Server implements Verticle {
         router.route("/resources/*").handler(StaticHandler.create("resources/")
                 .setCachingEnabled(settings.getCache()));
 
-        router.route("/*").handler(StaticHandler.create()
-                .setCachingEnabled(true));
+        router.route("/*").handler(StaticHandler.create("website/")
+                .setCachingEnabled(settings.getCache()));
     }
 
     private void setCatchAll(Router router) {

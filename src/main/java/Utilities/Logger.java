@@ -45,13 +45,13 @@ public interface Logger {
     void onAuthenticated(Account account, String host);
 
     /**
-     * Emit when a new character has been registered.
+     * Emit when a new character has been register.
      * @param host the originating host.
      */
     void onRegistered(Account account, String host);
 
     /**
-     * Emit when a realm successfully registered with the authentication server.
+     * Emit when a realm successfully register with the authentication server.
      */
     void onRealmRegistered(RealmSettings realm);
 
