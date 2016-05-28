@@ -104,11 +104,6 @@ class ClientRestRequest implements ClientRequest {
     }
 
     @Override
-    public boolean authorized() {
-        return false;
-    }
-
-    @Override
     public void error() {
         sendStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR);
     }

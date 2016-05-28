@@ -35,11 +35,6 @@ class RealmWebsocketRequest implements RealmRequest {
     }
 
     @Override
-    public boolean authorized() {
-        return connection.authenticated();
-    }
-
-    @Override
     public void write(Object object) {
         connection.write(object);
     }

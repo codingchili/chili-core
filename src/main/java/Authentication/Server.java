@@ -49,8 +49,8 @@ public class Server implements Verticle {
         new RealmHandler(provider);
 
         for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
-            vertx.deployVerticle(new ClientServer(provider, settings));
-            vertx.deployVerticle(new RealmServer(provider, settings));
+            vertx.deployVerticle(new ClientServer(provider));
+            vertx.deployVerticle(new RealmServer(provider));
         }
 
         logger.onServerStarted();

@@ -10,6 +10,14 @@ public class Binding {
     private Integer proxy;
     private Integer port;
 
+    public Binding() {}
+
+    public Binding(String remote, int port, int proxy) {
+        this.remote = remote;
+        this.port = port;
+        this.proxy = proxy;
+    }
+
     public String getRemote() {
         return remote;
     }

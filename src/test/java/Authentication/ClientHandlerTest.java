@@ -1,14 +1,15 @@
 package Authentication;
 
 import Authentication.ClientRequestMock.ResponseStatus;
+import Authentication.Controller.ClientHandler;
 import Authentication.Controller.ClientRequest;
 import Authentication.Controller.PacketHandler;
 import Authentication.Controller.Protocol;
 import Authentication.Model.AuthorizationHandler.Access;
-import Authentication.Controller.ClientHandler;
 import Authentication.Model.AuthorizationRequiredException;
 import Authentication.Model.HandlerMissingException;
 import Authentication.Model.Provider;
+import Authentication.Model.RealmStore;
 import Utilities.Serializer;
 import Utilities.Token;
 import Utilities.TokenFactory;
@@ -33,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 @RunWith(VertxUnitRunner.class)
-public class ClientAuthenticationTest {
+public class ClientHandlerTest {
     private static final String CHARACTER_NAME = "character";
     private static final String CHARACTER_NAME_DELETED = "character-deleted";
     private static final String PASSWORD = "password";
@@ -43,21 +44,23 @@ public class ClientAuthenticationTest {
     private static final String PASSWORD_WRONG = "wrong-password";
     private static final String REALM_NAME = "realmName.name";
     private static final String CLASS_NAME = "class.name";
-    private static final byte[] REALM_SECRET = "realmName.secret".getBytes();
+    private static TokenFactory clientToken;
+    private static TokenFactory realmToken;
     private static Protocol<PacketHandler<ClientRequest>> protocol;
-    private static TokenFactory factory = new TokenFactory("client.secret".getBytes());
     private static Vertx vertx;
 
     @Rule
-    public Timeout timeout = new Timeout(30, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(2, TimeUnit.SECONDS);
 
     @Before
     public void setUp() throws IOException {
         vertx = Vertx.vertx();
-
+        RealmStore realms = new RealmStore(vertx);
+        realms.put(new ConfigMock.RealmSettingsMock());
         Provider provider = new ProviderMock(vertx);
+        clientToken = new TokenFactory(provider.getAuthserverSettings().getClientSecret());
+        realmToken = new TokenFactory(new ConfigMock.RealmSettingsMock().getAuthentication().getToken().getKey().getBytes());
         protocol = provider.clientProtocol();
-
         new ClientHandler(provider);
     }
 
@@ -78,6 +81,10 @@ public class ClientAuthenticationTest {
         handle(Protocol.AUTHENTICATE, (response, status) -> {
             context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
         }, account(USERNAME, PASSWORD_WRONG));
+    }
+
+    private void handle(String action, ResponseListener listener) {
+        handle(action, listener, null);
     }
 
     private void handle(String action, ResponseListener listener, JsonObject data) {
@@ -116,7 +123,7 @@ public class ClientAuthenticationTest {
     @Test
     public void retrieveRealmList(TestContext context) {
         String[] keys = {
-                "classes", "description", "name", "remote", "resources", "type",
+                "classes", "description", "name", "resources", "type",
                 "secure", "trusted", "port", "version"};
 
         handle(Protocol.REALMLIST, (response, status) -> {
@@ -130,7 +137,7 @@ public class ClientAuthenticationTest {
                 for (String key : keys)
                     context.assertTrue(realm.containsKey(key));
             }
-        }, account(USERNAME_MISSING, PASSWORD));
+        });
     }
 
     @Test
@@ -144,17 +151,7 @@ public class ClientAuthenticationTest {
     }
 
     private JsonObject getClientToken() {
-        return Serializer.json(new Token(factory, USERNAME));
-    }
-
-    @Test
-    public void failToRemoveCharacterWhenInvalidToken(TestContext context) {
-        handle(Protocol.CHARACTERREMOVE, (response, status) -> {
-            context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
-        }, new JsonObject()
-                .put("character", CHARACTER_NAME_DELETED)
-                .put("token", getInvalidClientToken())
-                .put("realmName", REALM_NAME));
+        return Serializer.json(new Token(clientToken, USERNAME));
     }
 
     @Test
@@ -167,10 +164,6 @@ public class ClientAuthenticationTest {
                 .put("realmName", REALM_NAME));
     }
 
-    private JsonObject getInvalidClientToken() {
-        return Serializer.json(new Token(new TokenFactory("invalid".getBytes()), USERNAME));
-    }
-
     @Test
     public void createCharacter(TestContext context) {
         handle(Protocol.CHARACTERCREATE, (response, status) -> {
@@ -179,16 +172,6 @@ public class ClientAuthenticationTest {
                 .put("character", CHARACTER_NAME + ".NEW")
                 .put("className", CLASS_NAME)
                 .put("token", getClientToken())
-                .put("realmName", REALM_NAME));
-    }
-
-    @Test
-    public void failToCreateCharacterWhenInvalidToken(TestContext context) {
-        handle(Protocol.CHARACTERCREATE, (response, status) -> {
-            context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
-        }, new JsonObject()
-                .put("character", CHARACTER_NAME)
-                .put("token", getInvalidClientToken())
                 .put("realmName", REALM_NAME));
     }
 
@@ -223,18 +206,9 @@ public class ClientAuthenticationTest {
     }
 
     @Test
-    public void failListCharactersOnRealmWhenInvalidToken(TestContext context) {
-        handle(Protocol.CHARACTERLIST, (response, status) -> {
-            context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
-        }, new JsonObject()
-                .put("token", Serializer.json(getInvalidClientToken()))
-                .put("realmName", REALM_NAME));
-    }
-
-    @Test
     public void realmDataOnCharacterList(TestContext context) {
         handle(Protocol.CHARACTERLIST, (response, status) -> {
-            JsonObject realm = response.getJsonObject("realmName");
+            JsonObject realm = response.getJsonObject("realm");
 
             context.assertEquals(ResponseStatus.ACCEPTED, status);
             context.assertTrue(realm.containsKey("classes"));
@@ -250,7 +224,7 @@ public class ClientAuthenticationTest {
     @Test
     public void realmDataDoesNotIncludeTokenOnCharacterList(TestContext context) {
         handle(Protocol.CHARACTERLIST, (response, status) -> {
-            JsonObject realm = response.getJsonObject("realmName");
+            JsonObject realm = response.getJsonObject("realm");
 
             context.assertEquals(ResponseStatus.ACCEPTED, status);
             context.assertFalse(realm.containsKey("authentication"));
@@ -265,23 +239,13 @@ public class ClientAuthenticationTest {
     public void createRealmToken(TestContext context) {
         handle(Protocol.REALMTOKEN, (response, status) -> {
             Token token = (Token) Serializer.unpack(response, Token.class);
-            TokenFactory factory = new TokenFactory(REALM_SECRET);
 
             context.assertEquals(ResponseStatus.ACCEPTED, status);
             context.assertEquals(USERNAME, token.getDomain());
-            context.assertTrue(factory.verifyToken(token));
+            context.assertTrue(realmToken.verifyToken(token));
 
         }, new JsonObject()
                 .put("token", getClientToken())
-                .put("realmName", REALM_NAME));
-    }
-
-    @Test
-    public void failCreateRealmTokenWhenInvalidToken(TestContext context) {
-        handle(Protocol.REALMTOKEN, (response, status) -> {
-            context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
-        }, new JsonObject()
-                .put("token", getInvalidClientToken())
                 .put("realmName", REALM_NAME));
     }
 }

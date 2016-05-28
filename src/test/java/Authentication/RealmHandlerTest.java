@@ -26,8 +26,9 @@ import java.util.concurrent.TimeUnit;
  *         tests the API from realmName->authentication server.
  */
 
+@Ignore
 @RunWith(VertxUnitRunner.class)
-public class RealmAuthenticationTest {
+public class RealmHandlerTest {
     private Vertx vertx;
     private AuthServerSettings authconfig = new ConfigMock().getAuthSettings();
     private RealmSettings realmconfig = new ConfigMock().getRealm();

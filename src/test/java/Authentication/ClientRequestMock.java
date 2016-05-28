@@ -27,7 +27,7 @@ public class ClientRequestMock implements ClientRequest {
 
     @Override
     public String account() {
-        return data.getString("name");
+        return data.getJsonObject("token").getString("domain");
     }
 
     @Override
@@ -37,7 +37,7 @@ public class ClientRequestMock implements ClientRequest {
 
     @Override
     public String className() {
-        return data.getString("class");
+        return data.getString("className");
     }
 
     @Override
@@ -73,11 +73,6 @@ public class ClientRequestMock implements ClientRequest {
     @Override
     public void accept() {
         listener.handle(null, ResponseStatus.ACCEPTED);
-    }
-
-    @Override
-    public boolean authorized() {
-        return false;
     }
 
     @Override

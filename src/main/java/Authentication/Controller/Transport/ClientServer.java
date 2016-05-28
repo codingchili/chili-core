@@ -1,5 +1,6 @@
 package Authentication.Controller.Transport;
 
+import Authentication.Model.AuthorizationHandler.Access;
 import Authentication.Controller.ClientRequest;
 import Authentication.Controller.PacketHandler;
 import Authentication.Controller.Protocol;
@@ -8,6 +9,7 @@ import Authentication.Model.AuthorizationRequiredException;
 import Authentication.Model.HandlerMissingException;
 import Authentication.Model.Provider;
 import Configuration.AuthServerSettings;
+import Utilities.TokenFactory;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
@@ -23,10 +25,12 @@ import io.vertx.ext.web.handler.BodyHandler;
 public class ClientServer extends AbstractVerticle {
     private Protocol<PacketHandler<ClientRequest>> protocol;
     private AuthServerSettings settings;
+    private TokenFactory tokens;
 
-    public ClientServer(Provider provider, AuthServerSettings settings) {
-        this.settings = settings;
+    public ClientServer(Provider provider) {
+        this.settings = provider.getAuthserverSettings();
         this.protocol = provider.clientProtocol();
+        this.tokens = new TokenFactory(settings.getClientSecret());
     }
 
     @Override
@@ -58,15 +62,19 @@ public class ClientServer extends AbstractVerticle {
         handle(path, new ClientRestRequest(context));
     }
 
-    public void handle(String action, ClientRestRequest request) {
+    public void handle(String action, ClientRequest request) {
         try {
-            AuthorizationHandler.Access access = (request.authorized()) ? AuthorizationHandler.Access.AUTHORIZE : AuthorizationHandler.Access.PUBLIC;
-            protocol.get(action, access).handle(request);
+            protocol.get(action, access(request)).handle(request);
         } catch (AuthorizationRequiredException authorizationRequired) {
             request.unauthorized();
         } catch (HandlerMissingException e) {
             request.error();
         }
+    }
+
+    private AuthorizationHandler.Access access(ClientRequest request) {
+        boolean authorized = tokens.verifyToken(request.token());
+        return (authorized) ? Access.AUTHORIZE : Access.PUBLIC;
     }
 
     private HttpServerResponse allowCors(RoutingContext context) {

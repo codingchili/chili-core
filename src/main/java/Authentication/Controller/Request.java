@@ -5,8 +5,6 @@ package Authentication.Controller;
  */
 interface Request {
 
-    boolean authorized();
-
     void error();
 
     void unauthorized();

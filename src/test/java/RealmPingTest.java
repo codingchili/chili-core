@@ -1,3 +1,4 @@
+import Authentication.ConfigMock;
 import Configuration.FileConfiguration;
 import Configuration.RealmSettings;
 import Game.Controller.Realm;
@@ -32,7 +33,7 @@ public class RealmPingTest {
         realm.getAuthentication().getToken().setKey("null");
         realm.getAuthentication().setRemote("localhost");
 
-        vertx.deployVerticle(new Realm(FileConfiguration.instance().getGameServerSettings(), realm, new LoggerMock()), context.asyncAssertSuccess());
+        vertx.deployVerticle(new Realm(new ConfigMock.GameSettingsMock(), realm, new LoggerMock()), context.asyncAssertSuccess());
     }
 
     @After

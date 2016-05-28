@@ -11,6 +11,7 @@ import Authentication.Model.Provider;
 import Configuration.AuthServerSettings;
 import Protocol.Packet;
 import Utilities.Serializer;
+import Utilities.TokenFactory;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.http.ServerWebSocket;
@@ -24,10 +25,23 @@ public class RealmServer extends AbstractVerticle {
     private HashMap<String, RealmConnection> connections = new HashMap<>();
     private Protocol<PacketHandler<RealmRequest>> protocol;
     private AuthServerSettings settings;
+    private TokenFactory tokens;
 
-    public RealmServer(Provider provider, AuthServerSettings settings) {
+    public RealmServer(Provider provider) {
         this.protocol = provider.realmProtocol();
-        this.settings = settings;
+        this.settings = provider.getAuthserverSettings();
+        this.tokens = new TokenFactory(settings.getRealmSecret());
+
+        protocol.use(Protocol.REGISTER, this::register, Access.PUBLIC);
+    }
+
+    private void register(RealmRequest request) {
+        if (tokens.verifyToken(request.token())) {
+            request.connection().authenticate(request.token().getDomain());
+            request.accept();
+        } else {
+            request.error();
+        }
     }
 
     @Override
@@ -52,13 +66,19 @@ public class RealmServer extends AbstractVerticle {
 
     public void handle(String action, RealmRequest request) {
         try {
-            Access access = (request.authorized()) ? AuthorizationHandler.Access.AUTHORIZE : AuthorizationHandler.Access.PUBLIC;
-            protocol.get(action, access).handle(request);
+            protocol.get(action, access(request)).handle(request);
         } catch (AuthorizationRequiredException authorizationRequired) {
             request.unauthorized();
         } catch (HandlerMissingException e) {
             request.error();
         }
+    }
+
+    private Access access(RealmRequest request) {
+        if (request.connection().authenticated())
+            return Access.AUTHORIZE;
+        else
+            return Access.PUBLIC;
     }
 
     private RealmConnection getConnection(ServerWebSocket socket) {

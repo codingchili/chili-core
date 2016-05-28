@@ -17,8 +17,9 @@ public class PlayerClass {
         return name;
     }
 
-    public void setName(String name) {
+    public PlayerClass setName(String name) {
         this.name = name;
+        return this;
     }
 
     public String getDescription() {

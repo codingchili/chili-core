@@ -1,8 +1,13 @@
 package Authentication;
 
 import Configuration.*;
+import Game.Model.Binding;
+import Game.Model.PlayerCharacter;
+import Game.Model.PlayerClass;
 import Utilities.Token;
 import Utilities.TokenFactory;
+
+import java.util.ArrayList;
 
 /**
  * @author Robin Duda
@@ -63,6 +68,60 @@ public class ConfigMock implements ConfigurationLoader {
     public static class RealmSettingsMock extends RealmSettings {
 
         @Override
+        public String getDescription() {
+            return "description";
+        }
+
+        @Override
+        public Boolean getTrusted() {
+            return false;
+        }
+
+        @Override
+        public Boolean getSecure() {
+            return false;
+        }
+
+        @Override
+        public String getType() {
+            return "type";
+        }
+
+        @Override
+        public String getResources() {
+            return "resources";
+        }
+
+        @Override
+        public String getRemote() {
+            return "localhost";
+        }
+
+        @Override
+        public Binding getBinding() {
+            return new Binding("localhost", 11132, 11132);
+        }
+
+        @Override
+        public int getPort() {
+            return 11132;
+        }
+
+        @Override
+        public int getProxy() {
+            return 11132;
+        }
+
+        @Override
+        public ArrayList<PlayerClass> getClasses() {
+            ArrayList<PlayerClass> list = new ArrayList<>();
+
+            list.add(new PlayerClass().setName("class.name"));
+
+            return list;
+        }
+
+        @Override
         public String getName() {
             return "realmName.name";
         }
@@ -74,6 +133,18 @@ public class ConfigMock implements ConfigurationLoader {
                             new Token(
                                     new TokenFactory(new AuthServerSettingsMock().getRealmSecret()),
                                     this.getName()));
+        }
+    }
+
+    public static class GameSettingsMock extends GameServerSettings {
+
+        @Override
+        public ArrayList<RealmSettings> getRealms() {
+            ArrayList<RealmSettings> realms = new ArrayList<>();
+
+            realms.add(new RealmSettingsMock());
+
+            return realms;
         }
     }
 }

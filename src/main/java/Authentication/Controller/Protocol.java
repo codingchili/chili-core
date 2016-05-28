@@ -33,8 +33,6 @@ public class Protocol<Handler extends PacketHandler> {
         return handlers.get(action, access);
     }
 
-
-    public static final String AUTHENTICATEl = "realmName.register";
     public static final String CLOSE = "connection.close";
     public static final String CHARACTERLIST = "character-list";
     public static final String CHARACTERCREATE = "character-create";
@@ -43,5 +41,6 @@ public class Protocol<Handler extends PacketHandler> {
     public static final String REGISTER = "register";
     public static final String REALMTOKEN = "realmtoken";
     public static final String REALMLIST = "realmlist";
+    public static final String REALMREGISTER = "realm.register";
 }
 

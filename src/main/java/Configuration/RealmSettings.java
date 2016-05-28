@@ -27,7 +27,7 @@ public class RealmSettings {
     private ArrayList<InstanceSettings> instances = new ArrayList<>();
     private ArrayList<PlayerClass> classes = new ArrayList<>();
     private ArrayList<Affliction> afflictions = new ArrayList<>();
-    private PlayerCharacter template;
+    private PlayerCharacter template = new PlayerCharacter();
     private RemoteAuthentication authentication = new RemoteAuthentication();
     private Binding binding = new Binding();
     private String name;
@@ -114,7 +114,7 @@ public class RealmSettings {
         return secure;
     }
 
-    public  RealmSettings setSecure(Boolean secure) {
+    public RealmSettings setSecure(Boolean secure) {
         this.secure = secure;
         return this;
     }

@@ -12,7 +12,6 @@ import Protocol.Game.CharacterRequest;
 import Protocol.Game.CharacterResponse;
 import Protocol.RealmRegister;
 import Protocol.RealmUpdate;
-import Utilities.TokenFactory;
 import io.vertx.core.Future;
 
 /**
@@ -23,29 +22,17 @@ public class RealmHandler {
     private RealmStore realmStore;
     private AsyncAccountStore accounts;
     private AuthServerSettings settings;
-    private TokenFactory tokens;
 
     public RealmHandler(Provider provider) {
         this.accounts = provider.getAccountStore();
         this.settings = provider.getAuthserverSettings();
-        this.tokens = new TokenFactory(settings.getRealmSecret());
         this.realmStore = new RealmStore(provider.getVertx());
 
         new Protocol<PacketHandler<RealmRequest>>(Access.AUTHORIZE)
                 .use(RealmUpdate.ACTION, this::update)
                 .use(CharacterRequest.ACTION, this::character)
                 .use(Protocol.CLOSE, this::disconnected)
-                .use(RealmRegister.ACTION, this::register, Access.PUBLIC)
-                .use(Protocol.AUTHENTICATE, this::authenticate, Access.PUBLIC);
-    }
-
-    private void authenticate(RealmRequest request) {
-        if (tokens.verifyToken(request.token())) {
-            request.connection().authenticate(request.token().getDomain());
-            request.accept();
-        } else {
-            request.error();
-        }
+                .use(RealmRegister.ACTION, this::register, Access.PUBLIC);
     }
 
     private void register(RealmRequest request) {
