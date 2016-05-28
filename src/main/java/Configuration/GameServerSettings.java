@@ -11,7 +11,7 @@ import java.util.ArrayList;
 @JsonIgnoreProperties({"realms", "path", "name"})
 public class GameServerSettings implements Configurable {
     static final String GAMESERVER_PATH = "conf/system/gameserver.json";
-    static final String REALM_PATH = "conf/realm/";
+    static final String REALM_PATH = "conf/realmName/";
     private RemoteAuthentication logserver;
     private ArrayList<RealmSettings> realms = new ArrayList<>();
 

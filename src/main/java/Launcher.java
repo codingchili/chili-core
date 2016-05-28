@@ -1,3 +1,4 @@
+import Authentication.Model.DefaultProvider;
 import io.vertx.core.*;
 
 /**
@@ -36,7 +37,7 @@ public class Launcher extends AbstractVerticle {
         });
 
         startServer(web, new Website.Server());
-        startServer(authentication, new Authentication.Server());
+        startServer(authentication, new Authentication.Server(new DefaultProvider(vertx)));
         startServer(game, new Game.Server());
     }
 

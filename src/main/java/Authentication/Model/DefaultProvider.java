@@ -1,9 +1,9 @@
 package Authentication.Model;
 
-import Authentication.Controller.Transport.ClientRestProtocol;
-import Authentication.Controller.Transport.RealmWebsocketProtocol;
-import Authentication.Model.AuthorizationHandler.Access;
-import Authentication.Controller.*;
+import Authentication.Controller.ClientRequest;
+import Authentication.Controller.PacketHandler;
+import Authentication.Controller.Protocol;
+import Authentication.Controller.RealmRequest;
 import Configuration.AuthServerSettings;
 import Configuration.ConfigurationLoader;
 import Configuration.FileConfiguration;
@@ -18,6 +18,8 @@ import io.vertx.ext.mongo.MongoClient;
  */
 public class DefaultProvider implements Provider {
     private AuthServerSettings settings = FileConfiguration.instance().getAuthSettings();
+    private Protocol<PacketHandler<ClientRequest>> clientProtocol = new Protocol<>();
+    private Protocol<PacketHandler<RealmRequest>> realmProtocol = new Protocol<>();
     private Vertx vertx;
 
     public DefaultProvider(Vertx vertx) {
@@ -33,17 +35,13 @@ public class DefaultProvider implements Provider {
     }
 
     @Override
-    public ClientProtocol clientProtocol(Access access) {
-        ClientRestProtocol protocol = new ClientRestProtocol(this, access);
-        vertx.deployVerticle(protocol);
-        return protocol;
+    public Protocol<PacketHandler<ClientRequest>> clientProtocol() {
+        return clientProtocol;
     }
 
     @Override
-    public RealmProtocol realmProtocol(Access access) {
-        RealmWebsocketProtocol protocol = new RealmWebsocketProtocol(this, access);
-        vertx.deployVerticle(protocol);
-        return protocol;
+    public Protocol<PacketHandler<RealmRequest>> realmProtocol() {
+        return realmProtocol;
     }
 
     @Override

@@ -12,17 +12,17 @@ import java.util.ArrayList;
 /**
  * @author Robin Duda
  *         <p>
- *         Shares realm data between the clienthandler and the realmhandler.
+ *         Shares realmName data between the clienthandler and the realmhandler.
  *         Allows the deployment of multiple handlers.
  */
-public class RealmKeeper {
-    private static LocalMap<String, RealmSettings> realms;
+public class RealmStore {
+    private LocalMap<String, RealmSettings> realms;
 
-    public RealmKeeper(Vertx vertx) {
+    public RealmStore(Vertx vertx) {
         realms = vertx.sharedData().getLocalMap("realms");
     }
 
-    public static ArrayList<RealmMetaData> getMetadataList() {
+    public ArrayList<RealmMetaData> getMetadataList() {
         ArrayList<RealmMetaData> list = new ArrayList<>();
 
         for (RealmSettings realm : realms.values()) {
@@ -32,15 +32,22 @@ public class RealmKeeper {
         return list;
     }
 
-    public static Token signToken(String realm, String domain) {
+    public Token signToken(String realm, String domain) throws RealmMissingException {
         return new Token(getTokenFactory(realm), domain);
     }
 
-    private static TokenFactory getTokenFactory(String realm) {
-        return new TokenFactory(realms.get(realm).getAuthentication().getToken().getKey().getBytes());
+    private TokenFactory getTokenFactory(String realmName) throws RealmMissingException {
+        RealmSettings realm = realms.get(realmName);
+
+        if (realm == null) {
+            throw new RealmMissingException();
+        } else {
+            return new TokenFactory(realm.getAuthentication().getToken().getKey().getBytes());
+
+        }
     }
 
-    public static RealmSettings get(String realmName) throws RealmMissingException {
+    public RealmSettings get(String realmName) throws RealmMissingException {
         RealmSettings realm = realms.get(realmName);
 
         if (realm == null) {
@@ -50,11 +57,11 @@ public class RealmKeeper {
         }
     }
 
-    public static void put(RealmSettings realm) {
+    public void put(RealmSettings realm) {
         realms.put(realm.getName(), realm);
     }
 
-    public static RealmSettings remove(String realmName) {
+    public RealmSettings remove(String realmName) {
         return realms.remove(realmName);
     }
 }

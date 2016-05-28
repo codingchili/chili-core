@@ -1,9 +1,9 @@
 package Authentication;
 
-import Authentication.Controller.Transport.ClientRestProtocol;
-import Authentication.Controller.Transport.RealmWebsocketProtocol;
-import Authentication.Model.AuthorizationHandler.Access;
-import Authentication.Controller.*;
+import Authentication.Controller.ClientRequest;
+import Authentication.Controller.PacketHandler;
+import Authentication.Controller.Protocol;
+import Authentication.Controller.RealmRequest;
 import Authentication.Model.AsyncAccountStore;
 import Authentication.Model.Provider;
 import Configuration.AuthServerSettings;
@@ -14,13 +14,16 @@ import io.vertx.core.Vertx;
 /**
  * @author Robin Duda
  */
-class ProviderMock implements  Provider {
+class ProviderMock implements Provider {
     private Vertx vertx;
     private AsyncAccountStore accounts;
+    private Protocol<PacketHandler<ClientRequest>> clientProtocol = new Protocol<>();
+    private Protocol<PacketHandler<RealmRequest>> realmProtocol = new Protocol<>();
 
     ProviderMock(Vertx vertx) {
         this.vertx = vertx;
         this.accounts = new AccountStoreMock();
+
     }
 
     @Override
@@ -29,13 +32,13 @@ class ProviderMock implements  Provider {
     }
 
     @Override
-    public ClientProtocol clientProtocol(Access access) {
-        return new ClientRestProtocol(this, access);
+    public Protocol<PacketHandler<ClientRequest>> clientProtocol() {
+        return clientProtocol;
     }
 
     @Override
-    public RealmProtocol realmProtocol(Access access) {
-        return new RealmWebsocketProtocol(this, access);
+    public Protocol<PacketHandler<RealmRequest>> realmProtocol() {
+        return realmProtocol;
     }
 
     @Override

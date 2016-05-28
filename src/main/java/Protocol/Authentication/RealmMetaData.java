@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 /**
  * @author Robin Duda
- *         Contains realm metadata used in the realm-list.
+ *         Contains realmName metadata used in the realmName-list.
  */
 public class RealmMetaData {
     private ArrayList<String> classes = new ArrayList<>();

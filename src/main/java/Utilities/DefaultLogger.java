@@ -64,13 +64,13 @@ public class DefaultLogger implements Logger {
     public void onInstanceStarted(RealmSettings realm, InstanceSettings instance) {
         log(event("instance.start")
                 .put("instance", instance.getName())
-                .put("realm", realm.getName()));
+                .put("realmName", realm.getName()));
     }
 
     @Override
     public void onRealmStarted(RealmSettings realm) {
-        log(event("realm.start")
-                .put("realm", realm.getName()));
+        log(event("realmName.start")
+                .put("realmName", realm.getName()));
     }
 
     @Override
@@ -96,27 +96,27 @@ public class DefaultLogger implements Logger {
 
     @Override
     public void onRealmRegistered(RealmSettings realm) {
-        log(event("realm.register")
-                .put("realm", realm.getName()));
+        log(event("realmName.register")
+                .put("realmName", realm.getName()));
     }
 
     @Override
     public void onRealmDeregistered(RealmSettings realm) {
-        log(event("realm.deregister")
-                .put("realm", realm.getName()));
+        log(event("realmName.deregister")
+                .put("realmName", realm.getName()));
     }
 
     @Override
     public void onRealmUpdated(RealmSettings realm) {
-        log(event("realm.update")
-                .put("realm", realm.getName())
+        log(event("realmName.update")
+                .put("realmName", realm.getName())
                 .put("players", realm.getPlayers()));
     }
 
     @Override
     public void onRealmRejected(RealmSettings realm) {
-        log(event("realm.rejected")
-                .put("realm", realm.getName()));
+        log(event("realmName.rejected")
+                .put("realmName", realm.getName()));
     }
 
     @Override

@@ -28,7 +28,7 @@ public interface Logger {
     void onInstanceStarted(RealmSettings realm, InstanceSettings instance);
 
     /**
-     * Emit when a realm has been started.
+     * Emit when a realmName has been started.
      */
     void onRealmStarted(RealmSettings realm);
 
@@ -51,22 +51,22 @@ public interface Logger {
     void onRegistered(Account account, String host);
 
     /**
-     * Emit when a realm successfully register with the authentication server.
+     * Emit when a realmName successfully register with the authentication server.
      */
     void onRealmRegistered(RealmSettings realm);
 
     /**
-     * Emit when a realm was unregistered/disconnected.
+     * Emit when a realmName was unregistered/disconnected.
      */
     void onRealmDeregistered(RealmSettings realm);
 
     /**
-     * Emit when a realm has updated its status with the authentication server.
+     * Emit when a realmName has updated its status with the authentication server.
      */
     void onRealmUpdated(RealmSettings realm);
 
     /**
-     * Emit when a realm has been rejected by the authentication server.
+     * Emit when a realmName has been rejected by the authentication server.
      */
     void onRealmRejected(RealmSettings realm);
 

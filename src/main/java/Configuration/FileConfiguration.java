@@ -90,7 +90,7 @@ public class FileConfiguration implements ConfigurationLoader {
 
     void generateRealmTokens() throws IOException {
         TokenFactory factory = new TokenFactory(authentication.getRealmSecret());
-        ArrayList<JsonObject> realms = JsonFileStore.readDirectoryObjects("conf/realm/");
+        ArrayList<JsonObject> realms = JsonFileStore.readDirectoryObjects("conf/realmName/");
 
         for (JsonObject realm : realms) {
             JsonObject remote = realm.getJsonObject("authentication");

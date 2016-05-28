@@ -16,7 +16,7 @@ import java.util.ArrayList;
 /**
  * @author Robin Duda
  *         <p>
- *         Contains the settings for a realm.
+ *         Contains the settings for a realmName.
  */
 @JsonIgnoreProperties({"instance"})
 public class RealmSettings {

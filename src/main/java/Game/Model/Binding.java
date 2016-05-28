@@ -3,7 +3,7 @@ package Game.Model;
 /**
  * @author Robin Duda
  *         Provides configuration options to allow a server to listen on another port
- *         that it is broadcasting on the realm-list.
+ *         that it is broadcasting on the realmName-list.
  */
 public class Binding {
     private String remote;

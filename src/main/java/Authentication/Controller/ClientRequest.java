@@ -12,8 +12,8 @@ import java.util.ArrayList;
  */
 
 
-public interface ClientRequest {
-    String realm();
+public interface ClientRequest extends Request {
+    String realmName();
 
     String account();
 
@@ -24,18 +24,6 @@ public interface ClientRequest {
     String sender();
 
     Token token();
-
-    void write(Object object);
-
-    void unauthorize(); // send http 401 unatuhorized
-
-    void missing(); // send 404
-
-    void conflict(); // send conflict
-
-    void accept(); // send 200
-
-    void error(); // send 500
 
     Account getAccount();
 

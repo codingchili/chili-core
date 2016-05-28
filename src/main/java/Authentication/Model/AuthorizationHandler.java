@@ -8,7 +8,10 @@ import java.util.HashMap;
 public class AuthorizationHandler<T> {
     private HashMap<String, T> authorized = new HashMap<>();
     private HashMap<String, T> unauthorized = new HashMap<>();
-    private Access access;
+    private Access access = Access.AUTHORIZE;
+
+    public AuthorizationHandler() {
+    }
 
     public AuthorizationHandler(Access access) {
         this.access = access;
@@ -29,22 +32,22 @@ public class AuthorizationHandler<T> {
         use(action, handler, access);
     }
 
-    public T get(String action, Access access) throws AuthorizationRequired, HandlerMissingException {
+    public T get(String action, Access access) throws AuthorizationRequiredException, HandlerMissingException {
         switch (access) {
             case PUBLIC:
                 return unauthorized(action);
             case AUTHORIZE:
                 return any(action);
             default:
-                throw new AuthorizationRequired();
+                throw new AuthorizationRequiredException();
         }
     }
 
-    private T unauthorized(String action) throws AuthorizationRequired, HandlerMissingException {
+    private T unauthorized(String action) throws AuthorizationRequiredException, HandlerMissingException {
         if (unauthorized.containsKey(action)) {
             return unauthorized.get(action);
         } else if (authorized.containsKey(action)) {
-            throw new AuthorizationRequired();
+            throw new AuthorizationRequiredException();
         } else {
             throw new HandlerMissingException();
         }

@@ -16,6 +16,7 @@ import io.vertx.ext.web.RoutingContext;
 /**
  * @author Robin Duda
  */
+
 class ClientRestRequest implements ClientRequest {
     private RoutingContext context;
     private HttpServerResponse response;
@@ -35,8 +36,8 @@ class ClientRestRequest implements ClientRequest {
     }
 
     @Override
-    public String realm() {
-        return json.getString("realm");
+    public String realmName() {
+        return json.getString("realmName");
     }
 
     @Override
@@ -79,7 +80,7 @@ class ClientRestRequest implements ClientRequest {
     }
 
     @Override
-    public void unauthorize() {
+    public void unauthorized() {
         sendStatus(HttpResponseStatus.UNAUTHORIZED);
     }
 
@@ -100,6 +101,11 @@ class ClientRestRequest implements ClientRequest {
     @Override
     public void accept() {
         sendStatus(HttpResponseStatus.OK);
+    }
+
+    @Override
+    public boolean authorized() {
+        return false;
     }
 
     @Override

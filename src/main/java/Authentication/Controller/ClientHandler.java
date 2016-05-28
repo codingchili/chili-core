@@ -20,6 +20,7 @@ import java.util.ArrayList;
  *         Router used to authenticate users and create/delete characters.
  */
 public class ClientHandler {
+    private RealmStore realmStore;
     private AsyncAccountStore accounts;
     private TokenFactory factory;
     private Logger logger;
@@ -28,19 +29,24 @@ public class ClientHandler {
         this.logger = provider.getLogger();
         this.accounts = provider.getAccountStore();
         this.factory = new TokenFactory(provider.getAuthserverSettings().getClientSecret());
+        this.realmStore = new RealmStore(provider.getVertx());
 
-        provider.clientProtocol(Access.AUTHORIZE)
-                .use(ClientProtocol.CHARACTERLIST, this::characterList)
-                .use(ClientProtocol.CHARACTERCREATE, this::characterCreate)
-                .use(ClientProtocol.CHARACTERREMOVE, this::characterRemove)
-                .use(ClientProtocol.REALMTOKEN, this::realmtoken)
-                .use(ClientProtocol.AUTHENTICATE, this::authenticate, Access.PUBLIC)
-                .use(ClientProtocol.REGISTER, this::register, Access.PUBLIC)
-                .use(ClientProtocol.REALMLIST, this::realmlist, Access.PUBLIC);
+        provider.clientProtocol()
+                .use(Protocol.CHARACTERLIST, this::characterList)
+                .use(Protocol.CHARACTERCREATE, this::characterCreate)
+                .use(Protocol.CHARACTERREMOVE, this::characterRemove)
+                .use(Protocol.REALMTOKEN, this::realmtoken)
+                .use(Protocol.AUTHENTICATE, this::authenticate, Access.PUBLIC)
+                .use(Protocol.REGISTER, this::register, Access.PUBLIC)
+                .use(Protocol.REALMLIST, this::realmlist, Access.PUBLIC);
     }
 
     private void realmtoken(ClientRequest request) {
-        request.write(RealmKeeper.signToken(request.realm(), request.account()));
+        try {
+            request.write(realmStore.signToken(request.realmName(), request.account()));
+        } catch (RealmMissingException e) {
+            request.error();
+        }
     }
 
     private void characterList(ClientRequest request) {
@@ -49,7 +55,7 @@ public class ClientHandler {
         future.setHandler(result -> {
             if (result.succeeded()) {
                 try {
-                    RealmSettings realm = RealmKeeper.get(request.realm());
+                    RealmSettings realm = realmStore.get(request.realmName());
                     request.write(new CharacterList(realm, result.result()));
                 } catch (RealmMissingException e) {
                     request.error();
@@ -57,7 +63,7 @@ public class ClientHandler {
             } else
                 request.missing();
         });
-        accounts.findCharacters(future, request.realm(), request.account());
+        accounts.findCharacters(future, request.realmName(), request.account());
     }
 
     private void characterCreate(ClientRequest request) {
@@ -70,7 +76,7 @@ public class ClientHandler {
                 upsertCharacter(request);
             }
         });
-        accounts.findCharacter(find, request.realm(), request.account(), request.character());
+        accounts.findCharacter(find, request.realmName(), request.account(), request.character());
     }
 
     private void upsertCharacter(ClientRequest request) {
@@ -81,9 +87,9 @@ public class ClientHandler {
                 if (creation.succeeded()) {
                     request.accept();
                 } else {
-                    request.unauthorize();
+                    request.unauthorized();
                 }
-            }), request.realm(), request.account(), character);
+            }), request.realmName(), request.account(), character);
 
         } catch (PlayerClassDisabledException | RealmMissingException e) {
             request.missing();
@@ -92,7 +98,7 @@ public class ClientHandler {
 
 
     private PlayerCharacter createCharacterFromTemplate(ClientRequest request) throws PlayerClassDisabledException, RealmMissingException {
-        return readTemplate(RealmKeeper.get(request.realm()), request.character(), request.className());
+        return readTemplate(realmStore.get(request.realmName()), request.character(), request.className());
     }
 
     private PlayerCharacter readTemplate(RealmSettings realm, String characterName, String className) throws PlayerClassDisabledException {
@@ -116,7 +122,7 @@ public class ClientHandler {
                 request.accept();
             else
                 request.error();
-        }), request.realm(), request.account(), request.character());
+        }), request.realmName(), request.account(), request.character());
     }
 
     private void register(ClientRequest request) {
@@ -152,8 +158,9 @@ public class ClientHandler {
                 request.missing();
             } catch (AccountPasswordException e) {
                 logger.onAuthenticationFailure(request.getAccount(), request.sender());
-                request.unauthorize();
+                request.unauthorized();
             } catch (Throwable e) {
+                e.printStackTrace();
                 request.error();
             }
         });
@@ -166,7 +173,7 @@ public class ClientHandler {
                         account,
                         new Token(factory, account.getUsername()),
                         registered,
-                        RealmKeeper.getMetadataList()));
+                        realmStore.getMetadataList()));
 
         if (registered)
             logger.onRegistered(account, request.sender());
@@ -175,6 +182,6 @@ public class ClientHandler {
     }
 
     private void realmlist(ClientRequest request) {
-        request.write(new RealmList(RealmKeeper.getMetadataList()));
+        request.write(new RealmList(realmStore.getMetadataList()));
     }
 }

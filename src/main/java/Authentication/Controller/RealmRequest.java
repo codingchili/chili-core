@@ -8,17 +8,11 @@ import Utilities.Token;
 /**
  * @author Robin Duda
  */
-public interface RealmRequest {
+public interface RealmRequest extends Request {
 
     RealmSettings realm();
 
     RealmUpdate update();
-
-    boolean authorized();
-
-    void write(Object object);
-
-    void error();
 
     String realmName();
 
@@ -26,13 +20,9 @@ public interface RealmRequest {
 
     RealmConnection connection();
 
-    void accept();
-
     Token token();
 
     String account();
 
     String name();
-
-    void unauthorized();
 }

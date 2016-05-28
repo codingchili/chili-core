@@ -1,8 +1,9 @@
 package Authentication.Model;
 
-import Authentication.Model.AuthorizationHandler.Access;
-import Authentication.Controller.ClientProtocol;
-import Authentication.Controller.RealmProtocol;
+import Authentication.Controller.ClientRequest;
+import Authentication.Controller.PacketHandler;
+import Authentication.Controller.Protocol;
+import Authentication.Controller.RealmRequest;
 import Configuration.AuthServerSettings;
 import Configuration.ConfigurationLoader;
 import Utilities.Logger;
@@ -14,9 +15,9 @@ import io.vertx.core.Vertx;
 public interface Provider {
     AsyncAccountStore getAccountStore();
 
-    ClientProtocol clientProtocol(Access access);
+    Protocol<PacketHandler<ClientRequest>> clientProtocol();
 
-    RealmProtocol realmProtocol(Access access);
+    Protocol<PacketHandler<RealmRequest>> realmProtocol();
 
     Logger getLogger();
 

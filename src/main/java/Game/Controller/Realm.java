@@ -157,7 +157,7 @@ public class Realm implements Verticle {
 
 
     /**
-     * Register the realm with the authentication server to mark that it is ready to receive clients.
+     * Register the realmName with the authentication server to mark that it is ready to receive clients.
      * The registration event will then periodically trigger to update its state.
      */
     private void connectToAuthenticationServer() {

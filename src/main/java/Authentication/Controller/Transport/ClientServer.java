@@ -1,19 +1,16 @@
 package Authentication.Controller.Transport;
 
-import Authentication.Controller.ClientPacketHandler;
-import Authentication.Controller.ClientProtocol;
 import Authentication.Controller.ClientRequest;
+import Authentication.Controller.PacketHandler;
+import Authentication.Controller.Protocol;
 import Authentication.Model.AuthorizationHandler;
-import Authentication.Model.AuthorizationHandler.Access;
-import Authentication.Model.AuthorizationRequired;
+import Authentication.Model.AuthorizationRequiredException;
 import Authentication.Model.HandlerMissingException;
 import Authentication.Model.Provider;
 import Configuration.AuthServerSettings;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Context;
 import io.vertx.core.Future;
-import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.Router;
@@ -23,42 +20,13 @@ import io.vertx.ext.web.handler.BodyHandler;
 /**
  * @author Robin Duda
  */
-public class ClientRestProtocol extends AbstractVerticle implements ClientProtocol {
-    private AuthorizationHandler<ClientPacketHandler> handlers;
-    private Vertx vertx;
+public class ClientServer extends AbstractVerticle {
+    private Protocol<PacketHandler<ClientRequest>> protocol;
     private AuthServerSettings settings;
 
-    public ClientRestProtocol(Provider provider, Access access) {
-        this.settings = provider.getAuthserverSettings();
-        this.handlers = new AuthorizationHandler<>(access);
-    }
-
-    @Override
-    public ClientProtocol use(String action, ClientPacketHandler handler) {
-        handlers.use(action, handler);
-        return this;
-    }
-
-    @Override
-    public ClientProtocol use(String action, ClientPacketHandler handler, Access access) {
-        handlers.use(action, handler, access);
-        return this;
-    }
-
-    @Override
-    public void handle(String action, ClientRequest request) {
-        try {
-            handlers.get(action, Access.PUBLIC);
-        } catch (AuthorizationRequired e) {
-            request.unauthorize();
-        } catch (HandlerMissingException e) {
-            request.error();
-        }
-    }
-
-    @Override
-    public void init(Vertx vertx, Context context) {
-        this.vertx = vertx;
+    public ClientServer(Provider provider, AuthServerSettings settings) {
+        this.settings = settings;
+        this.protocol = provider.clientProtocol();
     }
 
     @Override
@@ -90,6 +58,17 @@ public class ClientRestProtocol extends AbstractVerticle implements ClientProtoc
         handle(path, new ClientRestRequest(context));
     }
 
+    public void handle(String action, ClientRestRequest request) {
+        try {
+            AuthorizationHandler.Access access = (request.authorized()) ? AuthorizationHandler.Access.AUTHORIZE : AuthorizationHandler.Access.PUBLIC;
+            protocol.get(action, access).handle(request);
+        } catch (AuthorizationRequiredException authorizationRequired) {
+            request.unauthorized();
+        } catch (HandlerMissingException e) {
+            request.error();
+        }
+    }
+
     private HttpServerResponse allowCors(RoutingContext context) {
         return context.response()
                 .putHeader("Access-Control-Allow-Origin", "*")
@@ -97,4 +76,5 @@ public class ClientRestProtocol extends AbstractVerticle implements ClientProtoc
                 .putHeader("Access-Control-Allow-Headers",
                         "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
     }
+
 }

@@ -10,6 +10,7 @@ import io.vertx.core.json.JsonObject;
 /**
  * @author Robin Duda
  */
+
 class RealmWebsocketRequest implements RealmRequest {
     private RealmConnection connection;
     private JsonObject data;
@@ -25,12 +26,12 @@ class RealmWebsocketRequest implements RealmRequest {
 
     @Override
     public RealmSettings realm() {
-        return (RealmSettings) Serializer.unpack(data.getJsonObject("realm"), RealmSettings.class);
+        return (RealmSettings) Serializer.unpack(data.getJsonObject("realmName"), RealmSettings.class);
     }
 
     @Override
     public RealmUpdate update() {
-        return (RealmUpdate) Serializer.unpack(data.getJsonObject("realm"), RealmUpdate.class);
+        return (RealmUpdate) Serializer.unpack(data.getJsonObject("realmName"), RealmUpdate.class);
     }
 
     @Override
@@ -67,6 +68,16 @@ class RealmWebsocketRequest implements RealmRequest {
     @Override
     public void accept() {
         connection.write(new JsonObject().put("accepted", true).encode());
+    }
+
+    @Override
+    public void missing() {
+
+    }
+
+    @Override
+    public void conflict() {
+
     }
 
     @Override

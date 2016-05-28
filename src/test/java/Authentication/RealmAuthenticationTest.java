@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author Robin Duda
- *         tests the API from realm->authentication server.
+ *         tests the API from realmName->authentication server.
  */
 
 @RunWith(VertxUnitRunner.class)

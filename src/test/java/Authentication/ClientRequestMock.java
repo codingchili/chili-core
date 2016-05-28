@@ -21,8 +21,8 @@ public class ClientRequestMock implements ClientRequest {
 
 
     @Override
-    public String realm() {
-        return data.getString("realm");
+    public String realmName() {
+        return data.getString("realmName");
     }
 
     @Override
@@ -56,7 +56,7 @@ public class ClientRequestMock implements ClientRequest {
     }
 
     @Override
-    public void unauthorize() {
+    public void unauthorized() {
         listener.handle(null, ResponseStatus.UNAUTHORIZED);
     }
 
@@ -73,6 +73,11 @@ public class ClientRequestMock implements ClientRequest {
     @Override
     public void accept() {
         listener.handle(null, ResponseStatus.ACCEPTED);
+    }
+
+    @Override
+    public boolean authorized() {
+        return false;
     }
 
     @Override

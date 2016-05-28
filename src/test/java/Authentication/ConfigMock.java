@@ -55,7 +55,7 @@ public class ConfigMock implements ConfigurationLoader {
 
         @Override
         public byte[] getRealmSecret() {
-            return "realm.secret".getBytes();
+            return "realmName.secret".getBytes();
         }
 
     }
@@ -64,7 +64,7 @@ public class ConfigMock implements ConfigurationLoader {
 
         @Override
         public String getName() {
-            return "realm.name";
+            return "realmName.name";
         }
 
         @Override

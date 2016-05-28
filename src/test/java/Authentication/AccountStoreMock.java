@@ -14,7 +14,7 @@ import java.util.HashMap;
 public class AccountStoreMock implements AsyncAccountStore {
     private static final String PASSWORD = "password";
     private static final String USERNAME = "username";
-    private static final String REALM_NAME = "realm.name";
+    private static final String REALM_NAME = "realmName.name";
     private static final String CHARACTER_NAME = "character";
     private static final String CHARACTER_NAME_DELETED = "character-deleted";
     private HashMap<String, Account> accounts = new HashMap<>();
@@ -108,7 +108,7 @@ public class AccountStoreMock implements AsyncAccountStore {
         HashMap<String, HashMap<String, PlayerCharacter>> characters = accounts.get(username).getCharacters();
 
         if (characters.containsKey(realm) && characters.get(realm).containsKey(character)) {
-            // characters.get(realm).remove(character);
+            // characters.get(realmName).remove(character);
             future.complete();
         } else
             future.fail(new CharacterMissingException());

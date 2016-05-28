@@ -13,7 +13,7 @@ import io.vertx.core.Vertx;
 
 /**
  * @author Robin Duda
- *         root game server, deploys realm servers.
+ *         root game server, deploys realmName servers.
  */
 public class Server implements Verticle {
     private GameServerSettings settings;

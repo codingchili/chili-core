@@ -4,7 +4,7 @@ package Protocol;
  * @author Robin Duda
  */
 public class RealmUpdate {
-    public static final String ACTION = "realm.update";
+    public static final String ACTION = "realmName.update";
     private Header header;
     private Integer players;
 
