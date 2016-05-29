@@ -2,7 +2,7 @@
 
 **ChiliCore** is a **lightweight architecture** for creating online games with focus on **modularity**, **security** and **scalability**. The backend uses **Vert.x** and the current frontend is based on **HTML5**, **websockets** and **Polymer**. 
 
-For full documentation and tutorials visit [the website](https://codingchili.com/), for a live demo visit [demo](https://beta.codingchili.com/).
+For documentation and tutorials visit [the website](https://codingchili.com/), for a live demo visit [demo](https://beta.codingchili.com/).
 
 
 
@@ -12,16 +12,16 @@ To install chili-core clone this repository with **git**,
 git clone https://github.com/codingchili/chili-core.git
 ```
 
-The webserver requires dependencies in **src/main/resources/webroot** run the following in that directory,
+The webserver requires dependencies in **website/** run the following in that directory,
 ```
 bower install
 ```
 
-Create a standalone JAR in the project root (also runs the tests)
+Create a JAR in the project root (also runs the tests)
 ```
 mvn package
 ```
-If the tests do not pass, either fix them yourself or checkout the (if exists) stable branch. The prepackaged jar file in the repository may also be used for testing out the project.
+If the tests do not pass, either fix them yourself or checkout the (if exists) stable branch. The prepackaged jar file in the repository may also be used for testing out the project. If you wish to create a fatjar with the resources bundled move **resources/** and **website/** to **src/main/resources**.
 
 If you do not have a local **MongoDB server** running on the default port, localhost:27017 install latest build of MongoDB from [Website](https://www.mongodb.com/).
 
@@ -71,7 +71,8 @@ The complete feature list may change during development.
 * 2D-movement & spells
 * AI enabled for npcs.
 * Inventory, trading & looting system
-* Crafting system (to be continued)
+* Crafting system 
+* Achievements
 * In-game chat
 * Player classes and spells 
  * Programming knowledge not required to create/edit 
@@ -81,6 +82,7 @@ The complete feature list may change during development.
 ###### Core
 * Distributed realms/servers
 * Centralized authentication server (per region)
+* Statistics API and visualizations
 * Authentication server supports third-party realms
   * Keys available and bound only to registered users.
   * Allows players to try out player-modified worlds.
@@ -107,6 +109,8 @@ The complete feature list may change during development.
 * Resource server: Provides game resources, graphics & logic (scripts)
 * Logging server: Receives logging data from the other components
 
+When completed the items will be marked in some way, as no items are done yet the marker is undecided.
+
 The authentication server exposes an API through REST. Communication within the system and with the game servers is handled with websockets. Using websockets within the system reduces overhead and latency compared to REST, complexity is reduced and availability increased compared to UDP or TCP. This could be changed to UDP or TCP if more performance is desired and if the frontend is replaced with a desktop client.
 
 The resources may be server from the webserver if desired.
@@ -122,6 +126,8 @@ The configuration structure
 |   ├── patch.json
 |   ├── game/
 |   ├── gui/
+├── website/
+|   ├── bower.json
 ├── config/
 │   ├── system/
 │   │   ├── authserver.json
@@ -156,6 +162,8 @@ The configuration structure
 │   │   │   ├── {name}.json
 ```
 **resources/patch.json** contains the patch data, subfolders **game** contains the game files and **gui** contains graphics used in character list/create.
+
+**website/** contains the website used for the web-game, could be reused for desktop games for registration/forums etc.
 
 **conf/system/** sets up the bindings between the components with host/port numbers, logging and authentication tokens between the components. 
 
