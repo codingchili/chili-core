@@ -10,6 +10,10 @@ var api = {
     webserver: function (method) {
         return '/api/' + method;
     },
+
+    resource: function (name) {
+        return '/data/' + name;
+    },
     authentication: function (method) {
         return this.remote + ':' + this.port + '/api/' + method;
     },
@@ -22,7 +26,7 @@ var api = {
     load: function () {
         $.ajax({
             type: 'GET',
-            url: api.webserver('authserver'),
+            url: api.resource('authserver.json'),
             dataType: 'json',
             contentType: 'text/plain',
             statusCode: {

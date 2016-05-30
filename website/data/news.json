@@ -1,9 +1,7 @@
-{
-  "items": [
+[
     {
       "title": "Demo launched",
       "content": "The demo contains this start page, authentication, realm list, character list, character creation and a patcher. Whenever the patcher finishes downloading data your experience ends, the red cube is not a part of the game only a placeholder. ",
       "date": "2016-05-22"
     }
-  ]
-}
+]

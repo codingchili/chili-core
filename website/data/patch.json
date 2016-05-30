@@ -1,41 +1,39 @@
 {
-  "patch": {
-    "build": "0.1.1a",
-    "name": "Redwood",
-    "date": "2016-05-22",
-    "changes": [
-      {
-        "title": "Backend.",
-        "list": [
-          "Added authentication scheme",
-          "Added character storage",
-          "Added patching system",
-          "Added logging system ElasticSeach/kibana",
-          "Added realm lists",
-          "Added configuration loader.",
-          "Added support for private servers.",
-          "Added ping service to realms."
-        ]
-      },
-      {
-        "title": "Webserver",
-        "list": [
-          "Added game interface",
-          "Added dynamic content from JSON.",
-          "Added dynamic version number",
-          "Added resource storage for patches.",
-          "Added project website at codingchili.com"
-        ]
-      },
-      {
-        "title": "Game",
-        "list": [
-          "No changes yet."
-        ]
-      },
-      {
-        "title": "More content coming soon!"
-      }
-    ]
-  }
+  "build": "0.1.1a",
+  "name": "Redwood",
+  "date": "2016-05-22",
+  "changes": [
+    {
+      "title": "Backend.",
+      "list": [
+        "Added authentication scheme",
+        "Added character storage",
+        "Added patching system",
+        "Added logging system ElasticSeach/kibana",
+        "Added realm lists",
+        "Added configuration loader.",
+        "Added support for private servers.",
+        "Added ping service to realms."
+      ]
+    },
+    {
+      "title": "Webserver",
+      "list": [
+        "Added game interface",
+        "Added dynamic content from JSON.",
+        "Added dynamic version number",
+        "Added resource storage for patches.",
+        "Added project website at codingchili.com"
+      ]
+    },
+    {
+      "title": "Game",
+      "list": [
+        "No changes yet."
+      ]
+    },
+    {
+      "title": "More content coming soon!"
+    }
+  ]
 }

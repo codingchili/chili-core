@@ -115,7 +115,7 @@
 
                 $.ajax({
                     type: "GET",
-                    url: api.webserver('/data/patchnotes.json'),
+                    url: api.resource('patch.json'),
                     contentType: "application/json",
 
                     success: (function (data) {
