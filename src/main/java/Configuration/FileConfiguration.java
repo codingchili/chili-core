@@ -30,25 +30,26 @@ public class FileConfiguration implements ConfigurationLoader {
     private MetaServerSettings webserver;
 
     private FileConfiguration() {
-        try {
-            authentication = (AuthServerSettings) load(AUTHSERVER_PATH, AuthServerSettings.class);
-            gameserver = (GameServerSettings) load(GAMESERVER_PATH, GameServerSettings.class);
-            logging = (LogServerSettings) load(LOGSERVER_PATH, LogServerSettings.class);
-            webserver = (MetaServerSettings) load(METASERVER_PATH, MetaServerSettings.class);
-            loadRealms(gameserver);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        authentication = (AuthServerSettings) load(AUTHSERVER_PATH, AuthServerSettings.class);
+        gameserver = (GameServerSettings) load(GAMESERVER_PATH, GameServerSettings.class);
+        logging = (LogServerSettings) load(LOGSERVER_PATH, LogServerSettings.class);
+        webserver = (MetaServerSettings) load(METASERVER_PATH, MetaServerSettings.class);
+        loadRealms(gameserver);
     }
 
-    private void loadRealms(GameServerSettings gameserver) throws IOException {
+    private void loadRealms(GameServerSettings gameserver) {
         ArrayList<RealmSettings> realms = new ArrayList<>();
-        ArrayList<JsonObject> configurations = JsonFileStore.readDirectoryObjects(REALM_PATH);
+        ArrayList<JsonObject> configurations = null;
+        try {
+            configurations = JsonFileStore.readDirectoryObjects(REALM_PATH);
 
-        for (JsonObject configuration : configurations)
-            realms.add((RealmSettings) Serializer.unpack(configuration, RealmSettings.class));
+            for (JsonObject configuration : configurations)
+                realms.add((RealmSettings) Serializer.unpack(configuration, RealmSettings.class));
 
-        gameserver.setRealms(realms);
+            gameserver.setRealms(realms);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static synchronized ConfigurationLoader instance() {
@@ -59,8 +60,12 @@ public class FileConfiguration implements ConfigurationLoader {
         return instance;
     }
 
-    private Object load(String path, Class clazz) throws IOException {
-        return Serializer.unpack(JsonFileStore.readObject(path), clazz);
+    private Object load(String path, Class clazz) {
+        try {
+            return Serializer.unpack(JsonFileStore.readObject(path), clazz);
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     @Override
