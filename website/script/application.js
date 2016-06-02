@@ -15,10 +15,10 @@ var api = {
         return this.remote + ':' + this.port + '/api/' + method;
     },
     realm: function (realm) {
-        return (realm.secure === true ? 'https://' : 'http://') + realm.remote + ':' + realm.advertise.proxy;
+        return (realm.secure === true ? 'https://' : 'http://') + realm.remote + ':' + realm.port;
     },
     realmWebSocket: function (realm) {
-        return (realm.secure === true ? 'wss://' : 'ws://') + realm.remote + ':' + realm.advertise.proxy;
+        return (realm.secure === true ? 'wss://' : 'ws://') + realm.remote + ':' + realm.port;
     },
     load: function () {
         $.ajax({

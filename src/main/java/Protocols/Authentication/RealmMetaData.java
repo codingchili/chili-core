@@ -31,7 +31,7 @@ public class RealmMetaData {
         this.setName(settings.getName())
                 .setDescription(settings.getDescription())
                 .setRemote(settings.getAdvertise().getRemote())
-                .setPort(settings.getPort())
+                .setPort(settings.getAdvertise().getProxy())
                 .setResources(settings.getResources())
                 .setVersion(settings.getVersion())
                 .setSize(settings.getSize())
