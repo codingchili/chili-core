@@ -46,7 +46,7 @@ java -cp <filename>.jar run Utilites.GeneratePatch
 ```
 The authentication tokens are stored in **/conf/system/{component}.json**. It is highly recommended to use a reverse proxy with TLS, see **/conf/system/proxy** for example configurations using NGINX and LetsEncrypt.
 
-When components are started they read the configuration files in conf/system/{authserver,gameserver,logserer,webserver} if the port numbers or addresses are to be changed, check these example configuration files.
+When components are started they read the configuration files in **conf/system/{authserver,gameserver,logserer,webserver}** if the port numbers or addresses are to be changed, check these sample configuration files.
 
 ## Background
 The purpose of the project is to provide a stable core for game development. There are many aspects of creating games, backend architecture, user interfaces, game resources (graphics, sounds) and then the design which includes the story/quests etc. The core is designed to be easily integrated with and modified in each of these aspects. In order to provide this, the core includes somewhat complete subsystems for each of these points. Additionally the core will be delivered as a "complete" game, to further increase the availability/modability and broaden the audience. As such it is the aim of the project to be complete enough both in documentation and code so that it may be used as a learning platform. 
@@ -83,6 +83,7 @@ The complete feature list may change during development.
 * Distributed realms/servers
 * Centralized authentication server (per region)
 * Statistics API and visualizations
+* Transport & protocol independent logic
 * Authentication server supports third-party realms
   * Keys available and bound only to registered users.
   * Allows players to try out player-modified worlds.
@@ -90,7 +91,7 @@ The complete feature list may change during development.
 * Support for instanced game worlds
  * Support for on-demand deployment
 * Security, non-cheatable server
- * Single-threaded in memory transactions
+ * Single-threaded in-memory transactions
  * Server authorized model
 * Logging system for data analysis
  * JSON output, ElasticSearch & Kibana ready.
@@ -111,9 +112,9 @@ The complete feature list may change during development.
 
 When completed the items will be marked in some way, as no items are done yet the marker is undecided.
 
-The authentication server exposes an API through REST. Communication within the system and with the game servers is handled with websockets. Using websockets within the system reduces overhead and latency compared to REST, complexity is reduced and availability increased compared to UDP or TCP. This could be changed to UDP or TCP if more performance is desired and if the frontend is replaced with a desktop client.
+The authentication server exposes an API through REST to clients. Communication within the system and with the game servers is handled with websockets. Using websockets within the system reduces overhead and latency compared to REST, complexity is reduced and availability increased compared to UDP or TCP. This could be changed to UDP or TCP if more performance is desired and if the frontend is replaced with a desktop client. The project aims to be transport and protocol independent, replacing these parts of the core is simple.
 
-The resources may be server from the webserver if desired.
+The resources may be served from the webserver if desired.
 
 All communication within the system uses a text-protocol based on JSON for simplicity.
 
