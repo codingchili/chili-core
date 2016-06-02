@@ -52,7 +52,7 @@
                 padding-top: 32px;
             }
 
-            .build {
+            .version {
                 position: absolute;
                 left: 0;
                 right: 0;
@@ -72,8 +72,8 @@
         <div class="container">
             <paper-material elevation="1" class="item">
 
-                <div class="build">
-                    {{patch.build}}
+                <div class="version">
+                    {{patch.version}}
                 </div>
 
                 <div class="title">
@@ -120,7 +120,7 @@
 
                     success: (function (data) {
                         this.set('patch', data);
-                        application.loadedVersion({name: data.name, build: data.build});
+                        application.loadedVersion({name: data.name, version: data.version});
                     }).bind(this),
 
                     error: function () {

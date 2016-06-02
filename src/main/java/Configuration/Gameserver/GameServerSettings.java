@@ -13,7 +13,7 @@ import java.util.ArrayList;
 @JsonIgnoreProperties({"realms", "path", "name"})
 public class GameServerSettings implements Configurable {
     public static final String GAMESERVER_PATH = "conf/system/gameserver.json";
-    public static final String REALM_PATH = "conf/realmName/";
+    public static final String REALM_PATH = "conf/realm/";
     private RemoteAuthentication logserver;
     private ArrayList<RealmSettings> realms = new ArrayList<>();
 
@@ -25,6 +25,7 @@ public class GameServerSettings implements Configurable {
         return realms;
     }
 
+    @Override
     public RemoteAuthentication getLogserver() {
         return logserver;
     }

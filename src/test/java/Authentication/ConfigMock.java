@@ -6,10 +6,10 @@ import Configuration.Gameserver.GameServerSettings;
 import Configuration.Gameserver.RealmSettings;
 import Configuration.Logserver.LogServerSettings;
 import Configuration.Webserver.MetaServerSettings;
-import Game.Model.Binding;
+import Configuration.Gameserver.Advertise;
 import Game.Model.PlayerClass;
-import Utilities.Token;
-import Utilities.TokenFactory;
+import Protocols.Authorization.Token;
+import Protocols.Authorization.TokenFactory;
 
 import java.util.ArrayList;
 
@@ -93,7 +93,7 @@ public class ConfigMock implements ConfigurationLoader {
 
         @Override
         public String getResources() {
-            return "resources";
+            return "RESOURCES";
         }
 
         @Override
@@ -102,17 +102,12 @@ public class ConfigMock implements ConfigurationLoader {
         }
 
         @Override
-        public Binding getBinding() {
-            return new Binding("localhost", 11132, 11132);
+        public Advertise getAdvertise() {
+            return new Advertise("localhost", 11132);
         }
 
         @Override
         public int getPort() {
-            return 11132;
-        }
-
-        @Override
-        public int getProxy() {
             return 11132;
         }
 

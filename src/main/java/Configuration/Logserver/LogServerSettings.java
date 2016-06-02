@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * @author Robin Duda
  *         Contains settings for the logserver.
  */
-@JsonIgnoreProperties({"path", "name"})
+@JsonIgnoreProperties({"path", "name", "system", "host"})
 public class LogServerSettings implements Configurable {
     public static final String LOGSERVER_PATH = "conf/system/logserver.json";
     private RemoteAuthentication logserver;
@@ -60,6 +60,7 @@ public class LogServerSettings implements Configurable {
         this.elastic = elastic;
     }
 
+    @Override
     public RemoteAuthentication getLogserver() {
         return logserver;
     }
@@ -67,4 +68,5 @@ public class LogServerSettings implements Configurable {
     protected void setLogserver(RemoteAuthentication logserver) {
         this.logserver = logserver;
     }
+
 }

@@ -1,13 +1,13 @@
 package Configuration;
 
-import Utilities.Token;
+import Protocols.Authorization.Token;
 
 /**
  * @author Robin Duda
  *         contains settings required to authenticate with a remote component.
  */
 public class RemoteAuthentication {
-    private Token token = new Token();
+    private Token token = null;
     private String system;
     private String host;
     private String remote;

@@ -20,4 +20,6 @@ public interface ConfigurationLoader {
     class Address {
         public final static String LOGS = "LOGGING";
     }
+
+    String RESOURCES = "resources/";
 }

@@ -3,8 +3,8 @@ package Authentication.Controller.Transport;
 import Authentication.Controller.RealmRequest;
 import Configuration.Gameserver.RealmSettings;
 import Protocols.Authentication.RealmUpdate;
-import Utilities.Serializer;
-import Utilities.Token;
+import Protocols.Serializer;
+import Protocols.Authorization.Token;
 import io.vertx.core.json.JsonObject;
 
 /**
@@ -14,10 +14,12 @@ import io.vertx.core.json.JsonObject;
 class RealmWebsocketRequest implements RealmRequest {
     private RealmConnection connection;
     private JsonObject data;
+    private JsonObject realm;
 
     RealmWebsocketRequest(RealmConnection connection, JsonObject data) {
         this.connection = connection;
         this.data = data;
+        this.realm = data.getJsonObject("realm");
     }
 
     public RealmWebsocketRequest(RealmConnection connection) {
@@ -26,12 +28,12 @@ class RealmWebsocketRequest implements RealmRequest {
 
     @Override
     public RealmSettings realm() {
-        return (RealmSettings) Serializer.unpack(data.getJsonObject("realmName"), RealmSettings.class);
+        return (RealmSettings) Serializer.unpack(realm, RealmSettings.class);
     }
 
     @Override
-    public RealmUpdate update() {
-        return (RealmUpdate) Serializer.unpack(data.getJsonObject("realmName"), RealmUpdate.class);
+    public int players() {
+        return data.getInteger("players");
     }
 
     @Override
@@ -67,7 +69,7 @@ class RealmWebsocketRequest implements RealmRequest {
 
     @Override
     public void missing() {
-
+        connection.write(new JsonObject().put("error", true));
     }
 
     @Override
@@ -77,7 +79,13 @@ class RealmWebsocketRequest implements RealmRequest {
 
     @Override
     public Token token() {
-        return (Token) Serializer.unpack(data.getJsonObject("token"), Token.class);
+        JsonObject authentication = realm.getJsonObject("authentication");
+
+        if (authentication.containsKey("token")) {
+            return (Token) Serializer.unpack(authentication.getJsonObject("token"), Token.class);
+        } else {
+            return null;
+        }
     }
 
     @Override

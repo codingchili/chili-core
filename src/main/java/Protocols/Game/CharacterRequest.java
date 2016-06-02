@@ -1,7 +1,7 @@
 package Protocols.Game;
 
 import Protocols.Header;
-import Utilities.Token;
+import Protocols.Authorization.Token;
 
 /**
  * @author Robin Duda

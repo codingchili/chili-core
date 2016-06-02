@@ -1,7 +1,7 @@
 import Game.Model.Affliction;
 import Game.Model.PlayerClass;
-import Utilities.JsonFileStore;
-import Utilities.Serializer;
+import Configuration.JsonFileStore;
+import Protocols.Serializer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import org.junit.Test;

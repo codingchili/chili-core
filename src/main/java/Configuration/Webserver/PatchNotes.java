@@ -16,23 +16,25 @@ public class PatchNotes {
         return version;
     }
 
-    protected void setVersion(String version) {
+    public PatchNotes setVersion(String version) {
         this.version = version;
+        return this;
     }
 
     public String getName() {
         return name;
     }
 
-    protected void setName(String name) {
+    public PatchNotes setName(String name) {
         this.name = name;
+        return this;
     }
 
     public String getDate() {
         return date;
     }
 
-    protected void setDate(String date) {
+    public void setDate(String date) {
         this.date = date;
     }
 

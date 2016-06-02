@@ -1,21 +1,20 @@
-package Game.Model;
+package Configuration.Gameserver;
 
 /**
  * @author Robin Duda
  *         Provides configuration options to allow a server to listen on another port
  *         that it is broadcasting on the realmName-list.
  */
-public class Binding {
+public class Advertise {
     private String remote;
     private Integer proxy;
-    private Integer port;
 
-    public Binding() {}
+    public Advertise() {
+    }
 
-    public Binding(String remote, int port, int proxy) {
+    public Advertise(String remote, int port) {
         this.remote = remote;
-        this.port = port;
-        this.proxy = proxy;
+        this.proxy = port;
     }
 
     public String getRemote() {
@@ -32,13 +31,5 @@ public class Binding {
 
     public void setProxy(Integer proxy) {
         this.proxy = proxy;
-    }
-
-    public Integer getPort() {
-        return port;
-    }
-
-    public void setPort(Integer port) {
-        this.port = port;
     }
 }

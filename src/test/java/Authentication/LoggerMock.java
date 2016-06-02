@@ -3,7 +3,7 @@ package Authentication;
 import Authentication.Model.Account;
 import Configuration.Gameserver.InstanceSettings;
 import Configuration.Gameserver.RealmSettings;
-import Utilities.Logger;
+import Logging.Model.Logger;
 import io.vertx.core.http.HttpServerRequest;
 
 /**
@@ -67,6 +67,21 @@ public class LoggerMock implements Logger {
 
     @Override
     public void onPageLoaded(HttpServerRequest request) {
+
+    }
+
+    @Override
+    public void patchReloading(String name, String version) {
+
+    }
+
+    @Override
+    public void patchReloaded(String name, String version) {
+
+    }
+
+    @Override
+    public void patchLoaded(String name, String version) {
 
     }
 }

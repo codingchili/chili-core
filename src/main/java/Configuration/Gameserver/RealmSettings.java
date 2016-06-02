@@ -2,11 +2,10 @@ package Configuration.Gameserver;
 
 import Configuration.RemoteAuthentication;
 import Game.Model.Affliction;
-import Game.Model.Binding;
 import Game.Model.PlayerCharacter;
 import Game.Model.PlayerClass;
-import Utilities.JsonFileStore;
-import Utilities.Serializer;
+import Configuration.JsonFileStore;
+import Protocols.Serializer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -30,7 +29,8 @@ public class RealmSettings {
     private ArrayList<Affliction> afflictions = new ArrayList<>();
     private PlayerCharacter template = new PlayerCharacter();
     private RemoteAuthentication authentication = new RemoteAuthentication();
-    private Binding binding = new Binding();
+    private Advertise advertise = new Advertise();
+    private int port;
     private String name;
     private String description;
     private String resources;
@@ -46,10 +46,11 @@ public class RealmSettings {
 
     public RealmSettings removeAuthentication() {
         return new RealmSettings()
+                .setPort(port)
                 .setClasses(classes)
                 .setAfflictions(afflictions)
                 .setTemplate(template)
-                .setBinding(binding)
+                .setAdvertise(advertise)
                 .setName(name)
                 .setDescription(description)
                 .setResources(resources)
@@ -102,12 +103,12 @@ public class RealmSettings {
         this.template = (PlayerCharacter) Serializer.unpack(JsonFileStore.readObject(PLAYER_TEMPLATE_PATH), PlayerCharacter.class);
     }
 
-    public Binding getBinding() {
-        return binding;
+    public Advertise getAdvertise() {
+        return advertise;
     }
 
-    public RealmSettings setBinding(Binding binding) {
-        this.binding = binding;
+    public RealmSettings setAdvertise(Advertise advertise) {
+        this.advertise = advertise;
         return this;
     }
 
@@ -260,14 +261,15 @@ public class RealmSettings {
     }
 
     public String getRemote() {
-        return binding.getRemote();
+        return advertise.getRemote();
     }
 
     public int getPort() {
-        return binding.getPort();
+        return port;
     }
 
-    public int getProxy() {
-        return binding.getProxy();
+    public RealmSettings setPort(int port) {
+        this.port = port;
+        return this;
     }
 }

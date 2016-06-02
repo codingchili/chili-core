@@ -5,13 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.version.sourceEncoding>UTF-8</project.version.sourceEncoding>
     </properties>
 
     <groupId>groupId</groupId>
     <artifactId>dungeon-core</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <build>
+    <version>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -45,7 +45,7 @@
                 </executions>
             </plugin>
         </plugins>
-    </build>
+    </version>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>

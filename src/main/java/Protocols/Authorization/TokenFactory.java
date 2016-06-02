@@ -1,4 +1,4 @@
-package Utilities;
+package Protocols.Authorization;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;

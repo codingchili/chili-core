@@ -8,7 +8,7 @@ import Configuration.Authserver.AuthServerSettings;
 import Configuration.ConfigurationLoader;
 import Protocols.PacketHandler;
 import Protocols.Protocol;
-import Utilities.Logger;
+import Logging.Model.Logger;
 import io.vertx.core.Vertx;
 
 /**

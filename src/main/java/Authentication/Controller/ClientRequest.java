@@ -2,9 +2,8 @@ package Authentication.Controller;
 
 import Authentication.Model.Account;
 import Protocols.Authentication.ClientAuthentication;
-import Protocols.Authentication.RealmMetaData;
 import Protocols.Request;
-import Utilities.Token;
+import Protocols.Authorization.Token;
 
 /**
  * @author Robin Duda

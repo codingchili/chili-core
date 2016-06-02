@@ -30,11 +30,11 @@ public class RealmHandler {
         this.settings = provider.getAuthserverSettings();
         this.realmStore = new RealmStore(provider.getVertx());
 
-        new Protocol<PacketHandler<RealmRequest>>(Access.AUTHORIZE)
+        provider.realmProtocol()
                 .use(RealmUpdate.ACTION, this::update)
                 .use(CharacterRequest.ACTION, this::character)
                 .use(PacketHandler.CLOSE, this::disconnected)
-                .use(RealmRegister.ACTION, this::register, Access.PUBLIC);
+                .use(RealmRequest.AUTHENTICATED, this::register, Access.PUBLIC);
     }
 
     private void register(RealmRequest request) {
@@ -47,11 +47,10 @@ public class RealmHandler {
 
     private void update(RealmRequest request) {
         String realmName = request.realmName();
-        int players = request.realm().getPlayers();
-        RealmSettings realm;
+        int players = request.players();
 
         try {
-            realm = realmStore.get(realmName);
+            RealmSettings realm = realmStore.get(realmName);
             realm.setPlayers(players);
             realmStore.put(realm);
         } catch (RealmMissingException e) {

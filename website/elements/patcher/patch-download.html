@@ -63,7 +63,7 @@
                 font-size: 22px
             }
 
-            .patch-build {
+            .patch-version {
                 display: block;
                 position: absolute;
                 top: 48px;
@@ -125,7 +125,7 @@
             </paper-progress>
 
             <span class="patch-name">{{patch.name}}</span>
-            <span class="patch-build">{{patch.build}}</span>
+            <span class="patch-version">{{patch.version}}</span>
             <span class="patch-count">{{patch.current}}/{{patch.files.length}}</span>
             <span class="patch-file">{{patch.file.path}}</span>
             <span class="patch-bandwidth">{{formatBitRate(patch.bandwidth)}}</span>
@@ -149,11 +149,11 @@
 
                     patcher.update({
 
-                        started: (function (name, build, size, files) {
+                        started: (function (name, version, size, files) {
                             this.set("downloading", true);
                             this.set("patch", {
                                 name: name,
-                                build: build,
+                                version: version,
                                 size: size,
                                 files: files
                             });

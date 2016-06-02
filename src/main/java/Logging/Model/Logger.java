@@ -1,4 +1,4 @@
-package Utilities;
+package Logging.Model;
 
 import Authentication.Model.Account;
 import Configuration.Gameserver.InstanceSettings;
@@ -34,18 +34,21 @@ public interface Logger {
 
     /**
      * Emit when an authentication failure occured on accounts.
+     *
      * @param host that the request originated from.
      */
     void onAuthenticationFailure(Account account, String host);
 
     /**
      * Emit when an account has been authenticated.
+     *
      * @param host the originating host.
      */
     void onAuthenticated(Account account, String host);
 
     /**
      * Emit when a new character has been register.
+     *
      * @param host the originating host.
      */
     void onRegistered(Account account, String host);
@@ -74,4 +77,19 @@ public interface Logger {
      * Emit when the webserver has served the root page /
      */
     void onPageLoaded(HttpServerRequest request);
+
+    /**
+     * Emit when a change in patch files are detected and files have started to reload.
+     */
+    void patchReloading(String name, String version);
+
+    /**
+     * Emit when the reloading of patch files have completed.
+     */
+    void patchReloaded(String name, String version);
+
+    /**
+     * Emit when patch version is loaded.
+     */
+    void patchLoaded(String name, String version);
 }

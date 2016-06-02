@@ -8,9 +8,9 @@ import Protocols.Authentication.CharacterList;
 import Protocols.Authentication.ClientAuthentication;
 import Protocols.Authentication.RealmList;
 import Protocols.AuthorizationHandler.Access;
-import Utilities.Logger;
-import Utilities.Token;
-import Utilities.TokenFactory;
+import Logging.Model.Logger;
+import Protocols.Authorization.Token;
+import Protocols.Authorization.TokenFactory;
 import io.vertx.core.Future;
 
 import java.util.ArrayList;

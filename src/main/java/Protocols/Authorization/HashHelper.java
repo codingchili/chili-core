@@ -1,4 +1,4 @@
-package Utilities;
+package Protocols.Authorization;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;

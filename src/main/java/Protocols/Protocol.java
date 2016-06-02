@@ -1,6 +1,8 @@
 package Protocols;
 
 import Protocols.AuthorizationHandler.Access;
+import Protocols.Exception.AuthorizationRequiredException;
+import Protocols.Exception.HandlerMissingException;
 
 /**
  * @author Robin Duda

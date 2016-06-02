@@ -6,8 +6,10 @@ import Configuration.Authserver.AuthServerSettings;
 import Protocols.Authentication.RealmRegister;
 import Protocols.AuthorizationHandler.Access;
 import Protocols.*;
-import Utilities.Serializer;
-import Utilities.TokenFactory;
+import Protocols.Exception.AuthorizationRequiredException;
+import Protocols.Exception.HandlerMissingException;
+import Protocols.Serializer;
+import Protocols.Authorization.TokenFactory;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.http.ServerWebSocket;
@@ -34,9 +36,12 @@ public class RealmServer extends AbstractVerticle {
     private void register(RealmRequest request) {
         if (tokens.verifyToken(request.token())) {
             request.connection().authenticate(request.token().getDomain());
-            request.accept();
+            try {
+                protocol.get(RealmRequest.AUTHENTICATED, Access.AUTHORIZE).handle(request);
+            } catch (AuthorizationRequiredException | HandlerMissingException ignored) {
+            }
         } else {
-            request.error();
+            request.unauthorized();
         }
     }
 
@@ -55,6 +60,7 @@ public class RealmServer extends AbstractVerticle {
                 handle(PacketHandler.CLOSE, new RealmWebsocketRequest(connections.remove(socket.textHandlerID())));
             });
 
+            connections.put(socket.textHandlerID(), new RealmConnection(socket));
         }).listen(settings.getRealmPort());
 
         future.complete();

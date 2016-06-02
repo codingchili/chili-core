@@ -1,8 +1,8 @@
 package Authentication.Model;
 
 import Game.Model.PlayerCharacter;
-import Utilities.HashHelper;
-import Utilities.Serializer;
+import Protocols.Authorization.HashHelper;
+import Protocols.Serializer;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.MongoClient;

@@ -2,6 +2,7 @@ import Authentication.ConfigMock;
 import Configuration.Gameserver.RealmSettings;
 import Game.Controller.Realm;
 import Authentication.LoggerMock;
+import Protocols.Authorization.Token;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Async;
@@ -28,8 +29,9 @@ public class RealmPingTest {
         vertx = Vertx.vertx();
 
         RealmSettings realm = new RealmSettings();
-        realm.getBinding().setPort(TEST_PORT);
-        realm.getAuthentication().getToken().setKey("null");
+        realm.setPort(TEST_PORT);
+
+        realm.getAuthentication().setToken(new Token().setKey("test"));
         realm.getAuthentication().setRemote("localhost");
 
         vertx.deployVerticle(new Realm(new ConfigMock.GameSettingsMock(), realm, new LoggerMock()), context.asyncAssertSuccess());

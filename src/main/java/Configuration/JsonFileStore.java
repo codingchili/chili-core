@@ -1,4 +1,4 @@
-package Utilities;
+package Configuration;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;

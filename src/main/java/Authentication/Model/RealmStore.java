@@ -2,9 +2,9 @@ package Authentication.Model;
 
 import Configuration.Gameserver.RealmSettings;
 import Protocols.Authentication.RealmMetaData;
-import Utilities.Serializer;
-import Utilities.Token;
-import Utilities.TokenFactory;
+import Protocols.Serializer;
+import Protocols.Authorization.Token;
+import Protocols.Authorization.TokenFactory;
 import io.vertx.core.Vertx;
 import io.vertx.core.shareddata.LocalMap;
 
@@ -48,12 +48,12 @@ public class RealmStore {
     }
 
     public RealmSettings get(String realmName) throws RealmMissingException {
-        RealmSettings realm = (RealmSettings) Serializer.unpack(realms.get(realmName), RealmSettings.class);
+        String data = realms.get(realmName);
 
-        if (realm == null) {
+        if (data == null) {
             throw new RealmMissingException();
         } else {
-            return realm.removeAuthentication();
+            return ((RealmSettings) Serializer.unpack(realms.get(realmName), RealmSettings.class)).removeAuthentication();
         }
     }
 

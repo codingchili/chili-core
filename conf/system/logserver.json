@@ -1,33 +1,33 @@
 {
-  "logserver": {
-    "token": {
-      "key": "F3E581672604DCCD517C0046116CE6978BE597E8C388AFB33CD375C517411591E6639BF37EB49C82B3D5B1D64547BA3CC77359A68150BC094510EBB82E6D2B85",
-      "expiry": 1466608752,
-      "domain": "logserver"
+  "logserver" : {
+    "token" : {
+      "key" : "B5628C2F765E6CF317F05A4D3C31DEBCDC8D926BAB79590C6A796FE49DE5EAC7D74AF15C63FF1DB302B508E2A2621709200CF8A6240572D238D4DE86DF1DA4B9",
+      "expiry" : 1467547580,
+      "domain" : "logserver@server.1"
     },
-    "system": "logserver",
-    "host": "server.1",
-    "remote": "localhost",
-    "port": 6109
+    "system" : "logserver",
+    "host" : "server.1",
+    "remote" : "localhost",
+    "port" : 6109
   },
-  "elastic": {
-    "enabled": false,
-    "remote": "localhost",
-    "index": "the_def_index",
-    "port": 9200,
-    "template": {
-      "mappings": {
-        "the_def_index": {
-          "properties": {
-            "time": {
-              "type": "date"
+  "elastic" : {
+    "remote" : "localhost",
+    "index" : "the_def_index",
+    "port" : 9200,
+    "template" : {
+      "mappings" : {
+        "the_def_index" : {
+          "properties" : {
+            "time" : {
+              "type" : "date"
             }
           }
         }
       }
-    }
+    },
+    "enabled" : false
   },
-  "secret": "FNc/hHBzT74W3ShyfDx8hZvwwL8toze8QtjqZ+uefTzX6mGWvqMiXxFha0x80kIA1Wiz7TDTDYspmKSJE34MIQ==",
-  "port": 6109,
-  "console": true
+  "secret" : "kMl57oKdZz8Ts9QWc7EVZdudW1JUfod1Xtt2rJutOOudyWZIYz3GT8i3MzR1WJ699p/LDbdfYRbSvy4j/r1Dig==",
+  "port" : 6109,
+  "console" : true
 }

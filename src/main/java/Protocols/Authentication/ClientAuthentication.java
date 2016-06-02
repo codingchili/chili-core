@@ -1,7 +1,7 @@
 package Protocols.Authentication;
 
 import Authentication.Model.Account;
-import Utilities.Token;
+import Protocols.Authorization.Token;
 
 import java.util.ArrayList;
 import java.util.HashMap;

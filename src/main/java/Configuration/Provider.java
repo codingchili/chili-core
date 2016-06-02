@@ -1,6 +1,6 @@
 package Configuration;
 
-import Utilities.Logger;
+import Logging.Model.Logger;
 import io.vertx.core.Vertx;
 
 /**

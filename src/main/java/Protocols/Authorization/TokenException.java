@@ -1,4 +1,4 @@
-package Utilities;
+package Protocols.Authorization;
 
 /**
  * @author Robin Duda

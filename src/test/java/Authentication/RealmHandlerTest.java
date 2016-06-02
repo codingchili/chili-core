@@ -4,9 +4,9 @@ import Configuration.Authserver.AuthServerSettings;
 import Configuration.Gameserver.RealmSettings;
 import Protocols.Game.CharacterRequest;
 import Protocols.Authentication.RealmRegister;
-import Utilities.Serializer;
-import Utilities.Token;
-import Utilities.TokenFactory;
+import Protocols.Serializer;
+import Protocols.Authorization.Token;
+import Protocols.Authorization.TokenFactory;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
  *         tests the API from realmName->authentication server.
  */
 
-@Ignore
 @RunWith(VertxUnitRunner.class)
 public class RealmHandlerTest {
     private Vertx vertx;

@@ -1,4 +1,4 @@
-package Protocols;
+package Protocols.Exception;
 
 /**
  * @author Robin Duda

@@ -23,7 +23,7 @@ mvn package
 ```
 If the tests do not pass, either fix them yourself or checkout the (if exists) stable branch. The prepackaged jar file in the repository may also be used for testing out the project. If you wish to create a fatjar with the resources bundled move **resources/** and **website/** to **src/main/resources**.
 
-If you do not have a local **MongoDB server** running on the default port, localhost:27017 install latest build of MongoDB from [Meta](https://www.mongodb.com/).
+If you do not have a local **MongoDB server** running on the default port, localhost:27017 install latest version of MongoDB from [Meta](https://www.mongodb.com/).
 
 To start the packaged JAR run
 ```

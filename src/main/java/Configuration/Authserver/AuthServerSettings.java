@@ -46,6 +46,7 @@ public class AuthServerSettings implements Configurable {
         this.realms = realms;
     }
 
+    @Override
     public RemoteAuthentication getLogserver() {
         return logserver;
     }

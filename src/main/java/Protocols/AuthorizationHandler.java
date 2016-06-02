@@ -1,5 +1,8 @@
 package Protocols;
 
+import Protocols.Exception.AuthorizationRequiredException;
+import Protocols.Exception.HandlerMissingException;
+
 import java.util.HashMap;
 
 /**

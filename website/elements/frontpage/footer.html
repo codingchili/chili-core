@@ -29,7 +29,7 @@
             <paper-material elevation="3">
                 <p>
                 <h6>
-                    {{build}}
+                    {{version}}
                 </h6>
                 </p>
             </paper-material>
@@ -43,7 +43,7 @@
             ready: function () {
 
                 application.onVersion((function (version) {
-                    this.set('build', version.name + ' ' + version.build);
+                    this.set('version', version.name + ' ' + version.version);
                 }).bind(this));
 
             }

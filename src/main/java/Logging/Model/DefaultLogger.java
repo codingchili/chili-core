@@ -1,9 +1,10 @@
-package Utilities;
+package Logging.Model;
 
 import Authentication.Model.Account;
 import Configuration.*;
 import Configuration.Gameserver.InstanceSettings;
 import Configuration.Gameserver.RealmSettings;
+import Protocols.Serializer;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 
 /**
  * @author Robin Duda
- * Default logging implementation.
+ *         Default logging implementation.
  */
 public class DefaultLogger implements Logger {
     private ArrayList<String> buffer = new ArrayList<>();
@@ -66,13 +67,13 @@ public class DefaultLogger implements Logger {
     public void onInstanceStarted(RealmSettings realm, InstanceSettings instance) {
         log(event("instance.start")
                 .put("instance", instance.getName())
-                .put("realmName", realm.getName()));
+                .put("realm", realm.getName()));
     }
 
     @Override
     public void onRealmStarted(RealmSettings realm) {
-        log(event("realmName.start")
-                .put("realmName", realm.getName()));
+        log(event("realm.start")
+                .put("realm", realm.getName()));
     }
 
     @Override
@@ -98,27 +99,27 @@ public class DefaultLogger implements Logger {
 
     @Override
     public void onRealmRegistered(RealmSettings realm) {
-        log(event("realmName.register")
-                .put("realmName", realm.getName()));
+        log(event("realm.register")
+                .put("realm", realm.getName()));
     }
 
     @Override
     public void onRealmDeregistered(RealmSettings realm) {
-        log(event("realmName.deregister")
-                .put("realmName", realm.getName()));
+        log(event("realm.deregister")
+                .put("realm", realm.getName()));
     }
 
     @Override
     public void onRealmUpdated(RealmSettings realm) {
-        log(event("realmName.update")
-                .put("realmName", realm.getName())
+        log(event("realm.update")
+                .put("realm", realm.getName())
                 .put("players", realm.getPlayers()));
     }
 
     @Override
     public void onRealmRejected(RealmSettings realm) {
-        log(event("realmName.rejected")
-                .put("realmName", realm.getName()));
+        log(event("realm.rejected")
+                .put("realm", realm.getName()));
     }
 
     @Override
@@ -126,6 +127,27 @@ public class DefaultLogger implements Logger {
         log(event("page.load")
                 .put("agent", request.getHeader("user-agent"))
                 .put("origin", request.remoteAddress().host()));
+    }
+
+    @Override
+    public void patchReloading(String name, String version) {
+        log(event("patcher.reload")
+                .put("name", name)
+                .put("version", version));
+    }
+
+    @Override
+    public void patchReloaded(String name, String version) {
+        log(event("patcher.reloaded")
+                .put("name", name)
+                .put("version", version));
+    }
+
+    @Override
+    public void patchLoaded(String name, String version) {
+        log(event("patcher.load")
+                .put("name", name)
+                .put("version", version));
     }
 
     private JsonObject event(String name) {

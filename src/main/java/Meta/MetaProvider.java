@@ -4,11 +4,12 @@ import Configuration.ConfigurationLoader;
 import Configuration.FileConfiguration;
 import Configuration.Provider;
 import Configuration.Webserver.MetaServerSettings;
+import Meta.Model.PatchKeeper;
 import Protocols.AuthorizationHandler.Access;
 import Protocols.PacketHandler;
 import Protocols.Protocol;
-import Utilities.DefaultLogger;
-import Utilities.Logger;
+import Logging.Model.DefaultLogger;
+import Logging.Model.Logger;
 import io.vertx.core.Vertx;
 
 /**
@@ -18,9 +19,11 @@ public class MetaProvider implements Provider {
     private MetaServerSettings settings = FileConfiguration.instance().getMetaServerSettings();
     private Protocol<PacketHandler<ClientRequest>> protocol = new Protocol<>(Access.PUBLIC);
     private Vertx vertx;
+    private PatchKeeper patchKeeper;
 
     public MetaProvider(Vertx vertx) {
         this.vertx = vertx;
+        this.patchKeeper = PatchKeeper.instance(vertx, getLogger());
     }
 
     @Override
@@ -44,5 +47,9 @@ public class MetaProvider implements Provider {
 
     public Protocol<PacketHandler<ClientRequest>> protocol() {
         return protocol;
+    }
+
+    public PatchKeeper getPatchKeeper() {
+        return patchKeeper;
     }
 }

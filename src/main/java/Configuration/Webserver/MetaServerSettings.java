@@ -12,19 +12,19 @@ import java.util.ArrayList;
  */
 @JsonIgnoreProperties({"path", "name"})
 public class MetaServerSettings implements Configurable {
-    public static final String WEBSERVER_PATH = "conf/system/webserver.json";
+    public static final String METASERVER_PATH = "conf/system/metaserver.json";
     private RemoteAuthentication authserver;
     private RemoteAuthentication logserver;
     private GameInfo gameinfo;
     private PatchNotes patch;
-    private NewsList news;
+    private ArrayList<NewsItem> news;
     private Integer port;
     private Boolean cache;
     private Boolean compress;
 
     @Override
     public String getPath() {
-        return WEBSERVER_PATH;
+        return METASERVER_PATH;
     }
 
     @Override
@@ -56,14 +56,6 @@ public class MetaServerSettings implements Configurable {
         this.patch = patch;
     }
 
-    public NewsList getNews() {
-        return news;
-    }
-
-    public void setNews(NewsList news) {
-        this.news = news;
-    }
-
     public Boolean getCompress() {
         return compress;
     }
@@ -80,12 +72,21 @@ public class MetaServerSettings implements Configurable {
         this.cache = cache;
     }
 
+    @Override
     public RemoteAuthentication getLogserver() {
         return logserver;
     }
 
     protected void setLogserver(RemoteAuthentication logserver) {
         this.logserver = logserver;
+    }
+
+    public ArrayList<NewsItem> getNews() {
+        return news;
+    }
+
+    public void setNews(ArrayList<NewsItem> news) {
+        this.news = news;
     }
 
     public Integer getPort() {

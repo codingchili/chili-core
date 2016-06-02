@@ -2,7 +2,7 @@ package Game.Model;
 
 import Protocols.Game.AuthenticationResult;
 import Protocols.Game.CharacterResponse;
-import Utilities.Serializer;
+import Protocols.Serializer;
 import io.vertx.core.http.ServerWebSocket;
 
 /**

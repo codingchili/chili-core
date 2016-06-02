@@ -3,8 +3,8 @@ package Authentication;
 import Authentication.Controller.ClientRequest;
 import Authentication.Model.Account;
 import Protocols.Authentication.ClientAuthentication;
-import Utilities.Serializer;
-import Utilities.Token;
+import Protocols.Serializer;
+import Protocols.Authorization.Token;
 import io.vertx.core.json.JsonObject;
 
 /**

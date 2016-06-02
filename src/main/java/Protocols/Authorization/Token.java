@@ -1,4 +1,4 @@
-package Utilities;
+package Protocols.Authorization;
 
 import java.time.Instant;
 
@@ -28,8 +28,9 @@ public class Token {
         return key;
     }
 
-    public void setKey(String key) {
+    public Token setKey(String key) {
         this.key = key;
+        return this;
     }
 
     public long getExpiry() {
