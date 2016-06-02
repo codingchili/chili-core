@@ -56,7 +56,7 @@ public class ClientHandler {
 
     private void file(ClientRequest request) {
         try {
-            request.file(Buffer.buffer(patcher.getPatchFile(request.file(), request.version()).getBytes()));
+            request.file(patcher.getPatchFile(request.file(), request.version()));
         } catch (PatchReloadedException e) {
             request.conflict();
         } catch (NoSuchFileException e) {

@@ -6,11 +6,13 @@ import Logging.Model.Logger;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
+import java.util.zip.GZIPOutputStream;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
@@ -95,7 +97,7 @@ public class PatchKeeper {
                 long fileModified = file.lastModified();
                 byte[] fileBytes = Files.readAllBytes(path);
 
-                files.put(filePath, new PatchFile(filePath, fileSize, fileModified, fileBytes));
+                files.put(filePath, new PatchFile(filePath, fileSize, fileModified, gzip(fileBytes)));
 
                 return FileVisitResult.CONTINUE;
             }
@@ -107,6 +109,19 @@ public class PatchKeeper {
         });
 
         patchInfo = new PatchInfo(files, name, version);
+    }
+
+    private byte[] gzip(byte[] file) {
+        try {
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            GZIPOutputStream gzip = new GZIPOutputStream(output);
+            gzip.write(file);
+            gzip.close();
+            output.close();
+            return output.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     public synchronized PatchFile getPatchFile(String path, String requestVersion) throws PatchReloadedException, NoSuchFileException {

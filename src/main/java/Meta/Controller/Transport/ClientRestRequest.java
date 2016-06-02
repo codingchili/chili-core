@@ -1,9 +1,20 @@
 package Meta.Controller.Transport;
 
 import Meta.Controller.ClientRequest;
+import Meta.Model.PatchFile;
 import Protocols.Serializer;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.web.RoutingContext;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * @author Robin Duda
@@ -50,8 +61,31 @@ class ClientRestRequest implements ClientRequest {
     }
 
     @Override
-    public void file(Buffer buffer) {
-        context.response().putHeader("content-type", "image/svg+xml").end(buffer);
+    public void file(PatchFile file) {
+        context.response()
+                .putHeader("content-type", getContentType(file))
+                .putHeader("content-encoding", "gzip")
+                .end(Buffer.buffer(file.getBytes()));
+    }
+
+    private String getContentType(PatchFile file) {
+        String type = URLConnection.guessContentTypeFromName(file.getPath());
+
+        if (type == null) {
+            String filename = file.getPath();
+            String extension = filename.substring(filename.lastIndexOf('.'), filename.length());
+
+            switch (extension) {
+                case ".json":
+                    return "application/json";
+                case ".svg":
+                    return "image/svg+xml";
+                default:
+                    return "unknown/type";
+            }
+        } else {
+            return type;
+        }
     }
 
     @Override
@@ -64,7 +98,7 @@ class ClientRestRequest implements ClientRequest {
         String version = context.request().getParam("version");
 
         if (version == null) {
-            version = "999999999999999999999999999999999999";
+            version = "9999.999.999";
         }
 
         return version;

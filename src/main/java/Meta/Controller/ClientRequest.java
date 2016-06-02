@@ -1,13 +1,13 @@
 package Meta.Controller;
 
+import Meta.Model.PatchFile;
 import Protocols.Request;
-import io.vertx.core.buffer.Buffer;
 
 /**
  * @author Robin Duda
  */
 public interface ClientRequest extends Request {
-    void file(Buffer buffer);
+    void file(PatchFile file);
 
     String file();
 
