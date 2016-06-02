@@ -1,17 +1,17 @@
 package Authentication.Controller;
 
 import Authentication.Model.*;
-import Configuration.RealmSettings;
+import Configuration.Gameserver.RealmSettings;
 import Game.Model.PlayerCharacter;
 import Game.Model.PlayerClass;
-import Protocol.Authentication.CharacterList;
-import Protocol.Authentication.ClientAuthentication;
-import Protocol.Authentication.RealmList;
+import Protocols.Authentication.CharacterList;
+import Protocols.Authentication.ClientAuthentication;
+import Protocols.Authentication.RealmList;
+import Protocols.AuthorizationHandler.Access;
 import Utilities.Logger;
 import Utilities.Token;
 import Utilities.TokenFactory;
 import io.vertx.core.Future;
-import Authentication.Model.AuthorizationHandler.Access;
 
 import java.util.ArrayList;
 
@@ -25,20 +25,20 @@ public class ClientHandler {
     private TokenFactory factory;
     private Logger logger;
 
-    public ClientHandler(Provider provider) {
+    public ClientHandler(AuthProvider provider) {
         this.logger = provider.getLogger();
         this.accounts = provider.getAccountStore();
         this.factory = new TokenFactory(provider.getAuthserverSettings().getClientSecret());
         this.realmStore = new RealmStore(provider.getVertx());
 
         provider.clientProtocol()
-                .use(Protocol.CHARACTERLIST, this::characterList)
-                .use(Protocol.CHARACTERCREATE, this::characterCreate)
-                .use(Protocol.CHARACTERREMOVE, this::characterRemove)
-                .use(Protocol.REALMTOKEN, this::realmtoken)
-                .use(Protocol.AUTHENTICATE, this::authenticate, Access.PUBLIC)
-                .use(Protocol.REGISTER, this::register, Access.PUBLIC)
-                .use(Protocol.REALMLIST, this::realmlist, Access.PUBLIC);
+                .use(ClientRequest.CHARACTERLIST, this::characterList)
+                .use(ClientRequest.CHARACTERCREATE, this::characterCreate)
+                .use(ClientRequest.CHARACTERREMOVE, this::characterRemove)
+                .use(ClientRequest.REALMTOKEN, this::realmtoken)
+                .use(ClientRequest.AUTHENTICATE, this::authenticate, Access.PUBLIC)
+                .use(ClientRequest.REGISTER, this::register, Access.PUBLIC)
+                .use(ClientRequest.REALMLIST, this::realmlist, Access.PUBLIC);
     }
 
     private void realmtoken(ClientRequest request) {

@@ -2,7 +2,7 @@ package Logging;
 
 
 import Configuration.FileConfiguration;
-import Configuration.LogServerSettings;
+import Configuration.Logserver.LogServerSettings;
 import Utilities.*;
 import io.vertx.core.Context;
 import io.vertx.core.Future;

@@ -1,15 +1,15 @@
 package Game.Controller;
 
-import Configuration.GameServerSettings;
-import Configuration.InstanceSettings;
-import Configuration.RealmSettings;
+import Configuration.Gameserver.GameServerSettings;
+import Configuration.Gameserver.InstanceSettings;
+import Configuration.Gameserver.RealmSettings;
 import Configuration.RemoteAuthentication;
 import Game.Model.Connection;
-import Protocol.Game.CharacterRequest;
-import Protocol.Game.CharacterResponse;
-import Protocol.Packet;
-import Protocol.RealmRegister;
-import Protocol.RealmUpdate;
+import Protocols.Game.CharacterRequest;
+import Protocols.Game.CharacterResponse;
+import Protocols.Packet;
+import Protocols.Authentication.RealmRegister;
+import Protocols.Authentication.RealmUpdate;
 import Utilities.DefaultLogger;
 import Utilities.Logger;
 import Utilities.Serializer;

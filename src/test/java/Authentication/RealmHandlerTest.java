@@ -1,9 +1,9 @@
 package Authentication;
 
-import Configuration.AuthServerSettings;
-import Configuration.RealmSettings;
-import Protocol.Game.CharacterRequest;
-import Protocol.RealmRegister;
+import Configuration.Authserver.AuthServerSettings;
+import Configuration.Gameserver.RealmSettings;
+import Protocols.Game.CharacterRequest;
+import Protocols.Authentication.RealmRegister;
 import Utilities.Serializer;
 import Utilities.Token;
 import Utilities.TokenFactory;

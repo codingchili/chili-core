@@ -1,15 +1,15 @@
 package Authentication;
 
 import Authentication.ClientRequestMock.ResponseStatus;
+import Authentication.Controller.AuthProvider;
 import Authentication.Controller.ClientHandler;
 import Authentication.Controller.ClientRequest;
-import Authentication.Controller.PacketHandler;
-import Authentication.Controller.Protocol;
-import Authentication.Model.AuthorizationHandler.Access;
-import Authentication.Model.AuthorizationRequiredException;
-import Authentication.Model.HandlerMissingException;
-import Authentication.Model.Provider;
 import Authentication.Model.RealmStore;
+import Protocols.AuthorizationHandler.Access;
+import Protocols.AuthorizationRequiredException;
+import Protocols.HandlerMissingException;
+import Protocols.PacketHandler;
+import Protocols.Protocol;
 import Utilities.Serializer;
 import Utilities.Token;
 import Utilities.TokenFactory;
@@ -57,7 +57,7 @@ public class ClientHandlerTest {
         vertx = Vertx.vertx();
         RealmStore realms = new RealmStore(vertx);
         realms.put(new ConfigMock.RealmSettingsMock());
-        Provider provider = new ProviderMock(vertx);
+        AuthProvider provider = new ProviderMock(vertx);
         clientToken = new TokenFactory(provider.getAuthserverSettings().getClientSecret());
         realmToken = new TokenFactory(new ConfigMock.RealmSettingsMock().getAuthentication().getToken().getKey().getBytes());
         protocol = provider.clientProtocol();
@@ -71,14 +71,14 @@ public class ClientHandlerTest {
 
     @Test
     public void authenticateAccount(TestContext context) {
-        handle(Protocol.AUTHENTICATE, (response, status) -> {
+        handle(ClientRequest.AUTHENTICATE, (response, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
         }, account(USERNAME, PASSWORD));
     }
 
     @Test
     public void failtoAuthenticateAccountWithWrongPassword(TestContext context) {
-        handle(Protocol.AUTHENTICATE, (response, status) -> {
+        handle(ClientRequest.AUTHENTICATE, (response, status) -> {
             context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
         }, account(USERNAME, PASSWORD_WRONG));
     }
@@ -97,14 +97,14 @@ public class ClientHandlerTest {
 
     @Test
     public void failtoAuthenticateAccountWithMissing(TestContext context) {
-        handle(Protocol.AUTHENTICATE, (response, status) -> {
+        handle(ClientRequest.AUTHENTICATE, (response, status) -> {
             context.assertEquals(ResponseStatus.MISSING, status);
         }, account(USERNAME_MISSING, PASSWORD));
     }
 
     @Test
     public void registerAccount(TestContext context) {
-        handle(Protocol.REGISTER, (response, status) -> {
+        handle(ClientRequest.REGISTER, (response, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
         }, account(USERNAME_NEW, PASSWORD));
     }
@@ -115,7 +115,7 @@ public class ClientHandlerTest {
 
     @Test
     public void failRegisterAccountExists(TestContext context) {
-        handle(Protocol.REGISTER, (response, status) -> {
+        handle(ClientRequest.REGISTER, (response, status) -> {
             context.assertEquals(ResponseStatus.CONFLICT, status);
         }, account(USERNAME, PASSWORD));
     }
@@ -126,7 +126,7 @@ public class ClientHandlerTest {
                 "classes", "description", "name", "resources", "type",
                 "secure", "trusted", "port", "version"};
 
-        handle(Protocol.REALMLIST, (response, status) -> {
+        handle(ClientRequest.REALMLIST, (response, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
 
             JsonArray list = response.getJsonArray("realms");
@@ -142,7 +142,7 @@ public class ClientHandlerTest {
 
     @Test
     public void removeCharacter(TestContext context) {
-        handle(Protocol.CHARACTERREMOVE, (response, status) -> {
+        handle(ClientRequest.CHARACTERREMOVE, (response, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
         }, new JsonObject()
                 .put("character", CHARACTER_NAME_DELETED)
@@ -156,7 +156,7 @@ public class ClientHandlerTest {
 
     @Test
     public void failToRemoveMissingCharacter(TestContext context) {
-        handle(Protocol.CHARACTERREMOVE, (response, status) -> {
+        handle(ClientRequest.CHARACTERREMOVE, (response, status) -> {
             context.assertEquals(ResponseStatus.ERROR, status);
         }, new JsonObject()
                 .put("character", CHARACTER_NAME + ".MISSING")
@@ -166,7 +166,7 @@ public class ClientHandlerTest {
 
     @Test
     public void createCharacter(TestContext context) {
-        handle(Protocol.CHARACTERCREATE, (response, status) -> {
+        handle(ClientRequest.CHARACTERCREATE, (response, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
         }, new JsonObject()
                 .put("character", CHARACTER_NAME + ".NEW")
@@ -177,7 +177,7 @@ public class ClientHandlerTest {
 
     @Test
     public void failOverwriteExistingCharacter(TestContext context) {
-        handle(Protocol.CHARACTERCREATE, (response, status) -> {
+        handle(ClientRequest.CHARACTERCREATE, (response, status) -> {
             context.assertEquals(ResponseStatus.CONFLICT, status);
         }, new JsonObject()
                 .put("character", CHARACTER_NAME)
@@ -187,7 +187,7 @@ public class ClientHandlerTest {
 
     @Test
     public void listCharactersOnRealm(TestContext context) {
-        handle(Protocol.CHARACTERLIST, (response, status) -> {
+        handle(ClientRequest.CHARACTERLIST, (response, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
             context.assertTrue(characterInJsonArray(CHARACTER_NAME, response.getJsonArray("characters")));
         }, new JsonObject()
@@ -207,7 +207,7 @@ public class ClientHandlerTest {
 
     @Test
     public void realmDataOnCharacterList(TestContext context) {
-        handle(Protocol.CHARACTERLIST, (response, status) -> {
+        handle(ClientRequest.CHARACTERLIST, (response, status) -> {
             JsonObject realm = response.getJsonObject("realm");
 
             context.assertEquals(ResponseStatus.ACCEPTED, status);
@@ -223,7 +223,7 @@ public class ClientHandlerTest {
 
     @Test
     public void realmDataDoesNotIncludeTokenOnCharacterList(TestContext context) {
-        handle(Protocol.CHARACTERLIST, (response, status) -> {
+        handle(ClientRequest.CHARACTERLIST, (response, status) -> {
             JsonObject realm = response.getJsonObject("realm");
 
             context.assertEquals(ResponseStatus.ACCEPTED, status);
@@ -237,7 +237,7 @@ public class ClientHandlerTest {
 
     @Test
     public void createRealmToken(TestContext context) {
-        handle(Protocol.REALMTOKEN, (response, status) -> {
+        handle(ClientRequest.REALMTOKEN, (response, status) -> {
             Token token = (Token) Serializer.unpack(response, Token.class);
 
             context.assertEquals(ResponseStatus.ACCEPTED, status);

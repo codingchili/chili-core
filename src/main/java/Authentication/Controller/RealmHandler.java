@@ -1,17 +1,19 @@
 package Authentication.Controller;
 
-import Authentication.Model.AuthorizationHandler.Access;
+import Protocols.AuthorizationHandler.Access;
 import Authentication.Model.AsyncAccountStore;
 import Authentication.Model.RealmStore;
 import Authentication.Model.RealmMissingException;
-import Authentication.Model.Provider;
-import Configuration.AuthServerSettings;
-import Configuration.RealmSettings;
+import Configuration.Provider;
+import Configuration.Authserver.AuthServerSettings;
+import Configuration.Gameserver.RealmSettings;
 import Game.Model.PlayerCharacter;
-import Protocol.Game.CharacterRequest;
-import Protocol.Game.CharacterResponse;
-import Protocol.RealmRegister;
-import Protocol.RealmUpdate;
+import Protocols.Game.CharacterRequest;
+import Protocols.Game.CharacterResponse;
+import Protocols.PacketHandler;
+import Protocols.Protocol;
+import Protocols.Authentication.RealmRegister;
+import Protocols.Authentication.RealmUpdate;
 import io.vertx.core.Future;
 
 /**
@@ -23,7 +25,7 @@ public class RealmHandler {
     private AsyncAccountStore accounts;
     private AuthServerSettings settings;
 
-    public RealmHandler(Provider provider) {
+    public RealmHandler(AuthProvider provider) {
         this.accounts = provider.getAccountStore();
         this.settings = provider.getAuthserverSettings();
         this.realmStore = new RealmStore(provider.getVertx());
@@ -31,7 +33,7 @@ public class RealmHandler {
         new Protocol<PacketHandler<RealmRequest>>(Access.AUTHORIZE)
                 .use(RealmUpdate.ACTION, this::update)
                 .use(CharacterRequest.ACTION, this::character)
-                .use(Protocol.CLOSE, this::disconnected)
+                .use(PacketHandler.CLOSE, this::disconnected)
                 .use(RealmRegister.ACTION, this::register, Access.PUBLIC);
     }
 

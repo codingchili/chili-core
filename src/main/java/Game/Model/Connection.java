@@ -1,9 +1,8 @@
 package Game.Model;
 
-import Protocol.Game.AuthenticationResult;
-import Protocol.Game.CharacterResponse;
+import Protocols.Game.AuthenticationResult;
+import Protocols.Game.CharacterResponse;
 import Utilities.Serializer;
-import io.vertx.core.Vertx;
 import io.vertx.core.http.ServerWebSocket;
 
 /**

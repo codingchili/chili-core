@@ -1,8 +1,9 @@
 package Authentication.Controller;
 
 import Authentication.Controller.Transport.RealmConnection;
-import Configuration.RealmSettings;
-import Protocol.RealmUpdate;
+import Configuration.Gameserver.RealmSettings;
+import Protocols.Authentication.RealmUpdate;
+import Protocols.Request;
 import Utilities.Token;
 
 /**

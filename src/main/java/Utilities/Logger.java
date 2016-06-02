@@ -1,8 +1,8 @@
 package Utilities;
 
 import Authentication.Model.Account;
-import Configuration.InstanceSettings;
-import Configuration.RealmSettings;
+import Configuration.Gameserver.InstanceSettings;
+import Configuration.Gameserver.RealmSettings;
 import io.vertx.core.http.HttpServerRequest;
 
 

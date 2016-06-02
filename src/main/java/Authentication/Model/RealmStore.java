@@ -1,7 +1,7 @@
 package Authentication.Model;
 
-import Configuration.RealmSettings;
-import Protocol.Authentication.RealmMetaData;
+import Configuration.Gameserver.RealmSettings;
+import Protocols.Authentication.RealmMetaData;
 import Utilities.Serializer;
 import Utilities.Token;
 import Utilities.TokenFactory;

@@ -2,7 +2,7 @@ package Authentication.Controller.Transport;
 
 import Authentication.Controller.ClientRequest;
 import Authentication.Model.Account;
-import Protocol.Authentication.ClientAuthentication;
+import Protocols.Authentication.ClientAuthentication;
 import Utilities.Serializer;
 import Utilities.Token;
 import io.netty.handler.codec.http.HttpResponseStatus;

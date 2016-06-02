@@ -1,8 +1,8 @@
 package Game.Controller;
 
-import Configuration.GameServerSettings;
-import Configuration.InstanceSettings;
-import Configuration.RealmSettings;
+import Configuration.Gameserver.GameServerSettings;
+import Configuration.Gameserver.InstanceSettings;
+import Configuration.Gameserver.RealmSettings;
 import Utilities.DefaultLogger;
 import Utilities.Logger;
 import io.vertx.core.Context;

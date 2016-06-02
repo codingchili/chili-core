@@ -1,8 +1,8 @@
 package Authentication.Controller.Transport;
 
 import Authentication.Controller.RealmRequest;
-import Configuration.RealmSettings;
-import Protocol.RealmUpdate;
+import Configuration.Gameserver.RealmSettings;
+import Protocols.Authentication.RealmUpdate;
 import Utilities.Serializer;
 import Utilities.Token;
 import io.vertx.core.json.JsonObject;

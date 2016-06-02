@@ -1,5 +1,10 @@
 package Configuration;
 
+import Configuration.Authserver.AuthServerSettings;
+import Configuration.Gameserver.GameServerSettings;
+import Configuration.Gameserver.RealmSettings;
+import Configuration.Logserver.LogServerSettings;
+import Configuration.Webserver.MetaServerSettings;
 import Utilities.*;
 import io.vertx.core.json.JsonObject;
 
@@ -7,7 +12,11 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 
-import static Configuration.GameServerSettings.REALM_PATH;
+import static Configuration.Authserver.AuthServerSettings.AUTHSERVER_PATH;
+import static Configuration.Gameserver.GameServerSettings.GAMESERVER_PATH;
+import static Configuration.Gameserver.GameServerSettings.REALM_PATH;
+import static Configuration.Logserver.LogServerSettings.LOGSERVER_PATH;
+import static Configuration.Webserver.MetaServerSettings.WEBSERVER_PATH;
 
 /**
  * @author Robin Duda
@@ -19,14 +28,14 @@ public class FileConfiguration implements ConfigurationLoader {
     private AuthServerSettings authentication;
     private LogServerSettings logging;
     private GameServerSettings gameserver;
-    private WebServerSettings webserver;
+    private MetaServerSettings webserver;
 
     private FileConfiguration() {
         try {
-            authentication = (AuthServerSettings) load(AuthServerSettings.AUTHSERVER_PATH, AuthServerSettings.class);
-            gameserver = (GameServerSettings) load(GameServerSettings.GAMESERVER_PATH, GameServerSettings.class);
-            logging = (LogServerSettings) load(LogServerSettings.LOGSERVER_PATH, LogServerSettings.class);
-            webserver = (WebServerSettings) load(WebServerSettings.WEBSERVER_PATH, WebServerSettings.class);
+            authentication = (AuthServerSettings) load(AUTHSERVER_PATH, AuthServerSettings.class);
+            gameserver = (GameServerSettings) load(GAMESERVER_PATH, GameServerSettings.class);
+            logging = (LogServerSettings) load(LOGSERVER_PATH, LogServerSettings.class);
+            webserver = (MetaServerSettings) load(WEBSERVER_PATH, MetaServerSettings.class);
 
             loadRealms(gameserver);
         } catch (IOException e) {
@@ -53,7 +62,7 @@ public class FileConfiguration implements ConfigurationLoader {
     }
 
     @Override
-    public WebServerSettings getWebServerSettings() {
+    public MetaServerSettings getMetaServerSettings() {
         return webserver;
     }
 

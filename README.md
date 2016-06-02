@@ -23,7 +23,7 @@ mvn package
 ```
 If the tests do not pass, either fix them yourself or checkout the (if exists) stable branch. The prepackaged jar file in the repository may also be used for testing out the project. If you wish to create a fatjar with the resources bundled move **resources/** and **website/** to **src/main/resources**.
 
-If you do not have a local **MongoDB server** running on the default port, localhost:27017 install latest build of MongoDB from [Website](https://www.mongodb.com/).
+If you do not have a local **MongoDB server** running on the default port, localhost:27017 install latest build of MongoDB from [Meta](https://www.mongodb.com/).
 
 To start the packaged JAR run
 ```
@@ -36,7 +36,7 @@ To start only **a single component** use any of the following,
 java -jar <filename>.jar run Authentication.Server
 java -jar <filename>.jar run Game.Server
 java -jar <filename>.jar run Logging.Server
-java -jar <filename>.jar run Website.Server
+java -jar <filename>.jar run Meta.Server
 ```
 
 To run the application in production mode the following commands must be executed,

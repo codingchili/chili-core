@@ -1,8 +1,8 @@
 package Game;
 
 import Configuration.FileConfiguration;
-import Configuration.GameServerSettings;
-import Configuration.RealmSettings;
+import Configuration.Gameserver.GameServerSettings;
+import Configuration.Gameserver.RealmSettings;
 import Game.Controller.Realm;
 import Utilities.DefaultLogger;
 import Utilities.Logger;

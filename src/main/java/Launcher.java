@@ -1,4 +1,5 @@
-import Authentication.Model.DefaultProvider;
+import Authentication.Controller.AuthProvider;
+import Meta.MetaProvider;
 import io.vertx.core.*;
 
 /**
@@ -36,8 +37,8 @@ public class Launcher extends AbstractVerticle {
                 future.fail(result.cause());
         });
 
-        startServer(web, new Website.Server());
-        startServer(authentication, new Authentication.Server(new DefaultProvider(vertx)));
+        startServer(web, new Meta.Server(new MetaProvider(vertx)));
+        startServer(authentication, new Authentication.Server(new AuthProvider(vertx)));
         startServer(game, new Game.Server());
     }
 

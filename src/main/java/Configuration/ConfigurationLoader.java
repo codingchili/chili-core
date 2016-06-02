@@ -1,10 +1,15 @@
 package Configuration;
 
+import Configuration.Authserver.AuthServerSettings;
+import Configuration.Gameserver.GameServerSettings;
+import Configuration.Logserver.LogServerSettings;
+import Configuration.Webserver.MetaServerSettings;
+
 /**
  * @author Robin Duda
  */
 public interface ConfigurationLoader {
-    WebServerSettings getWebServerSettings();
+    MetaServerSettings getMetaServerSettings();
 
     GameServerSettings getGameServerSettings();
 

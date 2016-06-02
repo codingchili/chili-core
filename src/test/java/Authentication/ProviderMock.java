@@ -1,29 +1,29 @@
 package Authentication;
 
+import Authentication.Controller.AuthProvider;
 import Authentication.Controller.ClientRequest;
-import Authentication.Controller.PacketHandler;
-import Authentication.Controller.Protocol;
 import Authentication.Controller.RealmRequest;
 import Authentication.Model.AsyncAccountStore;
-import Authentication.Model.Provider;
-import Configuration.AuthServerSettings;
+import Configuration.Authserver.AuthServerSettings;
 import Configuration.ConfigurationLoader;
+import Protocols.PacketHandler;
+import Protocols.Protocol;
 import Utilities.Logger;
 import io.vertx.core.Vertx;
 
 /**
  * @author Robin Duda
  */
-class ProviderMock implements Provider {
+class ProviderMock extends AuthProvider {
     private Vertx vertx;
     private AsyncAccountStore accounts;
     private Protocol<PacketHandler<ClientRequest>> clientProtocol = new Protocol<>();
     private Protocol<PacketHandler<RealmRequest>> realmProtocol = new Protocol<>();
 
     ProviderMock(Vertx vertx) {
+        super(vertx);
         this.vertx = vertx;
         this.accounts = new AccountStoreMock();
-
     }
 
     @Override

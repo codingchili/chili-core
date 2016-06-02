@@ -3,10 +3,9 @@ package Authentication;
 import Authentication.Controller.ClientHandler;
 import Authentication.Controller.Transport.ClientServer;
 import Authentication.Controller.Transport.RealmServer;
-import Authentication.Model.DefaultProvider;
+import Authentication.Controller.AuthProvider;
 import Authentication.Controller.RealmHandler;
-import Authentication.Model.Provider;
-import Configuration.AuthServerSettings;
+import Configuration.Provider;
 import Utilities.Logger;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
@@ -18,15 +17,13 @@ import io.vertx.core.Vertx;
  *         Starts up the client handler and the realmName handler.
  */
 public class Server implements Verticle {
-    private AuthServerSettings settings;
-    private Provider provider;
+    private AuthProvider provider;
     private Vertx vertx;
     private Logger logger;
 
-    public Server(Provider store) {
+    public Server(AuthProvider store) {
         this.provider = store;
         this.logger = store.getLogger();
-        this.settings = store.getAuthserverSettings();
     }
 
     @Override
@@ -37,10 +34,6 @@ public class Server implements Verticle {
     @Override
     public void init(Vertx vertx, Context context) {
         this.vertx = vertx;
-
-        if (provider == null) {
-            provider = new DefaultProvider(vertx);
-        }
     }
 
     @Override

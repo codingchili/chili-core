@@ -4,7 +4,7 @@ package Configuration;
  * @author Robin Duda
  *         Used to write changes to configuration files.
  */
-interface Configurable {
+public interface Configurable {
     /**
      * Get the path of a loaded configuration file.
      * @return the directory path to the configuration file.

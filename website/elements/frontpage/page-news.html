@@ -50,7 +50,7 @@
 
             <template id="t" is="dom-bind">
 
-                <iron-ajax url="/data/news.json" last-response="{{data}}" auto></iron-ajax>
+                <iron-ajax url="/api/news" last-response="{{data}}" auto></iron-ajax>
 
                 <template is="dom-repeat" items="{{data}}">
                     <paper-material elevation="1" class="item">

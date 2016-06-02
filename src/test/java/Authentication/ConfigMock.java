@@ -1,8 +1,12 @@
 package Authentication;
 
 import Configuration.*;
+import Configuration.Authserver.AuthServerSettings;
+import Configuration.Gameserver.GameServerSettings;
+import Configuration.Gameserver.RealmSettings;
+import Configuration.Logserver.LogServerSettings;
+import Configuration.Webserver.MetaServerSettings;
 import Game.Model.Binding;
-import Game.Model.PlayerCharacter;
 import Game.Model.PlayerClass;
 import Utilities.Token;
 import Utilities.TokenFactory;
@@ -17,8 +21,8 @@ import java.util.ArrayList;
 public class ConfigMock implements ConfigurationLoader {
 
     @Override
-    public WebServerSettings getWebServerSettings() {
-        return new WebServerSettings();
+    public MetaServerSettings getMetaServerSettings() {
+        return new MetaServerSettings();
     }
 
     @Override

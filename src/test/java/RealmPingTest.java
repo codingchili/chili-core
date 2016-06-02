@@ -1,6 +1,5 @@
 import Authentication.ConfigMock;
-import Configuration.FileConfiguration;
-import Configuration.RealmSettings;
+import Configuration.Gameserver.RealmSettings;
 import Game.Controller.Realm;
 import Authentication.LoggerMock;
 import io.netty.handler.codec.http.HttpResponseStatus;

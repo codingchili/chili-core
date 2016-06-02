@@ -1,12 +1,12 @@
 package Authentication;
 
+import Authentication.Controller.AuthProvider;
+import Authentication.Controller.ClientRequest;
 import Authentication.Controller.Transport.ClientServer;
-import Authentication.Model.AuthorizationHandler.Access;
 import Authentication.ClientRequestMock.ResponseStatus;
 import Authentication.Controller.ClientHandler;
-import Authentication.Controller.ClientRequest;
-import Authentication.Controller.PacketHandler;
-import Authentication.Controller.Protocol;
+import Configuration.Provider;
+import Protocols.Protocol;
 import Authentication.Model.*;
 import Utilities.Serializer;
 import Utilities.Token;
@@ -38,7 +38,7 @@ public class ClientServerTest {
         vertx = Vertx.vertx();
         RealmStore realms = new RealmStore(vertx);
         realms.put(new ConfigMock.RealmSettingsMock());
-        Provider provider = new ProviderMock(vertx);
+        AuthProvider provider = new ProviderMock(vertx);
         new ClientHandler(provider);
         server = new ClientServer(provider);
     }
@@ -53,7 +53,7 @@ public class ClientServerTest {
 
     @Test
     public void failCreateRealmTokenWhenInvalidToken(TestContext context) {
-        handle(Protocol.REALMTOKEN, (response, status) -> {
+        handle(ClientRequest.REALMTOKEN, (response, status) -> {
             context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
         }, new JsonObject()
                 .put("token", getInvalidClientToken()));
@@ -69,7 +69,7 @@ public class ClientServerTest {
 
     @Test
     public void failListCharactersOnRealmWhenInvalidToken(TestContext context) {
-        handle(Protocol.CHARACTERLIST, (response, status) -> {
+        handle(ClientRequest.CHARACTERLIST, (response, status) -> {
             context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
         }, new JsonObject()
                 .put("token", Serializer.json(getInvalidClientToken())));
@@ -77,7 +77,7 @@ public class ClientServerTest {
 
     @Test
     public void failToCreateCharacterWhenInvalidToken(TestContext context) {
-        handle(Protocol.CHARACTERCREATE, (response, status) -> {
+        handle(ClientRequest.CHARACTERCREATE, (response, status) -> {
             context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
         }, new JsonObject()
                 .put("token", getInvalidClientToken()));
@@ -85,7 +85,7 @@ public class ClientServerTest {
 
     @Test
     public void failToRemoveCharacterWhenInvalidToken(TestContext context) {
-        handle(Protocol.CHARACTERREMOVE, (response, status) -> {
+        handle(ClientRequest.CHARACTERREMOVE, (response, status) -> {
             context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
         }, new JsonObject()
                 .put("token", getInvalidClientToken()));

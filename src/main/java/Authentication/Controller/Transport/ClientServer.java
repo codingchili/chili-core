@@ -1,14 +1,15 @@
 package Authentication.Controller.Transport;
 
-import Authentication.Model.AuthorizationHandler.Access;
+import Authentication.Controller.AuthProvider;
+import Protocols.AuthorizationHandler.Access;
 import Authentication.Controller.ClientRequest;
-import Authentication.Controller.PacketHandler;
-import Authentication.Controller.Protocol;
-import Authentication.Model.AuthorizationHandler;
-import Authentication.Model.AuthorizationRequiredException;
-import Authentication.Model.HandlerMissingException;
-import Authentication.Model.Provider;
-import Configuration.AuthServerSettings;
+import Protocols.PacketHandler;
+import Protocols.Protocol;
+import Protocols.AuthorizationHandler;
+import Protocols.AuthorizationRequiredException;
+import Protocols.HandlerMissingException;
+import Configuration.Provider;
+import Configuration.Authserver.AuthServerSettings;
 import Utilities.TokenFactory;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.AbstractVerticle;
@@ -27,7 +28,7 @@ public class ClientServer extends AbstractVerticle {
     private AuthServerSettings settings;
     private TokenFactory tokens;
 
-    public ClientServer(Provider provider) {
+    public ClientServer(AuthProvider provider) {
         this.settings = provider.getAuthserverSettings();
         this.protocol = provider.clientProtocol();
         this.tokens = new TokenFactory(settings.getClientSecret());

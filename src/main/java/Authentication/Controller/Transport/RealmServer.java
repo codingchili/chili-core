@@ -1,15 +1,11 @@
 package Authentication.Controller.Transport;
 
-import Authentication.Controller.PacketHandler;
-import Authentication.Controller.Protocol;
+import Authentication.Controller.AuthProvider;
 import Authentication.Controller.RealmRequest;
-import Authentication.Model.AuthorizationHandler.Access;
-import Authentication.Model.AuthorizationHandler;
-import Authentication.Model.AuthorizationRequiredException;
-import Authentication.Model.HandlerMissingException;
-import Authentication.Model.Provider;
-import Configuration.AuthServerSettings;
-import Protocol.Packet;
+import Configuration.Authserver.AuthServerSettings;
+import Protocols.Authentication.RealmRegister;
+import Protocols.AuthorizationHandler.Access;
+import Protocols.*;
 import Utilities.Serializer;
 import Utilities.TokenFactory;
 import io.vertx.core.AbstractVerticle;
@@ -27,12 +23,12 @@ public class RealmServer extends AbstractVerticle {
     private AuthServerSettings settings;
     private TokenFactory tokens;
 
-    public RealmServer(Provider provider) {
+    public RealmServer(AuthProvider provider) {
         this.protocol = provider.realmProtocol();
         this.settings = provider.getAuthserverSettings();
         this.tokens = new TokenFactory(settings.getRealmSecret());
 
-        protocol.use(Protocol.REGISTER, this::register, Access.PUBLIC);
+        protocol.use(RealmRegister.ACTION, this::register, Access.PUBLIC);
     }
 
     private void register(RealmRequest request) {
@@ -56,7 +52,7 @@ public class RealmServer extends AbstractVerticle {
             });
 
             socket.endHandler(event -> {
-                handle(Protocol.CLOSE, new RealmWebsocketRequest(connections.remove(socket.textHandlerID())));
+                handle(PacketHandler.CLOSE, new RealmWebsocketRequest(connections.remove(socket.textHandlerID())));
             });
 
         }).listen(settings.getRealmPort());
