@@ -119,7 +119,7 @@ The configuration directory **'conf' & 'resources' must be in the same directory
 The configuration structure
 ```
 ├── resources/
-|   ├── patch.json
+|   ├── version.json
 |   ├── game/
 |   ├── gui/
 ├── website/
