@@ -39,11 +39,6 @@ java -jar <filename>.jar run Logging.Server
 java -jar <filename>.jar run Meta.Server
 ```
 
-To run the application in production mode the following commands must be executed,
-```
-java -cp <filename>.jar run Utilites.GenerateTokens regenerate
-java -cp <filename>.jar run Utilites.GeneratePatch
-```
 The authentication tokens are stored in **/conf/system/{component}.json**. It is highly recommended to use a reverse proxy with TLS, see **/conf/system/proxy** for example configurations using NGINX and LetsEncrypt.
 
 When components are started they read the configuration files in **conf/system/{authserver,gameserver,logserer,webserver}** if the port numbers or addresses are to be changed, check these sample configuration files.
@@ -124,7 +119,7 @@ The configuration directory **'conf' & 'resources' must be in the same directory
 The configuration structure
 ```
 ├── resources/
-|   ├── patch.json
+|   ├── version.json
 |   ├── game/
 |   ├── gui/
 ├── website/
