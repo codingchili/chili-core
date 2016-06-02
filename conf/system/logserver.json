@@ -1,10 +1,6 @@
 {
   "logserver" : {
-    "token" : {
-      "key" : "B5628C2F765E6CF317F05A4D3C31DEBCDC8D926BAB79590C6A796FE49DE5EAC7D74AF15C63FF1DB302B508E2A2621709200CF8A6240572D238D4DE86DF1DA4B9",
-      "expiry" : 1467547580,
-      "domain" : "logserver@server.1"
-    },
+    "token" : null,
     "system" : "logserver",
     "host" : "server.1",
     "remote" : "localhost",
@@ -27,7 +23,7 @@
     },
     "enabled" : false
   },
-  "secret" : "kMl57oKdZz8Ts9QWc7EVZdudW1JUfod1Xtt2rJutOOudyWZIYz3GT8i3MzR1WJ699p/LDbdfYRbSvy4j/r1Dig==",
+  "secret" : null,
   "port" : 6109,
   "console" : true
 }

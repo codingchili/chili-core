@@ -1,17 +1,13 @@
 {
   "logserver" : {
-    "token" : {
-      "key" : "D2836D6C950D7D513024C547AF731C29C9C9497BD2A618B898CC668A1F796359DF8A75B541584C4743C752DC22C0DD81FD0DEE297CCBBF2E8FB3B11E8EE8C152",
-      "expiry" : 1467548008,
-      "domain" : "authserver@server.1"
-    },
+    "token" : null,
     "system" : "authserver",
     "host" : "server.1",
     "remote" : "localhost",
     "port" : 6109
   },
-  "clientSecret" : "wkeJR/PgmfOnoXYvzfLrdQA1e0xcR9PM4cB/N1ao6CPMd62GZsCRBWCfhratRcsYfSYSgDyXpJk2MOLki98voA==",
-  "realmSecret" : "rkvLNKKuAQ87bJ7RBaj3Kn7FfWL4n2CifLpFP/vtr8rgOLHHef5srKjAlLbcwgiBGtls8HLirEaRS9xA/aL7HA==",
+  "clientSecret" : null,
+  "realmSecret" : null,
   "realmPort" : 5105,
   "clientPort" : 5505,
   "database" : {

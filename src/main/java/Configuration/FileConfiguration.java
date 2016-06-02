@@ -23,7 +23,7 @@ import static Configuration.Webserver.MetaServerSettings.METASERVER_PATH;
  *         Handles loading and parsing of the configuration files.
  */
 public class FileConfiguration implements ConfigurationLoader {
-    private static ConfigurationLoader instance = new FileConfiguration();
+    private static ConfigurationLoader instance;
     private AuthServerSettings authentication;
     private LogServerSettings logging;
     private GameServerSettings gameserver;
@@ -51,7 +51,11 @@ public class FileConfiguration implements ConfigurationLoader {
         gameserver.setRealms(realms);
     }
 
-    public static ConfigurationLoader instance() {
+    public static synchronized ConfigurationLoader instance() {
+        if (instance == null) {
+            instance = new FileConfiguration();
+            TokenRefresher.refresh();
+        }
         return instance;
     }
 

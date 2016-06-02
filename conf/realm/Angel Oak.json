@@ -10,11 +10,7 @@
     "haste" : 0.0
   },
   "authentication" : {
-    "token" : {
-      "key" : "61958B4E880735C48D2F6123B2B55EF7902A2A4EEE50975FAD3539E691D6D11DC997F1E5AB15C2FA95555E57EED025B17233B1E5E67B37D022C0A6BB9718EAE7",
-      "expiry" : 1467547879,
-      "domain" : "Angel Oak"
-    },
+    "token" : null,
     "remote" : "localhost",
     "port" : 5105
   },

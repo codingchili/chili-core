@@ -1,10 +1,6 @@
 {
   "logserver" : {
-    "token" : {
-      "key" : "25F8821EF6DEBD914DC3311A50E034612F9A246A43EBC38DBAA7711822290F6B0FACC928E1039DDBC805F05A03114959D843F3C0E8E8E1ED723EFCC9A6B9ECC7",
-      "expiry" : 1467547580,
-      "domain" : "gameserver@server.1"
-    },
+    "token" : null,
     "system" : "gameserver",
     "host" : "server.1",
     "remote" : "localhost",
