@@ -11,7 +11,7 @@
     <groupId>groupId</groupId>
     <artifactId>dungeon-core</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <version>
+    <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -45,7 +45,7 @@
                 </executions>
             </plugin>
         </plugins>
-    </version>
+    </build>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
