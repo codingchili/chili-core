@@ -15,9 +15,9 @@ var patcher = {
 
         $.ajax({
                 type: "GET",
-                url: this.resource + "/patch.json",
+                url: this.resource + "/api/patchdata",
                 contentType: "text/plain",
-
+                dataType: "json",
                 success: (function (patch) {
                     patch.size = this.patchSize(patch);
                     this.patch = patch;
@@ -34,7 +34,7 @@ var patcher = {
     update: function (worker) {
         var patch = patcher.patch;
         patcher.worker = worker;
-        worker.started(patch.name, patch.build, patch.size, patch.files);
+        worker.started(patch.name, patch.version, patch.size, patch.files);
         patcher.download(0);
     },
 
@@ -50,7 +50,7 @@ var patcher = {
 
     download: function (index) {
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', this.resource + this.patch.files[index].path, true);
+        xhr.open('GET', this.resource + "/api/download?file=" + this.patch.files[index].path + "&version=" + this.patch.version, true);
         xhr.responseType = 'arraybuffer';
 
         this.downloaded = 0;

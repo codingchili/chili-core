@@ -3,7 +3,7 @@ package Configuration;
 import Configuration.Authserver.AuthServerSettings;
 import Configuration.Gameserver.GameServerSettings;
 import Configuration.Logserver.LogServerSettings;
-import Configuration.Webserver.MetaServerSettings;
+import Configuration.MetaServer.MetaServerSettings;
 
 /**
  * @author Robin Duda

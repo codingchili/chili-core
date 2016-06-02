@@ -22,7 +22,7 @@ class RealmWebsocketRequest implements RealmRequest {
         this.realm = data.getJsonObject("realm");
     }
 
-    public RealmWebsocketRequest(RealmConnection connection) {
+    RealmWebsocketRequest(RealmConnection connection) {
         this(connection, null);
     }
 
@@ -53,7 +53,7 @@ class RealmWebsocketRequest implements RealmRequest {
 
     @Override
     public String sender() {
-        return connection.socket().remoteAddress().host();
+        return data.getString("connection");
     }
 
 
@@ -95,7 +95,7 @@ class RealmWebsocketRequest implements RealmRequest {
 
     @Override
     public String name() {
-        return data.getString("characterName");
+        return data.getString("name");
     }
 
     @Override

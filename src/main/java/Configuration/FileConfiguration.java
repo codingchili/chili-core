@@ -4,7 +4,7 @@ import Configuration.Authserver.AuthServerSettings;
 import Configuration.Gameserver.GameServerSettings;
 import Configuration.Gameserver.RealmSettings;
 import Configuration.Logserver.LogServerSettings;
-import Configuration.Webserver.MetaServerSettings;
+import Configuration.MetaServer.MetaServerSettings;
 import Protocols.Serializer;
 import io.vertx.core.json.JsonObject;
 
@@ -15,7 +15,7 @@ import static Configuration.Authserver.AuthServerSettings.AUTHSERVER_PATH;
 import static Configuration.Gameserver.GameServerSettings.GAMESERVER_PATH;
 import static Configuration.Gameserver.GameServerSettings.REALM_PATH;
 import static Configuration.Logserver.LogServerSettings.LOGSERVER_PATH;
-import static Configuration.Webserver.MetaServerSettings.METASERVER_PATH;
+import static Configuration.MetaServer.MetaServerSettings.METASERVER_PATH;
 
 
 /**
@@ -25,23 +25,30 @@ import static Configuration.Webserver.MetaServerSettings.METASERVER_PATH;
 public class FileConfiguration implements ConfigurationLoader {
     private static ConfigurationLoader instance;
     private AuthServerSettings authentication;
-    private LogServerSettings logging;
+    private LogServerSettings logserver;
     private GameServerSettings gameserver;
     private MetaServerSettings webserver;
 
     private FileConfiguration() {
         authentication = (AuthServerSettings) load(AUTHSERVER_PATH, AuthServerSettings.class);
         gameserver = (GameServerSettings) load(GAMESERVER_PATH, GameServerSettings.class);
-        logging = (LogServerSettings) load(LOGSERVER_PATH, LogServerSettings.class);
+        logserver = (LogServerSettings) load(LOGSERVER_PATH, LogServerSettings.class);
         webserver = (MetaServerSettings) load(METASERVER_PATH, MetaServerSettings.class);
         loadRealms(gameserver);
     }
 
+    private Object load(String path, Class clazz) {
+        try {
+            return Serializer.unpack(JsonFileStore.readObject(path), clazz);
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
     private void loadRealms(GameServerSettings gameserver) {
         ArrayList<RealmSettings> realms = new ArrayList<>();
-        ArrayList<JsonObject> configurations = null;
         try {
-            configurations = JsonFileStore.readDirectoryObjects(REALM_PATH);
+            ArrayList<JsonObject> configurations = JsonFileStore.readDirectoryObjects(REALM_PATH);
 
             for (JsonObject configuration : configurations)
                 realms.add((RealmSettings) Serializer.unpack(configuration, RealmSettings.class));
@@ -55,17 +62,15 @@ public class FileConfiguration implements ConfigurationLoader {
     public static synchronized ConfigurationLoader instance() {
         if (instance == null) {
             instance = new FileConfiguration();
-            TokenRefresher.refresh();
+
+            if (((FileConfiguration) instance).containsAllSettings())
+                TokenRefresher.refresh();
         }
         return instance;
     }
 
-    private Object load(String path, Class clazz) {
-        try {
-            return Serializer.unpack(JsonFileStore.readObject(path), clazz);
-        } catch (IOException e) {
-            return null;
-        }
+    private boolean containsAllSettings() {
+        return (authentication != null && logserver != null && gameserver != null && webserver != null);
     }
 
     @Override
@@ -80,7 +85,7 @@ public class FileConfiguration implements ConfigurationLoader {
 
     @Override
     public LogServerSettings getLogSettings() {
-        return logging;
+        return logserver;
     }
 
     @Override
@@ -89,7 +94,7 @@ public class FileConfiguration implements ConfigurationLoader {
     }
 
     void save() {
-        Configurable[] configurables = {authentication, logging, gameserver, webserver};
+        Configurable[] configurables = {authentication, logserver, gameserver, webserver};
 
         for (Configurable configurable : configurables) {
             JsonFileStore.writeObject(Serializer.json(configurable), getConfigPath(configurable));

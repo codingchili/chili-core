@@ -1,18 +1,25 @@
 import Authentication.Controller.AuthProvider;
-import Meta.MetaProvider;
+import Meta.Controller.MetaProvider;
 import io.vertx.core.*;
 
 /**
  * @author Robin Duda
  *         Launches all the components of the system on a single host.
  */
-public class Launcher extends AbstractVerticle {
+public class Launcher implements Verticle {
     private Vertx vertx;
 
+    @Override
+    public Vertx getVertx() {
+        return vertx;
+    }
+
+    @Override
     public void init(Vertx vertx, Context context) {
         this.vertx = vertx;
     }
 
+    @Override
     public void start(final Future<Void> future) {
         Future<Void> logging = Future.future();
         startServer(logging, new Logging.Server());
@@ -51,8 +58,8 @@ public class Launcher extends AbstractVerticle {
         });
     }
 
+    @Override
     public void stop(Future<Void> future) {
         future.complete();
     }
-
 }

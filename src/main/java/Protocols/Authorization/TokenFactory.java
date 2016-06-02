@@ -45,7 +45,7 @@ public class TokenFactory {
      * @see #verifyToken(String token, String username, Long expiry)
      */
     public boolean verifyToken(Token token) {
-        return (verifyToken(token.getKey(), token.getDomain(), token.getExpiry()));
+        return token != null && (verifyToken(token.getKey(), token.getDomain(), token.getExpiry()));
     }
 
     private byte[] generateToken(String domain, Long expiry) throws NoSuchAlgorithmException, InvalidKeyException {

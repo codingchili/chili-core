@@ -90,12 +90,12 @@ public class PatchKeeper {
             public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
                 File file = path.toFile();
 
-                String filePath = path.toString().replace("resources", "");
+                String filePath = path.toString().replace("resources", "").replace("\\", "/");
                 long fileSize = file.length();
                 long fileModified = file.lastModified();
                 byte[] fileBytes = Files.readAllBytes(path);
 
-                files.put(path.toString(), new PatchFile(filePath, fileSize, fileModified, fileBytes));
+                files.put(filePath, new PatchFile(filePath, fileSize, fileModified, fileBytes));
 
                 return FileVisitResult.CONTINUE;
             }
@@ -109,9 +109,13 @@ public class PatchKeeper {
         patchInfo = new PatchInfo(files, name, version);
     }
 
-    public synchronized PatchFile getPatchFile(String path, String version) throws PatchReloadedException {
-        if (this.version.equals(version)) {
-            return files.get(path);
+    public synchronized PatchFile getPatchFile(String path, String requestVersion) throws PatchReloadedException, NoSuchFileException {
+        if (version.compareTo(requestVersion) <= 0) {
+            if (files.get(path) != null)
+                return files.get(path);
+            else {
+                throw new NoSuchFileException(path);
+            }
         } else
             throw new PatchReloadedException();
     }

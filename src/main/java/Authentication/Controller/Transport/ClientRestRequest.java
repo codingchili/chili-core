@@ -37,7 +37,7 @@ class ClientRestRequest implements ClientRequest {
 
     @Override
     public String realmName() {
-        return json.getString("realmName");
+        return json.getString("realm");
     }
 
     @Override

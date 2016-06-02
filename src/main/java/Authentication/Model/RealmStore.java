@@ -38,23 +38,11 @@ public class RealmStore {
     }
 
     private TokenFactory getTokenFactory(String realmName) throws RealmMissingException {
-        if (realms.get(realmName) == null) {
-            throw new RealmMissingException();
-        } else {
-            RealmSettings realm = toRealm(realms.get(realmName));
-            return new TokenFactory(realm.getAuthentication().getToken().getKey().getBytes());
-
-        }
+        return new TokenFactory(find(realmName).getAuthentication().getToken().getKey().getBytes());
     }
 
     public RealmSettings get(String realmName) throws RealmMissingException {
-        String data = realms.get(realmName);
-
-        if (data == null) {
-            throw new RealmMissingException();
-        } else {
-            return ((RealmSettings) Serializer.unpack(realms.get(realmName), RealmSettings.class)).removeAuthentication();
-        }
+        return find(realmName).removeAuthentication();
     }
 
     public void put(RealmSettings realm) {
@@ -67,6 +55,22 @@ public class RealmStore {
 
     private RealmSettings toRealm(String realm) {
         return (RealmSettings) Serializer.unpack(realm, RealmSettings.class);
+    }
+
+    public void update(String realmName, int players) throws RealmMissingException {
+        RealmSettings realm = find(realmName);
+        realm.setPlayers(players);
+        put(realm);
+    }
+
+    private RealmSettings find(String realmName) throws RealmMissingException {
+        String data = realms.get(realmName);
+
+        if (data == null) {
+            throw new RealmMissingException();
+        } else {
+            return toRealm(data);
+        }
     }
 }
 

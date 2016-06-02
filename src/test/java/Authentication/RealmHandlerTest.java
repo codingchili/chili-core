@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  * @author Robin Duda
  *         tests the API from realmName->authentication server.
  */
-
+@Ignore
 @RunWith(VertxUnitRunner.class)
 public class RealmHandlerTest {
     private Vertx vertx;

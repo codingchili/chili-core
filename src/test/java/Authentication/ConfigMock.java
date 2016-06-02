@@ -5,7 +5,7 @@ import Configuration.Authserver.AuthServerSettings;
 import Configuration.Gameserver.GameServerSettings;
 import Configuration.Gameserver.RealmSettings;
 import Configuration.Logserver.LogServerSettings;
-import Configuration.Webserver.MetaServerSettings;
+import Configuration.MetaServer.MetaServerSettings;
 import Configuration.Gameserver.Advertise;
 import Game.Model.PlayerClass;
 import Protocols.Authorization.Token;

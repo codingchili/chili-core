@@ -153,7 +153,8 @@
                     <template is="dom-repeat" items="{{realm.classes}}" as="class">
                         <paper-material elevation="3" class="character-class" on-tap="select">
                             <paper-ripple></paper-ripple>
-                            <img src="{{realm.resources}}/gui/class/{{class.name}}.svg" class="class-image">
+                            <img src="{{realm.resources}}/api/download?file=/gui/class/{{class.name}}.svg"
+                                 class="class-image">
 
                             <div class="class-name">{{class.name}}</div>
                             <div class="class-description">{{class.description}}</div>
@@ -161,7 +162,7 @@
                             <div class="spell-container">
                                 <template is="dom-repeat" items="{{class.spells}}" as="spell">
                                     <div class="spell">
-                                        <img src="{{realm.resources}}/gui/spell/{{spell.name}}.svg"
+                                        <img src="{{realm.resources}}/api/download?file=/gui/spell/{{spell.name}}.svg"
                                              class="spell-image">
 
                                         <paper-tooltip animation-delay="0" class="tooltip">
@@ -198,7 +199,7 @@
 
                 <div class="list" style="padding-bottom:32px">
                     <paper-material elevation="3" class="character-class">
-                        <img src="{{classImage}}" class="class-image">
+                        <img src="{{classPortrait}}" class="class-image">
 
                         <paper-input id="name" class="character-name" value="{{characterName}}"
                                      label="Name"
@@ -244,7 +245,7 @@
             },
 
             showNaming: function (playerClass) {
-                this.set("classImage", this.realm.resources + "/gui/class/" + playerClass.name + ".svg");
+                this.set("classPortrait", this.realm.resources + "/api/download?file=/gui/class/" + playerClass.name + ".svg");
                 this.set("selection", false);
                 this.set("naming", true);
                 this.set("selected", playerClass);

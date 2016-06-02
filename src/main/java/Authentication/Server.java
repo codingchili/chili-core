@@ -20,6 +20,9 @@ public class Server implements Verticle {
     private Vertx vertx;
     private Logger logger;
 
+    public Server() {
+    }
+
     public Server(AuthProvider store) {
         this.provider = store;
         this.logger = store.getLogger();
@@ -33,6 +36,11 @@ public class Server implements Verticle {
     @Override
     public void init(Vertx vertx, Context context) {
         this.vertx = vertx;
+
+        if (provider == null) {
+            this.provider = new AuthProvider(vertx);
+            this.logger = provider.getLogger();
+        }
     }
 
     @Override

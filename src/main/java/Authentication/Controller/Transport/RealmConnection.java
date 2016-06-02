@@ -31,7 +31,7 @@ public class RealmConnection {
         return socket.textHandlerID();
     }
 
-    public ServerWebSocket socket() {
+    ServerWebSocket socket() {
         return socket;
     }
 

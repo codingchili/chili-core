@@ -50,9 +50,8 @@ public class RealmHandler {
         int players = request.players();
 
         try {
-            RealmSettings realm = realmStore.get(realmName);
-            realm.setPlayers(players);
-            realmStore.put(realm);
+            realmStore.update(realmName, players);
+            request.write(new RealmRegister(true));
         } catch (RealmMissingException e) {
             request.error();
         }
