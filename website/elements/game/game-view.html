@@ -51,6 +51,8 @@
                 var self = this;
 
                 application.onGameStart(function () {
+                    eval(new TextDecoder('UTF-8').decode(resources["game.js"]));
+
                     game.initialize(document.getElementById('game'));
                     self.update();
                 });

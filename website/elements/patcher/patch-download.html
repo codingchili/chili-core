@@ -145,7 +145,13 @@
                     this.socket = event.socket;
                     this.realm = event.realm;
                     this.character = event.character;
-                    this.set("patch")
+                    this.set("patch", {
+                        bandwidth: 0,
+                        transferred: 0,
+                        current: "",
+                        downloaded: 0,
+                        file: ""
+                    });
 
                     patcher.update({
                         started: (function (name, version, size, files) {
@@ -154,11 +160,7 @@
                                 name: name,
                                 version: version,
                                 size: size,
-                                files: files,
-                                bandwidth: 0,
-                                current: "",
-                                downloaded: 0,
-                                file: ""
+                                files: files
                             });
                         }).bind(this),
 

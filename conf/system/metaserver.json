@@ -39,6 +39,6 @@
     "date" : "2016-05-22"
   } ],
   "port" : 8081,
-  "cache" : false,
+  "cache" : true,
   "compress" : false
 }

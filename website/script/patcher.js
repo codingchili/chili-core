@@ -4,6 +4,7 @@
  * Handles the loading of game resources as a zip file.
  */
 
+var resources = {};
 
 var patcher = {
     check: function (checker) {
@@ -88,12 +89,14 @@ var patcher = {
 
     completeHandler: function (event) {
         if (event.target.status == 200) {
+            resources[patcher.patch.files[patcher.index].path] = event.target.response;
+            
             patcher.index += 1;
 
             if (patcher.index < patcher.patch.files.length) {
                 patcher.download(patcher.index);
-                localStorage.setItem("version", patcher.patch.version);
             } else {
+                console.log(resources);
                 patcher.worker.completed();
             }
         }
