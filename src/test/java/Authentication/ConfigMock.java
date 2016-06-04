@@ -112,6 +112,11 @@ public class ConfigMock implements ConfigurationLoader {
         }
 
         @Override
+        public int getProxy() {
+            return 11132;
+        }
+
+        @Override
         public ArrayList<PlayerClass> getClasses() {
             ArrayList<PlayerClass> list = new ArrayList<>();
 

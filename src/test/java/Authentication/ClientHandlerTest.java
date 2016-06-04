@@ -124,7 +124,7 @@ public class ClientHandlerTest {
     public void retrieveRealmList(TestContext context) {
         String[] keys = {
                 "classes", "description", "name", "resources", "type",
-                "secure", "trusted", "port", "version"};
+                "secure", "trusted", "proxy", "version"};
 
         handle(ClientRequest.REALMLIST, (response, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
