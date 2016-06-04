@@ -20,7 +20,8 @@ import static java.nio.file.StandardWatchEventKinds.*;
  * @author Robin Duda
  */
 public class PatchKeeper {
-    private static String resources = ConfigurationLoader.RESOURCES;
+    private static final String RESOURCE_DIR = ConfigurationLoader.RESOURCES;
+    private static final String VERSION_FILE = ConfigurationLoader.RESOURCES + "version.json";
     private HashMap<String, PatchFile> files = new HashMap<>();
     private static PatchKeeper instance;
     private Logger logger;
@@ -45,20 +46,22 @@ public class PatchKeeper {
 
     private void watchFiles() throws IOException {
         WatchService watcher = FileSystems.getDefault().newWatchService();
-        WatchKey watchKey = Paths.get(resources).register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+        WatchKey watchKey = Paths.get(RESOURCE_DIR).register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
 
         vertx.setPeriodic(2500, handler -> {
 
-            if (watchKey.pollEvents().size() != 0) {
-                try {
-                    logger.patchReloading(name, version);
-                    synchronized (this) {
-                        loadVersion();
-                        loadFiles();
+            for (WatchEvent<?> event : watchKey.pollEvents()) {
+                if (VERSION_FILE.endsWith(event.context().toString())) {
+                    try {
+                        logger.patchReloading(name, version);
+                        synchronized (this) {
+                            loadVersion();
+                            loadFiles();
+                        }
+                        logger.patchReloaded(name, version);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
-                    logger.patchReloaded(name, version);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
                 }
             }
         });
@@ -72,14 +75,14 @@ public class PatchKeeper {
     }
 
     private void loadVersion() throws IOException {
-        JsonObject version = JsonFileStore.readObject(resources + "/version.json");
+        JsonObject version = JsonFileStore.readObject(VERSION_FILE);
 
         this.name = version.getString("name");
         this.version = version.getString("version");
     }
 
     private void loadFiles() throws IOException {
-        Path path = Paths.get(resources);
+        Path path = Paths.get(RESOURCE_DIR);
         files.clear();
 
         Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
@@ -92,7 +95,7 @@ public class PatchKeeper {
             public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
                 File file = path.toFile();
 
-                String filePath = path.toString().replace("resources", "").replace("\\", "/");
+                String filePath = path.toString().replace("resources/", "");
                 long fileSize = file.length();
                 long fileModified = file.lastModified();
                 byte[] fileBytes = Files.readAllBytes(path);
