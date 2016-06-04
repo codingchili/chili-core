@@ -6,7 +6,6 @@ import Configuration.Gameserver.GameServerSettings;
 import Configuration.Gameserver.RealmSettings;
 import Configuration.Logserver.LogServerSettings;
 import Configuration.MetaServer.MetaServerSettings;
-import Configuration.Gameserver.Advertise;
 import Game.Model.PlayerClass;
 import Protocols.Authorization.Token;
 import Protocols.Authorization.TokenFactory;
@@ -99,11 +98,6 @@ public class ConfigMock implements ConfigurationLoader {
         @Override
         public String getRemote() {
             return "localhost";
-        }
-
-        @Override
-        public Advertise getAdvertise() {
-            return new Advertise("localhost", 11132);
         }
 
         @Override

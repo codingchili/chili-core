@@ -164,17 +164,24 @@ public class Realm implements Verticle {
         RemoteAuthentication authentication = settings.getAuthentication();
         logger.onRealmStarted(settings);
 
-        vertx.createHttpClient().websocket(authentication.getPort(), authentication.getRemote(), "", socket -> {
-            authserver = socket;
+        vertx.setPeriodic(4000, handler -> {
+            if (authserver == null)
+                vertx.createHttpClient().websocket(authentication.getPort(), authentication.getRemote(), "", socket -> {
+                    authserver = socket;
 
-            socket.handler(message -> {
-                Packet packet = (Packet) Serializer.unpack(message.toString(), Packet.class);
+                    socket.handler(message -> {
+                        Packet packet = (Packet) Serializer.unpack(message.toString(), Packet.class);
 
-                if (authHandlers.containsKey(packet.getAction()))
-                    authHandlers.get(packet.getAction()).handle(socket.textHandlerID(), message.toString());
-            });
+                        if (authHandlers.containsKey(packet.getAction()))
+                            authHandlers.get(packet.getAction()).handle(socket.textHandlerID(), message.toString());
+                    });
 
-            registerRealm();
+                    socket.endHandler(close -> {
+                        authserver = null;
+                    });
+
+                    registerRealm();
+                });
         });
     }
 

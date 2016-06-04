@@ -29,8 +29,9 @@ public class RealmSettings {
     private ArrayList<Affliction> afflictions = new ArrayList<>();
     private PlayerCharacter template = new PlayerCharacter();
     private RemoteAuthentication authentication = new RemoteAuthentication();
-    private Advertise advertise = new Advertise();
     private int port;
+    private int proxy;
+    private String remote;
     private String name;
     private String description;
     private String resources;
@@ -50,7 +51,8 @@ public class RealmSettings {
                 .setClasses(classes)
                 .setAfflictions(afflictions)
                 .setTemplate(template)
-                .setAdvertise(advertise)
+                .setProxy(proxy)
+                .setRemote(remote)
                 .setName(name)
                 .setDescription(description)
                 .setResources(resources)
@@ -99,17 +101,26 @@ public class RealmSettings {
         }
     }
 
+    public RealmSettings setProxy(int proxy) {
+        this.proxy = proxy;
+        return this;
+    }
+
+    public RealmSettings setRemote(String remote) {
+        this.remote = remote;
+        return this;
+    }
+
+    public int getProxy() {
+        return proxy;
+    }
+
+    public String getRemote() {
+        return remote;
+    }
+
     private void readTemplate() throws IOException {
         this.template = (PlayerCharacter) Serializer.unpack(JsonFileStore.readObject(PLAYER_TEMPLATE_PATH), PlayerCharacter.class);
-    }
-
-    public Advertise getAdvertise() {
-        return advertise;
-    }
-
-    public RealmSettings setAdvertise(Advertise advertise) {
-        this.advertise = advertise;
-        return this;
     }
 
     public Boolean getSecure() {
@@ -258,14 +269,6 @@ public class RealmSettings {
 
     public ArrayList<InstanceSettings> getInstance() {
         return instances;
-    }
-
-    public String getRemote() {
-        return advertise.getRemote();
-    }
-
-    public int getProxy() {
-        return advertise.getProxy();
     }
 
     public int getPort() {
