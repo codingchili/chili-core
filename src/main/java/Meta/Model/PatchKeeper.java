@@ -95,7 +95,7 @@ public class PatchKeeper {
             public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
                 File file = path.toFile();
 
-                String filePath = path.toString().replace("resources/", "");
+                String filePath = path.toString().replaceFirst("resources.", "").replace("\\", "/");
                 long fileSize = file.length();
                 long fileModified = file.lastModified();
                 byte[] fileBytes = Files.readAllBytes(path);
