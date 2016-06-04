@@ -21,7 +21,7 @@ public class RealmMetaData {
     private String lifetime;
     private double drop;
     private double leveling;
-    private int port;
+    private int proxy;
     private int players = 0;
     private Boolean trusted;
     private Boolean secure;
@@ -30,8 +30,8 @@ public class RealmMetaData {
 
         this.setName(settings.getName())
                 .setDescription(settings.getDescription())
-                .setRemote(settings.getAdvertise().getRemote())
-                .setPort(settings.getAdvertise().getProxy())
+                .setRemote(settings.getRemote())
+                .setProxy(settings.getProxy())
                 .setResources(settings.getResources())
                 .setVersion(settings.getVersion())
                 .setSize(settings.getSize())
@@ -155,12 +155,13 @@ public class RealmMetaData {
         return this;
     }
 
-    public int getPort() {
-        return port;
+
+    public int getProxy() {
+        return proxy;
     }
 
-    public RealmMetaData setPort(int port) {
-        this.port = port;
+    public RealmMetaData setProxy(int proxy) {
+        this.proxy = proxy;
         return this;
     }
 

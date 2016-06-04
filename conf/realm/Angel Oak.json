@@ -34,5 +34,6 @@
   "leveling" : 1.0,
   "players" : 0,
   "secure" : false,
-  "remote" : "localhost"
+  "remote" : "localhost",
+  "proxy" : 9201
 }

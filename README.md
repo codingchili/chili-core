@@ -23,7 +23,7 @@ mvn package
 ```
 If the tests do not pass, either fix them yourself or checkout the (if exists) stable branch. The prepackaged jar file in the repository may also be used for testing out the project. If you wish to create a fatjar with the resources bundled move **resources/** and **website/** to **src/main/resources**.
 
-If you do not have a local **MongoDB server** running on the default port, localhost:27017 install latest version of MongoDB from [Meta](https://www.mongodb.com/).
+If you do not have a local **MongoDB server** running on the default proxy, localhost:27017 install latest version of MongoDB from [Meta](https://www.mongodb.com/).
 
 To start the packaged JAR run
 ```
@@ -41,7 +41,7 @@ java -jar <filename>.jar run Meta.Server
 
 The authentication tokens are stored in **/conf/system/{component}.json**. It is highly recommended to use a reverse proxy with TLS, see **/conf/system/proxy** for example configurations using NGINX and LetsEncrypt.
 
-When components are started they read the configuration files in **conf/system/{authserver,gameserver,logserer,webserver}** if the port numbers or addresses are to be changed, check these sample configuration files.
+When components are started they read the configuration files in **conf/system/{authserver,gameserver,logserer,webserver}** if the proxy numbers or addresses are to be changed, check these sample configuration files.
 
 ## Background
 The purpose of the project is to provide a stable core for game development. There are many aspects of creating games, backend architecture, user interfaces, game resources (graphics, sounds) and then the design which includes the story/quests etc. The core is designed to be easily integrated with and modified in each of these aspects. In order to provide this, the core includes somewhat complete subsystems for each of these points. Additionally the core will be delivered as a "complete" game, to further increase the availability/modability and broaden the audience. As such it is the aim of the project to be complete enough both in documentation and code so that it may be used as a learning platform. 
@@ -161,7 +161,7 @@ The configuration structure
 
 **website/** contains the website used for the web-game, could be reused for desktop games for registration/forums etc.
 
-**conf/system/** sets up the bindings between the components with host/port numbers, logging and authentication tokens between the components. 
+**conf/system/** sets up the bindings between the components with host/proxy numbers, logging and authentication tokens between the components.
 
 **conf/realm/** each represents a realm/server to be registered to the master authentication server. Each of these must have a valid authentication signed by the authentication servers secret key. The name of the realm file must also correspond to the "name" attribute in the configuration file.
 

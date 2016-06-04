@@ -1,5 +1,5 @@
 # Configuration forwards authentication requests to the authentication server.
-# The components on the same host uses the internal port, the external port
+# The components on the same host uses the internal proxy, the external proxy
 # should be broadcasted to clients.
 
 server {

@@ -264,6 +264,10 @@ public class RealmSettings {
         return advertise.getRemote();
     }
 
+    public int getProxy() {
+        return advertise.getProxy();
+    }
+
     public int getPort() {
         return port;
     }
