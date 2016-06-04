@@ -6,23 +6,30 @@
 
 
 var patcher = {
-    patch: {},
-    index: 0,
+    check: function (checker) {
+        this.checker = checker;
+        this.resource = checker.resource;
+        this.reset();
+    },
 
-    check: function (worker) {
-        this.worker = worker;
-        this.resource = worker.resource;
+    reset: function () {
+        patcher.patch = {};
+        patcher.index = 0;
+        patcher.transferred = 0;
+        patcher.downloaded = 0;
+        patcher.chunks = 0;
+        patcher.delta = performance.now() - 1000;
 
         $.ajax({
                 type: "GET",
-                url: this.resource + "/api/patchdata",
+                url: patcher.resource + "/api/patchdata",
                 contentType: "text/plain",
                 dataType: "json",
                 success: (function (patch) {
-                    patch.size = this.patchSize(patch);
-                    this.patch = patch;
-                    worker.completed(patch);
-                }).bind(this),
+                    patch.size = patcher.patchSize(patch);
+                    patcher.patch = patch;
+                    patcher.checker.completed();
+                }),
 
                 error: function () {
                     application.error("Failed to retrieve patch data.");
@@ -50,46 +57,53 @@ var patcher = {
 
     download: function (index) {
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', this.resource + "/api/download?file=" + this.patch.files[index].path + "&version=" + this.patch.version, true);
+        xhr.open('GET', this.resource + "/api/download?file=" + patcher.patch.files[index].path + "&version=" + patcher.patch.version, true);
         xhr.responseType = 'arraybuffer';
 
-        this.downloaded = 0;
-        xhr.onload = this.completeHandler;
-        xhr.addEventListener('progress', this.progressHandler);
-        xhr.addEventListener('error', this.errorHandler);
+        patcher.downloaded = 0;
+        xhr.onload = patcher.completeHandler;
+        xhr.addEventListener('progress', patcher.progressHandler);
+        xhr.onreadystatechange = patcher.errorHandler;
         xhr.send();
     },
 
-    delta: performance.now(),
-    transferred: 0,
-    downloaded: 0,
-
     progressHandler: function (event) {
-        var bandwidth = (1000 * event.loaded) / (performance.now() - patcher.delta);
-
+        patcher.chunks += (event.loaded - patcher.downloaded);
         patcher.transferred += (event.loaded - patcher.downloaded);
         patcher.downloaded = event.loaded;
 
+        if ((performance.now() - patcher.delta) >= 1000) {
+            patcher.bandwidth = patcher.chunks * 1000;
+            patcher.delta = performance.now();
+            patcher.chunks = 0;
+        }
+
         patcher.worker.progress(
-            parseFloat(bandwidth).toFixed(2),
+            parseFloat(patcher.bandwidth).toFixed(2),
             patcher.transferred,
             patcher.downloaded,
             patcher.index
         );
-
-        patcher.delta = performance.now();
     },
 
-    completeHandler: function (e) {
-        patcher.index += 1;
+    completeHandler: function (event) {
+        if (event.target.status == 200) {
+            patcher.index += 1;
 
-        if (patcher.index < patcher.patch.files.length)
-            patcher.download(patcher.index);
-        else
-            patcher.worker.completed();
+            if (patcher.index < patcher.patch.files.length) {
+                patcher.download(patcher.index);
+                localStorage.setItem("version", patcher.patch.version);
+            } else {
+                patcher.worker.completed();
+            }
+        }
     },
 
-    errorHandler: function () {
-        application.error("Failed to retrieve file.");
+    errorHandler: function (event) {
+        if (event.target.status == 409) {
+            patcher.reset();
+        } else if (event.target.status == 404) {
+            application.error("Failed to retrieve file.");
+        }
     }
 };

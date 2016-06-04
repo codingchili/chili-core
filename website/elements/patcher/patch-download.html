@@ -140,22 +140,25 @@
             is: 'patch-download',
 
             ready: function () {
-
                 application.onUpdate((function (event) {
                     this.downloading = false;
                     this.socket = event.socket;
                     this.realm = event.realm;
                     this.character = event.character;
+                    this.set("patch")
 
                     patcher.update({
-
                         started: (function (name, version, size, files) {
                             this.set("downloading", true);
                             this.set("patch", {
                                 name: name,
                                 version: version,
                                 size: size,
-                                files: files
+                                files: files,
+                                bandwidth: 0,
+                                current: "",
+                                downloaded: 0,
+                                file: ""
                             });
                         }).bind(this),
 
