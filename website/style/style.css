@@ -34,6 +34,13 @@ paper-tooltip {
     --paper-tooltip-background: black;
 }
 
+paper-toast {
+    right: 0;
+    left: 0 !important;
+    bottom: -80px;
+    top: unset !important;
+}
+
 .noselect {
     -webkit-touch-callout: none;
     -webkit-user-select: none;

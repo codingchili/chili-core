@@ -25,6 +25,9 @@
       <excludeFolder url="file://$MODULE_DIR$/surefire-reports" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/test-classes" />
+      <excludeFolder url="file://$MODULE_DIR$/website/bower_components" />
+      <excludeFolder url="file://$MODULE_DIR$/website/bower_components_broken" />
+      <excludeFolder url="file://$MODULE_DIR$/website/bower_components_work" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

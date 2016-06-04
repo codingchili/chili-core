@@ -29,12 +29,6 @@
                 width: 525px;
             }
 
-            paper-toast {
-                position: absolute;
-                right: 0px;
-                bottom: -80px;
-            }
-
             .register {
                 margin-top: 32px;
             }
@@ -65,20 +59,20 @@
                     <paper-button class="register flex" on-tap="showRegisterForm">Register</paper-button>
                     <paper-button raised class="primary flex" on-tap="authenticate">Authenticate</paper-button>
                 </div>
-
-                <paper-toast class="toast-success" id="toast-missing"
-                             text="There is no account with that username."></paper-toast>
-                <paper-toast class="toast-error" id="toast-password"
-                             text="Password authentication failed."></paper-toast>
-                <paper-toast class="toast-error" id="toast-conflict"
-                             text="The selected username is already taken."></paper-toast>
-                <paper-toast class="toast-error" id="toast-validation-failed"
-                             text="Passwords must match and be at least 9 characters."></paper-toast>
-                <paper-toast class="toast-success" id="toast-login"
-                             text="Logging in.."></paper-toast>
-                <paper-toast class="toast-success" id="toast-register"
-                             text="Registering account.."></paper-toast>
             </paper-material>
+
+            <paper-toast class="toast-success" id="toast-missing"
+                         text="There is no account with that username."></paper-toast>
+            <paper-toast class="toast-error" id="toast-password"
+                         text="Password authentication failed."></paper-toast>
+            <paper-toast class="toast-error" id="toast-conflict"
+                         text="The selected username is already taken."></paper-toast>
+            <paper-toast class="toast-error" id="toast-validation-failed"
+                         text="Passwords must match and be at least 9 characters."></paper-toast>
+            <paper-toast class="toast-success" id="toast-login"
+                         text="Logging in.."></paper-toast>
+            <paper-toast class="toast-success" id="toast-register"
+                         text="Registering account.."></paper-toast>
         </div>
 
     </template>

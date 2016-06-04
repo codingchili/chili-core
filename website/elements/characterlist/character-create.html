@@ -131,13 +131,6 @@
                 width: 225px;
             }
 
-            paper-toast {
-                position: absolute;
-                right: 0;
-                bottom: -124px;
-            }
-
-
         </style>
 
         <div class="container">
@@ -207,17 +200,16 @@
 
                         <iron-icon on-tap="createCharacter" class="create-button"
                                    icon="icons:send"></iron-icon>
-
-                        <paper-toast class="toast-success" id="toast-exists"
-                                     text="Character already exists."></paper-toast>
-                        <paper-toast class="toast-error" id="toast-name"
-                                     text="Character name is required."></paper-toast>
-                        <paper-toast class="toast-error" id="toast-creating"
-                                     text="Creating character.."></paper-toast>
                     </paper-material>
                 </div>
             </div>
 
+            <paper-toast class="toast-success" id="toast-exists"
+                         text="Character already exists."></paper-toast>
+            <paper-toast class="toast-error" id="toast-name"
+                         text="Character name is required."></paper-toast>
+            <paper-toast class="toast-error" id="toast-creating"
+                         text="Creating character.."></paper-toast>
         </div>
 
     </template>
