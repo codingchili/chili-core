@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="./chat-box.html">
 
 <!--
     @author Robin Duda
@@ -23,11 +24,11 @@
                 position: absolute;
                 width: 100%;
                 height: 100%;
-                z-index: 80;
             }
 
             #interface {
                 position: absolute;
+                background-color: black;
                 z-index: 100;
                 width: 100%;
                 height: 100%;
@@ -38,6 +39,11 @@
         <div id="interface">
             <!-- todo add gridster and elements here. -->
             <paper-button class="primary" on-tap="characters" raised>CHARACTERS</paper-button>
+
+
+            <chat-box>
+            </chat-box>
+
         </div>
 
         <canvas id="game">
