@@ -19,6 +19,8 @@
     "port" : 5105
   },
   "port" : 9201,
+  "proxy" : 9201,
+  "remote" : "localhost",
   "name" : "Angel Oak",
   "description" : "Stable realm, PvP Aggressive.",
   "resources" : "",
@@ -29,7 +31,5 @@
   "drop" : 1.0,
   "leveling" : 1.0,
   "players" : 0,
-  "secure" : false,
-  "remote" : "localhost",
-  "proxy" : 9201
+  "secure" : false
 }

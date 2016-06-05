@@ -23,7 +23,6 @@
         <style>
             :host {
                 display: inline-block;
-                margin-top: 4%;
             }
 
             paper-button {
@@ -31,9 +30,12 @@
             }
 
             .container {
-                margin-top: 64px;
                 width: 80%;
                 max-width: 825px;
+            }
+
+            .realm-box {
+                min-height: 624px;
             }
 
             .titles {
@@ -144,8 +146,9 @@
             .mod-warning {
                 text-align: center;
                 width: 100%;
-                margin-top: 16px;
-                padding-bottom: 6px;
+                position: absolute;
+                font-size: smaller;
+                margin-top: 14px;
             }
 
             #tabs {
@@ -161,7 +164,7 @@
 
         </style>
 
-        <div class="container">
+        <div class="container center-box">
 
             <paper-material elevation="3">
 
@@ -183,7 +186,7 @@
                     <paper-button class="ping" on-tap="order" data-args="ping">Ping</paper-button>
                 </div>
 
-                <iron-pages selected="0" class="margin-top">
+                <iron-pages selected="0" class="realm-box margin-top">
                     <div>
                         <template is="dom-repeat" items="{{realms}}" as="realm" sort="{{sort}}">
                             <paper-material elevation="1">

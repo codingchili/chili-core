@@ -41,6 +41,18 @@ paper-toast {
     top: unset !important;
 }
 
+header-toolbar, footer-template {
+    z-index: 10;
+}
+
+paper-toolbar {
+    background-color: #000000;
+}
+
+.footer {
+    background-color: #000000;
+}
+
 .noselect {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -60,16 +72,7 @@ paper-toast {
 }
 
 .center-box {
-    position: absolute;;
-    left: 50%;
-    top: 50%;
-
-    transform: translate(-50%, -50%);
-    -webkit-transform: translate(-50%, -50%);
-    -moz-transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
-
-    -webkit-box-shadow: -1px 3px 39px -3px rgba(0, 0, 0, 0.54);
-    -moz-box-shadow: -1px 3px 39px -3px rgba(0, 0, 0, 0.54);
-    box-shadow: -1px 3px 39px -3px rgba(0, 0, 0, 0.54);
+    position: relative;
+    margin-top: 128px;
+    padding-bottom: 64px;
 }
