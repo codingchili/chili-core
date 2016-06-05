@@ -53,6 +53,10 @@ paper-toolbar {
     background-color: #000000;
 }
 
+.interface-box {
+    border: 1px solid rgba(74, 20, 140, 0.5);
+}
+
 .noselect {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
