@@ -1,6 +1,7 @@
 package Logging.Controller;
 
-import Configuration.Logserver.LogServerSettings;
+import Configuration.Strings;
+import Logging.Configuration.LogServerSettings;
 import Protocols.Authorization.Token;
 import Protocols.Authorization.TokenFactory;
 import Protocols.Serializer;
@@ -29,11 +30,11 @@ public class LogHandler extends AbstractVerticle {
         vertx.createHttpServer(new HttpServerOptions().setCompressionSupported(true)).websocketHandler(connection -> {
 
             connection.handler(data -> {
-                Token token = (Token) Serializer.unpack(data.toJsonObject().getJsonObject("token"), Token.class);
+                Token token = (Token) Serializer.unpack(data.toJsonObject().getJsonObject(Strings.ID_TOKEN), Token.class);
 
                 if (tokenFactory.verifyToken(token)) {
                     JsonObject logdata = data.toJsonObject();
-                    logdata.remove("token");
+                    logdata.remove(Strings.ID_TOKEN);
 
                     if (settings.getElastic().getEnabled()) {
                         vertx.createHttpClient().post(

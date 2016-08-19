@@ -4,7 +4,7 @@
 
 <!--
     @author Robin Duda
-    Game chat.
+    Realm chat.
  -->
 
 <dom-module id="chat-box">
@@ -48,7 +48,7 @@
         </style>
 
 
-        <paper-material elevation="1" class="interface-box">
+        <paper-material elevation="3" class="interface-box">
             <div class="list">
                 <ul class="messages">
                     <template is="dom-repeat" items="{{messages}}" as="message">
@@ -60,7 +60,7 @@
             </div>
             <paper-input value="{{message}}" id="message" class="input" maxlength="40" placeholder="message" on-keydown="submit"
                          autofocus></paper-input>
-            <paper-button class="button" on-tap="send" raised>SEND</paper-button>
+            <paper-button class="button" on-tap="send">SEND</paper-button>
         </paper-material>
 
 

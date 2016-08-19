@@ -1,6 +1,6 @@
 package Authentication.Model;
 
-import Game.Model.PlayerCharacter;
+import Realm.Model.PlayerCharacter;
 import io.vertx.core.Future;
 
 import java.util.ArrayList;

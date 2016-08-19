@@ -2,6 +2,7 @@ package Authentication.Controller.Transport;
 
 import Authentication.Controller.ClientRequest;
 import Authentication.Model.Account;
+import Configuration.Strings;
 import Protocols.Authentication.ClientAuthentication;
 import Protocols.Serializer;
 import Protocols.Authorization.Token;
@@ -30,14 +31,14 @@ class ClientRestRequest implements ClientRequest {
         if (context.request().method().equals(HttpMethod.POST)) {
             this.json = context.getBodyAsJson();
 
-            if (json.containsKey("token"))
-                token = (Token) Serializer.unpack(json.getJsonObject("token"), Token.class);
+            if (json.containsKey(Strings.ID_TOKEN))
+                token = (Token) Serializer.unpack(json.getJsonObject(Strings.ID_TOKEN), Token.class);
         }
     }
 
     @Override
     public String realmName() {
-        return json.getString("realm");
+        return json.getString(Strings.ID_REALM);
     }
 
     @Override
@@ -47,20 +48,20 @@ class ClientRestRequest implements ClientRequest {
 
     @Override
     public String character() {
-        return json.getString("character");
+        return json.getString(Strings.ID_CHARACTER);
     }
 
     @Override
     public String className() {
-        return json.getString("className");
+        return json.getString(Strings.PROTOCOL_CLASS_NAME);
     }
 
     @Override
     public String sender() {
         MultiMap headers = context.request().headers();
 
-        if (headers.contains("X-Real-IP"))
-            return headers.get("X-Real-IP");
+        if (headers.contains(Strings.PROTOCOL_REAL_IP))
+            return headers.get(Strings.PROTOCOL_REAL_IP);
         else
             return context.request().remoteAddress().host();
     }
@@ -110,7 +111,7 @@ class ClientRestRequest implements ClientRequest {
 
     @Override
     public Account getAccount() {
-        return (Account) Serializer.unpack(json.getJsonObject("account"), Account.class);
+        return (Account) Serializer.unpack(json.getJsonObject(Strings.ID_ACCOUNT), Account.class);
     }
 
     @Override

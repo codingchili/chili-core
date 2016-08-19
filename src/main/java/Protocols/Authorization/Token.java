@@ -1,5 +1,7 @@
 package Protocols.Authorization;
 
+import Configuration.Strings;
+
 import java.time.Instant;
 
 /**
@@ -20,7 +22,7 @@ public class Token {
             this.expiry = Instant.now().getEpochSecond() + 3600 * 24 * 31;
             this.key = factory.signToken(domain, this.expiry);
         } catch (Throwable e) {
-            throw new RuntimeException("Token factory failed to generate token.");
+            throw new RuntimeException(Strings.ERROR_TOKEN_FACTORY);
         }
     }
 

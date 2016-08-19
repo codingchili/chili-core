@@ -1,12 +1,13 @@
 package Protocols.Authentication;
 
+import Configuration.Strings;
 import Protocols.Header;
 
 /**
  * @author Robin Duda
  */
 public class RealmUpdate {
-    public static final String ACTION = "realm.update";
+    public static final String ACTION = Strings.LOG_REALM_UPDATE;
     private Header header;
     private Integer players;
 

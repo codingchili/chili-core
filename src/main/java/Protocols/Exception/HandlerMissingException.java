@@ -3,5 +3,5 @@ package Protocols.Exception;
 /**
  * @author Robin Duda
  */
-public class HandlerMissingException extends Throwable {
+public class HandlerMissingException extends Exception {
 }

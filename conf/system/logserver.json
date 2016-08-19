@@ -1,8 +1,8 @@
 {
   "logserver" : {
     "token" : {
-      "key" : "E43826B5237C56A675DFBDDE15F8C2B15B361FA95F189B4CF57E55803BECECCC48275B31E19367E727FC4CCFCF8FE422F0DE5D5849BBCF023800DC4CE7FE4757",
-      "expiry" : 1467552570,
+      "key" : "429E396FB3D3D5E8509B851EDB6029BD76AE1D5F6C67910A1B04C91157959800EEE29E06FC398B91AA242F7A362183F58CDF4495EB5DCD8266F4DB918AA49305",
+      "expiry" : 1474316197,
       "domain" : "logserver@server.1"
     },
     "system" : "logserver",
@@ -10,24 +10,7 @@
     "remote" : "localhost",
     "port" : 6109
   },
-  "elastic" : {
-    "remote" : "localhost",
-    "index" : "the_def_index",
-    "port" : 9200,
-    "template" : {
-      "mappings" : {
-        "the_def_index" : {
-          "properties" : {
-            "time" : {
-              "type" : "date"
-            }
-          }
-        }
-      }
-    },
-    "enabled" : false
-  },
-  "secret" : "ZW2xTDdIFy+swmI2W8O0PVmDCvZZpVrPssPIvB5Fp3ILb+/Sy4szfK2H9OoIpGxcgnH7U0DP8q1PGO7CKn6gxw==",
+  "secret" : "rbqlTbniiFp5YDr+WMUfXTM3ScxbI9UPJb1zO6x1JHSffP59c6LwGZP8ezqEN1RQnEoduzFHtX53TikPC3F5AQ==",
   "port" : 6109,
-  "console" : true
+  "path" : "conf/system/logserver.json"
 }

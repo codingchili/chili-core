@@ -8,7 +8,7 @@ import Protocols.Protocol;
 import Protocols.AuthorizationHandler;
 import Protocols.Exception.AuthorizationRequiredException;
 import Protocols.Exception.HandlerMissingException;
-import Configuration.Authserver.AuthServerSettings;
+import Authentication.Configuration.AuthServerSettings;
 import Protocols.Authorization.TokenFactory;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.AbstractVerticle;

@@ -1,7 +1,7 @@
 package Protocols.Authentication;
 
-import Configuration.Gameserver.RealmSettings;
-import Game.Model.PlayerCharacter;
+import Realm.Configuration.RealmSettings;
+import Realm.Model.PlayerCharacter;
 
 import java.util.ArrayList;
 

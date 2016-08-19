@@ -26,12 +26,4 @@ public interface ClientRequest extends Request {
     Account getAccount();
 
     void authenticate(ClientAuthentication authentication);
-
-    String CHARACTERLIST = "character-list";
-    String CHARACTERCREATE = "character-create";
-    String CHARACTERREMOVE = "character-remove";
-    String AUTHENTICATE = "authenticate";
-    String REGISTER = "register";
-    String REALMTOKEN = "realmtoken";
-    String REALMLIST = "realmlist";
 }

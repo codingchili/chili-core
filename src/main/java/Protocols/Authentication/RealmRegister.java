@@ -1,7 +1,8 @@
 package Protocols.Authentication;
 
 
-import Configuration.Gameserver.RealmSettings;
+import Configuration.Strings;
+import Realm.Configuration.RealmSettings;
 import Protocols.Header;
 
 /**
@@ -9,7 +10,7 @@ import Protocols.Header;
  * A request to register a realmName on the authentication server.
  */
 public class RealmRegister {
-    public static final String ACTION = "realm.register";
+    public static final String ACTION = Strings.REALM_REGISTER;
     private Header header;
     private RealmSettings realm;
     private Boolean registered;

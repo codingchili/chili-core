@@ -1,6 +1,7 @@
 package Authentication.Model;
 
-import Game.Model.PlayerCharacter;
+import Configuration.Strings;
+import Realm.Model.PlayerCharacter;
 import Protocols.Authorization.HashHelper;
 import Protocols.Serializer;
 import io.vertx.core.Future;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
  *         Implementation of asynchronous account store using MongoDb.
  */
 public class AccountDB implements AsyncAccountStore {
-    private static final String COLLECTION = "accounts";
+    private static final String COLLECTION = Strings.DB_ACCOUNT;
     private MongoClient client;
 
     public AccountDB(MongoClient client) {
@@ -25,11 +26,11 @@ public class AccountDB implements AsyncAccountStore {
 
     @Override
     public void find(Future<Account> future, String username) {
-        JsonObject query = new JsonObject().put("username", username);
+        JsonObject query = new JsonObject().put(Strings.DB_USER, username);
 
-        client.findOne(COLLECTION, query, null, account -> {
-            if (account.succeeded() && account.result() != null)
-                future.complete(filter((AccountMapping) Serializer.unpack(account.result(), AccountMapping.class)));
+        client.findOne(COLLECTION, query, null, find -> {
+            if (find.succeeded() && find.result() != null)
+                future.complete(filter((AccountMapping) Serializer.unpack(find.result(), AccountMapping.class)));
             else
                 future.fail(new AccountMissingException());
         });
@@ -37,22 +38,21 @@ public class AccountDB implements AsyncAccountStore {
 
     @Override
     public void register(Future<Account> future, Account registrant) {
-        JsonObject query = new JsonObject().put("username", registrant.getUsername());
+        JsonObject query = new JsonObject().put(Strings.DB_USER, registrant.getUsername());
         JsonObject account = new JsonObject(Serializer.pack(new AccountMapping(registrant)));
 
         client.findOne(COLLECTION, query, null, search -> {
 
             if (search.succeeded() && search.result() == null) {
                 String salt = HashHelper.generateSalt();
-                account.put("salt", salt);
-                account.put("hash", HashHelper.hash(registrant.getPassword(), salt));
+                account.put(Strings.DB_SALT, salt);
+                account.put(Strings.DB_HASH, HashHelper.hash(registrant.getPassword(), salt));
 
-                client.save(COLLECTION, account, result -> {
-                    if (result.succeeded()) {
-                        registrant.setPassword(null);
-                        future.complete(registrant);
+                client.save(COLLECTION, account, save -> {
+                    if (save.succeeded()) {
+                        future.complete(filter((AccountMapping) Serializer.unpack(save.result(), AccountMapping.class)));
                     } else
-                        future.fail(result.cause());
+                        future.fail(save.cause());
                 });
             } else {
                 future.fail(new AccountExistsException());
@@ -63,15 +63,15 @@ public class AccountDB implements AsyncAccountStore {
 
     @Override
     public void addCharacter(Future future, String realm, String username, PlayerCharacter player) {
-        JsonObject query = new JsonObject().put("username", username);
+        JsonObject query = new JsonObject().put(Strings.DB_USER, username);
         JsonObject character = new JsonObject().put("$set",
-                new JsonObject().put("characters." + realm + "." + player.getName(), Serializer.json(player)));
+                new JsonObject().put(Strings.DB_CHARACTERS + "." + realm + "." + player.getName(), Serializer.json(player)));
 
-        client.update(COLLECTION, query, character, result -> {
-            if (result.succeeded())
+        client.update(COLLECTION, query, character, update -> {
+            if (update.succeeded())
                 future.complete();
             else {
-                future.fail(result.cause());
+                future.fail(update.cause());
             }
         });
     }
@@ -82,10 +82,10 @@ public class AccountDB implements AsyncAccountStore {
 
         find.setHandler(found -> {
             JsonObject query = new JsonObject()
-                    .put("username", username);
+                    .put(Strings.DB_USER, username);
             JsonObject field = new JsonObject()
                     .put("$unset",
-                            new JsonObject().put("characters." + realm + "." + character, ""));
+                            new JsonObject().put(Strings.DB_CHARACTERS + "." + realm + "." + character, ""));
 
             client.update(COLLECTION, query, field, remove -> {
 
@@ -102,14 +102,14 @@ public class AccountDB implements AsyncAccountStore {
     @Override
     public void findCharacter(Future<PlayerCharacter> future, String realmName, String username, String characterName) {
         JsonObject query = new JsonObject()
-                .put("username", username);
+                .put(Strings.DB_USER, username);
         JsonObject fields = new JsonObject()
-                .put("characters." + realmName + "." + characterName, 1)
+                .put(Strings.DB_CHARACTERS + "." + realmName + "." + characterName, 1)
                 .put("_id", 0);
 
         client.findOne(COLLECTION, query, fields, search -> {
             if (search.succeeded() && search.result() != null) {
-                JsonObject characters = search.result().getJsonObject("characters");
+                JsonObject characters = search.result().getJsonObject(Strings.DB_CHARACTERS);
                 JsonObject realm = characters.getJsonObject(realmName);
 
                 if (realm != null && realm.containsKey(characterName)) {
@@ -126,13 +126,13 @@ public class AccountDB implements AsyncAccountStore {
     @Override
     public void findCharacters(Future<ArrayList<PlayerCharacter>> future, String realm, String username) {
         JsonObject query = new JsonObject()
-                .put("username", username);
+                .put(Strings.DB_USER, username);
         JsonObject fields = new JsonObject()
-                .put("characters." + realm, 1);
+                .put(Strings.DB_CHARACTERS + "." + realm, 1);
 
         client.findOne(COLLECTION, query, fields, search -> {
             if (search.succeeded() && search.result() != null) {
-                JsonObject characters = search.result().getJsonObject("characters").getJsonObject(realm);
+                JsonObject characters = search.result().getJsonObject(Strings.DB_CHARACTERS).getJsonObject(realm);
                 ArrayList<PlayerCharacter> result = new ArrayList<>();
 
                 if (characters != null)
@@ -148,12 +148,12 @@ public class AccountDB implements AsyncAccountStore {
 
     @Override
     public void authenticate(Future<Account> future, Account unauthenticated) {
-        JsonObject query = new JsonObject().put("username", unauthenticated.getUsername());
+        JsonObject query = new JsonObject().put(Strings.DB_USER, unauthenticated.getUsername());
 
-        client.findOne(COLLECTION, query, null, result -> {
-            if (result.succeeded() && result.result() != null) {
+        client.findOne(COLLECTION, query, null, find -> {
+            if (find.succeeded() && find.result() != null) {
 
-                AccountMapping account = (AccountMapping) Serializer.unpack(result.result(), AccountMapping.class);
+                AccountMapping account = (AccountMapping) Serializer.unpack(find.result(), AccountMapping.class);
 
                 if (authenticate(account, unauthenticated)) {
                     future.complete(filter(account));

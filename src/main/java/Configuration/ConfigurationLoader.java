@@ -1,15 +1,15 @@
 package Configuration;
 
-import Configuration.Authserver.AuthServerSettings;
-import Configuration.Gameserver.GameServerSettings;
-import Configuration.Logserver.LogServerSettings;
-import Configuration.MetaServer.MetaServerSettings;
+import Authentication.Configuration.AuthServerSettings;
+import Realm.Configuration.GameServerSettings;
+import Logging.Configuration.LogServerSettings;
+import Patching.Configuration.PatchServerSettings;
 
 /**
  * @author Robin Duda
  */
 public interface ConfigurationLoader {
-    MetaServerSettings getMetaServerSettings();
+    PatchServerSettings getPatchServerSettings();
 
     GameServerSettings getGameServerSettings();
 
@@ -18,8 +18,6 @@ public interface ConfigurationLoader {
     AuthServerSettings getAuthSettings();
 
     class Address {
-        public final static String LOGS = "LOGGING";
+        public final static String LOGS = Strings.LOG_ID;
     }
-
-    String RESOURCES = "resources/";
 }

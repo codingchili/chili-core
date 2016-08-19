@@ -2,7 +2,7 @@ package Logging;
 
 
 import Configuration.FileConfiguration;
-import Configuration.Logserver.LogServerSettings;
+import Logging.Configuration.LogServerSettings;
 import Logging.Controller.LogHandler;
 import Logging.Model.DefaultLogger;
 import Logging.Model.Logger;
@@ -10,6 +10,8 @@ import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
+
+import java.io.IOException;
 
 /**
  * @author Robin Duda
@@ -28,8 +30,8 @@ public class Server implements Verticle {
     @Override
     public void init(Vertx vertx, Context context) {
         this.vertx = vertx;
-        this.settings = FileConfiguration.instance().getLogSettings();
-        this.logger = new DefaultLogger(vertx, settings.getLogserver());
+            this.settings = FileConfiguration.instance().getLogSettings();
+            this.logger = new DefaultLogger(vertx, settings.getLogserver());
     }
 
     @Override

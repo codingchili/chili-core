@@ -1,6 +1,7 @@
 package Authentication.Model;
 
-import Configuration.Gameserver.RealmSettings;
+import Configuration.Strings;
+import Realm.Configuration.RealmSettings;
 import Protocols.Authentication.RealmMetaData;
 import Protocols.Serializer;
 import Protocols.Authorization.Token;
@@ -20,7 +21,7 @@ public class RealmStore {
     private LocalMap<String, String> realms;
 
     public RealmStore(Vertx vertx) {
-        realms = vertx.sharedData().getLocalMap("realms");
+        realms = vertx.sharedData().getLocalMap(Strings.SHARED_REALMS);
     }
 
     public ArrayList<RealmMetaData> getMetadataList() {

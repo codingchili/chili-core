@@ -2,19 +2,21 @@ package Authentication;
 
 import Authentication.Controller.ClientRequest;
 import Authentication.Model.Account;
+import Shared.ResponseListener;
 import Protocols.Authentication.ClientAuthentication;
 import Protocols.Serializer;
 import Protocols.Authorization.Token;
+import Shared.ResponseStatus;
 import io.vertx.core.json.JsonObject;
 
 /**
  * @author Robin Duda
  */
-public class ClientRequestMock implements ClientRequest {
+class ClientRequestMock implements ClientRequest {
     private ResponseListener listener;
     private JsonObject data;
 
-    public ClientRequestMock(JsonObject data, ResponseListener listener) {
+    ClientRequestMock(JsonObject data, ResponseListener listener) {
         this.data = data;
         this.listener = listener;
     }
@@ -89,8 +91,4 @@ public class ClientRequestMock implements ClientRequest {
     public void authenticate(ClientAuthentication authentication) {
         listener.handle(Serializer.json(authentication), ResponseStatus.ACCEPTED);
     }
-
-    enum ResponseStatus {UNAUTHORIZED, MISSING, CONFLICT, ACCEPTED, ERROR}
-
-    ;
 }

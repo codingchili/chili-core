@@ -1,8 +1,8 @@
 {
   "logserver" : {
     "token" : {
-      "key" : "6AE6F0EF434826E89BFE131C620B01BB8DE5C2BDE2F0ED213BB9F0EFFED3F2E8839923D35471295D9808866EE52B75D237FB5857CFA40192C4331D5D67884E4B",
-      "expiry" : 1467552570,
+      "key" : "ED615F22BA9B08F869488E447593FD8603E849DEE9B38F1317D143E07DE61947E6BA369620F810F14002A069B36B7CDD4ACD079BF8E4907D84852D6B0EA6CBD6",
+      "expiry" : 1474316197,
       "domain" : "authserver@server.1"
     },
     "system" : "authserver",
@@ -15,8 +15,9 @@
   "realmPort" : 5105,
   "clientPort" : 5505,
   "database" : {
-    "remote" : "mongodb://localhost:27017/",
-    "name" : "chili"
+    "db_name" : "chili",
+    "connection_string" : "mongodb://localhost:27017/"
   },
-  "realms" : [ "Angel Oak", "Developer Realm", "Iron Oak", "Staging Realm", "Wisteria", "Red Maple" ]
+  "realms" : [ "Angel Oak", "Developer Realm", "Iron Oak", "Staging Realm", "Wisteria", "Red Maple" ],
+  "path" : "conf/system/authserver.json"
 }

@@ -1,9 +1,10 @@
 package Authentication.Controller;
 
 import Authentication.Model.*;
-import Configuration.Gameserver.RealmSettings;
-import Game.Model.PlayerCharacter;
-import Game.Model.PlayerClass;
+import Configuration.Strings;
+import Realm.Configuration.RealmSettings;
+import Realm.Model.PlayerCharacter;
+import Realm.Model.PlayerClass;
 import Protocols.Authentication.CharacterList;
 import Protocols.Authentication.ClientAuthentication;
 import Protocols.Authentication.RealmList;
@@ -32,13 +33,13 @@ public class ClientHandler {
         this.realmStore = new RealmStore(provider.getVertx());
 
         provider.clientProtocol()
-                .use(ClientRequest.CHARACTERLIST, this::characterList)
-                .use(ClientRequest.CHARACTERCREATE, this::characterCreate)
-                .use(ClientRequest.CHARACTERREMOVE, this::characterRemove)
-                .use(ClientRequest.REALMTOKEN, this::realmtoken)
-                .use(ClientRequest.AUTHENTICATE, this::authenticate, Access.PUBLIC)
-                .use(ClientRequest.REGISTER, this::register, Access.PUBLIC)
-                .use(ClientRequest.REALMLIST, this::realmlist, Access.PUBLIC);
+                .use(Strings.CLIENT_CHARACTER_LIST, this::characterList)
+                .use(Strings.CLIENT_CHARACTER_CREATE, this::characterCreate)
+                .use(Strings.CLIENT_CHARACTER_REMOVE, this::characterRemove)
+                .use(Strings.CLIENT_REALM_TOKEN, this::realmtoken)
+                .use(Strings.CLIENT_AUTHENTICATE, this::authenticate, Access.PUBLIC)
+                .use(Strings.CLIENT_REGISTER, this::register, Access.PUBLIC)
+                .use(Strings.CLIENT_REALM_LIST, this::realmlist, Access.PUBLIC);
     }
 
     private void realmtoken(ClientRequest request) {

@@ -23,7 +23,7 @@ mvn package
 ```
 If the tests do not pass, either fix them yourself or checkout the (if exists) stable branch. The prepackaged jar file in the repository may also be used for testing out the project. If you wish to create a fatjar with the resources bundled move **resources/** and **website/** to **src/main/resources**.
 
-If you do not have a local **MongoDB server** running on the default port, localhost:27017 install latest version of MongoDB from [Meta](https://www.mongodb.com/).
+If you do not have a local **MongoDB server** running on the default port, localhost:27017 install latest version of MongoDB from [Patching](https://www.mongodb.com/).
 
 To start the packaged JAR run
 ```
@@ -34,9 +34,9 @@ This will start up all the components; authentication, gameserver, realms, insta
 To start only **a single component** use any of the following,
 ```
 java -jar <filename>.jar run Authentication.Server
-java -jar <filename>.jar run Game.Server
+java -jar <filename>.jar run Realm.Server
 java -jar <filename>.jar run Logging.Server
-java -jar <filename>.jar run Meta.Server
+java -jar <filename>.jar run Patching.Server
 ```
 
 The authentication tokens are stored in **/conf/system/{component}.json**. It is highly recommended to use a reverse proxy with TLS, see **/conf/system/proxy** for example configurations using NGINX and LetsEncrypt.
@@ -61,7 +61,7 @@ The purpose of the project is to provide a stable core for game development. The
 ## Features
 The complete feature list may change during development. 
 
-###### Game
+###### Realm
 * Multiplayer enabled
 * 2D-movement & spells
 * AI enabled for npcs.
@@ -98,7 +98,7 @@ The complete feature list may change during development.
 
 ###### Components
 * Authentication server: Account/character creation & available realms
-* Game server: Provides ping service for the clients browser
+* Realm server: Provides ping service for the clients browser
  * Realm Server: Handles incoming connections, instance travel
  * Instance Server: Handles game logic
 * Webserver: Provides an interface for account/character/realmlist
@@ -177,10 +177,10 @@ All configuration files are loaded by their respective component on startup. Min
 Brief introduction on how the core may be modified to fit your needs.
 
 * Server: Alter game mechanics, Protocol, Performance, Security. [Java programming]
-* Game design: Configuration files, Quests, Npcs, Worlds, Items [JSON]
+* Realm design: Configuration files, Quests, Npcs, Worlds, Items [JSON]
 * Resource mods: Modify graphics resources, spells, characters, sounds [Graphics/Sounds]
 
-Game and resource mods may be applied to systems which runs the authentication server with 3rd party server support. Or to a new system with the bundled game.
+Realm and resource mods may be applied to systems which runs the authentication server with 3rd party server support. Or to a new system with the bundled game.
 
 Example mod cases
 * Mod an existing game you like which uses the chili-core and publish it as a 3rd party server on their server.

@@ -2,8 +2,8 @@ package Logging.Model;
 
 import Authentication.Model.Account;
 import Configuration.*;
-import Configuration.Gameserver.InstanceSettings;
-import Configuration.Gameserver.RealmSettings;
+import Realm.Configuration.InstanceSettings;
+import Realm.Configuration.RealmSettings;
 import Protocols.Serializer;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
@@ -27,7 +27,7 @@ public class DefaultLogger implements Logger {
         this.authentication = authentication;
         this.vertx = vertx;
 
-        vertx.createHttpClient().websocket(authentication.getPort(), authentication.getRemote(), "/", handler -> {
+        vertx.createHttpClient().websocket(authentication.getPort(), authentication.getRemote(), Strings.DIR_SEPARATOR, handler -> {
             if (!connected) {
                 connected = true;
 
@@ -46,112 +46,112 @@ public class DefaultLogger implements Logger {
 
     private void log(JsonObject json) {
         log(json
-                .put("host", authentication.getHost())
-                .put("system", authentication.getSystem())
-                .put("time", Instant.now().toEpochMilli())
-                .put("token", Serializer.json(authentication.getToken()))
+                .put(Strings.LOG_HOST, authentication.getHost())
+                .put(Strings.LOG_SYSTEM, authentication.getSystem())
+                .put(Strings.LOG_TIME, Instant.now().toEpochMilli())
+                .put(Strings.ID_TOKEN, Serializer.json(authentication.getToken()))
                 .encodePrettily());
     }
 
     @Override
     public void onServerStarted() {
-        log(event("server.start"));
+        log(event(Strings.LOG_SERVER_START));
     }
 
     @Override
     public void onServerStopped() {
-        log(event("server.stop"));
+        log(event(Strings.LOG_SERVER_STOP));
     }
 
     @Override
     public void onInstanceStarted(RealmSettings realm, InstanceSettings instance) {
-        log(event("instance.start")
-                .put("instance", instance.getName())
-                .put("realm", realm.getName()));
+        log(event(Strings.LOG_INSTANCE_START)
+                .put(Strings.LOG_INSTANCE, instance.getName())
+                .put(Strings.ID_REALM, realm.getName()));
     }
 
     @Override
     public void onRealmStarted(RealmSettings realm) {
-        log(event("realm.start")
-                .put("realm", realm.getName()));
+        log(event(Strings.LOG_REALM_START)
+                .put(Strings.ID_REALM, realm.getName()));
     }
 
     @Override
     public void onAuthenticationFailure(Account account, String host) {
-        log(event("account.failure")
-                .put("username", account.getUsername())
-                .put("remote", host));
+        log(event(Strings.LOG_ACCOUNT_FAILURE)
+                .put(Strings.DB_USER, account.getUsername())
+                .put(Strings.LOG_REMOTE, host));
     }
 
     @Override
     public void onAuthenticated(Account account, String host) {
-        log(event("account.authenticated")
-                .put("username", account.getUsername())
-                .put("remote", host));
+        log(event(Strings.LOG_ACCOUNT_AUTHENTICATED)
+                .put(Strings.DB_USER, account.getUsername())
+                .put(Strings.LOG_REMOTE, host));
     }
 
     @Override
     public void onRegistered(Account account, String host) {
-        log(event("account.register")
-                .put("username", account.getUsername())
-                .put("remote", host));
+        log(event(Strings.LOG_ACCOUNT_REGISTERED)
+                .put(Strings.DB_USER, account.getUsername())
+                .put(Strings.LOG_REMOTE, host));
     }
 
     @Override
     public void onRealmRegistered(RealmSettings realm) {
-        log(event("realm.register")
-                .put("realm", realm.getName()));
+        log(event(Strings.LOG_REALM_REGISTERED)
+                .put(Strings.ID_REALM, realm.getName()));
     }
 
     @Override
     public void onRealmDeregistered(RealmSettings realm) {
-        log(event("realm.deregister")
-                .put("realm", realm.getName()));
+        log(event(Strings.LOG_REALM_DEREGISTERED)
+                .put(Strings.ID_REALM, realm.getName()));
     }
 
     @Override
     public void onRealmUpdated(RealmSettings realm) {
-        log(event("realm.update")
-                .put("realm", realm.getName())
-                .put("players", realm.getPlayers()));
+        log(event(Strings.LOG_REALM_UPDATE)
+                .put(Strings.ID_REALM, realm.getName())
+                .put(Strings.ID_PLAYERS, realm.getPlayers()));
     }
 
     @Override
     public void onRealmRejected(RealmSettings realm) {
-        log(event("realm.rejected")
-                .put("realm", realm.getName()));
+        log(event(Strings.LOG_REALM_REJECTED)
+                .put(Strings.ID_REALM, realm.getName()));
     }
 
     @Override
     public void onPageLoaded(HttpServerRequest request) {
-        log(event("page.load")
-                .put("agent", request.getHeader("user-agent"))
-                .put("origin", request.remoteAddress().host()));
+        log(event(Strings.LOG_PAGE_LOAD)
+                .put(Strings.LOG_AGENT, request.getHeader(Strings.LOG_USER_AGENT))
+                .put(Strings.LOG_ORIGIN, request.remoteAddress().host()));
     }
 
     @Override
     public void patchReloading(String name, String version) {
-        log(event("patcher.reload")
-                .put("name", name)
-                .put("version", version));
+        log(event(Strings.LOG_PATCHER_RELOAD)
+                .put(Strings.ID_NAME, name)
+                .put(Strings.LOG_VERSION, version));
     }
 
     @Override
     public void patchReloaded(String name, String version) {
-        log(event("patcher.reloaded")
-                .put("name", name)
-                .put("version", version));
+        log(event(Strings.LOG_PATCHER_RELOADED)
+                .put(Strings.ID_NAME, name)
+                .put(Strings.LOG_VERSION, version));
     }
 
     @Override
     public void patchLoaded(String name, String version) {
-        log(event("patcher.load")
-                .put("name", name)
-                .put("version", version));
+        log(event(Strings.LOG_PATCHER_LOADED)
+                .put(Strings.ID_NAME, name)
+                .put(Strings.LOG_VERSION, version));
     }
 
     private JsonObject event(String name) {
-        return new JsonObject().put("event", name);
+        return new JsonObject().put(Strings.LOG_EVENT, name);
     }
 
     private void log(String message) {

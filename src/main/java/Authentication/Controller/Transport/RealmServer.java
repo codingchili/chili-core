@@ -2,7 +2,8 @@ package Authentication.Controller.Transport;
 
 import Authentication.Controller.AuthProvider;
 import Authentication.Controller.RealmRequest;
-import Configuration.Authserver.AuthServerSettings;
+import Authentication.Configuration.AuthServerSettings;
+import Configuration.Strings;
 import Protocols.Authentication.RealmRegister;
 import Protocols.AuthorizationHandler.Access;
 import Protocols.*;
@@ -37,7 +38,7 @@ public class RealmServer extends AbstractVerticle {
         if (tokens.verifyToken(request.token())) {
             request.connection().authenticate(request.token().getDomain());
             try {
-                protocol.get(RealmRequest.AUTHENTICATED, Access.AUTHORIZE).handle(request);
+                protocol.get(Strings.REALM_AUTHENTICATED, Access.AUTHORIZE).handle(request);
             } catch (AuthorizationRequiredException | HandlerMissingException ignored) {
             }
         } else {
@@ -57,7 +58,7 @@ public class RealmServer extends AbstractVerticle {
             });
 
             socket.endHandler(event -> {
-                handle(PacketHandler.CLOSE, new RealmWebsocketRequest(connections.remove(socket.textHandlerID())));
+                handle(Strings.CLIENT_CLOSE, new RealmWebsocketRequest(connections.remove(socket.textHandlerID())));
             });
 
             connections.put(socket.textHandlerID(), new RealmConnection(socket));

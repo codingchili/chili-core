@@ -1,6 +1,6 @@
 package Authentication.Model;
 
-import Game.Model.PlayerCharacter;
+import Realm.Model.PlayerCharacter;
 
 import java.util.HashMap;
 

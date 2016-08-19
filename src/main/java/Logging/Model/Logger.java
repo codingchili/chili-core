@@ -1,8 +1,8 @@
 package Logging.Model;
 
 import Authentication.Model.Account;
-import Configuration.Gameserver.InstanceSettings;
-import Configuration.Gameserver.RealmSettings;
+import Realm.Configuration.InstanceSettings;
+import Realm.Configuration.RealmSettings;
 import io.vertx.core.http.HttpServerRequest;
 
 

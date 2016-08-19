@@ -1,5 +1,5 @@
 import Authentication.Controller.AuthProvider;
-import Meta.Controller.MetaProvider;
+import Patching.Controller.PatchProvider;
 import io.vertx.core.*;
 
 /**
@@ -44,9 +44,9 @@ public class Launcher implements Verticle {
                 future.fail(result.cause());
         });
 
-        startServer(web, new Meta.Server(new MetaProvider(vertx)));
+        startServer(web, new Patching.Server(new PatchProvider(vertx)));
         startServer(authentication, new Authentication.Server(new AuthProvider(vertx)));
-        startServer(game, new Game.Server());
+        startServer(game, new Realm.Server());
     }
 
     private void startServer(Future<Void> future, Verticle verticle) {

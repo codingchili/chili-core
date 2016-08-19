@@ -1,8 +1,7 @@
 package Authentication.Controller;
 
 import Authentication.Controller.Transport.RealmConnection;
-import Configuration.Gameserver.RealmSettings;
-import Protocols.Authentication.RealmUpdate;
+import Realm.Configuration.RealmSettings;
 import Protocols.Request;
 import Protocols.Authorization.Token;
 
@@ -26,6 +25,4 @@ public interface RealmRequest extends Request {
     String account();
 
     String name();
-
-    String AUTHENTICATED = "realm.authenticated";
 }

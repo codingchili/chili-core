@@ -7,6 +7,4 @@ package Protocols;
 @FunctionalInterface
 public interface PacketHandler<Request> {
     void handle(Request request);
-
-    String CLOSE = "connection.close";
 }

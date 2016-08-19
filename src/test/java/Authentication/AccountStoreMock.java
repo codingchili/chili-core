@@ -1,7 +1,7 @@
 package Authentication;
 
 import Authentication.Model.*;
-import Game.Model.PlayerCharacter;
+import Realm.Model.PlayerCharacter;
 import io.vertx.core.Future;
 
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.HashMap;
  * @author Robin Duda
  *         mock implementation of an account store used for testing.
  */
-public class AccountStoreMock implements AsyncAccountStore {
+class AccountStoreMock implements AsyncAccountStore {
     private static final String PASSWORD = "password";
     private static final String USERNAME = "username";
     private static final String REALM_NAME = "realmName.name";
@@ -19,7 +19,7 @@ public class AccountStoreMock implements AsyncAccountStore {
     private static final String CHARACTER_NAME_DELETED = "character-deleted";
     private HashMap<String, Account> accounts = new HashMap<>();
 
-    public AccountStoreMock() {
+    AccountStoreMock() {
         Account account = new Account()
                 .setPassword(PASSWORD)
                 .setUsername(USERNAME);

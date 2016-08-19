@@ -1,8 +1,9 @@
 package Authentication;
 
-import Configuration.Authserver.AuthServerSettings;
-import Configuration.Gameserver.RealmSettings;
-import Protocols.Game.CharacterRequest;
+import Authentication.Configuration.AuthServerSettings;
+import Configuration.ConfigMock;
+import Realm.Configuration.RealmSettings;
+import Protocols.Realm.CharacterRequest;
 import Protocols.Authentication.RealmRegister;
 import Protocols.Serializer;
 import Protocols.Authorization.Token;
@@ -25,6 +26,8 @@ import java.util.concurrent.TimeUnit;
  * @author Robin Duda
  *         tests the API from realmName->authentication server.
  */
+
+//todo complete these tests - handlers only!
 @Ignore
 @RunWith(VertxUnitRunner.class)
 public class RealmHandlerTest {
@@ -111,7 +114,6 @@ public class RealmHandlerTest {
             async.complete();
         });
 
-        // todo requires
         send(new CharacterRequest(), future);
     }
 
