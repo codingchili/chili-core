@@ -3,7 +3,7 @@ package Authentication;
 import Authentication.Controller.ClientHandler;
 import Authentication.Controller.Transport.ClientServer;
 import Authentication.Controller.Transport.RealmServer;
-import Authentication.Controller.AuthProvider;
+import Authentication.Configuration.AuthProvider;
 import Authentication.Controller.RealmHandler;
 import Logging.Model.Logger;
 import io.vertx.core.Context;

@@ -1,6 +1,7 @@
 package Patching.Controller;
 
 import Configuration.Strings;
+import Patching.Configuration.PatchProvider;
 import Patching.Configuration.PatchServerSettings;
 import Patching.Model.PatchKeeper;
 import Patching.Model.PatchReloadedException;

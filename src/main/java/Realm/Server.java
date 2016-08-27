@@ -1,7 +1,7 @@
 package Realm;
 
 import Configuration.FileConfiguration;
-import Realm.Configuration.GameServerSettings;
+import Realm.Configuration.RealmServerSettings;
 import Realm.Configuration.RealmSettings;
 import Realm.Controller.Realm;
 import Logging.Model.DefaultLogger;
@@ -16,7 +16,7 @@ import io.vertx.core.Vertx;
  *         root game server, deploys realmName servers.
  */
 public class Server implements Verticle {
-    private GameServerSettings settings;
+    private RealmServerSettings settings;
     private Logger logger;
     private Vertx vertx;
 

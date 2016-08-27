@@ -1,6 +1,6 @@
 package Authentication.Controller.Transport;
 
-import Authentication.Controller.AuthProvider;
+import Authentication.Configuration.AuthProvider;
 import Authentication.Controller.RealmRequest;
 import Authentication.Configuration.AuthServerSettings;
 import Configuration.Strings;

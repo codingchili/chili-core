@@ -4,6 +4,7 @@ package Logging;
 import Configuration.FileConfiguration;
 import Logging.Configuration.LogServerSettings;
 import Logging.Controller.LogHandler;
+import Logging.Model.ConsoleLogger;
 import Logging.Model.DefaultLogger;
 import Logging.Model.Logger;
 import io.vertx.core.Context;
@@ -30,8 +31,8 @@ public class Server implements Verticle {
     @Override
     public void init(Vertx vertx, Context context) {
         this.vertx = vertx;
-            this.settings = FileConfiguration.instance().getLogSettings();
-            this.logger = new DefaultLogger(vertx, settings.getLogserver());
+        this.settings = FileConfiguration.instance().getLogSettings();
+        this.logger = new DefaultLogger(vertx, settings.getLogserver());
     }
 
     @Override

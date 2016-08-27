@@ -1,6 +1,6 @@
 package Authentication.Controller.Transport;
 
-import Authentication.Controller.AuthProvider;
+import Authentication.Configuration.AuthProvider;
 import Protocols.AuthorizationHandler.Access;
 import Authentication.Controller.ClientRequest;
 import Protocols.PacketHandler;

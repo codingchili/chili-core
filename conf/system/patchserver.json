@@ -5,8 +5,8 @@
   },
   "logserver" : {
     "token" : {
-      "key" : "0D9BAF261FC11EEDEA206C7A0FBB599C2AE4D11EAF5DFCB65EE3B03EF2A105ADD6FBC15B4602C16886C892B8AACB709C4756488E56C6F0F00AF72EBC6F983E20",
-      "expiry" : 1474316197,
+      "key" : "2B196B6E983F65DF26BFD90CED408D6CD375EB11B9896B345794EE89F052368F5E1D7110ABBB2DD49611FB46F453C542BF0FAE8E41BA875D9AAE235D66C98FAA",
+      "expiry" : 1474972411,
       "domain" : "patchserver@server.1"
     },
     "system" : "patchserver",
@@ -19,7 +19,7 @@
     "title" : "Introduction"
   },
   "patch" : {
-    "version" : "0.1.28",
+    "version" : "0.1.4aa",
     "name" : "Spider Eyes",
     "date" : "2016-05-22",
     "changes" : [ {
@@ -42,8 +42,5 @@
       "date" : "2016-05-22"
     } ]
   },
-  "port" : 8080,
-  "cache" : true,
-  "compress" : false,
-  "path" : "conf/system/patchserver.json"
+  "port" : 8008
 }

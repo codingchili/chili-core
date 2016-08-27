@@ -3,13 +3,11 @@ package Patching.Configuration;
 import Configuration.Configurable;
 import Configuration.RemoteAuthentication;
 import Configuration.Strings;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * @author Robin Duda
  *         Contains settings for the webserver.
  */
-@JsonIgnoreProperties({"name"})
 public class PatchServerSettings implements Configurable {
     private RemoteAuthentication authserver;
     private RemoteAuthentication logserver;
@@ -18,7 +16,6 @@ public class PatchServerSettings implements Configurable {
     private NewsList news;
     private Integer port;
     private Boolean cache;
-    private Boolean compress;
 
     @Override
     public String getPath() {
@@ -52,14 +49,6 @@ public class PatchServerSettings implements Configurable {
 
     public void setPatch(PatchNotes patch) {
         this.patch = patch;
-    }
-
-    public Boolean getCompress() {
-        return compress;
-    }
-
-    public void setCompress(Boolean compress) {
-        this.compress = compress;
     }
 
     public Boolean getCache() {

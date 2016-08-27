@@ -1,6 +1,6 @@
 package Authentication;
 
-import Authentication.Controller.AuthProvider;
+import Authentication.Configuration.AuthProvider;
 import Authentication.Controller.ClientRequest;
 import Authentication.Controller.RealmRequest;
 import Authentication.Model.AsyncAccountStore;

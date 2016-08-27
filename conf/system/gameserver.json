@@ -1,14 +1,13 @@
 {
   "logserver" : {
     "token" : {
-      "key" : "4110DCB06761F9D165B03F45CA1DFFFB54E8A0BE3402A01A9E7502B1A914F75E192585415190FD5855F94543FEF5F3E9C3E4B21E62F71FBEFEAB09AF4F83992B",
-      "expiry" : 1474316197,
+      "key" : "575CC964FFF51BE1EBD0F7274D7106BEA8E8BF91318B30CC930B770FB55731A91C0C5410D733E1D37D3706FA20B23FCCF953FEDD0E859F1386BB981101A20B23",
+      "expiry" : 1474962186,
       "domain" : "gameserver@server.1"
     },
     "system" : "gameserver",
     "host" : "server.1",
     "remote" : "localhost",
     "port" : 6109
-  },
-  "path" : "conf/system/gameserver.json"
+  }
 }

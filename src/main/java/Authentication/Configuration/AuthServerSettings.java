@@ -2,12 +2,10 @@ package Authentication.Configuration;
 
 import Configuration.Configurable;
 import Configuration.RemoteAuthentication;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import static Configuration.Strings.PATH_AUTHSERVER;
 
 
-@JsonIgnoreProperties({"name"})
 public class AuthServerSettings implements Configurable {
     private RemoteAuthentication logserver;
     private byte[] clientSecret;
@@ -17,7 +15,7 @@ public class AuthServerSettings implements Configurable {
     private DatabaseSettings database;
     private String[] realms;
 
-    public boolean isPublicRealm(String name) {
+    public boolean isTrustedRealm(String name) {
         boolean result = false;
 
         for (Object object : realms) {

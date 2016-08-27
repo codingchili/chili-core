@@ -16,11 +16,22 @@ import java.util.ArrayList;
  *         Implementation of asynchronous account store using MongoDb.
  */
 public class AccountDB implements AsyncAccountStore {
-    private static final String COLLECTION = Strings.DB_ACCOUNT;
+    private static final String COLLECTION = Strings.DB_COLLECTION;
     private MongoClient client;
 
     public AccountDB(MongoClient client) {
         this.client = client;
+    }
+
+    @Override
+    public void isConnected(Future<Void> connection) {
+        client.count(COLLECTION, new JsonObject(), result -> {
+            if (result.succeeded()) {
+                connection.complete();
+            } else {
+                connection.fail(result.cause());
+            }
+        });
     }
 
 
@@ -67,7 +78,7 @@ public class AccountDB implements AsyncAccountStore {
         JsonObject character = new JsonObject().put("$set",
                 new JsonObject().put(Strings.DB_CHARACTERS + "." + realm + "." + player.getName(), Serializer.json(player)));
 
-        client.update(COLLECTION, query, character, update -> {
+        client.updateCollection(COLLECTION, query, character, update -> {
             if (update.succeeded())
                 future.complete();
             else {
@@ -87,7 +98,7 @@ public class AccountDB implements AsyncAccountStore {
                     .put("$unset",
                             new JsonObject().put(Strings.DB_CHARACTERS + "." + realm + "." + character, ""));
 
-            client.update(COLLECTION, query, field, remove -> {
+            client.updateCollection(COLLECTION, query, field, remove -> {
 
                 if (remove.succeeded())
                     future.complete();

@@ -36,7 +36,7 @@ public class RealmPingTest {
         realm.getAuthentication().setToken(new Token().setKey("test"));
         realm.getAuthentication().setRemote("localhost");
 
-        vertx.deployVerticle(new Realm(new ConfigMock.GameSettingsMock(), realm, new LoggerMock()), context.asyncAssertSuccess());
+        vertx.deployVerticle(new Realm(new ConfigMock.RealmServerSettingsMock(), realm, new LoggerMock()), context.asyncAssertSuccess());
     }
 
     @After

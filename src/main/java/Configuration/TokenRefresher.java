@@ -1,13 +1,12 @@
 package Configuration;
 
 import Authentication.Configuration.AuthServerSettings;
-import Realm.Configuration.GameServerSettings;
+import Realm.Configuration.RealmServerSettings;
 import Realm.Configuration.RealmSettings;
 import Logging.Configuration.LogServerSettings;
 import Protocols.Authorization.Token;
 import Protocols.Authorization.TokenFactory;
 
-import java.io.IOException;
 import java.security.SecureRandom;
 
 /**
@@ -33,7 +32,8 @@ class TokenRefresher {
                 configuration.getAuthSettings(),
                 configuration.getGameServerSettings(),
                 configuration.getLogSettings(),
-                configuration.getPatchServerSettings()
+                configuration.getPatchServerSettings(),
+                configuration.getWebsiteSettings()
         });
 
         generateRealmTokens(configuration.getGameServerSettings());
@@ -82,7 +82,7 @@ class TokenRefresher {
         return factory.verifyToken(token);
     }
 
-    private void generateRealmTokens(GameServerSettings gameserver) {
+    private void generateRealmTokens(RealmServerSettings gameserver) {
         for (RealmSettings realm : gameserver.getRealms()) {
             RemoteAuthentication remote = realm.getAuthentication();
 

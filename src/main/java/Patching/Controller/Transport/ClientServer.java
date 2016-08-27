@@ -1,10 +1,9 @@
 package Patching.Controller.Transport;
 
 import Configuration.FileConfiguration;
-import Configuration.Strings;
 import Patching.Configuration.PatchServerSettings;
 import Patching.Controller.ClientRequest;
-import Patching.Controller.PatchProvider;
+import Patching.Configuration.PatchProvider;
 import Protocols.AuthorizationHandler.Access;
 import Protocols.Exception.AuthorizationRequiredException;
 import Protocols.Exception.HandlerMissingException;
@@ -21,8 +20,6 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
-
-import java.io.IOException;
 
 /**
  * @author Robin Duda
@@ -58,11 +55,10 @@ public class ClientServer implements Verticle {
         router.route().handler(BodyHandler.create());
         setLogging(router);
         serveAPI(router);
-        serveWebsite(router);
         setCatchAll(router);
 
         vertx.createHttpServer(new HttpServerOptions()
-                .setCompressionSupported(settings.getCompress()))
+                .setCompressionSupported(true))
                 .requestHandler(router::accept).listen(settings.getPort());
 
         start.complete();
@@ -89,11 +85,6 @@ public class ClientServer implements Verticle {
         } catch (HandlerMissingException e) {
             request.error();
         }
-    }
-
-    private void serveWebsite(Router router) {
-        router.route("/*").handler(StaticHandler.create("website/")
-                .setCachingEnabled(settings.getCache()));
     }
 
     private void setCatchAll(Router router) {

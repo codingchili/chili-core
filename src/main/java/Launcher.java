@@ -1,5 +1,6 @@
-import Authentication.Controller.AuthProvider;
-import Patching.Controller.PatchProvider;
+import Authentication.Configuration.AuthProvider;
+import Patching.Configuration.PatchProvider;
+import Website.Configuration.WebserverProvider;
 import io.vertx.core.*;
 
 /**
@@ -33,19 +34,21 @@ public class Launcher implements Verticle {
     }
 
     private void startAll(Future<Void> future) {
-        Future<Void> web = Future.future();
+        Future<Void> patch = Future.future();
         Future<Void> authentication = Future.future();
         Future<Void> game = Future.future();
+        Future<Void> web = Future.future();
 
-        CompositeFuture.all(web, authentication, game).setHandler(result -> {
+        CompositeFuture.all(patch, authentication, game).setHandler(result -> {
             if (result.succeeded()) {
                 future.complete();
             } else
                 future.fail(result.cause());
         });
 
-        startServer(web, new Patching.Server(new PatchProvider(vertx)));
+        startServer(patch, new Patching.Server(new PatchProvider(vertx)));
         startServer(authentication, new Authentication.Server(new AuthProvider(vertx)));
+        startServer(web, new Website.Server(new WebserverProvider(vertx)));
         startServer(game, new Realm.Server());
     }
 

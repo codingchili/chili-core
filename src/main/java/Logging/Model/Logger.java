@@ -92,4 +92,14 @@ public interface Logger {
      * Emit when patch version is loaded.
      */
     void patchLoaded(String name, String version);
+
+    /**
+     * Emit when the database has failed.
+     */
+    void onDatabaseError(String message);
+
+    /**
+     * Emit when failing to load specified fileName;
+     */
+    void onFileLoadError(String fileName);
 }

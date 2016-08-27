@@ -2,15 +2,16 @@ package Configuration;
 
 /**
  * @author Robin Duda
- *
- * Store json keys and protocol headers so that they are easily maintained.
+ *         <p>
+ *         Store json keys and protocol headers so that they are easily maintained.
  */
 public class Strings {
     // Locations to configuration files.
     public static final String PATH_AUTHSERVER = "conf/system/authserver.json";
     public static final String PATH_LOGSERVER = "conf/system/logserver.json";
     public static final String PATH_PATCHSERVER = "conf/system/patchserver.json";
-    public static final String PATH_GAMESERVER = "conf/system/gameserver.json";
+    public static final String PATH_GAMESERVER = "conf/system/realmserver.json";
+    public static final String PATH_WEBSERVER = "conf/system/webserver.json";
     public static final String PATH_REALM = "conf/realm/";
     public static final String PATH_INSTANCE = "conf/game/world";
     public static final String PATH_CLASSES = "conf/game/class";
@@ -61,6 +62,7 @@ public class Strings {
     public static final String ID_RESOURCES = "resources";
 
     //Database naming.
+    public static final String DB_COLLECTION = "accounts";
     public static final String DB_ACCOUNT = "accounts";
     public static final String DB_USER = "username";
     public static final String DB_SALT = "salt";
@@ -87,7 +89,9 @@ public class Strings {
     public static final String LOG_SERVER_STOP = "server.stop";
     public static final String LOG_INSTANCE_START = "instance.start";
     public static final String LOG_REALM_START = "realm.start";
-    public static final String LOG_ACCOUNT_FAILURE = "account.failure";
+    public static final String LOG_MESSAGE = "message";
+    public static final String LOG_FILE_ERROR = "file.error";
+    public static final String LOG_ACCOUNT_UNAUTHORIZED = "account.unauthorized";
     public static final String LOG_ACCOUNT_AUTHENTICATED = "account.authenticated";
     public static final String LOG_ACCOUNT_REGISTERED = "account.registered";
     public static final String LOG_REALM_REGISTERED = "realm.registered";
@@ -98,6 +102,12 @@ public class Strings {
     public static final String LOG_PATCHER_RELOAD = "patcher.reload";
     public static final String LOG_PATCHER_RELOADED = "patcher.reloaded";
     public static final String LOG_PATCHER_LOADED = "patcher.loaded";
+    public static final String LOG_DATABASE_ERROR = "database.error";
+    public static final String LOG_LEVEL = "level";
+    public static final String LOG_LEVEL_CRITICAL = "critical";
+    public static final String LOG_LEVEL_WARNING = "warning";
+    public static final String LOG_LEVEL_INFO = "info";
+    public static final String LOG_LEVEL_STARTUP = "startup";
 
     //Patching
     public static final String PATCH_IDENTIFIER = "patch";

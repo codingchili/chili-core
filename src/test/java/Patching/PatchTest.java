@@ -4,7 +4,7 @@ import Configuration.Strings;
 import Patching.Configuration.PatchServerSettings;
 import Patching.Controller.ClientHandler;
 import Patching.Controller.ClientRequest;
-import Patching.Controller.PatchProvider;
+import Patching.Configuration.PatchProvider;
 import Protocols.AuthorizationHandler;
 import Protocols.Exception.AuthorizationRequiredException;
 import Protocols.Exception.HandlerMissingException;

@@ -1,13 +1,14 @@
 package Configuration;
 
 import Authentication.Configuration.AuthServerSettings;
-import Realm.Configuration.GameServerSettings;
+import Realm.Configuration.RealmServerSettings;
 import Realm.Configuration.RealmSettings;
 import Logging.Configuration.LogServerSettings;
 import Patching.Configuration.PatchServerSettings;
 import Realm.Model.PlayerClass;
 import Protocols.Authorization.Token;
 import Protocols.Authorization.TokenFactory;
+import Website.Configuration.WebserverSettings;
 
 import java.util.ArrayList;
 
@@ -24,8 +25,8 @@ public class ConfigMock implements ConfigurationLoader {
     }
 
     @Override
-    public GameServerSettings getGameServerSettings() {
-        return new GameServerSettings();
+    public RealmServerSettings getGameServerSettings() {
+        return new RealmServerSettings();
     }
 
     @Override
@@ -36,6 +37,11 @@ public class ConfigMock implements ConfigurationLoader {
     @Override
     public AuthServerSettings getAuthSettings() {
         return new AuthServerSettingsMock();
+    }
+
+    @Override
+    public WebserverSettings getWebsiteSettings() {
+        return new WebserverSettings();
     }
 
 
@@ -133,13 +139,13 @@ public class ConfigMock implements ConfigurationLoader {
         }
     }
 
-    public static class GameSettingsMock extends GameServerSettings {
+    public static class RealmServerSettingsMock extends RealmServerSettings {
 
         @Override
         public ArrayList<RealmSettings> getRealms() {
             ArrayList<RealmSettings> realms = new ArrayList<>();
 
-            realms.add(new RealmSettingsMock());
+            realms.add(new RealmSettings());
 
             return realms;
         }

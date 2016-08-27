@@ -10,6 +10,12 @@ import java.util.ArrayList;
  *         Asynchronous account store.
  */
 public interface AsyncAccountStore {
+
+    /**
+     * Checks if a connection is available by sending an empty query.
+     */
+    void isConnected(Future<Void> connection);
+
     /**
      * Finds an account in the store.
      *

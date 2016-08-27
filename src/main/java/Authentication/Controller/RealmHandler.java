@@ -1,5 +1,6 @@
 package Authentication.Controller;
 
+import Authentication.Configuration.AuthProvider;
 import Configuration.Strings;
 import Protocols.AuthorizationHandler.Access;
 import Authentication.Model.AsyncAccountStore;
@@ -38,7 +39,7 @@ public class RealmHandler {
     private void register(RealmRequest request) {
         RealmSettings realm = request.realm();
 
-        realm.setTrusted(settings.isPublicRealm(realm.getName()));
+        realm.setTrusted(settings.isTrustedRealm(realm.getName()));
         realmStore.put(realm);
         request.write(new RealmRegister(true));
     }

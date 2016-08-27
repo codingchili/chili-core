@@ -84,4 +84,14 @@ public class LoggerMock implements Logger {
     public void patchLoaded(String name, String version) {
 
     }
+
+    @Override
+    public void onDatabaseError(String message) {
+
+    }
+
+    @Override
+    public void onFileLoadError(String fileName) {
+
+    }
 }

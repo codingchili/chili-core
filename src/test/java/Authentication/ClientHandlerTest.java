@@ -3,7 +3,7 @@ package Authentication;
 import Configuration.Strings;
 import Shared.ResponseStatus;
 import Shared.ResponseListener;
-import Authentication.Controller.AuthProvider;
+import Authentication.Configuration.AuthProvider;
 import Authentication.Controller.ClientHandler;
 import Authentication.Controller.ClientRequest;
 import Authentication.Model.RealmStore;

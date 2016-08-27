@@ -12,6 +12,7 @@ import io.vertx.core.json.JsonObject;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 /**
  * @author Robin Duda
@@ -55,30 +56,30 @@ public class DefaultLogger implements Logger {
 
     @Override
     public void onServerStarted() {
-        log(event(Strings.LOG_SERVER_START));
+        log(event(Strings.LOG_SERVER_START, Strings.LOG_LEVEL_STARTUP));
     }
 
     @Override
     public void onServerStopped() {
-        log(event(Strings.LOG_SERVER_STOP));
+        log(event(Strings.LOG_SERVER_STOP, Strings.LOG_LEVEL_CRITICAL));
     }
 
     @Override
     public void onInstanceStarted(RealmSettings realm, InstanceSettings instance) {
-        log(event(Strings.LOG_INSTANCE_START)
+        log(event(Strings.LOG_INSTANCE_START, Strings.LOG_LEVEL_STARTUP)
                 .put(Strings.LOG_INSTANCE, instance.getName())
                 .put(Strings.ID_REALM, realm.getName()));
     }
 
     @Override
     public void onRealmStarted(RealmSettings realm) {
-        log(event(Strings.LOG_REALM_START)
+        log(event(Strings.LOG_REALM_START, Strings.LOG_LEVEL_STARTUP)
                 .put(Strings.ID_REALM, realm.getName()));
     }
 
     @Override
     public void onAuthenticationFailure(Account account, String host) {
-        log(event(Strings.LOG_ACCOUNT_FAILURE)
+        log(event(Strings.LOG_ACCOUNT_UNAUTHORIZED, Strings.LOG_LEVEL_WARNING)
                 .put(Strings.DB_USER, account.getUsername())
                 .put(Strings.LOG_REMOTE, host));
     }
@@ -118,7 +119,7 @@ public class DefaultLogger implements Logger {
 
     @Override
     public void onRealmRejected(RealmSettings realm) {
-        log(event(Strings.LOG_REALM_REJECTED)
+        log(event(Strings.LOG_REALM_REJECTED, Strings.LOG_LEVEL_WARNING)
                 .put(Strings.ID_REALM, realm.getName()));
     }
 
@@ -145,13 +146,30 @@ public class DefaultLogger implements Logger {
 
     @Override
     public void patchLoaded(String name, String version) {
-        log(event(Strings.LOG_PATCHER_LOADED)
+        log(event(Strings.LOG_PATCHER_LOADED, Strings.LOG_LEVEL_STARTUP)
                 .put(Strings.ID_NAME, name)
                 .put(Strings.LOG_VERSION, version));
     }
 
+    @Override
+    public void onDatabaseError(String message) {
+        log(event(Strings.LOG_DATABASE_ERROR, Strings.LOG_LEVEL_CRITICAL)
+                .put(Strings.LOG_DATABASE_ERROR, message)
+                .put(Strings.LOG_LEVEL, Strings.LOG_LEVEL_INFO));
+    }
+
+    @Override
+    public void onFileLoadError(String fileName) {
+        log(event(Strings.LOG_FILE_ERROR, Strings.LOG_LEVEL_CRITICAL)
+        .put(Strings.LOG_MESSAGE, fileName));
+    }
+
     private JsonObject event(String name) {
-        return new JsonObject().put(Strings.LOG_EVENT, name);
+        return event(name, Strings.LOG_LEVEL_INFO);
+    }
+
+    private JsonObject event(String name, String level) {
+        return new JsonObject().put(Strings.LOG_EVENT, name).put(Strings.LOG_LEVEL, level);
     }
 
     private void log(String message) {

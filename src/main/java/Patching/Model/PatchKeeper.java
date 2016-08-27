@@ -43,7 +43,7 @@ public class PatchKeeper {
 
     private void watchFiles() throws IOException {
         WatchService watcher = FileSystems.getDefault().newWatchService();
-        WatchKey watchKey = Paths.get(Strings.DIR_RESOURCES).register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+        WatchKey watchKey = Paths.get(Strings.DIR_SYSTEM).register(watcher, ENTRY_MODIFY);
 
         vertx.setPeriodic(2500, handler -> {
 

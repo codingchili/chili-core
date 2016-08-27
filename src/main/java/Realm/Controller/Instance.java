@@ -1,6 +1,6 @@
 package Realm.Controller;
 
-import Realm.Configuration.GameServerSettings;
+import Realm.Configuration.RealmServerSettings;
 import Realm.Configuration.InstanceSettings;
 import Realm.Configuration.RealmSettings;
 import Logging.Model.DefaultLogger;
@@ -18,10 +18,10 @@ public class Instance implements Verticle {
     private Vertx vertx;
     private InstanceSettings settings;
     private RealmSettings realm;
-    private GameServerSettings game;
+    private RealmServerSettings game;
     private Logger logger;
 
-    public Instance(GameServerSettings game, RealmSettings realm, InstanceSettings settings) {
+    public Instance(RealmServerSettings game, RealmSettings realm, InstanceSettings settings) {
         this.game = game;
         this.realm = realm;
         this.settings = settings;

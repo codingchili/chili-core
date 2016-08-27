@@ -1,5 +1,6 @@
 package Authentication.Controller;
 
+import Authentication.Configuration.AuthProvider;
 import Authentication.Model.*;
 import Configuration.Strings;
 import Realm.Configuration.RealmSettings;

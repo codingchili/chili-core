@@ -1,6 +1,6 @@
 package Realm.Controller;
 
-import Realm.Configuration.GameServerSettings;
+import Realm.Configuration.RealmServerSettings;
 import Realm.Configuration.InstanceSettings;
 import Realm.Configuration.RealmSettings;
 import Configuration.RemoteAuthentication;
@@ -43,17 +43,17 @@ public class Realm implements Verticle {
     private Boolean registered = false;
     private WebSocket authserver;
     private RealmSettings settings;
-    private GameServerSettings game;
+    private RealmServerSettings game;
     private TokenFactory tokenFactory;
     private Logger logger;
     private Vertx vertx;
 
-    public Realm(GameServerSettings game, RealmSettings settings) {
+    public Realm(RealmServerSettings game, RealmSettings settings) {
         this.settings = settings;
         this.game = game;
     }
 
-    public Realm(GameServerSettings game, RealmSettings settings, Logger logger) {
+    public Realm(RealmServerSettings game, RealmSettings settings, Logger logger) {
         this(game, settings);
         this.logger = logger;
     }
@@ -164,7 +164,7 @@ public class Realm implements Verticle {
         RemoteAuthentication authentication = settings.getAuthentication();
         logger.onRealmStarted(settings);
 
-        vertx.setPeriodic(4000, handler -> {
+        vertx.setPeriodic(2000, handler -> {
             if (authserver == null)
                 vertx.createHttpClient().websocket(authentication.getPort(), authentication.getRemote(), "", socket -> {
                     authserver = socket;

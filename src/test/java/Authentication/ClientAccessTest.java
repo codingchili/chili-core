@@ -1,6 +1,6 @@
 package Authentication;
 
-import Authentication.Controller.AuthProvider;
+import Authentication.Configuration.AuthProvider;
 import Authentication.Controller.Transport.ClientServer;
 import Authentication.Controller.ClientHandler;
 import Authentication.Model.*;

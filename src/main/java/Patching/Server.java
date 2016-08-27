@@ -2,7 +2,7 @@ package Patching;
 
 import Logging.Model.Logger;
 import Patching.Controller.ClientHandler;
-import Patching.Controller.PatchProvider;
+import Patching.Configuration.PatchProvider;
 import Patching.Controller.Transport.ClientServer;
 import io.vertx.core.Context;
 import io.vertx.core.Future;

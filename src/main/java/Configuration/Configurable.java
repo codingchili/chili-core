@@ -1,6 +1,6 @@
 package Configuration;
 
-import Protocols.Authorization.Token;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @author Robin Duda
@@ -12,6 +12,7 @@ public interface Configurable {
      *
      * @return the directory path to the configuration file.
      */
+    @JsonIgnore
     String getPath();
 
     /**
@@ -19,6 +20,7 @@ public interface Configurable {
      *
      * @return name as string with extension.
      */
+    @JsonIgnore
     String getName();
 
 
