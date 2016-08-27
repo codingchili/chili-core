@@ -37,6 +37,7 @@ java -jar <filename>.jar run Authentication.Server
 java -jar <filename>.jar run Realm.Server
 java -jar <filename>.jar run Logging.Server
 java -jar <filename>.jar run Patching.Server
+java -jar <filename>.jar run Website.Server
 ```
 
 The authentication tokens are stored in **/conf/system/{component}.json**. It is highly recommended to use a reverse proxy with TLS, see **/conf/system/proxy** for example configurations using NGINX and LetsEncrypt.
@@ -56,7 +57,7 @@ The purpose of the project is to provide a stable core for game development. The
 
 ###### Audience
 * Learning programming, game graphics or design, web development
-* Bootstrap package for game development, creating a prototype for a 2D web game.
+* Bootstrap package for game development, creating a prototype for a 2D game.
 
 ## Features
 The complete feature list may change during development. 
@@ -127,8 +128,9 @@ The configuration structure
 ├── config/
 │   ├── system/
 │   │   ├── authserver.json
-│   │   ├── gameserver.json
 │   │   ├── logserver.json
+│   │   ├── patchserver.json
+│   │   ├── realmserver.json
 │   │   ├── webserver.json
 │   ├── realm/
 │   │   ├── {name}.json
