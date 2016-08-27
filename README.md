@@ -42,7 +42,7 @@ java -jar <filename>.jar run Website.Server
 
 The authentication tokens are stored in **/conf/system/{component}.json**. It is highly recommended to use a reverse proxy with TLS, see **/conf/system/proxy** for example configurations using NGINX and LetsEncrypt.
 
-When components are started they read the configuration files in **conf/system/{authserver,gameserver,logserer,webserver}** if the port numbers or addresses are to be changed, check these sample configuration files.
+When components are started configuration files in **conf/system/{authserver,gameserver,logserer,webserver}** are used. If the port numbers or addresses needs to be changed, check these sample configuration files.
 
 ## Background
 The purpose of the project is to provide a stable core for game development. There are many aspects of creating games, backend architecture, user interfaces, game resources (graphics, sounds) and then the design which includes the story/quests etc. The core is designed to be easily integrated with and modified in each of these aspects. In order to provide this, the core includes somewhat complete subsystems for each of these points. Additionally the core will be delivered as a "complete" game, to further increase the availability/modability and broaden the audience. As such it is the aim of the project to be complete enough both in documentation and code so that it may be used as a learning platform. 
