@@ -1,11 +1,11 @@
 {
   "logserver" : {
     "token" : {
-      "key" : "575CC964FFF51BE1EBD0F7274D7106BEA8E8BF91318B30CC930B770FB55731A91C0C5410D733E1D37D3706FA20B23FCCF953FEDD0E859F1386BB981101A20B23",
-      "expiry" : 1474962186,
-      "domain" : "gameserver@server.1"
+      "key" : "7E2AC626AB36BA546C25BE52BEDA1960BF807B7B00B6E752FBDA18B0217DFCB2CD3712C6401D89BDA10A444CF18645087F5A79CEEB65214B550E71D653D24E01",
+      "expiry" : 1475060672,
+      "domain" : "realmserver@server.1"
     },
-    "system" : "gameserver",
+    "system" : "realmserver",
     "host" : "server.1",
     "remote" : "localhost",
     "port" : 6109
