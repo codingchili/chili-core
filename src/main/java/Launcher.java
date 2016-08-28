@@ -1,4 +1,6 @@
 import Authentication.Configuration.AuthProvider;
+import Configuration.FileConfiguration;
+import Configuration.VertxSettings;
 import Patching.Configuration.PatchProvider;
 import Website.Configuration.WebserverProvider;
 import io.vertx.core.*;
@@ -17,7 +19,8 @@ public class Launcher implements Verticle {
 
     @Override
     public void init(Vertx vertx, Context context) {
-        this.vertx = vertx;
+        FileConfiguration.instance();
+        this.vertx = Vertx.vertx(VertxSettings.Configuration());
     }
 
     @Override

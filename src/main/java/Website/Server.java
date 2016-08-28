@@ -46,8 +46,7 @@ public class Server implements Verticle {
             vertx.deployVerticle(new RequestHandler(provider, i));
         }
 
-        logger.onServerStarted();
-        start.complete();
+        logger.onServerStarted(start);
     }
 
 

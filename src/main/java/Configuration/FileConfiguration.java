@@ -30,6 +30,7 @@ public class FileConfiguration implements ConfigurationLoader {
         gameserver = (RealmServerSettings) load(Strings.PATH_GAMESERVER, RealmServerSettings.class);
         logserver = (LogServerSettings) load(Strings.PATH_LOGSERVER, LogServerSettings.class);
         webserver = (WebserverSettings) load(Strings.PATH_WEBSERVER, WebserverSettings.class);
+        load(Strings.PATH_VERTX, VertxSettings.class);
         patchserver = loadPatchSettings();
         loadRealms(gameserver);
     }

@@ -6,13 +6,15 @@ import Realm.Configuration.RealmSettings;
 import Logging.Model.Logger;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.json.JsonObject;
 
 /**
  * Authentication.Mock implementation of a logger to disable logging.
  */
 public class LoggerMock implements Logger {
+
     @Override
-    public void onServerStarted() {
+    public void onServerStarted(Future<Void> future) {
 
     }
 
@@ -93,6 +95,11 @@ public class LoggerMock implements Logger {
 
     @Override
     public void onFileLoadError(String fileName) {
+
+    }
+
+    @Override
+    public void onMetricsSnapshot(JsonObject metrics) {
 
     }
 }

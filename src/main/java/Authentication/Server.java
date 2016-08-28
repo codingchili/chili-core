@@ -72,8 +72,7 @@ public class Server implements Verticle {
             vertx.deployVerticle(new RealmServer(provider));
         }
 
-        logger.onServerStarted();
-        start.complete();
+        logger.onServerStarted(start);
     }
 
 

@@ -12,6 +12,7 @@ public class Strings {
     public static final String PATH_PATCHSERVER = "conf/system/patchserver.json";
     public static final String PATH_GAMESERVER = "conf/system/realmserver.json";
     public static final String PATH_WEBSERVER = "conf/system/webserver.json";
+    public static final String PATH_VERTX = "conf/system/vertx.json";
     public static final String PATH_REALM = "conf/realm/";
     public static final String PATH_INSTANCE = "conf/game/world";
     public static final String PATH_CLASSES = "conf/game/class";
@@ -60,10 +61,11 @@ public class Strings {
     public static final String ID_PLAYERS = "players";
     public static final String ID_FILE = "file";
     public static final String ID_RESOURCES = "resources";
+    public static final String ID_DATA = "data";
+
 
     //Database naming.
     public static final String DB_COLLECTION = "accounts";
-    public static final String DB_ACCOUNT = "accounts";
     public static final String DB_USER = "username";
     public static final String DB_SALT = "salt";
     public static final String DB_HASH = "hash";
@@ -110,6 +112,8 @@ public class Strings {
     public static final String LOG_LEVEL_INFO = "INFO";
     public static final String LOG_LEVEL_STARTUP = "STARTUP";
     public static final String LOG_VERTX = "vertx";
+    public static final String LOG_METRICS = "metrics";
+
 
 
     //Patching
@@ -127,5 +131,4 @@ public class Strings {
 
     // Error messages.
     public static final String ERROR_TOKEN_FACTORY = "Token factory failed to generate token.";
-    public static final String ERROR_LOADING_CONFIGURATION = "Failed to load configuration files.";
 }

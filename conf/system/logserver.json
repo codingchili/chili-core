@@ -12,7 +12,7 @@
   },
   "elastic" : {
     "remote" : "localhost",
-    "index" : "the_def_index",
+    "index" : "logserver.1",
     "port" : 9200,
     "template" : {
       "mappings" : {
@@ -25,7 +25,7 @@
         }
       }
     },
-    "enabled" : false
+    "enabled" : true
   },
   "secret" : "ZW2xTDdIFy+swmI2W8O0PVmDCvZZpVrPssPIvB5Fp3ILb+/Sy4szfK2H9OoIpGxcgnH7U0DP8q1PGO7CKn6gxw==",
   "port" : 6109,

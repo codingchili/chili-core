@@ -19,7 +19,7 @@
     "title" : "Introduction"
   },
   "patch" : {
-    "version" : "0.1.4aa",
+    "version" : "0.1.4b.2",
     "name" : "Spider Eyes",
     "date" : "2016-05-22",
     "changes" : [ {

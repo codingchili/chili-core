@@ -4,6 +4,7 @@ import Authentication.Model.Account;
 import Configuration.ConfigurationLoader;
 import Configuration.RemoteAuthentication;
 import Configuration.Strings;
+import Configuration.VertxSettings;
 import Protocols.Serializer;
 import Realm.Configuration.InstanceSettings;
 import Realm.Configuration.RealmSettings;
@@ -12,6 +13,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.dropwizard.MetricsService;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -74,8 +76,19 @@ public class DefaultLogger extends Handler implements Logger {
     }
 
     @Override
-    public void onServerStarted() {
+    public void onServerStarted(Future<Void> future) {
         log(event(Strings.LOG_SERVER_START, Strings.LOG_LEVEL_STARTUP));
+
+        if (vertx.isMetricsEnabled()) {
+            MetricsService metricsService = MetricsService.create(vertx);
+
+            vertx.setPeriodic(VertxSettings.METRIC_RATE, handler -> {
+                JsonObject metrics = metricsService.getMetricsSnapshot(vertx);
+                onMetricsSnapshot(metrics);
+            });
+        }
+
+        future.complete();
     }
 
     @Override
@@ -185,13 +198,19 @@ public class DefaultLogger extends Handler implements Logger {
     @Override
     public void onDatabaseError() {
         log(event(Strings.LOG_DATABASE_ERROR, Strings.LOG_LEVEL_SEVERE)
-                .put(Strings.LOG_DATABASE_ERROR, Strings.LOG_CONNECTION_ERROR));
+                .put(Strings.LOG_MESSAGE, Strings.LOG_CONNECTION_ERROR));
     }
 
     @Override
     public void onFileLoadError(String fileName) {
         log(event(Strings.LOG_FILE_ERROR, Strings.LOG_LEVEL_SEVERE)
                 .put(Strings.LOG_MESSAGE, fileName));
+    }
+
+    @Override
+    public void onMetricsSnapshot(JsonObject metrics) {
+        log(event(Strings.LOG_METRICS)
+                .put(Strings.ID_DATA, metrics));
     }
 
     private void log(String message) {

@@ -31,7 +31,7 @@ public class AuthProvider implements Provider {
     }
 
     public AsyncAccountStore getAccountStore() {
-        MongoClient client = MongoClient.createShared(vertx, settings.getDatabase().toJson());
+        MongoClient client = MongoClient.createShared(vertx, settings.getDatabase().toJson().put("socket_timeout", 3).put("socketTimeoutMS", 2).put("serverSelectionTimeout", 12).put("serverSelectionTimeoutMS", 3));
         return new AccountDB(client);
     }
 

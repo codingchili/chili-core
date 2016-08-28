@@ -5,6 +5,7 @@ import Realm.Configuration.InstanceSettings;
 import Realm.Configuration.RealmSettings;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.json.JsonObject;
 
 
 /**
@@ -16,7 +17,7 @@ public interface Logger {
     /**
      * Emit when a new server has started.
      */
-    void onServerStarted();
+    void onServerStarted(Future<Void> future);
 
     /**
      * Emit when a server has stopped.
@@ -103,4 +104,9 @@ public interface Logger {
      * Emit when failing to load specified fileName;
      */
     void onFileLoadError(String fileName);
+
+    /**
+     * Send METRICS_ENABLED to the logger.
+     */
+    void onMetricsSnapshot(JsonObject metrics);
 }

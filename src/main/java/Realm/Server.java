@@ -39,8 +39,7 @@ public class Server implements Verticle {
             vertx.deployVerticle(new Realm(settings, realm.load()));
         }
 
-        logger.onServerStarted();
-        start.complete();
+        logger.onServerStarted(start);
     }
 
     @Override

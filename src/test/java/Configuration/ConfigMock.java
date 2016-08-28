@@ -44,7 +44,6 @@ public class ConfigMock implements ConfigurationLoader {
         return new WebserverSettings();
     }
 
-
     public RealmSettings getRealm() {
         return new RealmSettingsMock();
     }
