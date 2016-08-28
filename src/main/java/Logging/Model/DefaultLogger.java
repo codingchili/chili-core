@@ -1,10 +1,13 @@
 package Logging.Model;
 
 import Authentication.Model.Account;
-import Configuration.*;
+import Configuration.ConfigurationLoader;
+import Configuration.RemoteAuthentication;
+import Configuration.Strings;
+import Protocols.Serializer;
 import Realm.Configuration.InstanceSettings;
 import Realm.Configuration.RealmSettings;
-import Protocols.Serializer;
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
@@ -12,17 +15,23 @@ import io.vertx.core.json.JsonObject;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.logging.Level;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 
 /**
  * @author Robin Duda
  *         Default logging implementation.
  */
-public class DefaultLogger implements Logger {
+public class DefaultLogger extends Handler implements Logger {
+    private static final int CLOSE_TIMEOUT = 1500;
+    private ConsoleLogger console = new ConsoleLogger();
     private ArrayList<String> buffer = new ArrayList<>();
     private RemoteAuthentication authentication;
     private boolean connected = false;
     private Vertx vertx;
+
+    public DefaultLogger() {
+    }
 
     public DefaultLogger(Vertx vertx, RemoteAuthentication authentication) {
         this.authentication = authentication;
@@ -34,24 +43,34 @@ public class DefaultLogger implements Logger {
 
                 for (String message : buffer)
                     handler.write(Buffer.buffer(message));
-
-                buffer.clear();
             }
 
             vertx.eventBus().consumer(ConfigurationLoader.Address.LOGS, message -> {
                 handler.write(Buffer.buffer(message.body().toString()));
             });
-
         });
     }
 
     private void log(JsonObject json) {
-        log(json
-                .put(Strings.LOG_HOST, authentication.getHost())
-                .put(Strings.LOG_SYSTEM, authentication.getSystem())
-                .put(Strings.LOG_TIME, Instant.now().toEpochMilli())
-                .put(Strings.ID_TOKEN, Serializer.json(authentication.getToken()))
-                .encodePrettily());
+        log(json.encodePrettily());
+    }
+
+    private JsonObject event(String name) {
+        return event(name, Strings.LOG_LEVEL_INFO);
+    }
+
+    private JsonObject event(String name, String level) {
+        JsonObject event = new JsonObject()
+                .put(Strings.LOG_EVENT, name)
+                .put(Strings.LOG_LEVEL, level)
+                .put(Strings.LOG_TIME, Instant.now().toEpochMilli());
+
+        if (authentication != null) {
+            event.put(Strings.LOG_HOST, authentication.getHost())
+                    .put(Strings.LOG_SYSTEM, authentication.getSystem())
+                    .put(Strings.ID_TOKEN, Serializer.json(authentication.getToken()));
+        }
+        return event;
     }
 
     @Override
@@ -60,8 +79,20 @@ public class DefaultLogger implements Logger {
     }
 
     @Override
-    public void onServerStopped() {
-        log(event(Strings.LOG_SERVER_STOP, Strings.LOG_LEVEL_CRITICAL));
+    public void onServerStopped(Future<Void> future) {
+        JsonObject message = event(Strings.LOG_SERVER_STOP, Strings.LOG_LEVEL_SEVERE);
+
+        log(message);
+        console.log(withoutToken(message));
+
+        vertx.setTimer(CLOSE_TIMEOUT, handler -> {
+            future.complete();
+        });
+    }
+
+    private JsonObject withoutToken(JsonObject message) {
+        message.remove(Strings.ID_TOKEN);
+        return message;
     }
 
     @Override
@@ -105,9 +136,9 @@ public class DefaultLogger implements Logger {
     }
 
     @Override
-    public void onRealmDeregistered(RealmSettings realm) {
-        log(event(Strings.LOG_REALM_DEREGISTERED)
-                .put(Strings.ID_REALM, realm.getName()));
+    public void onRealmDisconnect(String realm) {
+        log(event(Strings.LOG_REALM_DISCONNECT, Strings.LOG_LEVEL_SEVERE)
+                .put(Strings.ID_REALM, realm));
     }
 
     @Override
@@ -152,24 +183,15 @@ public class DefaultLogger implements Logger {
     }
 
     @Override
-    public void onDatabaseError(String message) {
-        log(event(Strings.LOG_DATABASE_ERROR, Strings.LOG_LEVEL_CRITICAL)
-                .put(Strings.LOG_DATABASE_ERROR, message)
-                .put(Strings.LOG_LEVEL, Strings.LOG_LEVEL_INFO));
+    public void onDatabaseError() {
+        log(event(Strings.LOG_DATABASE_ERROR, Strings.LOG_LEVEL_SEVERE)
+                .put(Strings.LOG_DATABASE_ERROR, Strings.LOG_CONNECTION_ERROR));
     }
 
     @Override
     public void onFileLoadError(String fileName) {
-        log(event(Strings.LOG_FILE_ERROR, Strings.LOG_LEVEL_CRITICAL)
-        .put(Strings.LOG_MESSAGE, fileName));
-    }
-
-    private JsonObject event(String name) {
-        return event(name, Strings.LOG_LEVEL_INFO);
-    }
-
-    private JsonObject event(String name, String level) {
-        return new JsonObject().put(Strings.LOG_EVENT, name).put(Strings.LOG_LEVEL, level);
+        log(event(Strings.LOG_FILE_ERROR, Strings.LOG_LEVEL_SEVERE)
+                .put(Strings.LOG_MESSAGE, fileName));
     }
 
     private void log(String message) {
@@ -177,5 +199,19 @@ public class DefaultLogger implements Logger {
             buffer.add(message);
         else
             vertx.eventBus().send(ConfigurationLoader.Address.LOGS, message);
+    }
+
+    @Override
+    public void publish(LogRecord record) {
+        console.log(event(Strings.LOG_VERTX, record.getLevel().getName())
+                .put(Strings.LOG_MESSAGE, record.getMessage()));
+    }
+
+    @Override
+    public void flush() {
+    }
+
+    @Override
+    public void close() throws SecurityException {
     }
 }

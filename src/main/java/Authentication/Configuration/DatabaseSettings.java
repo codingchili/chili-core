@@ -10,6 +10,7 @@ import io.vertx.core.json.JsonObject;
 public class DatabaseSettings {
     private String db_name;
     private String connection_string;
+    private long pollRate;
 
     public String getDb_name() {
         return db_name;
@@ -29,5 +30,13 @@ public class DatabaseSettings {
 
     public JsonObject toJson() {
         return Serializer.json(this);
+    }
+
+    public long getPollRate() {
+        return pollRate;
+    }
+
+    public void setPollRate(long pollRate) {
+        this.pollRate = pollRate;
     }
 }

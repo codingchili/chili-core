@@ -13,6 +13,17 @@ public class Account {
     public Account() {
     }
 
+    public Account(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    public Account(Account account) {
+        this.username = account.getUsername();
+        this.email = account.getEmail();
+        this.characters = account.getCharacters();
+    }
+
     public Account(AccountMapping account) {
         this.username = account.getUsername();
         this.email = account.getEmail();

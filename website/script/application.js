@@ -7,8 +7,8 @@ var api = {
     remote: '',
     port: null,
 
-    webserver: function (method) {
-        return '/api/' + method;
+    patchserver: function (method) {
+        return 'http://localhost:8008/api/' + method;
     },
 
     authentication: function (method) {
@@ -23,7 +23,7 @@ var api = {
     load: function () {
         $.ajax({
             type: 'GET',
-            url: api.webserver('authserver'),
+            url: api.patchserver('authserver'),
             dataType: 'json',
             contentType: 'text/plain',
             statusCode: {

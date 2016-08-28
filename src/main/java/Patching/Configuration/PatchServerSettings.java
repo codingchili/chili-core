@@ -6,7 +6,7 @@ import Configuration.Strings;
 
 /**
  * @author Robin Duda
- *         Contains settings for the webserver.
+ *         Contains settings for the patchserver.
  */
 public class PatchServerSettings implements Configurable {
     private RemoteAuthentication authserver;

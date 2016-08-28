@@ -1,28 +1,38 @@
 package Authentication;
 
-import Configuration.Strings;
-import Shared.ResponseStatus;
-import Shared.ResponseListener;
 import Authentication.Configuration.AuthProvider;
 import Authentication.Controller.ClientHandler;
 import Authentication.Controller.ClientRequest;
+import Authentication.Model.Account;
+import Authentication.Model.AsyncAccountStore;
 import Authentication.Model.RealmStore;
 import Configuration.ConfigMock;
+import Configuration.Strings;
+import Protocols.Authorization.Token;
+import Protocols.Authorization.TokenFactory;
 import Protocols.AuthorizationHandler.Access;
 import Protocols.Exception.AuthorizationRequiredException;
 import Protocols.Exception.HandlerMissingException;
 import Protocols.PacketHandler;
 import Protocols.Protocol;
 import Protocols.Serializer;
-import Protocols.Authorization.Token;
-import Protocols.Authorization.TokenFactory;
+import Realm.Model.PlayerCharacter;
+import Shared.EmbedMongo;
+import Shared.ResponseListener;
+import Shared.ResponseStatus;
+import io.vertx.core.CompositeFuture;
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
@@ -45,41 +55,74 @@ public class ClientHandlerTest {
     private static final String REALM_NAME = "realmName.name";
     private static final String CLASS_NAME = "class.name";
     private static TokenFactory clientToken;
-    private static TokenFactory realmToken;
     private static Protocol<PacketHandler<ClientRequest>> protocol;
+    private static AuthProvider provider;
     private static Vertx vertx;
 
     @Rule
-    public Timeout timeout = new Timeout(2, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(20, TimeUnit.SECONDS);
 
     @BeforeClass
-    public static void setUp() throws IOException {
+    public static void setUp(TestContext context) throws IOException {
+        EmbedMongo.start();
+
         vertx = Vertx.vertx();
         RealmStore realms = new RealmStore(vertx);
         realms.put(new ConfigMock.RealmSettingsMock());
-        AuthProvider provider = new ProviderMock(vertx);
+        provider = new ProviderMock(vertx);
         clientToken = new TokenFactory(provider.getAuthserverSettings().getClientSecret());
-        realmToken = new TokenFactory(new ConfigMock.RealmSettingsMock().getAuthentication().getToken().getKey().getBytes());
         protocol = provider.clientProtocol();
         new ClientHandler(provider);
+
+        addAccount(context);
+    }
+
+    private static void addAccount(TestContext context) {
+        Async async = context.async();
+        AsyncAccountStore accounts = provider.getAccountStore();
+        Account account = new Account(USERNAME, PASSWORD);
+        Future<Account> future = Future.future();
+
+        future.setHandler(result -> {
+            PlayerCharacter add = new PlayerCharacter().setName(CHARACTER_NAME);
+            PlayerCharacter delete = new PlayerCharacter().setName(CHARACTER_NAME_DELETED);
+            Future<Void> addFuture = Future.future();
+            Future<Void> deleteFuture = Future.future();
+
+            CompositeFuture.all(addFuture, deleteFuture).setHandler(complete -> {
+                async.complete();
+            });
+
+            accounts.addCharacter(addFuture, REALM_NAME, USERNAME, add);
+            accounts.addCharacter(deleteFuture, REALM_NAME, USERNAME, delete);
+        });
+
+        accounts.register(future, account);
     }
 
     @AfterClass
     public static void tearDown(TestContext context) {
         vertx.close(context.asyncAssertSuccess());
+        EmbedMongo.stop();
     }
 
     @Test
     public void authenticateAccount(TestContext context) {
+        Async async = context.async();
+
         handle(Strings.CLIENT_AUTHENTICATE, (response, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
+            async.complete();
         }, account(USERNAME, PASSWORD));
     }
 
     @Test
     public void failtoAuthenticateAccountWithWrongPassword(TestContext context) {
+        Async async = context.async();
+
         handle(Strings.CLIENT_AUTHENTICATE, (response, status) -> {
             context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
+            async.complete();
         }, account(USERNAME, PASSWORD_WRONG));
     }
 
@@ -97,15 +140,21 @@ public class ClientHandlerTest {
 
     @Test
     public void failtoAuthenticateAccountWithMissing(TestContext context) {
+        Async async = context.async();
+
         handle(Strings.CLIENT_AUTHENTICATE, (response, status) -> {
             context.assertEquals(ResponseStatus.MISSING, status);
+            async.complete();
         }, account(USERNAME_MISSING, PASSWORD));
     }
 
     @Test
     public void registerAccount(TestContext context) {
+        Async async = context.async();
+
         handle(Strings.CLIENT_REGISTER, (response, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
+            async.complete();
         }, account(USERNAME_NEW, PASSWORD));
     }
 
@@ -115,13 +164,17 @@ public class ClientHandlerTest {
 
     @Test
     public void failRegisterAccountExists(TestContext context) {
+        Async async = context.async();
+
         handle(Strings.CLIENT_REGISTER, (response, status) -> {
             context.assertEquals(ResponseStatus.CONFLICT, status);
+            async.complete();
         }, account(USERNAME, PASSWORD));
     }
 
     @Test
     public void retrieveRealmList(TestContext context) {
+        Async async = context.async();
         String[] keys = {
                 "classes", "description", "name", "resources", "type",
                 "secure", "trusted", "proxy", "version"};
@@ -137,13 +190,18 @@ public class ClientHandlerTest {
                 for (String key : keys)
                     context.assertTrue(realm.containsKey(key));
             }
+
+            async.complete();
         });
     }
 
     @Test
     public void removeCharacter(TestContext context) {
+        Async async = context.async();
+
         handle(Strings.CLIENT_CHARACTER_REMOVE, (response, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
+            async.complete();
         }, new JsonObject()
                 .put("character", CHARACTER_NAME_DELETED)
                 .put("token", getClientToken())
@@ -156,8 +214,11 @@ public class ClientHandlerTest {
 
     @Test
     public void failToRemoveMissingCharacter(TestContext context) {
+        Async async = context.async();
+
         handle(Strings.CLIENT_CHARACTER_REMOVE, (response, status) -> {
             context.assertEquals(ResponseStatus.ERROR, status);
+            async.complete();
         }, new JsonObject()
                 .put("character", CHARACTER_NAME + ".MISSING")
                 .put("token", getClientToken())
@@ -166,8 +227,11 @@ public class ClientHandlerTest {
 
     @Test
     public void createCharacter(TestContext context) {
+        Async async = context.async();
+
         handle(Strings.CLIENT_CHARACTER_CREATE, (response, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
+            async.complete();
         }, new JsonObject()
                 .put("character", CHARACTER_NAME + ".NEW")
                 .put("className", CLASS_NAME)
@@ -177,8 +241,10 @@ public class ClientHandlerTest {
 
     @Test
     public void failOverwriteExistingCharacter(TestContext context) {
+        Async async = context.async();
         handle(Strings.CLIENT_CHARACTER_CREATE, (response, status) -> {
             context.assertEquals(ResponseStatus.CONFLICT, status);
+            async.complete();
         }, new JsonObject()
                 .put("character", CHARACTER_NAME)
                 .put("token", getClientToken())
@@ -187,19 +253,22 @@ public class ClientHandlerTest {
 
     @Test
     public void listCharactersOnRealm(TestContext context) {
+        Async async = context.async();
+
         handle(Strings.CLIENT_CHARACTER_LIST, (response, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
             context.assertTrue(characterInJsonArray(CHARACTER_NAME, response.getJsonArray("characters")));
+            async.complete();
         }, new JsonObject()
                 .put("token", getClientToken())
                 .put("realmName", REALM_NAME));
     }
 
-    private boolean characterInJsonArray(String username, JsonArray characters) {
+    private boolean characterInJsonArray(String charname, JsonArray characters) {
         Boolean found = false;
 
         for (int i = 0; i < characters.size(); i++) {
-            if (characters.getJsonObject(i).getString("name").equals(username))
+            if (characters.getJsonObject(i).getString("name").equals(charname))
                 found = true;
         }
         return found;
@@ -207,6 +276,8 @@ public class ClientHandlerTest {
 
     @Test
     public void realmDataOnCharacterList(TestContext context) {
+        Async async = context.async();
+
         handle(Strings.CLIENT_CHARACTER_LIST, (response, status) -> {
             JsonObject realm = response.getJsonObject("realm");
 
@@ -216,6 +287,7 @@ public class ClientHandlerTest {
             context.assertTrue(realm.containsKey("afflictions"));
             context.assertTrue(realm.containsKey("template"));
 
+            async.complete();
         }, new JsonObject()
                 .put("token", getClientToken())
                 .put("realmName", REALM_NAME));
@@ -223,6 +295,8 @@ public class ClientHandlerTest {
 
     @Test
     public void realmDataDoesNotIncludeTokenOnCharacterList(TestContext context) {
+        Async async = context.async();
+
         handle(Strings.CLIENT_CHARACTER_LIST, (response, status) -> {
             JsonObject realm = response.getJsonObject("realm");
 
@@ -230,6 +304,7 @@ public class ClientHandlerTest {
             context.assertFalse(realm.containsKey("authentication"));
             context.assertFalse(realm.containsKey("token"));
 
+            async.complete();
         }, new JsonObject()
                 .put("token", getClientToken())
                 .put("realmName", REALM_NAME));
@@ -237,13 +312,15 @@ public class ClientHandlerTest {
 
     @Test
     public void createRealmToken(TestContext context) {
+        Async async = context.async();
+
         handle(Strings.CLIENT_REALM_TOKEN, (response, status) -> {
             Token token = (Token) Serializer.unpack(response, Token.class);
 
             context.assertEquals(ResponseStatus.ACCEPTED, status);
             context.assertEquals(USERNAME, token.getDomain());
-            context.assertTrue(realmToken.verifyToken(token));
 
+            async.complete();
         }, new JsonObject()
                 .put("token", getClientToken())
                 .put("realmName", REALM_NAME));

@@ -1,6 +1,7 @@
 package Patching.Controller.Transport;
 
 import Configuration.FileConfiguration;
+import Configuration.Routing;
 import Patching.Configuration.PatchServerSettings;
 import Patching.Controller.ClientRequest;
 import Patching.Configuration.PatchProvider;
@@ -11,11 +12,13 @@ import Protocols.PacketHandler;
 import Protocols.Protocol;
 import Logging.Model.DefaultLogger;
 import Logging.Model.Logger;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -53,6 +56,8 @@ public class ClientServer implements Verticle {
         Router router = Router.router(vertx);
 
         router.route().handler(BodyHandler.create());
+
+        Routing.EnableCors(router);
         setLogging(router);
         serveAPI(router);
         setCatchAll(router);

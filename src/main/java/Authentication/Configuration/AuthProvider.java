@@ -35,6 +35,10 @@ public class AuthProvider implements Provider {
         return new AccountDB(client);
     }
 
+    public DatabaseSettings getDatabase() {
+        return settings.getDatabase();
+    }
+
     public Protocol<PacketHandler<ClientRequest>> clientProtocol() {
         return clientProtocol;
     }

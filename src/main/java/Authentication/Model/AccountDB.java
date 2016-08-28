@@ -61,7 +61,7 @@ public class AccountDB implements AsyncAccountStore {
 
                 client.save(COLLECTION, account, save -> {
                     if (save.succeeded()) {
-                        future.complete(filter((AccountMapping) Serializer.unpack(save.result(), AccountMapping.class)));
+                        future.complete(filter(registrant));
                     } else
                         future.fail(save.cause());
                 });
@@ -100,7 +100,7 @@ public class AccountDB implements AsyncAccountStore {
 
             client.updateCollection(COLLECTION, query, field, remove -> {
 
-                if (remove.succeeded())
+                if (remove.result().getDocModified() != 0)
                     future.complete();
                 else
                     future.fail(remove.cause());
@@ -182,6 +182,10 @@ public class AccountDB implements AsyncAccountStore {
     }
 
     private Account filter(AccountMapping account) {
-        return new Account(account);
+        return new Account(account).setPassword(null);
+    }
+
+    private Account filter(Account account) {
+        return account.setPassword(null);
     }
 }

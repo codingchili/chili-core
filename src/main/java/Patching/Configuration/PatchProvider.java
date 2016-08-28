@@ -23,8 +23,8 @@ public class PatchProvider implements Provider {
 
     public PatchProvider(Vertx vertx) {
         this.vertx = vertx;
-            this.loader = FileConfiguration.instance();
-            this.settings = loader.getPatchServerSettings();
+        this.loader = FileConfiguration.instance();
+        this.settings = loader.getPatchServerSettings();
     }
 
     @Override

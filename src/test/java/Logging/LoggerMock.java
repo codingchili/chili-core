@@ -4,6 +4,7 @@ import Authentication.Model.Account;
 import Realm.Configuration.InstanceSettings;
 import Realm.Configuration.RealmSettings;
 import Logging.Model.Logger;
+import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerRequest;
 
 /**
@@ -16,8 +17,8 @@ public class LoggerMock implements Logger {
     }
 
     @Override
-    public void onServerStopped() {
-
+    public void onServerStopped(Future<Void> future) {
+        future.complete();
     }
 
     @Override
@@ -51,7 +52,7 @@ public class LoggerMock implements Logger {
     }
 
     @Override
-    public void onRealmDeregistered(RealmSettings realm) {
+    public void onRealmDisconnect(String realm) {
 
     }
 
@@ -86,7 +87,7 @@ public class LoggerMock implements Logger {
     }
 
     @Override
-    public void onDatabaseError(String message) {
+    public void onDatabaseError() {
 
     }
 

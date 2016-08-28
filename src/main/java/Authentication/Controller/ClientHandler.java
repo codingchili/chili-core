@@ -162,7 +162,6 @@ public class ClientHandler {
                 logger.onAuthenticationFailure(request.getAccount(), request.sender());
                 request.unauthorized();
             } catch (Throwable e) {
-                e.printStackTrace();
                 request.error();
             }
         });

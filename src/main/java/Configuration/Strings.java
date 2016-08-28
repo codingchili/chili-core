@@ -95,7 +95,7 @@ public class Strings {
     public static final String LOG_ACCOUNT_AUTHENTICATED = "account.authenticated";
     public static final String LOG_ACCOUNT_REGISTERED = "account.registered";
     public static final String LOG_REALM_REGISTERED = "realm.registered";
-    public static final String LOG_REALM_DEREGISTERED = "realm.deregistered";
+    public static final String LOG_REALM_DISCONNECT = "realm.disconnected";
     public static final String LOG_REALM_UPDATE = "realm.update";
     public static final String LOG_REALM_REJECTED = "realm.rejected";
     public static final String LOG_PAGE_LOAD = "page.load";
@@ -103,11 +103,14 @@ public class Strings {
     public static final String LOG_PATCHER_RELOADED = "patcher.reloaded";
     public static final String LOG_PATCHER_LOADED = "patcher.loaded";
     public static final String LOG_DATABASE_ERROR = "database.error";
+    public static final String LOG_CONNECTION_ERROR = "connection.error";
     public static final String LOG_LEVEL = "level";
-    public static final String LOG_LEVEL_CRITICAL = "critical";
-    public static final String LOG_LEVEL_WARNING = "warning";
-    public static final String LOG_LEVEL_INFO = "info";
-    public static final String LOG_LEVEL_STARTUP = "startup";
+    public static final String LOG_LEVEL_SEVERE = "SEVERE";
+    public static final String LOG_LEVEL_WARNING = "WARNING";
+    public static final String LOG_LEVEL_INFO = "INFO";
+    public static final String LOG_LEVEL_STARTUP = "STARTUP";
+    public static final String LOG_VERTX = "vertx";
+
 
     //Patching
     public static final String PATCH_IDENTIFIER = "patch";

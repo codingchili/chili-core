@@ -3,6 +3,7 @@ package Logging.Model;
 import Authentication.Model.Account;
 import Realm.Configuration.InstanceSettings;
 import Realm.Configuration.RealmSettings;
+import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerRequest;
 
 
@@ -20,7 +21,7 @@ public interface Logger {
     /**
      * Emit when a server has stopped.
      */
-    void onServerStopped();
+    void onServerStopped(Future<Void> future);
 
     /**
      * Emit when a new instance has been created.
@@ -61,7 +62,7 @@ public interface Logger {
     /**
      * Emit when a realmName was unregistered/disconnected.
      */
-    void onRealmDeregistered(RealmSettings realm);
+    void onRealmDisconnect(String realm);
 
     /**
      * Emit when a realmName has updated its status with the authentication server.
@@ -74,7 +75,7 @@ public interface Logger {
     void onRealmRejected(RealmSettings realm);
 
     /**
-     * Emit when the webserver has served the root page /
+     * Emit when the patchserver has served the root page /
      */
     void onPageLoaded(HttpServerRequest request);
 
@@ -96,7 +97,7 @@ public interface Logger {
     /**
      * Emit when the database has failed.
      */
-    void onDatabaseError(String message);
+    void onDatabaseError();
 
     /**
      * Emit when failing to load specified fileName;

@@ -1,13 +1,17 @@
 package Website.Controller;
 
+import Configuration.Routing;
 import Logging.Model.Logger;
 import Website.Configuration.WebserverProvider;
 import Website.Configuration.WebserverSettings;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 
@@ -29,10 +33,10 @@ public class RequestHandler extends AbstractVerticle {
     @Override
     public void init(Vertx vertx, Context context) {
         this.vertx = vertx;
-
         Router router = Router.router(vertx);
 
         router.route().handler(BodyHandler.create());
+        Routing.EnableCors(router);
         setLogging(router);
         serveWebsite(router);
         setCatchAll(router);

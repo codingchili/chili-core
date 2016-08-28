@@ -1,15 +1,11 @@
 package Authentication;
 
 import Authentication.Configuration.AuthProvider;
-import Authentication.Controller.ClientRequest;
-import Authentication.Controller.RealmRequest;
-import Authentication.Model.AsyncAccountStore;
 import Authentication.Configuration.AuthServerSettings;
+import Authentication.Model.AsyncAccountStore;
 import Configuration.ConfigMock;
 import Configuration.ConfigurationLoader;
 import Logging.LoggerMock;
-import Protocols.PacketHandler;
-import Protocols.Protocol;
 import Logging.Model.Logger;
 import io.vertx.core.Vertx;
 
@@ -17,30 +13,16 @@ import io.vertx.core.Vertx;
  * @author Robin Duda
  */
 class ProviderMock extends AuthProvider {
-    private Vertx vertx;
     private AsyncAccountStore accounts;
-    private Protocol<PacketHandler<ClientRequest>> clientProtocol = new Protocol<>();
-    private Protocol<PacketHandler<RealmRequest>> realmProtocol = new Protocol<>();
 
     ProviderMock(Vertx vertx) {
         super(vertx);
-        this.vertx = vertx;
-        this.accounts = new AccountStoreMock();
+        this.accounts = super.getAccountStore();
     }
 
     @Override
     public AsyncAccountStore getAccountStore() {
         return accounts;
-    }
-
-    @Override
-    public Protocol<PacketHandler<ClientRequest>> clientProtocol() {
-        return clientProtocol;
-    }
-
-    @Override
-    public Protocol<PacketHandler<RealmRequest>> realmProtocol() {
-        return realmProtocol;
     }
 
     @Override
@@ -56,10 +38,5 @@ class ProviderMock extends AuthProvider {
     @Override
     public AuthServerSettings getAuthserverSettings() {
         return new ConfigMock().getAuthSettings();
-    }
-
-    @Override
-    public Vertx getVertx() {
-        return vertx;
     }
 }

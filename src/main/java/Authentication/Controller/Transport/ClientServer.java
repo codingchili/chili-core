@@ -1,6 +1,7 @@
 package Authentication.Controller.Transport;
 
 import Authentication.Configuration.AuthProvider;
+import Configuration.Routing;
 import Protocols.AuthorizationHandler.Access;
 import Authentication.Controller.ClientRequest;
 import Protocols.PacketHandler;
@@ -38,16 +39,8 @@ public class ClientServer extends AbstractVerticle {
         Router router = Router.router(vertx);
         router.route().handler(BodyHandler.create());
 
-        router.options("/*").handler(context -> {
-            allowCors(context);
-            context.response().setStatusCode(HttpResponseStatus.OK.code()).end();
-        });
 
-        router.route("/*").handler(context -> {
-            allowCors(context);
-            context.next();
-        });
-
+        Routing.EnableCors(router);
         router.route("/api/*").handler(this::packet);
 
         vertx.createHttpServer(new HttpServerOptions()
@@ -76,13 +69,4 @@ public class ClientServer extends AbstractVerticle {
         boolean authorized = tokens.verifyToken(request.token());
         return (authorized) ? Access.AUTHORIZE : Access.PUBLIC;
     }
-
-    private HttpServerResponse allowCors(RoutingContext context) {
-        return context.response()
-                .putHeader("Access-Control-Allow-Origin", "*")
-                .putHeader("Access-Control-Allow-Methods", "POST, GET")
-                .putHeader("Access-Control-Allow-Headers",
-                        "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
-    }
-
 }

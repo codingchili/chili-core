@@ -49,7 +49,6 @@ public class Server implements Verticle {
 
     @Override
     public void stop(Future<Void> stop) throws Exception {
-        logger.onServerStopped();
-        stop.complete();
+        logger.onServerStopped(stop);
     }
 }

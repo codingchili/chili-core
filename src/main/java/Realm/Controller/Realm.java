@@ -1,5 +1,6 @@
 package Realm.Controller;
 
+import Configuration.Routing;
 import Realm.Configuration.RealmServerSettings;
 import Realm.Configuration.InstanceSettings;
 import Realm.Configuration.RealmSettings;
@@ -94,22 +95,15 @@ public class Realm implements Verticle {
     private Router createRouter() {
         Router router = Router.router(vertx);
         router.route().handler(BodyHandler.create());
+        Routing.EnableCors(router);
 
         router.route("/*").handler(context -> {
-            allowCors(context);
             context.response().setStatusCode(HttpResponseStatus.OK.code()).end();
         });
 
         return router;
     }
 
-    private HttpServerResponse allowCors(RoutingContext context) {
-        return context.response()
-                .putHeader("Access-Control-Allow-Origin", "*")
-                .putHeader("Access-Control-Allow-Methods", "POST, GET")
-                .putHeader("Access-Control-Allow-Headers",
-                        "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
-    }
 
     private void startServer(Router router) {
         vertx.createHttpServer(new HttpServerOptions()
@@ -177,6 +171,7 @@ public class Realm implements Verticle {
                     });
 
                     socket.endHandler(close -> {
+                        logger.onRealmDisconnect(settings.getName());
                         authserver = null;
                     });
 

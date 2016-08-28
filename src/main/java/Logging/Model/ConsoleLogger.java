@@ -38,7 +38,7 @@ public class ConsoleLogger {
         if (data.containsKey(Strings.LOG_LEVEL)) {
 
             switch (data.getString(Strings.LOG_LEVEL)) {
-                case Strings.LOG_LEVEL_CRITICAL:
+                case Strings.LOG_LEVEL_SEVERE:
                     setColor(RED);
                     break;
                 case Strings.LOG_LEVEL_WARNING:
@@ -59,7 +59,7 @@ public class ConsoleLogger {
     public void log(JsonObject data) {
         if (enabled) {
             setColor(data);
-            AnsiConsole.out.print("\r\n" + data);
+            AnsiConsole.out.println(data);
         }
     }
 }

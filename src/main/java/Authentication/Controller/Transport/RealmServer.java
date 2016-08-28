@@ -4,6 +4,7 @@ import Authentication.Configuration.AuthProvider;
 import Authentication.Controller.RealmRequest;
 import Authentication.Configuration.AuthServerSettings;
 import Configuration.Strings;
+import Logging.Model.Logger;
 import Protocols.Authentication.RealmRegister;
 import Protocols.AuthorizationHandler.Access;
 import Protocols.*;
@@ -25,10 +26,12 @@ public class RealmServer extends AbstractVerticle {
     private Protocol<PacketHandler<RealmRequest>> protocol;
     private AuthServerSettings settings;
     private TokenFactory tokens;
+    private Logger logger;
 
     public RealmServer(AuthProvider provider) {
         this.protocol = provider.realmProtocol();
         this.settings = provider.getAuthserverSettings();
+        this.logger = provider.getLogger();
         this.tokens = new TokenFactory(settings.getRealmSecret());
 
         protocol.use(RealmRegister.ACTION, this::register, Access.PUBLIC);
@@ -58,6 +61,7 @@ public class RealmServer extends AbstractVerticle {
             });
 
             socket.endHandler(event -> {
+                logger.onRealmDisconnect(getConnection(socket).realm());
                 handle(Strings.CLIENT_CLOSE, new RealmWebsocketRequest(connections.remove(socket.textHandlerID())));
             });
 

@@ -16,7 +16,8 @@
   "clientPort" : 5505,
   "database" : {
     "db_name" : "chili",
-    "connection_string" : "mongodb://localhost:27017/"
+    "connection_string" : "mongodb://localhost:27017/",
+    "pollRate" : 30000
   },
   "realms" : [ "Angel Oak", "Developer Realm", "Iron Oak", "Staging Realm", "Wisteria", "Red Maple" ]
 }
