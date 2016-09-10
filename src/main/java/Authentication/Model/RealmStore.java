@@ -120,15 +120,17 @@ public class RealmStore {
         });
     }
 
-    public void update(String realmName, int players) {
+    public void update(Future<Void> future, String realmName, int players) {
         realms.get(Strings.MAP_REALMS, map -> {
 
             if (map.succeeded()) {
                 map.result().get(realmName).setPlayers(players);
 
                 realms.replace(Strings.MAP_REALMS, map.result(), put -> {
-                    if (put.failed()) {
-                        throw new RuntimeException(put.cause());
+                    if (put.succeeded()) {
+                        future.complete();
+                    } else {
+                        future.fail(put.cause());
                     }
                 });
             }

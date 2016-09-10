@@ -38,7 +38,7 @@ public class Strings {
     public static final String CLIENT_CLOSE = "close";
 
     // Protocol identifiers for realms.
-    public static final String REALM_AUTHENTICATED = "realm.authenticated";
+    public static final String REALM_AUTHENTICATE = "realm.authenticate";
     public static final String REALM_REGISTER = "realm.register";
     public static final String REALM_AUTHENTICATION_RESULT = "authentication.result";
     public static final String REALM_CHARACTER_REQUEST = "character.request";

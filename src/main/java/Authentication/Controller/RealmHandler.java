@@ -5,7 +5,6 @@ import Configuration.Strings;
 import Protocols.AuthorizationHandler.Access;
 import Authentication.Model.AsyncAccountStore;
 import Authentication.Model.RealmStore;
-import Authentication.Model.RealmMissingException;
 import Authentication.Configuration.AuthServerSettings;
 import Realm.Configuration.RealmSettings;
 import Realm.Model.PlayerCharacter;
@@ -33,7 +32,7 @@ public class RealmHandler {
                 .use(RealmUpdate.ACTION, this::update)
                 .use(CharacterRequest.ACTION, this::character)
                 .use(Strings.CLIENT_CLOSE, this::disconnected)
-                .use(Strings.REALM_AUTHENTICATED, this::register, Access.PUBLIC);
+                .use(Strings.REALM_AUTHENTICATE, this::register, Access.PUBLIC);
     }
 
     private void register(RealmRequest request) {
@@ -45,15 +44,19 @@ public class RealmHandler {
     }
 
     private void update(RealmRequest request) {
+        Future<Void> updateFuture = Future.future();
         String realmName = request.realmName();
         int players = request.players();
 
-        try {
-            realmStore.update(realmName, players);
-            request.write(new RealmRegister(true));
-        } catch (RealmMissingException e) {
-            request.error();
-        }
+        updateFuture.setHandler(update -> {
+            if (update.succeeded()) {
+                request.write(new RealmRegister(true));
+            } else {
+                request.error();
+            }
+        });
+
+        realmStore.update(updateFuture, realmName, players);
     }
 
     private void disconnected(RealmRequest request) {
