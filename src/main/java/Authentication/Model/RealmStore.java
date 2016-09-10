@@ -4,13 +4,13 @@ import Configuration.Strings;
 import Protocols.Authentication.RealmMetaData;
 import Protocols.Authorization.Token;
 import Protocols.Authorization.TokenFactory;
-import Protocols.Serializer;
 import Realm.Configuration.RealmSettings;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.shareddata.AsyncMap;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * @author Robin Duda
@@ -19,15 +19,15 @@ import java.util.ArrayList;
  *         Allows the deployment of multiple handlers.
  */
 public class RealmStore {
-    // A list is stored within the map so that it is possible to enumerate available realms.
-    private AsyncMap<String, ArrayList<RealmSettings>> realms;
+    // A standard map is stored within the map so that it is possible to enumerate available realms.
+    private AsyncMap<String, HashMap<String, RealmSettings>> realms;
 
     public RealmStore(Vertx vertx) {
-        vertx.sharedData().<String, ArrayList<RealmSettings>>getClusterWideMap(Strings.MAP_REALMS, cluster -> {
+        vertx.sharedData().<String, HashMap<String, RealmSettings>>getClusterWideMap(Strings.MAP_REALMS, cluster -> {
             if (cluster.succeeded()) {
                 realms = cluster.result();
 
-                realms.put(Strings.MAP_REALMS, new ArrayList<>(), put -> {
+                realms.put(Strings.MAP_REALMS, new HashMap<>(), put -> {
                     if (put.failed()) {
                         throw new RuntimeException(put.cause());
                     }
@@ -45,8 +45,8 @@ public class RealmStore {
 
             if (map.succeeded()) {
 
-                for (RealmSettings realm : map.result()) {
-                    list.add(new RealmMetaData(realm));
+                for (String key : map.result().keySet()) {
+                    list.add(new RealmMetaData(map.result().get(key)));
                 }
 
                 future.complete(list);
@@ -56,28 +56,41 @@ public class RealmStore {
         });
     }
 
-    public Token signToken(String realm, String domain) throws RealmMissingException {
-        return new Token(getTokenFactory(realm), domain);
+    public void signToken(Future<Token> future, String realm, String domain) throws RealmMissingException {
+        realms.get(Strings.MAP_REALMS, map -> {
+            RealmSettings settings = map.result().get(realm);
+
+            if (map.succeeded()) {
+                future.complete(
+                        new Token(
+                                new TokenFactory(getSecretBytes(settings)), domain));
+            } else {
+                future.fail(map.cause());
+            }
+        });
     }
 
-    private TokenFactory getTokenFactory(String realmName) throws RealmMissingException {
-        return new TokenFactory(find(realmName).getAuthentication().getToken().getKey().getBytes());
+    private byte[] getSecretBytes(RealmSettings settings) {
+        return settings.getAuthentication().getToken().getKey().getBytes();
     }
 
-    public RealmSettings get(String realmName) throws RealmMissingException {
-        return find(realmName).removeAuthentication();
+    public void get(Future<RealmSettings> future, String realmName) throws RealmMissingException {
+        realms.get(Strings.MAP_REALMS, map -> {
+            if (map.succeeded()) {
+                future.complete(map.result().get(realmName));
+            } else {
+                future.fail(map.cause());
+            }
+        });
     }
 
     public void put(RealmSettings realm) {
         realms.get(Strings.MAP_REALMS, map -> {
-            ArrayList<RealmSettings> list = map.result();
+            HashMap<String, RealmSettings> list = map.result();
 
-            if (list.contains(realm)) {
-                list.remove(realm);
-                list.add(realm);
-            }
+            list.replace(realm.getName(), realm);
 
-            realms.put(Strings.MAP_REALMS, list, put -> {
+            realms.replace(Strings.MAP_REALMS, list, put -> {
                 if (put.failed()) {
                     throw new RuntimeException(put.cause());
                 }
@@ -86,12 +99,12 @@ public class RealmStore {
     }
 
     public void remove(String realmName) {
-        realms.get(Strings.MAP_REALMS, map -> {
-            ArrayList<RealmSettings> list = map.result();
+        realms.get(Strings.MAP_REALMS, get -> {
+            HashMap<String, RealmSettings> map = get.result();
 
-            list.remove(new RealmSettings().setName(realmName));
+            map.remove(realmName);
 
-            realms.put(Strings.MAP_REALMS, list, put -> {
+            realms.replace(Strings.MAP_REALMS, map, put -> {
                 if (put.failed())
                     throw new RuntimeException(put.cause());
             });
@@ -100,41 +113,15 @@ public class RealmStore {
 
     public void update(String realmName, int players) {
         realms.get(Strings.MAP_REALMS, map -> {
-            boolean updated = false;
 
-            for (RealmSettings settings : map.result()) {
-                if (settings.getName().equals(realmName)) {
-                    if (settings.getPlayers() != players) {
-                        updated = true;
-                        settings.setPlayers(players);
-                    }
-                }
-            }
+            if (map.succeeded()) {
+                map.result().get(realmName).setPlayers(players);
 
-            if (updated) {
-                realms.put(Strings.MAP_REALMS, map.result(), put -> {
+                realms.replace(Strings.MAP_REALMS, map.result(), put -> {
                     if (put.failed()) {
                         throw new RuntimeException(put.cause());
                     }
                 });
-            }
-        });
-    }
-
-    private void find(Future<RealmSettings> future, String realmName) {
-        realms.get(Strings.MAP_REALMS, map -> {
-            RealmSettings result = null;
-
-            for (RealmSettings settings : map.result()) {
-                if (settings.getName().equals(realmName)) {
-                    result = settings;
-                }
-            }
-
-            if (result == null) {
-                future.fail(new RealmMissingException());
-            } else {
-                future.complete(result);
             }
         });
     }
