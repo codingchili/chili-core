@@ -56,14 +56,18 @@ public class RealmStore {
         });
     }
 
-    public void signToken(Future<Token> future, String realm, String domain) throws RealmMissingException {
+    public void signToken(Future<Token> future, String realm, String domain) {
         realms.get(Strings.MAP_REALMS, map -> {
             RealmSettings settings = map.result().get(realm);
 
             if (map.succeeded()) {
-                future.complete(
-                        new Token(
-                                new TokenFactory(getSecretBytes(settings)), domain));
+                if (map.result() == null) {
+                    future.fail(new RealmMissingException());
+                } else {
+                    future.complete(
+                            new Token(
+                                    new TokenFactory(getSecretBytes(settings)), domain));
+                }
             } else {
                 future.fail(map.cause());
             }
@@ -74,10 +78,15 @@ public class RealmStore {
         return settings.getAuthentication().getToken().getKey().getBytes();
     }
 
-    public void get(Future<RealmSettings> future, String realmName) throws RealmMissingException {
+    public void get(Future<RealmSettings> future, String realmName) {
         realms.get(Strings.MAP_REALMS, map -> {
             if (map.succeeded()) {
-                future.complete(map.result().get(realmName));
+
+                if (map.result() == null) {
+                    future.fail(new RealmMissingException());
+                } else {
+                    future.complete(map.result().get(realmName));
+                }
             } else {
                 future.fail(map.cause());
             }

@@ -3,6 +3,7 @@ package Authentication.Controller;
 import Authentication.Configuration.AuthProvider;
 import Authentication.Model.*;
 import Configuration.Strings;
+import Protocols.Authentication.RealmMetaData;
 import Realm.Configuration.RealmSettings;
 import Realm.Model.PlayerCharacter;
 import Realm.Model.PlayerClass;
@@ -44,28 +45,40 @@ public class ClientHandler {
     }
 
     private void realmtoken(ClientRequest request) {
-        try {
-            request.write(realmStore.signToken(request.realmName(), request.account()));
-        } catch (RealmMissingException e) {
-            request.error();
-        }
+        Future<Token> token = Future.future();
+
+        token.setHandler(result -> {
+            if (result.succeeded()) {
+                request.write(result.result());
+            } else {
+                request.error();
+            }
+        });
+
+        realmStore.signToken(token, request.realmName(), request.account());
     }
 
     private void characterList(ClientRequest request) {
-        Future<ArrayList<PlayerCharacter>> future = Future.future();
+        Future<ArrayList<PlayerCharacter>> characterFuture = Future.future();
 
-        future.setHandler(result -> {
-            if (result.succeeded()) {
-                try {
-                    RealmSettings realm = realmStore.get(request.realmName());
-                    request.write(new CharacterList(realm, result.result()));
-                } catch (RealmMissingException e) {
-                    request.error();
-                }
-            } else
+        characterFuture.setHandler(characters -> {
+            if (characters.succeeded()) {
+                Future<RealmSettings> realmFuture = Future.future();
+
+                realmFuture.setHandler(realm -> {
+                    if (realm.succeeded()) {
+                        request.write(new CharacterList(realm.result(), characters.result()));
+                    } else {
+                        request.error();
+                    }
+                });
+
+                realmStore.get(realmFuture, request.realmName());
+            } else {
                 request.missing();
+            }
         });
-        accounts.findCharacters(future, request.realmName(), request.account());
+        accounts.findCharacters(characterFuture, request.realmName(), request.account());
     }
 
     private void characterCreate(ClientRequest request) {
@@ -82,25 +95,46 @@ public class ClientHandler {
     }
 
     private void upsertCharacter(ClientRequest request) {
-        try {
-            PlayerCharacter character = createCharacterFromTemplate(request);
+        Future<PlayerCharacter> templateFuture = Future.future();
 
-            accounts.upsertCharacter(Future.future().setHandler(creation -> {
-                if (creation.succeeded()) {
-                    request.accept();
-                } else {
-                    request.unauthorized();
+        templateFuture.setHandler(template -> {
+
+            if (template.succeeded()) {
+                accounts.upsertCharacter(Future.future().setHandler(creation -> {
+                    if (creation.succeeded()) {
+                        request.accept();
+                    } else {
+                        request.unauthorized();
+                    }
+                }), request.realmName(), request.account(), template.result());
+            } else {
+                try {
+                    throw template.cause();
+                } catch (PlayerClassDisabledException | RealmMissingException e) {
+                    request.missing();
+                } catch (Throwable throwable) {
+                    request.error();
                 }
-            }), request.realmName(), request.account(), character);
-
-        } catch (PlayerClassDisabledException | RealmMissingException e) {
-            request.missing();
-        }
+            }
+        });
     }
 
 
-    private PlayerCharacter createCharacterFromTemplate(ClientRequest request) throws PlayerClassDisabledException, RealmMissingException {
-        return readTemplate(realmStore.get(request.realmName()), request.character(), request.className());
+    private void createCharacterFromTemplate(Future<PlayerCharacter> future, ClientRequest request) throws PlayerClassDisabledException, RealmMissingException {
+        Future<RealmSettings> realmFuture = Future.future();
+
+        realmFuture.setHandler(realm -> {
+            if (realm.succeeded()) {
+                try {
+                    future.complete(readTemplate(realm.result(), request.character(), request.className()));
+                } catch (PlayerClassDisabledException e) {
+                    future.fail(e);
+                }
+            } else {
+                future.fail(realm.cause());
+            }
+        });
+        realmStore.get(realmFuture, request.realmName());
     }
 
     private PlayerCharacter readTemplate(RealmSettings realm, String characterName, String className) throws PlayerClassDisabledException {
@@ -169,20 +203,33 @@ public class ClientHandler {
     }
 
     private void sendAuthentication(Account account, ClientRequest request, boolean registered) {
-        request.authenticate(
-                new ClientAuthentication(
-                        account,
-                        new Token(factory, account.getUsername()),
-                        registered,
-                        realmStore.getMetadataList()));
+        Future<ArrayList<RealmMetaData>> future = Future.future();
 
-        if (registered)
-            logger.onRegistered(account, request.sender());
-        else
-            logger.onAuthenticated(account, request.sender());
+
+        future.setHandler(metadata -> {
+            request.authenticate(
+                    new ClientAuthentication(
+                            account,
+                            new Token(factory, account.getUsername()),
+                            registered,
+                            metadata.result()));
+
+            if (registered)
+                logger.onRegistered(account, request.sender());
+            else
+                logger.onAuthenticated(account, request.sender());
+        });
+
+        realmStore.getMetadataList(future);
     }
 
     private void realmlist(ClientRequest request) {
-        request.write(new RealmList(realmStore.getMetadataList()));
+        Future<ArrayList<RealmMetaData>> future = Future.future();
+
+        future.setHandler(result -> {
+            request.write(new RealmList(result.result()));
+        });
+
+        realmStore.getMetadataList(future);
     }
 }

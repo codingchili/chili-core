@@ -1,14 +1,12 @@
 package Realm.Configuration;
 
-import Authentication.Controller.Transport.RealmServer;
+import Configuration.JsonFileStore;
 import Configuration.RemoteAuthentication;
 import Configuration.Strings;
-import Realm.Controller.Realm;
+import Protocols.Serializer;
 import Realm.Model.Affliction;
 import Realm.Model.PlayerCharacter;
 import Realm.Model.PlayerClass;
-import Configuration.JsonFileStore;
-import Protocols.Serializer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
