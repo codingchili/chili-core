@@ -41,26 +41,8 @@ public class Server implements Verticle {
             this.provider = new AuthProvider(vertx);
             this.logger = provider.getLogger();
         }
-
-        monitorDatabase();
     }
 
-    /**
-     * Monitor the database connection and log connection issues.
-     */
-    private void monitorDatabase() {
-        vertx.setPeriodic(provider.getDatabase().getPollRate(), (id) -> {
-            Future<Void> future = Future.future();
-
-            future.setHandler(result -> {
-                if (result.failed()) {
-                    logger.onDatabaseError();
-                }
-            });
-
-            provider.getAccountStore().isConnected(future);
-        });
-    }
 
     @Override
     public void start(Future<Void> start) throws Exception {

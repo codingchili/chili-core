@@ -1,7 +1,9 @@
 package Realm.Configuration;
 
+import Authentication.Controller.Transport.RealmServer;
 import Configuration.RemoteAuthentication;
 import Configuration.Strings;
+import Realm.Controller.Realm;
 import Realm.Model.Affliction;
 import Realm.Model.PlayerCharacter;
 import Realm.Model.PlayerClass;
@@ -187,7 +189,7 @@ public class RealmSettings {
         return name;
     }
 
-    protected RealmSettings setName(String name) {
+    public RealmSettings setName(String name) {
         this.name = name;
         return this;
     }
@@ -275,5 +277,11 @@ public class RealmSettings {
     public RealmSettings setPort(int port) {
         this.port = port;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof RealmSettings && (((RealmSettings) other).getName().equals(name));
+
     }
 }

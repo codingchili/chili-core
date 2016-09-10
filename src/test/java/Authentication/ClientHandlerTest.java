@@ -17,12 +17,12 @@ import Protocols.PacketHandler;
 import Protocols.Protocol;
 import Protocols.Serializer;
 import Realm.Model.PlayerCharacter;
-import Shared.EmbedMongo;
 import Shared.ResponseListener;
 import Shared.ResponseStatus;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
@@ -64,17 +64,19 @@ public class ClientHandlerTest {
 
     @BeforeClass
     public static void setUp(TestContext context) throws IOException {
-        EmbedMongo.start();
+        Async async = context.async();
 
-        vertx = Vertx.vertx();
-        RealmStore realms = new RealmStore(vertx);
-        realms.put(new ConfigMock.RealmSettingsMock());
-        provider = new ProviderMock(vertx);
-        clientToken = new TokenFactory(provider.getAuthserverSettings().getClientSecret());
-        protocol = provider.clientProtocol();
-        new ClientHandler(provider);
+        Vertx.clusteredVertx(new VertxOptions(), result -> {
+            RealmStore realms = new RealmStore(vertx);
+            realms.put(new ConfigMock.RealmSettingsMock());
+            provider = new ProviderMock(vertx);
+            clientToken = new TokenFactory(provider.getAuthserverSettings().getClientSecret());
+            protocol = provider.clientProtocol();
+            new ClientHandler(provider);
+            addAccount(context);
 
-        addAccount(context);
+            async.complete();
+        });
     }
 
     private static void addAccount(TestContext context) {
@@ -93,8 +95,8 @@ public class ClientHandlerTest {
                 async.complete();
             });
 
-            accounts.addCharacter(addFuture, REALM_NAME, USERNAME, add);
-            accounts.addCharacter(deleteFuture, REALM_NAME, USERNAME, delete);
+            accounts.upsertCharacter(addFuture, REALM_NAME, USERNAME, add);
+            accounts.upsertCharacter(deleteFuture, REALM_NAME, USERNAME, delete);
         });
 
         accounts.register(future, account);
@@ -103,7 +105,6 @@ public class ClientHandlerTest {
     @AfterClass
     public static void tearDown(TestContext context) {
         vertx.close(context.asyncAssertSuccess());
-        EmbedMongo.stop();
     }
 
     @Test

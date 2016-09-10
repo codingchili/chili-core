@@ -72,7 +72,7 @@ public class Strings {
     public static final String DB_CHARACTERS = "characters";
 
     // Shared memory maps.
-    public static final String SHARED_REALMS = "realms";
+    public static final String MAP_REALMS = "realms";
 
     // Logging
     public static final String LOG_ID = "LOG_ID";

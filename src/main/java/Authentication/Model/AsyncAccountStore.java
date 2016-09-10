@@ -12,11 +12,6 @@ import java.util.ArrayList;
 public interface AsyncAccountStore {
 
     /**
-     * Checks if a connection is available by sending an empty query.
-     */
-    void isConnected(Future<Void> connection);
-
-    /**
      * Finds an account in the store.
      *
      * @param username username of the account to find.
@@ -38,30 +33,30 @@ public interface AsyncAccountStore {
     void register(Future<Account> future, Account account);
 
     /**
-     * Adds a character to an account.
+     * Adds a character to an username.
      *
      * @param realm     the realmName which the character is added to.
-     * @param account   the name of the account the character is added to.
+     * @param username   the name of the username the character is added to.
      * @param character the character to be added.
      */
-    void addCharacter(Future future, String realm, String account, PlayerCharacter character);
+    void upsertCharacter(Future future, String realm, String username, PlayerCharacter character);
 
     /**
      * Finds all characters associated with an account on specified realmName.
      *
      * @param realm       the realmName of which to search for the characters.
-     * @param accountName the name of the account the characters belong to.
+     * @param username the name of the account the characters belong to.
      */
-    void findCharacters(Future<ArrayList<PlayerCharacter>> future, String realm, String accountName);
+    void findCharacters(Future<ArrayList<PlayerCharacter>> future, String realm, String username);
 
     /**
      * Finds a single character.
      *
      * @param realm    the realmName of which to search for the character.
      * @param username the name of the account the character belongs to.
-     * @param name     the name of the character to find.
+     * @param character     the name of the character to find.
      */
-    void findCharacter(Future<PlayerCharacter> future, String realm, String username, String name);
+    void findCharacter(Future<PlayerCharacter> future, String realm, String username, String character);
 
     /**
      * Finds and removes a character from specified realmName by its character name.

@@ -59,7 +59,11 @@ public class ConsoleLogger {
     public void log(JsonObject data) {
         if (enabled) {
             setColor(data);
-            AnsiConsole.out.println(data);
+            String text = data.encode()
+                    .replaceAll("(\":\")", "=")
+                    .replaceAll("[{}\"]", "")
+                    .replaceAll(",", " ");
+            AnsiConsole.out.println(text);
         }
     }
 }

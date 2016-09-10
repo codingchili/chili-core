@@ -12,7 +12,9 @@ import Protocols.Authorization.Token;
 import Protocols.Authorization.TokenFactory;
 import Shared.ResponseStatus;
 import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -31,13 +33,20 @@ public class ClientAccessTest {
     private static ClientServer server;
 
     @BeforeClass
-    public static void setUp() throws IOException {
-        vertx = Vertx.vertx();
-        RealmStore realms = new RealmStore(vertx);
-        realms.put(new ConfigMock.RealmSettingsMock());
-        AuthProvider provider = new ProviderMock(vertx);
-        new ClientHandler(provider);
-        server = new ClientServer(provider);
+    public static void setUp(TestContext context) throws IOException {
+        Async async = context.async();
+
+        Vertx.clusteredVertx(new VertxOptions(), result -> {
+            vertx = result.result();
+
+            RealmStore realms = new RealmStore(vertx);
+            realms.put(new ConfigMock.RealmSettingsMock());
+            AuthProvider provider = new ProviderMock(vertx);
+            new ClientHandler(provider);
+            server = new ClientServer(provider);
+
+            async.complete();
+        });
     }
 
     @AfterClass

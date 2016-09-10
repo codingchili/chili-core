@@ -9,7 +9,7 @@ import java.util.HashMap;
  *         Database mapping not shared outside storage.
  */
 class AccountMapping {
-    private HashMap<String, HashMap<String, PlayerCharacter>> characters = new HashMap<>();
+    private HashMap<String, HashMap<String, PlayerCharacter>> realms = new HashMap<>();
     private String username;
     private String email;
     private String salt;
@@ -21,15 +21,15 @@ class AccountMapping {
     public AccountMapping(Account account) {
         this.username = account.getUsername();
         this.email = account.getEmail();
-        this.characters = account.getCharacters();
+        this.realms = account.getCharacters();
     }
 
-    public HashMap<String, HashMap<String, PlayerCharacter>> getCharacters() {
-        return characters;
+    public HashMap<String, HashMap<String, PlayerCharacter>> getRealms() {
+        return realms;
     }
 
-    public void setCharacters(HashMap<String, HashMap<String, PlayerCharacter>> characters) {
-        this.characters = characters;
+    public void setRealms(HashMap<String, HashMap<String, PlayerCharacter>> realms) {
+        this.realms = realms;
     }
 
     public String getSalt() {

@@ -27,7 +27,7 @@ public class Account {
     public Account(AccountMapping account) {
         this.username = account.getUsername();
         this.email = account.getEmail();
-        this.characters = account.getCharacters();
+        this.characters = account.getRealms();
     }
 
     public HashMap<String, HashMap<String, PlayerCharacter>> getCharacters() {

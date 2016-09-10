@@ -2,7 +2,7 @@ package Authentication.Configuration;
 
 import Authentication.Controller.ClientRequest;
 import Authentication.Controller.RealmRequest;
-import Authentication.Model.AccountDB;
+import Authentication.Model.AccountClusteredDB;
 import Authentication.Model.AsyncAccountStore;
 import Configuration.ConfigurationLoader;
 import Configuration.FileConfiguration;
@@ -12,7 +12,6 @@ import Logging.Model.Logger;
 import Protocols.PacketHandler;
 import Protocols.Protocol;
 import io.vertx.core.Vertx;
-import io.vertx.ext.mongo.MongoClient;
 
 /**
  * @author Robin Duda
@@ -31,12 +30,7 @@ public class AuthProvider implements Provider {
     }
 
     public AsyncAccountStore getAccountStore() {
-        MongoClient client = MongoClient.createShared(vertx, settings.getDatabase().toJson().put("socket_timeout", 3).put("socketTimeoutMS", 2).put("serverSelectionTimeout", 12).put("serverSelectionTimeoutMS", 3));
-        return new AccountDB(client);
-    }
-
-    public DatabaseSettings getDatabase() {
-        return settings.getDatabase();
+        return new AccountClusteredDB(vertx) ;
     }
 
     public Protocol<PacketHandler<ClientRequest>> clientProtocol() {

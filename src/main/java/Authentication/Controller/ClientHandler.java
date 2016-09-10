@@ -85,7 +85,7 @@ public class ClientHandler {
         try {
             PlayerCharacter character = createCharacterFromTemplate(request);
 
-            accounts.addCharacter(Future.future().setHandler(creation -> {
+            accounts.upsertCharacter(Future.future().setHandler(creation -> {
                 if (creation.succeeded()) {
                     request.accept();
                 } else {

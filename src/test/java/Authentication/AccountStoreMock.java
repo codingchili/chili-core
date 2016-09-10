@@ -31,11 +31,6 @@ class AccountStoreMock implements AsyncAccountStore {
     }
 
     @Override
-    public void isConnected(Future<Void> connection) {
-        connection.complete();
-    }
-
-    @Override
     public void find(Future<Account> future, String username) {
         if (accounts.containsKey(username))
             future.complete(accounts.get(username));
@@ -67,7 +62,7 @@ class AccountStoreMock implements AsyncAccountStore {
     }
 
     @Override
-    public void addCharacter(Future future, String realm, String username, PlayerCharacter character) {
+    public void upsertCharacter(Future future, String realm, String username, PlayerCharacter character) {
         if (accounts.containsKey(username)) {
             Account account = accounts.get(username);
             account.getCharacters().get(realm).put(character.getName(), character);

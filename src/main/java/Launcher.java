@@ -20,19 +20,27 @@ public class Launcher implements Verticle {
     @Override
     public void init(Vertx vertx, Context context) {
         FileConfiguration.instance();
-        this.vertx = Vertx.vertx(VertxSettings.Configuration());
+        this.vertx = vertx;
     }
 
     @Override
-    public void start(final Future<Void> future) {
+    public void start(final Future<Void> start) {
         Future<Void> logging = Future.future();
         startServer(logging, new Logging.Server());
 
-        logging.setHandler(result -> {
-            if (result.succeeded()) {
-                startAll(future);
-            } else
-                future.fail(result.cause());
+        Vertx.clusteredVertx(VertxSettings.Configuration(), cluster -> {
+            this.vertx = cluster.result();
+
+            if (cluster.succeeded()) {
+                logging.setHandler(logger -> {
+                    if (logger.succeeded()) {
+                        startAll(start);
+                    } else
+                        start.fail(logger.cause());
+                });
+            } else {
+                start.fail(cluster.cause());
+            }
         });
     }
 
@@ -65,7 +73,7 @@ public class Launcher implements Verticle {
     }
 
     @Override
-    public void stop(Future<Void> future) {
-        future.complete();
+    public void stop(Future<Void> stop) {
+        stop.complete();
     }
 }
