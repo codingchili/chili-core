@@ -34,27 +34,10 @@ public class Serializer {
     }
 
     /**
-     * Deserializes a json-string into an object.
-     *
-     * @param data   json-encoded string.
-     * @param format the class to instantiate.
-     * @return an Object of the specified class.
-     */
-   /* public static Object unpack(String data, Class format) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            return mapper.readValue(data, format);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }*/
-
-    /**
      * Deserializes a json-string into a typed object.
      * @param data json-encoded string.
-     * @param <T> the class to instantiate.
-     * @return an object specified as the type parameter.
+     * @param clazz the class to instantiate.
+     * @return an object specified by the type parameter.
      */
     public static <T> T unpack(String data, Class clazz) {
         try {
@@ -66,26 +49,15 @@ public class Serializer {
         }
     }
 
-    public static <T> T unpack(JsonObject json, Class clazz) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            return (T) mapper.readValue(json.encode(), clazz);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     /**
-     * Deserializes a JSON string into an object.
-     *
-     * @param json   String containing the object values.
-     * @param format class to be populated with the key/value pair.
-     * @return an unpacked object.
+     * Deserializes a json-string into a typed object.
+     * @param json json object to be unpacked.
+     * @param clazz the class to instantiate.
+     * @return an object specified by the type parameter.
      */
-  /*  public static Object unpack(JsonObject json, Class format) {
-        return unpack(json.encode(), format);
-    }*/
+    public static <T> T unpack(JsonObject json, Class clazz) {
+        return unpack(json.encode(), clazz);
+    }
 
 
     /**

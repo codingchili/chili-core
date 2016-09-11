@@ -21,17 +21,17 @@ public class FileConfiguration implements ConfigurationLoader {
     private static ConfigurationLoader instance;
     private AuthServerSettings authentication;
     private LogServerSettings logserver;
-    private RealmServerSettings realmserver;
+    private RealmServerSettings gameserver;
     private PatchServerSettings patchserver;
     private WebserverSettings webserver;
 
     private FileConfiguration() throws IOException {
         authentication = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_AUTHSERVER), AuthServerSettings.class);
-        realmserver = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_GAMESERVER), RealmServerSettings.class);
+        gameserver = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_GAMESERVER), RealmServerSettings.class);
         logserver = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_LOGSERVER), LogServerSettings.class);
         webserver = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_WEBSERVER), WebserverSettings.class);
         patchserver = loadPatchSettings();
-        loadRealms(realmserver);
+        loadRealms(gameserver);
     }
 
     /**
@@ -72,7 +72,7 @@ public class FileConfiguration implements ConfigurationLoader {
     }
 
     private boolean containsAllSettings() {
-        return (authentication != null && logserver != null && realmserver != null
+        return (authentication != null && logserver != null && gameserver != null
                 && patchserver != null && webserver != null);
     }
 
@@ -83,7 +83,7 @@ public class FileConfiguration implements ConfigurationLoader {
 
     @Override
     public RealmServerSettings getGameServerSettings() {
-        return realmserver;
+        return gameserver;
     }
 
     @Override
@@ -102,13 +102,13 @@ public class FileConfiguration implements ConfigurationLoader {
     }
 
     void save() {
-        Configurable[] configurables = {authentication, logserver, realmserver, patchserver, webserver};
+        Configurable[] configurables = {authentication, logserver, gameserver, patchserver, webserver};
 
         for (Configurable configurable : configurables) {
             JsonFileStore.writeObject(Serializer.json(configurable), getConfigPath(configurable));
         }
 
-        for (RealmSettings realm : realmserver.getRealms()) {
+        for (RealmSettings realm : gameserver.getRealms()) {
             JsonObject json = Serializer.json(realm);
 
             json.remove(Strings.GAME_AFFLICTIONS);
