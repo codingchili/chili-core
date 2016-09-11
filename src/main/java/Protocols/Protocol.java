@@ -4,6 +4,9 @@ import Protocols.AuthorizationHandler.Access;
 import Protocols.Exception.AuthorizationRequiredException;
 import Protocols.Exception.HandlerMissingException;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
  * @author Robin Duda
  */
@@ -30,6 +33,10 @@ public class Protocol<Handler extends PacketHandler> {
 
     public Handler get(String action, Access access) throws AuthorizationRequiredException, HandlerMissingException {
         return handlers.get(action, access);
+    }
+
+    public HashMap<String, Handler> list() {
+        return handlers.list();
     }
 }
 

@@ -4,6 +4,7 @@ import Authentication.Configuration.AuthServerSettings;
 import Realm.Configuration.RealmServerSettings;
 import Logging.Configuration.LogServerSettings;
 import Patching.Configuration.PatchServerSettings;
+import Routing.Configuration.RoutingSettings;
 import Website.Configuration.WebserverSettings;
 
 /**
@@ -19,6 +20,8 @@ public interface ConfigurationLoader {
     AuthServerSettings getAuthSettings();
 
     WebserverSettings getWebsiteSettings();
+
+    RoutingSettings getRoutingSettings();
 
     class Address {
         public final static String LOGS = Strings.LOG_ID;

@@ -213,6 +213,12 @@ public class DefaultLogger extends Handler implements Logger {
                 .put(Strings.ID_DATA, metrics));
     }
 
+    @Override
+    public void onHandlerMissing(String action) {
+        log(event(Strings.LOG_HANDLER_MISSING, Strings.LOG_LEVEL_WARNING)
+                .put(Strings.LOG_MESSAGE, action));
+    }
+
     private void log(String message) {
         if (!connected)
             buffer.add(message);
@@ -237,6 +243,8 @@ public class DefaultLogger extends Handler implements Logger {
                                 element.getMethodName() + " (" +
                                 element.getLineNumber() + ")"
                 );
+
+            record.getThrown().printStackTrace();
         }
 
         return log;

@@ -42,6 +42,7 @@ public class LogHandler extends AbstractVerticle {
 
                     if (tokenFactory.verifyToken(token)) {
                         JsonObject logdata = data.toJsonObject();
+
                         logdata.remove(Strings.ID_TOKEN);
 
                         elastic.log(logdata);

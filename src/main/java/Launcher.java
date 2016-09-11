@@ -49,17 +49,19 @@ public class Launcher implements Verticle {
         Future<Void> authentication = Future.future();
         Future<Void> game = Future.future();
         Future<Void> web = Future.future();
+        Future<Void> router = Future.future();
 
-        CompositeFuture.all(patch, authentication, game).setHandler(result -> {
+        CompositeFuture.all(patch, authentication, game, router).setHandler(result -> {
             if (result.succeeded()) {
                 future.complete();
             } else
                 future.fail(result.cause());
         });
 
-        startServer(patch, new Patching.Server(new PatchProvider(vertx)));
+        startServer(router, new Routing.Server());
+        startServer(patch, new Patching.Server());
         startServer(authentication, new Authentication.Server());
-        startServer(web, new Website.Server(new WebserverProvider(vertx)));
+        startServer(web, new Website.Server());
         startServer(game, new Realm.Server());
     }
 

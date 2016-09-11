@@ -8,6 +8,7 @@ import Patching.Configuration.PatchServerSettings;
 import Realm.Model.PlayerClass;
 import Protocols.Authorization.Token;
 import Protocols.Authorization.TokenFactory;
+import Routing.Configuration.RoutingSettings;
 import Website.Configuration.WebserverSettings;
 
 import java.util.ArrayList;
@@ -42,6 +43,11 @@ public class ConfigMock implements ConfigurationLoader {
     @Override
     public WebserverSettings getWebsiteSettings() {
         return new WebserverSettings();
+    }
+
+    @Override
+    public RoutingSettings getRoutingSettings() {
+        return new RoutingSettings();
     }
 
     public RealmSettings getRealm() {

@@ -109,4 +109,10 @@ public interface Logger {
      * Send METRICS_ENABLED to the logger.
      */
     void onMetricsSnapshot(JsonObject metrics);
+
+    /**
+     * Throw when a requested handler was not found.
+     * @param action
+     */
+    void onHandlerMissing(String action);
 }

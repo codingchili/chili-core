@@ -12,6 +12,7 @@ public class Strings {
     public static final String PATH_PATCHSERVER = "conf/system/patchserver.json";
     public static final String PATH_GAMESERVER = "conf/system/realmserver.json";
     public static final String PATH_WEBSERVER = "conf/system/webserver.json";
+    public static final String PATH_ROUTING = "conf/system/routingserver.json";
     public static final String PATH_VERTX = "conf/system/vertx.json";
     public static final String PATH_REALM = "conf/realm/";
     public static final String PATH_INSTANCE = "conf/game/world";
@@ -62,6 +63,9 @@ public class Strings {
     public static final String ID_FILE = "file";
     public static final String ID_RESOURCES = "resources";
     public static final String ID_DATA = "data";
+    public static final String ID_INSTANCE = "instance";
+    public static final String ID_MESSAGE = "message";
+    public static final String ID_ERROR = "error";
 
 
     //Database naming.
@@ -71,8 +75,19 @@ public class Strings {
     public static final String DB_HASH = "hash";
     public static final String DB_CHARACTERS = "characters";
 
+    // Cluster addressing.
+    public static final String ADDRESS_AUTHENTICATION = "authentication.node";
+    public static final String ADDRESS_WEBSERVER = "webserver.node";
+    public static final String ADDRESS_PATCHING = "patching.node";
+    public static final String ADDRESS_LOGGING = "logging.node";
+    public static final String ADDRESS_REALM = "realm.node";
+
+    // Routing
+    public static final String ROUTER_MISSING_MAP = "router.missing";
+
     // Shared memory maps.
     public static final String MAP_REALMS = "realms";
+    public static final String MAP_ACCOUNTS = "accounts";
 
     // Logging
     public static final String LOG_ID = "LOG_ID";
@@ -114,6 +129,7 @@ public class Strings {
     public static final String LOG_VERTX = "vertx";
     public static final String LOG_METRICS = "metrics";
     public static final String LOG_TRACE = "trace";
+    public static final String LOG_HANDLER_MISSING = "handler.missing";
 
 
     //Patching
@@ -132,4 +148,7 @@ public class Strings {
     // Error messages.
     public static final String ERROR_TOKEN_FACTORY = "Token factory failed to generate token.";
     public static final String ERROR_CLUSTERING_REQUIRED = "Clustering required but not enabled.";
+    public static final String ERROR_IN_ADDRESS = "The requested node was not found in the cluster.";
+    public static final String ERROR_NOT_AUTHORIZED = "The requested resource requires authorization.";
+    public static final String ERROR_HANDLER_MISSING = "The requested handler was not found.";
 }

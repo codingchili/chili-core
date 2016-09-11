@@ -5,6 +5,8 @@ import Patching.Configuration.PatchProvider;
 import Patching.Configuration.PatchServerSettings;
 import Patching.Model.PatchKeeper;
 import Patching.Model.PatchReloadedException;
+import Protocols.PacketHandler;
+import Protocols.Protocol;
 
 import java.nio.file.NoSuchFileException;
 
@@ -19,7 +21,11 @@ public class ClientHandler {
         this.settings = provider.getSettings();
         this.patcher = provider.getPatchKeeper();
 
-        provider.protocol()
+        apply(provider.protocol());
+    }
+
+    public Protocol apply(Protocol<PacketHandler<ClientRequest>> protocol) {
+        return protocol
                 .use(Strings.PATCH_IDENTIFIER, this::patchinfo)
                 .use(Strings.PATCH_GAME_INFO, this::gameinfo)
                 .use(Strings.PATCH_NEWS, this::news)

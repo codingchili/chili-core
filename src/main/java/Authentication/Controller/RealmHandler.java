@@ -1,22 +1,23 @@
 package Authentication.Controller;
 
 import Authentication.Configuration.AuthProvider;
+import Authentication.Configuration.AuthServerSettings;
+import Authentication.Model.AsyncAccountStore;
 import Authentication.Model.AsyncRealmStore;
 import Configuration.Strings;
-import Protocols.AuthorizationHandler.Access;
-import Authentication.Model.AsyncAccountStore;
-import Authentication.Configuration.AuthServerSettings;
-import Realm.Configuration.RealmSettings;
-import Realm.Model.PlayerCharacter;
-import Protocols.Realm.CharacterRequest;
-import Protocols.Realm.CharacterResponse;
 import Protocols.Authentication.RealmRegister;
 import Protocols.Authentication.RealmUpdate;
+import Protocols.PacketHandler;
+import Protocols.Protocol;
+import Protocols.Realm.CharacterRequest;
+import Protocols.Realm.CharacterResponse;
+import Realm.Configuration.RealmSettings;
+import Realm.Model.PlayerCharacter;
 import io.vertx.core.Future;
 
 /**
  * @author Robin Duda
- *         Router used to authenticate realms and generate realmName lists.
+ *         Routing used to authenticate realms and generate realmName lists.
  */
 public class RealmHandler {
     private AsyncRealmStore realmStore;
@@ -28,7 +29,11 @@ public class RealmHandler {
         this.settings = provider.getAuthserverSettings();
         this.realmStore = provider.getRealmStore();
 
-        provider.realmProtocol()
+        apply(provider.realmProtocol());
+    }
+
+    public Protocol apply(Protocol<PacketHandler<RealmRequest>> protocol) {
+        return protocol
                 .use(RealmUpdate.ACTION, this::update)
                 .use(CharacterRequest.ACTION, this::character)
                 .use(Strings.CLIENT_CLOSE, this::disconnected)

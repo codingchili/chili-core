@@ -3,6 +3,7 @@ package Protocols;
 import Protocols.Exception.AuthorizationRequiredException;
 import Protocols.Exception.HandlerMissingException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -64,6 +65,13 @@ public class AuthorizationHandler<T> {
         } else {
             throw new HandlerMissingException();
         }
+    }
+
+    public HashMap<String, T> list() {
+        HashMap<String, T> list = new HashMap<>();
+        list.putAll(authorized);
+        list.putAll(unauthorized);
+        return list;
     }
 
     public enum Access {

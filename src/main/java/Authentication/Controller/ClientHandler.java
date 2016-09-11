@@ -4,6 +4,8 @@ import Authentication.Configuration.AuthProvider;
 import Authentication.Model.*;
 import Configuration.Strings;
 import Protocols.Authentication.RealmMetaData;
+import Protocols.PacketHandler;
+import Protocols.Protocol;
 import Realm.Configuration.RealmSettings;
 import Realm.Model.PlayerCharacter;
 import Realm.Model.PlayerClass;
@@ -20,7 +22,7 @@ import java.util.ArrayList;
 
 /**
  * @author Robin Duda
- *         Router used to authenticate users and create/delete characters.
+ *         Routing used to authenticate users and create/delete characters.
  */
 public class ClientHandler {
     private AsyncRealmStore realmStore;
@@ -34,7 +36,11 @@ public class ClientHandler {
         this.factory = new TokenFactory(provider.getAuthserverSettings().getClientSecret());
         this.realmStore = provider.getRealmStore();
 
-        provider.clientProtocol()
+        apply(provider.clientProtocol());
+    }
+
+    public Protocol apply(Protocol<PacketHandler<ClientRequest>> protocol) {
+        return protocol
                 .use(Strings.CLIENT_CHARACTER_LIST, this::characterList)
                 .use(Strings.CLIENT_CHARACTER_CREATE, this::characterCreate)
                 .use(Strings.CLIENT_CHARACTER_REMOVE, this::characterRemove)

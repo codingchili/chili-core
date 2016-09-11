@@ -54,10 +54,10 @@ public class RealmServer extends AbstractVerticle {
         vertx.createHttpServer().websocketHandler(socket -> {
 
             socket.handler(event -> {
-                Header header = Serializer.unpack(event.toString(), Header.class);
+                Packet packet = Serializer.unpack(event.toString(), Packet.class);
                 RealmRequest request = new RealmWebsocketRequest(getConnection(socket), event.toJsonObject());
 
-                handle(header.getAction(), request);
+                handle(packet.getAction(), request);
             });
 
             socket.endHandler(event -> {

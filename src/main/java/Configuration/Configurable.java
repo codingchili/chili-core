@@ -15,14 +15,20 @@ public interface Configurable {
     @JsonIgnore
     String getPath();
 
+
     /**
-     * Get the name of the configuration file.
+     * Get the name of the service within the configurable.
      *
-     * @return name as string with extension.
+     * @return the name of the service.
      */
     @JsonIgnore
     String getName();
 
 
+    /**
+     * Get the logserver configuration for the configurable.
+     *
+     * @return configuration of a logging server.
+     */
     RemoteAuthentication getLogserver();
 }
