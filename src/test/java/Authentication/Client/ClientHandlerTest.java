@@ -56,7 +56,7 @@ public class ClientHandlerTest {
     private static AuthProvider provider;
 
     @Rule
-    public Timeout timeout = new Timeout(20, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
 
     @Before
     public void setUp() throws IOException {

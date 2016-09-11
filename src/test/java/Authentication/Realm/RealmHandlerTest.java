@@ -47,7 +47,7 @@ public class RealmHandlerTest {
     private TokenFactory factory;
 
     @Rule
-    public Timeout timeout = new Timeout(2, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
 
     @Before
     public void setUp() {
