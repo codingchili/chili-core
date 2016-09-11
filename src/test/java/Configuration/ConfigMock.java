@@ -83,8 +83,8 @@ public class ConfigMock implements ConfigurationLoader {
             this.setSecure(false);
             this.setRemote("remote_ip");
             this.setResources("DIR_RESOURCES");
-            this.setPort(21111);
-            this.setProxy(31111);
+            this.setPort(11132);
+            this.setProxy(11132);
 
             generateAuthentication();
             generateMockClasses();

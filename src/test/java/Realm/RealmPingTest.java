@@ -1,21 +1,24 @@
 package Realm;
 
 import Configuration.ConfigMock;
-import Realm.Configuration.RealmSettings;
-import Realm.Controller.Realm;
 import Logging.LoggerMock;
 import Protocols.Authorization.Token;
+import Realm.Configuration.RealmSettings;
+import Realm.Controller.Realm;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Robin Duda
@@ -24,7 +27,10 @@ import java.io.IOException;
 @RunWith(VertxUnitRunner.class)
 public class RealmPingTest {
     private Vertx vertx;
-    private static final int TEST_PORT = 11132;
+    private static final int TEST_PORT = new ConfigMock.RealmSettingsMock().getPort();
+
+    @Rule
+    public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
 
     @Before
     public void setUp(TestContext context) throws IOException {
