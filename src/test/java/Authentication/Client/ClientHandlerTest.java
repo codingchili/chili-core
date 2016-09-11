@@ -277,7 +277,7 @@ public class ClientHandlerTest {
         Async async = context.async();
 
         handle(Strings.CLIENT_REALM_TOKEN, (response, status) -> {
-            Token token = (Token) Serializer.unpack(response, Token.class);
+            Token token = Serializer.unpack(response, Token.class);
 
             context.assertEquals(ResponseStatus.ACCEPTED, status);
             context.assertEquals(USERNAME, token.getDomain());

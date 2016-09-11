@@ -38,7 +38,7 @@ public class LogHandler extends AbstractVerticle {
                 JsonObject message = data.toJsonObject();
 
                 if (message.containsKey(Strings.ID_TOKEN)) {
-                    Token token = (Token) Serializer.unpack(data.toJsonObject().getJsonObject(Strings.ID_TOKEN), Token.class);
+                    Token token = Serializer.unpack(data.toJsonObject().getJsonObject(Strings.ID_TOKEN), Token.class);
 
                     if (tokenFactory.verifyToken(token)) {
                         JsonObject logdata = data.toJsonObject();

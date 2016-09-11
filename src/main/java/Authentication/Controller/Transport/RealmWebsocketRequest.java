@@ -28,7 +28,7 @@ class RealmWebsocketRequest implements RealmRequest {
 
     @Override
     public RealmSettings realm() {
-        return (RealmSettings) Serializer.unpack(realm, RealmSettings.class);
+        return Serializer.unpack(realm, RealmSettings.class);
     }
 
     @Override
@@ -82,7 +82,7 @@ class RealmWebsocketRequest implements RealmRequest {
         JsonObject authentication = realm.getJsonObject(Strings.PROTOCOL_AUTHENTICATION);
 
         if (authentication.containsKey(Strings.ID_TOKEN)) {
-            return (Token) Serializer.unpack(authentication.getJsonObject(Strings.ID_TOKEN), Token.class);
+            return Serializer.unpack(authentication.getJsonObject(Strings.ID_TOKEN), Token.class);
         } else {
             return null;
         }

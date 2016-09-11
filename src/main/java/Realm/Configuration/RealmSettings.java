@@ -78,7 +78,7 @@ public class RealmSettings implements Serializable {
         ArrayList<JsonObject> configurations = JsonFileStore.readDirectoryObjects(Strings.PATH_INSTANCE);
 
         for (JsonObject configuration : configurations) {
-            instances.add((InstanceSettings) Serializer.unpack(configuration, InstanceSettings.class));
+            instances.add(Serializer.unpack(configuration, InstanceSettings.class));
         }
     }
 
@@ -86,7 +86,7 @@ public class RealmSettings implements Serializable {
         ArrayList<JsonObject> configurations = JsonFileStore.readDirectoryObjects(Strings.PATH_CLASSES);
 
         for (JsonObject configuration : configurations) {
-            classes.add((PlayerClass) Serializer.unpack(configuration, PlayerClass.class));
+            classes.add(Serializer.unpack(configuration, PlayerClass.class));
         }
     }
 
@@ -94,7 +94,7 @@ public class RealmSettings implements Serializable {
         JsonArray configurations = JsonFileStore.readList(Strings.PATH_AFFLICTIONS);
 
         for (int i = 0; i < configurations.size(); i++) {
-            Affliction affliction = (Affliction) Serializer.unpack(configurations.getJsonObject(i), Affliction.class);
+            Affliction affliction = Serializer.unpack(configurations.getJsonObject(i), Affliction.class);
             afflictions.add(affliction);
         }
     }
@@ -118,7 +118,7 @@ public class RealmSettings implements Serializable {
     }
 
     private void readTemplate() throws IOException {
-        this.template = (PlayerCharacter) Serializer.unpack(JsonFileStore.readObject(Strings.PATH_PLAYER_TEMPLATE), PlayerCharacter.class);
+        this.template = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_PLAYER_TEMPLATE), PlayerCharacter.class);
     }
 
     public Boolean getSecure() {

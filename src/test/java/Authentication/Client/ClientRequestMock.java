@@ -9,6 +9,8 @@ import Protocols.Authorization.Token;
 import Shared.ResponseStatus;
 import io.vertx.core.json.JsonObject;
 
+import static Protocols.Serializer.unpack;
+
 /**
  * @author Robin Duda
  */
@@ -49,7 +51,7 @@ class ClientRequestMock implements ClientRequest {
 
     @Override
     public Token token() {
-        return (Token) Serializer.unpack(data.getJsonObject("token"), Token.class);
+        return Serializer.unpack(data.getJsonObject("token"), Token.class);
     }
 
     @Override
@@ -84,7 +86,7 @@ class ClientRequestMock implements ClientRequest {
 
     @Override
     public Account getAccount() {
-        return (Account) Serializer.unpack(data.getJsonObject("account"), Account.class);
+        return unpack(data.getJsonObject("account"), Account.class);
     }
 
     @Override

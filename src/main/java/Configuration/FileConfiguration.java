@@ -21,22 +21,17 @@ public class FileConfiguration implements ConfigurationLoader {
     private static ConfigurationLoader instance;
     private AuthServerSettings authentication;
     private LogServerSettings logserver;
-    private RealmServerSettings gameserver;
+    private RealmServerSettings realmserver;
     private PatchServerSettings patchserver;
     private WebserverSettings webserver;
 
     private FileConfiguration() throws IOException {
-        authentication = (AuthServerSettings) load(Strings.PATH_AUTHSERVER, AuthServerSettings.class);
-        gameserver = (RealmServerSettings) load(Strings.PATH_GAMESERVER, RealmServerSettings.class);
-        logserver = (LogServerSettings) load(Strings.PATH_LOGSERVER, LogServerSettings.class);
-        webserver = (WebserverSettings) load(Strings.PATH_WEBSERVER, WebserverSettings.class);
-        load(Strings.PATH_VERTX, VertxSettings.class);
+        authentication = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_AUTHSERVER), AuthServerSettings.class);
+        realmserver = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_GAMESERVER), RealmServerSettings.class);
+        logserver = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_LOGSERVER), LogServerSettings.class);
+        webserver = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_WEBSERVER), WebserverSettings.class);
         patchserver = loadPatchSettings();
-        loadRealms(gameserver);
-    }
-
-    private static Object load(String path, Class clazz) throws IOException {
-        return Serializer.unpack(JsonFileStore.readObject(path), clazz);
+        loadRealms(realmserver);
     }
 
     /**
@@ -45,7 +40,7 @@ public class FileConfiguration implements ConfigurationLoader {
      * @return PatchServerSettings instantiated from JSON at #Strings.PATH_PATCHSERVER
      */
     public static PatchServerSettings loadPatchSettings() throws IOException {
-        return (PatchServerSettings) load(Strings.PATH_PATCHSERVER, PatchServerSettings.class);
+        return Serializer.unpack(JsonFileStore.readObject(Strings.PATH_PATCHSERVER), PatchServerSettings.class);
     }
 
     private void loadRealms(RealmServerSettings gameserver) {
@@ -54,7 +49,7 @@ public class FileConfiguration implements ConfigurationLoader {
             ArrayList<JsonObject> configurations = JsonFileStore.readDirectoryObjects(Strings.PATH_REALM);
 
             for (JsonObject configuration : configurations)
-                realms.add((RealmSettings) Serializer.unpack(configuration, RealmSettings.class));
+                realms.add(Serializer.unpack(configuration, RealmSettings.class));
 
             gameserver.setRealms(realms);
         } catch (IOException e) {
@@ -77,7 +72,7 @@ public class FileConfiguration implements ConfigurationLoader {
     }
 
     private boolean containsAllSettings() {
-        return (authentication != null && logserver != null && gameserver != null
+        return (authentication != null && logserver != null && realmserver != null
                 && patchserver != null && webserver != null);
     }
 
@@ -88,7 +83,7 @@ public class FileConfiguration implements ConfigurationLoader {
 
     @Override
     public RealmServerSettings getGameServerSettings() {
-        return gameserver;
+        return realmserver;
     }
 
     @Override
@@ -107,13 +102,13 @@ public class FileConfiguration implements ConfigurationLoader {
     }
 
     void save() {
-        Configurable[] configurables = {authentication, logserver, gameserver, patchserver, webserver};
+        Configurable[] configurables = {authentication, logserver, realmserver, patchserver, webserver};
 
         for (Configurable configurable : configurables) {
             JsonFileStore.writeObject(Serializer.json(configurable), getConfigPath(configurable));
         }
 
-        for (RealmSettings realm : gameserver.getRealms()) {
+        for (RealmSettings realm : realmserver.getRealms()) {
             JsonObject json = Serializer.json(realm);
 
             json.remove(Strings.GAME_AFFLICTIONS);

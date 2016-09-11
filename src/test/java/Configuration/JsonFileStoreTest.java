@@ -1,6 +1,7 @@
 package Configuration;
 
 import Realm.Model.Affliction;
+import Realm.Model.PlayerCharacter;
 import Realm.Model.PlayerClass;
 import Configuration.JsonFileStore;
 import Protocols.Serializer;

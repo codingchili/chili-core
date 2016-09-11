@@ -115,7 +115,7 @@ public class MongoAccountDB implements AsyncAccountStore {
                 JsonObject realm = characters.getJsonObject(realmName);
 
                 if (realm != null && realm.containsKey(character)) {
-                    future.complete((PlayerCharacter) Serializer.unpack(realm.getJsonObject(character), PlayerCharacter.class));
+                    future.complete(Serializer.unpack(realm.getJsonObject(character), PlayerCharacter.class));
                 } else {
                     future.fail(new CharacterMissingException());
                 }
@@ -139,7 +139,7 @@ public class MongoAccountDB implements AsyncAccountStore {
 
                 if (characters != null)
                     for (String key : characters.fieldNames())
-                        result.add((PlayerCharacter) Serializer.unpack(characters.getJsonObject(key), PlayerCharacter.class));
+                        result.add(Serializer.unpack(characters.getJsonObject(key), PlayerCharacter.class));
 
                 future.complete(result);
             } else {
@@ -155,7 +155,7 @@ public class MongoAccountDB implements AsyncAccountStore {
         client.findOne(COLLECTION, query, null, find -> {
             if (find.succeeded() && find.result() != null) {
 
-                AccountMapping account = (AccountMapping) Serializer.unpack(find.result(), AccountMapping.class);
+                AccountMapping account = Serializer.unpack(find.result(), Account.class);
 
                 if (authenticate(account, unauthenticated)) {
                     future.complete(filter(account));

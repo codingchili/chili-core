@@ -32,7 +32,7 @@ class ClientRestRequest implements ClientRequest {
             this.json = context.getBodyAsJson();
 
             if (json.containsKey(Strings.ID_TOKEN))
-                token = (Token) Serializer.unpack(json.getJsonObject(Strings.ID_TOKEN), Token.class);
+                token = Serializer.unpack(json.getJsonObject(Strings.ID_TOKEN), Token.class);
         }
     }
 
@@ -111,7 +111,7 @@ class ClientRestRequest implements ClientRequest {
 
     @Override
     public Account getAccount() {
-        return (Account) Serializer.unpack(json.getJsonObject(Strings.ID_ACCOUNT), Account.class);
+        return Serializer.unpack(json.getJsonObject(Strings.ID_ACCOUNT), Account.class);
     }
 
     @Override

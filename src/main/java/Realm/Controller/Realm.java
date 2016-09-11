@@ -111,7 +111,7 @@ public class Realm implements Verticle {
             Connection connection = new Connection(socket);
 
             socket.handler(event -> {
-                Packet packet = (Packet) Serializer.unpack(event.toString(), Packet.class);
+                Packet packet = Serializer.unpack(event.toString(), Packet.class);
 
                 if (packet.getAction().equals(CharacterRequest.ACTION))
                     handleLogin(connection, event.toString());
@@ -129,7 +129,7 @@ public class Realm implements Verticle {
 
 
     private void handleLogin(Connection connection, String data) {
-        CharacterRequest login = (CharacterRequest) Serializer.unpack(data, CharacterRequest.class);
+        CharacterRequest login = Serializer.unpack(data, CharacterRequest.class);
         login.setConnection(connection.getAddress());
 
         if (tokenFactory.verifyToken(login.getToken())) {
@@ -162,7 +162,7 @@ public class Realm implements Verticle {
                     authserver = socket;
 
                     socket.handler(message -> {
-                        Packet packet = (Packet) Serializer.unpack(message.toString(), Packet.class);
+                        Packet packet = Serializer.unpack(message.toString(), Packet.class);
 
                         if (authHandlers.containsKey(packet.getAction()))
                             authHandlers.get(packet.getAction()).handle(socket.textHandlerID(), message.toString());
@@ -180,12 +180,12 @@ public class Realm implements Verticle {
 
     private void setupAuthenticationServerHandlers() {
         authHandlers.put(CharacterResponse.ACTION, (connection, data) -> {
-            CharacterResponse response = (CharacterResponse) Serializer.unpack(data, CharacterResponse.class);
+            CharacterResponse response = Serializer.unpack(data, CharacterResponse.class);
             connections.get(response.getConnection()).sendCharacterResponse(response);
         });
 
         authHandlers.put(RealmRegister.ACTION, (connection, data) -> {
-            RealmRegister response = (RealmRegister) Serializer.unpack(data, RealmRegister.class);
+            RealmRegister response = Serializer.unpack(data, RealmRegister.class);
 
             if (response.getRegistered()) {
                 if (!registered) {
