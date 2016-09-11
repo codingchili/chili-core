@@ -1,4 +1,4 @@
 {
-  "metrics": true,
+  "metrics": false,
   "rate": 15000
 }

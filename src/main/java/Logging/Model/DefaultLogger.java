@@ -222,8 +222,24 @@ public class DefaultLogger extends Handler implements Logger {
 
     @Override
     public void publish(LogRecord record) {
-        console.log(event(Strings.LOG_VERTX, record.getLevel().getName())
+        console.log(addTrace(event(Strings.LOG_VERTX, record.getLevel().getName()), record)
                 .put(Strings.LOG_MESSAGE, record.getMessage()));
+    }
+
+    private JsonObject addTrace(JsonObject log, LogRecord record) {
+
+        if (record.getThrown() != null) {
+            StackTraceElement element = record.getThrown().getStackTrace()[0];
+
+            if (element != null)
+                log.put(Strings.LOG_TRACE,
+                        element.getClassName() + "." +
+                                element.getMethodName() + " (" +
+                                element.getLineNumber() + ")"
+                );
+        }
+
+        return log;
     }
 
     @Override

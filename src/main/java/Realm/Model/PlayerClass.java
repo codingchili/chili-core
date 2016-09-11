@@ -1,12 +1,13 @@
 package Realm.Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * @author Robin Duda
  *         Model for player classes.
  */
-public class PlayerClass {
+public class PlayerClass implements Serializable {
     private String name;
     private String description;
     private ArrayList<Spell> spells;

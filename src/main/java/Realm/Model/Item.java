@@ -1,10 +1,12 @@
 package Realm.Model;
 
+import java.io.Serializable;
+
 /**
  * @author Robin Duda
  *         Contains item data.
  */
-public class Item {
+public class Item implements Serializable {
     private String name;
     private String description;
     private Attributes attributes;

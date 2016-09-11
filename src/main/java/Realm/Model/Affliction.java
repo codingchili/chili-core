@@ -1,5 +1,6 @@
 package Realm.Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -8,7 +9,7 @@ import java.util.ArrayList;
  *
  *         Afflictions affects a character by modifying their attributes temporarily.
  */
-public class Affliction {
+public class Affliction implements Serializable {
     private String name;
     private String description;
     private Target target;

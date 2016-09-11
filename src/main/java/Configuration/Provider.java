@@ -9,8 +9,4 @@ import io.vertx.core.Vertx;
 public interface Provider {
 
     Logger getLogger();
-
-    ConfigurationLoader getConfig();
-
-    Vertx getVertx();
 }

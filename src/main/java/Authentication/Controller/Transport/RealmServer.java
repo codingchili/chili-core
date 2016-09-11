@@ -41,7 +41,7 @@ public class RealmServer extends AbstractVerticle {
         if (tokens.verifyToken(request.token())) {
             request.connection().authenticate(request.token().getDomain());
             try {
-                protocol.get(Strings.REALM_AUTHENTICATED, Access.AUTHORIZE).handle(request);
+                protocol.get(Strings.REALM_AUTHENTICATE, Access.AUTHORIZE).handle(request);
             } catch (AuthorizationRequiredException | HandlerMissingException ignored) {
             }
         } else {

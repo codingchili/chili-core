@@ -1,6 +1,5 @@
 package Patching.Configuration;
 
-import Configuration.ConfigurationLoader;
 import Configuration.FileConfiguration;
 import Configuration.Provider;
 import Logging.Model.DefaultLogger;
@@ -17,29 +16,17 @@ import io.vertx.core.Vertx;
  */
 public class PatchProvider implements Provider {
     private PatchServerSettings settings;
-    private ConfigurationLoader loader;
     private Protocol<PacketHandler<ClientRequest>> protocol = new Protocol<>(Access.PUBLIC);
     private Vertx vertx;
 
     public PatchProvider(Vertx vertx) {
         this.vertx = vertx;
-        this.loader = FileConfiguration.instance();
-        this.settings = loader.getPatchServerSettings();
+        this.settings = FileConfiguration.instance().getPatchServerSettings();
     }
 
     @Override
     public Logger getLogger() {
         return new DefaultLogger(vertx, settings.getLogserver());
-    }
-
-    @Override
-    public ConfigurationLoader getConfig() {
-        return loader;
-    }
-
-    @Override
-    public Vertx getVertx() {
-        return vertx;
     }
 
     public PatchServerSettings getSettings() {

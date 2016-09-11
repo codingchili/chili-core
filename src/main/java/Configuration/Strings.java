@@ -28,9 +28,9 @@ public class Strings {
     public static final String EXT_SVG = ".svg";
 
     // Protocol identifiers for clients.
-    public static final String CLIENT_CHARACTER_LIST = "character-list";
-    public static final String CLIENT_CHARACTER_CREATE = "character-create";
-    public static final String CLIENT_CHARACTER_REMOVE = "character-remove";
+    public static final String CLIENT_CHARACTER_LIST = "character.list";
+    public static final String CLIENT_CHARACTER_CREATE = "character.create";
+    public static final String CLIENT_CHARACTER_REMOVE = "character.remove";
     public static final String CLIENT_AUTHENTICATE = "authenticate";
     public static final String CLIENT_REGISTER = "register";
     public static final String CLIENT_REALM_TOKEN = "realmtoken";
@@ -38,7 +38,7 @@ public class Strings {
     public static final String CLIENT_CLOSE = "close";
 
     // Protocol identifiers for realms.
-    public static final String REALM_AUTHENTICATED = "realm.authenticated";
+    public static final String REALM_AUTHENTICATE = "realm.authenticate";
     public static final String REALM_REGISTER = "realm.register";
     public static final String REALM_AUTHENTICATION_RESULT = "authentication.result";
     public static final String REALM_CHARACTER_REQUEST = "character.request";
@@ -113,7 +113,7 @@ public class Strings {
     public static final String LOG_LEVEL_STARTUP = "STARTUP";
     public static final String LOG_VERTX = "vertx";
     public static final String LOG_METRICS = "metrics";
-
+    public static final String LOG_TRACE = "trace";
 
 
     //Patching
@@ -131,4 +131,5 @@ public class Strings {
 
     // Error messages.
     public static final String ERROR_TOKEN_FACTORY = "Token factory failed to generate token.";
+    public static final String ERROR_CLUSTERING_REQUIRED = "Clustering required but not enabled.";
 }

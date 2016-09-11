@@ -2,13 +2,14 @@ package Protocols.Authorization;
 
 import Configuration.Strings;
 
+import java.io.Serializable;
 import java.time.Instant;
 
 /**
  * @author Robin Duda
  *         used to request authentication by token.
  */
-public class Token {
+public class Token implements Serializable {
     private String key;
     private long expiry;
     private String domain;

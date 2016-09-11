@@ -23,7 +23,7 @@ import java.util.ArrayList;
  *         Router used to authenticate users and create/delete characters.
  */
 public class ClientHandler {
-    private RealmStore realmStore;
+    private AsyncRealmStore realmStore;
     private AsyncAccountStore accounts;
     private TokenFactory factory;
     private Logger logger;
@@ -32,7 +32,7 @@ public class ClientHandler {
         this.logger = provider.getLogger();
         this.accounts = provider.getAccountStore();
         this.factory = new TokenFactory(provider.getAuthserverSettings().getClientSecret());
-        this.realmStore = new RealmStore(provider.getVertx());
+        this.realmStore = provider.getRealmStore();
 
         provider.clientProtocol()
                 .use(Strings.CLIENT_CHARACTER_LIST, this::characterList)
@@ -117,10 +117,11 @@ public class ClientHandler {
                 }
             }
         });
+        createCharacterFromTemplate(templateFuture, request);
     }
 
 
-    private void createCharacterFromTemplate(Future<PlayerCharacter> future, ClientRequest request) throws PlayerClassDisabledException, RealmMissingException {
+    private void createCharacterFromTemplate(Future<PlayerCharacter> future, ClientRequest request) {
         Future<RealmSettings> realmFuture = Future.future();
 
         realmFuture.setHandler(realm -> {
@@ -168,9 +169,9 @@ public class ClientHandler {
             try {
                 if (future.succeeded()) {
                     sendAuthentication(result.result(), request, true);
-                } else
+                } else {
                     throw future.cause();
-
+                }
             } catch (AccountExistsException e) {
                 request.conflict();
             } catch (Throwable e) {

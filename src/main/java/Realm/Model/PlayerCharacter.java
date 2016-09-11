@@ -1,10 +1,12 @@
 package Realm.Model;
 
+import java.io.Serializable;
+
 /**
  * @author Robin Duda
  *         Model for player characters.
  */
-public class PlayerCharacter {
+public class PlayerCharacter implements Serializable {
     private String name;
     private String className;
     private Inventory inventory;

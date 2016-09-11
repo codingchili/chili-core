@@ -36,25 +36,35 @@ public class Server implements Verticle {
     @Override
     public void init(Vertx vertx, Context context) {
         this.vertx = vertx;
-
-        if (provider == null) {
-            this.provider = new AuthProvider(vertx);
-            this.logger = provider.getLogger();
-        }
     }
 
 
     @Override
     public void start(Future<Void> start) throws Exception {
-        new ClientHandler(provider);
-        new RealmHandler(provider);
+        if (provider == null) {
+            Future<AuthProvider> providerFuture = Future.future();
 
-        for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
-            vertx.deployVerticle(new ClientServer(provider));
-            vertx.deployVerticle(new RealmServer(provider));
+            providerFuture.setHandler(future -> {
+                if (future.succeeded()) {
+                    this.provider = future.result();
+                    this.logger = provider.getLogger();
+
+                    new ClientHandler(provider);
+                    new RealmHandler(provider);
+
+                    for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
+                        vertx.deployVerticle(new ClientServer(provider));
+                        vertx.deployVerticle(new RealmServer(provider));
+                    }
+
+                    logger.onServerStarted(start);
+                } else {
+                    start.fail(future.cause());
+                }
+            });
+
+            AuthProvider.create(providerFuture, vertx);
         }
-
-        logger.onServerStarted(start);
     }
 
 

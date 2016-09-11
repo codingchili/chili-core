@@ -1,11 +1,13 @@
 package Realm.Model;
 
+import java.io.Serializable;
+
 /**
  * @author Robin Duda
  *
  * base stats for a character and may be used in items too.
  */
-class Attributes {
+class Attributes implements Serializable {
     private int power;
     private int attack;
     private int spell;
