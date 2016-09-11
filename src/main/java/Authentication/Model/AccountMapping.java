@@ -2,13 +2,14 @@ package Authentication.Model;
 
 import Realm.Model.PlayerCharacter;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 /**
  * @author Robin Duda
  *         Database mapping not shared outside storage.
  */
-class AccountMapping {
+class AccountMapping implements Serializable {
     private HashMap<String, HashMap<String, PlayerCharacter>> realms = new HashMap<>();
     private String username;
     private String email;

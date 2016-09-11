@@ -1,5 +1,6 @@
 package Realm.Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -7,7 +8,7 @@ import java.util.HashMap;
  * @author Robin Duda
  *         Represents a characters inventory.
  */
-class Inventory {
+class Inventory implements Serializable {
     private HashMap<String, Item> equipped;
     private ArrayList<String> slots;
     private ArrayList<Item> items;

@@ -12,6 +12,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -20,7 +21,7 @@ import java.util.ArrayList;
  *         Contains the settings for a realmName.
  */
 @JsonIgnoreProperties({"instance"})
-public class RealmSettings {
+public class RealmSettings implements Serializable {
     private ArrayList<InstanceSettings> instances = new ArrayList<>();
     private ArrayList<PlayerClass> classes = new ArrayList<>();
     private ArrayList<Affliction> afflictions = new ArrayList<>();

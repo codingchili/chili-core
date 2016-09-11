@@ -58,7 +58,7 @@ public class Launcher implements Verticle {
         });
 
         startServer(patch, new Patching.Server(new PatchProvider(vertx)));
-        startServer(authentication, new Authentication.Server(new AuthProvider(vertx)));
+        startServer(authentication, new Authentication.Server());
         startServer(web, new Website.Server(new WebserverProvider(vertx)));
         startServer(game, new Realm.Server());
     }

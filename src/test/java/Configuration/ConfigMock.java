@@ -48,7 +48,7 @@ public class ConfigMock implements ConfigurationLoader {
         return new RealmSettingsMock();
     }
 
-    public static class AuthServerSettingsMock extends AuthServerSettings {
+    private static class AuthServerSettingsMock extends AuthServerSettings {
 
         @Override
         public Integer getRealmPort() {
@@ -74,67 +74,36 @@ public class ConfigMock implements ConfigurationLoader {
 
     public static class RealmSettingsMock extends RealmSettings {
 
-        @Override
-        public String getDescription() {
-            return "description";
+        public RealmSettingsMock() {
+            super();
+            this.setName("realmName.name");
+            this.setDescription("description");
+            this.setType("type.1");
+            this.setTrusted(false);
+            this.setSecure(false);
+            this.setRemote("remote_ip");
+            this.setResources("DIR_RESOURCES");
+            this.setPort(21111);
+            this.setProxy(31111);
+
+            generateAuthentication();
+            generateMockClasses();
         }
 
-        @Override
-        public Boolean getTrusted() {
-            return false;
-        }
-
-        @Override
-        public Boolean getSecure() {
-            return false;
-        }
-
-        @Override
-        public String getType() {
-            return "type";
-        }
-
-        @Override
-        public String getResources() {
-            return "DIR_RESOURCES";
-        }
-
-        @Override
-        public String getRemote() {
-            return "localhost";
-        }
-
-        @Override
-        public int getPort() {
-            return 11132;
-        }
-
-        @Override
-        public int getProxy() {
-            return 11132;
-        }
-
-        @Override
-        public ArrayList<PlayerClass> getClasses() {
+        private void generateMockClasses() {
             ArrayList<PlayerClass> list = new ArrayList<>();
 
             list.add(new PlayerClass().setName("class.name"));
 
-            return list;
+            this.setClasses(list);
         }
 
-        @Override
-        public String getName() {
-            return "realmName.name";
-        }
-
-        @Override
-        public RemoteAuthentication getAuthentication() {
-            return new RemoteAuthentication()
+        private void generateAuthentication() {
+            this.setAuthentication(new RemoteAuthentication()
                     .setToken(
                             new Token(
                                     new TokenFactory(new AuthServerSettingsMock().getRealmSecret()),
-                                    this.getName()));
+                                    this.getName())));
         }
     }
 

@@ -1,12 +1,13 @@
 package Realm.Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * @author Robin Duda
  * A trigger is executed on a specific event and may apply afflictions or modifiers.
  */
-class Trigger {
+class Trigger implements Serializable {
     private Event on;
     private String spell;
     private Target modifies;

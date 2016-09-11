@@ -1,10 +1,10 @@
 package Authentication.Controller;
 
 import Authentication.Configuration.AuthProvider;
+import Authentication.Model.AsyncRealmStore;
 import Configuration.Strings;
 import Protocols.AuthorizationHandler.Access;
 import Authentication.Model.AsyncAccountStore;
-import Authentication.Model.RealmStore;
 import Authentication.Configuration.AuthServerSettings;
 import Realm.Configuration.RealmSettings;
 import Realm.Model.PlayerCharacter;
@@ -19,28 +19,37 @@ import io.vertx.core.Future;
  *         Router used to authenticate realms and generate realmName lists.
  */
 public class RealmHandler {
-    private RealmStore realmStore;
+    private AsyncRealmStore realmStore;
     private AsyncAccountStore accounts;
     private AuthServerSettings settings;
 
     public RealmHandler(AuthProvider provider) {
         this.accounts = provider.getAccountStore();
         this.settings = provider.getAuthserverSettings();
-        this.realmStore = new RealmStore(provider.getVertx());
+        this.realmStore = provider.getRealmStore();
 
         provider.realmProtocol()
                 .use(RealmUpdate.ACTION, this::update)
                 .use(CharacterRequest.ACTION, this::character)
                 .use(Strings.CLIENT_CLOSE, this::disconnected)
-                .use(Strings.REALM_AUTHENTICATE, this::register, Access.PUBLIC);
+                .use(Strings.REALM_AUTHENTICATE, this::register);
     }
 
     private void register(RealmRequest request) {
+        Future<Void> realmFuture = Future.future();
         RealmSettings realm = request.realm();
 
         realm.setTrusted(settings.isTrustedRealm(realm.getName()));
-        realmStore.put(realm);
-        request.write(new RealmRegister(true));
+
+        realmFuture.setHandler(insert -> {
+            if (insert.succeeded()) {
+                request.write(new RealmRegister(true));
+            } else {
+                request.error();
+            }
+        });
+
+        realmStore.put(realmFuture, realm);
     }
 
     private void update(RealmRequest request) {
@@ -60,7 +69,17 @@ public class RealmHandler {
     }
 
     private void disconnected(RealmRequest request) {
-        realmStore.remove(request.realm().getName());
+        Future<Void> realmFuture = Future.future();
+
+        realmFuture.setHandler(remove -> {
+            if (remove.succeeded()) {
+                request.accept();
+            } else {
+                request.error();
+            }
+        });
+
+        realmStore.remove(realmFuture, request.realm().getName());
     }
 
     private void character(RealmRequest request) {

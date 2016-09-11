@@ -1,12 +1,13 @@
 package Realm.Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * @author Robin Duda
  *         A spell that may be cast by a player or NPC.
  */
-class Spell {
+class Spell implements Serializable {
     private String name;
     private String description;
     private Target target;

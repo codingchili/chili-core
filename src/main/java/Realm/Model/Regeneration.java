@@ -1,10 +1,12 @@
 package Realm.Model;
 
+import java.io.Serializable;
+
 /**
  * @author Robin Duda
  *         Defines regeneration for a characters main attributes.
  */
-class Regeneration {
+class Regeneration implements Serializable {
     private Double health;
     private Double energy;
 

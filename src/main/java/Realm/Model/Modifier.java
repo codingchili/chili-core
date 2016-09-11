@@ -1,12 +1,13 @@
 package Realm.Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * @author Robin Duda
  *         Modifies an attribute of a character.
  */
-class Modifier {
+class Modifier implements Serializable {
     private ArrayList<Affliction> affliction;
     private Target modifies = Target.caster;
     private Attribute attribute;

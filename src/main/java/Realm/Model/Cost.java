@@ -1,10 +1,12 @@
 package Realm.Model;
 
+import java.io.Serializable;
+
 /**
  * @author Robin Duda
  *         Holds the cost of a spell.
  */
-class Cost {
+class Cost implements Serializable {
     private Attribute requires;
     private Integer value;
 

@@ -1,11 +1,13 @@
 package Realm.Model;
 
+import java.io.Serializable;
+
 /**
  * @author Robin Duda
  *         Allows modification of one players stats by the stats of another players.
  *         Use case: dealing damage, healing, applying afflictions
  */
-public class Using {
+public class Using implements Serializable {
     private Target source = Target.caster;
     private Attribute attribute;
     private Double value;

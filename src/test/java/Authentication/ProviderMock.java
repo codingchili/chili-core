@@ -3,21 +3,25 @@ package Authentication;
 import Authentication.Configuration.AuthProvider;
 import Authentication.Configuration.AuthServerSettings;
 import Authentication.Model.AsyncAccountStore;
+import Authentication.Model.AsyncRealmStore;
 import Configuration.ConfigMock;
-import Configuration.ConfigurationLoader;
 import Logging.LoggerMock;
 import Logging.Model.Logger;
-import io.vertx.core.Vertx;
 
 /**
  * @author Robin Duda
  */
-class ProviderMock extends AuthProvider {
-    private AsyncAccountStore accounts;
+public class ProviderMock extends AuthProvider {
+    private AsyncRealmStore realms = new RealmStoreMock();
+    private AsyncAccountStore accounts = new AccountStoreMock();
 
-    ProviderMock(Vertx vertx) {
-        super(vertx);
-        this.accounts = super.getAccountStore();
+    public ProviderMock() {
+        super();
+    }
+
+    @Override
+    public AsyncRealmStore getRealmStore() {
+        return realms;
     }
 
     @Override
@@ -28,11 +32,6 @@ class ProviderMock extends AuthProvider {
     @Override
     public Logger getLogger() {
         return new LoggerMock();
-    }
-
-    @Override
-    public ConfigurationLoader getConfig() {
-        return new ConfigMock();
     }
 
     @Override

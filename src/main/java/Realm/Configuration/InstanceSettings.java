@@ -4,13 +4,14 @@ import Realm.Model.Node;
 import Realm.Model.Npc;
 import Realm.Model.Portal;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * @author Robin Duda
  *         Contains settings for an instance of a map.
  */
-public class InstanceSettings {
+public class InstanceSettings implements Serializable {
     private ArrayList<Portal> portals;
     private ArrayList<Node> nodes;
     private ArrayList<Npc> npc;

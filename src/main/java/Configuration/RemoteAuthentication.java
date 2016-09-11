@@ -2,11 +2,13 @@ package Configuration;
 
 import Protocols.Authorization.Token;
 
+import java.io.Serializable;
+
 /**
  * @author Robin Duda
  *         contains settings required to authenticate with a remote component.
  */
-public class RemoteAuthentication {
+public class RemoteAuthentication implements Serializable {
     private Token token = null;
     private String system;
     private String host;
