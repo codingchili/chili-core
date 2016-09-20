@@ -1,0 +1,27 @@
+{
+  "repository": {
+    "remote":"https://github.com/codingchili/chili-core.git",
+    "branch":"master",
+    "commit":"<last-synced>",
+    "poll":15000
+  },
+  "deploy": {
+    "await": {"replication":true},
+    "notification":{"event":"cluster.deploy"},
+    "paths": {
+      {"os":"linux", "path":"/opt/chili"},
+      {"os":"windows", "path":"c:\chili"}
+    },
+    hosts:[{
+        "host":"localhost", 
+        "os":"linux",
+        "system":["*"],
+        "authentication": {
+          "username":"root",
+          "password":"root",
+          "certificate":"root.key",
+          "passphrase":"optional"
+        }
+    ]
+  }
+}
