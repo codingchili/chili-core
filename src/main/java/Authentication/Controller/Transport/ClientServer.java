@@ -8,6 +8,7 @@ import Configuration.Routing;
 import Protocols.Access;
 import Protocols.Authorization.TokenFactory;
 import Protocols.Exception.AuthorizationRequiredException;
+import Protocols.Exception.HandlerMissingException;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerOptions;
@@ -54,7 +55,7 @@ public class ClientServer extends AbstractVerticle {
             handler.process(request, access(request));
         } catch (AuthorizationRequiredException authorizationRequired) {
             request.unauthorized();
-        } catch (Exception e) {
+        } catch (HandlerMissingException e) {
             request.error();
         }
     }

@@ -10,6 +10,7 @@ import Patching.Controller.ClientPatchHandler;
 import Patching.Controller.ClientRequest;
 import Protocols.Access;
 import Protocols.Exception.AuthorizationRequiredException;
+import Protocols.Exception.HandlerMissingException;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
@@ -82,7 +83,7 @@ public class ClientServer implements Verticle {
             handler.process(request, Access.PUBLIC);
         } catch (AuthorizationRequiredException e) {
             request.unauthorized();
-        } catch (Exception e) {
+        } catch (HandlerMissingException e) {
             request.error();
         }
     }
