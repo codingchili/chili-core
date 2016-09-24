@@ -7,8 +7,7 @@
     },
     "system" : "routing",
     "host" : "server.1",
-    "remote" : "localhost",
-    "port" : 6109
+    "port" : 0
   },
   "transport" : [ {
     "type" : "UDP",

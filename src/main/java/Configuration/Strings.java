@@ -85,8 +85,8 @@ public class Strings {
     public static final String DB_CHARACTERS = "characters";
 
     // Cluster addressing.
-    public static final String ADDRESS_AUTHENTICATION_CLIENTS = "authentication.clients.node";
-    public static final String ADDRESS_AUTHENTICATION_REALMS = "authentication.realms.node";
+    public static final String ADDRESS_AUTHENTICATION_CLIENTS = "clients.authentication.node";
+    public static final String ADDRESS_AUTHENTICATION_REALMS = "realms.authentication.node";
     public static final String ADDRESS_WEBSERVER = "webserver.node";
     public static final String ADDRESS_PATCHING = "patching.node";
     public static final String ADDRESS_LOGGING = "logging.node";

@@ -36,7 +36,7 @@ public class DefaultLogger extends Handler implements Logger {
         this.vertx = vertx;
 
         vertx.eventBus().consumer(LOCAL_LOGGING, message -> {
-            vertx.eventBus().send(ADDRESS_LOGGING, message.body());
+            vertx.eventBus().publish(ADDRESS_LOGGING, message.body());
         });
     }
 

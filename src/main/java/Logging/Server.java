@@ -19,8 +19,9 @@ import io.vertx.core.Vertx;
  * @author Robin Duda
  *         Receives logging data from the other components and writes it to an elasticsearch cluster or console.
  */
-public class Server extends ClusterServer {
+public class Server implements Verticle {
     private Logger logger;
+    private Vertx vertx;
     private LogServerSettings settings;
 
     @Override
@@ -36,7 +37,7 @@ public class Server extends ClusterServer {
     }
 
     @Override
-    public void initialize(Future<Void> start) {
+    public void start(Future<Void> start) {
         LogProvider provider = new LogProvider(settings, logger, vertx);
 
         for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {

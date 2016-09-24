@@ -82,6 +82,11 @@ public class FileConfiguration implements ConfigurationLoader {
     }
 
     @Override
+    public VertxSettings getVertxSettings() {
+        return vertxSettings;
+    }
+
+    @Override
     public PatchServerSettings getPatchServerSettings() {
         return patchserver;
     }

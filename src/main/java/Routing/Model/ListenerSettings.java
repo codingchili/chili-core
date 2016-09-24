@@ -3,7 +3,7 @@ package Routing.Model;
 /**
  * @author Robin Duda
  */
-public class WireListener {
+public class ListenerSettings {
     private WireType type;
     private int port;
     private int timeout;

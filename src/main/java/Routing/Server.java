@@ -2,13 +2,14 @@ package Routing;
 
 import Configuration.FileConfiguration;
 import Logging.Model.Logger;
+import Protocols.ClusterServer;
 import Routing.Configuration.RouteProvider;
 import Routing.Configuration.RoutingSettings;
 import Routing.Controller.Transport.RestListener;
 import Routing.Controller.Transport.TcpListener;
 import Routing.Controller.Transport.UdpListener;
 import Routing.Controller.Transport.WebsocketListener;
-import Routing.Model.WireListener;
+import Routing.Model.ListenerSettings;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
@@ -20,9 +21,8 @@ import io.vertx.core.Vertx;
  */
 public class Server implements Verticle {
     private RoutingSettings settings;
-    private RouteProvider provider;
-    private Logger logger;
     private Vertx vertx;
+    private Logger logger;
 
     @Override
     public Vertx getVertx() {
@@ -33,15 +33,17 @@ public class Server implements Verticle {
     public void init(Vertx vertx, Context context) {
         this.vertx = vertx;
         this.settings = FileConfiguration.instance().getRoutingSettings();
-        this.provider = new RouteProvider(vertx, settings);
-        this.logger = provider.getLogger();
     }
 
     @Override
-    public void start(Future<Void> start) throws Exception {
+    public void start(Future<Void> start) {
+        RouteProvider provider = new RouteProvider(vertx, settings);
+
+        this.logger = provider.getLogger();
+
         for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
 
-            for (WireListener listener : settings.getTransport()) {
+            for (ListenerSettings listener : settings.getTransport()) {
                 switch (listener.getType()) {
                     case UDP:
                         vertx.deployVerticle(new UdpListener(provider, listener));

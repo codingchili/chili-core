@@ -3,7 +3,7 @@ package Routing.Configuration;
 import Configuration.Configurable;
 import Configuration.RemoteAuthentication;
 import Configuration.Strings;
-import Routing.Model.WireListener;
+import Routing.Model.ListenerSettings;
 
 import java.util.ArrayList;
 
@@ -12,13 +12,13 @@ import java.util.ArrayList;
  */
 public class RoutingSettings implements Configurable {
     private RemoteAuthentication logserver;
-    private ArrayList<WireListener> transport;
+    private ArrayList<ListenerSettings> transport;
 
-    public ArrayList<WireListener> getTransport() {
+    public ArrayList<ListenerSettings> getTransport() {
         return transport;
     }
 
-    public void setTransport(ArrayList<WireListener> transport) {
+    public void setTransport(ArrayList<ListenerSettings> transport) {
         this.transport = transport;
     }
 

@@ -21,6 +21,11 @@ import java.util.ArrayList;
 public class ConfigMock implements ConfigurationLoader {
 
     @Override
+    public VertxSettings getVertxSettings() {
+        return new VertxSettings();
+    }
+
+    @Override
     public PatchServerSettings getPatchServerSettings() {
         return new PatchServerSettings();
     }

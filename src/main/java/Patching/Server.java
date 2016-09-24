@@ -15,9 +15,10 @@ import io.vertx.core.Vertx;
  * @author Robin Duda
  *         website and resource server.
  */
-public class Server extends ClusterServer {
+public class Server implements Verticle {
     private PatchProvider provider;
     private Logger logger;
+    private Vertx vertx;
 
     public Server() {
     }
@@ -43,7 +44,7 @@ public class Server extends ClusterServer {
     }
 
     @Override
-    public void initialize(Future<Void> start) {
+    public void start(Future<Void> start) {
         for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
             vertx.deployVerticle(new ClusterListener(new ClientPatchHandler(provider)));
         }

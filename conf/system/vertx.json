@@ -1,4 +1,13 @@
 {
+  "help": {
+    "Authentication.Server": "Start the authentication node.",
+    "Logging.Server": "Start the logger node.",
+    "Routing.Server": "Start the cluster router node.",
+    "Patching.Server": "Start the patch-service node.",
+    "Website.Server": "Start the website server.",
+    "Realm.Server": "Start the realm/gameserver node.",
+    "*": "Start all available nodes in a single cluster on the same machine."
+  },
   "metrics": true,
   "rate": 15000
 }

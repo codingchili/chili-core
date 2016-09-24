@@ -7,8 +7,7 @@
     },
     "system" : "authserver",
     "host" : "server.1",
-    "remote" : "localhost",
-    "port" : 6109
+    "port" : 0
   },
   "clientSecret" : "weeP3o5pa+fOZtW9V1nJbSnzmMOxU2vee3IzYyGYt3IgGHnTV2MWzZ3EyLqMmpkqKL6Tz+dCAx7dTgz1Zvx+Kw==",
   "realmSecret" : "YBH7Kxe9nhC9k5EeIsXnQogms25e9NHeWFB27OZLOr8rKkdibsmz0mgXXVak3DLRM4BwPvPB6BpVhhc2ALewTw==",

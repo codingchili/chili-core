@@ -1,47 +1,77 @@
 import Configuration.FileConfiguration;
+import Configuration.JsonFileStore;
+import Configuration.Strings;
 import Configuration.VertxSettings;
-import io.vertx.core.*;
+import Logging.Model.ConsoleLogger;
+import io.vertx.core.CompositeFuture;
+import io.vertx.core.Future;
+import io.vertx.core.Verticle;
+import io.vertx.core.Vertx;
+
+import java.io.IOException;
 
 /**
  * @author Robin Duda
  *         Launches all the components of the system on a single host.
  */
-public class Launcher implements Verticle {
+public class Launcher {
     private Vertx vertx;
 
-    @Override
-    public Vertx getVertx() {
-        return vertx;
+    public static void main(String[] args) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+        Future<Launcher> future = Future.future();
+
+        if (args.length == 0) {
+            printHelp();
+        } else {
+            future.setHandler(startup -> {
+                if (startup.succeeded()) {
+                    Launcher launcher = startup.result();
+
+                    for (String arg : args) {
+                        if (arg.equals("*")) {
+                            launcher.startAll();
+                        } else {
+                            launcher.start(arg);
+                        }
+                    }
+                } else {
+                    throw new RuntimeException(startup.cause());
+                }
+            });
+            new Launcher(future);
+        }
     }
 
-    @Override
-    public void init(Vertx vertx, Context context) {
-        FileConfiguration.instance();
-        this.vertx = vertx;
+    private static void printHelp() {
+        ConsoleLogger logger = new ConsoleLogger().setStyle(ConsoleLogger.Style.PRETTY);
+        try {
+            logger.log(JsonFileStore.readObject(Strings.PATH_VERTX));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    @Override
-    public void start(final Future<Void> start) {
-        Future<Void> logging = Future.future();
-        startServer(logging, new Logging.Server());
-
+    public Launcher(Future<Launcher> future) {
         Vertx.clusteredVertx(VertxSettings.Configuration(), cluster -> {
             this.vertx = cluster.result();
 
             if (cluster.succeeded()) {
-                logging.setHandler(logger -> {
-                    if (logger.succeeded()) {
-                        startAll(start);
-                    } else
-                        start.fail(logger.cause());
-                });
+                future.complete(this);
             } else {
-                start.fail(cluster.cause());
+                future.fail(cluster.cause());
             }
         });
     }
 
-    private void startAll(Future<Void> future) {
+    public void start(String arg) {
+        vertx.deployVerticle(arg, result -> {
+            if (result.failed()) {
+                throw new RuntimeException(result.cause());
+            }
+        });
+    }
+
+    private void startAll() {
         Future<Void> patch = Future.future();
         Future<Void> authentication = Future.future();
         Future<Void> game = Future.future();
@@ -49,10 +79,9 @@ public class Launcher implements Verticle {
         Future<Void> router = Future.future();
 
         CompositeFuture.all(patch, authentication, game, router).setHandler(result -> {
-            if (result.succeeded()) {
-                future.complete();
-            } else
-                future.fail(result.cause());
+            if (result.failed()) {
+                throw new RuntimeException(result.cause());
+            }
         });
 
         startServer(router, new Routing.Server());
@@ -69,10 +98,5 @@ public class Launcher implements Verticle {
             else
                 future.fail(result.cause());
         });
-    }
-
-    @Override
-    public void stop(Future<Void> stop) {
-        stop.complete();
     }
 }

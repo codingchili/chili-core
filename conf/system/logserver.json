@@ -7,8 +7,7 @@
     },
     "system" : "logserver",
     "host" : "server.1",
-    "remote" : "localhost",
-    "port" : 6109
+    "port" : 0
   },
   "elastic" : {
     "remote" : "localhost",

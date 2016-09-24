@@ -8,15 +8,17 @@ import Protocols.ClusterListener;
 import Protocols.ClusterServer;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
+import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
 
 /**
  * @author Robin Duda
  *         Starts up the client handler and the realmName handler.
  */
-public class Server extends ClusterServer {
+public class Server implements Verticle {
     private AuthProvider provider;
     private Logger logger;
+    private Vertx vertx;
 
     public Server() {
     }
@@ -37,7 +39,7 @@ public class Server extends ClusterServer {
     }
 
     @Override
-    public void initialize(Future<Void> start) {
+    public void start(Future<Void> start) {
         if (provider == null) {
             Future<AuthProvider> providerFuture = Future.future();
 

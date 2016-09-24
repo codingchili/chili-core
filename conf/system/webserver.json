@@ -7,8 +7,7 @@
     },
     "system" : "webserver",
     "host" : "server.1",
-    "remote" : "localhost",
-    "port" : 6109
+    "port" : 0
   },
   "patchserver" : {
     "remote" : "http://localhost",

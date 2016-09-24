@@ -11,6 +11,8 @@ import Website.Configuration.WebserverSettings;
  * @author Robin Duda
  */
 public interface ConfigurationLoader {
+    VertxSettings getVertxSettings();
+
     PatchServerSettings getPatchServerSettings();
 
     RealmServerSettings getGameServerSettings();
