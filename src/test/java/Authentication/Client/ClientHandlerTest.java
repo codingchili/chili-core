@@ -7,7 +7,6 @@ import Authentication.Model.AsyncAccountStore;
 import Authentication.ProviderMock;
 import Configuration.ConfigMock;
 import Configuration.Strings;
-import Protocols.Access;
 import Protocols.Authorization.Token;
 import Protocols.Authorization.TokenFactory;
 import Protocols.Protocol;
@@ -290,7 +289,7 @@ public class ClientHandlerTest {
 
     private void handle(String action, ResponseListener listener, JsonObject data) {
         try {
-            handler.process(new ClientRequestMock(data, listener, action), Access.AUTHORIZE);
+            handler.process(new ClientRequestMock(data, listener, action));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

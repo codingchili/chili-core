@@ -6,6 +6,7 @@ import Authentication.Model.AsyncAccountStore;
 import Authentication.Model.AsyncRealmStore;
 import Protocols.*;
 import Protocols.Authentication.RealmRegister;
+import Protocols.Authorization.TokenFactory;
 import Protocols.Exception.AuthorizationRequiredException;
 import Protocols.Exception.HandlerMissingException;
 import Protocols.Realm.CharacterResponse;
@@ -22,14 +23,22 @@ import static Protocols.Access.PUBLIC;
  */
 public class RealmHandler implements HandlerProvider {
     private Protocol protocol = new Protocol(this.getClass());
-    private  AsyncRealmStore realmStore;
-    private  AsyncAccountStore accounts;
-    private  AuthServerSettings settings;
+    private AsyncRealmStore realmStore;
+    private AsyncAccountStore accounts;
+    private AuthServerSettings settings;
+    private TokenFactory tokens;
 
     public RealmHandler(AuthProvider provider) {
         accounts = provider.getAccountStore();
         settings = provider.getAuthserverSettings();
         realmStore = provider.getRealmStore();
+        tokens = provider.getClientTokenFactory();
+    }
+
+    @Authenticator
+    public Access authenticate(Request request) {
+        boolean authorized = tokens.verifyToken(request.token());
+        return (authorized) ? Access.AUTHORIZE : Access.PUBLIC;
     }
 
     @Handler(value = REALM_AUTHENTICATE, access = PUBLIC)
@@ -96,7 +105,7 @@ public class RealmHandler implements HandlerProvider {
     }
 
     @Override
-    public void process(Request request, Access access) throws AuthorizationRequiredException, HandlerMissingException {
-        protocol.handle(this, request, access);
+    public void process(Request request) throws AuthorizationRequiredException, HandlerMissingException {
+        protocol.handle(this, request);
     }
 }

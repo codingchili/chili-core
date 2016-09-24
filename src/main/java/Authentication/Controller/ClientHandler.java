@@ -30,14 +30,20 @@ public class ClientHandler implements HandlerProvider {
     private Protocol protocol = new Protocol(this.getClass());
     private AsyncRealmStore realmStore;
     private AsyncAccountStore accounts;
-    private TokenFactory factory;
+    private TokenFactory tokens;
     private Logger logger;
 
     public ClientHandler(AuthProvider provider) {
         this.logger = provider.getLogger();
         this.accounts = provider.getAccountStore();
-        this.factory = new TokenFactory(provider.getAuthserverSettings().getClientSecret());
+        this.tokens = new TokenFactory(provider.getAuthserverSettings().getClientSecret());
         this.realmStore = provider.getRealmStore();
+    }
+
+    @Authenticator
+    public Access authenticate(Request request) {
+        boolean authorized = tokens.verifyToken(request.token());
+        return (authorized) ? Access.AUTHORIZE : Access.PUBLIC;
     }
 
     @Handler(CLIENT_REALM_TOKEN)
@@ -212,7 +218,7 @@ public class ClientHandler implements HandlerProvider {
             request.authenticate(
                     new ClientAuthentication(
                             account,
-                            new Token(factory, account.getUsername()),
+                            new Token(tokens, account.getUsername()),
                             registered,
                             metadata.result()));
 
@@ -237,7 +243,7 @@ public class ClientHandler implements HandlerProvider {
     }
 
     @Override
-    public void process(Request request, Access access) throws AuthorizationRequiredException, HandlerMissingException {
-        protocol.handle(this, request, access);
+    public void process(Request request) throws AuthorizationRequiredException, HandlerMissingException {
+        protocol.handle(this, request);
     }
 }

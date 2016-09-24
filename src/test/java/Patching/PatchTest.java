@@ -56,7 +56,7 @@ public class PatchTest {
     }
 
     private void handle(ClientRequest request) throws Exception {
-        handler.process(request, Access.PUBLIC);
+        handler.process(request);
     }
 
     @Test

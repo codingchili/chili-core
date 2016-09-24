@@ -11,7 +11,7 @@ import Protocols.Exception.HandlerMissingException;
 import java.nio.file.NoSuchFileException;
 
 import static Configuration.Strings.*;
-import static Protocols.Access.PUBLIC;
+import static Protocols.Access.AUTHORIZE;
 
 /**
  * @author Robin Duda
@@ -26,32 +26,37 @@ public class ClientPatchHandler implements HandlerProvider {
         this.patcher = provider.getPatchKeeper();
     }
 
-    @Handler(value = PATCH_IDENTIFIER, access = PUBLIC)
+    @Authenticator
+    public Access authenticate(Request request) {
+        return AUTHORIZE;
+    }
+
+    @Handler(value = PATCH_IDENTIFIER)
     private void patchinfo(ClientRequest request) {
         request.write(patcher.getPatchNotes());
     }
 
-    @Handler(value = PATCH_GAME_INFO, access = PUBLIC)
+    @Handler(value = PATCH_GAME_INFO)
     private void gameinfo(ClientRequest request) {
         request.write(settings.getGameinfo());
     }
 
-    @Handler(value = PATCH_NEWS, access = PUBLIC)
+    @Handler(value = PATCH_NEWS)
     private void news(ClientRequest request) {
         request.write(settings.getNews());
     }
 
-    @Handler(value = PATCH_AUTHSERVER, access = PUBLIC)
+    @Handler(value = PATCH_AUTHSERVER)
     private void authserver(ClientRequest request) {
         request.write(settings.getAuthserver());
     }
 
-    @Handler(value = PATCH_DATA, access = PUBLIC)
+    @Handler(value = PATCH_DATA)
     private void patchdata(ClientRequest request) {
         request.write(patcher.getDetails());
     }
 
-    @Handler(value = PATCH_DOWNLOAD, access = PUBLIC)
+    @Handler(value = PATCH_DOWNLOAD)
     private void download(ClientRequest request) {
         try {
             request.file(patcher.getFile(request.file(), request.version()));
@@ -63,7 +68,7 @@ public class ClientPatchHandler implements HandlerProvider {
     }
 
     @Override
-    public void process(Request request, Access access) throws AuthorizationRequiredException, HandlerMissingException {
-        protocol.handle(this, request, access);
+    public void process(Request request) throws AuthorizationRequiredException, HandlerMissingException {
+        protocol.handle(this, request);
     }
 }

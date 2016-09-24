@@ -52,19 +52,12 @@ public class RealmServer extends AbstractVerticle {
 
     public void handle(RealmRequest request) {
         try {
-            handler.process(request, access(request));
+            handler.process(request);
         } catch (AuthorizationRequiredException authorizationRequired) {
             request.unauthorized();
         } catch (HandlerMissingException e) {
             e.printStackTrace();
         }
-    }
-
-    private Access access(RealmRequest request) {
-        if (request.connection().authenticated())
-            return Access.AUTHORIZE;
-        else
-            return Access.PUBLIC;
     }
 
     private RealmConnection getConnection(ServerWebSocket socket) {

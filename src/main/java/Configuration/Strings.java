@@ -155,4 +155,5 @@ public class Strings {
     public static final String ERROR_IN_ADDRESS = "The requested node was not found in the cluster.";
     public static final String ERROR_NOT_AUTHORIZED = "The requested resource requires authorization.";
     public static final String ERROR_HANDLER_MISSING = "The requested handler was not found.";
+    public static final String ERROR_HANDLER_MISSING_AUTHENTICATOR = "The handler is missing an @Authenticator.";
 }

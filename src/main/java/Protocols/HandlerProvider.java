@@ -8,5 +8,5 @@ import Protocols.Exception.HandlerMissingException;
  * @author Robin Duda
  */
 public interface HandlerProvider {
-    void process(Request request, Access access) throws AuthorizationRequiredException, HandlerMissingException;
+    void process(Request request) throws AuthorizationRequiredException, HandlerMissingException;
 }

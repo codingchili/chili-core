@@ -1,9 +1,10 @@
 package Authentication.Controller.Transport;
 
 import Authentication.Configuration.AuthProvider;
+import Authentication.Controller.ClientHandler;
+import Authentication.Controller.RealmHandler;
 import Protocols.Access;
 import Protocols.Authorization.TokenFactory;
-import Protocols.Protocol;
 import Protocols.Request;
 import Protocols.Transport.BusListener;
 import io.vertx.core.AbstractVerticle;
@@ -16,7 +17,8 @@ import static Protocols.Access.PUBLIC;
  * @author Robin Duda
  */
 public class MessageListener extends AbstractVerticle implements BusListener {
-    private Protocol protocol;
+    private ClientHandler clientHandler;
+    private RealmHandler realmHandler;
     private AuthProvider provider;
     private TokenFactory clientToken;
     private TokenFactory realmToken;

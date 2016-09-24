@@ -4,8 +4,8 @@ import Authentication.Controller.ClientRequest;
 import Authentication.Model.Account;
 import Configuration.Strings;
 import Protocols.Authentication.ClientAuthentication;
-import Protocols.Serializer;
 import Protocols.Authorization.Token;
+import Protocols.Serializer;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
@@ -13,8 +13,6 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
-
-import static Configuration.Strings.*;
 
 /**
  * @author Robin Duda

@@ -52,16 +52,11 @@ public class ClientServer extends AbstractVerticle {
 
     public void handle(ClientRequest request) {
         try {
-            handler.process(request, access(request));
+            handler.process(request);
         } catch (AuthorizationRequiredException authorizationRequired) {
             request.unauthorized();
         } catch (HandlerMissingException e) {
             request.error();
         }
-    }
-
-    private Access access(ClientRequest request) {
-        boolean authorized = tokens.verifyToken(request.token());
-        return (authorized) ? Access.AUTHORIZE : Access.PUBLIC;
     }
 }

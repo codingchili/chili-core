@@ -80,7 +80,7 @@ public class ClientServer implements Verticle {
         String method = context.request().path().replace("/api/", "");
         ClientRequest request = new ClientRestRequest(context, method);
         try {
-            handler.process(request, Access.PUBLIC);
+            handler.process(request);
         } catch (AuthorizationRequiredException e) {
             request.unauthorized();
         } catch (HandlerMissingException e) {
