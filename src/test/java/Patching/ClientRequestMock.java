@@ -12,12 +12,12 @@ import io.vertx.core.json.JsonObject;
  */
 class ClientRequestMock implements ClientRequest {
     private ResponseListener listener;
-    private JsonObject json;
+    private JsonObject data;
     private String action;
 
     ClientRequestMock(ResponseListener listener, JsonObject json, String action) {
         this.listener = listener;
-        this.json = json;
+        this.data = json;
         this.action = action;
     }
 
@@ -29,12 +29,12 @@ class ClientRequestMock implements ClientRequest {
 
     @Override
     public String file() {
-        return json.getString("file");
+        return data.getString("file");
     }
 
     @Override
     public String version() {
-        return json.getString("version");
+        return data.getString("version");
     }
 
     @Override
@@ -75,5 +75,10 @@ class ClientRequestMock implements ClientRequest {
     @Override
     public Token token() {
         return null;
+    }
+
+    @Override
+    public JsonObject data() {
+        return data;
     }
 }

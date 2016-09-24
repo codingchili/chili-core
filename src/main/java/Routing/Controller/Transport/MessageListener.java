@@ -3,14 +3,13 @@ package Routing.Controller.Transport;
 import Authentication.Configuration.AuthProvider;
 import Authentication.Controller.ClientHandler;
 import Authentication.Controller.RealmHandler;
-import Protocols.Transport.BusListener;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 
 /**
  * @author Robin Duda
  */
-class MessageListener extends AbstractVerticle implements BusListener {
+class MessageListener extends AbstractVerticle {
     private ClientHandler clientHandler;
     private RealmHandler realmHandler;
     private AuthProvider provider;

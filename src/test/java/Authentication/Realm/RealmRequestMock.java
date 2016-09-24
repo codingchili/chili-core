@@ -52,6 +52,11 @@ public class RealmRequestMock implements RealmRequest {
     }
 
     @Override
+    public JsonObject data() {
+        return data;
+    }
+
+    @Override
     public String account() {
         return null;
     }

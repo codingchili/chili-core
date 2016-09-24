@@ -22,8 +22,4 @@ public interface ConfigurationLoader {
     WebserverSettings getWebsiteSettings();
 
     RoutingSettings getRoutingSettings();
-
-    class Address {
-        public final static String LOGS = Strings.LOG_ID;
-    }
 }

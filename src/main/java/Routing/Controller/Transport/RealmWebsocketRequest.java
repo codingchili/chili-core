@@ -96,6 +96,11 @@ class RealmWebsocketRequest implements RealmRequest {
     }
 
     @Override
+    public JsonObject data() {
+        return data;
+    }
+
+    @Override
     public String account() {
         return data.getString(ID_ACCOUNT);
     }

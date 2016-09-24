@@ -3,21 +3,19 @@ package Authentication;
 import Authentication.Configuration.AuthProvider;
 import Authentication.Controller.ClientHandler;
 import Authentication.Controller.RealmHandler;
-import Configuration.VertxSettings;
 import Logging.Model.Logger;
 import Protocols.ClusterListener;
+import Protocols.ClusterServer;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
-import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
 
 /**
  * @author Robin Duda
  *         Starts up the client handler and the realmName handler.
  */
-public class Server implements Verticle {
+public class Server extends ClusterServer {
     private AuthProvider provider;
-    private Vertx vertx;
     private Logger logger;
 
     public Server() {
@@ -38,21 +36,8 @@ public class Server implements Verticle {
         this.vertx = vertx;
     }
 
-
     @Override
-    public void start(Future<Void> start) throws Exception {
-        Vertx.clusteredVertx(VertxSettings.Configuration(), cluster -> {
-            this.vertx = cluster.result();
-
-            if (cluster.succeeded()) {
-                initialize(start);
-            } else {
-                start.fail(cluster.cause());
-            }
-        });
-    }
-
-    private void initialize(Future<Void> start) {
+    public void initialize(Future<Void> start) {
         if (provider == null) {
             Future<AuthProvider> providerFuture = Future.future();
 

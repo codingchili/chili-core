@@ -2,10 +2,14 @@ package Logging;
 
 
 import Configuration.FileConfiguration;
+import Configuration.VertxSettings;
+import Logging.Configuration.LogProvider;
 import Logging.Configuration.LogServerSettings;
 import Logging.Controller.LogHandler;
 import Logging.Model.DefaultLogger;
 import Logging.Model.Logger;
+import Protocols.ClusterListener;
+import Protocols.ClusterServer;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
@@ -15,8 +19,7 @@ import io.vertx.core.Vertx;
  * @author Robin Duda
  *         Receives logging data from the other components and writes it to an elasticsearch cluster or console.
  */
-public class Server implements Verticle {
-    private Vertx vertx;
+public class Server extends ClusterServer {
     private Logger logger;
     private LogServerSettings settings;
 
@@ -33,10 +36,11 @@ public class Server implements Verticle {
     }
 
     @Override
-    public void start(Future<Void> start) throws Exception {
+    public void initialize(Future<Void> start) {
+        LogProvider provider = new LogProvider(settings, logger, vertx);
 
         for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
-            vertx.deployVerticle(new LogHandler(vertx, settings));
+            vertx.deployVerticle(new ClusterListener(new LogHandler(provider)));
         }
 
         logger.onServerStarted(start);

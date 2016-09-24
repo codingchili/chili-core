@@ -2,7 +2,10 @@ package Patching;
 
 import Logging.Model.Logger;
 import Patching.Configuration.PatchProvider;
-import Patching.Controller.Transport.ClientServer;
+import Patching.Controller.ClientPatchHandler;
+import Protocols.ClusterListener;
+import Protocols.ClusterServer;
+import Routing.Controller.Transport.ClientServerPatch;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
@@ -12,8 +15,7 @@ import io.vertx.core.Vertx;
  * @author Robin Duda
  *         website and resource server.
  */
-public class Server implements Verticle {
-    private Vertx vertx;
+public class Server extends ClusterServer {
     private PatchProvider provider;
     private Logger logger;
 
@@ -41,10 +43,9 @@ public class Server implements Verticle {
     }
 
     @Override
-    public void start(Future<Void> start) throws Exception {
-
+    public void initialize(Future<Void> start) {
         for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
-            vertx.deployVerticle(new ClientServer(provider));
+            vertx.deployVerticle(new ClusterListener(new ClientPatchHandler(provider)));
         }
 
         logger.onServerStarted(start);

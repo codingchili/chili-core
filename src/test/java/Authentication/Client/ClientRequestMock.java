@@ -64,6 +64,11 @@ class ClientRequestMock implements ClientRequest {
     }
 
     @Override
+    public JsonObject data() {
+        return data;
+    }
+
+    @Override
     public void write(Object object) {
         listener.handle(Serializer.json(object), ResponseStatus.ACCEPTED);
     }

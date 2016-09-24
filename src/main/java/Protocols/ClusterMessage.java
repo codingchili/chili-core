@@ -14,7 +14,7 @@ class ClusterMessage implements Request {
     private Message message;
 
     ClusterMessage(Message message) {
-        this.body = (JsonObject) message.body();
+        this.body = new JsonObject(message.body().toString());
         this.message =message;
     }
 
@@ -59,6 +59,11 @@ class ClusterMessage implements Request {
 
     @Override
     public Token token() {
-        return Serializer.unpack(body.getString(ID_TOKEN), Token.class);
+        return Serializer.unpack(body.getJsonObject(ID_TOKEN), Token.class);
+    }
+
+    @Override
+    public JsonObject data() {
+        return body;
     }
 }

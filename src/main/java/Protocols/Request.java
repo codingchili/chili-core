@@ -1,6 +1,7 @@
 package Protocols;
 
 import Protocols.Authorization.Token;
+import io.vertx.core.json.JsonObject;
 
 /**
  * @author Robin Duda
@@ -22,4 +23,6 @@ public interface Request {
     String action();
 
     Token token();
+
+    JsonObject data();
 }

@@ -72,6 +72,11 @@ class ClientRestRequest implements ClientRequest {
     }
 
     @Override
+    public JsonObject data() {
+        return null;
+    }
+
+    @Override
     public void write(Object object) {
         try {
             response.end(Buffer.buffer(Serializer.pack(object)));

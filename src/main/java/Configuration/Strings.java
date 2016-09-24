@@ -58,6 +58,7 @@ public class Strings {
     public static final String PROTOCOL_UNAUTHORIZED = "unauthorized";
     public static final String PROTOCOL_MISSING = "missing";
     public static final String PROTOCOL_ACTION = "action";
+    public static final String PROTOCOL_LOGGING = "logging";
 
     // General shared attributes.
     public static final String ID_CHARACTER = "character";
@@ -90,6 +91,9 @@ public class Strings {
     public static final String ADDRESS_PATCHING = "patching.node";
     public static final String ADDRESS_LOGGING = "logging.node";
     public static final String ADDRESS_REALM = "realm.node";
+
+    public static final String LOCAL_LOGGING = "logging.local";
+
 
     // Routing
     public static final String ROUTER_MISSING_MAP = "router.missing";
