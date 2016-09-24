@@ -1,7 +1,7 @@
 package Authentication.Realm;
 
 import Authentication.Controller.RealmRequest;
-import Authentication.Controller.Transport.RealmConnection;
+import Routing.Controller.Transport.RealmConnection;
 import Configuration.Strings;
 import Protocols.Authorization.Token;
 import Realm.Configuration.RealmSettings;

@@ -19,8 +19,8 @@ public class ClientPatchHandler extends HandlerProvider {
     private PatchKeeper patcher;
 
     public ClientPatchHandler(PatchProvider provider) {
-        protocol = new Protocol(this.getClass());
-        logger = provider.getLogger();
+        super(ClientPatchHandler.class, provider.getLogger(), ADDRESS_PATCHING);
+
         this.settings = provider.getSettings();
         this.patcher = provider.getPatchKeeper();
     }
@@ -30,32 +30,32 @@ public class ClientPatchHandler extends HandlerProvider {
         return AUTHORIZE;
     }
 
-    @Handler(value = PATCH_IDENTIFIER)
+    @Handles(PATCH_IDENTIFIER)
     public void patchinfo(ClientRequest request) {
         request.write(patcher.getPatchNotes());
     }
 
-    @Handler(value = PATCH_GAME_INFO)
+    @Handles(PATCH_GAME_INFO)
     public void gameinfo(ClientRequest request) {
         request.write(settings.getGameinfo());
     }
 
-    @Handler(value = PATCH_NEWS)
+    @Handles(PATCH_NEWS)
     public void news(ClientRequest request) {
         request.write(settings.getNews());
     }
 
-    @Handler(value = PATCH_AUTHSERVER)
+    @Handles(PATCH_AUTHSERVER)
     public void authserver(ClientRequest request) {
         request.write(settings.getAuthserver());
     }
 
-    @Handler(value = PATCH_DATA)
+    @Handles(PATCH_DATA)
     public void patchdata(ClientRequest request) {
         request.write(patcher.getDetails());
     }
 
-    @Handler(value = PATCH_DOWNLOAD)
+    @Handles(PATCH_DOWNLOAD)
     public void download(ClientRequest request) {
         try {
             request.file(patcher.getFile(request.file(), request.version()));

@@ -2,7 +2,6 @@ package Authentication.Client;
 
 import Authentication.Configuration.AuthProvider;
 import Authentication.Controller.ClientHandler;
-import Authentication.Controller.Transport.ClientServer;
 import Authentication.ProviderMock;
 import Configuration.ConfigMock;
 import Configuration.Strings;

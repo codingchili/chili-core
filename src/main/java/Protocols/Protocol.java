@@ -17,9 +17,9 @@ public class Protocol {
 
     public Protocol(Class clazz) {
         for (Method method : clazz.getDeclaredMethods()) {
-            if (method.isAnnotationPresent(Handler.class)) {
+            if (method.isAnnotationPresent(Handles.class)) {
 
-                Handler handler = method.getAnnotation(Handler.class);
+                Handles handler = method.getAnnotation(Handles.class);
                 use(handler.value(), method, handler.access());
             }
 

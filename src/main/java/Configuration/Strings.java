@@ -54,6 +54,10 @@ public class Strings {
     public static final String PROTOCOL_CONNECTION = "connection";
     public static final String PROTOCOL_ERROR = "error";
     public static final String PROTOCOL_AUTHENTICATION = "authentication";
+    public static final String PROTOCOL_CONFLICT = "conflict";
+    public static final String PROTOCOL_UNAUTHORIZED = "unauthorized";
+    public static final String PROTOCOL_MISSING = "missing";
+    public static final String PROTOCOL_ACTION = "action";
 
     // General shared attributes.
     public static final String ID_CHARACTER = "character";
@@ -80,7 +84,8 @@ public class Strings {
     public static final String DB_CHARACTERS = "characters";
 
     // Cluster addressing.
-    public static final String ADDRESS_AUTHENTICATION = "authentication.node";
+    public static final String ADDRESS_AUTHENTICATION_CLIENTS = "authentication.clients.node";
+    public static final String ADDRESS_AUTHENTICATION_REALMS = "authentication.realms.node";
     public static final String ADDRESS_WEBSERVER = "webserver.node";
     public static final String ADDRESS_PATCHING = "patching.node";
     public static final String ADDRESS_LOGGING = "logging.node";

@@ -1,7 +1,7 @@
 package Routing.Controller;
 
 import Configuration.Strings;
-import Protocols.Handler;
+import Protocols.Handles;
 import Routing.Configuration.RouteProvider;
 import Routing.Model.ClusterRequest;
 import io.vertx.core.Vertx;
@@ -19,7 +19,7 @@ public class RoutingHandler {
         this.vertx = provider.getVertx();
     }
 
-    @Handler(ADDRESS_REALM)
+    @Handles(ADDRESS_REALM)
     private void realm(ClusterRequest request) {
         sendCluster(realmAddress(request), request);
     }
@@ -28,24 +28,29 @@ public class RoutingHandler {
         return Strings.ADDRESS_REALM + "." + request.realm() + "." + request.instance();
     }
 
-    @Handler(ADDRESS_LOGGING)
+    @Handles(ADDRESS_LOGGING)
     private void logging(ClusterRequest request) {
         sendCluster(Strings.ADDRESS_LOGGING, request);
     }
 
-    @Handler(ADDRESS_PATCHING)
+    @Handles(ADDRESS_PATCHING)
     private void patching(ClusterRequest request) {
         sendCluster(Strings.ADDRESS_PATCHING, request);
     }
 
-    @Handler(ADDRESS_WEBSERVER)
+    @Handles(ADDRESS_WEBSERVER)
     private void webserver(ClusterRequest request) {
         sendCluster(Strings.ADDRESS_WEBSERVER, request);
     }
 
-    @Handler(ADDRESS_AUTHENTICATION)
-    private void authentication(ClusterRequest request) {
-        sendCluster(Strings.ADDRESS_AUTHENTICATION, request);
+    @Handles(ADDRESS_AUTHENTICATION_CLIENTS)
+    private void clientAuthentication(ClusterRequest request) {
+        sendCluster(ADDRESS_AUTHENTICATION_CLIENTS, request);
+    }
+
+    @Handles(ADDRESS_AUTHENTICATION_REALMS)
+    private void realmAuthentication(ClusterRequest request) {
+        sendCluster(ADDRESS_AUTHENTICATION_REALMS, request);
     }
 
     private void sendCluster(String address, ClusterRequest request) {

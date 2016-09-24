@@ -26,12 +26,12 @@ public class RealmHandler extends HandlerProvider {
     private TokenFactory tokens;
 
     public RealmHandler(AuthProvider provider) {
-        protocol = new Protocol(this.getClass());
+        super(ClientHandler.class, provider.getLogger(),ADDRESS_AUTHENTICATION_REALMS);
+
         accounts = provider.getAccountStore();
         settings = provider.getAuthserverSettings();
         realmStore = provider.getRealmStore();
         tokens = provider.getClientTokenFactory();
-        logger = provider.getLogger();
     }
 
     @Authenticator
@@ -40,7 +40,7 @@ public class RealmHandler extends HandlerProvider {
         return (authorized) ? Access.AUTHORIZE : Access.PUBLIC;
     }
 
-    @Handler(value = REALM_AUTHENTICATE, access = PUBLIC)
+    @Handles(value = REALM_AUTHENTICATE, access = PUBLIC)
     public void register(RealmRequest request) {
         Future<Void> realmFuture = Future.future();
         RealmSettings realm = request.realm();
@@ -58,7 +58,7 @@ public class RealmHandler extends HandlerProvider {
         realmStore.put(realmFuture, realm);
     }
 
-    @Handler(REALM_UPDATE)
+    @Handles(REALM_UPDATE)
     public void update(RealmRequest request) {
         Future<Void> updateFuture = Future.future();
         String realmName = request.realmName();
@@ -75,7 +75,7 @@ public class RealmHandler extends HandlerProvider {
         realmStore.update(updateFuture, realmName, players);
     }
 
-    @Handler(CLIENT_CLOSE)
+    @Handles(CLIENT_CLOSE)
     public void disconnected(RealmRequest request) {
         Future<Void> realmFuture = Future.future();
 
@@ -90,7 +90,7 @@ public class RealmHandler extends HandlerProvider {
         realmStore.remove(realmFuture, request.realm().getName());
     }
 
-    @Handler(REALM_CHARACTER_REQUEST)
+    @Handles(REALM_CHARACTER_REQUEST)
     public void character(RealmRequest request) {
         Future<PlayerCharacter> find = Future.future();
 

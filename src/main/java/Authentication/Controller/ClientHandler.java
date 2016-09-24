@@ -29,8 +29,8 @@ public class ClientHandler extends HandlerProvider {
     private TokenFactory tokens;
 
     public ClientHandler(AuthProvider provider) {
-        this.protocol =  new Protocol(this.getClass());
-        this.logger = provider.getLogger();
+        super(ClientHandler.class, provider.getLogger(),ADDRESS_AUTHENTICATION_CLIENTS);
+
         this.accounts = provider.getAccountStore();
         this.tokens = new TokenFactory(provider.getAuthserverSettings().getClientSecret());
         this.realmStore = provider.getRealmStore();
@@ -42,7 +42,7 @@ public class ClientHandler extends HandlerProvider {
         return (authorized) ? Access.AUTHORIZE : Access.PUBLIC;
     }
 
-    @Handler(CLIENT_REALM_TOKEN)
+    @Handles(CLIENT_REALM_TOKEN)
     public void realmtoken(ClientRequest request) {
         Future<Token> token = Future.future();
 
@@ -57,7 +57,7 @@ public class ClientHandler extends HandlerProvider {
         realmStore.signToken(token, request.realmName(), request.account());
     }
 
-    @Handler(CLIENT_CHARACTER_LIST)
+    @Handles(CLIENT_CHARACTER_LIST)
     public void characterList(ClientRequest request) {
         Future<ArrayList<PlayerCharacter>> characterFuture = Future.future();
 
@@ -81,7 +81,7 @@ public class ClientHandler extends HandlerProvider {
         accounts.findCharacters(characterFuture, request.realmName(), request.account());
     }
 
-    @Handler(CLIENT_CHARACTER_CREATE)
+    @Handles(CLIENT_CHARACTER_CREATE)
     public void characterCreate(ClientRequest request) {
         Future<PlayerCharacter> find = Future.future();
 
@@ -153,7 +153,7 @@ public class ClientHandler extends HandlerProvider {
             throw new PlayerClassDisabledException();
     }
 
-    @Handler(CLIENT_CHARACTER_REMOVE)
+    @Handles(CLIENT_CHARACTER_REMOVE)
     public void characterRemove(ClientRequest request) {
         accounts.removeCharacter(Future.future().setHandler(remove -> {
             if (remove.succeeded())
@@ -163,7 +163,7 @@ public class ClientHandler extends HandlerProvider {
         }), request.realmName(), request.account(), request.character());
     }
 
-    @Handler(value = CLIENT_REGISTER, access =  PUBLIC)
+    @Handles(value = CLIENT_REGISTER, access =  PUBLIC)
     public void register(ClientRequest request) {
         Future<Account> future = Future.future();
 
@@ -183,7 +183,7 @@ public class ClientHandler extends HandlerProvider {
         accounts.register(future, request.getAccount());
     }
 
-    @Handler(value = CLIENT_AUTHENTICATE, access = PUBLIC)
+    @Handles(value = CLIENT_AUTHENTICATE, access = PUBLIC)
     public void authenticate(ClientRequest request) {
         Future<Account> future = Future.future();
 
@@ -227,7 +227,7 @@ public class ClientHandler extends HandlerProvider {
         realmStore.getMetadataList(future);
     }
 
-    @Handler(value = CLIENT_REALM_LIST, access = PUBLIC)
+    @Handles(value = CLIENT_REALM_LIST, access = PUBLIC)
     public void realmlist(ClientRequest request) {
         Future<ArrayList<RealmMetaData>> future = Future.future();
 

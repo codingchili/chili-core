@@ -1,9 +1,11 @@
 package Authentication;
 
 import Authentication.Configuration.AuthProvider;
-import Authentication.Controller.Transport.ClientServer;
-import Authentication.Controller.Transport.RealmServer;
+import Authentication.Controller.ClientHandler;
+import Authentication.Controller.RealmHandler;
+import Configuration.VertxSettings;
 import Logging.Model.Logger;
+import Protocols.ClusterListener;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
@@ -39,6 +41,18 @@ public class Server implements Verticle {
 
     @Override
     public void start(Future<Void> start) throws Exception {
+        Vertx.clusteredVertx(VertxSettings.Configuration(), cluster -> {
+            this.vertx = cluster.result();
+
+            if (cluster.succeeded()) {
+                initialize(start);
+            } else {
+                start.fail(cluster.cause());
+            }
+        });
+    }
+
+    private void initialize(Future<Void> start) {
         if (provider == null) {
             Future<AuthProvider> providerFuture = Future.future();
 
@@ -48,8 +62,8 @@ public class Server implements Verticle {
                     this.logger = provider.getLogger();
 
                     for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
-                        vertx.deployVerticle(new ClientServer(provider));
-                        vertx.deployVerticle(new RealmServer(provider));
+                        vertx.deployVerticle(new ClusterListener(new RealmHandler(provider)));
+                        vertx.deployVerticle(new ClusterListener(new ClientHandler(provider)));
                     }
 
                     logger.onServerStarted(start);
