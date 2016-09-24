@@ -32,24 +32,23 @@ public class LogHandler extends AbstractVerticle {
     }
 
     public void start(Future<Void> start) {
-        vertx.createHttpServer(new HttpServerOptions().setCompressionSupported(true)).websocketHandler(connection -> {
+        vertx.createHttpServer(new HttpServerOptions().setCompressionSupported(true)).websocketHandler(connection ->
 
-            connection.handler(data -> {
-                JsonObject message = data.toJsonObject();
+                connection.handler(data -> {
+                    JsonObject message = data.toJsonObject();
 
-                if (message.containsKey(Strings.ID_TOKEN)) {
-                    Token token = Serializer.unpack(data.toJsonObject().getJsonObject(Strings.ID_TOKEN), Token.class);
+                    if (message.containsKey(Strings.ID_TOKEN)) {
+                        Token token = Serializer.unpack(data.toJsonObject().getJsonObject(Strings.ID_TOKEN), Token.class);
 
-                    if (tokenFactory.verifyToken(token)) {
-                        JsonObject logdata = data.toJsonObject();
+                        if (tokenFactory.verifyToken(token)) {
+                            JsonObject logdata = data.toJsonObject();
 
-                        logdata.remove(Strings.ID_TOKEN);
+                            logdata.remove(Strings.ID_TOKEN);
 
-                        elastic.log(logdata);
-                        console.log(logdata);
+                            elastic.log(logdata);
+                            console.log(logdata);
+                        }
                     }
-                }
-            });
-        }).listen(settings.getPort());
+                })).listen(settings.getPort());
     }
 }

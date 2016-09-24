@@ -4,7 +4,6 @@ import Configuration.FileConfiguration;
 import Logging.Model.Logger;
 import Routing.Configuration.RouteProvider;
 import Routing.Configuration.RoutingSettings;
-import Routing.Controller.RoutingHandler;
 import Routing.Controller.Transport.RestListener;
 import Routing.Controller.Transport.TcpListener;
 import Routing.Controller.Transport.UdpListener;

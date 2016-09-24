@@ -11,6 +11,7 @@ import io.vertx.core.shareddata.AsyncMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 /**
  * @author Robin Duda
@@ -52,9 +53,10 @@ public class HazelRealmDB implements AsyncRealmStore {
 
             if (map.succeeded()) {
 
-                for (String key : map.result().keySet()) {
-                    list.add(new RealmMetaData(map.result().get(key)));
-                }
+                list.addAll(map.result().keySet()
+                        .stream()
+                        .map(key -> new RealmMetaData(map.result().get(key)))
+                        .collect(Collectors.toList()));
 
                 future.complete(list);
             } else {

@@ -47,7 +47,6 @@ public class ClientHandlerTest {
     private static final String REALM_NAME = "realmName.name";
     private static final String CLASS_NAME = "class.name";
     private static TokenFactory clientToken;
-    private static Protocol protocol = new Protocol(ClientHandler.class);
     private static AuthProvider provider;
     private static ClientHandler handler;
 
@@ -284,7 +283,7 @@ public class ClientHandlerTest {
     }
 
     private void handle(String action, ResponseListener listener) {
-        handle(action, listener, null);
+        handle(action, listener, new JsonObject().put(Strings.ID_TOKEN, getClientToken()));
     }
 
     private void handle(String action, ResponseListener listener, JsonObject data) {

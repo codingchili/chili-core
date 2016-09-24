@@ -5,8 +5,6 @@ import Patching.Configuration.PatchServerSettings;
 import Patching.Model.PatchKeeper;
 import Patching.Model.PatchReloadedException;
 import Protocols.*;
-import Protocols.Exception.AuthorizationRequiredException;
-import Protocols.Exception.HandlerMissingException;
 
 import java.nio.file.NoSuchFileException;
 
@@ -16,12 +14,13 @@ import static Protocols.Access.AUTHORIZE;
 /**
  * @author Robin Duda
  */
-public class ClientPatchHandler implements HandlerProvider {
-    private Protocol protocol = new Protocol(this.getClass());
+public class ClientPatchHandler extends HandlerProvider {
     private PatchServerSettings settings;
     private PatchKeeper patcher;
 
     public ClientPatchHandler(PatchProvider provider) {
+        protocol = new Protocol(this.getClass());
+        logger = provider.getLogger();
         this.settings = provider.getSettings();
         this.patcher = provider.getPatchKeeper();
     }
@@ -32,32 +31,32 @@ public class ClientPatchHandler implements HandlerProvider {
     }
 
     @Handler(value = PATCH_IDENTIFIER)
-    private void patchinfo(ClientRequest request) {
+    public void patchinfo(ClientRequest request) {
         request.write(patcher.getPatchNotes());
     }
 
     @Handler(value = PATCH_GAME_INFO)
-    private void gameinfo(ClientRequest request) {
+    public void gameinfo(ClientRequest request) {
         request.write(settings.getGameinfo());
     }
 
     @Handler(value = PATCH_NEWS)
-    private void news(ClientRequest request) {
+    public void news(ClientRequest request) {
         request.write(settings.getNews());
     }
 
     @Handler(value = PATCH_AUTHSERVER)
-    private void authserver(ClientRequest request) {
+    public void authserver(ClientRequest request) {
         request.write(settings.getAuthserver());
     }
 
     @Handler(value = PATCH_DATA)
-    private void patchdata(ClientRequest request) {
+    public void patchdata(ClientRequest request) {
         request.write(patcher.getDetails());
     }
 
     @Handler(value = PATCH_DOWNLOAD)
-    private void download(ClientRequest request) {
+    public void download(ClientRequest request) {
         try {
             request.file(patcher.getFile(request.file(), request.version()));
         } catch (PatchReloadedException e) {
@@ -65,10 +64,5 @@ public class ClientPatchHandler implements HandlerProvider {
         } catch (NoSuchFileException e) {
             request.missing();
         }
-    }
-
-    @Override
-    public void process(Request request) throws AuthorizationRequiredException, HandlerMissingException {
-        protocol.handle(this, request);
     }
 }

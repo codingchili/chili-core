@@ -112,7 +112,7 @@ public interface Logger {
 
     /**
      * Throw when a requested handler was not found.
-     * @param action
+     * @param action the name of the missing handler.
      */
     void onHandlerMissing(String action);
 }

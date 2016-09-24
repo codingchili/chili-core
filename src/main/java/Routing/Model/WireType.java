@@ -8,4 +8,4 @@ public enum WireType {
     TCP,
     WEBSOCKET,
     REST
-};
+}

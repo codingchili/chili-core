@@ -4,11 +4,7 @@ import Configuration.FileConfiguration;
 import Configuration.Provider;
 import Logging.Model.DefaultLogger;
 import Logging.Model.Logger;
-import Patching.Controller.ClientRequest;
 import Patching.Model.PatchKeeper;
-import Protocols.AuthorizationHandler.Access;
-import Protocols.PacketHandler;
-import Protocols.Protocol;
 import io.vertx.core.Vertx;
 
 /**

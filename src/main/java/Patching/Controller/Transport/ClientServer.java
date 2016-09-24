@@ -79,22 +79,15 @@ public class ClientServer implements Verticle {
     private void packet(RoutingContext context) {
         String method = context.request().path().replace("/api/", "");
         ClientRequest request = new ClientRestRequest(context, method);
-        try {
-            handler.process(request);
-        } catch (AuthorizationRequiredException e) {
-            request.unauthorized();
-        } catch (HandlerMissingException e) {
-            request.error();
-        }
+        handler.process(request);
     }
 
     private void setCatchAll(Router router) {
-        router.route().handler(context -> {
-            context.response()
-                    .setStatusCode(404)
-                    .putHeader("content-type", "application/json")
-                    .end("{\"page\" : 404}");
-        });
+        router.route().handler(context ->
+                context.response()
+                        .setStatusCode(404)
+                        .putHeader("content-type", "application/json")
+                        .end("{\"page\" : 404}"));
     }
 
     @Override

@@ -4,15 +4,12 @@ package Logging;
 import Configuration.FileConfiguration;
 import Logging.Configuration.LogServerSettings;
 import Logging.Controller.LogHandler;
-import Logging.Model.ConsoleLogger;
 import Logging.Model.DefaultLogger;
 import Logging.Model.Logger;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
-
-import java.io.IOException;
 
 /**
  * @author Robin Duda

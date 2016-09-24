@@ -6,7 +6,7 @@ import java.io.Serializable;
  * @author Robin Duda
  *         Contains item data.
  */
-public class Item implements Serializable {
+class Item implements Serializable {
     private String name;
     private String description;
     private Attributes attributes;

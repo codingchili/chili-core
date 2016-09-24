@@ -21,16 +21,17 @@ public class AuthProvider implements Provider {
     private AsyncAccountStore accounts;
     private AsyncRealmStore realms;
     private AuthServerSettings settings;
+    private Vertx vertx;
     private Logger logger;
 
-    public AuthProvider() {
-    }
+    public AuthProvider() {}
 
-    public AuthProvider(AsyncRealmStore realms, AsyncAccountStore accounts, Vertx vertx) {
+    private AuthProvider(AsyncRealmStore realms, AsyncAccountStore accounts, Vertx vertx) {
         this.realms = realms;
         this.accounts = accounts;
         this.settings = FileConfiguration.instance().getAuthSettings();
         this.logger = new DefaultLogger(vertx, settings.getLogserver());
+        this.vertx = vertx;
     }
 
     public static void create(Future<AuthProvider> future, Vertx vertx) {
@@ -63,6 +64,10 @@ public class AuthProvider implements Provider {
     @Override
     public Logger getLogger() {
         return logger;
+    }
+
+    public Vertx getVertx() {
+        return vertx;
     }
 
     public AuthServerSettings getAuthserverSettings() {

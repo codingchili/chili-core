@@ -2,9 +2,9 @@ package Authentication.Controller.Transport;
 
 import Authentication.Controller.RealmRequest;
 import Configuration.Strings;
-import Realm.Configuration.RealmSettings;
-import Protocols.Serializer;
 import Protocols.Authorization.Token;
+import Protocols.Serializer;
+import Realm.Configuration.RealmSettings;
 import io.vertx.core.json.JsonObject;
 
 import static Configuration.Strings.*;
@@ -24,8 +24,8 @@ class RealmWebsocketRequest implements RealmRequest {
         this.realm = data.getJsonObject(ID_REALM);
     }
 
-    RealmWebsocketRequest(RealmConnection connection) {
-        this(connection, null);
+    RealmWebsocketRequest(RealmConnection connection, String action) {
+        this(connection, new JsonObject().put(Strings.ID_ACTION, action));
     }
 
     @Override

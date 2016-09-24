@@ -56,7 +56,11 @@ class ClientRequestMock implements ClientRequest {
 
     @Override
     public Token token() {
-        return Serializer.unpack(data.getJsonObject(ID_TOKEN), Token.class);
+        if (data.containsKey(ID_TOKEN)) {
+            return Serializer.unpack(data.getJsonObject(ID_TOKEN), Token.class);
+        } else {
+            return null;
+        }
     }
 
     @Override

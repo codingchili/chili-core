@@ -1,6 +1,5 @@
 package Routing.Model;
 
-import Configuration.Strings;
 import Protocols.Authorization.Token;
 import Protocols.Request;
 import Protocols.Serializer;

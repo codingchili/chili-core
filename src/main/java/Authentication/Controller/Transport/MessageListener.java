@@ -3,31 +3,21 @@ package Authentication.Controller.Transport;
 import Authentication.Configuration.AuthProvider;
 import Authentication.Controller.ClientHandler;
 import Authentication.Controller.RealmHandler;
-import Protocols.Access;
-import Protocols.Authorization.TokenFactory;
-import Protocols.Request;
 import Protocols.Transport.BusListener;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 
-import static Protocols.Access.AUTHORIZE;
-import static Protocols.Access.PUBLIC;
-
 /**
  * @author Robin Duda
  */
-public class MessageListener extends AbstractVerticle implements BusListener {
+class MessageListener extends AbstractVerticle implements BusListener {
     private ClientHandler clientHandler;
     private RealmHandler realmHandler;
     private AuthProvider provider;
-    private TokenFactory clientToken;
-    private TokenFactory realmToken;
 
     public MessageListener(AuthProvider provider) {
-        this.clientToken = provider.getClientTokenFactory();
-        this.realmToken = provider.getRealmTokenFactory();
-
-
+        clientHandler = new ClientHandler(provider);
+        realmHandler = new RealmHandler(provider);
     }
 
     private void packet() {
@@ -44,10 +34,6 @@ public class MessageListener extends AbstractVerticle implements BusListener {
         }
     }*/
 
-    private Access access(Request request) {
-        boolean authorized = realmToken.verifyToken(request.token());
-        return (authorized) ? AUTHORIZE : PUBLIC;
-    }
 
     @Override
     public void start(Future<Void> start) {

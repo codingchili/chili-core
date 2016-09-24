@@ -2,7 +2,6 @@ package Authentication.Controller;
 
 import Authentication.Configuration.AuthProvider;
 import Authentication.Model.*;
-import Logging.Model.Logger;
 import Protocols.*;
 import Protocols.Authentication.CharacterList;
 import Protocols.Authentication.ClientAuthentication;
@@ -10,8 +9,6 @@ import Protocols.Authentication.RealmList;
 import Protocols.Authentication.RealmMetaData;
 import Protocols.Authorization.Token;
 import Protocols.Authorization.TokenFactory;
-import Protocols.Exception.AuthorizationRequiredException;
-import Protocols.Exception.HandlerMissingException;
 import Realm.Configuration.RealmSettings;
 import Realm.Model.PlayerCharacter;
 import Realm.Model.PlayerClass;
@@ -26,14 +23,13 @@ import static Protocols.Access.PUBLIC;
  * @author Robin Duda
  *         Routing used to authenticate users and create/delete characters.
  */
-public class ClientHandler implements HandlerProvider {
-    private Protocol protocol = new Protocol(this.getClass());
+public class ClientHandler extends HandlerProvider {
     private AsyncRealmStore realmStore;
     private AsyncAccountStore accounts;
     private TokenFactory tokens;
-    private Logger logger;
 
     public ClientHandler(AuthProvider provider) {
+        this.protocol =  new Protocol(this.getClass());
         this.logger = provider.getLogger();
         this.accounts = provider.getAccountStore();
         this.tokens = new TokenFactory(provider.getAuthserverSettings().getClientSecret());
@@ -235,15 +231,8 @@ public class ClientHandler implements HandlerProvider {
     public void realmlist(ClientRequest request) {
         Future<ArrayList<RealmMetaData>> future = Future.future();
 
-        future.setHandler(result -> {
-            request.write(new RealmList(result.result()));
-        });
+        future.setHandler(result -> request.write(new RealmList(result.result())));
 
         realmStore.getMetadataList(future);
-    }
-
-    @Override
-    public void process(Request request) throws AuthorizationRequiredException, HandlerMissingException {
-        protocol.handle(this, request);
     }
 }

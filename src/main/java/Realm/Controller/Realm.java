@@ -82,8 +82,7 @@ public class Realm implements Verticle {
         start.complete();
     }
 
-    private void startInstances() throws IOException {
-
+    private void startInstances() {
         for (InstanceSettings instance : settings.getInstance()) {
             vertx.deployVerticle(new Instance(game, settings, instance));
         }
@@ -120,9 +119,7 @@ public class Realm implements Verticle {
                 }
             });
 
-            socket.endHandler(event -> {
-                connections.remove(socket.textHandlerID());
-            });
+            socket.endHandler(event -> connections.remove(socket.textHandlerID()));
 
         }).listen(settings.getPort());
     }
@@ -203,9 +200,7 @@ public class Realm implements Verticle {
     private void registerRealm() {
         sendAuthServer(new RealmRegister(settings));
 
-        vertx.setPeriodic(REALM_UPDATE, event -> {
-            sendAuthServer(new RealmUpdate(connections.size()));
-        });
+        vertx.setPeriodic(REALM_UPDATE, event -> sendAuthServer(new RealmUpdate(connections.size())));
     }
 
     @Override

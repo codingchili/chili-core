@@ -14,7 +14,7 @@ import io.vertx.core.Vertx;
  * @author Robin Duda
  *         Handles players in a map.
  */
-public class Instance implements Verticle {
+class Instance implements Verticle {
     private Vertx vertx;
     private InstanceSettings settings;
     private RealmSettings realm;

@@ -3,12 +3,7 @@ package Authentication.Controller.Transport;
 import Authentication.Configuration.AuthProvider;
 import Authentication.Configuration.AuthServerSettings;
 import Authentication.Controller.ClientHandler;
-import Authentication.Controller.ClientRequest;
 import Configuration.Routing;
-import Protocols.Access;
-import Protocols.Authorization.TokenFactory;
-import Protocols.Exception.AuthorizationRequiredException;
-import Protocols.Exception.HandlerMissingException;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerOptions;
@@ -21,13 +16,11 @@ import io.vertx.ext.web.handler.BodyHandler;
  */
 public class ClientServer extends AbstractVerticle {
     private AuthServerSettings settings;
-    private TokenFactory tokens;
     private ClientHandler handler;
 
     public ClientServer(AuthProvider provider) {
         this.handler = new ClientHandler(provider);
         this.settings = provider.getAuthserverSettings();
-        this.tokens = new TokenFactory(settings.getClientSecret());
     }
 
     @Override
@@ -47,16 +40,6 @@ public class ClientServer extends AbstractVerticle {
     }
 
     private void packet(RoutingContext context) {
-        handle(new ClientRestRequest(context));
-    }
-
-    public void handle(ClientRequest request) {
-        try {
-            handler.process(request);
-        } catch (AuthorizationRequiredException authorizationRequired) {
-            request.unauthorized();
-        } catch (HandlerMissingException e) {
-            request.error();
-        }
+        handler.process(new ClientRestRequest(context));
     }
 }

@@ -8,7 +8,7 @@ import Protocols.Header;
  *         Contains the result of an authentication attempt.
  */
 public class AuthenticationResult {
-    public static final String ACTION = Strings.REALM_AUTHENTICATION_RESULT;
+    private static final String ACTION = Strings.REALM_AUTHENTICATION_RESULT;
     private boolean success;
     private Header header;
 

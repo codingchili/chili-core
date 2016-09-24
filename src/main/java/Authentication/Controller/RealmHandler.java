@@ -7,8 +7,6 @@ import Authentication.Model.AsyncRealmStore;
 import Protocols.*;
 import Protocols.Authentication.RealmRegister;
 import Protocols.Authorization.TokenFactory;
-import Protocols.Exception.AuthorizationRequiredException;
-import Protocols.Exception.HandlerMissingException;
 import Protocols.Realm.CharacterResponse;
 import Realm.Configuration.RealmSettings;
 import Realm.Model.PlayerCharacter;
@@ -21,18 +19,19 @@ import static Protocols.Access.PUBLIC;
  * @author Robin Duda
  *         Routing used to authenticate realms and generate realmName lists.
  */
-public class RealmHandler implements HandlerProvider {
-    private Protocol protocol = new Protocol(this.getClass());
+public class RealmHandler extends HandlerProvider {
     private AsyncRealmStore realmStore;
     private AsyncAccountStore accounts;
     private AuthServerSettings settings;
     private TokenFactory tokens;
 
     public RealmHandler(AuthProvider provider) {
+        protocol = new Protocol(this.getClass());
         accounts = provider.getAccountStore();
         settings = provider.getAuthserverSettings();
         realmStore = provider.getRealmStore();
         tokens = provider.getClientTokenFactory();
+        logger = provider.getLogger();
     }
 
     @Authenticator
@@ -102,10 +101,5 @@ public class RealmHandler implements HandlerProvider {
                 request.error();
         });
         accounts.findCharacter(find, request.realmName(), request.account(), request.name());
-    }
-
-    @Override
-    public void process(Request request) throws AuthorizationRequiredException, HandlerMissingException {
-        protocol.handle(this, request);
     }
 }

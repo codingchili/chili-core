@@ -25,12 +25,9 @@ public class ElasticLogger {
             vertx.createHttpClient().post(
                     settings.getPort(),
                     settings.getRemote(),
-                    settings.getIndex() + "/all/", response -> {
-
-                        response.handler(event -> {
-                        });
-
-                    }).end(data.encode());
+                    settings.getIndex() + "/all/", response -> response.handler(event -> {
+                    }))
+                    .end(data.encode());
         }
     }
 
