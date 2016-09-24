@@ -2,6 +2,7 @@ package Authentication.Client;
 
 import Authentication.Controller.ClientRequest;
 import Authentication.Model.Account;
+import Configuration.Strings;
 import Shared.ResponseListener;
 import Protocols.Authentication.ClientAuthentication;
 import Protocols.Serializer;
@@ -11,16 +12,20 @@ import io.vertx.core.json.JsonObject;
 
 import static Protocols.Serializer.unpack;
 
+import static Configuration.Strings.*;
+
 /**
  * @author Robin Duda
  */
 class ClientRequestMock implements ClientRequest {
     private ResponseListener listener;
-    private JsonObject data;
+    private JsonObject data = new JsonObject();
+    private String action;
 
-    ClientRequestMock(JsonObject data, ResponseListener listener) {
+    ClientRequestMock(JsonObject data, ResponseListener listener, String action) {
         this.data = data;
         this.listener = listener;
+        this.action = action;
     }
 
 
@@ -51,7 +56,7 @@ class ClientRequestMock implements ClientRequest {
 
     @Override
     public Token token() {
-        return Serializer.unpack(data.getJsonObject("token"), Token.class);
+        return Serializer.unpack(data.getJsonObject(ID_TOKEN), Token.class);
     }
 
     @Override
@@ -72,6 +77,11 @@ class ClientRequestMock implements ClientRequest {
     @Override
     public void conflict() {
         listener.handle(null, ResponseStatus.CONFLICT);
+    }
+
+    @Override
+    public String action() {
+        return action;
     }
 
     @Override

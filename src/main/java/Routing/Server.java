@@ -40,8 +40,6 @@ public class Server implements Verticle {
 
     @Override
     public void start(Future<Void> start) throws Exception {
-        new RoutingHandler(provider);
-
         for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
 
             for (WireListener listener : settings.getTransport()) {

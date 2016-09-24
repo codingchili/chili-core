@@ -1,9 +1,12 @@
 package Routing.Model;
 
 import Configuration.Strings;
+import Protocols.Authorization.Token;
 import Protocols.Request;
 import Protocols.Serializer;
 import io.vertx.core.json.JsonObject;
+
+import static Configuration.Strings.*;
 
 /**
  * @author Robin Duda
@@ -29,16 +32,16 @@ public class ClusterRequest implements Request {
     }
 
     public String realm() {
-        return request.getString(Strings.ID_REALM);
+        return request.getString(ID_REALM);
     }
 
     public String instance() {
-        return request.getString(Strings.ID_INSTANCE);
+        return request.getString(ID_INSTANCE);
     }
 
     @Override
     public void missing() {
-        connection.write(new JsonObject().put(Strings.ID_ERROR, Strings.ERROR_IN_ADDRESS));
+        connection.write(new JsonObject().put(ID_ERROR, ERROR_IN_ADDRESS));
     }
 
     public long getTimeout() {
@@ -59,5 +62,15 @@ public class ClusterRequest implements Request {
 
     @Override
     public void conflict() {
+    }
+
+    @Override
+    public String action() {
+        return request.getString(ID_ACTION);
+    }
+
+    @Override
+    public Token token() {
+        return Serializer.unpack(request.getJsonObject(ID_TOKEN), Token.class);
     }
 }

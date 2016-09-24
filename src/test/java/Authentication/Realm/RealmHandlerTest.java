@@ -6,15 +6,12 @@ import Authentication.Controller.RealmHandler;
 import Authentication.Controller.RealmRequest;
 import Authentication.ProviderMock;
 import Configuration.ConfigMock;
-import Protocols.AuthorizationHandler;
+import Protocols.*;
 import Protocols.Exception.AuthorizationRequiredException;
 import Protocols.Exception.HandlerMissingException;
-import Protocols.PacketHandler;
-import Protocols.Protocol;
 import Realm.Configuration.RealmSettings;
 import Protocols.Realm.CharacterRequest;
 import Protocols.Authentication.RealmRegister;
-import Protocols.Serializer;
 import Protocols.Authorization.Token;
 import Protocols.Authorization.TokenFactory;
 import Shared.ResponseListener;
@@ -32,6 +29,8 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeUnit;
 
+import static Protocols.Access.AUTHORIZE;
+
 /**
  * @author Robin Duda
  *         tests the API from realmName->authentication server.
@@ -43,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 public class RealmHandlerTest {
     private AuthServerSettings authconfig = new ConfigMock().getAuthSettings();
     private RealmSettings realmconfig = new ConfigMock().getRealm();
-    private Protocol<PacketHandler<RealmRequest>> protocol;
+    private RealmHandler handler;
     private TokenFactory factory;
 
     @Rule
@@ -52,14 +51,11 @@ public class RealmHandlerTest {
     @Before
     public void setUp() {
         AuthProvider provider = new ProviderMock();
+        handler = new RealmHandler(provider);
         RealmSettings realm = new ConfigMock.RealmSettingsMock();
         provider.getRealmStore().put(Future.future(), realm);
-        protocol = provider.realmProtocol();
         factory = new TokenFactory("null".getBytes());
-        new RealmHandler(provider);
     }
-
-
 
     @Test
     public void shouldRegisterWithRealm(TestContext context) {
@@ -145,9 +141,9 @@ public class RealmHandlerTest {
 
     private void handle(String action, ResponseListener listener, JsonObject data) {
         try {
-            protocol.get(action, AuthorizationHandler.Access.AUTHORIZE).handle(new RealmRequestMock(data, listener));
-        } catch (AuthorizationRequiredException | HandlerMissingException e) {
-            throw new RuntimeException(e.getMessage());
+            handler.process(new RealmRequestMock(data, listener, action), AUTHORIZE);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

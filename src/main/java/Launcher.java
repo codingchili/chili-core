@@ -1,8 +1,5 @@
-import Authentication.Configuration.AuthProvider;
 import Configuration.FileConfiguration;
 import Configuration.VertxSettings;
-import Patching.Configuration.PatchProvider;
-import Website.Configuration.WebserverProvider;
 import io.vertx.core.*;
 
 /**

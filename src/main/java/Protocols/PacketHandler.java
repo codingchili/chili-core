@@ -5,6 +5,6 @@ package Protocols;
  */
 
 @FunctionalInterface
-public interface PacketHandler<Request> {
-    void handle(Request request);
+public interface PacketHandler {
+    void handle(Request request) throws Exception;
 }

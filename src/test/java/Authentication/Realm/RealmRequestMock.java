@@ -2,6 +2,7 @@ package Authentication.Realm;
 
 import Authentication.Controller.RealmRequest;
 import Authentication.Controller.Transport.RealmConnection;
+import Configuration.Strings;
 import Protocols.Authorization.Token;
 import Realm.Configuration.RealmSettings;
 import Shared.ResponseListener;
@@ -14,9 +15,10 @@ public class RealmRequestMock implements RealmRequest {
     private ResponseListener listener;
     private JsonObject data;
 
-    RealmRequestMock(JsonObject data, ResponseListener listener) {
+    RealmRequestMock(JsonObject data, ResponseListener listener, String action) {
         this.data = data;
         this.listener = listener;
+        this.data.put(Strings.ID_ACTION, action);
     }
 
     @Override
@@ -87,5 +89,10 @@ public class RealmRequestMock implements RealmRequest {
     @Override
     public void conflict() {
 
+    }
+
+    @Override
+    public String action() {
+        return data.getString(Strings.ID_ACTION);
     }
 }

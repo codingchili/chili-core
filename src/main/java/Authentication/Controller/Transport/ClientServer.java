@@ -1,21 +1,16 @@
 package Authentication.Controller.Transport;
 
 import Authentication.Configuration.AuthProvider;
-import Configuration.Routing;
-import Protocols.AuthorizationHandler.Access;
-import Authentication.Controller.ClientRequest;
-import Protocols.PacketHandler;
-import Protocols.Protocol;
-import Protocols.AuthorizationHandler;
-import Protocols.Exception.AuthorizationRequiredException;
-import Protocols.Exception.HandlerMissingException;
 import Authentication.Configuration.AuthServerSettings;
+import Authentication.Controller.ClientHandler;
+import Authentication.Controller.ClientRequest;
+import Configuration.Routing;
+import Protocols.Access;
 import Protocols.Authorization.TokenFactory;
-import io.netty.handler.codec.http.HttpResponseStatus;
+import Protocols.Exception.AuthorizationRequiredException;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerOptions;
-import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -24,13 +19,13 @@ import io.vertx.ext.web.handler.BodyHandler;
  * @author Robin Duda
  */
 public class ClientServer extends AbstractVerticle {
-    private Protocol<PacketHandler<ClientRequest>> protocol;
     private AuthServerSettings settings;
     private TokenFactory tokens;
+    private ClientHandler handler;
 
     public ClientServer(AuthProvider provider) {
+        this.handler = new ClientHandler(provider);
         this.settings = provider.getAuthserverSettings();
-        this.protocol = provider.clientProtocol();
         this.tokens = new TokenFactory(settings.getClientSecret());
     }
 
@@ -51,21 +46,20 @@ public class ClientServer extends AbstractVerticle {
     }
 
     private void packet(RoutingContext context) {
-        String path = context.request().path().replace("/api/", "");
-        handle(path, new ClientRestRequest(context));
+        handle(new ClientRestRequest(context));
     }
 
-    public void handle(String action, ClientRequest request) {
+    public void handle(ClientRequest request) {
         try {
-            protocol.get(action, access(request)).handle(request);
+            handler.process(request, access(request));
         } catch (AuthorizationRequiredException authorizationRequired) {
             request.unauthorized();
-        } catch (HandlerMissingException e) {
+        } catch (Exception e) {
             request.error();
         }
     }
 
-    private AuthorizationHandler.Access access(ClientRequest request) {
+    private Access access(ClientRequest request) {
         boolean authorized = tokens.verifyToken(request.token());
         return (authorized) ? Access.AUTHORIZE : Access.PUBLIC;
     }

@@ -2,6 +2,7 @@ package Patching;
 
 import Patching.Controller.ClientRequest;
 import Patching.Model.PatchFile;
+import Protocols.Authorization.Token;
 import Protocols.Serializer;
 import Shared.*;
 import io.vertx.core.json.JsonObject;
@@ -12,10 +13,12 @@ import io.vertx.core.json.JsonObject;
 class ClientRequestMock implements ClientRequest {
     private ResponseListener listener;
     private JsonObject json;
+    private String action;
 
-    ClientRequestMock(ResponseListener listener, JsonObject json) {
+    ClientRequestMock(ResponseListener listener, JsonObject json, String action) {
         this.listener = listener;
         this.json = json;
+        this.action = action;
     }
 
 
@@ -62,5 +65,15 @@ class ClientRequestMock implements ClientRequest {
     @Override
     public void conflict() {
         listener.handle(null, ResponseStatus.CONFLICT);
+    }
+
+    @Override
+    public String action() {
+        return action;
+    }
+
+    @Override
+    public Token token() {
+        return null;
     }
 }

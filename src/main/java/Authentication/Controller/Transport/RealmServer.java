@@ -1,17 +1,12 @@
 package Authentication.Controller.Transport;
 
 import Authentication.Configuration.AuthProvider;
-import Authentication.Controller.RealmRequest;
 import Authentication.Configuration.AuthServerSettings;
-import Configuration.Strings;
+import Authentication.Controller.RealmHandler;
+import Authentication.Controller.RealmRequest;
 import Logging.Model.Logger;
-import Protocols.Authentication.RealmRegister;
-import Protocols.AuthorizationHandler.Access;
-import Protocols.*;
+import Protocols.Access;
 import Protocols.Exception.AuthorizationRequiredException;
-import Protocols.Exception.HandlerMissingException;
-import Protocols.Serializer;
-import Protocols.Authorization.TokenFactory;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.http.ServerWebSocket;
@@ -23,30 +18,14 @@ import java.util.HashMap;
  */
 public class RealmServer extends AbstractVerticle {
     private HashMap<String, RealmConnection> connections = new HashMap<>();
-    private Protocol<PacketHandler<RealmRequest>> protocol;
     private AuthServerSettings settings;
-    private TokenFactory tokens;
+    private RealmHandler handler;
     private Logger logger;
 
     public RealmServer(AuthProvider provider) {
-        this.protocol = provider.realmProtocol();
         this.settings = provider.getAuthserverSettings();
         this.logger = provider.getLogger();
-        this.tokens = new TokenFactory(settings.getRealmSecret());
-
-        protocol.use(RealmRegister.ACTION, this::register, Access.PUBLIC);
-    }
-
-    private void register(RealmRequest request) {
-        if (tokens.verifyToken(request.token())) {
-            request.connection().authenticate(request.token().getDomain());
-            try {
-                protocol.get(Strings.REALM_AUTHENTICATE, Access.AUTHORIZE).handle(request);
-            } catch (AuthorizationRequiredException | HandlerMissingException ignored) {
-            }
-        } else {
-            request.unauthorized();
-        }
+        this.handler = new RealmHandler(provider);
     }
 
     @Override
@@ -54,15 +33,14 @@ public class RealmServer extends AbstractVerticle {
         vertx.createHttpServer().websocketHandler(socket -> {
 
             socket.handler(event -> {
-                Packet packet = Serializer.unpack(event.toString(), Packet.class);
                 RealmRequest request = new RealmWebsocketRequest(getConnection(socket), event.toJsonObject());
 
-                handle(packet.getAction(), request);
+                handle(request);
             });
 
             socket.endHandler(event -> {
                 logger.onRealmDisconnect(getConnection(socket).realm());
-                handle(Strings.CLIENT_CLOSE, new RealmWebsocketRequest(connections.remove(socket.textHandlerID())));
+                handle(new RealmWebsocketRequest(connections.remove(socket.textHandlerID())));
             });
 
             connections.put(socket.textHandlerID(), new RealmConnection(socket));
@@ -71,12 +49,12 @@ public class RealmServer extends AbstractVerticle {
         future.complete();
     }
 
-    public void handle(String action, RealmRequest request) {
+    public void handle(RealmRequest request) {
         try {
-            protocol.get(action, access(request)).handle(request);
+            handler.process(request, access(request));
         } catch (AuthorizationRequiredException authorizationRequired) {
             request.unauthorized();
-        } catch (HandlerMissingException e) {
+        } catch (Exception e) {
             request.error();
         }
     }

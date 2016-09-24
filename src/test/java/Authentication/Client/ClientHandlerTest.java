@@ -2,18 +2,14 @@ package Authentication.Client;
 
 import Authentication.Configuration.AuthProvider;
 import Authentication.Controller.ClientHandler;
-import Authentication.Controller.ClientRequest;
 import Authentication.Model.Account;
 import Authentication.Model.AsyncAccountStore;
 import Authentication.ProviderMock;
 import Configuration.ConfigMock;
 import Configuration.Strings;
+import Protocols.Access;
 import Protocols.Authorization.Token;
 import Protocols.Authorization.TokenFactory;
-import Protocols.AuthorizationHandler.Access;
-import Protocols.Exception.AuthorizationRequiredException;
-import Protocols.Exception.HandlerMissingException;
-import Protocols.PacketHandler;
 import Protocols.Protocol;
 import Protocols.Serializer;
 import Realm.Configuration.RealmSettings;
@@ -52,8 +48,9 @@ public class ClientHandlerTest {
     private static final String REALM_NAME = "realmName.name";
     private static final String CLASS_NAME = "class.name";
     private static TokenFactory clientToken;
-    private static Protocol<PacketHandler<ClientRequest>> protocol;
+    private static Protocol protocol = new Protocol(ClientHandler.class);
     private static AuthProvider provider;
+    private static ClientHandler handler;
 
     @Rule
     public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
@@ -61,11 +58,10 @@ public class ClientHandlerTest {
     @Before
     public void setUp() throws IOException {
         provider = new ProviderMock();
+        handler = new ClientHandler(provider);
         RealmSettings realm = new ConfigMock.RealmSettingsMock();
         provider.getRealmStore().put(Future.future(), realm);
         clientToken = new TokenFactory(provider.getAuthserverSettings().getClientSecret());
-        protocol = provider.clientProtocol();
-        new ClientHandler(provider);
         addAccount();
     }
 
@@ -294,9 +290,9 @@ public class ClientHandlerTest {
 
     private void handle(String action, ResponseListener listener, JsonObject data) {
         try {
-            protocol.get(action, Access.AUTHORIZE).handle(new ClientRequestMock(data, listener));
-        } catch (AuthorizationRequiredException | HandlerMissingException e) {
-            throw new RuntimeException(e.getMessage());
+            handler.process(new ClientRequestMock(data, listener, action), Access.AUTHORIZE);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -1,42 +1,38 @@
 package Protocols;
 
-import Protocols.AuthorizationHandler.Access;
+import Authentication.Controller.ClientRequest;
 import Protocols.Exception.AuthorizationRequiredException;
 import Protocols.Exception.HandlerMissingException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * @author Robin Duda
  */
-public class Protocol<Handler extends PacketHandler> {
-    private AuthorizationHandler<Handler> handlers;
+public class Protocol {
+    private AuthorizationHandler handlers = new AuthorizationHandler();
 
-    public Protocol() {
-        this.handlers = new AuthorizationHandler<>();
+    public Protocol(Class clazz) {
+        for (Method m : clazz.getDeclaredMethods()) {
+            if (m.isAnnotationPresent(Handler.class)) {
+
+                Handler handler = m.getAnnotation(Handler.class);
+                use(handler.value(), m, handler.access());
+            }
+        }
     }
 
-    public Protocol(Access access) {
-        this.handlers = new AuthorizationHandler<>(access);
+    public void handle(HandlerProvider handler, Request request, Access access) throws AuthorizationRequiredException, HandlerMissingException {
+        try {
+            handlers.get(request.action(), access).invoke(handler, request);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
     }
 
-    public Protocol<Handler> use(String action, Handler handler) {
-        handlers.use(action, handler);
-        return this;
-    }
-
-    public Protocol<Handler> use(String action, Handler handler, Access access) {
+    private void use(String action, Method handler, Access access) {
         handlers.use(action, handler, access);
-        return this;
-    }
-
-    public Handler get(String action, Access access) throws AuthorizationRequiredException, HandlerMissingException {
-        return handlers.get(action, access);
-    }
-
-    public HashMap<String, Handler> list() {
-        return handlers.list();
     }
 }
 

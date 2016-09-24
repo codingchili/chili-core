@@ -1,5 +1,7 @@
 package Protocols;
 
+import Protocols.Authorization.Token;
+
 /**
  * @author Robin Duda
  */
@@ -16,4 +18,8 @@ public interface Request {
     void missing();
 
     void conflict();
+
+    String action();
+
+    Token token();
 }

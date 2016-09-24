@@ -1,10 +1,8 @@
 package Authentication;
 
-import Authentication.Controller.ClientHandler;
+import Authentication.Configuration.AuthProvider;
 import Authentication.Controller.Transport.ClientServer;
 import Authentication.Controller.Transport.RealmServer;
-import Authentication.Configuration.AuthProvider;
-import Authentication.Controller.RealmHandler;
 import Logging.Model.Logger;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
@@ -48,9 +46,6 @@ public class Server implements Verticle {
                 if (future.succeeded()) {
                     this.provider = future.result();
                     this.logger = provider.getLogger();
-
-                    new ClientHandler(provider);
-                    new RealmHandler(provider);
 
                     for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
                         vertx.deployVerticle(new ClientServer(provider));

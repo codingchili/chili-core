@@ -1,10 +1,13 @@
 package Routing.Controller;
 
 import Configuration.Strings;
+import Protocols.Handler;
 import Routing.Configuration.RouteProvider;
 import Routing.Model.ClusterRequest;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.DeliveryOptions;
+
+import static Configuration.Strings.*;
 
 /**
  * @author Robin Duda
@@ -14,15 +17,9 @@ public class RoutingHandler {
 
     public RoutingHandler(RouteProvider provider) {
         this.vertx = provider.getVertx();
-
-        provider.getProtocol()
-                .use(Strings.ADDRESS_AUTHENTICATION, this::authentication)
-                .use(Strings.ADDRESS_WEBSERVER, this::webserver)
-                .use(Strings.ADDRESS_PATCHING, this::patching)
-                .use(Strings.ADDRESS_LOGGING, this::logging)
-                .use(Strings.ADDRESS_REALM, this::realm);
     }
 
+    @Handler(ADDRESS_REALM)
     private void realm(ClusterRequest request) {
         sendCluster(realmAddress(request), request);
     }
@@ -31,18 +28,22 @@ public class RoutingHandler {
         return Strings.ADDRESS_REALM + "." + request.realm() + "." + request.instance();
     }
 
+    @Handler(ADDRESS_LOGGING)
     private void logging(ClusterRequest request) {
         sendCluster(Strings.ADDRESS_LOGGING, request);
     }
 
+    @Handler(ADDRESS_PATCHING)
     private void patching(ClusterRequest request) {
         sendCluster(Strings.ADDRESS_PATCHING, request);
     }
 
+    @Handler(ADDRESS_WEBSERVER)
     private void webserver(ClusterRequest request) {
         sendCluster(Strings.ADDRESS_WEBSERVER, request);
     }
 
+    @Handler(ADDRESS_AUTHENTICATION)
     private void authentication(ClusterRequest request) {
         sendCluster(Strings.ADDRESS_AUTHENTICATION, request);
     }

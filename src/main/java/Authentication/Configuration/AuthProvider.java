@@ -1,7 +1,5 @@
 package Authentication.Configuration;
 
-import Authentication.Controller.ClientRequest;
-import Authentication.Controller.RealmRequest;
 import Authentication.Model.AsyncAccountStore;
 import Authentication.Model.AsyncRealmStore;
 import Authentication.Model.HazelAccountDB;
@@ -11,8 +9,7 @@ import Configuration.Provider;
 import Configuration.Strings;
 import Logging.Model.DefaultLogger;
 import Logging.Model.Logger;
-import Protocols.PacketHandler;
-import Protocols.Protocol;
+import Protocols.Authorization.TokenFactory;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -21,8 +18,6 @@ import io.vertx.core.Vertx;
  * @author Robin Duda
  */
 public class AuthProvider implements Provider {
-    private Protocol<PacketHandler<ClientRequest>> clientProtocol = new Protocol<>();
-    private Protocol<PacketHandler<RealmRequest>> realmProtocol = new Protocol<>();
     private AsyncAccountStore accounts;
     private AsyncRealmStore realms;
     private AuthServerSettings settings;
@@ -65,14 +60,6 @@ public class AuthProvider implements Provider {
         return accounts;
     }
 
-    public Protocol<PacketHandler<ClientRequest>> clientProtocol() {
-        return clientProtocol;
-    }
-
-    public Protocol<PacketHandler<RealmRequest>> realmProtocol() {
-        return realmProtocol;
-    }
-
     @Override
     public Logger getLogger() {
         return logger;
@@ -80,5 +67,13 @@ public class AuthProvider implements Provider {
 
     public AuthServerSettings getAuthserverSettings() {
         return settings;
+    }
+
+    public TokenFactory getClientTokenFactory() {
+        return new TokenFactory(settings.getClientSecret());
+    }
+
+    public TokenFactory getRealmTokenFactory() {
+        return new TokenFactory(settings.getRealmSecret());
     }
 }

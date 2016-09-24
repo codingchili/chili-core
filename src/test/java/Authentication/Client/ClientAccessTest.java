@@ -35,7 +35,6 @@ public class ClientAccessTest {
     public void setUp() throws IOException {
         AuthProvider provider = new ProviderMock();
         provider.getRealmStore().put(Future.future(), new ConfigMock.RealmSettingsMock());
-        new ClientHandler(provider);
         server = new ClientServer(provider);
     }
 
@@ -77,7 +76,7 @@ public class ClientAccessTest {
 
 
     private void handle(String action, ResponseListener listener, JsonObject data) {
-        server.handle(action, new ClientRequestMock(data, listener));
+        server.handle(new ClientRequestMock(data, listener, action));
     }
 
     private JsonObject getInvalidClientToken() {

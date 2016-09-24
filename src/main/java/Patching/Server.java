@@ -1,7 +1,7 @@
 package Patching;
 
 import Logging.Model.Logger;
-import Patching.Controller.ClientHandler;
+import Patching.Controller.ClientPatchHandler;
 import Patching.Configuration.PatchProvider;
 import Patching.Controller.Transport.ClientServer;
 import io.vertx.core.Context;
@@ -43,7 +43,6 @@ public class Server implements Verticle {
 
     @Override
     public void start(Future<Void> start) throws Exception {
-        new ClientHandler(provider);
 
         for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
             vertx.deployVerticle(new ClientServer(provider));

@@ -1,14 +1,11 @@
 package Patching;
 
 import Configuration.Strings;
-import Patching.Configuration.PatchServerSettings;
-import Patching.Controller.ClientHandler;
+import Patching.Controller.ClientPatchHandler;
 import Patching.Controller.ClientRequest;
 import Patching.Configuration.PatchProvider;
+import Protocols.Access;
 import Protocols.AuthorizationHandler;
-import Protocols.Exception.AuthorizationRequiredException;
-import Protocols.Exception.HandlerMissingException;
-import Protocols.PacketHandler;
 import Protocols.Protocol;
 import Shared.ResponseStatus;
 import io.vertx.core.Vertx;
@@ -29,17 +26,15 @@ import org.junit.runner.RunWith;
 
 @RunWith(VertxUnitRunner.class)
 public class PatchTest {
-    private static PatchServerSettings settings;
-    private static Protocol<PacketHandler<ClientRequest>> protocol;
+    private static ClientPatchHandler handler;
     private static Vertx vertx;
 
     @BeforeClass
     public static void startUp() {
         vertx = Vertx.vertx();
         PatchProvider provider = new PatchProvider(vertx);
-        protocol = provider.protocol();
-        settings = provider.getSettings();
-        new ClientHandler(provider);
+        handler = new ClientPatchHandler(provider);
+        new ClientPatchHandler(provider);
     }
 
     @AfterClass
@@ -49,7 +44,7 @@ public class PatchTest {
 
     @Test
     public void testGetPatchInfo(TestContext context) throws Exception {
-        handle(Strings.PATCH_IDENTIFIER, new ClientRequestMock((response, status) -> {
+        handle(new ClientRequestMock((response, status) -> {
 
             context.assertTrue(response.containsKey("name"));
             context.assertTrue(response.containsKey("version"));
@@ -57,18 +52,18 @@ public class PatchTest {
             context.assertTrue(response.containsKey("changes"));
             context.assertEquals(ResponseStatus.ACCEPTED, status);
 
-        }, new JsonObject()));
+        }, new JsonObject(), Strings.PATCH_IDENTIFIER));
     }
 
-    private void handle(String action, ClientRequest request) throws AuthorizationRequiredException, HandlerMissingException {
-        protocol.get(action, AuthorizationHandler.Access.PUBLIC).handle(request);
+    private void handle(ClientRequest request) throws Exception {
+        handler.process(request, Access.PUBLIC);
     }
 
     @Test
     public void testGetPatchData(TestContext context) throws Exception {
-        handle(Strings.PATCH_DATA, new ClientRequestMock((response, status) -> {
+        handle(new ClientRequestMock((response, status) -> {
             context.assertTrue(response.containsKey("files"));
-        }, null));
+        }, null, Strings.PATCH_DATA));
     }
 
     private JsonObject getDownloadFile(String filename) {
@@ -78,32 +73,32 @@ public class PatchTest {
 
     @Test
     public void testGetGameInfo(TestContext context) throws Exception {
-        handle(Strings.PATCH_GAME_INFO, new ClientRequestMock((response, status) -> {
+        handle(new ClientRequestMock((response, status) -> {
             context.assertTrue(response.containsKey("content"));
             context.assertTrue(response.containsKey("title"));
             context.assertEquals(ResponseStatus.ACCEPTED, status);
-        }, new JsonObject()));
+        }, new JsonObject(), Strings.PATCH_GAME_INFO));
     }
 
     @Test
     public void testGetGameNews(TestContext context) throws Exception {
-        handle(Strings.PATCH_NEWS, new ClientRequestMock((response, status) -> {
+        handle(new ClientRequestMock((response, status) -> {
             JsonArray list = response.getJsonArray("list");
 
             context.assertTrue(list.size() == 1);
             context.assertEquals(ResponseStatus.ACCEPTED, status);
-        }, new JsonObject()));
+        }, new JsonObject(), Strings.PATCH_NEWS));
     }
 
     @Test
     public void testGetAuthServer(TestContext context) throws Exception {
-        handle(Strings.PATCH_AUTHSERVER, new ClientRequestMock((response, status) -> {
+        handle(new ClientRequestMock((response, status) -> {
 
             context.assertTrue(response.containsKey("remote"));
             context.assertTrue(response.containsKey("port"));
 
             context.assertEquals(ResponseStatus.ACCEPTED, status);
-        }, new JsonObject()));
+        }, new JsonObject(), Strings.PATCH_AUTHSERVER));
     }
 
     @Ignore

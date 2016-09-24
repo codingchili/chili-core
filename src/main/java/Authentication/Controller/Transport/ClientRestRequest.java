@@ -14,6 +14,8 @@ import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 
+import static Configuration.Strings.*;
+
 /**
  * @author Robin Duda
  */
@@ -97,6 +99,11 @@ class ClientRestRequest implements ClientRequest {
     @Override
     public void conflict() {
         sendStatus(HttpResponseStatus.CONFLICT);
+    }
+
+    @Override
+    public String action() {
+        return context.request().path().replace("/api/", "");
     }
 
     @Override

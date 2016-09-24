@@ -44,6 +44,8 @@ public class Strings {
     public static final String REALM_AUTHENTICATION_RESULT = "authentication.result";
     public static final String REALM_CHARACTER_REQUEST = "character.request";
     public static final String REALM_CHARACTER_RESPONSE = "character.response";
+    public static final String REALM_UPDATE = "realm.update";
+
 
     // Protocol attributes.
     public static final String PROTOCOL_CLASS_NAME = "className";
@@ -66,6 +68,8 @@ public class Strings {
     public static final String ID_INSTANCE = "instance";
     public static final String ID_MESSAGE = "message";
     public static final String ID_ERROR = "error";
+    public static final String ID_ACTION = "action";
+
 
 
     //Database naming.

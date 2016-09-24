@@ -4,43 +4,36 @@ import Authentication.Configuration.AuthProvider;
 import Authentication.Configuration.AuthServerSettings;
 import Authentication.Model.AsyncAccountStore;
 import Authentication.Model.AsyncRealmStore;
-import Configuration.Strings;
+import Protocols.*;
 import Protocols.Authentication.RealmRegister;
-import Protocols.Authentication.RealmUpdate;
-import Protocols.PacketHandler;
-import Protocols.Protocol;
-import Protocols.Realm.CharacterRequest;
+import Protocols.Exception.AuthorizationRequiredException;
+import Protocols.Exception.HandlerMissingException;
 import Protocols.Realm.CharacterResponse;
 import Realm.Configuration.RealmSettings;
 import Realm.Model.PlayerCharacter;
 import io.vertx.core.Future;
 
+import static Configuration.Strings.*;
+import static Protocols.Access.PUBLIC;
+
 /**
  * @author Robin Duda
  *         Routing used to authenticate realms and generate realmName lists.
  */
-public class RealmHandler {
-    private AsyncRealmStore realmStore;
-    private AsyncAccountStore accounts;
-    private AuthServerSettings settings;
+public class RealmHandler implements HandlerProvider {
+    private Protocol protocol = new Protocol(this.getClass());
+    private  AsyncRealmStore realmStore;
+    private  AsyncAccountStore accounts;
+    private  AuthServerSettings settings;
 
     public RealmHandler(AuthProvider provider) {
-        this.accounts = provider.getAccountStore();
-        this.settings = provider.getAuthserverSettings();
-        this.realmStore = provider.getRealmStore();
-
-        apply(provider.realmProtocol());
+        accounts = provider.getAccountStore();
+        settings = provider.getAuthserverSettings();
+        realmStore = provider.getRealmStore();
     }
 
-    public Protocol apply(Protocol<PacketHandler<RealmRequest>> protocol) {
-        return protocol
-                .use(RealmUpdate.ACTION, this::update)
-                .use(CharacterRequest.ACTION, this::character)
-                .use(Strings.CLIENT_CLOSE, this::disconnected)
-                .use(Strings.REALM_AUTHENTICATE, this::register);
-    }
-
-    private void register(RealmRequest request) {
+    @Handler(value = REALM_AUTHENTICATE, access = PUBLIC)
+    public void register(RealmRequest request) {
         Future<Void> realmFuture = Future.future();
         RealmSettings realm = request.realm();
 
@@ -57,7 +50,8 @@ public class RealmHandler {
         realmStore.put(realmFuture, realm);
     }
 
-    private void update(RealmRequest request) {
+    @Handler(REALM_UPDATE)
+    public void update(RealmRequest request) {
         Future<Void> updateFuture = Future.future();
         String realmName = request.realmName();
         int players = request.players();
@@ -73,7 +67,8 @@ public class RealmHandler {
         realmStore.update(updateFuture, realmName, players);
     }
 
-    private void disconnected(RealmRequest request) {
+    @Handler(CLIENT_CLOSE)
+    public void disconnected(RealmRequest request) {
         Future<Void> realmFuture = Future.future();
 
         realmFuture.setHandler(remove -> {
@@ -87,7 +82,8 @@ public class RealmHandler {
         realmStore.remove(realmFuture, request.realm().getName());
     }
 
-    private void character(RealmRequest request) {
+    @Handler(REALM_CHARACTER_REQUEST)
+    public void character(RealmRequest request) {
         Future<PlayerCharacter> find = Future.future();
 
         find.setHandler(result -> {
@@ -97,5 +93,10 @@ public class RealmHandler {
                 request.error();
         });
         accounts.findCharacter(find, request.realmName(), request.account(), request.name());
+    }
+
+    @Override
+    public void process(Request request, Access access) throws AuthorizationRequiredException, HandlerMissingException {
+        protocol.handle(this, request, access);
     }
 }

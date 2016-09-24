@@ -3,6 +3,7 @@ package Patching.Controller.Transport;
 import Configuration.Strings;
 import Patching.Controller.ClientRequest;
 import Patching.Model.PatchFile;
+import Protocols.Authorization.Token;
 import Protocols.Serializer;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.web.RoutingContext;
@@ -14,9 +15,11 @@ import java.net.URLConnection;
  */
 class ClientRestRequest implements ClientRequest {
     private RoutingContext context;
+    private String action;
 
-    ClientRestRequest(RoutingContext context) {
+    ClientRestRequest(RoutingContext context, String method) {
         this.context = context;
+        this.action = method;
     }
 
     @Override
@@ -51,6 +54,16 @@ class ClientRestRequest implements ClientRequest {
     @Override
     public void conflict() {
         sendStatus(409);
+    }
+
+    @Override
+    public String action() {
+        return action;
+    }
+
+    @Override
+    public Token token() {
+        return null;
     }
 
     @Override
