@@ -34,10 +34,10 @@ public class Protocol {
         }
     }
 
-    public void handle(HandlerProvider handler, Request request) throws AuthorizationRequiredException, HandlerMissingException {
+    public void handle(HandlerProvider handler, Request request, String target) throws AuthorizationRequiredException, HandlerMissingException {
         try {
-            if (handlers.contains(request.action())) {
-                handlers.get(request.action(), access(handler, request)).invoke(handler, request);
+            if (handlers.contains(target)) {
+                handlers.get(target, access(handler, request)).invoke(handler, request);
             } else {
                 handlers.get(ANY, access(handler, request)).invoke(handler, request);
             }

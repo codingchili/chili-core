@@ -25,7 +25,7 @@ public class HandlerProvider {
      */
     public void process(Request request) {
         try {
-            protocol.handle(this, request);
+            protocol.handle(this, request, request.action());
         } catch (AuthorizationRequiredException authorizationRequired) {
             request.unauthorized();
         } catch (HandlerMissingException e) {

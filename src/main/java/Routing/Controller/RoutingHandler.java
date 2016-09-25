@@ -1,6 +1,8 @@
 package Routing.Controller;
 
 import Protocols.*;
+import Protocols.Exception.AuthorizationRequiredException;
+import Protocols.Exception.HandlerMissingException;
 import Routing.Configuration.RouteProvider;
 import Routing.Model.ClusterRequest;
 import io.vertx.core.Vertx;
@@ -23,6 +25,24 @@ public class RoutingHandler extends HandlerProvider {
     @Authenticator
     public Access authorize(Request request) {
         return Access.AUTHORIZED;
+    }
+
+    /**
+     * Processes an incoming request with authentication control.
+     * Overrides HandlerProvider to provide routing based on request target instead of action.
+     * @param request the request to be processed.
+     */
+    @Override
+    public void process(Request request) {
+        try {
+            protocol.handle(this, request, request.target());
+        } catch (AuthorizationRequiredException authorizationRequired) {
+            request.unauthorized();
+        } catch (HandlerMissingException e) {
+            request.missing();
+
+            logger.onHandlerMissing(request.action());
+        }
     }
 
     @Handles(ANY)

@@ -24,6 +24,7 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 
 import static Configuration.Strings.ID_ACTION;
+import static Configuration.Strings.ID_TARGET;
 import static Configuration.Strings.ID_TOKEN;
 
 /**
@@ -102,6 +103,11 @@ public class RestListener extends ClusterVerticle {
             @Override
             public String action() {
                 return request.path();
+            }
+
+            @Override
+            public String target() {
+                return context.getBodyAsJson().getString(ID_TARGET);
             }
 
             @Override

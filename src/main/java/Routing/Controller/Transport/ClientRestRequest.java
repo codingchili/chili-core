@@ -115,6 +115,11 @@ class ClientRestRequest implements ClientAuthenticationRequest {
     }
 
     @Override
+    public String target() {
+        return null;
+    }
+
+    @Override
     public void accept() {
         sendStatus(HttpResponseStatus.OK);
     }

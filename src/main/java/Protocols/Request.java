@@ -23,6 +23,8 @@ public interface Request {
 
     String action();
 
+    String target();
+
     Token token();
 
     JsonObject data();

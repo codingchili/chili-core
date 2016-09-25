@@ -69,6 +69,11 @@ public class ClusterRequest implements Request {
     }
 
     @Override
+    public String target() {
+        return request.getString(ID_TARGET);
+    }
+
+    @Override
     public Token token() {
         return Serializer.unpack(request.getJsonObject(ID_TOKEN), Token.class);
     }

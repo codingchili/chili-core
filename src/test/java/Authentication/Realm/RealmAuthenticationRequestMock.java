@@ -106,4 +106,9 @@ public class RealmAuthenticationRequestMock implements RealmAuthenticationReques
     public String action() {
         return data.getString(Strings.ID_ACTION);
     }
+
+    @Override
+    public String target() {
+        return null;
+    }
 }

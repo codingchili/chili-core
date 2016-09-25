@@ -25,21 +25,22 @@ public class Launcher extends ClusterVerticle {
     @Override
     public void init(Vertx vertx, Context context) {
         try {
-            super.init(vertx, context);
             this.nodes = context.processArgs();
+            super.init(vertx, context);
         } catch (RuntimeException e) {
             System.out.println(e.getMessage());
         }
     }
 
     @Override
-    public void start(Future<Void> startFuture) throws Exception {
+    public void start(Future<Void> start) throws Exception {
         if (nodes.size() <= 3) {
             printHelp();
         } else {
             deploy();
         }
 
+        start.complete();
     }
 
     private static void printHelp() {

@@ -74,6 +74,11 @@ class PatchRequestMock implements PatchRequest {
     }
 
     @Override
+    public String target() {
+        return null;
+    }
+
+    @Override
     public Token token() {
         return null;
     }

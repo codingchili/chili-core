@@ -99,6 +99,11 @@ class ClientAuthenticationRequestMock implements ClientAuthenticationRequest {
     }
 
     @Override
+    public String target() {
+        return null;
+    }
+
+    @Override
     public void accept() {
         listener.handle(null, ResponseStatus.ACCEPTED);
     }

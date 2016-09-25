@@ -86,6 +86,11 @@ class RealmWebsocketRequest implements RealmAuthenticationRequest {
     }
 
     @Override
+    public String target() {
+        return null;
+    }
+
+    @Override
     public Token token() {
         JsonObject authentication = realm.getJsonObject(PROTOCOL_AUTHENTICATION);
 
