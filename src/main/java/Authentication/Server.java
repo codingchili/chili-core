@@ -3,22 +3,16 @@ package Authentication;
 import Authentication.Configuration.AuthProvider;
 import Authentication.Controller.ClientHandler;
 import Authentication.Controller.RealmHandler;
-import Logging.Model.Logger;
 import Protocols.ClusterListener;
-import Protocols.ClusterServer;
-import io.vertx.core.Context;
+import Protocols.ClusterVerticle;
 import io.vertx.core.Future;
-import io.vertx.core.Verticle;
-import io.vertx.core.Vertx;
 
 /**
  * @author Robin Duda
  *         Starts up the client handler and the realmName handler.
  */
-public class Server implements Verticle {
+public class Server extends ClusterVerticle {
     private AuthProvider provider;
-    private Logger logger;
-    private Vertx vertx;
 
     public Server() {
     }
@@ -26,16 +20,6 @@ public class Server implements Verticle {
     public Server(AuthProvider store) {
         this.provider = store;
         this.logger = store.getLogger();
-    }
-
-    @Override
-    public Vertx getVertx() {
-        return vertx;
-    }
-
-    @Override
-    public void init(Vertx vertx, Context context) {
-        this.vertx = vertx;
     }
 
     @Override
@@ -61,11 +45,5 @@ public class Server implements Verticle {
 
             AuthProvider.create(providerFuture, vertx);
         }
-    }
-
-
-    @Override
-    public void stop(Future<Void> stop) throws Exception {
-        logger.onServerStopped(stop);
     }
 }

@@ -1,8 +1,7 @@
 package Routing;
 
 import Configuration.FileConfiguration;
-import Logging.Model.Logger;
-import Protocols.ClusterServer;
+import Protocols.ClusterVerticle;
 import Routing.Configuration.RouteProvider;
 import Routing.Configuration.RoutingSettings;
 import Routing.Controller.Transport.RestListener;
@@ -10,28 +9,16 @@ import Routing.Controller.Transport.TcpListener;
 import Routing.Controller.Transport.UdpListener;
 import Routing.Controller.Transport.WebsocketListener;
 import Routing.Model.ListenerSettings;
-import io.vertx.core.Context;
 import io.vertx.core.Future;
-import io.vertx.core.Verticle;
-import io.vertx.core.Vertx;
 
 /**
  * @author Robin Duda
  *         root game server, deploys realmName servers.
  */
-public class Server implements Verticle {
+public class Server extends ClusterVerticle {
     private RoutingSettings settings;
-    private Vertx vertx;
-    private Logger logger;
 
-    @Override
-    public Vertx getVertx() {
-        return vertx;
-    }
-
-    @Override
-    public void init(Vertx vertx, Context context) {
-        this.vertx = vertx;
+    public Server() {
         this.settings = FileConfiguration.instance().getRoutingSettings();
     }
 
@@ -62,10 +49,5 @@ public class Server implements Verticle {
         }
 
         logger.onServerStarted(start);
-    }
-
-    @Override
-    public void stop(Future<Void> stop) throws Exception {
-        logger.onServerStopped(stop);
     }
 }
