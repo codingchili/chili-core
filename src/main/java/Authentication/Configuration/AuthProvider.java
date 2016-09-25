@@ -24,7 +24,8 @@ public class AuthProvider implements Provider {
     private Vertx vertx;
     private Logger logger;
 
-    public AuthProvider() {}
+    public AuthProvider() {
+    }
 
     private AuthProvider(AsyncRealmStore realms, AsyncAccountStore accounts, Vertx vertx) {
         this.realms = realms;
@@ -35,22 +36,18 @@ public class AuthProvider implements Provider {
     }
 
     public static void create(Future<AuthProvider> future, Vertx vertx) {
-        if (vertx.isClustered()) {
-            Future<AsyncRealmStore> realmFuture = Future.future();
-            Future<AsyncAccountStore> accountFuture = Future.future();
+        Future<AsyncRealmStore> realmFuture = Future.future();
+        Future<AsyncAccountStore> accountFuture = Future.future();
 
-            CompositeFuture.all(realmFuture, accountFuture).setHandler(initialization -> {
-                AsyncRealmStore realms = (AsyncRealmStore) initialization.result().list().get(0);
-                AsyncAccountStore accounts = (AsyncAccountStore) initialization.result().list().get(1);
+        CompositeFuture.all(realmFuture, accountFuture).setHandler(initialization -> {
+            AsyncRealmStore realms = (AsyncRealmStore) initialization.result().list().get(0);
+            AsyncAccountStore accounts = (AsyncAccountStore) initialization.result().list().get(1);
 
-                future.complete(new AuthProvider(realms, accounts, vertx));
-            });
+            future.complete(new AuthProvider(realms, accounts, vertx));
+        });
 
-            HazelAccountDB.create(accountFuture, vertx);
-            HazelRealmDB.create(realmFuture, vertx);
-        } else {
-            throw new RuntimeException(Strings.ERROR_CLUSTERING_REQUIRED);
-        }
+        HazelAccountDB.create(accountFuture, vertx);
+        HazelRealmDB.create(realmFuture, vertx);
     }
 
     public AsyncRealmStore getRealmStore() {

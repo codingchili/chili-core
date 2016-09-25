@@ -1,24 +1,19 @@
 package Patching;
 
-import Logging.Model.Logger;
 import Patching.Configuration.PatchProvider;
 import Patching.Controller.ClientPatchHandler;
 import Protocols.ClusterListener;
-import Protocols.ClusterServer;
-import Routing.Controller.Transport.ClientServerPatch;
+import Protocols.ClusterVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
-import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
 
 /**
  * @author Robin Duda
  *         website and resource server.
  */
-public class Server implements Verticle {
+public class Server extends ClusterVerticle {
     private PatchProvider provider;
-    private Logger logger;
-    private Vertx vertx;
 
     public Server() {
     }
@@ -28,13 +23,8 @@ public class Server implements Verticle {
     }
 
     @Override
-    public Vertx getVertx() {
-        return vertx;
-    }
-
-    @Override
     public void init(Vertx vertx, Context context) {
-        this.vertx = vertx;
+        super.init(vertx, context);
 
         if (provider == null) {
             provider = new PatchProvider(vertx);

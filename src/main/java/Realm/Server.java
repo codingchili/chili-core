@@ -1,6 +1,7 @@
 package Realm;
 
 import Configuration.FileConfiguration;
+import Protocols.ClusterVerticle;
 import Realm.Configuration.RealmServerSettings;
 import Realm.Configuration.RealmSettings;
 import Realm.Controller.Realm;
@@ -15,19 +16,11 @@ import io.vertx.core.Vertx;
  * @author Robin Duda
  *         root game server, deploys realmName servers.
  */
-public class Server implements Verticle {
+public class Server extends ClusterVerticle {
     private RealmServerSettings settings;
-    private Logger logger;
-    private Vertx vertx;
-
-    @Override
-    public Vertx getVertx() {
-        return vertx;
-    }
 
     @Override
     public void init(Vertx vertx, Context context) {
-        this.vertx = vertx;
         this.settings = FileConfiguration.instance().getGameServerSettings();
         this.logger = new DefaultLogger(vertx, settings.getLogserver());
     }

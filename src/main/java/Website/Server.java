@@ -1,19 +1,16 @@
 package Website;
 
-import Logging.Model.Logger;
+import Protocols.ClusterVerticle;
 import Website.Configuration.WebserverProvider;
 import Website.Controller.RequestHandler;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
-import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
 
 /**
  * @author Robin Duda
  */
-public class Server implements Verticle {
-    private Vertx vertx;
-    private Logger logger;
+public class Server extends ClusterVerticle {
     private WebserverProvider provider;
 
     public Server() {
@@ -24,13 +21,8 @@ public class Server implements Verticle {
     }
 
     @Override
-    public Vertx getVertx() {
-        return vertx;
-    }
-
-    @Override
     public void init(Vertx vertx, Context context) {
-        this.vertx = vertx;
+        super.init(vertx, context);
 
         if (provider == null) {
             this.provider = new WebserverProvider(vertx);

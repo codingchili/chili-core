@@ -36,12 +36,17 @@ public class DefaultLogger extends Handler implements Logger {
         this.vertx = vertx;
 
         vertx.eventBus().consumer(LOCAL_LOGGING, message -> {
-            vertx.eventBus().publish(ADDRESS_LOGGING, message.body());
+            vertx.eventBus().send(ADDRESS_LOGGING, message.body());
         });
     }
 
     private void log(JsonObject json) {
         log(json.encodePrettily());
+    }
+
+
+    private void log(String message) {
+        vertx.eventBus().send(LOCAL_LOGGING, message);
     }
 
     private JsonObject event(String name) {
@@ -205,10 +210,6 @@ public class DefaultLogger extends Handler implements Logger {
     public void onHandlerMissing(String action) {
         log(event(LOG_HANDLER_MISSING, LOG_LEVEL_WARNING)
                 .put(LOG_MESSAGE, action));
-    }
-
-    private void log(String message) {
-            vertx.eventBus().publish(LOCAL_LOGGING, message);
     }
 
     @Override
