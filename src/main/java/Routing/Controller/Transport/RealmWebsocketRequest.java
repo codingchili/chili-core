@@ -1,10 +1,11 @@
 package Routing.Controller.Transport;
 
-import Authentication.Controller.RealmRequest;
+import Authentication.Controller.RealmAuthenticationRequest;
 import Configuration.Strings;
 import Protocols.Authorization.Token;
 import Protocols.Serializer;
 import Realm.Configuration.RealmSettings;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
 import static Configuration.Strings.*;
@@ -13,7 +14,7 @@ import static Configuration.Strings.*;
  * @author Robin Duda
  */
 
-class RealmWebsocketRequest implements RealmRequest {
+class RealmWebsocketRequest implements RealmAuthenticationRequest {
     private RealmConnection connection;
     private JsonObject data;
     private JsonObject realm;
@@ -98,6 +99,11 @@ class RealmWebsocketRequest implements RealmRequest {
     @Override
     public JsonObject data() {
         return data;
+    }
+
+    @Override
+    public int timeout() {
+        return 0;
     }
 
     @Override

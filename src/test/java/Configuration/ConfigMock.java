@@ -62,16 +62,6 @@ public class ConfigMock implements ConfigurationLoader {
     private static class AuthServerSettingsMock extends AuthServerSettings {
 
         @Override
-        public Integer getRealmPort() {
-            return 12502;
-        }
-
-        @Override
-        public Integer getClientPort() {
-            return 13091;
-        }
-
-        @Override
         public byte[] getClientSecret() {
             return "client.secret".getBytes();
         }
@@ -94,8 +84,6 @@ public class ConfigMock implements ConfigurationLoader {
             this.setSecure(false);
             this.setRemote("remote_ip");
             this.setResources("DIR_RESOURCES");
-            this.setPort(21111);
-            this.setProxy(31111);
 
             generateAuthentication();
             generateMockClasses();

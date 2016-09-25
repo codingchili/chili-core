@@ -5,25 +5,24 @@
       "expiry" : 1476269600,
       "domain" : "routing@server.1"
     },
-    "system" : "routing",
-    "host" : "server.1",
-    "port" : 0
+    "system" : "routing.node",
+    "host" : "server.1"
   },
   "transport" : [ {
     "type" : "UDP",
     "port" : 80,
-    "timeout" : 1000
+    "timeout" : 2000
   }, {
     "type" : "TCP",
     "port" : 8010,
-    "timeout" : 1000
+    "timeout" : 2000
   }, {
     "type" : "WEBSOCKET",
     "port" : 80,
-    "timeout" : 2000
+    "timeout" : 4000
   }, {
     "type" : "REST",
     "port" : 80,
-    "timeout" : 2000
+    "timeout" : 6000
   } ]
 }

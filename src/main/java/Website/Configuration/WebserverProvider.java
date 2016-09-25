@@ -22,6 +22,10 @@ public class WebserverProvider implements Provider {
         return settings;
     }
 
+    public Vertx getVertx() {
+        return vertx;
+    }
+
     @Override
     public Logger getLogger() {
         return new DefaultLogger(vertx, settings.getLogserver());

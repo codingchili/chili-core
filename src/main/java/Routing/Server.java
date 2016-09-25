@@ -1,15 +1,19 @@
 package Routing;
 
 import Configuration.FileConfiguration;
+import Logging.Model.DefaultLogger;
 import Protocols.ClusterVerticle;
 import Routing.Configuration.RouteProvider;
 import Routing.Configuration.RoutingSettings;
+import Routing.Controller.RoutingHandler;
 import Routing.Controller.Transport.RestListener;
 import Routing.Controller.Transport.TcpListener;
 import Routing.Controller.Transport.UdpListener;
 import Routing.Controller.Transport.WebsocketListener;
 import Routing.Model.ListenerSettings;
+import io.vertx.core.Context;
 import io.vertx.core.Future;
+import io.vertx.core.Vertx;
 
 /**
  * @author Robin Duda
@@ -23,26 +27,30 @@ public class Server extends ClusterVerticle {
     }
 
     @Override
+    public void init(Vertx vertx, Context context) {
+        super.init(vertx, context);
+        this.logger = new DefaultLogger(vertx, settings.getLogserver());
+    }
+
+    @Override
     public void start(Future<Void> start) {
-        RouteProvider provider = new RouteProvider(vertx, settings);
-
-        this.logger = provider.getLogger();
-
         for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
 
             for (ListenerSettings listener : settings.getTransport()) {
+                RouteProvider provider = new RouteProvider(vertx, settings);
+
                 switch (listener.getType()) {
                     case UDP:
-                        vertx.deployVerticle(new UdpListener(provider, listener));
+                        vertx.deployVerticle(new UdpListener(new RoutingHandler(provider), listener));
                         break;
                     case TCP:
-                        vertx.deployVerticle(new TcpListener(provider, listener));
+                        vertx.deployVerticle(new TcpListener(new RoutingHandler(provider), listener));
                         break;
                     case WEBSOCKET:
-                        vertx.deployVerticle(new WebsocketListener(provider, listener));
+                        vertx.deployVerticle(new WebsocketListener(new RoutingHandler(provider), listener));
                         break;
                     case REST:
-                        vertx.deployVerticle(new RestListener(provider, listener));
+                        vertx.deployVerticle(new RestListener(new RoutingHandler(provider), settings));
                         break;
                 }
             }

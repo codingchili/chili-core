@@ -8,6 +8,7 @@ import Realm.Configuration.InstanceSettings;
 import Realm.Configuration.RealmSettings;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.dropwizard.MetricsService;
@@ -36,7 +37,7 @@ public class DefaultLogger extends Handler implements Logger {
         this.vertx = vertx;
 
         vertx.eventBus().consumer(LOCAL_LOGGING, message -> {
-            vertx.eventBus().send(ADDRESS_LOGGING, message.body());
+            vertx.eventBus().send(NODE_LOGGING, message.body(), new DeliveryOptions().setSendTimeout(10000));
         });
     }
 

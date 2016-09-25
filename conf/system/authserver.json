@@ -5,18 +5,10 @@
       "expiry" : 1474962186,
       "domain" : "authserver@server.1"
     },
-    "system" : "authserver",
-    "host" : "server.1",
-    "port" : 0
+    "system" : "authentication.node",
+    "host" : "server.1"
   },
   "clientSecret" : "weeP3o5pa+fOZtW9V1nJbSnzmMOxU2vee3IzYyGYt3IgGHnTV2MWzZ3EyLqMmpkqKL6Tz+dCAx7dTgz1Zvx+Kw==",
   "realmSecret" : "YBH7Kxe9nhC9k5EeIsXnQogms25e9NHeWFB27OZLOr8rKkdibsmz0mgXXVak3DLRM4BwPvPB6BpVhhc2ALewTw==",
-  "realmPort" : 5105,
-  "clientPort" : 5505,
-  "database" : {
-    "db_name" : "chili",
-    "connection_string" : "mongodb://localhost:27017/",
-    "pollRate" : 30000
-  },
   "realms" : [ "Angel Oak", "Developer Realm", "Iron Oak", "Staging Realm", "Wisteria", "Red Maple" ]
 }

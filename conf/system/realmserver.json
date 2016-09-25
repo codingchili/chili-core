@@ -5,8 +5,7 @@
       "expiry" : 1475060672,
       "domain" : "realmserver@server.1"
     },
-    "system" : "realmserver",
-    "host" : "server.1",
-    "port" : 0
+    "system" : "realm.node",
+    "host" : "server.1"
   }
 }

@@ -1,6 +1,6 @@
 package Routing.Controller.Transport;
 
-import Authentication.Controller.ClientRequest;
+import Authentication.Controller.ClientAuthenticationRequest;
 import Authentication.Model.Account;
 import Configuration.Strings;
 import Protocols.Authentication.ClientAuthentication;
@@ -18,7 +18,7 @@ import io.vertx.ext.web.RoutingContext;
  * @author Robin Duda
  */
 
-class ClientRestRequest implements ClientRequest {
+class ClientRestRequest implements ClientAuthenticationRequest {
     private RoutingContext context;
     private HttpServerResponse response;
     private JsonObject json;
@@ -74,6 +74,11 @@ class ClientRestRequest implements ClientRequest {
     @Override
     public JsonObject data() {
         return null;
+    }
+
+    @Override
+    public int timeout() {
+        return 0;
     }
 
     @Override

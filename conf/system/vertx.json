@@ -6,8 +6,8 @@
     "Patching.Server": "Start the patch-service node.",
     "Website.Server": "Start the website server.",
     "Realm.Server": "Start the realm/gameserver node.",
-    "*": "Start all available nodes in a single cluster on the same machine."
+    "all": "Start all available nodes in a single cluster on the same machine."
   },
   "metrics": true,
-  "rate": 15000
+  "rate": 5000
 }

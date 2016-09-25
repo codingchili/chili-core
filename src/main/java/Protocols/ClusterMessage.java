@@ -1,6 +1,7 @@
 package Protocols;
 
 import Protocols.Authorization.Token;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 
@@ -10,17 +11,25 @@ import static Configuration.Strings.*;
  * @author Robin Duda
  */
 class ClusterMessage implements Request {
-    private JsonObject body;
+    private Buffer buffer;
+    private JsonObject json;
     private Message message;
 
     ClusterMessage(Message message) {
-        this.body = new JsonObject(message.body().toString());
-        this.message =message;
+        if (message.body() instanceof Buffer) {
+            this.buffer = (Buffer) message.body();
+        } if (message.body() instanceof  String) {
+            this.json = new JsonObject((String) message.body());
+        } else {
+            this.json = (JsonObject) message.body();
+        }
+
+        this.message = message;
     }
 
     @Override
     public void error() {
-        message.reply(message(PROTOCOL_ACTION, PROTOCOL_ERROR));
+        message.reply(message(PROTOCOL_ERROR, PROTOCOL_ERROR));
     }
 
     private JsonObject message(String action, String message) {
@@ -29,7 +38,7 @@ class ClusterMessage implements Request {
 
     @Override
     public void unauthorized() {
-        message.reply(message(PROTOCOL_ACTION, PROTOCOL_UNAUTHORIZED));
+        message.reply(message(PROTOCOL_ERROR, PROTOCOL_UNAUTHORIZED));
     }
 
     @Override
@@ -44,26 +53,35 @@ class ClusterMessage implements Request {
 
     @Override
     public void missing() {
-        message.reply(message(PROTOCOL_ACTION, PROTOCOL_MISSING));
+        message.reply(message(PROTOCOL_ERROR, PROTOCOL_MISSING));
     }
 
     @Override
     public void conflict() {
-        message.reply(message(PROTOCOL_ACTION, PROTOCOL_CONFLICT));
+        message.reply(message(PROTOCOL_ERROR, PROTOCOL_CONFLICT));
     }
 
     @Override
     public String action() {
-        return body.getString(ID_ACTION);
+        return json.getString(ID_ACTION);
     }
 
     @Override
     public Token token() {
-        return Serializer.unpack(body.getJsonObject(ID_TOKEN), Token.class);
+        return Serializer.unpack(json.getJsonObject(ID_TOKEN), Token.class);
     }
 
     @Override
     public JsonObject data() {
-        return body;
+        return json;
+    }
+
+    public Buffer buffer() {
+        return buffer;
+    }
+
+    @Override
+    public int timeout() {
+        return 0;
     }
 }

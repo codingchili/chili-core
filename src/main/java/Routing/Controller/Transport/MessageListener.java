@@ -1,8 +1,8 @@
 package Routing.Controller.Transport;
 
 import Authentication.Configuration.AuthProvider;
-import Authentication.Controller.ClientHandler;
-import Authentication.Controller.RealmHandler;
+import Authentication.Controller.ClientAuthenticationHandler;
+import Authentication.Controller.RealmAuthenticationHandler;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 
@@ -10,13 +10,13 @@ import io.vertx.core.Future;
  * @author Robin Duda
  */
 class MessageListener extends AbstractVerticle {
-    private ClientHandler clientHandler;
-    private RealmHandler realmHandler;
+    private ClientAuthenticationHandler clientHandler;
+    private RealmAuthenticationHandler realmAuthenticationHandler;
     private AuthProvider provider;
 
     public MessageListener(AuthProvider provider) {
-        clientHandler = new ClientHandler(provider);
-        realmHandler = new RealmHandler(provider);
+        clientHandler = new ClientAuthenticationHandler(provider);
+        realmAuthenticationHandler = new RealmAuthenticationHandler(provider);
     }
 
     private void packet() {

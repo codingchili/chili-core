@@ -4,6 +4,7 @@ import Configuration.Configurable;
 import Configuration.RemoteAuthentication;
 import Configuration.Strings;
 import Routing.Model.ListenerSettings;
+import Routing.Model.WireType;
 
 import java.util.ArrayList;
 
@@ -39,5 +40,14 @@ public class RoutingSettings implements Configurable {
     @Override
     public String getName() {
         return logserver.getSystem();
+    }
+
+    public ListenerSettings getListener(WireType type) {
+        for (ListenerSettings listener : transport) {
+            if (listener.getType().equals(type)) {
+                return listener;
+            }
+        }
+        return null;
     }
 }

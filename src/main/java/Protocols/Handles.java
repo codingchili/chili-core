@@ -14,5 +14,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Handles {
     String value();
-    Access access() default Access.AUTHORIZE;
+    Access access() default Access.AUTHORIZED;
 }

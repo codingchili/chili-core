@@ -4,17 +4,16 @@ import Configuration.FileConfiguration;
 import Configuration.Strings;
 import Logging.Model.Logger;
 import Patching.Configuration.PatchNotes;
+import Protocols.Serializer;
 import io.vertx.core.Vertx;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
-import java.util.zip.GZIPOutputStream;
 
-import static java.nio.file.StandardWatchEventKinds.*;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 /**
  * @author Robin Duda
@@ -84,12 +83,12 @@ public class PatchKeeper {
             public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
                 File file = path.toFile();
 
-                String filePath = path.toString().replaceFirst(Strings.ID_RESOURCES + ".", "").replace("\\", Strings.DIR_SEPARATOR);
+                String filePath = (path.toString().replaceFirst(Strings.ID_RESOURCES + ".", "")).replace("\\", Strings.DIR_SEPARATOR);
                 long fileSize = file.length();
                 long fileModified = file.lastModified();
                 byte[] fileBytes = Files.readAllBytes(path);
 
-                files.put(filePath, new PatchFile(filePath, fileSize, fileModified, gzip(fileBytes)));
+                files.put(filePath, new PatchFile(filePath, fileSize, fileModified, Serializer.gzip(fileBytes)));
 
                 return FileVisitResult.CONTINUE;
             }
@@ -102,19 +101,6 @@ public class PatchKeeper {
 
         notes = FileConfiguration.loadPatchSettings().getPatch();
         details = new PatchDetails(files, notes.getName(), notes.getVersion());
-    }
-
-    private byte[] gzip(byte[] file) {
-        try {
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
-            GZIPOutputStream gzip = new GZIPOutputStream(output);
-            gzip.write(file);
-            gzip.close();
-            output.close();
-            return output.toByteArray();
-        } catch (IOException e) {
-            throw new RuntimeException(e.getMessage());
-        }
     }
 
     public synchronized PatchFile getFile(String path, String requestVersion) throws PatchReloadedException, NoSuchFileException {

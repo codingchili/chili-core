@@ -2,8 +2,8 @@ package Routing.Controller.Transport;
 
 import Authentication.Configuration.AuthProvider;
 import Authentication.Configuration.AuthServerSettings;
-import Authentication.Controller.RealmHandler;
-import Authentication.Controller.RealmRequest;
+import Authentication.Controller.RealmAuthenticationHandler;
+import Authentication.Controller.RealmAuthenticationRequest;
 import Logging.Model.Logger;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
@@ -19,21 +19,21 @@ import static Configuration.Strings.CLIENT_CLOSE;
 public class RealmServer extends AbstractVerticle {
     private HashMap<String, RealmConnection> connections = new HashMap<>();
     private AuthServerSettings settings;
-    private RealmHandler handler;
+    private RealmAuthenticationHandler handler;
     private Logger logger;
 
     public RealmServer(AuthProvider provider) {
         this.settings = provider.getAuthserverSettings();
         this.logger = provider.getLogger();
-        this.handler = new RealmHandler(provider);
+        this.handler = new RealmAuthenticationHandler(provider);
     }
 
     @Override
     public void start(Future<Void> future) {
-        vertx.createHttpServer().websocketHandler(socket -> {
+        /*vertx.createHttpServer().websocketHandler(socket -> {
 
             socket.handler(event -> {
-                RealmRequest request = new RealmWebsocketRequest(getConnection(socket), event.toJsonObject());
+                RealmAuthenticationRequest request = new RealmWebsocketRequest(getConnection(socket), event.toJsonObject());
 
                 handler.process(request);
             });
@@ -48,7 +48,7 @@ public class RealmServer extends AbstractVerticle {
             connections.put(socket.textHandlerID(), new RealmConnection(socket));
         }).listen(settings.getRealmPort());
 
-        future.complete();
+        future.complete();*/
     }
 
     private RealmConnection getConnection(ServerWebSocket socket) {

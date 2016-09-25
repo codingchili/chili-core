@@ -3,6 +3,7 @@ package Routing.Model;
 import Protocols.Authorization.Token;
 import Protocols.Request;
 import Protocols.Serializer;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
 import static Configuration.Strings.*;
@@ -13,9 +14,9 @@ import static Configuration.Strings.*;
 public class ClusterRequest implements Request {
     private JsonObject request;
     private WireConnection connection;
-    private long timeout;
+    private int timeout;
 
-    public ClusterRequest(WireConnection connection, JsonObject request, long timeout) {
+    public ClusterRequest(WireConnection connection, JsonObject request, int timeout) {
         this.request = request;
         this.connection = connection;
         this.timeout = timeout;
@@ -40,7 +41,6 @@ public class ClusterRequest implements Request {
 
     @Override
     public void missing() {
-        connection.write(new JsonObject().put(ID_ERROR, ERROR_IN_ADDRESS));
     }
 
     public long getTimeout() {
@@ -76,5 +76,10 @@ public class ClusterRequest implements Request {
     @Override
     public JsonObject data() {
         return request;
+    }
+
+    @Override
+    public int timeout() {
+        return timeout;
     }
 }

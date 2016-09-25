@@ -2,7 +2,7 @@ package Routing.Controller.Transport;
 
 import Authentication.Configuration.AuthProvider;
 import Authentication.Configuration.AuthServerSettings;
-import Authentication.Controller.ClientHandler;
+import Authentication.Controller.ClientAuthenticationHandler;
 import Configuration.Routing;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
@@ -16,10 +16,10 @@ import io.vertx.ext.web.handler.BodyHandler;
  */
 public class ClientServer extends AbstractVerticle {
     private AuthServerSettings settings;
-    private ClientHandler handler;
+    private ClientAuthenticationHandler handler;
 
     public ClientServer(AuthProvider provider) {
-        this.handler = new ClientHandler(provider);
+        this.handler = new ClientAuthenticationHandler(provider);
         this.settings = provider.getAuthserverSettings();
     }
 
@@ -32,9 +32,9 @@ public class ClientServer extends AbstractVerticle {
         Routing.EnableCors(router);
         router.route("/api/*").handler(this::packet);
 
-        vertx.createHttpServer(new HttpServerOptions()
-                .setCompressionSupported(true))
-                .requestHandler(router::accept).listen(settings.getClientPort());
+        //vertx.createHttpServer(new HttpServerOptions()
+        //        .setCompressionSupported(true))
+        //        .requestHandler(router::accept).listen(settings.getClientPort());
 
         future.complete();
     }

@@ -20,7 +20,8 @@ public class Strings {
     public static final String PATH_AFFLICTIONS = "conf/game/player/affliction.json";
     public static final String PATH_PLAYER_TEMPLATE = "conf/game/player/character.json";
 
-    public static final String DIR_RESOURCES = "resources/";
+    public static final String DIR_RESOURCES = "resources";
+    public static final String DIR_WEBSITE = "website";
     public static final String DIR_SYSTEM = "conf/system/";
     public static final String DIR_SEPARATOR = "/";
 
@@ -45,7 +46,7 @@ public class Strings {
     public static final String REALM_CHARACTER_REQUEST = "character.request";
     public static final String REALM_CHARACTER_RESPONSE = "character.response";
     public static final String REALM_UPDATE = "realm.update";
-
+    public static final String ANY = "*";
 
     // Protocol attributes.
     public static final String PROTOCOL_CLASS_NAME = "className";
@@ -74,8 +75,7 @@ public class Strings {
     public static final String ID_MESSAGE = "message";
     public static final String ID_ERROR = "error";
     public static final String ID_ACTION = "action";
-
-
+    public static final String ID_TARGET = "target";
 
     //Database naming.
     public static final String DB_COLLECTION = "accounts";
@@ -85,15 +85,22 @@ public class Strings {
     public static final String DB_CHARACTERS = "characters";
 
     // Cluster addressing.
-    public static final String ADDRESS_AUTHENTICATION_CLIENTS = "clients.authentication.node";
-    public static final String ADDRESS_AUTHENTICATION_REALMS = "realms.authentication.node";
-    public static final String ADDRESS_WEBSERVER = "webserver.node";
-    public static final String ADDRESS_PATCHING = "patching.node";
-    public static final String ADDRESS_LOGGING = "logging.node";
-    public static final String ADDRESS_REALM = "realm.node";
+    public static final String NODE_AUTHHENTICATION_CLIENTS = "clients.authentication.node";
+    public static final String NODE_AUTHENTICATION_REALMS = "realms.authentication.node";
+    public static final String NODE_WEBSERVER = "webserver.node";
+    public static final String NODE_PATCHING = "patching.node";
+    public static final String NODE_REALM = "realm.node";
+    public static final String NODE_LOGGING = "logging.node";
 
     public static final String LOCAL_LOGGING = "logging.local";
 
+    public static final String VERTICLE_LOGGING = "Logging.Server";
+    public static final String VERTICLE_AUTHENTICATION = "Authentication.Server";
+    public static final String VERTICLE_PATCHING = "Patching.Server";
+    public static final String VERTICLE_ROUTING = "Routing.Server";
+    public static final String VERTICLE_WEBSERVER = "Website.Server";
+    public static final String VERTICLE_REALM = "Realm.Server";
+    public static final String VERTICLE_ALL = "all";
 
     // Routing
     public static final String ROUTER_MISSING_MAP = "router.missing";
@@ -144,15 +151,12 @@ public class Strings {
     public static final String LOG_TRACE = "trace";
     public static final String LOG_HANDLER_MISSING = "handler.missing";
 
-
     //Patching
     public static final String PATCH_IDENTIFIER = "patch";
     public static final String PATCH_GAME_INFO = "gameinfo";
     public static final String PATCH_NEWS = "news";
-    public static final String PATCH_AUTHSERVER = "authserver";
     public static final String PATCH_DOWNLOAD = "download";
     public static final String PATCH_DATA = "patchdata";
-    public static final String PATCH_MAX_VERSION = "9999.999.999";
 
     // Game
     public static final String GAME_AFFLICTIONS = "afflictions";

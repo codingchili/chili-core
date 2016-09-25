@@ -5,15 +5,9 @@
       "expiry" : 1474973530,
       "domain" : "webserver@server.1"
     },
-    "system" : "webserver",
-    "host" : "server.1",
-    "port" : 0
+    "system" : "website.node",
+    "host" : "server.1"
   },
-  "patchserver" : {
-    "remote" : "http://localhost",
-    "port" : 8008
-  },
-  "port" : 8080,
   "cache" : false,
   "compress" : true
 }

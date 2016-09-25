@@ -1,6 +1,7 @@
 package Protocols;
 
 import Protocols.Authorization.Token;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
 /**
@@ -25,4 +26,6 @@ public interface Request {
     Token token();
 
     JsonObject data();
+
+    int timeout();
 }

@@ -1,24 +1,19 @@
 {
-  "authserver" : {
-    "remote" : "http://localhost",
-    "port" : 5505
-  },
   "logserver" : {
     "token" : {
       "key" : "2B196B6E983F65DF26BFD90CED408D6CD375EB11B9896B345794EE89F052368F5E1D7110ABBB2DD49611FB46F453C542BF0FAE8E41BA875D9AAE235D66C98FAA",
       "expiry" : 1474972411,
       "domain" : "patchserver@server.1"
     },
-    "system" : "patchserver",
-    "host" : "server.1",
-    "port" : 0
+    "system" : "patching.node",
+    "host" : "server.1"
   },
   "gameinfo" : {
     "content" : "The chili-core is a lightweight architecture for creating online games with focus on modularity, security and scalability. The backend uses Vert.x and the current frontend is based on HTML5, websockets and Polymer. The purpose of the project is to provide a complete architecture with a bundled game, that may be modified in any way.",
     "title" : "Introduction"
   },
   "patch" : {
-    "version" : "0.1.4b.2",
+    "version" : "0.1.4b.4",
     "name" : "Spider Eyes",
     "date" : "2016-05-22",
     "changes" : [ {
@@ -40,6 +35,5 @@
       "content" : "The demo contains this start page, authentication, realm list, character list, character creation and a patcher. Whenever the patcher finishes downloading data your experience ends, the red cube is not a part of the game only a placeholder. ",
       "date" : "2016-05-22"
     } ]
-  },
-  "port" : 8008
+  }
 }

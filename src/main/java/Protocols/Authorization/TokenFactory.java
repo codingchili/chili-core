@@ -1,5 +1,7 @@
 package Protocols.Authorization;
 
+import Configuration.RemoteAuthentication;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
@@ -17,6 +19,10 @@ public class TokenFactory {
 
     public TokenFactory(byte[] secret) {
         this.secret = secret;
+    }
+
+    public TokenFactory(RemoteAuthentication authentication) {
+        this.secret = authentication.getToken().getKey().getBytes();
     }
 
     /**

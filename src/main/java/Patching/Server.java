@@ -1,7 +1,7 @@
 package Patching;
 
 import Patching.Configuration.PatchProvider;
-import Patching.Controller.ClientPatchHandler;
+import Patching.Controller.PatchHandler;
 import Protocols.ClusterListener;
 import Protocols.ClusterVerticle;
 import io.vertx.core.Context;
@@ -36,7 +36,7 @@ public class Server extends ClusterVerticle {
     @Override
     public void start(Future<Void> start) {
         for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
-            vertx.deployVerticle(new ClusterListener(new ClientPatchHandler(provider)));
+            vertx.deployVerticle(new ClusterListener(new PatchHandler(provider)));
         }
 
         logger.onServerStarted(start);

@@ -9,7 +9,7 @@ import Protocols.Authorization.TokenFactory;
 import io.vertx.core.json.JsonObject;
 
 import static Configuration.Strings.*;
-import static Protocols.Access.AUTHORIZE;
+import static Protocols.Access.AUTHORIZED;
 import static Protocols.Access.PUBLIC;
 
 
@@ -22,7 +22,7 @@ public class LogHandler extends HandlerProvider {
     private ElasticLogger elastic;
 
     public LogHandler(LogProvider provider) {
-        super(LogHandler.class, provider.getLogger(), ADDRESS_LOGGING);
+        super(LogHandler.class, provider.getLogger(), NODE_LOGGING);
 
         LogServerSettings settings = provider.getSettings();
         this.tokenFactory = new TokenFactory(settings.getSecret());
@@ -33,7 +33,7 @@ public class LogHandler extends HandlerProvider {
     @Authenticator
     public Access authenticator(Request request) {
         if (tokenFactory.verifyToken(request.token())) {
-            return AUTHORIZE;
+            return AUTHORIZED;
         } else {
             return PUBLIC;
         }

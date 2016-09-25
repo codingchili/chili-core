@@ -1,62 +1,78 @@
 package Routing.Controller;
 
-import Configuration.Strings;
-import Protocols.Handles;
+import Protocols.*;
 import Routing.Configuration.RouteProvider;
 import Routing.Model.ClusterRequest;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.DeliveryOptions;
+import io.vertx.core.json.JsonObject;
 
 import static Configuration.Strings.*;
 
 /**
  * @author Robin Duda
  */
-public class RoutingHandler {
+public class RoutingHandler extends HandlerProvider {
     private Vertx vertx;
 
     public RoutingHandler(RouteProvider provider) {
+        super(RoutingHandler.class, provider.getLogger(), ANY);
         this.vertx = provider.getVertx();
     }
 
-    @Handles(ADDRESS_REALM)
-    private void realm(ClusterRequest request) {
-        sendCluster(realmAddress(request), request);
+    @Authenticator
+    public Access authorize(Request request) {
+        return Access.AUTHORIZED;
     }
 
-    private String realmAddress(ClusterRequest request) {
-        return Strings.ADDRESS_REALM + "." + request.realm() + "." + request.instance();
+    @Handles(ANY)
+    public void webserver(Request request) {
+        sendCluster(NODE_WEBSERVER, request);
     }
 
-    @Handles(ADDRESS_LOGGING)
-    private void logging(ClusterRequest request) {
-        sendCluster(Strings.ADDRESS_LOGGING, request);
+    @Handles(NODE_REALM)
+    public void realm(Request request) {
+        try {
+            sendCluster(getRealm(request), request);
+        } catch (TargetNodeUnspecifiedException e) {
+            request.error();
+        }
     }
 
-    @Handles(ADDRESS_PATCHING)
-    private void patching(ClusterRequest request) {
-        sendCluster(Strings.ADDRESS_PATCHING, request);
+    private String getRealm(Request request) throws TargetNodeUnspecifiedException {
+        JsonObject data = request.data();
+
+        if (data.containsKey(ID_TARGET)) {
+            return data.getString(ID_TARGET);
+        } else {
+            throw new TargetNodeUnspecifiedException();
+        }
     }
 
-    @Handles(ADDRESS_WEBSERVER)
-    private void webserver(ClusterRequest request) {
-        sendCluster(Strings.ADDRESS_WEBSERVER, request);
+    @Handles(NODE_LOGGING)
+    public void logging(ClusterRequest request) {
+        sendCluster(NODE_LOGGING, request);
     }
 
-    @Handles(ADDRESS_AUTHENTICATION_CLIENTS)
-    private void clientAuthentication(ClusterRequest request) {
-        sendCluster(ADDRESS_AUTHENTICATION_CLIENTS, request);
+    @Handles(NODE_PATCHING)
+    public void patching(ClusterRequest request) {
+        sendCluster(NODE_PATCHING, request);
     }
 
-    @Handles(ADDRESS_AUTHENTICATION_REALMS)
-    private void realmAuthentication(ClusterRequest request) {
-        sendCluster(ADDRESS_AUTHENTICATION_REALMS, request);
+    @Handles(NODE_AUTHHENTICATION_CLIENTS)
+    public void clientAuthentication(ClusterRequest request) {
+        sendCluster(NODE_AUTHHENTICATION_CLIENTS, request);
     }
 
-    private void sendCluster(String address, ClusterRequest request) {
-        DeliveryOptions options = new DeliveryOptions().setSendTimeout(request.getTimeout());
+    @Handles(NODE_AUTHENTICATION_REALMS)
+    public void realmAuthentication(ClusterRequest request) {
+        sendCluster(NODE_AUTHENTICATION_REALMS, request);
+    }
 
-        vertx.eventBus().send(address, request.getMessage(), options, result -> {
+    private void sendCluster(String address, Request request) {
+        DeliveryOptions options = new DeliveryOptions().setSendTimeout(request.timeout());
+
+        vertx.eventBus().send(address, request.data(), options, result -> {
             if (result.succeeded()) {
                 request.write(result.result().body());
             } else {

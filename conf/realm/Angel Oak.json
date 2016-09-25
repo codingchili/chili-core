@@ -14,22 +14,17 @@
       "key" : "0D1B47AD0A3FD8663C752184E83E1F272446F15E36189AFC6576812D9989371C75DD6CF5F4B93C57FAA5A29A8BEE5BCE92C67A24E119455309CB8F3A9A2E2B69",
       "expiry" : 1474973949,
       "domain" : "Angel Oak"
-    },
-    "remote" : "localhost",
-    "port" : 5105
+    }
   },
-  "port" : 9201,
-  "proxy" : 9201,
-  "remote" : "localhost",
+  "remote" : "ao.realm.node",
   "name" : "Angel Oak",
   "description" : "Stable realm, PvP Aggressive.",
   "resources" : "",
   "version" : 1.0,
-  "size" : 500,
+  "size" : 5000,
   "type" : "PvP",
   "lifetime" : "weekly",
   "drop" : 1.0,
   "leveling" : 1.0,
-  "players" : 0,
-  "secure" : false
+  "players" : 0
 }

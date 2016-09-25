@@ -6,6 +6,7 @@ import Protocols.Exception.HandlerMissingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import static Configuration.Strings.ANY;
 import static Configuration.Strings.ERROR_HANDLER_MISSING_AUTHENTICATOR;
 
 /**
@@ -35,7 +36,11 @@ public class Protocol {
 
     public void handle(HandlerProvider handler, Request request) throws AuthorizationRequiredException, HandlerMissingException {
         try {
-            handlers.get(request.action(), access(handler, request)).invoke(handler, request);
+            if (handlers.contains(request.action())) {
+                handlers.get(request.action(), access(handler, request)).invoke(handler, request);
+            } else {
+                handlers.get(ANY, access(handler, request)).invoke(handler, request);
+            }
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }

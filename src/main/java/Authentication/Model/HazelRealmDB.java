@@ -74,9 +74,7 @@ public class HazelRealmDB implements AsyncRealmStore {
                 if (map.result() == null) {
                     future.fail(new RealmMissingException());
                 } else {
-                    future.complete(
-                            new Token(
-                                    new TokenFactory(getSecretBytes(settings)), domain));
+                    future.complete(new Token(new TokenFactory(getSecretBytes(settings)), domain));
                 }
             } else {
                 future.fail(map.cause());

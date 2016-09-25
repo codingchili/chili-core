@@ -1,8 +1,9 @@
 package Website;
 
+import Protocols.ClusterListener;
 import Protocols.ClusterVerticle;
 import Website.Configuration.WebserverProvider;
-import Website.Controller.RequestHandler;
+import Website.Controller.WebHandler;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -35,7 +36,7 @@ public class Server extends ClusterVerticle {
     public void start(Future<Void> start) throws Exception {
 
         for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
-            vertx.deployVerticle(new RequestHandler(provider, i));
+            vertx.deployVerticle(new ClusterListener(new WebHandler(provider)));
         }
 
         logger.onServerStarted(start);

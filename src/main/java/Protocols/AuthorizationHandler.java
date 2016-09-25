@@ -18,7 +18,7 @@ public class AuthorizationHandler {
             case PUBLIC:
                 unauthorized.put(action, handler);
                 break;
-            case AUTHORIZE:
+            case AUTHORIZED:
                 authorized.put(action, handler);
                 break;
         }
@@ -28,11 +28,15 @@ public class AuthorizationHandler {
         switch (access) {
             case PUBLIC:
                 return unauthorized(action);
-            case AUTHORIZE:
+            case AUTHORIZED:
                 return any(action);
             default:
                 throw new AuthorizationRequiredException();
         }
+    }
+
+    public boolean contains(String action) {
+        return (authorized.containsKey(action) || unauthorized.containsKey(action));
     }
 
     private Method unauthorized(String action) throws AuthorizationRequiredException, HandlerMissingException {

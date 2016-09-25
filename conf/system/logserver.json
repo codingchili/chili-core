@@ -5,9 +5,8 @@
       "expiry" : 1474962186,
       "domain" : "logserver@server.1"
     },
-    "system" : "logserver",
-    "host" : "server.1",
-    "port" : 0
+    "system" : "logging.node",
+    "host" : "server.1"
   },
   "elastic" : {
     "remote" : "localhost",
@@ -27,6 +26,5 @@
     "enabled" : true
   },
   "secret" : "ZW2xTDdIFy+swmI2W8O0PVmDCvZZpVrPssPIvB5Fp3ILb+/Sy4szfK2H9OoIpGxcgnH7U0DP8q1PGO7CKn6gxw==",
-  "port" : 6109,
   "console" : true
 }

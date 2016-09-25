@@ -14,7 +14,6 @@ public class PatchServerSettings implements Configurable {
     private GameInfo gameinfo;
     private PatchNotes patch;
     private NewsList news;
-    private Integer port;
     private Boolean cache;
 
     @Override
@@ -74,13 +73,5 @@ public class PatchServerSettings implements Configurable {
 
     public void setNews(NewsList news) {
         this.news = news;
-    }
-
-    public Integer getPort() {
-        return port;
-    }
-
-    protected void setPort(Integer port) {
-        this.port = port;
     }
 }
