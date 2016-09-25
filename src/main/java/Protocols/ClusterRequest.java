@@ -10,15 +10,16 @@ import static Configuration.Strings.*;
 /**
  * @author Robin Duda
  */
-class ClusterMessage implements Request {
+class ClusterRequest implements Request {
     private Buffer buffer;
     private JsonObject json;
     private Message message;
 
-    ClusterMessage(Message message) {
+    ClusterRequest(Message message) {
         if (message.body() instanceof Buffer) {
             this.buffer = (Buffer) message.body();
-        } if (message.body() instanceof  String) {
+        }
+        if (message.body() instanceof String) {
             this.json = new JsonObject((String) message.body());
         } else {
             this.json = (JsonObject) message.body();
@@ -73,7 +74,11 @@ class ClusterMessage implements Request {
 
     @Override
     public Token token() {
-        return Serializer.unpack(json.getJsonObject(ID_TOKEN), Token.class);
+        if (json.containsKey(ID_TOKEN)) {
+            return Serializer.unpack(json.getJsonObject(ID_TOKEN), Token.class);
+        } else {
+            return new Token();
+        }
     }
 
     @Override

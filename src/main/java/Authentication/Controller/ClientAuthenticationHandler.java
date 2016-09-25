@@ -228,7 +228,7 @@ public class ClientAuthenticationHandler extends HandlerProvider {
     }
 
     @Handles(value = CLIENT_REALM_LIST, access = PUBLIC)
-    public void realmlist(ClientAuthenticationRequest request) {
+    public void realmlist(Request request) {
         Future<ArrayList<RealmMetaData>> future = Future.future();
 
         future.setHandler(result -> request.write(new RealmList(result.result())));

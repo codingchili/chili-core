@@ -16,7 +16,7 @@ public class ClusterListener extends AbstractVerticle {
     @Override
     public void start(Future<Void> future) {
         vertx.eventBus().consumer(handler.getAdddress()).handler(message -> {
-            handler.process(new ClusterMessage(message));
+            handler.process(new ClusterRequest(message));
         });
 
         future.complete();

@@ -4,7 +4,6 @@ import Protocols.*;
 import Protocols.Exception.AuthorizationRequiredException;
 import Protocols.Exception.HandlerMissingException;
 import Routing.Configuration.RouteProvider;
-import Routing.Model.ClusterRequest;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
@@ -41,7 +40,7 @@ public class RoutingHandler extends HandlerProvider {
         } catch (HandlerMissingException e) {
             request.missing();
 
-            logger.onHandlerMissing(request.action());
+            logger.onHandlerMissing(request.target());
         }
     }
 
@@ -70,22 +69,22 @@ public class RoutingHandler extends HandlerProvider {
     }
 
     @Handles(NODE_LOGGING)
-    public void logging(ClusterRequest request) {
+    public void logging(Request request) {
         sendCluster(NODE_LOGGING, request);
     }
 
     @Handles(NODE_PATCHING)
-    public void patching(ClusterRequest request) {
+    public void patching(Request request) {
         sendCluster(NODE_PATCHING, request);
     }
 
     @Handles(NODE_AUTHHENTICATION_CLIENTS)
-    public void clientAuthentication(ClusterRequest request) {
+    public void clientAuthentication(Request request) {
         sendCluster(NODE_AUTHHENTICATION_CLIENTS, request);
     }
 
     @Handles(NODE_AUTHENTICATION_REALMS)
-    public void realmAuthentication(ClusterRequest request) {
+    public void realmAuthentication(Request request) {
         sendCluster(NODE_AUTHENTICATION_REALMS, request);
     }
 

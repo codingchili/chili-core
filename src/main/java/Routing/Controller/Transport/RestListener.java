@@ -22,10 +22,9 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import static Configuration.Strings.ID_ACTION;
-import static Configuration.Strings.ID_TARGET;
-import static Configuration.Strings.ID_TOKEN;
+import static Configuration.Strings.*;
 
 /**
  * @author Robin Duda
@@ -102,23 +101,46 @@ public class RestListener extends ClusterVerticle {
 
             @Override
             public String action() {
-                return request.path();
+                String action = request.path();
+
+                try {
+                    JsonObject data = context.getBodyAsJson();
+
+                    if (data != null && data.containsKey(ID_ACTION)) {
+                        action = data.getString(ID_ACTION);
+                    }
+                } catch (DecodeException ignored) {
+                }
+
+                return action;
             }
 
             @Override
             public String target() {
-                return context.getBodyAsJson().getString(ID_TARGET);
+                String target = NODE_WEBSERVER;
+
+                try {
+                    JsonObject data = context.getBodyAsJson();
+
+                    if (data != null && data.containsKey(ID_TARGET)) {
+                        target = data.getString(ID_TARGET);
+                    }
+                } catch (DecodeException ignored) {
+                }
+
+                return target;
             }
 
             @Override
             public Token token() {
-                return Serializer.unpack(context.getBodyAsJson().getJsonObject(ID_TOKEN), Token.class);
+                // Authentication is not used on the router node.
+                throw new NotImplementedException();
             }
 
             @Override
             public JsonObject data() {
                 try {
-                    return context.getBodyAsJson().put(ID_ACTION, request.path());
+                    return context.getBodyAsJson().put(ID_ACTION, action());
                 } catch (DecodeException e) {
                     return new JsonObject().put(ID_ACTION, request.path());
                 }
