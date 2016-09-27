@@ -5,6 +5,8 @@ import Patching.Configuration.PatchServerSettings;
 import Patching.Model.PatchKeeper;
 import Patching.Model.PatchReloadedException;
 import Protocols.*;
+import Protocols.Exception.AuthorizationRequiredException;
+import Protocols.Exception.HandlerMissingException;
 
 import java.nio.file.NoSuchFileException;
 
@@ -14,44 +16,53 @@ import static Protocols.Access.AUTHORIZED;
 /**
  * @author Robin Duda
  */
-public class PatchHandler extends HandlerProvider {
+public class PatchHandler extends AbstractHandler {
+    private Protocol<PacketHandler<PatchRequest>> protocol = new Protocol<>();
     private PatchServerSettings settings;
     private PatchKeeper patcher;
 
     public PatchHandler(PatchProvider provider) {
-        super(PatchHandler.class, provider.getLogger(), NODE_PATCHING);
+        super(NODE_PATCHING);
 
         this.settings = provider.getSettings();
         this.patcher = provider.getPatchKeeper();
+
+        protocol.use(PATCH_IDENTIFIER, this::patchinfo)
+                .use(PATCH_GAME_INFO, this::gameinfo)
+                .use(PATCH_NEWS, this::news)
+                .use(PATCH_DATA, this::patchdata)
+                .use(PATCH_DOWNLOAD, this::download);
+
     }
 
-    @Authenticator
-    public Access authenticate(Request request) {
-        return AUTHORIZED;
+    @Override
+    public void handle(Request request) {
+        try {
+            protocol.get(AUTHORIZED, request.action()).handle((PatchRequest) request);
+        } catch (AuthorizationRequiredException e) {
+            request.unauthorized();
+        } catch (HandlerMissingException e) {
+            request.error();
+        }
     }
 
-    @Handles(PATCH_IDENTIFIER)
-    public void patchinfo(PatchRequest request) {
+    private void patchinfo(PatchRequest request) {
         request.write(patcher.getPatchNotes());
     }
 
-    @Handles(PATCH_GAME_INFO)
-    public void gameinfo(PatchRequest request) {
+    private void gameinfo(PatchRequest request) {
         request.write(settings.getGameinfo());
     }
 
-    @Handles(PATCH_NEWS)
-    public void news(PatchRequest request) {
+    private void news(PatchRequest request) {
         request.write(settings.getNews());
     }
 
-    @Handles(PATCH_DATA)
-    public void patchdata(PatchRequest request) {
+    private void patchdata(PatchRequest request) {
         request.write(patcher.getDetails());
     }
 
-    @Handles(PATCH_DOWNLOAD)
-    public void download(PatchRequest request) {
+    private void download(PatchRequest request) {
         try {
             request.file(patcher.getFile(request.file(), request.version()));
         } catch (PatchReloadedException e) {

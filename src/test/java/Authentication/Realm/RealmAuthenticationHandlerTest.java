@@ -2,7 +2,7 @@ package Authentication.Realm;
 
 import Authentication.Configuration.AuthProvider;
 import Authentication.Configuration.AuthServerSettings;
-import Authentication.Controller.RealmAuthenticationHandler;
+import Authentication.Controller.RealmHandler;
 import Authentication.ProviderMock;
 import Configuration.ConfigMock;
 import Protocols.*;
@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 public class RealmAuthenticationHandlerTest {
     private AuthServerSettings authconfig = new ConfigMock().getAuthSettings();
     private RealmSettings realmconfig = new ConfigMock().getRealm();
-    private RealmAuthenticationHandler handler;
+    private RealmHandler handler;
     private TokenFactory factory;
 
     @Rule
@@ -44,7 +44,7 @@ public class RealmAuthenticationHandlerTest {
     @Before
     public void setUp() {
         AuthProvider provider = new ProviderMock();
-        handler = new RealmAuthenticationHandler(provider);
+        handler = new RealmHandler(provider);
         RealmSettings realm = new ConfigMock.RealmSettingsMock();
         provider.getRealmStore().put(Future.future(), realm);
         factory = new TokenFactory("null".getBytes());

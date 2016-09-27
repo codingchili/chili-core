@@ -9,11 +9,11 @@ import java.util.HashMap;
 /**
  * @author Robin Duda
  */
-public class AuthorizationHandler {
-    private HashMap<String, Method> authorized = new HashMap<>();
-    private HashMap<String, Method> unauthorized = new HashMap<>();
+public class AuthorizationHandler<T> {
+    private HashMap<String, T> authorized = new HashMap<>();
+    private HashMap<String, T> unauthorized = new HashMap<>();
 
-    public void use(String action, Method handler, Access access) {
+    public void use(String action, T handler, Access access) {
         switch (access) {
             case PUBLIC:
                 unauthorized.put(action, handler);
@@ -24,7 +24,7 @@ public class AuthorizationHandler {
         }
     }
 
-    public Method get(String action, Access access) throws AuthorizationRequiredException, HandlerMissingException {
+    public T get(String action, Access access) throws AuthorizationRequiredException, HandlerMissingException {
         switch (access) {
             case PUBLIC:
                 return unauthorized(action);
@@ -39,7 +39,7 @@ public class AuthorizationHandler {
         return (authorized.containsKey(action) || unauthorized.containsKey(action));
     }
 
-    private Method unauthorized(String action) throws AuthorizationRequiredException, HandlerMissingException {
+    private T unauthorized(String action) throws AuthorizationRequiredException, HandlerMissingException {
         if (unauthorized.containsKey(action)) {
             return unauthorized.get(action);
         } else if (authorized.containsKey(action)) {
@@ -49,7 +49,7 @@ public class AuthorizationHandler {
         }
     }
 
-    private Method any(String action) throws HandlerMissingException {
+    private T any(String action) throws HandlerMissingException {
         if (authorized.containsKey(action)) {
             return authorized.get(action);
         } else if (unauthorized.containsKey(action)) {
@@ -59,8 +59,8 @@ public class AuthorizationHandler {
         }
     }
 
-    public HashMap<String, Method> list() {
-        HashMap<String, Method> list = new HashMap<>();
+    public HashMap<String, T> list() {
+        HashMap<String, T> list = new HashMap<>();
         list.putAll(authorized);
         list.putAll(unauthorized);
         return list;

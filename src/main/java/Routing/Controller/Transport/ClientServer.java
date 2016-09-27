@@ -2,11 +2,10 @@ package Routing.Controller.Transport;
 
 import Authentication.Configuration.AuthProvider;
 import Authentication.Configuration.AuthServerSettings;
-import Authentication.Controller.ClientAuthenticationHandler;
+import Authentication.Controller.ClientHandler;
 import Configuration.Routing;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
-import io.vertx.core.http.HttpServerOptions;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -16,10 +15,10 @@ import io.vertx.ext.web.handler.BodyHandler;
  */
 public class ClientServer extends AbstractVerticle {
     private AuthServerSettings settings;
-    private ClientAuthenticationHandler handler;
+    private ClientHandler handler;
 
     public ClientServer(AuthProvider provider) {
-        this.handler = new ClientAuthenticationHandler(provider);
+        this.handler = new ClientHandler(provider);
         this.settings = provider.getAuthserverSettings();
     }
 

@@ -4,44 +4,66 @@ import Authentication.Configuration.AuthProvider;
 import Authentication.Configuration.AuthServerSettings;
 import Authentication.Model.AsyncAccountStore;
 import Authentication.Model.AsyncRealmStore;
+import Logging.Model.Logger;
 import Protocols.*;
 import Protocols.Authentication.RealmRegister;
 import Protocols.Authorization.TokenFactory;
+import Protocols.Exception.AuthorizationRequiredException;
+import Protocols.Exception.HandlerMissingException;
 import Protocols.Realm.CharacterResponse;
 import Realm.Configuration.RealmSettings;
 import Realm.Model.PlayerCharacter;
 import io.vertx.core.Future;
 
 import static Configuration.Strings.*;
+import static Protocols.Access.AUTHORIZED;
 import static Protocols.Access.PUBLIC;
 
 /**
  * @author Robin Duda
  *         Routing used to authenticate realms and generate realmName lists.
  */
-public class RealmAuthenticationHandler extends HandlerProvider {
+public class RealmHandler extends AbstractHandler {
+    private Protocol<PacketHandler<RealmRequest>> protocol = new Protocol<>();
     private AsyncRealmStore realmStore;
     private AsyncAccountStore accounts;
     private AuthServerSettings settings;
+    private Logger logger;
     private TokenFactory tokens;
 
-    public RealmAuthenticationHandler(AuthProvider provider) {
-        super(ClientAuthenticationHandler.class, provider.getLogger(), NODE_AUTHENTICATION_REALMS);
+    public RealmHandler(AuthProvider provider) {
+        super(NODE_AUTHENTICATION_REALMS);
 
+        logger = provider.getLogger();
         accounts = provider.getAccountStore();
         settings = provider.getAuthserverSettings();
         realmStore = provider.getRealmStore();
         tokens = provider.getClientTokenFactory();
+
+        protocol.use(REALM_REGISTER, this::register, PUBLIC)
+                .use(REALM_UPDATE, this::update)
+                .use(CLIENT_CLOSE, this::disconnected)
+                .use(REALM_CHARACTER_REQUEST, this::character);
     }
 
-    @Authenticator
     public Access authenticate(Request request) {
         boolean authorized = tokens.verifyToken(request.token());
-        return (authorized) ? Access.AUTHORIZED : Access.PUBLIC;
+        return (authorized) ? AUTHORIZED : PUBLIC;
     }
 
-    @Handles(value = REALM_AUTHENTICATE, access = PUBLIC)
-    public void register(RealmAuthenticationRequest request) {
+    @Override
+    public void handle(Request request) {
+        try {
+            protocol.get(authenticate(request), request.action()).handle((RealmRequest) request);
+        } catch (AuthorizationRequiredException e) {
+            request.unauthorized();
+        } catch (HandlerMissingException e) {
+            request.error();
+            logger.onHandlerMissing(request.action());
+        }
+    }
+
+    private void register(RealmRequest request) {
         Future<Void> realmFuture = Future.future();
         RealmSettings realm = request.realm();
 
@@ -58,8 +80,7 @@ public class RealmAuthenticationHandler extends HandlerProvider {
         realmStore.put(realmFuture, realm);
     }
 
-    @Handles(REALM_UPDATE)
-    public void update(RealmAuthenticationRequest request) {
+    private void update(RealmRequest request) {
         Future<Void> updateFuture = Future.future();
         String realmName = request.realmName();
         int players = request.players();
@@ -75,8 +96,7 @@ public class RealmAuthenticationHandler extends HandlerProvider {
         realmStore.update(updateFuture, realmName, players);
     }
 
-    @Handles(CLIENT_CLOSE)
-    public void disconnected(RealmAuthenticationRequest request) {
+    private void disconnected(RealmRequest request) {
         Future<Void> realmFuture = Future.future();
 
         realmFuture.setHandler(remove -> {
@@ -90,8 +110,7 @@ public class RealmAuthenticationHandler extends HandlerProvider {
         realmStore.remove(realmFuture, request.realm().getName());
     }
 
-    @Handles(REALM_CHARACTER_REQUEST)
-    public void character(RealmAuthenticationRequest request) {
+    private void character(RealmRequest request) {
         Future<PlayerCharacter> find = Future.future();
 
         find.setHandler(result -> {

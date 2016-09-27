@@ -8,7 +8,7 @@ import Protocols.Authorization.Token;
 /**
  * @author Robin Duda
  */
-public interface RealmAuthenticationRequest extends Request {
+public interface RealmRequest extends Request {
 
     RealmSettings realm();
 

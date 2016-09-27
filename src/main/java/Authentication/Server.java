@@ -1,8 +1,8 @@
 package Authentication;
 
 import Authentication.Configuration.AuthProvider;
-import Authentication.Controller.ClientAuthenticationHandler;
-import Authentication.Controller.RealmAuthenticationHandler;
+import Authentication.Controller.ClientHandler;
+import Authentication.Controller.RealmHandler;
 import Protocols.ClusterListener;
 import Protocols.ClusterVerticle;
 import io.vertx.core.Future;
@@ -33,8 +33,8 @@ public class Server extends ClusterVerticle {
                     this.logger = provider.getLogger();
 
                     for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
-                        vertx.deployVerticle(new ClusterListener(new RealmAuthenticationHandler(provider)));
-                        vertx.deployVerticle(new ClusterListener(new ClientAuthenticationHandler(provider)));
+                        vertx.deployVerticle(new ClusterListener(new RealmHandler(provider)));
+                        vertx.deployVerticle(new ClusterListener(new ClientHandler(provider)));
                     }
 
                     logger.onServerStarted(start);

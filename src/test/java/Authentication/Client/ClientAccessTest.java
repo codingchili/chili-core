@@ -1,7 +1,7 @@
 package Authentication.Client;
 
 import Authentication.Configuration.AuthProvider;
-import Authentication.Controller.ClientAuthenticationHandler;
+import Authentication.Controller.ClientHandler;
 import Authentication.ProviderMock;
 import Configuration.ConfigMock;
 import Configuration.Strings;
@@ -28,13 +28,13 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(VertxUnitRunner.class)
 public class ClientAccessTest {
-    private static ClientAuthenticationHandler handler;
+    private static ClientHandler handler;
 
     @Before
     public void setUp() throws IOException {
         AuthProvider provider = new ProviderMock();
         provider.getRealmStore().put(Future.future(), new ConfigMock.RealmSettingsMock());
-        handler = new ClientAuthenticationHandler(provider);
+        handler = new ClientHandler(provider);
     }
 
 

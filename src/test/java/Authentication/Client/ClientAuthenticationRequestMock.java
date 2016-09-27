@@ -1,13 +1,12 @@
 package Authentication.Client;
 
-import Authentication.Controller.ClientAuthenticationRequest;
+import Authentication.Controller.ClientRequest;
 import Authentication.Model.Account;
 import Shared.ResponseListener;
 import Protocols.Authentication.ClientAuthentication;
 import Protocols.Serializer;
 import Protocols.Authorization.Token;
 import Shared.ResponseStatus;
-import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
 import static Protocols.Serializer.unpack;
@@ -17,7 +16,7 @@ import static Configuration.Strings.*;
 /**
  * @author Robin Duda
  */
-class ClientAuthenticationRequestMock implements ClientAuthenticationRequest {
+class ClientAuthenticationRequestMock implements ClientRequest {
     private ResponseListener listener;
     private JsonObject data = new JsonObject();
     private String action;

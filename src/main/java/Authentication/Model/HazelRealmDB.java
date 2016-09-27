@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  *         Allows the deployment of multiple handlers.
  */
 public class HazelRealmDB implements AsyncRealmStore {
-    // A standard map is stored within the map so that it is possible to enumerate available realms.
+    // A standard get is stored within the get so that it is possible to enumerate available realms.
     private AsyncMap<String, HashMap<String, RealmSettings>> realms;
 
     public static void create(Future<AsyncRealmStore> future, Vertx vertx) {

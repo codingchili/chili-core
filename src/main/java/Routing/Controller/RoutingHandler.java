@@ -1,5 +1,6 @@
 package Routing.Controller;
 
+import Logging.Model.Logger;
 import Protocols.*;
 import Protocols.Exception.AuthorizationRequiredException;
 import Protocols.Exception.HandlerMissingException;
@@ -9,48 +10,46 @@ import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
 
 import static Configuration.Strings.*;
+import static Protocols.Access.AUTHORIZED;
 
 /**
  * @author Robin Duda
  */
-public class RoutingHandler extends HandlerProvider {
+public class RoutingHandler extends AbstractHandler {
+    private Protocol<PacketHandler<Request>> protocol = new Protocol<>();
+    private Logger logger;
     private Vertx vertx;
 
     public RoutingHandler(RouteProvider provider) {
-        super(RoutingHandler.class, provider.getLogger(), ANY);
+        super(ANY);
+        this.logger = provider.getLogger();
         this.vertx = provider.getVertx();
+
+        protocol.use(ANY, this::webserver)
+                .use(NODE_REALM, this::realm)
+                .use(NODE_LOGGING, this::logging)
+                .use(NODE_PATCHING, this::patching)
+                .use(NODE_AUTHENTICATION_REALMS, this::realmAuthentication)
+                .use(NODE_AUTHHENTICATION_CLIENTS, this::clientAuthentication);
     }
 
-    @Authenticator
-    public Access authorize(Request request) {
-        return Access.AUTHORIZED;
-    }
-
-    /**
-     * Processes an incoming request with authentication control.
-     * Overrides HandlerProvider to provide routing based on request target instead of action.
-     * @param request the request to be processed.
-     */
     @Override
-    public void process(Request request) {
+    public void handle(Request request) {
         try {
-            protocol.handle(this, request, request.target());
-        } catch (AuthorizationRequiredException authorizationRequired) {
+            protocol.get(AUTHORIZED, request.target()).handle(request);
+        } catch (AuthorizationRequiredException e) {
             request.unauthorized();
         } catch (HandlerMissingException e) {
             request.missing();
-
             logger.onHandlerMissing(request.target());
         }
     }
 
-    @Handles(ANY)
-    public void webserver(Request request) {
+    private void webserver(Request request) {
         sendCluster(NODE_WEBSERVER, request);
     }
 
-    @Handles(NODE_REALM)
-    public void realm(Request request) {
+    private void realm(Request request) {
         try {
             sendCluster(getRealm(request), request);
         } catch (TargetNodeUnspecifiedException e) {
@@ -68,23 +67,19 @@ public class RoutingHandler extends HandlerProvider {
         }
     }
 
-    @Handles(NODE_LOGGING)
-    public void logging(Request request) {
+    private void logging(Request request) {
         sendCluster(NODE_LOGGING, request);
     }
 
-    @Handles(NODE_PATCHING)
-    public void patching(Request request) {
+    private void patching(Request request) {
         sendCluster(NODE_PATCHING, request);
     }
 
-    @Handles(NODE_AUTHHENTICATION_CLIENTS)
-    public void clientAuthentication(Request request) {
+    private void clientAuthentication(Request request) {
         sendCluster(NODE_AUTHHENTICATION_CLIENTS, request);
     }
 
-    @Handles(NODE_AUTHENTICATION_REALMS)
-    public void realmAuthentication(Request request) {
+    private void realmAuthentication(Request request) {
         sendCluster(NODE_AUTHENTICATION_REALMS, request);
     }
 

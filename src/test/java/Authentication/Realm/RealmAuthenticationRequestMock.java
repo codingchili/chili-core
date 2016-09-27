@@ -1,18 +1,17 @@
 package Authentication.Realm;
 
-import Authentication.Controller.RealmAuthenticationRequest;
+import Authentication.Controller.RealmRequest;
 import Routing.Controller.Transport.RealmConnection;
 import Configuration.Strings;
 import Protocols.Authorization.Token;
 import Realm.Configuration.RealmSettings;
 import Shared.ResponseListener;
-import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
 /**
  * @author Robin Duda
  */
-public class RealmAuthenticationRequestMock implements RealmAuthenticationRequest {
+public class RealmAuthenticationRequestMock implements RealmRequest {
     private ResponseListener listener;
     private JsonObject data;
 

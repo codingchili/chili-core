@@ -1,35 +1,28 @@
 package Website.Controller;
 
-import Configuration.Strings;
-import Protocols.*;
+import Protocols.AbstractHandler;
+import Protocols.Request;
 import Website.Configuration.WebserverProvider;
 import Website.Model.CachedFileStore;
 
 import java.nio.file.NoSuchFileException;
 
-import static Configuration.Strings.ANY;
 import static Configuration.Strings.DIR_WEBSITE;
-import static Protocols.Access.AUTHORIZED;
+import static Configuration.Strings.NODE_WEBSERVER;
 
 /**
  * @author Robin Duda
  */
-public class WebHandler extends HandlerProvider {
+public class WebHandler extends AbstractHandler {
     private CachedFileStore files;
 
     public WebHandler(WebserverProvider provider) {
-        super(WebHandler.class, provider.getLogger(), Strings.NODE_WEBSERVER);
+        super(NODE_WEBSERVER);
 
         this.files = CachedFileStore.instance(provider.getVertx(), DIR_WEBSITE);
     }
 
-    @Authenticator
-    public Access authenticator(Request request) {
-        return AUTHORIZED;
-    }
-
-    @Handles(ANY)
-    public void serve(Request request) {
+    private void serve(Request request) {
         try {
             String file = request.action();
 
@@ -41,5 +34,10 @@ public class WebHandler extends HandlerProvider {
         } catch (NoSuchFileException e) {
             request.missing();
         }
+    }
+
+    @Override
+    public void handle(Request request) {
+        serve(request);
     }
 }

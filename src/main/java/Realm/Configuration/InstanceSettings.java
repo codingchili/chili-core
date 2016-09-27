@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 /**
  * @author Robin Duda
- *         Contains settings for an instance of a map.
+ *         Contains settings for an instance of a get.
  */
 public class InstanceSettings implements Serializable {
     private ArrayList<Portal> portals;

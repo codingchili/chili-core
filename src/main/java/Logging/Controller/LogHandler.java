@@ -6,6 +6,8 @@ import Logging.Model.ConsoleLogger;
 import Logging.Model.ElasticLogger;
 import Protocols.*;
 import Protocols.Authorization.TokenFactory;
+import Protocols.Exception.AuthorizationRequiredException;
+import Protocols.Exception.HandlerMissingException;
 import io.vertx.core.json.JsonObject;
 
 import static Configuration.Strings.*;
@@ -16,22 +18,24 @@ import static Protocols.Access.PUBLIC;
 /**
  * @author Robin Duda
  */
-public class LogHandler extends HandlerProvider {
+public class LogHandler extends AbstractHandler {
+    private Protocol<PacketHandler<Request>> protocol = new Protocol<>();
     private TokenFactory tokenFactory;
     private ConsoleLogger console;
     private ElasticLogger elastic;
 
     public LogHandler(LogProvider provider) {
-        super(LogHandler.class, provider.getLogger(), NODE_LOGGING);
+        super(NODE_LOGGING);
 
         LogServerSettings settings = provider.getSettings();
         this.tokenFactory = new TokenFactory(settings.getSecret());
         this.console = new ConsoleLogger(settings.getConsole());
         this.elastic = new ElasticLogger(settings.getElastic(), provider.getVertx());
+
+        protocol.use(PROTOCOL_LOGGING, this::log);
     }
 
-    @Authenticator
-    public Access authenticator(Request request) {
+    private Access authenticator(Request request) {
         if (tokenFactory.verifyToken(request.token())) {
             return AUTHORIZED;
         } else {
@@ -39,8 +43,18 @@ public class LogHandler extends HandlerProvider {
         }
     }
 
-    @Handles(PROTOCOL_LOGGING)
-    public void log(Request request) {
+    @Override
+    public void handle(PacketHandler handler, Request request) {
+        try {
+            protocol.get(authenticator(request), request.action()).handle(request);
+        } catch (AuthorizationRequiredException e) {
+            request.unauthorized();
+        } catch (HandlerMissingException e) {
+            request.error();
+        }
+    }
+
+    private void log(Request request) {
         if (tokenFactory.verifyToken(request.token())) {
             JsonObject logdata = request.data();
 

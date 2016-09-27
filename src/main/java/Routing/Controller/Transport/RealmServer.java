@@ -2,8 +2,7 @@ package Routing.Controller.Transport;
 
 import Authentication.Configuration.AuthProvider;
 import Authentication.Configuration.AuthServerSettings;
-import Authentication.Controller.RealmAuthenticationHandler;
-import Authentication.Controller.RealmAuthenticationRequest;
+import Authentication.Controller.RealmHandler;
 import Logging.Model.Logger;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
@@ -11,21 +10,19 @@ import io.vertx.core.http.ServerWebSocket;
 
 import java.util.HashMap;
 
-import static Configuration.Strings.CLIENT_CLOSE;
-
 /**
  * @author Robin Duda
  */
 public class RealmServer extends AbstractVerticle {
     private HashMap<String, RealmConnection> connections = new HashMap<>();
     private AuthServerSettings settings;
-    private RealmAuthenticationHandler handler;
+    private RealmHandler handler;
     private Logger logger;
 
     public RealmServer(AuthProvider provider) {
         this.settings = provider.getAuthserverSettings();
         this.logger = provider.getLogger();
-        this.handler = new RealmAuthenticationHandler(provider);
+        this.handler = new RealmHandler(provider);
     }
 
     @Override

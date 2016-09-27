@@ -10,7 +10,7 @@ import Protocols.Authorization.Token;
  */
 
 
-public interface ClientAuthenticationRequest extends Request {
+public interface ClientRequest extends Request {
     String realmName();
 
     String account();

@@ -1,7 +1,7 @@
 package Authentication.Client;
 
 import Authentication.Configuration.AuthProvider;
-import Authentication.Controller.ClientAuthenticationHandler;
+import Authentication.Controller.ClientHandler;
 import Authentication.Model.Account;
 import Authentication.Model.AsyncAccountStore;
 import Authentication.ProviderMock;
@@ -48,7 +48,7 @@ public class ClientAuthenticationHandlerTest {
     private static final String CLASS_NAME = "class.name";
     private static TokenFactory clientToken;
     private static AuthProvider provider;
-    private static ClientAuthenticationHandler handler;
+    private static ClientHandler handler;
 
     @Rule
     public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
@@ -56,7 +56,7 @@ public class ClientAuthenticationHandlerTest {
     @Before
     public void setUp() throws IOException {
         provider = new ProviderMock();
-        handler = new ClientAuthenticationHandler(provider);
+        handler = new ClientHandler(provider);
         RealmSettings realm = new ConfigMock.RealmSettingsMock();
         provider.getRealmStore().put(Future.future(), realm);
         clientToken = new TokenFactory(provider.getAuthserverSettings().getClientSecret());
