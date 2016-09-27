@@ -19,7 +19,7 @@ import static Protocols.Access.PUBLIC;
  * @author Robin Duda
  */
 public class LogHandler extends AbstractHandler {
-    private Protocol<PacketHandler<Request>> protocol = new Protocol<>();
+    private Protocol<RequestHandler<Request>> protocol = new Protocol<>();
     private TokenFactory tokenFactory;
     private ConsoleLogger console;
     private ElasticLogger elastic;
@@ -44,7 +44,7 @@ public class LogHandler extends AbstractHandler {
     }
 
     @Override
-    public void handle(PacketHandler handler, Request request) {
+    public void handle(Request request) {
         try {
             protocol.get(authenticator(request), request.action()).handle(request);
         } catch (AuthorizationRequiredException e) {

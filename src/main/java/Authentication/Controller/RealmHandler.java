@@ -24,7 +24,7 @@ import static Protocols.Access.PUBLIC;
  *         Routing used to authenticate realms and generate realmName lists.
  */
 public class RealmHandler extends AbstractHandler {
-    private Protocol<PacketHandler<RealmRequest>> protocol = new Protocol<>();
+    private Protocol<RequestHandler<RealmRequest>> protocol = new Protocol<>();
     private AsyncRealmStore realmStore;
     private AsyncAccountStore accounts;
     private AuthServerSettings settings;

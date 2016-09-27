@@ -75,7 +75,7 @@ public class ClientAccessTest {
 
 
     private void handle(String action, ResponseListener listener, JsonObject data) {
-        handler.process(new ClientAuthenticationRequestMock(data, listener, action));
+        handler.handle(new ClientAuthenticationRequestMock(data, listener, action));
     }
 
     private JsonObject getInvalidClientToken() {

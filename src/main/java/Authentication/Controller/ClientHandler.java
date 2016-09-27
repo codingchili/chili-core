@@ -27,7 +27,7 @@ import static Protocols.Access.PUBLIC;
  *         Routing used to authenticate users and create/delete characters.
  */
 public class ClientHandler extends AbstractHandler {
-    private Protocol<PacketHandler<ClientRequest>> protocol = new Protocol<>();
+    private Protocol<RequestHandler<ClientRequest>> protocol = new Protocol<>();
     private Logger logger;
     private AsyncRealmStore realmStore;
     private AsyncAccountStore accounts;

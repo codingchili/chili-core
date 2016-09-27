@@ -17,7 +17,7 @@ import static Protocols.Access.AUTHORIZED;
  * @author Robin Duda
  */
 public class PatchHandler extends AbstractHandler {
-    private Protocol<PacketHandler<PatchRequest>> protocol = new Protocol<>();
+    private Protocol<RequestHandler<PatchRequest>> protocol = new Protocol<>();
     private PatchServerSettings settings;
     private PatchKeeper patcher;
 

@@ -288,7 +288,7 @@ public class ClientAuthenticationHandlerTest {
 
     private void handle(String action, ResponseListener listener, JsonObject data) {
         try {
-            handler.process(new ClientAuthenticationRequestMock(data, listener, action));
+            handler.handle(new ClientAuthenticationRequestMock(data, listener, action));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

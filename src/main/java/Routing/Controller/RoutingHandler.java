@@ -16,7 +16,7 @@ import static Protocols.Access.AUTHORIZED;
  * @author Robin Duda
  */
 public class RoutingHandler extends AbstractHandler {
-    private Protocol<PacketHandler<Request>> protocol = new Protocol<>();
+    private Protocol<RequestHandler<Request>> protocol = new Protocol<>();
     private Logger logger;
     private Vertx vertx;
 

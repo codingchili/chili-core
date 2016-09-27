@@ -24,7 +24,7 @@ import static Configuration.Strings.*;
 public class RealmHandler extends AbstractHandler {
     private static final int REALM_UPDATE = 6000;
     private HashMap<String, Connection> connections = new HashMap<>();
-    private Protocol<PacketHandler<RealmRequest>> protocol = new Protocol<>();
+    private Protocol<RequestHandler<RealmRequest>> protocol = new Protocol<>();
     private Logger logger;
     private RealmSettings settings;
     private RealmServerSettings server;

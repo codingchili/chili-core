@@ -39,6 +39,6 @@ public class ClientServer extends AbstractVerticle {
     }
 
     private void packet(RoutingContext context) {
-        handler.process(new ClientRestRequest(context));
+        handler.handle(new ClientRestRequest(context));
     }
 }

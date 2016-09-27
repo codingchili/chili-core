@@ -55,7 +55,7 @@ public class PatchTest {
     }
 
     private void handle(PatchRequest request) throws Exception {
-        handler.process(request);
+        handler.handle(request);
     }
 
     @Test

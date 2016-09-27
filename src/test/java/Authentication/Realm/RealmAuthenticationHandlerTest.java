@@ -134,7 +134,7 @@ public class RealmAuthenticationHandlerTest {
 
     private void handle(String action, ResponseListener listener, JsonObject data) {
         try {
-            handler.process(new RealmAuthenticationRequestMock(data, listener, action));
+            handler.handle(new RealmAuthenticationRequestMock(data, listener, action));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

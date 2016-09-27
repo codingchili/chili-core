@@ -64,7 +64,7 @@ public class RestListener extends ClusterVerticle {
     private void packet(RoutingContext context) {
         HttpServerRequest request = context.request();
 
-        handler.process(new Request() {
+        handler.handle(new Request() {
             @Override
             public void error() {
                 send(request, HttpResponseStatus.INTERNAL_SERVER_ERROR);
