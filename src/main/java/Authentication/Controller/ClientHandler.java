@@ -230,7 +230,7 @@ public class ClientHandler extends AbstractHandler {
 
 
         future.setHandler(metadata -> {
-            request.authenticate(
+            request.write(
                     new ClientAuthentication(
                             account,
                             new Token(tokens, account.getUsername()),

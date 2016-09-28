@@ -36,7 +36,7 @@ import static Configuration.Strings.*;
  */
 
 @RunWith(VertxUnitRunner.class)
-public class ClientAuthenticationHandlerTest {
+public class ClientHandlerTest {
     private static final String CHARACTER_NAME = "character";
     private static final String CHARACTER_NAME_DELETED = "character-deleted";
     private static final String PASSWORD = "password";
@@ -288,7 +288,7 @@ public class ClientAuthenticationHandlerTest {
 
     private void handle(String action, ResponseListener listener, JsonObject data) {
         try {
-            handler.handle(new ClientAuthenticationRequestMock(data, listener, action));
+            handler.handle(new ClientRequestMock(data, listener, action));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -11,11 +11,11 @@ import io.vertx.core.json.JsonObject;
 /**
  * @author Robin Duda
  */
-public class RealmAuthenticationRequestMock implements RealmRequest {
+public class RealmRequestMock implements RealmRequest {
     private ResponseListener listener;
     private JsonObject data;
 
-    RealmAuthenticationRequestMock(JsonObject data, ResponseListener listener, String action) {
+    RealmRequestMock(JsonObject data, ResponseListener listener, String action) {
         this.data = data;
         this.listener = listener;
         this.data.put(Strings.ID_ACTION, action);

@@ -16,12 +16,12 @@ import static Configuration.Strings.*;
 /**
  * @author Robin Duda
  */
-class ClientAuthenticationRequestMock implements ClientRequest {
+class ClientRequestMock implements ClientRequest {
     private ResponseListener listener;
     private JsonObject data = new JsonObject();
     private String action;
 
-    ClientAuthenticationRequestMock(JsonObject data, ResponseListener listener, String action) {
+    ClientRequestMock(JsonObject data, ResponseListener listener, String action) {
         this.data = data;
         this.listener = listener;
         this.action = action;
@@ -115,10 +115,5 @@ class ClientAuthenticationRequestMock implements ClientRequest {
     @Override
     public Account getAccount() {
         return unpack(data.getJsonObject("account"), Account.class);
-    }
-
-    @Override
-    public void authenticate(ClientAuthentication authentication) {
-        listener.handle(Serializer.json(authentication), ResponseStatus.ACCEPTED);
     }
 }

@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 
 @Ignore
 @RunWith(VertxUnitRunner.class)
-public class RealmAuthenticationHandlerTest {
+public class RealmHandlerTest {
     private AuthServerSettings authconfig = new ConfigMock().getAuthSettings();
     private RealmSettings realmconfig = new ConfigMock().getRealm();
     private RealmHandler handler;
@@ -134,7 +134,7 @@ public class RealmAuthenticationHandlerTest {
 
     private void handle(String action, ResponseListener listener, JsonObject data) {
         try {
-            handler.handle(new RealmAuthenticationRequestMock(data, listener, action));
+            handler.handle(new RealmRequestMock(data, listener, action));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

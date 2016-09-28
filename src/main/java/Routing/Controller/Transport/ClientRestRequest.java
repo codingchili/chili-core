@@ -133,9 +133,4 @@ class ClientRestRequest implements ClientRequest {
     public Account getAccount() {
         return Serializer.unpack(json.getJsonObject(Strings.ID_ACCOUNT), Account.class);
     }
-
-    @Override
-    public void authenticate(ClientAuthentication authentication) {
-        response.end(Serializer.pack(authentication));
-    }
 }

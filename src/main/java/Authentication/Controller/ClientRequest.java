@@ -24,6 +24,4 @@ public interface ClientRequest extends Request {
     Token token();
 
     Account getAccount();
-
-    void authenticate(ClientAuthentication authentication);
 }
