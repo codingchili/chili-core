@@ -33,7 +33,8 @@ class TokenRefresher {
                 configuration.getGameServerSettings(),
                 configuration.getLogSettings(),
                 configuration.getPatchServerSettings(),
-                configuration.getWebsiteSettings()
+                configuration.getWebsiteSettings(),
+                configuration.getRoutingSettings()
         });
 
         generateRealmTokens(configuration.getGameServerSettings());

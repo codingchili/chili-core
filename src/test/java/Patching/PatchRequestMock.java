@@ -1,21 +1,25 @@
 package Patching;
 
-import Patching.Controller.ClientRequest;
+import Patching.Controller.PatchRequest;
 import Patching.Model.PatchFile;
+import Protocols.Authorization.Token;
 import Protocols.Serializer;
 import Shared.*;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
 /**
  * @author Robin Duda
  */
-class ClientRequestMock implements ClientRequest {
+class PatchRequestMock implements PatchRequest {
     private ResponseListener listener;
-    private JsonObject json;
+    private JsonObject data;
+    private String action;
 
-    ClientRequestMock(ResponseListener listener, JsonObject json) {
+    PatchRequestMock(ResponseListener listener, JsonObject json, String action) {
         this.listener = listener;
-        this.json = json;
+        this.data = json;
+        this.action = action;
     }
 
 
@@ -26,12 +30,12 @@ class ClientRequestMock implements ClientRequest {
 
     @Override
     public String file() {
-        return json.getString("file");
+        return data.getString("file");
     }
 
     @Override
     public String version() {
-        return json.getString("version");
+        return data.getString("version");
     }
 
     @Override
@@ -62,5 +66,30 @@ class ClientRequestMock implements ClientRequest {
     @Override
     public void conflict() {
         listener.handle(null, ResponseStatus.CONFLICT);
+    }
+
+    @Override
+    public String action() {
+        return action;
+    }
+
+    @Override
+    public String target() {
+        return null;
+    }
+
+    @Override
+    public Token token() {
+        return null;
+    }
+
+    @Override
+    public JsonObject data() {
+        return data;
+    }
+
+    @Override
+    public int timeout() {
+        return 0;
     }
 }

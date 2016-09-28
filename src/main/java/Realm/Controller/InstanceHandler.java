@@ -12,16 +12,16 @@ import io.vertx.core.Vertx;
 
 /**
  * @author Robin Duda
- *         Handles players in a map.
+ *         Handles players in a get.
  */
-public class Instance implements Verticle {
+class InstanceHandler implements Verticle {
     private Vertx vertx;
     private InstanceSettings settings;
     private RealmSettings realm;
     private RealmServerSettings game;
     private Logger logger;
 
-    public Instance(RealmServerSettings game, RealmSettings realm, InstanceSettings settings) {
+    public InstanceHandler(RealmServerSettings game, RealmSettings realm, InstanceSettings settings) {
         this.game = game;
         this.realm = realm;
         this.settings = settings;

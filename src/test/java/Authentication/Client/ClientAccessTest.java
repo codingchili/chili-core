@@ -2,7 +2,6 @@ package Authentication.Client;
 
 import Authentication.Configuration.AuthProvider;
 import Authentication.Controller.ClientHandler;
-import Authentication.Controller.Transport.ClientServer;
 import Authentication.ProviderMock;
 import Configuration.ConfigMock;
 import Configuration.Strings;
@@ -29,14 +28,13 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(VertxUnitRunner.class)
 public class ClientAccessTest {
-    private static ClientServer server;
+    private static ClientHandler handler;
 
     @Before
     public void setUp() throws IOException {
         AuthProvider provider = new ProviderMock();
         provider.getRealmStore().put(Future.future(), new ConfigMock.RealmSettingsMock());
-        new ClientHandler(provider);
-        server = new ClientServer(provider);
+        handler = new ClientHandler(provider);
     }
 
 
@@ -77,7 +75,7 @@ public class ClientAccessTest {
 
 
     private void handle(String action, ResponseListener listener, JsonObject data) {
-        server.handle(action, new ClientRequestMock(data, listener));
+        handler.handle(new ClientRequestMock(data, listener, action));
     }
 
     private JsonObject getInvalidClientToken() {

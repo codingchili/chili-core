@@ -1,11 +1,13 @@
-package Authentication.Controller.Transport;
+package Routing.Controller.Transport;
 
 import Authentication.Controller.RealmRequest;
 import Configuration.Strings;
-import Realm.Configuration.RealmSettings;
-import Protocols.Serializer;
 import Protocols.Authorization.Token;
+import Protocols.Serializer;
+import Realm.Configuration.RealmSettings;
 import io.vertx.core.json.JsonObject;
+
+import static Configuration.Strings.*;
 
 /**
  * @author Robin Duda
@@ -19,11 +21,11 @@ class RealmWebsocketRequest implements RealmRequest {
     RealmWebsocketRequest(RealmConnection connection, JsonObject data) {
         this.connection = connection;
         this.data = data;
-        this.realm = data.getJsonObject(Strings.ID_REALM);
+        this.realm = data.getJsonObject(ID_REALM);
     }
 
-    RealmWebsocketRequest(RealmConnection connection) {
-        this(connection, null);
+    RealmWebsocketRequest(RealmConnection connection, String action) {
+        this(connection, new JsonObject().put(Strings.ID_ACTION, action));
     }
 
     @Override
@@ -33,7 +35,7 @@ class RealmWebsocketRequest implements RealmRequest {
 
     @Override
     public int players() {
-        return data.getInteger(Strings.ID_PLAYERS);
+        return data.getInteger(ID_PLAYERS);
     }
 
     @Override
@@ -43,7 +45,7 @@ class RealmWebsocketRequest implements RealmRequest {
 
     @Override
     public void error() {
-        connection.write(new JsonObject().put(Strings.PROTOCOL_ACCEPTED, false).encode());
+        connection.write(new JsonObject().put(PROTOCOL_ACCEPTED, false).encode());
     }
 
     @Override
@@ -53,7 +55,7 @@ class RealmWebsocketRequest implements RealmRequest {
 
     @Override
     public String sender() {
-        return data.getString(Strings.PROTOCOL_CONNECTION);
+        return data.getString(PROTOCOL_CONNECTION);
     }
 
 
@@ -64,12 +66,12 @@ class RealmWebsocketRequest implements RealmRequest {
 
     @Override
     public void accept() {
-        connection.write(new JsonObject().put(Strings.PROTOCOL_ACCEPTED, true).encode());
+        connection.write(new JsonObject().put(PROTOCOL_ACCEPTED, true).encode());
     }
 
     @Override
     public void missing() {
-        connection.write(new JsonObject().put(Strings.PROTOCOL_ERROR, true));
+        connection.write(new JsonObject().put(PROTOCOL_ERROR, true));
     }
 
     @Override
@@ -78,28 +80,48 @@ class RealmWebsocketRequest implements RealmRequest {
     }
 
     @Override
-    public Token token() {
-        JsonObject authentication = realm.getJsonObject(Strings.PROTOCOL_AUTHENTICATION);
+    public String action() {
+        return data.getString(ID_ACTION);
+    }
 
-        if (authentication.containsKey(Strings.ID_TOKEN)) {
-            return Serializer.unpack(authentication.getJsonObject(Strings.ID_TOKEN), Token.class);
+    @Override
+    public String target() {
+        return null;
+    }
+
+    @Override
+    public Token token() {
+        JsonObject authentication = realm.getJsonObject(PROTOCOL_AUTHENTICATION);
+
+        if (authentication.containsKey(ID_TOKEN)) {
+            return Serializer.unpack(authentication.getJsonObject(ID_TOKEN), Token.class);
         } else {
             return null;
         }
     }
 
     @Override
+    public JsonObject data() {
+        return data;
+    }
+
+    @Override
+    public int timeout() {
+        return 0;
+    }
+
+    @Override
     public String account() {
-        return data.getString(Strings.ID_ACCOUNT);
+        return data.getString(ID_ACCOUNT);
     }
 
     @Override
     public String name() {
-        return data.getString(Strings.ID_NAME);
+        return data.getString(ID_NAME);
     }
 
     @Override
     public void unauthorized() {
-        connection.write(new JsonObject().put(Strings.PROTOCOL_ERROR, true));
+        connection.write(new JsonObject().put(PROTOCOL_ERROR, true));
     }
 }

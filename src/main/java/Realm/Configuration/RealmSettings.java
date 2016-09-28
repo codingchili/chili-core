@@ -27,8 +27,6 @@ public class RealmSettings implements Serializable {
     private ArrayList<Affliction> afflictions = new ArrayList<>();
     private PlayerCharacter template = new PlayerCharacter();
     private RemoteAuthentication authentication = new RemoteAuthentication();
-    private int port;
-    private int proxy;
     private String remote;
     private String name;
     private String description;
@@ -45,11 +43,9 @@ public class RealmSettings implements Serializable {
 
     public RealmSettings removeAuthentication() {
         return new RealmSettings()
-                .setPort(port)
                 .setClasses(classes)
                 .setAfflictions(afflictions)
                 .setTemplate(template)
-                .setProxy(proxy)
                 .setRemote(remote)
                 .setName(name)
                 .setDescription(description)
@@ -99,18 +95,9 @@ public class RealmSettings implements Serializable {
         }
     }
 
-    public RealmSettings setProxy(int proxy) {
-        this.proxy = proxy;
-        return this;
-    }
-
     public RealmSettings setRemote(String remote) {
         this.remote = remote;
         return this;
-    }
-
-    public int getProxy() {
-        return proxy;
     }
 
     public String getRemote() {
@@ -267,15 +254,6 @@ public class RealmSettings implements Serializable {
 
     public ArrayList<InstanceSettings> getInstance() {
         return instances;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public RealmSettings setPort(int port) {
-        this.port = port;
-        return this;
     }
 
     @Override

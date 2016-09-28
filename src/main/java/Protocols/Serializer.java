@@ -3,13 +3,13 @@ package Protocols;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vertx.core.json.JsonObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * @author Robin Duda
@@ -35,7 +35,8 @@ public class Serializer {
 
     /**
      * Deserializes a json-string into a typed object.
-     * @param data json-encoded string.
+     *
+     * @param data  json-encoded string.
      * @param clazz the class to instantiate.
      * @return an object specified by the type parameter.
      */
@@ -51,7 +52,8 @@ public class Serializer {
 
     /**
      * Deserializes a json-string into a typed object.
-     * @param json json object to be unpacked.
+     *
+     * @param json  json object to be unpacked.
      * @param clazz the class to instantiate.
      * @return an object specified by the type parameter.
      */
@@ -68,5 +70,24 @@ public class Serializer {
      */
     public static JsonObject json(Object object) {
         return new JsonObject(pack(object));
+    }
+
+    /**
+     * Compresses a byte array using gzip.
+     *
+     * @param data data to be compressed.
+     * @return data compressed with gzip.
+     */
+    public static byte[] gzip(byte[] data) {
+        try {
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            GZIPOutputStream gzip = new GZIPOutputStream(output);
+            gzip.write(data);
+            gzip.close();
+            output.close();
+            return output.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 }

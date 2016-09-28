@@ -7,7 +7,7 @@ import Protocols.Header;
  * @author Robin Duda
  */
 public class RealmUpdate {
-    public static final String ACTION = Strings.LOG_REALM_UPDATE;
+    public static final String ACTION = Strings.REALM_UPDATE;
     private Header header;
     private Integer players;
 

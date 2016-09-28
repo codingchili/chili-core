@@ -31,9 +31,7 @@ class RealmStoreMock implements AsyncRealmStore {
     public void signToken(Future<Token> future, String realmName, String domain) {
         RealmSettings realm = realms.get(realmName);
 
-        future.complete(
-                new Token(
-                        new TokenFactory(realm.getAuthentication().getToken().getKey().getBytes()), domain));
+        future.complete(new Token(new TokenFactory(realm.getAuthentication()), domain));
     }
 
     @Override

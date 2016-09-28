@@ -8,6 +8,7 @@ import Patching.Configuration.PatchServerSettings;
 import Realm.Model.PlayerClass;
 import Protocols.Authorization.Token;
 import Protocols.Authorization.TokenFactory;
+import Routing.Configuration.RoutingSettings;
 import Website.Configuration.WebserverSettings;
 
 import java.util.ArrayList;
@@ -18,6 +19,11 @@ import java.util.ArrayList;
  *         Removes the dependency on valid configurations.
  */
 public class ConfigMock implements ConfigurationLoader {
+
+    @Override
+    public VertxSettings getVertxSettings() {
+        return new VertxSettings();
+    }
 
     @Override
     public PatchServerSettings getPatchServerSettings() {
@@ -44,21 +50,16 @@ public class ConfigMock implements ConfigurationLoader {
         return new WebserverSettings();
     }
 
+    @Override
+    public RoutingSettings getRoutingSettings() {
+        return new RoutingSettings();
+    }
+
     public RealmSettings getRealm() {
         return new RealmSettingsMock();
     }
 
     private static class AuthServerSettingsMock extends AuthServerSettings {
-
-        @Override
-        public Integer getRealmPort() {
-            return 12502;
-        }
-
-        @Override
-        public Integer getClientPort() {
-            return 13091;
-        }
 
         @Override
         public byte[] getClientSecret() {
@@ -83,8 +84,6 @@ public class ConfigMock implements ConfigurationLoader {
             this.setSecure(false);
             this.setRemote("remote_ip");
             this.setResources("DIR_RESOURCES");
-            this.setPort(11132);
-            this.setProxy(11132);
 
             generateAuthentication();
             generateMockClasses();

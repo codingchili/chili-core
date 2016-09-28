@@ -6,7 +6,7 @@ import Protocols.Request;
 /**
  * @author Robin Duda
  */
-public interface ClientRequest extends Request {
+public interface PatchRequest extends Request {
     void file(PatchFile file);
 
     String file();

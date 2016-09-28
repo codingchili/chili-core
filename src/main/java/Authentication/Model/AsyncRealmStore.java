@@ -33,13 +33,13 @@ public interface AsyncRealmStore {
     void get(Future<RealmSettings> future, String realmName);
 
     /**
-     * Place a realm into the cluster-wide map.
+     * Place a realm into the cluster-wide get.
      * @param realm realm information to be inserted.
      */
     void put(Future<Void> future, RealmSettings realm);
 
     /**
-     * Removes a realm from the cluster-wide map.
+     * Removes a realm from the cluster-wide get.
      * @param realmName name of the realm.
      */
     void remove(Future<Void> future, String realmName);

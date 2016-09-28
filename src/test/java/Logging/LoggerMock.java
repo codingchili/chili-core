@@ -102,4 +102,9 @@ public class LoggerMock implements Logger {
     public void onMetricsSnapshot(JsonObject metrics) {
 
     }
+
+    @Override
+    public void onHandlerMissing(String action) {
+
+    }
 }

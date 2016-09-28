@@ -12,6 +12,7 @@ public class Strings {
     public static final String PATH_PATCHSERVER = "conf/system/patchserver.json";
     public static final String PATH_GAMESERVER = "conf/system/realmserver.json";
     public static final String PATH_WEBSERVER = "conf/system/webserver.json";
+    public static final String PATH_ROUTING = "conf/system/routingserver.json";
     public static final String PATH_VERTX = "conf/system/vertx.json";
     public static final String PATH_REALM = "conf/realm/";
     public static final String PATH_INSTANCE = "conf/game/world";
@@ -19,7 +20,8 @@ public class Strings {
     public static final String PATH_AFFLICTIONS = "conf/game/player/affliction.json";
     public static final String PATH_PLAYER_TEMPLATE = "conf/game/player/character.json";
 
-    public static final String DIR_RESOURCES = "resources/";
+    public static final String DIR_RESOURCES = "resources";
+    public static final String DIR_WEBSITE = "website";
     public static final String DIR_SYSTEM = "conf/system/";
     public static final String DIR_SEPARATOR = "/";
 
@@ -43,6 +45,8 @@ public class Strings {
     public static final String REALM_AUTHENTICATION_RESULT = "authentication.result";
     public static final String REALM_CHARACTER_REQUEST = "character.request";
     public static final String REALM_CHARACTER_RESPONSE = "character.response";
+    public static final String REALM_UPDATE = "realm.update";
+    public static final String ANY = "*";
 
     // Protocol attributes.
     public static final String PROTOCOL_CLASS_NAME = "className";
@@ -51,6 +55,11 @@ public class Strings {
     public static final String PROTOCOL_CONNECTION = "connection";
     public static final String PROTOCOL_ERROR = "error";
     public static final String PROTOCOL_AUTHENTICATION = "authentication";
+    public static final String PROTOCOL_CONFLICT = "conflict";
+    public static final String PROTOCOL_UNAUTHORIZED = "unauthorized";
+    public static final String PROTOCOL_MISSING = "missing";
+    public static final String PROTOCOL_ACTION = "action";
+    public static final String PROTOCOL_LOGGING = "logging";
 
     // General shared attributes.
     public static final String ID_CHARACTER = "character";
@@ -62,7 +71,11 @@ public class Strings {
     public static final String ID_FILE = "file";
     public static final String ID_RESOURCES = "resources";
     public static final String ID_DATA = "data";
-
+    public static final String ID_INSTANCE = "instance";
+    public static final String ID_MESSAGE = "message";
+    public static final String ID_ERROR = "error";
+    public static final String ID_ACTION = "action";
+    public static final String ID_TARGET = "target";
 
     //Database naming.
     public static final String DB_COLLECTION = "accounts";
@@ -71,8 +84,30 @@ public class Strings {
     public static final String DB_HASH = "hash";
     public static final String DB_CHARACTERS = "characters";
 
+    // Cluster addressing.
+    public static final String NODE_AUTHHENTICATION_CLIENTS = "clients.authentication.node";
+    public static final String NODE_AUTHENTICATION_REALMS = "realms.authentication.node";
+    public static final String NODE_WEBSERVER = "webserver.node";
+    public static final String NODE_PATCHING = "patching.node";
+    public static final String NODE_REALM = "realm.node";
+    public static final String NODE_LOGGING = "logging.node";
+
+    public static final String LOCAL_LOGGING = "logging.local";
+
+    public static final String VERTICLE_LOGGING = "Logging.Server";
+    public static final String VERTICLE_AUTHENTICATION = "Authentication.Server";
+    public static final String VERTICLE_PATCHING = "Patching.Server";
+    public static final String VERTICLE_ROUTING = "Routing.Server";
+    public static final String VERTICLE_WEBSERVER = "Website.Server";
+    public static final String VERTICLE_REALM = "Realm.Server";
+    public static final String VERTICLE_ALL = "all";
+
+    // Routing
+    public static final String ROUTER_MISSING_MAP = "router.missing";
+
     // Shared memory maps.
     public static final String MAP_REALMS = "realms";
+    public static final String MAP_ACCOUNTS = "accounts";
 
     // Logging
     public static final String LOG_ID = "LOG_ID";
@@ -114,16 +149,14 @@ public class Strings {
     public static final String LOG_VERTX = "vertx";
     public static final String LOG_METRICS = "metrics";
     public static final String LOG_TRACE = "trace";
-
+    public static final String LOG_HANDLER_MISSING = "handler.missing";
 
     //Patching
     public static final String PATCH_IDENTIFIER = "patch";
     public static final String PATCH_GAME_INFO = "gameinfo";
     public static final String PATCH_NEWS = "news";
-    public static final String PATCH_AUTHSERVER = "authserver";
     public static final String PATCH_DOWNLOAD = "download";
     public static final String PATCH_DATA = "patchdata";
-    public static final String PATCH_MAX_VERSION = "9999.999.999";
 
     // Game
     public static final String GAME_AFFLICTIONS = "afflictions";
@@ -132,4 +165,8 @@ public class Strings {
     // Error messages.
     public static final String ERROR_TOKEN_FACTORY = "Token factory failed to generate token.";
     public static final String ERROR_CLUSTERING_REQUIRED = "Clustering required but not enabled.";
+    public static final String ERROR_IN_ADDRESS = "The requested node was not found in the cluster.";
+    public static final String ERROR_NOT_AUTHORIZED = "The requested resource requires authorization.";
+    public static final String ERROR_HANDLER_MISSING = "The requested handler was not found.";
+    public static final String ERROR_HANDLER_MISSING_AUTHENTICATOR = "The handler is missing an @Authenticator.";
 }

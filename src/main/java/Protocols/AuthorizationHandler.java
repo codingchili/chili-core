@@ -3,6 +3,7 @@ package Protocols;
 import Protocols.Exception.AuthorizationRequiredException;
 import Protocols.Exception.HandlerMissingException;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 
 /**
@@ -11,39 +12,31 @@ import java.util.HashMap;
 public class AuthorizationHandler<T> {
     private HashMap<String, T> authorized = new HashMap<>();
     private HashMap<String, T> unauthorized = new HashMap<>();
-    private Access access = Access.AUTHORIZE;
-
-    public AuthorizationHandler() {
-    }
-
-    public AuthorizationHandler(Access access) {
-        this.access = access;
-    }
 
     public void use(String action, T handler, Access access) {
         switch (access) {
             case PUBLIC:
                 unauthorized.put(action, handler);
                 break;
-            case AUTHORIZE:
+            case AUTHORIZED:
                 authorized.put(action, handler);
                 break;
         }
-    }
-
-    public void use(String action, T handler) {
-        use(action, handler, access);
     }
 
     public T get(String action, Access access) throws AuthorizationRequiredException, HandlerMissingException {
         switch (access) {
             case PUBLIC:
                 return unauthorized(action);
-            case AUTHORIZE:
+            case AUTHORIZED:
                 return any(action);
             default:
                 throw new AuthorizationRequiredException();
         }
+    }
+
+    public boolean contains(String action) {
+        return (authorized.containsKey(action) || unauthorized.containsKey(action));
     }
 
     private T unauthorized(String action) throws AuthorizationRequiredException, HandlerMissingException {
@@ -66,7 +59,10 @@ public class AuthorizationHandler<T> {
         }
     }
 
-    public enum Access {
-        PUBLIC, AUTHORIZE
+    public HashMap<String, T> list() {
+        HashMap<String, T> list = new HashMap<>();
+        list.putAll(authorized);
+        list.putAll(unauthorized);
+        return list;
     }
 }

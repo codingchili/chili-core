@@ -17,6 +17,7 @@ public class ConsoleLogger {
     private static final String PURPLE = "\u001B[35m";
     private static final String CYAN = "\u001B[36m";
     private static final String WHITE = "\u001B[37m";
+    private Style style = Style.COMPRESSED;
     private boolean enabled;
 
 
@@ -56,14 +57,23 @@ public class ConsoleLogger {
         }
     }
 
+    public ConsoleLogger setStyle(Style style) {
+        this.style = style;
+        return this;
+    }
+
     public void log(JsonObject data) {
         if (enabled) {
             setColor(data);
-            String text = data.encode()
+
+            String text = ((style == Style.PRETTY) ? data.encodePrettily() : data.encode())
                     .replaceAll("(\":\")", "=")
                     .replaceAll("[{}\"]", "")
                     .replaceAll(",", " ");
+
             AnsiConsole.out.println(text);
         }
     }
+
+    public enum Style {PRETTY, COMPRESSED}
 }

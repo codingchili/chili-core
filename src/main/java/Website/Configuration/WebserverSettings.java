@@ -10,21 +10,11 @@ import Configuration.Strings;
 public class WebserverSettings implements Configurable {
     private RemoteAuthentication logserver;
     private RemoteAuthentication patchserver;
-    private int port;
     private boolean cache;
     private boolean compress;
 
     public void setLogserver(RemoteAuthentication logserver) {
         this.logserver = logserver;
-    }
-
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
     }
 
     public boolean getCache() {

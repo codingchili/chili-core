@@ -2,49 +2,72 @@ package Authentication.Controller;
 
 import Authentication.Configuration.AuthProvider;
 import Authentication.Model.*;
-import Configuration.Strings;
-import Protocols.Authentication.RealmMetaData;
-import Realm.Configuration.RealmSettings;
-import Realm.Model.PlayerCharacter;
-import Realm.Model.PlayerClass;
+import Logging.Model.Logger;
+import Protocols.*;
 import Protocols.Authentication.CharacterList;
 import Protocols.Authentication.ClientAuthentication;
 import Protocols.Authentication.RealmList;
-import Protocols.AuthorizationHandler.Access;
-import Logging.Model.Logger;
+import Protocols.Authentication.RealmMetaData;
 import Protocols.Authorization.Token;
 import Protocols.Authorization.TokenFactory;
+import Protocols.Exception.AuthorizationRequiredException;
+import Protocols.Exception.HandlerMissingException;
+import Realm.Configuration.RealmSettings;
+import Realm.Model.PlayerCharacter;
+import Realm.Model.PlayerClass;
 import io.vertx.core.Future;
 
 import java.util.ArrayList;
 
+import static Configuration.Strings.*;
+import static Protocols.Access.PUBLIC;
+
 /**
  * @author Robin Duda
- *         Router used to authenticate users and create/delete characters.
+ *         Routing used to authenticate users and create/delete characters.
  */
-public class ClientHandler {
+public class ClientHandler extends AbstractHandler {
+    private Protocol<RequestHandler<ClientRequest>> protocol = new Protocol<>();
+    private Logger logger;
     private AsyncRealmStore realmStore;
     private AsyncAccountStore accounts;
-    private TokenFactory factory;
-    private Logger logger;
+    private TokenFactory tokens;
 
     public ClientHandler(AuthProvider provider) {
-        this.logger = provider.getLogger();
-        this.accounts = provider.getAccountStore();
-        this.factory = new TokenFactory(provider.getAuthserverSettings().getClientSecret());
-        this.realmStore = provider.getRealmStore();
+        super(NODE_AUTHHENTICATION_CLIENTS);
 
-        provider.clientProtocol()
-                .use(Strings.CLIENT_CHARACTER_LIST, this::characterList)
-                .use(Strings.CLIENT_CHARACTER_CREATE, this::characterCreate)
-                .use(Strings.CLIENT_CHARACTER_REMOVE, this::characterRemove)
-                .use(Strings.CLIENT_REALM_TOKEN, this::realmtoken)
-                .use(Strings.CLIENT_AUTHENTICATE, this::authenticate, Access.PUBLIC)
-                .use(Strings.CLIENT_REGISTER, this::register, Access.PUBLIC)
-                .use(Strings.CLIENT_REALM_LIST, this::realmlist, Access.PUBLIC);
+        logger = provider.getLogger();
+        accounts = provider.getAccountStore();
+        tokens = new TokenFactory(provider.getAuthserverSettings().getClientSecret());
+        realmStore = provider.getRealmStore();
+
+        protocol.use(CLIENT_REALM_TOKEN, this::realmToken)
+                .use(CLIENT_CHARACTER_LIST, this::characterList)
+                .use(CLIENT_CHARACTER_CREATE, this::characterCreate)
+                .use(CLIENT_CHARACTER_REMOVE, this::characterRemove)
+                .use(CLIENT_REALM_LIST, this::realmlist, PUBLIC)
+                .use(CLIENT_REGISTER, this::register, PUBLIC)
+                .use(CLIENT_AUTHENTICATE, this::authenticate, PUBLIC);
     }
 
-    private void realmtoken(ClientRequest request) {
+    public Access authenticate(Protocols.Request request) {
+        boolean authorized = tokens.verifyToken(request.token());
+        return (authorized) ? Access.AUTHORIZED : PUBLIC;
+    }
+
+    @Override
+    public void handle(Request request) {
+        try {
+            protocol.get(authenticate(request), request.action()).handle((ClientRequest) request);
+        } catch (AuthorizationRequiredException e) {
+            request.unauthorized();
+        } catch (HandlerMissingException e) {
+            request.error();
+            logger.onHandlerMissing(request.action());
+        }
+    }
+
+    private void realmToken(ClientRequest request) {
         Future<Token> token = Future.future();
 
         token.setHandler(result -> {
@@ -152,7 +175,6 @@ public class ClientHandler {
             throw new PlayerClassDisabledException();
     }
 
-
     private void characterRemove(ClientRequest request) {
         accounts.removeCharacter(Future.future().setHandler(remove -> {
             if (remove.succeeded())
@@ -162,7 +184,7 @@ public class ClientHandler {
         }), request.realmName(), request.account(), request.character());
     }
 
-    private void register(ClientRequest request) {
+    public void register(ClientRequest request) {
         Future<Account> future = Future.future();
 
         future.setHandler(result -> {
@@ -181,7 +203,7 @@ public class ClientHandler {
         accounts.register(future, request.getAccount());
     }
 
-    private void authenticate(ClientRequest request) {
+    public void authenticate(ClientRequest request) {
         Future<Account> future = Future.future();
 
         future.setHandler(result -> {
@@ -208,10 +230,10 @@ public class ClientHandler {
 
 
         future.setHandler(metadata -> {
-            request.authenticate(
+            request.write(
                     new ClientAuthentication(
                             account,
-                            new Token(factory, account.getUsername()),
+                            new Token(tokens, account.getUsername()),
                             registered,
                             metadata.result()));
 
@@ -224,12 +246,10 @@ public class ClientHandler {
         realmStore.getMetadataList(future);
     }
 
-    private void realmlist(ClientRequest request) {
+    private void realmlist(Request request) {
         Future<ArrayList<RealmMetaData>> future = Future.future();
 
-        future.setHandler(result -> {
-            request.write(new RealmList(result.result()));
-        });
+        future.setHandler(result -> request.write(new RealmList(result.result())));
 
         realmStore.getMetadataList(future);
     }

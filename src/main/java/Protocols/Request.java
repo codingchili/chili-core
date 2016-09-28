@@ -1,5 +1,9 @@
 package Protocols;
 
+import Protocols.Authorization.Token;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.json.JsonObject;
+
 /**
  * @author Robin Duda
  */
@@ -16,4 +20,14 @@ public interface Request {
     void missing();
 
     void conflict();
+
+    String action();
+
+    String target();
+
+    Token token();
+
+    JsonObject data();
+
+    int timeout();
 }

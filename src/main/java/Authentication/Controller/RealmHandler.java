@@ -1,38 +1,66 @@
 package Authentication.Controller;
 
 import Authentication.Configuration.AuthProvider;
-import Authentication.Model.AsyncRealmStore;
-import Configuration.Strings;
-import Protocols.AuthorizationHandler.Access;
-import Authentication.Model.AsyncAccountStore;
 import Authentication.Configuration.AuthServerSettings;
+import Authentication.Model.AsyncAccountStore;
+import Authentication.Model.AsyncRealmStore;
+import Logging.Model.Logger;
+import Protocols.*;
+import Protocols.Authentication.RealmRegister;
+import Protocols.Authorization.TokenFactory;
+import Protocols.Exception.AuthorizationRequiredException;
+import Protocols.Exception.HandlerMissingException;
+import Protocols.Realm.CharacterResponse;
 import Realm.Configuration.RealmSettings;
 import Realm.Model.PlayerCharacter;
-import Protocols.Realm.CharacterRequest;
-import Protocols.Realm.CharacterResponse;
-import Protocols.Authentication.RealmRegister;
-import Protocols.Authentication.RealmUpdate;
 import io.vertx.core.Future;
+
+import static Configuration.Strings.*;
+import static Protocols.Access.AUTHORIZED;
+import static Protocols.Access.PUBLIC;
 
 /**
  * @author Robin Duda
- *         Router used to authenticate realms and generate realmName lists.
+ *         Routing used to authenticate realms and generate realmName lists.
  */
-public class RealmHandler {
+public class RealmHandler extends AbstractHandler {
+    private Protocol<RequestHandler<RealmRequest>> protocol = new Protocol<>();
     private AsyncRealmStore realmStore;
     private AsyncAccountStore accounts;
     private AuthServerSettings settings;
+    private Logger logger;
+    private TokenFactory tokens;
 
     public RealmHandler(AuthProvider provider) {
-        this.accounts = provider.getAccountStore();
-        this.settings = provider.getAuthserverSettings();
-        this.realmStore = provider.getRealmStore();
+        super(NODE_AUTHENTICATION_REALMS);
 
-        provider.realmProtocol()
-                .use(RealmUpdate.ACTION, this::update)
-                .use(CharacterRequest.ACTION, this::character)
-                .use(Strings.CLIENT_CLOSE, this::disconnected)
-                .use(Strings.REALM_AUTHENTICATE, this::register);
+        logger = provider.getLogger();
+        accounts = provider.getAccountStore();
+        settings = provider.getAuthserverSettings();
+        realmStore = provider.getRealmStore();
+        tokens = provider.getClientTokenFactory();
+
+        protocol.use(REALM_REGISTER, this::register, PUBLIC)
+                .use(REALM_UPDATE, this::update)
+                .use(CLIENT_CLOSE, this::disconnected)
+                .use(REALM_CHARACTER_REQUEST, this::character);
+    }
+
+    public Access authenticate(Request request) {
+        boolean authorized = tokens.verifyToken(request.token());
+        return (authorized) ? AUTHORIZED : PUBLIC;
+    }
+
+    @Override
+    public void handle(Request request) {
+        try {
+            protocol.get(authenticate(request), request.action()).handle((RealmRequest) request);
+        } catch (AuthorizationRequiredException e) {
+            request.unauthorized();
+        } catch (HandlerMissingException e) {
+            request.error();
+            logger.onHandlerMissing(request.action());
+        }
     }
 
     private void register(RealmRequest request) {

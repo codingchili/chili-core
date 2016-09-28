@@ -6,6 +6,7 @@ import Realm.Configuration.RealmSettings;
 import Logging.Configuration.LogServerSettings;
 import Patching.Configuration.PatchServerSettings;
 import Protocols.Serializer;
+import Routing.Configuration.RoutingSettings;
 import Website.Configuration.WebserverSettings;
 import io.vertx.core.json.JsonObject;
 
@@ -24,12 +25,16 @@ public class FileConfiguration implements ConfigurationLoader {
     private RealmServerSettings gameserver;
     private PatchServerSettings patchserver;
     private WebserverSettings webserver;
+    private RoutingSettings routing;
+    private VertxSettings vertxSettings;
 
     private FileConfiguration() throws IOException {
         authentication = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_AUTHSERVER), AuthServerSettings.class);
         gameserver = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_GAMESERVER), RealmServerSettings.class);
         logserver = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_LOGSERVER), LogServerSettings.class);
         webserver = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_WEBSERVER), WebserverSettings.class);
+        routing = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_ROUTING), RoutingSettings.class);
+        vertxSettings = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_VERTX), VertxSettings.class);
         patchserver = loadPatchSettings();
         loadRealms(gameserver);
     }
@@ -73,7 +78,12 @@ public class FileConfiguration implements ConfigurationLoader {
 
     private boolean containsAllSettings() {
         return (authentication != null && logserver != null && gameserver != null
-                && patchserver != null && webserver != null);
+                && patchserver != null && webserver != null && routing != null);
+    }
+
+    @Override
+    public VertxSettings getVertxSettings() {
+        return vertxSettings;
     }
 
     @Override
@@ -101,8 +111,13 @@ public class FileConfiguration implements ConfigurationLoader {
         return webserver;
     }
 
+    @Override
+    public RoutingSettings getRoutingSettings() {
+        return routing;
+    }
+
     void save() {
-        Configurable[] configurables = {authentication, logserver, gameserver, patchserver, webserver};
+        Configurable[] configurables = {authentication, logserver, gameserver, patchserver, webserver, routing};
 
         for (Configurable configurable : configurables) {
             JsonFileStore.writeObject(Serializer.json(configurable), getConfigPath(configurable));
@@ -123,6 +138,6 @@ public class FileConfiguration implements ConfigurationLoader {
     }
 
     private String getConfigPath(Configurable configurable) {
-        return Strings.DIR_SYSTEM + configurable.getName() + Strings.EXT_JSON;
+        return configurable.getPath();
     }
 }

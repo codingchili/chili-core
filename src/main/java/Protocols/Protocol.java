@@ -1,35 +1,32 @@
 package Protocols;
 
-import Protocols.AuthorizationHandler.Access;
 import Protocols.Exception.AuthorizationRequiredException;
 import Protocols.Exception.HandlerMissingException;
+
+import static Configuration.Strings.ANY;
 
 /**
  * @author Robin Duda
  */
-public class Protocol<Handler extends PacketHandler> {
-    private AuthorizationHandler<Handler> handlers;
+public class Protocol<Handler extends RequestHandler> {
+    private AuthorizationHandler<Handler> handlers = new AuthorizationHandler<>();
 
-    public Protocol() {
-        this.handlers = new AuthorizationHandler<>();
-    }
-
-    public Protocol(Access access) {
-        this.handlers = new AuthorizationHandler<>(access);
+    public Handler get(Access access, String target) throws AuthorizationRequiredException, HandlerMissingException {
+        if (handlers.contains(target)) {
+            return handlers.get(target, access);
+        } else {
+            return handlers.get(ANY, access);
+        }
     }
 
     public Protocol<Handler> use(String action, Handler handler) {
-        handlers.use(action, handler);
+        use(action, handler, Access.AUTHORIZED);
         return this;
     }
 
     public Protocol<Handler> use(String action, Handler handler, Access access) {
         handlers.use(action, handler, access);
         return this;
-    }
-
-    public Handler get(String action, Access access) throws AuthorizationRequiredException, HandlerMissingException {
-        return handlers.get(action, access);
     }
 }
 

@@ -4,12 +4,15 @@ import Authentication.Configuration.AuthServerSettings;
 import Realm.Configuration.RealmServerSettings;
 import Logging.Configuration.LogServerSettings;
 import Patching.Configuration.PatchServerSettings;
+import Routing.Configuration.RoutingSettings;
 import Website.Configuration.WebserverSettings;
 
 /**
  * @author Robin Duda
  */
 public interface ConfigurationLoader {
+    VertxSettings getVertxSettings();
+
     PatchServerSettings getPatchServerSettings();
 
     RealmServerSettings getGameServerSettings();
@@ -20,7 +23,5 @@ public interface ConfigurationLoader {
 
     WebserverSettings getWebsiteSettings();
 
-    class Address {
-        public final static String LOGS = Strings.LOG_ID;
-    }
+    RoutingSettings getRoutingSettings();
 }

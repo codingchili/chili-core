@@ -2,19 +2,12 @@ package Authentication.Client;
 
 import Authentication.Configuration.AuthProvider;
 import Authentication.Controller.ClientHandler;
-import Authentication.Controller.ClientRequest;
 import Authentication.Model.Account;
 import Authentication.Model.AsyncAccountStore;
 import Authentication.ProviderMock;
 import Configuration.ConfigMock;
-import Configuration.Strings;
 import Protocols.Authorization.Token;
 import Protocols.Authorization.TokenFactory;
-import Protocols.AuthorizationHandler.Access;
-import Protocols.Exception.AuthorizationRequiredException;
-import Protocols.Exception.HandlerMissingException;
-import Protocols.PacketHandler;
-import Protocols.Protocol;
 import Protocols.Serializer;
 import Realm.Configuration.RealmSettings;
 import Realm.Model.PlayerCharacter;
@@ -35,6 +28,8 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import static Configuration.Strings.*;
+
 /**
  * @author Robin Duda
  *         tests the API from client -> authentication server.
@@ -52,8 +47,8 @@ public class ClientHandlerTest {
     private static final String REALM_NAME = "realmName.name";
     private static final String CLASS_NAME = "class.name";
     private static TokenFactory clientToken;
-    private static Protocol<PacketHandler<ClientRequest>> protocol;
     private static AuthProvider provider;
+    private static ClientHandler handler;
 
     @Rule
     public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
@@ -61,11 +56,10 @@ public class ClientHandlerTest {
     @Before
     public void setUp() throws IOException {
         provider = new ProviderMock();
+        handler = new ClientHandler(provider);
         RealmSettings realm = new ConfigMock.RealmSettingsMock();
         provider.getRealmStore().put(Future.future(), realm);
         clientToken = new TokenFactory(provider.getAuthserverSettings().getClientSecret());
-        protocol = provider.clientProtocol();
-        new ClientHandler(provider);
         addAccount();
     }
 
@@ -84,7 +78,7 @@ public class ClientHandlerTest {
     public void authenticateAccount(TestContext context) {
         Async async = context.async();
 
-        handle(Strings.CLIENT_AUTHENTICATE, (response, status) -> {
+        handle(CLIENT_AUTHENTICATE, (response, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
             async.complete();
         }, account(USERNAME, PASSWORD));
@@ -94,7 +88,7 @@ public class ClientHandlerTest {
     public void failtoAuthenticateAccountWithWrongPassword(TestContext context) {
         Async async = context.async();
 
-        handle(Strings.CLIENT_AUTHENTICATE, (response, status) -> {
+        handle(CLIENT_AUTHENTICATE, (response, status) -> {
             context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
             async.complete();
         }, account(USERNAME, PASSWORD_WRONG));
@@ -104,7 +98,7 @@ public class ClientHandlerTest {
     public void failtoAuthenticateAccountWithMissing(TestContext context) {
         Async async = context.async();
 
-        handle(Strings.CLIENT_AUTHENTICATE, (response, status) -> {
+        handle(CLIENT_AUTHENTICATE, (response, status) -> {
             context.assertEquals(ResponseStatus.MISSING, status);
             async.complete();
         }, account(USERNAME_MISSING, PASSWORD));
@@ -114,7 +108,7 @@ public class ClientHandlerTest {
     public void registerAccount(TestContext context) {
         Async async = context.async();
 
-        handle(Strings.CLIENT_REGISTER, (response, status) -> {
+        handle(CLIENT_REGISTER, (response, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
             async.complete();
         }, account(USERNAME_NEW, PASSWORD));
@@ -128,7 +122,7 @@ public class ClientHandlerTest {
     public void failRegisterAccountExists(TestContext context) {
         Async async = context.async();
 
-        handle(Strings.CLIENT_REGISTER, (response, status) -> {
+        handle(CLIENT_REGISTER, (response, status) -> {
             context.assertEquals(ResponseStatus.CONFLICT, status);
             async.complete();
         }, account(USERNAME, PASSWORD));
@@ -141,7 +135,7 @@ public class ClientHandlerTest {
                 "classes", "description", "name", "resources", "type",
                 "secure", "trusted", "proxy", "version"};
 
-        handle(Strings.CLIENT_REALM_LIST, (response, status) -> {
+        handle(CLIENT_REALM_LIST, (response, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
 
             JsonArray list = response.getJsonArray("realms");
@@ -161,7 +155,7 @@ public class ClientHandlerTest {
     public void removeCharacter(TestContext context) {
         Async async = context.async();
 
-        handle(Strings.CLIENT_CHARACTER_REMOVE, (response, status) -> {
+        handle(CLIENT_CHARACTER_REMOVE, (response, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
             async.complete();
         }, new JsonObject()
@@ -178,7 +172,7 @@ public class ClientHandlerTest {
     public void failToRemoveMissingCharacter(TestContext context) {
         Async async = context.async();
 
-        handle(Strings.CLIENT_CHARACTER_REMOVE, (response, status) -> {
+        handle(CLIENT_CHARACTER_REMOVE, (response, status) -> {
             context.assertEquals(ResponseStatus.ERROR, status);
             async.complete();
         }, new JsonObject()
@@ -191,7 +185,7 @@ public class ClientHandlerTest {
     public void createCharacter(TestContext context) {
         Async async = context.async();
 
-        handle(Strings.CLIENT_CHARACTER_CREATE, (response, status) -> {
+        handle(CLIENT_CHARACTER_CREATE, (response, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
             async.complete();
         }, new JsonObject()
@@ -204,7 +198,7 @@ public class ClientHandlerTest {
     @Test
     public void failOverwriteExistingCharacter(TestContext context) {
         Async async = context.async();
-        handle(Strings.CLIENT_CHARACTER_CREATE, (response, status) -> {
+        handle(CLIENT_CHARACTER_CREATE, (response, status) -> {
             context.assertEquals(ResponseStatus.CONFLICT, status);
             async.complete();
         }, new JsonObject()
@@ -217,7 +211,7 @@ public class ClientHandlerTest {
     public void listCharactersOnRealm(TestContext context) {
         Async async = context.async();
 
-        handle(Strings.CLIENT_CHARACTER_LIST, (response, status) -> {
+        handle(CLIENT_CHARACTER_LIST, (response, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
             context.assertTrue(characterInJsonArray(CHARACTER_NAME, response.getJsonArray("characters")));
             async.complete();
@@ -240,7 +234,7 @@ public class ClientHandlerTest {
     public void realmDataOnCharacterList(TestContext context) {
         Async async = context.async();
 
-        handle(Strings.CLIENT_CHARACTER_LIST, (response, status) -> {
+        handle(CLIENT_CHARACTER_LIST, (response, status) -> {
             JsonObject realm = response.getJsonObject("realm");
 
             context.assertEquals(ResponseStatus.ACCEPTED, status);
@@ -259,7 +253,7 @@ public class ClientHandlerTest {
     public void realmDataDoesNotIncludeTokenOnCharacterList(TestContext context) {
         Async async = context.async();
 
-        handle(Strings.CLIENT_CHARACTER_LIST, (response, status) -> {
+        handle(CLIENT_CHARACTER_LIST, (response, status) -> {
             JsonObject realm = response.getJsonObject("realm");
 
             context.assertEquals(ResponseStatus.ACCEPTED, status);
@@ -276,7 +270,7 @@ public class ClientHandlerTest {
     public void createRealmToken(TestContext context) {
         Async async = context.async();
 
-        handle(Strings.CLIENT_REALM_TOKEN, (response, status) -> {
+        handle(CLIENT_REALM_TOKEN, (response, status) -> {
             Token token = Serializer.unpack(response, Token.class);
 
             context.assertEquals(ResponseStatus.ACCEPTED, status);
@@ -289,14 +283,14 @@ public class ClientHandlerTest {
     }
 
     private void handle(String action, ResponseListener listener) {
-        handle(action, listener, null);
+        handle(action, listener, new JsonObject().put(ID_TOKEN, getClientToken()));
     }
 
     private void handle(String action, ResponseListener listener, JsonObject data) {
         try {
-            protocol.get(action, Access.AUTHORIZE).handle(new ClientRequestMock(data, listener));
-        } catch (AuthorizationRequiredException | HandlerMissingException e) {
-            throw new RuntimeException(e.getMessage());
+            handler.handle(new ClientRequestMock(data, listener, action));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -1,11 +1,11 @@
-package Authentication.Controller.Transport;
+package Routing.Controller.Transport;
 
 import Authentication.Controller.ClientRequest;
 import Authentication.Model.Account;
 import Configuration.Strings;
 import Protocols.Authentication.ClientAuthentication;
-import Protocols.Serializer;
 import Protocols.Authorization.Token;
+import Protocols.Serializer;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
@@ -72,6 +72,16 @@ class ClientRestRequest implements ClientRequest {
     }
 
     @Override
+    public JsonObject data() {
+        return null;
+    }
+
+    @Override
+    public int timeout() {
+        return 0;
+    }
+
+    @Override
     public void write(Object object) {
         try {
             response.end(Buffer.buffer(Serializer.pack(object)));
@@ -100,6 +110,16 @@ class ClientRestRequest implements ClientRequest {
     }
 
     @Override
+    public String action() {
+        return context.request().path().replace("/api/", "");
+    }
+
+    @Override
+    public String target() {
+        return null;
+    }
+
+    @Override
     public void accept() {
         sendStatus(HttpResponseStatus.OK);
     }
@@ -112,10 +132,5 @@ class ClientRestRequest implements ClientRequest {
     @Override
     public Account getAccount() {
         return Serializer.unpack(json.getJsonObject(Strings.ID_ACCOUNT), Account.class);
-    }
-
-    @Override
-    public void authenticate(ClientAuthentication authentication) {
-        response.end(Serializer.pack(authentication));
     }
 }

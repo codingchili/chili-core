@@ -10,8 +10,6 @@ public class AuthServerSettings implements Configurable {
     private RemoteAuthentication logserver;
     private byte[] clientSecret;
     private byte[] realmSecret;
-    private Integer realmPort;
-    private Integer clientPort;
     private DatabaseSettings database;
     private String[] realms;
 
@@ -60,22 +58,6 @@ public class AuthServerSettings implements Configurable {
 
     protected void setDatabase(DatabaseSettings database) {
         this.database = database;
-    }
-
-    public Integer getClientPort() {
-        return clientPort;
-    }
-
-    protected void setClientPort(Integer clientPort) {
-        this.clientPort = clientPort;
-    }
-
-    public Integer getRealmPort() {
-        return realmPort;
-    }
-
-    protected void setRealmPort(Integer realmPort) {
-        this.realmPort = realmPort;
     }
 
     public byte[] getRealmSecret() {

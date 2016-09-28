@@ -11,16 +11,20 @@ import io.vertx.core.json.JsonObject;
 
 import static Protocols.Serializer.unpack;
 
+import static Configuration.Strings.*;
+
 /**
  * @author Robin Duda
  */
 class ClientRequestMock implements ClientRequest {
     private ResponseListener listener;
-    private JsonObject data;
+    private JsonObject data = new JsonObject();
+    private String action;
 
-    ClientRequestMock(JsonObject data, ResponseListener listener) {
+    ClientRequestMock(JsonObject data, ResponseListener listener, String action) {
         this.data = data;
         this.listener = listener;
+        this.action = action;
     }
 
 
@@ -51,7 +55,21 @@ class ClientRequestMock implements ClientRequest {
 
     @Override
     public Token token() {
-        return Serializer.unpack(data.getJsonObject("token"), Token.class);
+        if (data.containsKey(ID_TOKEN)) {
+            return Serializer.unpack(data.getJsonObject(ID_TOKEN), Token.class);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public JsonObject data() {
+        return data;
+    }
+
+    @Override
+    public int timeout() {
+        return 0;
     }
 
     @Override
@@ -75,6 +93,16 @@ class ClientRequestMock implements ClientRequest {
     }
 
     @Override
+    public String action() {
+        return action;
+    }
+
+    @Override
+    public String target() {
+        return null;
+    }
+
+    @Override
     public void accept() {
         listener.handle(null, ResponseStatus.ACCEPTED);
     }
@@ -87,10 +115,5 @@ class ClientRequestMock implements ClientRequest {
     @Override
     public Account getAccount() {
         return unpack(data.getJsonObject("account"), Account.class);
-    }
-
-    @Override
-    public void authenticate(ClientAuthentication authentication) {
-        listener.handle(Serializer.json(authentication), ResponseStatus.ACCEPTED);
     }
 }

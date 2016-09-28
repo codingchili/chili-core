@@ -11,6 +11,7 @@ import io.vertx.core.shareddata.AsyncMap;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 /**
  * @author Robin Duda
@@ -19,7 +20,7 @@ import java.util.HashMap;
  *         Allows the deployment of multiple handlers.
  */
 public class HazelRealmDB implements AsyncRealmStore {
-    // A standard map is stored within the map so that it is possible to enumerate available realms.
+    // A standard get is stored within the get so that it is possible to enumerate available realms.
     private AsyncMap<String, HashMap<String, RealmSettings>> realms;
 
     public static void create(Future<AsyncRealmStore> future, Vertx vertx) {
@@ -52,9 +53,10 @@ public class HazelRealmDB implements AsyncRealmStore {
 
             if (map.succeeded()) {
 
-                for (String key : map.result().keySet()) {
-                    list.add(new RealmMetaData(map.result().get(key)));
-                }
+                list.addAll(map.result().keySet()
+                        .stream()
+                        .map(key -> new RealmMetaData(map.result().get(key)))
+                        .collect(Collectors.toList()));
 
                 future.complete(list);
             } else {
@@ -72,9 +74,7 @@ public class HazelRealmDB implements AsyncRealmStore {
                 if (map.result() == null) {
                     future.fail(new RealmMissingException());
                 } else {
-                    future.complete(
-                            new Token(
-                                    new TokenFactory(getSecretBytes(settings)), domain));
+                    future.complete(new Token(new TokenFactory(getSecretBytes(settings)), domain));
                 }
             } else {
                 future.fail(map.cause());

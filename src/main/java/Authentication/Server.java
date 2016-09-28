@@ -1,24 +1,18 @@
 package Authentication;
 
-import Authentication.Controller.ClientHandler;
-import Authentication.Controller.Transport.ClientServer;
-import Authentication.Controller.Transport.RealmServer;
 import Authentication.Configuration.AuthProvider;
+import Authentication.Controller.ClientHandler;
 import Authentication.Controller.RealmHandler;
-import Logging.Model.Logger;
-import io.vertx.core.Context;
+import Protocols.ClusterListener;
+import Protocols.ClusterVerticle;
 import io.vertx.core.Future;
-import io.vertx.core.Verticle;
-import io.vertx.core.Vertx;
 
 /**
  * @author Robin Duda
  *         Starts up the client handler and the realmName handler.
  */
-public class Server implements Verticle {
+public class Server extends ClusterVerticle {
     private AuthProvider provider;
-    private Vertx vertx;
-    private Logger logger;
 
     public Server() {
     }
@@ -29,18 +23,7 @@ public class Server implements Verticle {
     }
 
     @Override
-    public Vertx getVertx() {
-        return vertx;
-    }
-
-    @Override
-    public void init(Vertx vertx, Context context) {
-        this.vertx = vertx;
-    }
-
-
-    @Override
-    public void start(Future<Void> start) throws Exception {
+    public void start(Future<Void> start) {
         if (provider == null) {
             Future<AuthProvider> providerFuture = Future.future();
 
@@ -49,12 +32,9 @@ public class Server implements Verticle {
                     this.provider = future.result();
                     this.logger = provider.getLogger();
 
-                    new ClientHandler(provider);
-                    new RealmHandler(provider);
-
                     for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
-                        vertx.deployVerticle(new ClientServer(provider));
-                        vertx.deployVerticle(new RealmServer(provider));
+                        vertx.deployVerticle(new ClusterListener(new RealmHandler(provider)));
+                        vertx.deployVerticle(new ClusterListener(new ClientHandler(provider)));
                     }
 
                     logger.onServerStarted(start);
@@ -65,11 +45,5 @@ public class Server implements Verticle {
 
             AuthProvider.create(providerFuture, vertx);
         }
-    }
-
-
-    @Override
-    public void stop(Future<Void> stop) throws Exception {
-        logger.onServerStopped(stop);
     }
 }

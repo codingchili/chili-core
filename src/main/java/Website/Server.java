@@ -1,19 +1,17 @@
 package Website;
 
-import Logging.Model.Logger;
+import Protocols.ClusterListener;
+import Protocols.ClusterVerticle;
 import Website.Configuration.WebserverProvider;
-import Website.Controller.RequestHandler;
+import Website.Controller.WebHandler;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
-import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
 
 /**
  * @author Robin Duda
  */
-public class Server implements Verticle {
-    private Vertx vertx;
-    private Logger logger;
+public class Server extends ClusterVerticle {
     private WebserverProvider provider;
 
     public Server() {
@@ -24,13 +22,8 @@ public class Server implements Verticle {
     }
 
     @Override
-    public Vertx getVertx() {
-        return vertx;
-    }
-
-    @Override
     public void init(Vertx vertx, Context context) {
-        this.vertx = vertx;
+        super.init(vertx, context);
 
         if (provider == null) {
             this.provider = new WebserverProvider(vertx);
@@ -43,15 +36,9 @@ public class Server implements Verticle {
     public void start(Future<Void> start) throws Exception {
 
         for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
-            vertx.deployVerticle(new RequestHandler(provider, i));
+            vertx.deployVerticle(new ClusterListener(new WebHandler(provider)));
         }
 
         logger.onServerStarted(start);
-    }
-
-
-    @Override
-    public void stop(Future<Void> stop) throws Exception {
-        logger.onServerStopped(stop);
     }
 }
