@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  * @author Robin Duda
  *         tests the services provided by the game server.
  */
-@RunWith(VertxUnitRunner.class)
+//@RunWith(VertxUnitRunner.class)
 public class RealmPingTest {
     private Vertx vertx;
 /*    private static final int TEST_PORT = new ConfigMock.RealmSettingsMock().getPort();
