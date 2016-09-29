@@ -46,7 +46,7 @@ public class RealmHandler extends AbstractHandler {
                 .use(REALM_CHARACTER_REQUEST, this::character);
     }
 
-    public Access authenticate(Request request) {
+    private Access authenticate(Request request) {
         boolean authorized = tokens.verifyToken(request.token());
         return (authorized) ? AUTHORIZED : PUBLIC;
     }

@@ -59,7 +59,7 @@ public class ConfigMock implements ConfigurationLoader {
         return new RealmSettingsMock();
     }
 
-    private static class AuthServerSettingsMock extends AuthServerSettings {
+    public static class AuthServerSettingsMock extends AuthServerSettings {
 
         @Override
         public byte[] getClientSecret() {
@@ -71,6 +71,10 @@ public class ConfigMock implements ConfigurationLoader {
             return "realmName.secret".getBytes();
         }
 
+        @Override
+        public boolean isTrustedRealm(String realm) {
+            return realm.equals("trusted");
+        }
     }
 
     public static class RealmSettingsMock extends RealmSettings {

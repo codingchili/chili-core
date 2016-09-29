@@ -51,7 +51,7 @@ public class ClientHandlerTest {
     private static ClientHandler handler;
 
     @Rule
-    public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(2, TimeUnit.SECONDS);
 
     @Before
     public void setUp() throws IOException {

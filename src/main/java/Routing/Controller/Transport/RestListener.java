@@ -5,7 +5,6 @@ import Logging.Model.DefaultLogger;
 import Protocols.Authorization.Token;
 import Protocols.ClusterVerticle;
 import Protocols.Request;
-import Protocols.Serializer;
 import Routing.Configuration.RoutingSettings;
 import Routing.Controller.RoutingHandler;
 import Routing.Model.ListenerSettings;
@@ -22,7 +21,6 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import static Configuration.Strings.*;
 
@@ -133,8 +131,7 @@ public class RestListener extends ClusterVerticle {
 
             @Override
             public Token token() {
-                // Authentication is not used on the router node.
-                throw new NotImplementedException();
+                return null;
             }
 
             @Override

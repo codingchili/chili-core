@@ -30,16 +30,15 @@ import java.util.concurrent.TimeUnit;
 public class ClientAccessTest {
     private static ClientHandler handler;
 
+    @Rule
+    public Timeout timeout = new Timeout(2, TimeUnit.SECONDS);
+
     @Before
     public void setUp() throws IOException {
         AuthProvider provider = new ProviderMock();
         provider.getRealmStore().put(Future.future(), new ConfigMock.RealmSettingsMock());
         handler = new ClientHandler(provider);
     }
-
-
-    @Rule
-    public Timeout timeout = new Timeout(2, TimeUnit.SECONDS);
 
     @Test
     public void failCreateRealmTokenWhenInvalidToken(TestContext context) {

@@ -1,12 +1,16 @@
 package Authentication.Realm;
 
 import Authentication.Controller.RealmRequest;
+import Protocols.Serializer;
 import Routing.Controller.Transport.RealmConnection;
 import Configuration.Strings;
 import Protocols.Authorization.Token;
 import Realm.Configuration.RealmSettings;
 import Shared.ResponseListener;
+import Shared.ResponseStatus;
 import io.vertx.core.json.JsonObject;
+
+import static Configuration.Strings.ID_ACTION;
 
 /**
  * @author Robin Duda
@@ -14,11 +18,13 @@ import io.vertx.core.json.JsonObject;
 public class RealmRequestMock implements RealmRequest {
     private ResponseListener listener;
     private JsonObject data;
+    private String action;
 
     RealmRequestMock(JsonObject data, ResponseListener listener, String action) {
         this.data = data;
         this.listener = listener;
-        this.data.put(Strings.ID_ACTION, action);
+        this.action = action;
+        this.data.put(ID_ACTION, action);
     }
 
     @Override
@@ -73,38 +79,40 @@ public class RealmRequestMock implements RealmRequest {
 
     @Override
     public void error() {
-
-    }
-
-    @Override
-    public void unauthorized() {
-
+        listener.handle(null, ResponseStatus.ERROR);
     }
 
     @Override
     public void write(Object object) {
-
+        listener.handle(Serializer.json(object), ResponseStatus.ACCEPTED);
     }
 
     @Override
-    public void accept() {
-
+    public void unauthorized() {
+        listener.handle(null, ResponseStatus.UNAUTHORIZED);
     }
 
     @Override
     public void missing() {
-
+        listener.handle(null, ResponseStatus.MISSING);
     }
 
     @Override
     public void conflict() {
-
+        listener.handle(null, ResponseStatus.CONFLICT);
     }
 
     @Override
     public String action() {
-        return data.getString(Strings.ID_ACTION);
+        return action;
     }
+
+
+    @Override
+    public void accept() {
+        listener.handle(null, ResponseStatus.ACCEPTED);
+    }
+
 
     @Override
     public String target() {
