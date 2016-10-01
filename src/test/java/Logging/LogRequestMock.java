@@ -1,40 +1,26 @@
-package Patching;
+package Logging;
 
-import Patching.Controller.PatchRequest;
-import Patching.Model.PatchFile;
 import Protocols.Util.Token;
+import Protocols.Request;
 import Protocols.Util.Serializer;
-import Shared.*;
+import Shared.ResponseListener;
+import Shared.ResponseStatus;
 import io.vertx.core.json.JsonObject;
+
+import static Configuration.Strings.ID_TOKEN;
 
 /**
  * @author Robin Duda
  */
-class PatchRequestMock implements PatchRequest {
+class LogRequestMock implements Request {
     private ResponseListener listener;
-    private JsonObject data;
     private String action;
+    private JsonObject data;
 
-    PatchRequestMock(ResponseListener listener, JsonObject json, String action) {
-        this.listener = listener;
-        this.data = json;
+    LogRequestMock(String action, ResponseListener listener, JsonObject data) {
         this.action = action;
-    }
-
-
-    @Override
-    public void file(PatchFile file) {
-        listener.handle(Serializer.json(file), ResponseStatus.ACCEPTED);
-    }
-
-    @Override
-    public String file() {
-        return data.getString("file");
-    }
-
-    @Override
-    public String version() {
-        return data.getString("version");
+        this.listener = listener;
+        this.data = (data == null) ? new JsonObject() : data;
     }
 
     @Override
@@ -74,12 +60,12 @@ class PatchRequestMock implements PatchRequest {
 
     @Override
     public String target() {
-        return null;
+        return "";
     }
 
     @Override
     public Token token() {
-        return null;
+        return Serializer.unpack(data().getJsonObject(ID_TOKEN), Token.class);
     }
 
     @Override

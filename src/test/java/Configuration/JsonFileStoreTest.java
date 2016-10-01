@@ -1,10 +1,8 @@
 package Configuration;
 
 import Realm.Model.Affliction;
-import Realm.Model.PlayerCharacter;
 import Realm.Model.PlayerClass;
-import Configuration.JsonFileStore;
-import Protocols.Serializer;
+import Protocols.Util.Serializer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import org.junit.Test;

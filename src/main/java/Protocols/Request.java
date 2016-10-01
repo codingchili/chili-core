@@ -1,7 +1,6 @@
 package Protocols;
 
-import Protocols.Authorization.Token;
-import io.vertx.core.buffer.Buffer;
+import Protocols.Util.Token;
 import io.vertx.core.json.JsonObject;
 
 /**

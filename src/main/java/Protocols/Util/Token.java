@@ -1,4 +1,4 @@
-package Protocols.Authorization;
+package Protocols.Util;
 
 import Configuration.Strings;
 

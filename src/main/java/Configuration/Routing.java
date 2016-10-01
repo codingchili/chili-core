@@ -27,7 +27,7 @@ public abstract class Routing {
                 .putHeader("Access-Control-Allow-Origin", "*")
                 .putHeader("Access-Control-Allow-Methods", "POST, GET")
                 .putHeader("Access-Control-Allow-Headers",
-                        "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+                        "Content-Type, Access-Control-Allow-Headers, Util, X-Requested-With");
     }
 
 }

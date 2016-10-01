@@ -5,7 +5,7 @@ import Realm.Configuration.RealmServerSettings;
 import Realm.Configuration.RealmSettings;
 import Logging.Configuration.LogServerSettings;
 import Patching.Configuration.PatchServerSettings;
-import Protocols.Serializer;
+import Protocols.Util.Serializer;
 import Routing.Configuration.RoutingSettings;
 import Website.Configuration.WebserverSettings;
 import io.vertx.core.json.JsonObject;

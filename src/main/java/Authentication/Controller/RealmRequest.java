@@ -3,7 +3,7 @@ package Authentication.Controller;
 import Routing.Controller.Transport.RealmConnection;
 import Realm.Configuration.RealmSettings;
 import Protocols.Request;
-import Protocols.Authorization.Token;
+import Protocols.Util.Token;
 
 /**
  * @author Robin Duda

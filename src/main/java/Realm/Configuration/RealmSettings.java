@@ -3,7 +3,7 @@ package Realm.Configuration;
 import Configuration.JsonFileStore;
 import Configuration.RemoteAuthentication;
 import Configuration.Strings;
-import Protocols.Serializer;
+import Protocols.Util.Serializer;
 import Realm.Model.Affliction;
 import Realm.Model.PlayerCharacter;
 import Realm.Model.PlayerClass;

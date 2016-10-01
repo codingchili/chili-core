@@ -6,7 +6,6 @@ import Authentication.ProviderMock;
 import Shared.ResponseListener;
 import Shared.ResponseStatus;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -17,9 +16,7 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeUnit;
 
-import static Configuration.Strings.CLIENT_CLOSE;
-import static Configuration.Strings.REALM_CHARACTER_REQUEST;
-import static Configuration.Strings.REALM_UPDATE;
+import static Configuration.Strings.*;
 
 /**
  * @author Robin Duda

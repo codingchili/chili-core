@@ -8,9 +8,11 @@ import io.vertx.core.Vertx;
  * @author Robin Duda
  */
 public class LogProvider implements Provider {
-    private final Vertx vertx;
+    private Vertx vertx;
     private LogServerSettings settings;
     private Logger logger;
+
+    public LogProvider() {}
 
     public LogProvider(LogServerSettings settings, Logger logger, Vertx vertx) {
         this.logger = logger;

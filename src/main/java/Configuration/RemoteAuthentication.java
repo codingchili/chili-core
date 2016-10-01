@@ -1,6 +1,6 @@
 package Configuration;
 
-import Protocols.Authorization.Token;
+import Protocols.Util.Token;
 
 import java.io.Serializable;
 

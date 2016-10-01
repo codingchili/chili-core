@@ -1,6 +1,6 @@
 package Routing.Controller.Transport;
 
-import Protocols.Serializer;
+import Protocols.Util.Serializer;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.json.JsonObject;

@@ -4,7 +4,7 @@ import Configuration.FileConfiguration;
 import Configuration.Strings;
 import Logging.Model.Logger;
 import Patching.Configuration.PatchNotes;
-import Protocols.Serializer;
+import Protocols.Util.Serializer;
 import io.vertx.core.Vertx;
 
 import java.io.File;

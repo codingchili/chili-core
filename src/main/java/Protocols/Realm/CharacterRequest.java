@@ -2,7 +2,7 @@ package Protocols.Realm;
 
 import Configuration.Strings;
 import Protocols.Header;
-import Protocols.Authorization.Token;
+import Protocols.Util.Token;
 
 /**
  * @author Robin Duda

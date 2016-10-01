@@ -1,4 +1,4 @@
-package Protocols.Authorization;
+package Protocols.Util;
 
 import Configuration.RemoteAuthentication;
 
@@ -33,7 +33,7 @@ public class TokenFactory {
      * @param expiry the unix epoch time in which it is expired.
      * @return true if the token is accepted.
      */
-    public boolean verifyToken(String token, String domain, Long expiry) {
+    private boolean verifyToken(String token, String domain, Long expiry) {
         if (expiry > Instant.now().getEpochSecond()) {
             try {
                 byte[] result = DatatypeConverter.printHexBinary(generateToken(domain, expiry)).getBytes();
