@@ -4,8 +4,8 @@ import Authentication.Configuration.AuthServerSettings;
 import Realm.Configuration.RealmServerSettings;
 import Realm.Configuration.RealmSettings;
 import Logging.Configuration.LogServerSettings;
-import Protocols.Authorization.Token;
-import Protocols.Authorization.TokenFactory;
+import Protocols.Util.Token;
+import Protocols.Util.TokenFactory;
 
 import java.security.SecureRandom;
 

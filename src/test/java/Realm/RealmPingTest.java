@@ -1,23 +1,6 @@
 package Realm;
 
-import Configuration.ConfigMock;
-import Logging.LoggerMock;
-import Protocols.Authorization.Token;
-import Realm.Configuration.RealmSettings;
-import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Vertx;
-import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.Timeout;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Robin Duda

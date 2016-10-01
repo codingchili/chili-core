@@ -1,10 +1,9 @@
 package Authentication.Realm;
 
 import Authentication.Controller.RealmRequest;
-import Protocols.Serializer;
+import Protocols.Util.Serializer;
 import Routing.Controller.Transport.RealmConnection;
-import Configuration.Strings;
-import Protocols.Authorization.Token;
+import Protocols.Util.Token;
 import Realm.Configuration.RealmSettings;
 import Shared.ResponseListener;
 import Shared.ResponseStatus;

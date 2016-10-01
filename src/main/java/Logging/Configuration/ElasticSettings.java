@@ -17,8 +17,9 @@ public class ElasticSettings {
         return enabled;
     }
 
-    public void setEnabled(Boolean enabled) {
+    public ElasticSettings setEnabled(Boolean enabled) {
         this.enabled = enabled;
+        return this;
     }
 
     public String getRemote() {

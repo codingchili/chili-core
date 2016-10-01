@@ -1,6 +1,6 @@
 package Authentication.Configuration;
 
-import Protocols.Serializer;
+import Protocols.Util.Serializer;
 import io.vertx.core.json.JsonObject;
 
 /**

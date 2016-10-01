@@ -2,8 +2,8 @@ package Authentication.Model;
 
 import Configuration.Strings;
 import Protocols.Authentication.RealmMetaData;
-import Protocols.Authorization.Token;
-import Protocols.Authorization.TokenFactory;
+import Protocols.Util.Token;
+import Protocols.Util.TokenFactory;
 import Realm.Configuration.RealmSettings;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;

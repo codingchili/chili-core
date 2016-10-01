@@ -3,7 +3,7 @@ package Logging.Model;
 import Authentication.Model.Account;
 import Configuration.RemoteAuthentication;
 import Configuration.VertxSettings;
-import Protocols.Serializer;
+import Protocols.Util.Serializer;
 import Realm.Configuration.InstanceSettings;
 import Realm.Configuration.RealmSettings;
 import io.vertx.core.Future;

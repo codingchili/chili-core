@@ -2,7 +2,7 @@ package Realm.Model;
 
 import Protocols.Realm.AuthenticationResult;
 import Protocols.Realm.CharacterResponse;
-import Protocols.Serializer;
+import Protocols.Util.Serializer;
 import io.vertx.core.http.ServerWebSocket;
 
 /**

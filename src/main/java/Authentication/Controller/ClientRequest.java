@@ -1,9 +1,8 @@
 package Authentication.Controller;
 
 import Authentication.Model.Account;
-import Protocols.Authentication.ClientAuthentication;
 import Protocols.Request;
-import Protocols.Authorization.Token;
+import Protocols.Util.Token;
 
 /**
  * @author Robin Duda

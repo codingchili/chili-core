@@ -2,7 +2,7 @@ package Routing.Controller.Transport;
 
 import Configuration.Routing;
 import Logging.Model.DefaultLogger;
-import Protocols.Authorization.Token;
+import Protocols.Util.Token;
 import Protocols.ClusterVerticle;
 import Protocols.Request;
 import Routing.Configuration.RoutingSettings;

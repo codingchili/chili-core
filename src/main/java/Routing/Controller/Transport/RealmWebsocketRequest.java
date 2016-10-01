@@ -2,8 +2,8 @@ package Routing.Controller.Transport;
 
 import Authentication.Controller.RealmRequest;
 import Configuration.Strings;
-import Protocols.Authorization.Token;
-import Protocols.Serializer;
+import Protocols.Util.Token;
+import Protocols.Util.Serializer;
 import Realm.Configuration.RealmSettings;
 import io.vertx.core.json.JsonObject;
 

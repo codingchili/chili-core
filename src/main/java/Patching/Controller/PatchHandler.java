@@ -7,6 +7,7 @@ import Patching.Model.PatchReloadedException;
 import Protocols.*;
 import Protocols.Exception.AuthorizationRequiredException;
 import Protocols.Exception.HandlerMissingException;
+import Protocols.Util.Protocol;
 
 import java.nio.file.NoSuchFileException;
 

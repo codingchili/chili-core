@@ -1,7 +1,7 @@
 package Authentication.Model;
 
 import Configuration.Strings;
-import Protocols.Authorization.HashHelper;
+import Protocols.Util.HashHelper;
 import Realm.Model.PlayerCharacter;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;

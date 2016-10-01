@@ -1,22 +1,17 @@
 package Authentication.Realm;
 
 import Authentication.Configuration.AuthProvider;
-import Authentication.Configuration.AuthServerSettings;
 import Authentication.Controller.RealmHandler;
 import Authentication.ProviderMock;
 import Configuration.ConfigMock;
-import Protocols.*;
+import Protocols.Util.Serializer;
 import Realm.Configuration.RealmSettings;
-import Protocols.Realm.CharacterRequest;
-import Protocols.Authorization.Token;
-import Protocols.Authorization.TokenFactory;
+import Protocols.Util.Token;
+import Protocols.Util.TokenFactory;
 import Shared.ResponseListener;
 import Shared.ResponseStatus;
 import io.vertx.core.Future;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.WebSocket;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;

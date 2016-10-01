@@ -2,7 +2,8 @@ package Realm.Controller;
 
 import Logging.Model.Logger;
 import Protocols.*;
-import Protocols.Authorization.TokenFactory;
+import Protocols.Util.Protocol;
+import Protocols.Util.TokenFactory;
 import Protocols.Exception.AuthorizationRequiredException;
 import Protocols.Exception.HandlerMissingException;
 import Realm.Configuration.InstanceSettings;

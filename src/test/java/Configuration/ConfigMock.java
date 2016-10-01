@@ -1,13 +1,14 @@
 package Configuration;
 
 import Authentication.Configuration.AuthServerSettings;
+import Logging.Configuration.ElasticSettings;
 import Realm.Configuration.RealmServerSettings;
 import Realm.Configuration.RealmSettings;
 import Logging.Configuration.LogServerSettings;
 import Patching.Configuration.PatchServerSettings;
 import Realm.Model.PlayerClass;
-import Protocols.Authorization.Token;
-import Protocols.Authorization.TokenFactory;
+import Protocols.Util.Token;
+import Protocols.Util.TokenFactory;
 import Routing.Configuration.RoutingSettings;
 import Website.Configuration.WebserverSettings;
 
@@ -120,5 +121,24 @@ public class ConfigMock implements ConfigurationLoader {
 
             return realms;
         }
+    }
+
+    public static class LogServerSettingsMock extends LogServerSettings {
+
+        @Override
+        public byte[] getSecret() {
+            return new byte[0];
+        }
+
+        @Override
+        public Boolean getConsole() {
+            return false;
+        }
+
+        @Override
+        public ElasticSettings getElastic() {
+            return new ElasticSettings().setEnabled(false);
+        }
+
     }
 }

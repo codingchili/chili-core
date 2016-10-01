@@ -1,8 +1,8 @@
-package Protocols.Authorization;
+package Protocols.Util;
 
 /**
  * @author Robin Duda
  *         throw when a TokenFactory has failed to process a token.
  */
-class TokenException extends Exception {
+public class TokenException extends Exception {
 }

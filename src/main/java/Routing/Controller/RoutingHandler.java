@@ -4,6 +4,7 @@ import Logging.Model.Logger;
 import Protocols.*;
 import Protocols.Exception.AuthorizationRequiredException;
 import Protocols.Exception.HandlerMissingException;
+import Protocols.Util.Protocol;
 import Routing.Configuration.RouteProvider;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.DeliveryOptions;

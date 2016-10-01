@@ -1,4 +1,4 @@
-package Protocols;
+package Protocols.Util;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -58,7 +58,7 @@ public class Serializer {
      * @return an object specified by the type parameter.
      */
     public static <T> T unpack(JsonObject json, Class clazz) {
-        return unpack(json.encode(), clazz);
+        return (json == null) ? null : unpack(json.encode(), clazz);
     }
 
 

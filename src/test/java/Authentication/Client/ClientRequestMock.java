@@ -3,13 +3,12 @@ package Authentication.Client;
 import Authentication.Controller.ClientRequest;
 import Authentication.Model.Account;
 import Shared.ResponseListener;
-import Protocols.Authentication.ClientAuthentication;
-import Protocols.Serializer;
-import Protocols.Authorization.Token;
+import Protocols.Util.Serializer;
+import Protocols.Util.Token;
 import Shared.ResponseStatus;
 import io.vertx.core.json.JsonObject;
 
-import static Protocols.Serializer.unpack;
+import static Protocols.Util.Serializer.unpack;
 
 import static Configuration.Strings.*;
 

@@ -7,7 +7,7 @@ import Authentication.Model.AsyncRealmStore;
 import Configuration.ConfigMock;
 import Logging.LoggerMock;
 import Logging.Model.Logger;
-import Protocols.Authorization.TokenFactory;
+import Protocols.Util.TokenFactory;
 
 /**
  * @author Robin Duda

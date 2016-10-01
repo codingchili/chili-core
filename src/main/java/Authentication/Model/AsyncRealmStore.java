@@ -1,7 +1,7 @@
 package Authentication.Model;
 
 import Protocols.Authentication.RealmMetaData;
-import Protocols.Authorization.Token;
+import Protocols.Util.Token;
 import Realm.Configuration.RealmSettings;
 import io.vertx.core.Future;
 
