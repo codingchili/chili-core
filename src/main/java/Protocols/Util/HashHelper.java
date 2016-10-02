@@ -13,7 +13,7 @@ import java.util.Base64;
  */
 
 public abstract class HashHelper {
-    private final static int ITERATIONS = 15242;
+    private final static int ITERATIONS = 1024;
     private final static int KEY_BITS = 1024;
     private final static int SALT_BYTES = 64;
     private final static String ALGORITHM = "PBKDF2WithHmacSHA1";
