@@ -75,7 +75,7 @@ HazelAccountDB implements AsyncAccountStore {
         accounts.putIfAbsent(account.getUsername(), mapping, map -> {
             if (map.succeeded()) {
 
-                // Result is null when no previous value was in the get.
+                // Result is null when no previous value was in the map.
                 if (map.result() == null) {
                     future.complete(filter(account));
                 } else {

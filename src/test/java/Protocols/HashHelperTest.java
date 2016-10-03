@@ -1,22 +1,47 @@
 package Protocols;
 
 import Protocols.Util.HashHelper;
+import io.vertx.core.Vertx;
+import io.vertx.core.WorkerExecutor;
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.Repeat;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Robin Duda
  */
+@RunWith(VertxUnitRunner.class)
 public class HashHelperTest {
     private static final int HASH_TIME_LIMIT = 1000;
+    private static final int HASH_TIME_MIN = 200;
     private static final String password = "pass";
     private static final String wrong = "wrong";
     private static final String salt = "salt";
     private static final String salt2 = "salt2";
+    private static Vertx vertx;
+    private static WorkerExecutor executor;
 
+    @Before
+    public void setUp() {
+        vertx = Vertx.vertx();
+
+        executor = vertx.createSharedWorkerExecutor("worker_pool_name", 8);
+    }
+
+    @After
+    public void tearDown(TestContext context) {
+        vertx.close(context.asyncAssertSuccess());
+    }
 
     @Test
     public void generateUniqueSaltTest() {
@@ -70,14 +95,24 @@ public class HashHelperTest {
     }
 
     @Test
-    public void checkHandles100HashesPerSecond() {
+    public void checkHandles100HashesPerSecond(TestContext context) {
+        Async async = context.async();
         long start = getTimeMS();
+        AtomicInteger countdown = new AtomicInteger(100);
 
-        for (int i = 0; i < 50; i++) {
-            HashHelper.hash(password, salt);
+        for (int i = 0; i < 100; i++) {
+            executor.executeBlocking((blocking) -> {
+                HashHelper.hash(password, salt);
+                blocking.complete();
+            }, false, (result) -> {
+                if (countdown.decrementAndGet() == 0) {
+                    long time = getTimeMS() - start;
+                    Assert.assertTrue(time < HASH_TIME_LIMIT);
+                    Assert.assertTrue(time > HASH_TIME_MIN);
+                    async.complete();
+                }
+            });
         }
-
-        Assert.assertTrue(getTimeMS() - start < HASH_TIME_LIMIT);
     }
 
     private long getTimeMS() {
