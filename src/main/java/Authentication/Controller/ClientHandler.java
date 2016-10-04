@@ -51,7 +51,7 @@ public class ClientHandler extends AbstractHandler {
                 .use(CLIENT_AUTHENTICATE, this::authenticate, PUBLIC);
     }
 
-    public Access authenticate(Protocols.Request request) {
+    private Access authenticate(Protocols.Request request) {
         boolean authorized = tokens.verifyToken(request.token());
         return (authorized) ? Access.AUTHORIZED : PUBLIC;
     }

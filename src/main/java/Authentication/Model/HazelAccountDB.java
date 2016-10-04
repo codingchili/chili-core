@@ -5,6 +5,7 @@ import Protocols.Util.HashHelper;
 import Realm.Model.PlayerCharacter;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.WorkerExecutor;
 import io.vertx.core.shareddata.AsyncMap;
 
 import java.util.ArrayList;
@@ -17,9 +18,12 @@ import java.util.stream.Collectors;
 public class
 HazelAccountDB implements AsyncAccountStore {
     private AsyncMap<String, AccountMapping> accounts;
+    private static WorkerExecutor executor;
 
 
     public static void create(Future<AsyncAccountStore> realmFuture, Vertx vertx) {
+        executor = vertx.createSharedWorkerExecutor("hash_worker_pool", 16);
+
         vertx.sharedData().<String, AccountMapping>getClusterWideMap(Strings.DB_COLLECTION, map -> {
             if (map.succeeded()) {
                 realmFuture.complete(new HazelAccountDB(map.result()));
@@ -72,19 +76,25 @@ HazelAccountDB implements AsyncAccountStore {
         mapping.setSalt(salt);
         mapping.setHash(HashHelper.hash(account.getPassword(), salt));
 
-        accounts.putIfAbsent(account.getUsername(), mapping, map -> {
-            if (map.succeeded()) {
+        executor.executeBlocking((blocking) -> {
+            blocking.complete(HashHelper.hash(account.getPassword(), salt));
+        }, false, (result) -> {
 
-                // Result is null when no previous value was in the map.
-                if (map.result() == null) {
-                    future.complete(filter(account));
+            accounts.putIfAbsent(account.getUsername(), mapping, map -> {
+                if (map.succeeded()) {
+
+                    // Result is null when no previous value was in the map.
+                    if (map.result() == null) {
+                        future.complete(filter(account));
+                    } else {
+                        future.fail(new AccountExistsException());
+                    }
+
                 } else {
-                    future.fail(new AccountExistsException());
+                    future.fail(map.cause());
                 }
+            });
 
-            } else {
-                future.fail(map.cause());
-            }
         });
     }
 
