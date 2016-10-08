@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @RunWith(VertxUnitRunner.class)
 public class HashHelperTest {
-    private static final int HASH_TIME_LIMIT = 1000;
+    private static final int HASH_TIME_LIMIT = 5000;
     private static final int HASH_TIME_MIN = 200;
     private static final String password = "pass";
     private static final String wrong = "wrong";
@@ -94,7 +94,7 @@ public class HashHelperTest {
     }
 
     @Test
-    public void checkHandles100HashesPerSecond(TestContext context) {
+    public void checkHashingNotTooFast(TestContext context) {
         Async async = context.async();
         long start = getTimeMS();
         AtomicInteger countdown = new AtomicInteger(100);
