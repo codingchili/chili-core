@@ -1,8 +1,8 @@
 package com.codingchili.core.Protocols.Realm;
 
 import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Realm.Model.PlayerCharacter;
 import com.codingchili.core.Protocols.Header;
+import com.codingchili.core.Realm.Instance.Model.PlayerCharacter;
 
 /**
  * @author Robin Duda

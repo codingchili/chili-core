@@ -1,7 +1,7 @@
 package com.codingchili.core.Logging;
 
 import com.codingchili.core.Authentication.Model.Account;
-import com.codingchili.core.Realm.Configuration.InstanceSettings;
+import com.codingchili.core.Realm.Instance.Configuration.InstanceSettings;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
 import com.codingchili.core.Logging.Model.Logger;
 import io.vertx.core.Future;

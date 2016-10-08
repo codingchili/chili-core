@@ -1,6 +1,7 @@
 package com.codingchili.core.Authentication.Controller;
 
 import com.codingchili.core.Authentication.Configuration.AuthProvider;
+import com.codingchili.core.Authentication.Model.*;
 import com.codingchili.core.Logging.Model.Logger;
 import com.codingchili.core.Protocols.AbstractHandler;
 import com.codingchili.core.Protocols.Access;
@@ -8,17 +9,16 @@ import com.codingchili.core.Protocols.Authentication.CharacterList;
 import com.codingchili.core.Protocols.Authentication.ClientAuthentication;
 import com.codingchili.core.Protocols.Authentication.RealmList;
 import com.codingchili.core.Protocols.Authentication.RealmMetaData;
+import com.codingchili.core.Protocols.Exception.AuthorizationRequiredException;
+import com.codingchili.core.Protocols.Exception.HandlerMissingException;
 import com.codingchili.core.Protocols.Request;
 import com.codingchili.core.Protocols.RequestHandler;
 import com.codingchili.core.Protocols.Util.Protocol;
 import com.codingchili.core.Protocols.Util.Token;
 import com.codingchili.core.Protocols.Util.TokenFactory;
-import com.codingchili.core.Protocols.Exception.AuthorizationRequiredException;
-import com.codingchili.core.Protocols.Exception.HandlerMissingException;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
-import com.codingchili.core.Realm.Model.PlayerCharacter;
-import com.codingchili.core.Realm.Model.PlayerClass;
-import com.codingchili.core.Authentication.Model.*;
+import com.codingchili.core.Realm.Instance.Model.PlayerCharacter;
+import com.codingchili.core.Realm.Instance.Model.PlayerClass;
 import io.vertx.core.Future;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class ClientHandler extends AbstractHandler {
     private TokenFactory tokens;
 
     public ClientHandler(AuthProvider provider) {
-        super(NODE_AUTHHENTICATION_CLIENTS);
+        super(NODE_AUTHENTICATION_CLIENTS);
 
         logger = provider.getLogger();
         accounts = provider.getAccountStore();

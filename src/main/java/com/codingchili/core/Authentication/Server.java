@@ -2,7 +2,7 @@ package com.codingchili.core.Authentication;
 
 import com.codingchili.core.Authentication.Configuration.AuthProvider;
 import com.codingchili.core.Authentication.Controller.ClientHandler;
-import com.codingchili.core.Authentication.Controller.RealmHandler;
+import com.codingchili.core.Authentication.Controller.AuthenticationHandler;
 import com.codingchili.core.Protocols.ClusterListener;
 import com.codingchili.core.Protocols.ClusterVerticle;
 import io.vertx.core.Future;
@@ -33,7 +33,7 @@ public class Server extends ClusterVerticle {
                     this.logger = provider.getLogger();
 
                     for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
-                        vertx.deployVerticle(new ClusterListener(new RealmHandler(provider)));
+                        vertx.deployVerticle(new ClusterListener(new AuthenticationHandler(provider)));
                         vertx.deployVerticle(new ClusterListener(new ClientHandler(provider)));
                     }
 

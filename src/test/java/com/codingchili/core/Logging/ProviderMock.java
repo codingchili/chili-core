@@ -21,6 +21,6 @@ class ProviderMock extends LogProvider {
 
     @Override
     public Logger getLogger() {
-        return null;
+        return new LoggerMock();
     }
 }

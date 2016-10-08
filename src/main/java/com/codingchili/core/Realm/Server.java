@@ -1,13 +1,13 @@
 package com.codingchili.core.Realm;
 
 import com.codingchili.core.Configuration.FileConfiguration;
+import com.codingchili.core.Logging.Model.DefaultLogger;
 import com.codingchili.core.Protocols.ClusterListener;
 import com.codingchili.core.Protocols.ClusterVerticle;
 import com.codingchili.core.Realm.Configuration.RealmProvider;
 import com.codingchili.core.Realm.Configuration.RealmServerSettings;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
 import com.codingchili.core.Realm.Controller.RealmHandler;
-import com.codingchili.core.Logging.Model.DefaultLogger;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;

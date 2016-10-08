@@ -6,7 +6,7 @@ import com.codingchili.core.Realm.Configuration.RealmServerSettings;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
 import com.codingchili.core.Logging.Configuration.LogServerSettings;
 import com.codingchili.core.Patching.Configuration.PatchServerSettings;
-import com.codingchili.core.Realm.Model.PlayerClass;
+import com.codingchili.core.Realm.Instance.Model.PlayerClass;
 import com.codingchili.core.Protocols.Util.Token;
 import com.codingchili.core.Protocols.Util.TokenFactory;
 import com.codingchili.core.Routing.Configuration.RoutingSettings;
@@ -87,7 +87,6 @@ public class ConfigMock implements ConfigurationLoader {
             this.setType("type.1");
             this.setTrusted(false);
             this.setSecure(false);
-            this.setRemote("remote_ip");
             this.setResources("DIR_RESOURCES");
 
             generateAuthentication();
@@ -127,7 +126,7 @@ public class ConfigMock implements ConfigurationLoader {
 
         @Override
         public byte[] getSecret() {
-            return new byte[0];
+            return "logger-secret".getBytes();
         }
 
         @Override

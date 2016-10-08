@@ -5,7 +5,7 @@ import com.codingchili.core.Logging.Model.DefaultLogger;
 import com.codingchili.core.Protocols.ClusterVerticle;
 import com.codingchili.core.Routing.Configuration.RouteProvider;
 import com.codingchili.core.Routing.Configuration.RoutingSettings;
-import com.codingchili.core.Routing.Controller.RoutingHandler;
+import com.codingchili.core.Routing.Controller.RouteHandler;
 import com.codingchili.core.Routing.Controller.Transport.RestListener;
 import com.codingchili.core.Routing.Controller.Transport.TcpListener;
 import com.codingchili.core.Routing.Controller.Transport.UdpListener;
@@ -37,20 +37,20 @@ public class Server extends ClusterVerticle {
         for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
 
             for (ListenerSettings listener : settings.getTransport()) {
-                RouteProvider provider = new RouteProvider(vertx, settings);
+                RouteProvider provider = new RouteProvider(vertx);
 
                 switch (listener.getType()) {
                     case UDP:
-                        vertx.deployVerticle(new UdpListener(new RoutingHandler(provider), listener));
+                        vertx.deployVerticle(new UdpListener(new RouteHandler(provider), listener));
                         break;
                     case TCP:
-                        vertx.deployVerticle(new TcpListener(new RoutingHandler(provider), listener));
+                        vertx.deployVerticle(new TcpListener(new RouteHandler(provider), listener));
                         break;
                     case WEBSOCKET:
-                        vertx.deployVerticle(new WebsocketListener(new RoutingHandler(provider), listener));
+                        vertx.deployVerticle(new WebsocketListener(new RouteHandler(provider), listener));
                         break;
                     case REST:
-                        vertx.deployVerticle(new RestListener(new RoutingHandler(provider), settings));
+                        vertx.deployVerticle(new RestListener(new RouteHandler(provider), settings));
                         break;
                 }
             }

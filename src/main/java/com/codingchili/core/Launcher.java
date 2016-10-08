@@ -1,10 +1,10 @@
 package com.codingchili.core;
 
+import com.codingchili.core.Authentication.Server;
 import com.codingchili.core.Configuration.JsonFileStore;
 import com.codingchili.core.Configuration.Strings;
 import com.codingchili.core.Logging.Model.ConsoleLogger;
 import com.codingchili.core.Protocols.ClusterVerticle;
-import com.codingchili.core.Authentication.Server;
 import io.vertx.core.*;
 
 import java.io.IOException;

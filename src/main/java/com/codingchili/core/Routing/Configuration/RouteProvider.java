@@ -1,5 +1,6 @@
 package com.codingchili.core.Routing.Configuration;
 
+import com.codingchili.core.Configuration.FileConfiguration;
 import com.codingchili.core.Configuration.Provider;
 import com.codingchili.core.Logging.Model.DefaultLogger;
 import com.codingchili.core.Logging.Model.Logger;
@@ -13,10 +14,10 @@ public class RouteProvider implements Provider {
     private Logger logger;
     private Vertx vertx;
 
-    public RouteProvider(Vertx vertx, RoutingSettings settings) {
+    public RouteProvider(Vertx vertx) {
+        this.settings = FileConfiguration.instance().getRoutingSettings();
         this.logger = new DefaultLogger(vertx, settings.getLogserver());
         this.vertx = vertx;
-        this.settings = settings;
     }
 
     @Override

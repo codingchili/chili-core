@@ -1,6 +1,6 @@
 package com.codingchili.core.Authentication.Model;
 
-import com.codingchili.core.Realm.Model.PlayerCharacter;
+import com.codingchili.core.Realm.Instance.Model.PlayerCharacter;
 import io.vertx.core.Future;
 
 import java.util.ArrayList;

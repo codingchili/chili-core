@@ -6,12 +6,12 @@ import com.codingchili.core.Logging.Model.ConsoleLogger;
 import com.codingchili.core.Logging.Model.ElasticLogger;
 import com.codingchili.core.Protocols.AbstractHandler;
 import com.codingchili.core.Protocols.Access;
+import com.codingchili.core.Protocols.Exception.AuthorizationRequiredException;
+import com.codingchili.core.Protocols.Exception.HandlerMissingException;
 import com.codingchili.core.Protocols.Request;
 import com.codingchili.core.Protocols.RequestHandler;
 import com.codingchili.core.Protocols.Util.Protocol;
 import com.codingchili.core.Protocols.Util.TokenFactory;
-import com.codingchili.core.Protocols.Exception.AuthorizationRequiredException;
-import com.codingchili.core.Protocols.Exception.HandlerMissingException;
 import io.vertx.core.json.JsonObject;
 
 import static com.codingchili.core.Configuration.Strings.*;
@@ -39,11 +39,15 @@ public class LogHandler extends AbstractHandler {
         protocol.use(PROTOCOL_LOGGING, this::log);
     }
 
-    private Access authenticator(Request request) {
+    private void log(Request request) {
         if (tokenFactory.verifyToken(request.token())) {
-            return AUTHORIZED;
-        } else {
-            return PUBLIC;
+            JsonObject logdata = request.data();
+
+            logdata.remove(ID_TOKEN);
+            logdata.remove(PROTOCOL_ACTION);
+
+            elastic.log(logdata);
+            console.log(logdata);
         }
     }
 
@@ -58,15 +62,11 @@ public class LogHandler extends AbstractHandler {
         }
     }
 
-    private void log(Request request) {
+    private Access authenticator(Request request) {
         if (tokenFactory.verifyToken(request.token())) {
-            JsonObject logdata = request.data();
-
-            logdata.remove(ID_TOKEN);
-            logdata.remove(PROTOCOL_ACTION);
-
-            elastic.log(logdata);
-            console.log(logdata);
+            return AUTHORIZED;
+        } else {
+            return PUBLIC;
         }
     }
 }

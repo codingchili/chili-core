@@ -2,7 +2,7 @@ package com.codingchili.core.Authentication.Model;
 
 import com.codingchili.core.Configuration.Strings;
 import com.codingchili.core.Protocols.Util.HashHelper;
-import com.codingchili.core.Realm.Model.PlayerCharacter;
+import com.codingchili.core.Realm.Instance.Model.PlayerCharacter;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.shareddata.AsyncMap;

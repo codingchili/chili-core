@@ -4,7 +4,7 @@ import com.codingchili.core.Authentication.Model.Account;
 import com.codingchili.core.Configuration.RemoteAuthentication;
 import com.codingchili.core.Configuration.VertxSettings;
 import com.codingchili.core.Protocols.Util.Serializer;
-import com.codingchili.core.Realm.Configuration.InstanceSettings;
+import com.codingchili.core.Realm.Instance.Configuration.InstanceSettings;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;

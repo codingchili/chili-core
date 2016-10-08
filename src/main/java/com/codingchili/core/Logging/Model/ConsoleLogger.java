@@ -2,7 +2,7 @@ package com.codingchili.core.Logging.Model;
 
 import com.codingchili.core.Configuration.Strings;
 import io.vertx.core.json.JsonObject;
-import org.fusesource.jansi.*;
+import org.fusesource.jansi.AnsiConsole;
 
 /**
  * @author Robin Duda

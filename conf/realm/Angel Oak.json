@@ -16,7 +16,6 @@
       "domain" : "Angel Oak"
     }
   },
-  "remote" : "ao.realm.node",
   "name" : "Angel Oak",
   "description" : "Stable realm, PvP Aggressive.",
   "resources" : "",
@@ -26,5 +25,6 @@
   "lifetime" : "weekly",
   "drop" : 1.0,
   "leveling" : 1.0,
-  "players" : 0
+  "players" : 0,
+  "remote" : "Angel Oak.realm.node"
 }

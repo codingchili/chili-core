@@ -1,5 +1,6 @@
 package com.codingchili.core.Patching;
 
+import com.codingchili.core.Configuration.Strings;
 import com.codingchili.core.Patching.Controller.PatchRequest;
 import com.codingchili.core.Patching.Model.PatchFile;
 import com.codingchili.core.Protocols.Util.Token;
@@ -15,12 +16,11 @@ class PatchRequestMock implements PatchRequest {
     private JsonObject data;
     private String action;
 
-    PatchRequestMock(ResponseListener listener, JsonObject json, String action) {
+    PatchRequestMock(String action, ResponseListener listener, JsonObject data) {
         this.listener = listener;
-        this.data = json;
+        this.data = data;
         this.action = action;
     }
-
 
     @Override
     public void file(PatchFile file) {
@@ -34,7 +34,11 @@ class PatchRequestMock implements PatchRequest {
 
     @Override
     public String version() {
-        return data.getString("version");
+        if (data.containsKey(Strings.ID_VERSION)) {
+            return data.getString(Strings.ID_VERSION);
+        } else {
+            return "";
+        }
     }
 
     @Override

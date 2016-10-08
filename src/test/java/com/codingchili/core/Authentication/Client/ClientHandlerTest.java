@@ -6,11 +6,12 @@ import com.codingchili.core.Authentication.Model.Account;
 import com.codingchili.core.Authentication.Model.AsyncAccountStore;
 import com.codingchili.core.Authentication.Model.ProviderMock;
 import com.codingchili.core.Configuration.ConfigMock;
+import com.codingchili.core.Configuration.Strings;
 import com.codingchili.core.Protocols.Util.Token;
 import com.codingchili.core.Protocols.Util.TokenFactory;
 import com.codingchili.core.Protocols.Util.Serializer;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
-import com.codingchili.core.Realm.Model.PlayerCharacter;
+import com.codingchili.core.Realm.Instance.Model.PlayerCharacter;
 import com.codingchili.core.Shared.ResponseListener;
 import com.codingchili.core.Shared.ResponseStatus;
 import io.vertx.core.Future;
@@ -51,7 +52,7 @@ public class ClientHandlerTest {
     private static ClientHandler handler;
 
     @Rule
-    public Timeout timeout = new Timeout(30, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
 
     @Before
     public void setUp(TestContext context) throws IOException {
@@ -289,13 +290,49 @@ public class ClientHandlerTest {
                 .put("realmName", REALM_NAME));
     }
 
+    @Test
+    public void failCreateRealmTokenWhenInvalidToken(TestContext context) {
+        handle(Strings.CLIENT_REALM_TOKEN, (response, status) -> {
+            context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
+        }, new JsonObject()
+                .put("token", getInvalidClientToken()));
+    }
+
+    @Test
+    public void failListCharactersOnRealmWhenInvalidToken(TestContext context) {
+        handle(Strings.CLIENT_CHARACTER_LIST, (response, status) -> {
+            context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
+        }, new JsonObject()
+                .put("token", Serializer.json(getInvalidClientToken())));
+    }
+
+    @Test
+    public void failToCreateCharacterWhenInvalidToken(TestContext context) {
+        handle(Strings.CLIENT_CHARACTER_CREATE, (response, status) -> {
+            context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
+        }, new JsonObject()
+                .put("token", getInvalidClientToken()));
+    }
+
+    @Test
+    public void failToRemoveCharacterWhenInvalidToken(TestContext context) {
+        handle(Strings.CLIENT_CHARACTER_REMOVE, (response, status) -> {
+            context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
+        }, new JsonObject()
+                .put("token", getInvalidClientToken()));
+    }
+
+    private JsonObject getInvalidClientToken() {
+        return Serializer.json(new Token(new TokenFactory("invalid".getBytes()), "username"));
+    }
+
     private void handle(String action, ResponseListener listener) {
         handle(action, listener, new JsonObject().put(ID_TOKEN, getClientToken()));
     }
 
     private void handle(String action, ResponseListener listener, JsonObject data) {
         try {
-            handler.handle(new ClientRequestMock(data, listener, action));
+            handler.handle(new ClientRequestMock(action, listener, data));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

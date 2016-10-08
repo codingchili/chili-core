@@ -20,7 +20,7 @@ class ClientRequestMock implements ClientRequest {
     private JsonObject data = new JsonObject();
     private String action;
 
-    ClientRequestMock(JsonObject data, ResponseListener listener, String action) {
+    ClientRequestMock(String action, ResponseListener listener, JsonObject data) {
         this.data = data;
         this.listener = listener;
         this.action = action;

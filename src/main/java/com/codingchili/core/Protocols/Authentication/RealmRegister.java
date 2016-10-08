@@ -2,8 +2,8 @@ package com.codingchili.core.Protocols.Authentication;
 
 
 import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Realm.Configuration.RealmSettings;
 import com.codingchili.core.Protocols.Header;
+import com.codingchili.core.Realm.Configuration.RealmSettings;
 
 /**
  * @author Robin Duda

@@ -4,9 +4,10 @@ import com.codingchili.core.Configuration.JsonFileStore;
 import com.codingchili.core.Configuration.RemoteAuthentication;
 import com.codingchili.core.Configuration.Strings;
 import com.codingchili.core.Protocols.Util.Serializer;
-import com.codingchili.core.Realm.Model.Affliction;
-import com.codingchili.core.Realm.Model.PlayerCharacter;
-import com.codingchili.core.Realm.Model.PlayerClass;
+import com.codingchili.core.Realm.Instance.Configuration.InstanceSettings;
+import com.codingchili.core.Realm.Instance.Model.Affliction;
+import com.codingchili.core.Realm.Instance.Model.PlayerCharacter;
+import com.codingchili.core.Realm.Instance.Model.PlayerClass;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -14,6 +15,8 @@ import io.vertx.core.json.JsonObject;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+
+import static com.codingchili.core.Configuration.Strings.NODE_REALM;
 
 /**
  * @author Robin Duda
@@ -27,7 +30,6 @@ public class RealmSettings implements Serializable {
     private ArrayList<Affliction> afflictions = new ArrayList<>();
     private PlayerCharacter template = new PlayerCharacter();
     private RemoteAuthentication authentication = new RemoteAuthentication();
-    private String remote;
     private String name;
     private String description;
     private String resources;
@@ -46,7 +48,6 @@ public class RealmSettings implements Serializable {
                 .setClasses(classes)
                 .setAfflictions(afflictions)
                 .setTemplate(template)
-                .setRemote(remote)
                 .setName(name)
                 .setDescription(description)
                 .setResources(resources)
@@ -95,13 +96,8 @@ public class RealmSettings implements Serializable {
         }
     }
 
-    public RealmSettings setRemote(String remote) {
-        this.remote = remote;
-        return this;
-    }
-
     public String getRemote() {
-        return remote;
+        return name + NODE_REALM;
     }
 
     private void readTemplate() throws IOException {

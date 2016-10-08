@@ -6,6 +6,7 @@ import com.codingchili.core.Configuration.ConfigMock;
 import com.codingchili.core.Logging.LoggerMock;
 import com.codingchili.core.Logging.Model.Logger;
 import com.codingchili.core.Protocols.Util.TokenFactory;
+import com.codingchili.core.Shared.AsyncMapMock;
 import io.vertx.core.Vertx;
 
 /**

@@ -9,7 +9,7 @@ import java.util.HashMap;
 /**
  * @author Robin Duda
  */
-public class AuthorizationHandler<T> {
+class AuthorizationHandler<T> {
     private HashMap<String, T> authorized = new HashMap<>();
     private HashMap<String, T> unauthorized = new HashMap<>();
 

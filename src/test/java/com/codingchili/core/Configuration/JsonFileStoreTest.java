@@ -1,14 +1,17 @@
 package com.codingchili.core.Configuration;
 
-import com.codingchili.core.Realm.Model.Affliction;
-import com.codingchili.core.Realm.Model.PlayerClass;
+import com.codingchili.core.Realm.Instance.Model.Affliction;
+import com.codingchili.core.Realm.Instance.Model.PlayerClass;
 import com.codingchili.core.Protocols.Util.Serializer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.junit.Timeout;
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Robin Duda
@@ -16,6 +19,9 @@ import java.util.ArrayList;
  */
 
 public class JsonFileStoreTest {
+
+    @Rule
+    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
 
     @Test
     public void testReadList() throws IOException {
@@ -34,12 +40,6 @@ public class JsonFileStoreTest {
     @Test
     public void readDirectoryObjects() throws IOException {
         JsonFileStore.readDirectoryObjects("conf/game/class/");
-    }
-
-    @Test
-    public void testReadPaladin() throws IOException {
-        JsonObject paladin = JsonFileStore.readObject("conf/game/class/paladin.json");
-        Serializer.unpack(paladin, PlayerClass.class);
     }
 
     @Test

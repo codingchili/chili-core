@@ -38,6 +38,8 @@ public class Strings {
     public static final String CLIENT_REALM_TOKEN = "realmtoken";
     public static final String CLIENT_REALM_LIST = "realmlist";
     public static final String CLIENT_CLOSE = "close";
+    public static final String REALM_PING = "ping";
+
 
     // Protocol identifiers for realms.
     public static final String REALM_AUTHENTICATE = "realm.authenticate";
@@ -76,6 +78,14 @@ public class Strings {
     public static final String ID_ERROR = "error";
     public static final String ID_ACTION = "action";
     public static final String ID_TARGET = "target";
+    public static final String ID_VERSION = "version";
+    public static final String ID_BYTES = "bytes";
+    public static final String ID_PATH = "path";
+    public static final String ID_MODIFIED = "modified";
+    public static final String ID_SIZE = "size";
+    public static final String ID_DOMAIN = "domain";
+
+
 
     //Database naming.
     public static final String DB_COLLECTION = "accounts";
@@ -85,12 +95,13 @@ public class Strings {
     public static final String DB_CHARACTERS = "characters";
 
     // Cluster addressing.
-    public static final String NODE_AUTHHENTICATION_CLIENTS = "clients.authentication.node";
+    public static final String NODE_AUTHENTICATION_CLIENTS = "clients.authentication.node";
     public static final String NODE_AUTHENTICATION_REALMS = "realms.authentication.node";
     public static final String NODE_WEBSERVER = "webserver.node";
     public static final String NODE_PATCHING = "patching.node";
-    public static final String NODE_REALM = "realm.node";
+    public static final String NODE_REALM = ".realm.node";
     public static final String NODE_LOGGING = "logging.node";
+    public static final String NODE_ROUTING = "routing.node";
 
     public static final String LOCAL_LOGGING = "logging.local";
 

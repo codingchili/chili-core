@@ -1,23 +1,23 @@
 package com.codingchili.core.Realm.Controller;
 
+import com.codingchili.core.Configuration.Strings;
 import com.codingchili.core.Logging.Model.Logger;
 import com.codingchili.core.Protocols.AbstractHandler;
 import com.codingchili.core.Protocols.Access;
+import com.codingchili.core.Protocols.Exception.AuthorizationRequiredException;
+import com.codingchili.core.Protocols.Exception.HandlerMissingException;
 import com.codingchili.core.Protocols.Request;
 import com.codingchili.core.Protocols.RequestHandler;
 import com.codingchili.core.Protocols.Util.Protocol;
 import com.codingchili.core.Protocols.Util.TokenFactory;
-import com.codingchili.core.Protocols.Exception.AuthorizationRequiredException;
-import com.codingchili.core.Protocols.Exception.HandlerMissingException;
-import com.codingchili.core.Realm.Configuration.InstanceSettings;
+import com.codingchili.core.Realm.Instance.Configuration.InstanceSettings;
 import com.codingchili.core.Realm.Configuration.RealmProvider;
 import com.codingchili.core.Realm.Configuration.RealmServerSettings;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
-import com.codingchili.core.Realm.Model.Connection;
+import com.codingchili.core.Realm.Instance.Controller.InstanceHandler;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
 
-import java.util.HashMap;
 
 import static com.codingchili.core.Configuration.Strings.*;
 
@@ -26,8 +26,6 @@ import static com.codingchili.core.Configuration.Strings.*;
  *         Handles traveling between instances.
  */
 public class RealmHandler extends AbstractHandler {
-    private static final int REALM_UPDATE = 6000;
-    private HashMap<String, Connection> connections = new HashMap<>();
     private Protocol<RequestHandler<RealmRequest>> protocol = new Protocol<>();
     private Logger logger;
     private RealmSettings settings;
@@ -37,7 +35,7 @@ public class RealmHandler extends AbstractHandler {
 
 
     public RealmHandler(RealmProvider provider) {
-        super(NODE_REALM);
+        super(provider.getRealm().getRemote());
 
         logger = provider.getLogger();
         settings = provider.getRealm();
@@ -48,27 +46,22 @@ public class RealmHandler extends AbstractHandler {
         startInstances();
         registerRealm();
 
-        protocol.use(REALM_CHARACTER_REQUEST, this::characterRequest)
+        protocol.use(Strings.REALM_PING, this::ping, Access.PUBLIC)
+                .use(REALM_CHARACTER_REQUEST, this::characterRequest)
                 .use(ANY, this::instanceHandler);
     }
 
-    // todo should the handler really start the instances? should it be done by a (new) owner?
     private void startInstances() {
         for (InstanceSettings instance : settings.getInstance()) {
             vertx.deployVerticle(new InstanceHandler(server, settings, instance));
         }
     }
 
-    // todo the realms must be registered/unregistered with the authentication server.
-    private void registerRealm() {
+    private void ping(RealmRequest request) {
+        request.accept();
     }
 
-    private Access authenticator(Request request) {
-        if (tokenFactory.verifyToken(request.token())) {
-            return Access.AUTHORIZED;
-        } else {
-            return Access.PUBLIC;
-        }
+    private void registerRealm() {
     }
 
     private void instanceHandler(RealmRequest request) {
@@ -91,6 +84,14 @@ public class RealmHandler extends AbstractHandler {
 
     private EventBus upstream(Object message) {
         return vertx.eventBus().send(NODE_AUTHENTICATION_REALMS, message);
+    }
+
+    private Access authenticator(Request request) {
+        if (tokenFactory.verifyToken(request.token())) {
+            return Access.AUTHORIZED;
+        } else {
+            return Access.PUBLIC;
+        }
     }
 
     @Override

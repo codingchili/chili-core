@@ -1,9 +1,9 @@
 package com.codingchili.core.Configuration;
 
 import com.codingchili.core.Authentication.Configuration.AuthServerSettings;
-import com.codingchili.core.Realm.Configuration.RealmServerSettings;
 import com.codingchili.core.Logging.Configuration.LogServerSettings;
 import com.codingchili.core.Patching.Configuration.PatchServerSettings;
+import com.codingchili.core.Realm.Configuration.RealmServerSettings;
 import com.codingchili.core.Routing.Configuration.RoutingSettings;
 import com.codingchili.core.Website.Configuration.WebserverSettings;
 

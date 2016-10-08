@@ -1,7 +1,7 @@
 package com.codingchili.core.Protocols.Authentication;
 
 import com.codingchili.core.Realm.Configuration.RealmSettings;
-import com.codingchili.core.Realm.Model.PlayerCharacter;
+import com.codingchili.core.Realm.Instance.Model.PlayerCharacter;
 
 import java.util.ArrayList;
 

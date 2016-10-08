@@ -35,7 +35,6 @@ public class PatchHandler extends AbstractHandler {
                 .use(PATCH_NEWS, this::news)
                 .use(PATCH_DATA, this::patchdata)
                 .use(PATCH_DOWNLOAD, this::download);
-
     }
 
     @Override

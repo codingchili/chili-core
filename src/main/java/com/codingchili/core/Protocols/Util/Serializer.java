@@ -7,8 +7,10 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vertx.core.json.JsonObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 /**
@@ -86,6 +88,32 @@ public class Serializer {
             gzip.close();
             output.close();
             return output.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    /**
+     * Decompress a byte array using gzip.
+     *
+     * @param data to be decompressed.
+     * @return data decompressed with gzip.
+     */
+    public static byte[] ungzip(byte[] data) {
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            GZIPInputStream gzip = new GZIPInputStream(new ByteArrayInputStream(data));
+            byte[] buffer = new byte[1024];
+            int len;
+
+            while((len = gzip.read(buffer)) != -1){
+                out.write(buffer, 0, len);
+            }
+
+            out.close();
+            gzip.close();
+
+            return out.toByteArray();
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
         }
