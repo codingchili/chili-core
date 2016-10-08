@@ -1,10 +1,11 @@
 # chili-core [![Build Status](https://travis-ci.org/codingchili/chili-core.svg?branch=master)](https://travis-ci.org/codingchili/chili-core)
 
-**ChiliCore** is a **lightweight architecture** for creating online games with focus on **modularity**, **security** and **scalability**. The backend uses **Vert.x** and the current frontend is based on **HTML5**, **websockets** and **Polymer**. 
+The chili core is a lightweight **architecture** for creating online games with focus on **modularity**, **security** and **scalability**. The backend uses **Vert.x** with **Hazelcast**. The frontend prototype is based on **Polymer**, **websockets** and **HTML5**. 
 
 For documentation and tutorials visit [the website](https://codingchili.com/), for a live demo visit [demo](https://beta.codingchili.com).
 
-
+**Beware!**
+Until the first RC master will be unstable.
 
 ## Installation
 To install chili-core clone this repository with **git**,
@@ -17,22 +18,24 @@ The webserver requires dependencies in **website/** run the following in that di
 bower install
 ```
 
-Create a JAR in the project root (also runs the tests)
+Create a JAR in the project root (and run tests)
 ```
 mvn package
 ```
-If the tests do not pass, either fix them yourself or checkout the (if exists) stable branch. The prepackaged jar file in the repository may also be used for testing out the project. If you wish to create a fatjar with the resources bundled move **resources/** and **website/** to **src/main/resources**.
 
-If you do not have a local **MongoDB server** running on the default port, localhost:27017 install latest version of MongoDB from [mongodb.com](https://www.mongodb.com/).
+If you wish to create a fatjar with bundled resources move **conf/**, **resources/** or **website/** to **src/main/resources**.
+
+If you do not have a local **ElasticSearch server** running on the default port log messages will be dropped.
 
 To start the packaged JAR run
 ```
 java -jar <filename>.jar run Launcher
 ```
-This will start up all the components; authentication, gameserver, realms, instances, logserver, webserver (+resources). The configuration in the **/conf** directory will be used to setup the connections and load the game data. 
+This will start up all the services; routing, authentication, gameserver, realms, instances, logserver, webserver (+resources). The configuration files **conf/* will be used to setup the connections and load the game data. 
 
-To start only **a single component** use any of the following,
+To start only a single component use any of the following,
 ```
+java -jar <filename>.jar run Routing.Server
 java -jar <filename>.jar run Authentication.Server
 java -jar <filename>.jar run Realm.Server
 java -jar <filename>.jar run Logging.Server
@@ -40,9 +43,9 @@ java -jar <filename>.jar run Patching.Server
 java -jar <filename>.jar run Website.Server
 ```
 
-The authentication tokens are stored in **/conf/system/{component}.json**. It is highly recommended to use a reverse proxy with TLS, see **/conf/system/proxy** for example configurations using NGINX and LetsEncrypt.
+The authentication tokens are stored in **/conf/system/{service}.json** and certificates for the router in **conf/cert/**.
 
-When components are started configuration files in **conf/system/{authserver,gameserver,logserer,webserver}** are used. If the port numbers or addresses needs to be changed, check these sample configuration files.
+When components are started configuration files in **conf/system/{service}.json** are used.
 
 ## Background
 The purpose of the project is to provide a stable core for game development. There are many aspects of creating games, backend architecture, user interfaces, game resources (graphics, sounds) and then the design which includes the story/quests etc. The core is designed to be easily integrated with and modified in each of these aspects. In order to provide this, the core includes somewhat complete subsystems for each of these points. Additionally the core will be delivered as a "complete" game, to further increase the availability/modability and broaden the audience. As such it is the aim of the project to be complete enough both in documentation and code so that it may be used as a learning platform. 
@@ -86,6 +89,7 @@ The complete feature list may change during development.
   * Realms may only edit characters bound to them.
 * Support for instanced game worlds
  * Support for on-demand deployment
+ * Support for matchmaking. 
 * Security, non-cheatable server
  * Single-threaded in-memory transactions
  * Server authorized model
@@ -97,10 +101,10 @@ The complete feature list may change during development.
  * Concurrency using the actor model
  * Zero thread programming required (!!!) 
 
-###### Components
+###### Services
 * Authentication server: Account/character creation & available realms
-* Realm server: Provides ping service for the clients browser
- * Realm Server: Handles incoming connections, instance travel
+* Routing server: Routes client requests in/out of the cluster.
+* Realm Server: Handles incoming connections, instance travel
  * Instance Server: Handles game logic
 * Webserver: Provides an interface for account/character/realmlist
 * Resource server: Provides game resources, graphics & logic (scripts)

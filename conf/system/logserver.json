@@ -1,14 +1,12 @@
 {
   "logserver" : {
     "token" : {
-      "key" : "374FDC88E26EC3C3855B3BEFA6D88C343B7D97BF3CE98865F783ED799302FF7D7DFEEC9641372A23276A6768F7F0E2F175FDDE1660A843279FF60A19F9E3EE46",
-      "expiry" : 1474962186,
-      "domain" : "logserver@server.1"
+      "key" : "5526C06A0C54CE6864473BDFECECC1A874C2403C25395C5D44E9C58660659CB3A9D49D693E5178730E3696BDBB03475772EDEDB20ECA22C2A243FD061FDC2CDE",
+      "expiry" : 1477689868,
+      "domain" : "logging.node@server.1"
     },
-    "system" : "logserver",
-    "host" : "server.1",
-    "remote" : "localhost",
-    "port" : 6109
+    "system" : "logging.node",
+    "host" : "server.1"
   },
   "elastic" : {
     "remote" : "localhost",
@@ -28,6 +26,5 @@
     "enabled" : true
   },
   "secret" : "ZW2xTDdIFy+swmI2W8O0PVmDCvZZpVrPssPIvB5Fp3ILb+/Sy4szfK2H9OoIpGxcgnH7U0DP8q1PGO7CKn6gxw==",
-  "port" : 6109,
   "console" : true
 }

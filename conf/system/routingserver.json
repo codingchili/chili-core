@@ -1,0 +1,28 @@
+{
+  "logserver" : {
+    "token" : {
+      "key" : "265CCF35D1BAD47F359EBC511D8F9B4529EEFB8ABA4F87AA6388947777CBCC8DF61E4898E19755F2EBE1BCE34BDA487A08FEAEC3987D5AD80DD05CE6CCA9F22C",
+      "expiry" : 1476269600,
+      "domain" : "routing@server.1"
+    },
+    "system" : "routing.node",
+    "host" : "server.1"
+  },
+  "transport" : [ {
+    "type" : "UDP",
+    "port" : 80,
+    "timeout" : 2000
+  }, {
+    "type" : "TCP",
+    "port" : 8010,
+    "timeout" : 2000
+  }, {
+    "type" : "WEBSOCKET",
+    "port" : 80,
+    "timeout" : 4000
+  }, {
+    "type" : "REST",
+    "port" : 80,
+    "timeout" : 6000
+  } ]
+}
