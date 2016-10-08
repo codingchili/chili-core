@@ -28,7 +28,7 @@ import static com.codingchili.core.Configuration.Strings.REALM_PING;
  */
 
 @RunWith(VertxUnitRunner.class)
-public class AuthenticationHandlerTest {
+public class RealmHandlerTest {
     private RealmHandler handler;
     private Vertx vertx;
 
