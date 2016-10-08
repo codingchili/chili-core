@@ -9,5 +9,6 @@
     "all": "Start all available nodes in a single cluster on the same machine."
   },
   "metrics": true,
-  "rate": 5000
+  "rate": 5000,
+  "poolSize": 16
 }

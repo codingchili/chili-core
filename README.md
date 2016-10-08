@@ -33,11 +33,11 @@ This will start up all the components; authentication, gameserver, realms, insta
 
 To start only **a single component** use any of the following,
 ```
-java -jar <filename>.jar run Authentication.Server
-java -jar <filename>.jar run Realm.Server
-java -jar <filename>.jar run Logging.Server
-java -jar <filename>.jar run Patching.Server
-java -jar <filename>.jar run Website.Server
+java -jar <filename>.jar run Server
+java -jar <filename>.jar run Server
+java -jar <filename>.jar run Server
+java -jar <filename>.jar run Server
+java -jar <filename>.jar run Server
 ```
 
 The authentication tokens are stored in **/conf/system/{component}.json**. It is highly recommended to use a reverse proxy with TLS, see **/conf/system/proxy** for example configurations using NGINX and LetsEncrypt.
