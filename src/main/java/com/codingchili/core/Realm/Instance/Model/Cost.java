@@ -7,14 +7,14 @@ import java.io.Serializable;
  *         Holds the cost of a spell.
  */
 class Cost implements Serializable {
-    private Attribute requires;
+    private String requires;
     private Integer value;
 
-    public Attribute getRequires() {
+    public String getRequires() {
         return requires;
     }
 
-    public void setRequires(Attribute requires) {
+    public void setRequires(String requires) {
         this.requires = requires;
     }
 

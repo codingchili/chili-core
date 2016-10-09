@@ -8,16 +8,16 @@ import java.io.Serializable;
  *         The condition specifies whether the modifier should be applied.
  */
 class Condition implements Serializable{
-    private Attribute attribute;
+    private String attribute;
     private As as;
     private Matches matches;
     private double value;
 
-    public Attribute getAttribute() {
+    public String getAttribute() {
         return attribute;
     }
 
-    public void setAttribute(Attribute attribute) {
+    public void setAttribute(String attribute) {
         this.attribute = attribute;
     }
 

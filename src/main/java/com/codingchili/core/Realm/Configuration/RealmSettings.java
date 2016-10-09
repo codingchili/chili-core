@@ -2,7 +2,6 @@ package com.codingchili.core.Realm.Configuration;
 
 import com.codingchili.core.Configuration.JsonFileStore;
 import com.codingchili.core.Configuration.RemoteAuthentication;
-import com.codingchili.core.Configuration.Strings;
 import com.codingchili.core.Protocols.Util.Serializer;
 import com.codingchili.core.Realm.Instance.Configuration.InstanceSettings;
 import com.codingchili.core.Realm.Instance.Model.Affliction;
@@ -85,7 +84,7 @@ public class RealmSettings implements Serializable {
     }
 
     private void readPlayerClasses() throws IOException {
-        String path = getConfigurationOverride(PATH_CLASSES);
+        String path = getConfigurationOverride(PATH_GAME_CLASSES);
         ArrayList<JsonObject> configurations = JsonFileStore.readDirectoryObjects(path);
 
         for (JsonObject configuration : configurations) {
@@ -94,13 +93,18 @@ public class RealmSettings implements Serializable {
     }
 
     private void readAfflictions() throws IOException {
-        String path = getConfigurationOverride(PATH_AFFLICTIONS);
+        String path = getConfigurationOverride(PATH_GAME_AFFLICTIONS);
         JsonArray configurations = JsonFileStore.readList(path);
 
         for (int i = 0; i < configurations.size(); i++) {
             Affliction affliction = Serializer.unpack(configurations.getJsonObject(i), Affliction.class);
             afflictions.add(affliction);
         }
+    }
+
+    private void readTemplate() throws IOException {
+        String path = getConfigurationOverride(PATH_GAME_PLAYERTEMPLATE);
+        this.template = Serializer.unpack(JsonFileStore.readObject(path), PlayerCharacter.class);
     }
 
     private String getConfigurationOverride(String path) {
@@ -116,11 +120,6 @@ public class RealmSettings implements Serializable {
 
     public String getRemote() {
         return name + NODE_REALM;
-    }
-
-    private void readTemplate() throws IOException {
-        String path = getConfigurationOverride(PATH_PLAYER_TEMPLATE);
-        this.template = Serializer.unpack(JsonFileStore.readObject(path), PlayerCharacter.class);
     }
 
     public Boolean getSecure() {

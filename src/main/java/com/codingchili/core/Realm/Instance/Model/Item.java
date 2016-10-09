@@ -6,18 +6,9 @@ import java.io.Serializable;
  * @author Robin Duda
  *         Contains item data.
  */
-class Item implements Serializable {
+class Item extends Attributes implements Serializable {
     private String name;
     private String description;
-    private Attributes attributes;
-
-    public Attributes getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(Attributes attributes) {
-        this.attributes = attributes;
-    }
 
     public String getName() {
         return name;

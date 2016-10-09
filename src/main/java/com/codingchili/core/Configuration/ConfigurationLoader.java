@@ -28,4 +28,8 @@ public interface ConfigurationLoader {
     LauncherSettings getLauncherSettings();
 
     DeploySettings getDeploySettings();
+
+    Configurable[] getConfigurables();
+
+    void save();
 }

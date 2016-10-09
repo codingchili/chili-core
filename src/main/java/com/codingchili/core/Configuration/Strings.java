@@ -19,9 +19,9 @@ public class Strings {
     public static final String PATH_VERTX = "conf/system/vertx.json";
     public static final String PATH_REALM = "conf/realm/";
     public static final String PATH_INSTANCE = "conf/game/instances";
-    public static final String PATH_CLASSES = "conf/game/class";
-    public static final String PATH_AFFLICTIONS = "conf/game/player/affliction.json";
-    public static final String PATH_PLAYER_TEMPLATE = "conf/game/player/character.json";
+    public static final String PATH_GAME_CLASSES = "conf/game/class";
+    public static final String PATH_GAME_AFFLICTIONS = "conf/game/player/affliction.json";
+    public static final String PATH_GAME_PLAYERTEMPLATE = "conf/game/player/character.json";
     public static final String PATH_GAME_OVERRIDE = "conf/realm/override/";
     public static final String PATH_GAME = "conf/game";
 

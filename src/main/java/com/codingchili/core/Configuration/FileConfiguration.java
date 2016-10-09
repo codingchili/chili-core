@@ -86,6 +86,10 @@ public class FileConfiguration implements ConfigurationLoader {
         return instance;
     }
 
+    public static synchronized void unload() {
+        instance = null;
+    }
+
     @Override
     public VertxSettings getVertxSettings() {
         return vertxSettings;
@@ -131,7 +135,8 @@ public class FileConfiguration implements ConfigurationLoader {
         return deploy;
     }
 
-    void save() {
+    @Override
+    public void save() {
         Configurable[] configurables = {authentication, logserver, realmserver, patchserver, webserver, routing};
 
         for (Configurable configurable : configurables) {
@@ -146,6 +151,11 @@ public class FileConfiguration implements ConfigurationLoader {
 
             JsonFileStore.writeObject(json, getRealmPath(realm));
         }
+    }
+
+    @Override
+    public Configurable[] getConfigurables() {
+        return new Configurable[]{authentication, logserver, realmserver, patchserver, webserver, routing};
     }
 
     private String getRealmPath(RealmSettings realm) {

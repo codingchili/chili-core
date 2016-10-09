@@ -10,7 +10,7 @@ import java.util.ArrayList;
 class Modifier implements Serializable {
     private ArrayList<Affliction> affliction;
     private Target modifies = Target.caster;
-    private Attribute attribute;
+    private String attribute;
     private Using using;
 
     public ArrayList<Affliction> getAffliction() {
@@ -29,11 +29,11 @@ class Modifier implements Serializable {
         this.modifies = modifies;
     }
 
-    public Attribute getAttribute() {
+    public String getAttribute() {
         return attribute;
     }
 
-    public void setAttribute(Attribute attribute) {
+    public void setAttribute(String attribute) {
         this.attribute = attribute;
     }
 

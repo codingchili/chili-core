@@ -1,65 +1,54 @@
 package com.codingchili.core.Realm.Instance.Model;
 
-import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.util.HashMap;
 
 /**
  * @author Robin Duda
- *
- * base stats for a character and may be used in items too.
  */
-class Attributes implements Serializable {
-    private int power;
-    private int attack;
-    private int spell;
-    private int defence;
-    private int resistance;
-    private int stamina;
+public abstract class Attributes {
+    protected HashMap attributes = new HashMap<>();
+    @JsonIgnore
+    protected HashMap<String, Integer> intAttributes = new HashMap<>();
+    @JsonIgnore
+    protected HashMap<String, Double> doubleAttributes = new HashMap<>();
+    @JsonIgnore
+    protected HashMap<String, String> stringAttributes = new HashMap<>();
 
-    public int getPower() {
-        return power;
+    public void setAttributes(HashMap<String, Object> attributes) {
+        this.attributes = attributes;
+
+        for (String key : attributes.keySet()) {
+            Object object = attributes.get(key);
+
+            if (object instanceof String) {
+                stringAttributes.put(key, (String) object);
+            } else if (object instanceof Double) {
+                doubleAttributes.put(key, (Double) object);
+            } else if (object instanceof Integer) {
+                intAttributes.put(key, (Integer) object);
+            }
+        }
     }
 
-    public void setPower(int power) {
-        this.power = power;
+    public HashMap getAttributes() {
+        return attributes;
     }
 
-    public int getAttack() {
-        return attack;
+    public int getInt(String attribute) {
+        return intAttributes.get(attribute);
     }
 
-    public void setAttack(int attack) {
-        this.attack = attack;
+    public String getString(String attribute) {
+        return stringAttributes.get(attribute);
     }
 
-    public int getSpell() {
-        return spell;
+    public Double getDouble(String attribute) {
+        return doubleAttributes.get(attribute);
     }
 
-    public void setSpell(int spell) {
-        this.spell = spell;
-    }
-
-    public int getDefence() {
-        return defence;
-    }
-
-    public void setDefence(int defence) {
-        this.defence = defence;
-    }
-
-    public int getResistance() {
-        return resistance;
-    }
-
-    public void setResistance(int resistance) {
-        this.resistance = resistance;
-    }
-
-    public int getStamina() {
-        return stamina;
-    }
-
-    public void setStamina(int stamina) {
-        this.stamina = stamina;
+    public Object getObject(String attribute) {
+        return attributes.get(attribute);
     }
 }

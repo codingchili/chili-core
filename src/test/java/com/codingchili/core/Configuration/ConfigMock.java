@@ -66,6 +66,16 @@ public class ConfigMock implements ConfigurationLoader {
         return null;
     }
 
+    @Override
+    public Configurable[] getConfigurables() {
+        return new Configurable[0];
+    }
+
+    @Override
+    public void save() {
+
+    }
+
     public RealmSettings getRealm() {
         return new RealmSettingsMock();
     }

@@ -8,19 +8,19 @@ import java.util.HashMap;
  * @author Robin Duda
  *         Represents a characters inventory.
  */
-class Inventory implements Serializable {
+public class Inventory implements Serializable {
     private HashMap<String, Item> equipped;
     private ArrayList<String> slots;
     private ArrayList<Item> items;
     private Integer space;
-    private Integer crystals = 1;
+    private Integer currency = 1;
 
-    public Integer getCrystals() {
-        return crystals;
+    public Integer getCurrency() {
+        return currency;
     }
 
-    public void setCrystals(Integer crystals) {
-        this.crystals = crystals;
+    public void setCurrency(Integer currency) {
+        this.currency = currency;
     }
 
     public HashMap<String, Item> getEquipped() {

@@ -6,11 +6,9 @@
     "spell": 0,
     "attack": 0,
     "resistance": 0,
-    "defence": 0
-  },
-  "regeneration": {
-    "health": 0.01,
-    "energy": 1
+    "defence": 0,
+    "string": "text",
+    "boost": 0.5
   },
   "inventory": {
     "crystals": 1,

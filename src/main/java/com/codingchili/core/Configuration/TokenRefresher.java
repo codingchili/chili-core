@@ -19,14 +19,18 @@ class TokenRefresher {
     private TokenFactory realmTokens;
 
     static void refresh() {
-        new TokenRefresher().generate();
+        new TokenRefresher().generate(false);
     }
 
-    private void generate() {
+    static void regenerate() {
+        new TokenRefresher().generate(true);
+    }
+
+    private void generate(boolean replaceSecrets) {
         FileConfiguration configuration = (FileConfiguration) FileConfiguration.instance();
 
-        generateAuthSecrets(configuration.getAuthSettings());
-        generateLoggingSecret(configuration.getLogSettings());
+        generateAuthSecrets(configuration.getAuthSettings(), replaceSecrets);
+        generateLoggingSecret(configuration.getLogSettings(), replaceSecrets);
 
         generateLoggingTokens(new Configurable[]{
                 configuration.getAuthSettings(),
@@ -42,12 +46,12 @@ class TokenRefresher {
         configuration.save();
     }
 
-    private void generateAuthSecrets(AuthServerSettings authserver) {
-        if (authserver.getRealmSecret() == null) {
+    private void generateAuthSecrets(AuthServerSettings authserver, boolean replace) {
+        if (replace || authserver.getRealmSecret() == null) {
             authserver.setRealmSecret(getRandomString());
         }
 
-        if (authserver.getClientSecret() == null) {
+        if (replace || authserver.getClientSecret() == null) {
             authserver.setClientSecret(getRandomString());
         }
 
@@ -61,8 +65,8 @@ class TokenRefresher {
         return secret;
     }
 
-    private void generateLoggingSecret(LogServerSettings logserver) {
-        if (logserver.getSecret() == null) {
+    private void generateLoggingSecret(LogServerSettings logserver, boolean replace) {
+        if (replace || logserver.getSecret() == null) {
             logserver.setSecret(getRandomString());
         }
 

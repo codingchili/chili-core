@@ -9,7 +9,7 @@ import java.io.Serializable;
  */
 public class Using implements Serializable {
     private Target source = Target.caster;
-    private Attribute attribute;
+    private String attribute;
     private Double value;
     private Boolean cancel;
     private Condition condition;
@@ -38,11 +38,11 @@ public class Using implements Serializable {
         this.source = source;
     }
 
-    public Attribute getAttribute() {
+    public String getAttribute() {
         return attribute;
     }
 
-    public void setAttribute(Attribute attribute) {
+    public void setAttribute(String attribute) {
         this.attribute = attribute;
     }
 
