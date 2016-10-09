@@ -4,15 +4,16 @@ import com.codingchili.core.Authentication.Configuration.AuthProvider;
 import com.codingchili.core.Authentication.Configuration.AuthServerSettings;
 import com.codingchili.core.Authentication.Model.AsyncAccountStore;
 import com.codingchili.core.Authentication.Model.AsyncRealmStore;
-import com.codingchili.core.Logging.Model.Logger;
-import com.codingchili.core.Protocols.*;
+import com.codingchili.core.Protocols.AbstractHandler;
+import com.codingchili.core.Protocols.Access;
 import com.codingchili.core.Protocols.Authentication.RealmRegister;
 import com.codingchili.core.Protocols.Exception.AuthorizationRequiredException;
 import com.codingchili.core.Protocols.Exception.HandlerMissingException;
 import com.codingchili.core.Protocols.Realm.CharacterResponse;
+import com.codingchili.core.Protocols.Request;
+import com.codingchili.core.Protocols.RequestHandler;
 import com.codingchili.core.Protocols.Util.Protocol;
 import com.codingchili.core.Protocols.Util.TokenFactory;
-import com.codingchili.core.Realm.Configuration.RealmServerSettings;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
 import com.codingchili.core.Realm.Instance.Model.PlayerCharacter;
 import io.vertx.core.Future;
@@ -30,7 +31,6 @@ public class AuthenticationHandler extends AbstractHandler {
     private AsyncRealmStore realmStore;
     private AsyncAccountStore accounts;
     private AuthServerSettings settings;
-    private Logger logger;
     private TokenFactory tokens;
 
     public AuthenticationHandler(AuthProvider provider) {

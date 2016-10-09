@@ -2,15 +2,12 @@ package com.codingchili.core.Authentication.Controller;
 
 import com.codingchili.core.Authentication.Configuration.AuthProvider;
 import com.codingchili.core.Authentication.Model.*;
-import com.codingchili.core.Logging.Model.Logger;
 import com.codingchili.core.Protocols.AbstractHandler;
 import com.codingchili.core.Protocols.Access;
 import com.codingchili.core.Protocols.Authentication.CharacterList;
 import com.codingchili.core.Protocols.Authentication.ClientAuthentication;
 import com.codingchili.core.Protocols.Authentication.RealmList;
 import com.codingchili.core.Protocols.Authentication.RealmMetaData;
-import com.codingchili.core.Protocols.Exception.AuthorizationRequiredException;
-import com.codingchili.core.Protocols.Exception.HandlerMissingException;
 import com.codingchili.core.Protocols.Exception.ProtocolException;
 import com.codingchili.core.Protocols.Request;
 import com.codingchili.core.Protocols.RequestHandler;
@@ -128,13 +125,7 @@ public class ClientHandler extends AbstractHandler {
                     }
                 }), request.realmName(), request.account(), template.result());
             } else {
-                try {
-                    throw template.cause();
-                } catch (PlayerClassDisabledException | RealmMissingException e) {
-                    request.missing();
-                } catch (Throwable throwable) {
-                    request.error();
-                }
+                request.error();
             }
         });
         createCharacterFromTemplate(templateFuture, request);

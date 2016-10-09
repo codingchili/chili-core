@@ -20,7 +20,7 @@ public class HazelAccountDB implements AsyncAccountStore {
 
 
     public static void create(Future<AsyncAccountStore> future, Vertx vertx) {
-        vertx.sharedData().<String, AccountMapping>getClusterWideMap(Strings.DB_COLLECTION, map -> {
+        vertx.sharedData().<String, AccountMapping>getClusterWideMap(Strings.DB_ACCOUNTS, map -> {
             if (map.succeeded()) {
                 future.complete(new HazelAccountDB(map.result(), vertx));
             } else {
@@ -91,17 +91,15 @@ public class HazelAccountDB implements AsyncAccountStore {
     @Override
     public void upsertCharacter(Future future, String realmName, String username, PlayerCharacter character) {
         accounts.get(username, map -> {
-            if (map.succeeded()) {
+            if (map.succeeded() && map.result() != null) {
                 AccountMapping mapping = map.result();
                 HashMap<String, PlayerCharacter> realm = mapping.getRealms().get(realmName);
 
-                // Add a realm to an account if not existing.
                 if (realm == null) {
-                    realm = new HashMap<>();
-                    mapping.getRealms().put(realmName, realm);
+                    mapping.getRealms().put(realmName, new HashMap<>());
                 }
 
-                realm.put(character.getName(), character);
+                mapping.getRealms().get(realmName).put(character.getName(), character);
 
                 accounts.replace(username, mapping, replace -> {
                     if (replace.succeeded()) {

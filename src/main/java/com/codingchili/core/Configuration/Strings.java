@@ -106,7 +106,7 @@ public class Strings {
 
 
     //Database naming.
-    public static final String DB_COLLECTION = "accounts";
+    public static final String DB_ACCOUNTS = "accounts";
     public static final String DB_USER = "username";
     public static final String DB_SALT = "salt";
     public static final String DB_HASH = "hash";
