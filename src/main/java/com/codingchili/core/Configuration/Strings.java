@@ -43,8 +43,6 @@ public class Strings {
     public static final String CLIENT_REALM_TOKEN = "realmtoken";
     public static final String CLIENT_REALM_LIST = "realmlist";
     public static final String CLIENT_CLOSE = "close";
-    public static final String REALM_PING = "ping";
-
 
     // Protocol identifiers for realms.
     public static final String REALM_AUTHENTICATE = "realm.authenticate";
@@ -61,6 +59,7 @@ public class Strings {
     public static final String PROTOCOL_ACCEPTED = "accepted";
     public static final String PROTOCOL_CONNECTION = "connection";
     public static final String PROTOCOL_ERROR = "error";
+    public static final String PROTOCOL_STATUS = "status";
     public static final String PROTOCOL_AUTHENTICATION = "authentication";
     public static final String PROTOCOL_CONFLICT = "conflict";
     public static final String PROTOCOL_UNAUTHORIZED = "unauthorized";
@@ -70,9 +69,11 @@ public class Strings {
 
     // General shared attributes.
     public static final String ID_CHARACTER = "character";
+    public static final String ID_CHARACTERS = "characters";
     public static final String ID_ACCOUNT = "account";
     public static final String ID_TOKEN = "token";
     public static final String ID_REALM = "realm";
+    public static final String ID_REALMS = "realms";
     public static final String ID_NAME = "name";
     public static final String ID_PLAYERS = "players";
     public static final String ID_FILE = "file";
@@ -89,7 +90,19 @@ public class Strings {
     public static final String ID_MODIFIED = "modified";
     public static final String ID_SIZE = "size";
     public static final String ID_DOMAIN = "domain";
-
+    public static final String ID_AFFLICTIONS = "afflictions";
+    public static final String ID_CLASSES = "classes";
+    public static final String ID_TEMPLATE = "template";
+    public static final String ID_PING = "ping";
+    public static final String ID_CLASS = "className";
+    public static final String ID_AUTHENTICATION = "authentication";
+    public static final String ID_LIST = "list";
+    public static final String ID_FILES = "files";
+    public static final String ID_DATE = "date";
+    public static final String ID_CHANGES = "changes";
+    public static final String ID_CONTENT = "content";
+    public static final String ID_TITLE = "title";
+    public static final String ID_LICENSE = "license";
 
 
     //Database naming.
@@ -141,7 +154,9 @@ public class Strings {
     public static final String LOG_SERVER_START = "server.start";
     public static final String LOG_SERVER_STOP = "server.stop";
     public static final String LOG_INSTANCE_START = "instance.start";
+    public static final String LOG_INSTANCE_STOP = "instance.stop";
     public static final String LOG_REALM_START = "realm.start";
+    public static final String LOG_REALM_STOP = "realm.stop";
     public static final String LOG_MESSAGE = "message";
     public static final String LOG_FILE_ERROR = "file.error";
     public static final String LOG_ACCOUNT_UNAUTHORIZED = "account.unauthorized";
@@ -166,6 +181,7 @@ public class Strings {
     public static final String LOG_METRICS = "metrics";
     public static final String LOG_TRACE = "trace";
     public static final String LOG_HANDLER_MISSING = "handler.missing";
+    public static final String LOG_REALM_DEPLOY_ERROR = "realm.deploy.error";
 
     //Patching
     public static final String PATCH_IDENTIFIER = "patch";
@@ -173,10 +189,6 @@ public class Strings {
     public static final String PATCH_NEWS = "news";
     public static final String PATCH_DOWNLOAD = "download";
     public static final String PATCH_DATA = "patchdata";
-
-    // Game
-    public static final String GAME_AFFLICTIONS = "afflictions";
-    public static final String GAME_CLASSES = "classes";
 
     // Error messages.
     public static final String ERROR_TOKEN_FACTORY = "Token factory failed to generate token.";
@@ -187,4 +199,5 @@ public class Strings {
     public static final String ERROR_HANDLER_MISSING_AUTHENTICATOR = "The handler is missing an @Authenticator.";
     public static final String ERROR_LAUNCHER_STARTUP = "Failed to start the launcher with clustering.";
     public static final String ERRROR_LAUNCHER_SHUTDOWN = "System has been shut down..";
+    public static final String ERROR_REALM_DEPLOYMENT_FAILED = "Failed to deploy %realm%, already deployed in cluster.";
 }

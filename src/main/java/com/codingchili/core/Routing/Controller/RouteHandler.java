@@ -1,9 +1,9 @@
 package com.codingchili.core.Routing.Controller;
 
-import com.codingchili.core.Logging.Model.Logger;
 import com.codingchili.core.Protocols.AbstractHandler;
 import com.codingchili.core.Protocols.Exception.AuthorizationRequiredException;
 import com.codingchili.core.Protocols.Exception.HandlerMissingException;
+import com.codingchili.core.Protocols.Exception.ProtocolException;
 import com.codingchili.core.Protocols.Request;
 import com.codingchili.core.Protocols.RequestHandler;
 import com.codingchili.core.Protocols.Util.Protocol;
@@ -19,7 +19,6 @@ import static com.codingchili.core.Protocols.Access.AUTHORIZED;
  */
 public class RouteHandler extends AbstractHandler {
     private Protocol<RequestHandler<Request>> protocol = new Protocol<>();
-    private Logger logger;
     private Vertx vertx;
 
     public RouteHandler(RouteProvider provider) {
@@ -36,19 +35,13 @@ public class RouteHandler extends AbstractHandler {
     }
 
     @Override
-    public void handle(Request request) {
-        try {
-            protocol.get(AUTHORIZED, request.target()).handle(request);
-        } catch (AuthorizationRequiredException e) {
-            request.unauthorized();
-        } catch (HandlerMissingException e) {
-            request.missing();
-            logger.onHandlerMissing(request.target());
-        }
+    public void handle(Request request) throws ProtocolException {
+        protocol.get(AUTHORIZED, request.target()).handle(request);
     }
 
     /**
      * Handler for dynamic routes and requests missing target.
+     *
      * @param request the request to be routed.
      */
     private void dynamic(Request request) {

@@ -11,6 +11,7 @@ import com.codingchili.core.Protocols.Authentication.RealmList;
 import com.codingchili.core.Protocols.Authentication.RealmMetaData;
 import com.codingchili.core.Protocols.Exception.AuthorizationRequiredException;
 import com.codingchili.core.Protocols.Exception.HandlerMissingException;
+import com.codingchili.core.Protocols.Exception.ProtocolException;
 import com.codingchili.core.Protocols.Request;
 import com.codingchili.core.Protocols.RequestHandler;
 import com.codingchili.core.Protocols.Util.Protocol;
@@ -42,7 +43,7 @@ public class ClientHandler extends AbstractHandler {
 
         logger = provider.getLogger();
         accounts = provider.getAccountStore();
-        tokens = new TokenFactory(provider.getAuthserverSettings().getClientSecret());
+        tokens = provider.getClientTokenFactory();
         realmStore = provider.getRealmStore();
 
         protocol.use(CLIENT_REALM_TOKEN, this::realmToken)
@@ -60,15 +61,8 @@ public class ClientHandler extends AbstractHandler {
     }
 
     @Override
-    public void handle(Request request) {
-        try {
-            protocol.get(authenticate(request), request.action()).handle((ClientRequest) request);
-        } catch (AuthorizationRequiredException e) {
-            request.unauthorized();
-        } catch (HandlerMissingException e) {
-            request.error();
-            logger.onHandlerMissing(request.action());
-        }
+    public void handle(Request request) throws ProtocolException {
+        protocol.get(authenticate(request), request.action()).handle(new ClientRequest(request));
     }
 
     private void realmToken(ClientRequest request) {
@@ -93,7 +87,7 @@ public class ClientHandler extends AbstractHandler {
                 Future<RealmSettings> realmFuture = Future.future();
 
                 realmFuture.setHandler(realm -> {
-                    if (realm.succeeded()) {
+                    if (realm.result() != null) {
                         request.write(new CharacterList(realm.result(), characters.result()));
                     } else {
                         request.error();
@@ -152,14 +146,14 @@ public class ClientHandler extends AbstractHandler {
         Future<RealmSettings> realmFuture = Future.future();
 
         realmFuture.setHandler(realm -> {
-            if (realm.succeeded()) {
+            if (realm.result() != null) {
                 try {
                     future.complete(readTemplate(realm.result(), request.character(), request.className()));
                 } catch (PlayerClassDisabledException e) {
                     future.fail(e);
                 }
             } else {
-                future.fail(realm.cause());
+                future.fail(new RealmMissingException());
             }
         });
         realmStore.get(realmFuture, request.realmName());

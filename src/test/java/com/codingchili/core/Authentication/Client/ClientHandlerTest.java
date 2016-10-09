@@ -12,8 +12,9 @@ import com.codingchili.core.Protocols.Util.TokenFactory;
 import com.codingchili.core.Protocols.Util.Serializer;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
 import com.codingchili.core.Realm.Instance.Model.PlayerCharacter;
+import com.codingchili.core.Shared.RequestMock;
 import com.codingchili.core.Shared.ResponseListener;
-import com.codingchili.core.Shared.ResponseStatus;
+import com.codingchili.core.Protocols.ResponseStatus;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -52,7 +53,7 @@ public class ClientHandlerTest {
     private static ClientHandler handler;
 
     @Rule
-    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(50, TimeUnit.SECONDS);
 
     @Before
     public void setUp(TestContext context) throws IOException {
@@ -123,7 +124,7 @@ public class ClientHandlerTest {
     }
 
     private JsonObject account(String username, String password) {
-        return new JsonObject().put("account", new JsonObject().put("username", username).put("password", password));
+        return new JsonObject().put(ID_ACCOUNT, new JsonObject().put("username", username).put("password", password));
     }
 
     @Test
@@ -146,7 +147,7 @@ public class ClientHandlerTest {
         handle(CLIENT_REALM_LIST, (response, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
 
-            JsonArray list = response.getJsonArray("realms");
+            JsonArray list = response.getJsonArray(ID_REALMS);
 
             for (int i = 0; i < list.size(); i++) {
                 JsonObject realm = list.getJsonObject(i);
@@ -167,9 +168,9 @@ public class ClientHandlerTest {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
             async.complete();
         }, new JsonObject()
-                .put("character", CHARACTER_NAME_DELETED)
-                .put("token", getClientToken())
-                .put("realmName", REALM_NAME));
+                .put(ID_CHARACTER, CHARACTER_NAME_DELETED)
+                .put(ID_TOKEN, getClientToken())
+                .put(ID_REALM, REALM_NAME));
     }
 
     private JsonObject getClientToken() {
@@ -184,9 +185,9 @@ public class ClientHandlerTest {
             context.assertEquals(ResponseStatus.ERROR, status);
             async.complete();
         }, new JsonObject()
-                .put("character", CHARACTER_NAME + ".MISSING")
-                .put("token", getClientToken())
-                .put("realmName", REALM_NAME));
+                .put(ID_CHARACTER, CHARACTER_NAME + ".MISSING")
+                .put(ID_TOKEN, getClientToken())
+                .put(ID_REALM, REALM_NAME));
     }
 
     @Test
@@ -197,10 +198,10 @@ public class ClientHandlerTest {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
             async.complete();
         }, new JsonObject()
-                .put("character", CHARACTER_NAME + ".NEW")
-                .put("className", CLASS_NAME)
-                .put("token", getClientToken())
-                .put("realmName", REALM_NAME));
+                .put(ID_CHARACTER, CHARACTER_NAME + ".NEW")
+                .put(ID_CLASS, CLASS_NAME)
+                .put(ID_TOKEN, getClientToken())
+                .put(ID_REALM, REALM_NAME));
     }
 
     @Test
@@ -210,9 +211,9 @@ public class ClientHandlerTest {
             context.assertEquals(ResponseStatus.CONFLICT, status);
             async.complete();
         }, new JsonObject()
-                .put("character", CHARACTER_NAME)
-                .put("token", getClientToken())
-                .put("realmName", REALM_NAME));
+                .put(ID_CHARACTER, CHARACTER_NAME)
+                .put(ID_TOKEN, getClientToken())
+                .put(ID_REALM, REALM_NAME));
     }
 
     @Test
@@ -221,18 +222,18 @@ public class ClientHandlerTest {
 
         handle(CLIENT_CHARACTER_LIST, (response, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
-            context.assertTrue(characterInJsonArray(CHARACTER_NAME, response.getJsonArray("characters")));
+            context.assertTrue(characterInJsonArray(CHARACTER_NAME, response.getJsonArray(ID_CHARACTERS)));
             async.complete();
         }, new JsonObject()
-                .put("token", getClientToken())
-                .put("realmName", REALM_NAME));
+                .put(ID_TOKEN, getClientToken())
+                .put(ID_REALM, REALM_NAME));
     }
 
     private boolean characterInJsonArray(String charname, JsonArray characters) {
         Boolean found = false;
 
         for (int i = 0; i < characters.size(); i++) {
-            if (characters.getJsonObject(i).getString("name").equals(charname))
+            if (characters.getJsonObject(i).getString(ID_NAME).equals(charname))
                 found = true;
         }
         return found;
@@ -243,18 +244,18 @@ public class ClientHandlerTest {
         Async async = context.async();
 
         handle(CLIENT_CHARACTER_LIST, (response, status) -> {
-            JsonObject realm = response.getJsonObject("realm");
+            JsonObject realm = response.getJsonObject(ID_REALM);
 
             context.assertEquals(ResponseStatus.ACCEPTED, status);
-            context.assertTrue(realm.containsKey("classes"));
-            context.assertTrue(realm.containsKey("name"));
-            context.assertTrue(realm.containsKey("afflictions"));
-            context.assertTrue(realm.containsKey("template"));
+            context.assertTrue(realm.containsKey(ID_CLASSES));
+            context.assertTrue(realm.containsKey(ID_NAME));
+            context.assertTrue(realm.containsKey(ID_AFFLICTIONS));
+            context.assertTrue(realm.containsKey(ID_TEMPLATE));
 
             async.complete();
         }, new JsonObject()
-                .put("token", getClientToken())
-                .put("realmName", REALM_NAME));
+                .put(ID_TOKEN, getClientToken())
+                .put(ID_REALM, REALM_NAME));
     }
 
     @Test
@@ -262,16 +263,16 @@ public class ClientHandlerTest {
         Async async = context.async();
 
         handle(CLIENT_CHARACTER_LIST, (response, status) -> {
-            JsonObject realm = response.getJsonObject("realm");
+            JsonObject realm = response.getJsonObject(ID_REALM);
 
             context.assertEquals(ResponseStatus.ACCEPTED, status);
-            context.assertFalse(realm.containsKey("authentication"));
-            context.assertFalse(realm.containsKey("token"));
+            context.assertFalse(realm.containsKey(ID_AUTHENTICATION));
+            context.assertFalse(realm.containsKey(ID_TOKEN));
 
             async.complete();
         }, new JsonObject()
-                .put("token", getClientToken())
-                .put("realmName", REALM_NAME));
+                .put(ID_TOKEN, getClientToken())
+                .put(ID_REALM, REALM_NAME));
     }
 
     @Test
@@ -286,8 +287,8 @@ public class ClientHandlerTest {
 
             async.complete();
         }, new JsonObject()
-                .put("token", getClientToken())
-                .put("realmName", REALM_NAME));
+                .put(ID_TOKEN, getClientToken())
+                .put(ID_REALM, REALM_NAME));
     }
 
     @Test
@@ -295,7 +296,7 @@ public class ClientHandlerTest {
         handle(Strings.CLIENT_REALM_TOKEN, (response, status) -> {
             context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
         }, new JsonObject()
-                .put("token", getInvalidClientToken()));
+                .put(ID_TOKEN, getInvalidClientToken()));
     }
 
     @Test
@@ -303,7 +304,7 @@ public class ClientHandlerTest {
         handle(Strings.CLIENT_CHARACTER_LIST, (response, status) -> {
             context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
         }, new JsonObject()
-                .put("token", Serializer.json(getInvalidClientToken())));
+                .put(ID_TOKEN, Serializer.json(getInvalidClientToken())));
     }
 
     @Test
@@ -311,7 +312,7 @@ public class ClientHandlerTest {
         handle(Strings.CLIENT_CHARACTER_CREATE, (response, status) -> {
             context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
         }, new JsonObject()
-                .put("token", getInvalidClientToken()));
+                .put(ID_TOKEN, getInvalidClientToken()));
     }
 
     @Test
@@ -319,7 +320,7 @@ public class ClientHandlerTest {
         handle(Strings.CLIENT_CHARACTER_REMOVE, (response, status) -> {
             context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
         }, new JsonObject()
-                .put("token", getInvalidClientToken()));
+                .put(ID_TOKEN, getInvalidClientToken()));
     }
 
     private JsonObject getInvalidClientToken() {
@@ -331,10 +332,6 @@ public class ClientHandlerTest {
     }
 
     private void handle(String action, ResponseListener listener, JsonObject data) {
-        try {
-            handler.handle(new ClientRequestMock(action, listener, data));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        handler.process(RequestMock.get(action, listener, data));
     }
 }

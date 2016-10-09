@@ -1,23 +1,19 @@
 package com.codingchili.core.Realm.Controller;
 
-import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Logging.Model.Logger;
-import com.codingchili.core.Protocols.AbstractHandler;
-import com.codingchili.core.Protocols.Access;
+import com.codingchili.core.Protocols.*;
 import com.codingchili.core.Protocols.Exception.AuthorizationRequiredException;
 import com.codingchili.core.Protocols.Exception.HandlerMissingException;
-import com.codingchili.core.Protocols.Request;
-import com.codingchili.core.Protocols.RequestHandler;
+import com.codingchili.core.Protocols.Exception.ProtocolException;
 import com.codingchili.core.Protocols.Util.Protocol;
 import com.codingchili.core.Protocols.Util.TokenFactory;
-import com.codingchili.core.Realm.Instance.Configuration.InstanceSettings;
 import com.codingchili.core.Realm.Configuration.RealmProvider;
-import com.codingchili.core.Realm.Configuration.RealmServerSettings;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
+import com.codingchili.core.Realm.Instance.Configuration.InstanceProvider;
+import com.codingchili.core.Realm.Instance.Configuration.InstanceSettings;
 import com.codingchili.core.Realm.Instance.Controller.InstanceHandler;
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
-
 
 import static com.codingchili.core.Configuration.Strings.*;
 
@@ -27,9 +23,7 @@ import static com.codingchili.core.Configuration.Strings.*;
  */
 public class RealmHandler extends AbstractHandler {
     private Protocol<RequestHandler<RealmRequest>> protocol = new Protocol<>();
-    private Logger logger;
-    private RealmSettings settings;
-    private RealmServerSettings server;
+    private RealmSettings realm;
     private TokenFactory tokenFactory;
     private Vertx vertx;
 
@@ -38,22 +32,22 @@ public class RealmHandler extends AbstractHandler {
         super(provider.getRealm().getRemote());
 
         logger = provider.getLogger();
-        settings = provider.getRealm();
-        server = provider.getServer();
+        realm = provider.getRealm();
         vertx = provider.getVertx();
-        tokenFactory = new TokenFactory(settings.getAuthentication());
+        tokenFactory = new TokenFactory(realm.getAuthentication());
 
         startInstances();
         registerRealm();
 
-        protocol.use(Strings.REALM_PING, this::ping, Access.PUBLIC)
+        protocol.use(ID_PING, this::ping, Access.PUBLIC)
                 .use(REALM_CHARACTER_REQUEST, this::characterRequest)
                 .use(ANY, this::instanceHandler);
     }
 
     private void startInstances() {
-        for (InstanceSettings instance : settings.getInstance()) {
-            vertx.deployVerticle(new InstanceHandler(server, settings, instance));
+        for (InstanceSettings instance : realm.getInstance()) {
+            InstanceProvider provider = new InstanceProvider(realm, instance, vertx);
+            vertx.deployVerticle(new ClusterListener(new InstanceHandler(provider)));
         }
     }
 
@@ -62,6 +56,7 @@ public class RealmHandler extends AbstractHandler {
     }
 
     private void registerRealm() {
+
     }
 
     private void instanceHandler(RealmRequest request) {
@@ -95,14 +90,18 @@ public class RealmHandler extends AbstractHandler {
     }
 
     @Override
-    public void handle(Request request) {
-        try {
-            protocol.get(authenticator(request), request.action()).handle((RealmRequest) request);
-        } catch (AuthorizationRequiredException e) {
-            request.unauthorized();
-        } catch (HandlerMissingException e) {
-            request.error();
-            logger.onHandlerMissing(request.action());
-        }
+    public void handle(Request request) throws ProtocolException {
+        protocol.get(authenticator(request), request.action()).handle(new RealmRequest(request));
+    }
+
+    @Override
+    public void stop(Future<Void> future) {
+        logger.onRealmStopped(future, realm);
+    }
+
+    @Override
+    public void start(Future<Void> future) {
+        logger.onRealmStarted(realm);
+        future.complete();
     }
 }

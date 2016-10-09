@@ -62,6 +62,6 @@ public class RestListener extends ClusterVerticle {
     private void packet(RoutingContext context) {
         HttpServerRequest request = context.request();
 
-        handler.handle(new RestRouteRequest(context, request, listener));
+        handler.process(new RestRouteRequest(context, request, listener));
     }
 }

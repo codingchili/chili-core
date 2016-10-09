@@ -4,7 +4,7 @@ import com.codingchili.core.Protocols.Util.Token;
 import com.codingchili.core.Protocols.Request;
 import com.codingchili.core.Protocols.Util.Serializer;
 import com.codingchili.core.Shared.ResponseListener;
-import com.codingchili.core.Shared.ResponseStatus;
+import com.codingchili.core.Protocols.ResponseStatus;
 import io.vertx.core.json.JsonObject;
 
 import static com.codingchili.core.Configuration.Strings.ID_TOKEN;

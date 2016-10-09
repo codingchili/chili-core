@@ -165,18 +165,24 @@ public class HazelAccountDB implements AsyncAccountStore {
 
                 if (map.result() != null) {
                     AccountMapping mapping = map.result();
-                    PlayerCharacter removed = mapping.getRealms().get(realm).remove(character);
+                    HashMap<String, PlayerCharacter> players = mapping.getRealms().get(realm);
 
-                    if (removed == null) {
-                        future.fail(new CharacterMissingException());
+                    if (players != null) {
+                        PlayerCharacter removed = mapping.getRealms().get(realm).remove(character);
+
+                        if (removed == null) {
+                            future.fail(new CharacterMissingException());
+                        } else {
+                            accounts.replace(username, mapping, remove -> {
+                                if (remove.succeeded()) {
+                                    future.complete();
+                                } else {
+                                    future.fail(remove.cause());
+                                }
+                            });
+                        }
                     } else {
-                        accounts.replace(username, mapping, remove -> {
-                            if (remove.succeeded()) {
-                                future.complete();
-                            } else {
-                                future.fail(remove.cause());
-                            }
-                        });
+                        future.fail(new RealmMissingException());
                     }
                 } else {
                     future.fail(new AccountMissingException());

@@ -1,25 +1,52 @@
 package com.codingchili.core.Authentication.Controller;
 
+import com.codingchili.core.Protocols.ClusterRequest;
 import com.codingchili.core.Protocols.Request;
+import com.codingchili.core.Protocols.Util.Serializer;
 import com.codingchili.core.Protocols.Util.Token;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
+import io.vertx.core.eventbus.Message;
+
+import static com.codingchili.core.Configuration.Strings.*;
 
 /**
  * @author Robin Duda
  */
-public interface AuthenticationRequest extends Request {
+class AuthenticationRequest extends ClusterRequest {
 
-    RealmSettings realm();
+    AuthenticationRequest(Request request) {
+        super(request);
+    }
 
-    int players();
+    public RealmSettings realm() {
+        if (data().containsKey(ID_REALM)) {
+            return Serializer.unpack(data().getJsonObject(ID_REALM), RealmSettings.class);
+        } else {
+            return new RealmSettings();
+        }
+    }
 
-    String realmName();
+    public String realmName() {
+        return token().getDomain();
+    }
 
-    String sender();
+    public int players() {
+        if (data().containsKey(ID_PLAYERS)) {
+            return data().getInteger(ID_PLAYERS);
+        } else {
+            return 0;
+        }
+    }
 
-    Token token();
+    public String sender() {
+        return data().getString(PROTOCOL_CONNECTION);
+    }
 
-    String account();
+    public String account() {
+        return data().getString(ID_ACCOUNT);
+    }
 
-    String name();
+    public String name() {
+        return data().getString(ID_CHARACTER);
+    }
 }

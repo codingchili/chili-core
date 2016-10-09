@@ -1,6 +1,7 @@
 package com.codingchili.core.Logging.Model;
 
 import com.codingchili.core.Authentication.Model.Account;
+import com.codingchili.core.Configuration.FileConfiguration;
 import com.codingchili.core.Configuration.RemoteAuthentication;
 import com.codingchili.core.Configuration.VertxSettings;
 import com.codingchili.core.Protocols.Util.Serializer;
@@ -84,9 +85,7 @@ public class DefaultLogger extends Handler implements Logger {
     public void onServerStopped(Future<Void> future) {
         log(event(LOG_SERVER_STOP, LOG_LEVEL_SEVERE));
 
-        vertx.setTimer(1000, shutdown -> {
-           future.complete();
-        });
+        delay(future);
     }
 
     private JsonObject withoutToken(JsonObject message) {
@@ -103,9 +102,26 @@ public class DefaultLogger extends Handler implements Logger {
     }
 
     @Override
+    public void onInstanceStopped(Future<Void> future, RealmSettings realm, InstanceSettings instance) {
+        log(event(LOG_INSTANCE_STOP, LOG_LEVEL_SEVERE)
+                .put(LOG_INSTANCE, instance.getName())
+                .put(ID_REALM, realm.getName()));
+
+        delay(future);
+    }
+
+    @Override
     public void onRealmStarted(RealmSettings realm) {
         log(event(LOG_REALM_START, LOG_LEVEL_STARTUP)
                 .put(ID_REALM, realm.getName()));
+    }
+
+    @Override
+    public void onRealmStopped(Future<Void> future, RealmSettings realm) {
+        log(event(LOG_REALM_STOP, LOG_LEVEL_SEVERE)
+                .put(ID_REALM, realm.getName()));
+
+        delay(future);
     }
 
     @Override
@@ -183,12 +199,6 @@ public class DefaultLogger extends Handler implements Logger {
     }
 
     @Override
-    public void onDatabaseError() {
-        log(event(LOG_DATABASE_ERROR, LOG_LEVEL_SEVERE)
-                .put(LOG_MESSAGE, LOG_CONNECTION_ERROR));
-    }
-
-    @Override
     public void onFileLoadError(String fileName) {
         log(event(LOG_FILE_ERROR, LOG_LEVEL_SEVERE)
                 .put(LOG_MESSAGE, fileName));
@@ -204,6 +214,12 @@ public class DefaultLogger extends Handler implements Logger {
     public void onHandlerMissing(String action) {
         log(event(LOG_HANDLER_MISSING, LOG_LEVEL_WARNING)
                 .put(LOG_MESSAGE, action));
+    }
+
+    @Override
+    public void onDeployRealmFailure(RealmSettings realm) {
+        log(event(LOG_REALM_DEPLOY_ERROR, LOG_LEVEL_SEVERE)
+                .put(LOG_MESSAGE, ERROR_REALM_DEPLOYMENT_FAILED.replace("%realm%", realm.getName())));
     }
 
     @Override
@@ -228,6 +244,14 @@ public class DefaultLogger extends Handler implements Logger {
         }
 
         return log;
+    }
+
+    private void delay(Future<Void> future) {
+        VertxSettings settings = FileConfiguration.instance().getVertxSettings();
+
+        vertx.setTimer(settings.getShutdownLogTimeout(), shutdown -> {
+            future.complete();
+        });
     }
 
     @Override

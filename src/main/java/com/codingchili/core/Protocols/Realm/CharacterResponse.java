@@ -12,26 +12,16 @@ public class CharacterResponse {
     public static final String ACTION = Strings.REALM_CHARACTER_RESPONSE;
     private Header header;
     private PlayerCharacter character;
-    private String sender;
     private boolean success;
 
     private CharacterResponse() {
         this.header = new Header(ACTION);
     }
 
-    public CharacterResponse(PlayerCharacter character, String sender) {
+    public CharacterResponse(PlayerCharacter character) {
         this();
         this.character = character;
-        this.sender = sender;
         this.success = true;
-    }
-
-    public String getConnection() {
-        return sender;
-    }
-
-    public void setConnection(String sender) {
-        this.sender = sender;
     }
 
     public Header getHeader() {

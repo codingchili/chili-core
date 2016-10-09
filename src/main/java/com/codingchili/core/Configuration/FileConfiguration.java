@@ -9,13 +9,11 @@ import com.codingchili.core.Realm.Configuration.RealmServerSettings;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
 import com.codingchili.core.Routing.Configuration.RoutingSettings;
 import com.codingchili.core.Website.Configuration.WebserverSettings;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static com.codingchili.core.Configuration.Strings.EXT_JSON;
 import static com.codingchili.core.Configuration.Strings.PATH_REALM;
 
 
@@ -146,8 +144,9 @@ public class FileConfiguration implements ConfigurationLoader {
         for (RealmSettings realm : realmserver.getRealms()) {
             JsonObject json = Serializer.json(realm);
 
-            json.remove(Strings.GAME_AFFLICTIONS);
-            json.remove(Strings.GAME_CLASSES);
+            json.remove(Strings.ID_AFFLICTIONS);
+            json.remove(Strings.ID_CLASSES);
+            json.remove(Strings.ID_TEMPLATE);
 
             JsonFileStore.writeObject(json, getRealmPath(realm));
         }

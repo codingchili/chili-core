@@ -1,7 +1,8 @@
 package com.codingchili.core.Website;
 
+import com.codingchili.core.Configuration.Strings;
 import com.codingchili.core.Shared.ResponseListener;
-import com.codingchili.core.Shared.ResponseStatus;
+import com.codingchili.core.Protocols.ResponseStatus;
 import com.codingchili.core.Website.Configuration.WebserverProvider;
 import com.codingchili.core.Website.Controller.WebHandler;
 import io.vertx.core.Vertx;
@@ -43,7 +44,7 @@ public class WebsiteTest {
             JsonObject bower = new JsonObject(request.getBuffer().toString());
 
             context.assertEquals(ResponseStatus.ACCEPTED, status);
-            context.assertEquals(bower.getString("license"), "MIT");
+            context.assertEquals(bower.getString(Strings.ID_LICENSE), "MIT");
 
             async.complete();
         }));

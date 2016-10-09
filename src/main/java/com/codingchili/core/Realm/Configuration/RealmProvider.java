@@ -20,7 +20,7 @@ public class RealmProvider implements Provider {
         this.server = server;
         this.realm = realm;
         this.vertx = vertx;
-        this.logger = new DefaultLogger(vertx, realm.getAuthentication());
+        this.logger = new DefaultLogger(vertx, server.getLogserver());
     }
 
     @Override

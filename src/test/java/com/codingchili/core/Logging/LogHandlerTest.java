@@ -9,13 +9,11 @@ import com.codingchili.core.Protocols.Util.Serializer;
 import com.codingchili.core.Protocols.Util.Token;
 import com.codingchili.core.Protocols.Util.TokenFactory;
 import com.codingchili.core.Shared.ResponseListener;
-import com.codingchili.core.Shared.ResponseStatus;
-import io.vertx.core.Vertx;
+import com.codingchili.core.Protocols.ResponseStatus;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -70,6 +68,6 @@ public class LogHandlerTest {
     }
 
     private void handle(String action, ResponseListener listener, JsonObject data) {
-        handler.handle(new LogRequestMock(action, listener, data));
+        handler.process(new LogRequestMock(action, listener, data));
     }
 }

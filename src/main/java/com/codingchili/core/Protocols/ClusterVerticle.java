@@ -25,8 +25,6 @@ public abstract class ClusterVerticle implements Verticle {
 
     @Override
     public void stop(Future<Void> stop) throws Exception {
-        System.out.println("SERVER STOPPED");
-        System.out.flush();
         logger.onServerStopped(stop);
     }
 

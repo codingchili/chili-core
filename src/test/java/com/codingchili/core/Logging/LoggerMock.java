@@ -29,7 +29,17 @@ public class LoggerMock implements Logger {
     }
 
     @Override
+    public void onInstanceStopped(Future<Void> future, RealmSettings realm, InstanceSettings instance) {
+
+    }
+
+    @Override
     public void onRealmStarted(RealmSettings realm) {
+
+    }
+
+    @Override
+    public void onRealmStopped(Future<Void> future, RealmSettings realm) {
 
     }
 
@@ -89,11 +99,6 @@ public class LoggerMock implements Logger {
     }
 
     @Override
-    public void onDatabaseError() {
-
-    }
-
-    @Override
     public void onFileLoadError(String fileName) {
 
     }
@@ -105,6 +110,11 @@ public class LoggerMock implements Logger {
 
     @Override
     public void onHandlerMissing(String action) {
+
+    }
+
+    @Override
+    public void onDeployRealmFailure(RealmSettings realm) {
 
     }
 }

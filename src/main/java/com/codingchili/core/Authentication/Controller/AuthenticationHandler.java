@@ -5,16 +5,14 @@ import com.codingchili.core.Authentication.Configuration.AuthServerSettings;
 import com.codingchili.core.Authentication.Model.AsyncAccountStore;
 import com.codingchili.core.Authentication.Model.AsyncRealmStore;
 import com.codingchili.core.Logging.Model.Logger;
-import com.codingchili.core.Protocols.AbstractHandler;
-import com.codingchili.core.Protocols.Access;
+import com.codingchili.core.Protocols.*;
 import com.codingchili.core.Protocols.Authentication.RealmRegister;
 import com.codingchili.core.Protocols.Exception.AuthorizationRequiredException;
 import com.codingchili.core.Protocols.Exception.HandlerMissingException;
 import com.codingchili.core.Protocols.Realm.CharacterResponse;
-import com.codingchili.core.Protocols.Request;
-import com.codingchili.core.Protocols.RequestHandler;
 import com.codingchili.core.Protocols.Util.Protocol;
 import com.codingchili.core.Protocols.Util.TokenFactory;
+import com.codingchili.core.Realm.Configuration.RealmServerSettings;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
 import com.codingchili.core.Realm.Instance.Model.PlayerCharacter;
 import io.vertx.core.Future;
@@ -42,7 +40,7 @@ public class AuthenticationHandler extends AbstractHandler {
         accounts = provider.getAccountStore();
         settings = provider.getAuthserverSettings();
         realmStore = provider.getRealmStore();
-        tokens = provider.getClientTokenFactory();
+        tokens = provider.getRealmTokenFactory();
 
         protocol.use(REALM_REGISTER, this::register, PUBLIC)
                 .use(REALM_UPDATE, this::update)
@@ -56,32 +54,30 @@ public class AuthenticationHandler extends AbstractHandler {
     }
 
     @Override
-    public void handle(Request request) {
-        try {
-            protocol.get(authenticate(request), request.action()).handle((AuthenticationRequest) request);
-        } catch (AuthorizationRequiredException e) {
-            request.unauthorized();
-        } catch (HandlerMissingException e) {
-            request.error();
-            logger.onHandlerMissing(request.action());
-        }
+    public void handle(Request request) throws AuthorizationRequiredException, HandlerMissingException {
+        protocol.get(authenticate(request), request.action()).handle(new AuthenticationRequest(request));
     }
 
     private void register(AuthenticationRequest request) {
-        Future<Void> realmFuture = Future.future();
-        RealmSettings realm = request.realm();
+        boolean authenticated = tokens.verifyToken(request.realm().getAuthentication().getToken());
 
-        realm.setTrusted(settings.isTrustedRealm(realm.getName()));
+        if (authenticated) {
+            Future<Void> realmFuture = Future.future();
+            RealmSettings realm = request.realm();
 
-        realmFuture.setHandler(insert -> {
-            if (insert.succeeded()) {
-                request.write(new RealmRegister(true));
-            } else {
-                request.error();
-            }
-        });
+            realm.setTrusted(settings.isTrustedRealm(realm.getName()));
 
-        realmStore.put(realmFuture, realm);
+            realmFuture.setHandler(insert -> {
+                if (insert.succeeded()) {
+                    request.write(new RealmRegister(true));
+                } else {
+                    request.error();
+                }
+            });
+            realmStore.put(realmFuture, realm);
+        } else {
+            request.unauthorized();
+        }
     }
 
     private void update(AuthenticationRequest request) {
@@ -91,7 +87,7 @@ public class AuthenticationHandler extends AbstractHandler {
 
         updateFuture.setHandler(update -> {
             if (update.succeeded()) {
-                request.write(new RealmRegister(true));
+                request.accept();
             } else {
                 request.error();
             }
@@ -101,7 +97,7 @@ public class AuthenticationHandler extends AbstractHandler {
     }
 
     private void disconnected(AuthenticationRequest request) {
-        Future<Void> realmFuture = Future.future();
+        Future<RealmSettings> realmFuture = Future.future();
 
         realmFuture.setHandler(remove -> {
             if (remove.succeeded()) {
@@ -111,7 +107,7 @@ public class AuthenticationHandler extends AbstractHandler {
             }
         });
 
-        realmStore.remove(realmFuture, request.realm().getName());
+        realmStore.remove(realmFuture, request.realmName());
     }
 
     private void character(AuthenticationRequest request) {
@@ -119,7 +115,7 @@ public class AuthenticationHandler extends AbstractHandler {
 
         find.setHandler(result -> {
             if (result.succeeded()) {
-                request.write(new CharacterResponse(result.result(), request.sender()));
+                request.write(new CharacterResponse(result.result()));
             } else
                 request.error();
         });

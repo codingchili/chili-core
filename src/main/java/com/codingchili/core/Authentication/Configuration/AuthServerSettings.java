@@ -10,8 +10,7 @@ public class AuthServerSettings implements Configurable {
     private RemoteAuthentication logserver;
     private byte[] clientSecret;
     private byte[] realmSecret;
-    private DatabaseSettings database;
-    private String[] realms;
+    private String[] realms = new String[]{};
 
     public boolean isTrustedRealm(String name) {
         boolean result = false;
@@ -50,14 +49,6 @@ public class AuthServerSettings implements Configurable {
 
     protected void setLogserver(RemoteAuthentication logserver) {
         this.logserver = logserver;
-    }
-
-    public DatabaseSettings getDatabase() {
-        return database;
-    }
-
-    protected void setDatabase(DatabaseSettings database) {
-        this.database = database;
     }
 
     public byte[] getRealmSecret() {

@@ -1,9 +1,15 @@
 package com.codingchili.core.Realm.Instance.Controller;
 
+import com.codingchili.core.Protocols.ClusterRequest;
 import com.codingchili.core.Protocols.Request;
 
 /**
  * @author Robin Duda
  */
-public interface InstanceRequest extends Request {
+class InstanceRequest extends ClusterRequest {
+
+    InstanceRequest(Request request) {
+        super(request);
+    }
+
 }

@@ -3,7 +3,7 @@ package com.codingchili.core.Routing;
 import com.codingchili.core.Routing.Configuration.RouteProvider;
 import com.codingchili.core.Routing.Controller.RouteHandler;
 import com.codingchili.core.Shared.ResponseListener;
-import com.codingchili.core.Shared.ResponseStatus;
+import com.codingchili.core.Protocols.ResponseStatus;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
@@ -116,7 +116,7 @@ public class RouteHandlerTest {
 
     private void handle(String target, ResponseListener listener) {
         mockNode(target);
-        handler.handle(new RouteRequestMock(target, listener, new JsonObject()));
+        handler.process(new RouteRequestMock(target, listener, new JsonObject()));
     }
 
     /**

@@ -3,8 +3,9 @@ package com.codingchili.core.Patching;
 import com.codingchili.core.Configuration.Strings;
 import com.codingchili.core.Patching.Controller.PatchHandler;
 import com.codingchili.core.Patching.Configuration.PatchProvider;
+import com.codingchili.core.Shared.RequestMock;
 import com.codingchili.core.Shared.ResponseListener;
-import com.codingchili.core.Shared.ResponseStatus;
+import com.codingchili.core.Protocols.ResponseStatus;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -52,10 +53,10 @@ public class PatchHandlerTest {
 
         handle(Strings.PATCH_IDENTIFIER, (response, status) -> {
 
-            context.assertTrue(response.containsKey("name"));
-            context.assertTrue(response.containsKey("version"));
-            context.assertTrue(response.containsKey("date"));
-            context.assertTrue(response.containsKey("changes"));
+            context.assertTrue(response.containsKey(ID_NAME));
+            context.assertTrue(response.containsKey(ID_VERSION));
+            context.assertTrue(response.containsKey(ID_DATE));
+            context.assertTrue(response.containsKey(ID_CHANGES));
             context.assertEquals(ResponseStatus.ACCEPTED, status);
             async.complete();
 
@@ -67,7 +68,7 @@ public class PatchHandlerTest {
         Async async = context.async();
 
         handle(Strings.PATCH_DATA, (response, status) -> {
-            context.assertTrue(response.containsKey("files"));
+            context.assertTrue(response.containsKey(ID_FILES));
             async.complete();
         }, null);
     }
@@ -77,8 +78,8 @@ public class PatchHandlerTest {
         Async async = context.async();
 
         handle(Strings.PATCH_GAME_INFO, (response, status) -> {
-            context.assertTrue(response.containsKey("content"));
-            context.assertTrue(response.containsKey("title"));
+            context.assertTrue(response.containsKey(ID_CONTENT));
+            context.assertTrue(response.containsKey(ID_TITLE));
             context.assertEquals(ResponseStatus.ACCEPTED, status);
 
             async.complete();
@@ -90,7 +91,7 @@ public class PatchHandlerTest {
         Async async = context.async();
 
         handle(Strings.PATCH_NEWS, (response, status) -> {
-            JsonArray list = response.getJsonArray("list");
+            JsonArray list = response.getJsonArray(ID_LIST);
 
             context.assertTrue(list.size() == 1);
             context.assertEquals(ResponseStatus.ACCEPTED, status);
@@ -140,12 +141,12 @@ public class PatchHandlerTest {
 
     private JsonObject getDownloadFile(String filename) {
         return new JsonObject()
-                .put("file", filename);
+                .put(ID_FILE, filename);
     }
 
 
 
     private void handle(String action, ResponseListener listener, JsonObject data) {
-        handler.handle(new PatchRequestMock(action, listener, data));
+        handler.process(RequestMock.get(action, listener, data));
     }
 }

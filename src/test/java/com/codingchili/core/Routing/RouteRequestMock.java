@@ -3,7 +3,7 @@ package com.codingchili.core.Routing;
 import com.codingchili.core.Protocols.Util.Serializer;
 import com.codingchili.core.Routing.Controller.Transport.RestRouteRequest;
 import com.codingchili.core.Shared.ResponseListener;
-import com.codingchili.core.Shared.ResponseStatus;
+import com.codingchili.core.Protocols.ResponseStatus;
 import io.vertx.core.json.JsonObject;
 
 /**

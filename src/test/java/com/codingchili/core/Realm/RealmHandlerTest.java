@@ -1,13 +1,13 @@
 package com.codingchili.core.Realm;
 
 import com.codingchili.core.Configuration.ConfigMock;
+import com.codingchili.core.Protocols.ResponseStatus;
 import com.codingchili.core.Realm.Configuration.RealmProvider;
 import com.codingchili.core.Realm.Configuration.RealmServerSettings;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
 import com.codingchili.core.Realm.Controller.RealmHandler;
-import com.codingchili.core.Realm.Controller.RealmRequestMock;
+import com.codingchili.core.Shared.RequestMock;
 import com.codingchili.core.Shared.ResponseListener;
-import com.codingchili.core.Shared.ResponseStatus;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
@@ -20,7 +20,7 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeUnit;
 
-import static com.codingchili.core.Configuration.Strings.REALM_PING;
+import static com.codingchili.core.Configuration.Strings.ID_PING;
 
 /**
  * @author Robin Duda
@@ -50,12 +50,12 @@ public class RealmHandlerTest {
 
     @Test
     public void realmPingTest(TestContext context) {
-        handle(REALM_PING, (response, status) -> {
+        handle(ID_PING, (response, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
         });
     }
 
     private void handle(String action, ResponseListener listener) {
-        handler.handle(new RealmRequestMock(action, listener, null));
+        handler.process(RequestMock.get(action, listener, null));
     }
 }

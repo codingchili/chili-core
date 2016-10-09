@@ -11,12 +11,16 @@ import static com.codingchili.core.Configuration.Strings.*;
 /**
  * @author Robin Duda
  */
-class ClusterRequest implements Request {
+public class ClusterRequest implements Request {
     private Buffer buffer;
     private JsonObject json;
     private Message message;
 
-    ClusterRequest(Message message) {
+    public ClusterRequest(Request request) {
+        this(((ClusterRequest) request).getMessage());
+    }
+
+    public ClusterRequest(Message message) {
         if (message.body() instanceof Buffer) {
             this.buffer = (Buffer) message.body();
         }
@@ -31,36 +35,36 @@ class ClusterRequest implements Request {
 
     @Override
     public void error() {
-        message.reply(message(PROTOCOL_ERROR, PROTOCOL_ERROR));
+        message.reply(message(ResponseStatus.ERROR));
     }
 
-    private JsonObject message(String action, String message) {
-        return new JsonObject().put(action, message);
+    private JsonObject message(ResponseStatus message) {
+        return new JsonObject().put(PROTOCOL_STATUS, message);
     }
 
     @Override
     public void unauthorized() {
-        message.reply(message(PROTOCOL_ERROR, PROTOCOL_UNAUTHORIZED));
+        message.reply(message(ResponseStatus.UNAUTHORIZED));
     }
 
     @Override
     public void write(Object object) {
-        message.reply(object);
+        message.reply(Serializer.json(object).put(PROTOCOL_STATUS, ResponseStatus.ACCEPTED));
     }
 
     @Override
     public void accept() {
-        message.reply(message(PROTOCOL_ACTION, PROTOCOL_ACCEPTED));
+        message.reply(message(ResponseStatus.ACCEPTED));
     }
 
     @Override
     public void missing() {
-        message.reply(message(PROTOCOL_ERROR, PROTOCOL_MISSING));
+        message.reply(message(ResponseStatus.MISSING));
     }
 
     @Override
     public void conflict() {
-        message.reply(message(PROTOCOL_ERROR, PROTOCOL_CONFLICT));
+        message.reply(message(ResponseStatus.CONFLICT));
     }
 
     @Override
@@ -94,5 +98,9 @@ class ClusterRequest implements Request {
     @Override
     public int timeout() {
         return 0;
+    }
+
+    public Message getMessage() {
+        return message;
     }
 }

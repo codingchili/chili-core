@@ -7,6 +7,7 @@ import com.codingchili.core.Patching.Model.PatchReloadedException;
 import com.codingchili.core.Protocols.AbstractHandler;
 import com.codingchili.core.Protocols.Exception.AuthorizationRequiredException;
 import com.codingchili.core.Protocols.Exception.HandlerMissingException;
+import com.codingchili.core.Protocols.Exception.ProtocolException;
 import com.codingchili.core.Protocols.Request;
 import com.codingchili.core.Protocols.RequestHandler;
 import com.codingchili.core.Protocols.Util.Protocol;
@@ -38,14 +39,8 @@ public class PatchHandler extends AbstractHandler {
     }
 
     @Override
-    public void handle(Request request) {
-        try {
-            protocol.get(AUTHORIZED, request.action()).handle((PatchRequest) request);
-        } catch (AuthorizationRequiredException e) {
-            request.unauthorized();
-        } catch (HandlerMissingException e) {
-            request.error();
-        }
+    public void handle(Request request) throws ProtocolException {
+        protocol.get(AUTHORIZED, request.action()).handle(new PatchRequest(request));
     }
 
     private void patchinfo(PatchRequest request) {

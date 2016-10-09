@@ -89,12 +89,12 @@ public class ConfigMock implements ConfigurationLoader {
 
         @Override
         public byte[] getRealmSecret() {
-            return "realmName.secret".getBytes();
+            return "realm.secret".getBytes();
         }
 
         @Override
         public boolean isTrustedRealm(String realm) {
-            return realm.equals("trusted");
+            return "trusted".equals(realm);
         }
     }
 

@@ -30,9 +30,19 @@ public interface Logger {
     void onInstanceStarted(RealmSettings realm, InstanceSettings instance);
 
     /**
+     * Emit when an instance has stopped.
+     */
+    void onInstanceStopped(Future<Void> future, RealmSettings realm, InstanceSettings instance);
+
+    /**
      * Emit when a realmName has been started.
      */
     void onRealmStarted(RealmSettings realm);
+
+    /**
+     * Emit when a realm has stopped.
+     */
+    void onRealmStopped(Future<Void> future, RealmSettings realm);
 
     /**
      * Emit when an authentication failure occured on accounts.
@@ -96,11 +106,6 @@ public interface Logger {
     void patchLoaded(String name, String version);
 
     /**
-     * Emit when the database has failed.
-     */
-    void onDatabaseError();
-
-    /**
      * Emit when failing to load specified fileName;
      */
     void onFileLoadError(String fileName);
@@ -112,7 +117,13 @@ public interface Logger {
 
     /**
      * Throw when a requested handler was not found.
+     *
      * @param action the name of the missing handler.
      */
     void onHandlerMissing(String action);
+
+    /**
+     * Emit when a realm has failed deployment.
+     */
+    void onDeployRealmFailure(RealmSettings realm);
 }

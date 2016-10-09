@@ -42,7 +42,7 @@ public interface AsyncRealmStore {
      * Removes a realm from the cluster-wide get.
      * @param realmName name of the realm.
      */
-    void remove(Future<Void> future, String realmName);
+    void remove(Future<RealmSettings> future, String realmName);
 
     /**
      * Update an existing realm with new information.

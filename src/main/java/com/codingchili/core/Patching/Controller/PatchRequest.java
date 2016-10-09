@@ -1,15 +1,28 @@
 package com.codingchili.core.Patching.Controller;
 
+import com.codingchili.core.Configuration.Strings;
 import com.codingchili.core.Patching.Model.PatchFile;
+import com.codingchili.core.Protocols.ClusterRequest;
 import com.codingchili.core.Protocols.Request;
 
 /**
  * @author Robin Duda
  */
-public interface PatchRequest extends Request {
-    void file(PatchFile file);
+class PatchRequest extends ClusterRequest {
 
-    String file();
+    PatchRequest(Request request) {
+        super(request);
+    }
 
-    String version();
+    public void file(PatchFile file) {
+        write(file);
+    }
+
+    public String file() {
+        return data().getString(Strings.ID_FILE);
+    }
+
+    public String version() {
+        return data().getString(Strings.ID_VERSION);
+    }
 }

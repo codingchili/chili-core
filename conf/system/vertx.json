@@ -10,5 +10,8 @@
   },
   "metrics": true,
   "rate": 30000,
-  "poolSize": 16
+  "poolSize": 16,
+  "deployTimeout": 3500,
+  "shutdownLogTimeout": 2000,
+  "shutdownHookTimeout": 2000
 }

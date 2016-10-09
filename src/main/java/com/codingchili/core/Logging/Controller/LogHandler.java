@@ -8,6 +8,7 @@ import com.codingchili.core.Protocols.AbstractHandler;
 import com.codingchili.core.Protocols.Access;
 import com.codingchili.core.Protocols.Exception.AuthorizationRequiredException;
 import com.codingchili.core.Protocols.Exception.HandlerMissingException;
+import com.codingchili.core.Protocols.Exception.ProtocolException;
 import com.codingchili.core.Protocols.Request;
 import com.codingchili.core.Protocols.RequestHandler;
 import com.codingchili.core.Protocols.Util.Protocol;
@@ -40,26 +41,18 @@ public class LogHandler extends AbstractHandler {
     }
 
     private void log(Request request) {
-        if (tokenFactory.verifyToken(request.token())) {
-            JsonObject logdata = request.data();
+        JsonObject logdata = request.data();
 
-            logdata.remove(ID_TOKEN);
-            logdata.remove(PROTOCOL_ACTION);
+        logdata.remove(ID_TOKEN);
+        logdata.remove(PROTOCOL_ACTION);
 
-            elastic.log(logdata);
-            console.log(logdata);
-        }
+        elastic.log(logdata);
+        console.log(logdata);
     }
 
     @Override
-    public void handle(Request request) {
-        try {
-            protocol.get(authenticator(request), request.action()).handle(request);
-        } catch (AuthorizationRequiredException e) {
-            request.unauthorized();
-        } catch (HandlerMissingException e) {
-            request.error();
-        }
+    public void handle(Request request) throws ProtocolException {
+        protocol.get(authenticator(request), request.action()).handle(request);
     }
 
     private Access authenticator(Request request) {

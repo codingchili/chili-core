@@ -1,51 +1,67 @@
 package com.codingchili.core.Realm.Instance.Controller;
 
-import com.codingchili.core.Logging.Model.DefaultLogger;
-import com.codingchili.core.Logging.Model.Logger;
-import com.codingchili.core.Realm.Instance.Configuration.InstanceSettings;
-import com.codingchili.core.Realm.Configuration.RealmServerSettings;
+import com.codingchili.core.Protocols.AbstractHandler;
+import com.codingchili.core.Protocols.Access;
+import com.codingchili.core.Protocols.Exception.AuthorizationRequiredException;
+import com.codingchili.core.Protocols.Exception.HandlerMissingException;
+import com.codingchili.core.Protocols.Exception.ProtocolException;
+import com.codingchili.core.Protocols.Request;
+import com.codingchili.core.Protocols.RequestHandler;
+import com.codingchili.core.Protocols.Util.Protocol;
+import com.codingchili.core.Protocols.Util.TokenFactory;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
-import io.vertx.core.Context;
+import com.codingchili.core.Realm.Instance.Configuration.InstanceProvider;
+import com.codingchili.core.Realm.Instance.Configuration.InstanceSettings;
 import io.vertx.core.Future;
-import io.vertx.core.Verticle;
-import io.vertx.core.Vertx;
+
+import static com.codingchili.core.Configuration.Strings.ID_PING;
 
 /**
  * @author Robin Duda
  *         Handles players in a get.
  */
-public class InstanceHandler implements Verticle {
-    private Vertx vertx;
-    private InstanceSettings settings;
+public class InstanceHandler extends AbstractHandler {
+    private Protocol<RequestHandler<InstanceRequest>> protocol = new Protocol<>();
+    private TokenFactory tokens;
+    private InstanceSettings instance;
     private RealmSettings realm;
-    private RealmServerSettings game;
-    private Logger logger;
 
-    public InstanceHandler(RealmServerSettings game, RealmSettings realm, InstanceSettings settings) {
-        this.game = game;
-        this.realm = realm;
-        this.settings = settings;
+
+    public InstanceHandler(InstanceProvider provider) {
+        super(provider.getAddress());
+        this.logger = provider.getLogger();
+        this.tokens = provider.getTokenFactory();
+        this.realm = provider.getRealm();
+        this.instance = provider.getInstance();
+
+        protocol.use(ID_PING, this::ping, Access.PUBLIC);
+    }
+
+    private void ping(InstanceRequest request) {
+        request.accept();
+    }
+
+    private Access authenticator(Request request) {
+        if (tokens.verifyToken(request.token())) {
+            return Access.AUTHORIZED;
+        } else {
+            return Access.PUBLIC;
+        }
     }
 
     @Override
-    public Vertx getVertx() {
-        return vertx;
+    public void handle(Request request) throws ProtocolException {
+        protocol.get(authenticator(request), request.action()).handle(new InstanceRequest(request));
     }
 
     @Override
-    public void init(Vertx vertx, Context context) {
-        this.vertx = vertx;
-        this.logger = new DefaultLogger(vertx, game.getLogserver());
+    public void stop(Future<Void> future) {
+        logger.onInstanceStopped(future, realm, instance);
     }
 
     @Override
-    public void start(Future<Void> start) throws Exception {
-        logger.onInstanceStarted(realm, settings);
-        start.complete();
-    }
-
-    @Override
-    public void stop(Future<Void> stop) throws Exception {
-        stop.complete();
+    public void start(Future<Void> future) {
+        logger.onInstanceStarted(realm, instance);
+        future.complete();
     }
 }

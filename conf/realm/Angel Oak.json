@@ -1,37 +1,8 @@
 {
-  "template" : {
-    "attributes" : {
-      "spell" : 0,
-      "string" : "text",
-      "defence" : 0,
-      "attack" : 0,
-      "stamina" : 5,
-      "boost" : 0.5,
-      "power" : 5,
-      "resistance" : 0
-    },
-    "inventory" : {
-      "equipped" : {
-        "head" : null,
-        "weapon" : null,
-        "chest" : null,
-        "ring" : null,
-        "legs" : null
-      },
-      "slots" : [ "head", "weapon", "chest", "legs", "ring" ],
-      "items" : [ {
-        "attributes" : { },
-        "name" : "Newbie Manual",
-        "description" : "Good for starting out."
-      } ],
-      "space" : 64,
-      "currency" : 1
-    }
-  },
   "authentication" : {
     "token" : {
-      "key" : "08CD4BD23D9849FCFCD5A710DA1C9B4A791F43C498519BDA13A22E63B127671C5DF3BBE1EEB7B2AE05010F63A5855C75ECD571279F42E3AC73DB8E19935F8D1C",
-      "expiry" : 1478680900,
+      "key" : "59063179CF3AD7477939995CB7EEF4D8B10DDCD41373705AC7B07FD948D7AEE98E39641E01810686FF2369F5657870C4260E35E3B827837A56070A796222FEE4",
+      "expiry" : 1478700340,
       "domain" : "Angel Oak"
     }
   },

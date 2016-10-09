@@ -12,6 +12,9 @@ public class VertxSettings {
     public static boolean METRICS_ENABLED;
     private JsonArray help;
     private int poolSize;
+    private int deployTimeout;
+    private int shutdownLogTimeout;
+    private int shutdownHookTimeout;
 
     public static VertxOptions Configuration() {
         return new VertxOptions().setMetricsOptions(new MetricsOptions().setEnabled(METRICS_ENABLED));
@@ -47,6 +50,30 @@ public class VertxSettings {
 
     public void setPoolSize(int poolSize) {
         this.poolSize = poolSize;
+    }
+
+    public int getDeployTimeout() {
+        return deployTimeout;
+    }
+
+    public void setDeployTimeout(int deployTimeout) {
+        this.deployTimeout = deployTimeout;
+    }
+
+    public int getShutdownLogTimeout() {
+        return shutdownLogTimeout;
+    }
+
+    public void setShutdownLogTimeout(int shutdownLogTimeout) {
+        this.shutdownLogTimeout = shutdownLogTimeout;
+    }
+
+    public int getShutdownHookTimeout() {
+        return shutdownHookTimeout;
+    }
+
+    public void setShutdownHookTimeout(int shutdownHookTimeout) {
+        this.shutdownHookTimeout = shutdownHookTimeout;
     }
 
     public VertxOptions getOptions() {

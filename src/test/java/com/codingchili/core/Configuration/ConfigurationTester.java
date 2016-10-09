@@ -1,5 +1,8 @@
 package com.codingchili.core.Configuration;
 
+import com.codingchili.core.Authentication.Configuration.AuthServerSettings;
+import com.codingchili.core.Realm.Configuration.RealmServerSettings;
+import com.codingchili.core.Realm.Configuration.RealmSettings;
 import com.codingchili.core.Realm.Instance.Model.Affliction;
 import com.codingchili.core.Realm.Instance.Model.Inventory;
 import com.codingchili.core.Realm.Instance.Model.PlayerCharacter;
@@ -69,6 +72,21 @@ public class ConfigurationTester {
         }
 
         Assert.assertFalse(classes.isEmpty());
+    }
+
+    @Test
+    public void testTrustedRealm() {
+        RealmServerSettings server = FileConfiguration.instance().getRealmServerSettings();
+        AuthServerSettings auth = FileConfiguration.instance().getAuthSettings();
+
+        for (RealmSettings realm : server.getRealms()) {
+            Assert.assertTrue(auth.isTrustedRealm(realm.getName()));
+        }
+    }
+
+    @Test
+    public void testNotTrustedRealm() {
+        Assert.assertFalse(new AuthServerSettings().isTrustedRealm("not trusted"));
     }
 
     @Test

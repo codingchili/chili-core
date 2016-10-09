@@ -69,7 +69,7 @@ public class HazelRealmDB implements AsyncRealmStore {
         realms.get(Strings.MAP_REALMS, map -> {
             RealmSettings settings = map.result().get(realm);
 
-            if (map.succeeded()) {
+            if (settings != null) {
                 if (map.result() == null) {
                     future.fail(new RealmMissingException());
                 } else {
@@ -123,17 +123,17 @@ public class HazelRealmDB implements AsyncRealmStore {
     }
 
     @Override
-    public void remove(Future<Void> future, String realmName) {
+    public void remove(Future<RealmSettings> future, String realmName) {
         realms.get(Strings.MAP_REALMS, get -> {
 
             if (get.succeeded()) {
                 HashMap<String, RealmSettings> map = get.result();
 
-                map.remove(realmName);
+                RealmSettings realm = map.remove(realmName);
 
                 realms.replace(Strings.MAP_REALMS, map, replace -> {
-                    if (replace.succeeded()) {
-                        future.complete();
+                    if (replace.succeeded() && realm != null) {
+                        future.complete(realm);
                     } else {
                         future.fail(replace.cause());
                     }
