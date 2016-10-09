@@ -65,4 +65,9 @@ public abstract class JsonFileStore {
     private static String currentPath() {
         return Paths.get("").toAbsolutePath().normalize().toString();
     }
+
+    public static void deleteObject(String s) {
+        File file = new File(s);
+        file.delete();
+    }
 }

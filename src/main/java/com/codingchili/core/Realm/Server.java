@@ -22,7 +22,7 @@ public class Server extends ClusterVerticle {
     @Override
     public void init(Vertx vertx, Context context) {
         super.init(vertx, context);
-        this.settings = FileConfiguration.instance().getGameServerSettings();
+        this.settings = FileConfiguration.instance().getRealmServerSettings();
         this.logger = new DefaultLogger(vertx, settings.getLogserver());
     }
 

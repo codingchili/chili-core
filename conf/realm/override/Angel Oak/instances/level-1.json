@@ -1,0 +1,12 @@
+{
+  "name": "override instances..",
+  "limit": 50,
+  "width": 3000,
+  "height": 3000,
+  "portals": [
+  ],
+  "nodes": [
+  ],
+  "npc": [
+  ]
+}

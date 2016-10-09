@@ -24,4 +24,7 @@
             </tcp-ip>
         </join>
     </network>
+    <properties>
+        <property name="hazelcast.map.partition.count">61</property>
+    </properties>
 </hazelcast>

@@ -15,7 +15,7 @@ public interface ConfigurationLoader {
 
     PatchServerSettings getPatchServerSettings();
 
-    RealmServerSettings getGameServerSettings();
+    RealmServerSettings getRealmServerSettings();
 
     LogServerSettings getLogSettings();
 
@@ -24,4 +24,8 @@ public interface ConfigurationLoader {
     WebserverSettings getWebsiteSettings();
 
     RoutingSettings getRoutingSettings();
+
+    LauncherSettings getLauncherSettings();
+
+    DeploySettings getDeploySettings();
 }

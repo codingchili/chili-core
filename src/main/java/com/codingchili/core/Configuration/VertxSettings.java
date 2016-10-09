@@ -48,4 +48,10 @@ public class VertxSettings {
     public void setPoolSize(int poolSize) {
         this.poolSize = poolSize;
     }
+
+    public VertxOptions getOptions() {
+        return new VertxOptions()
+                .setMetricsOptions(new MetricsOptions().setEnabled(METRICS_ENABLED))
+                .setWorkerPoolSize(poolSize);
+    }
 }

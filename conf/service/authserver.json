@@ -1,0 +1,14 @@
+{
+  "logserver" : {
+    "token" : {
+      "key" : "AE20DAE062D5FCEB85F45906925158FC7DE7D3735063ADF6E63D2C16A5D7F08CF79D293574174E571B7AE1A8D1C29D0534893FBEB308BD01A30CB8498CD3C2A2",
+      "expiry" : 1477689868,
+      "domain" : "authentication.node@server.1"
+    },
+    "system" : "authentication.node",
+    "host" : "server.1"
+  },
+  "clientSecret" : "weeP3o5pa+fOZtW9V1nJbSnzmMOxU2vee3IzYyGYt3IgGHnTV2MWzZ3EyLqMmpkqKL6Tz+dCAx7dTgz1Zvx+Kw==",
+  "realmSecret" : "YBH7Kxe9nhC9k5EeIsXnQogms25e9NHeWFB27OZLOr8rKkdibsmz0mgXXVak3DLRM4BwPvPB6BpVhhc2ALewTw==",
+  "realms" : [ "Angel Oak", "Developer Realm", "Iron Oak", "Staging Realm", "Wisteria", "Red Maple" ]
+}

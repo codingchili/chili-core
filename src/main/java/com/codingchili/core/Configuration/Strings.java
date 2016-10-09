@@ -7,18 +7,23 @@ package com.codingchili.core.Configuration;
  */
 public class Strings {
     // Locations to configuration files.
-    public static final String PATH_AUTHSERVER = "conf/system/authserver.json";
-    public static final String PATH_LOGSERVER = "conf/system/logserver.json";
-    public static final String PATH_PATCHSERVER = "conf/system/patchserver.json";
-    public static final String PATH_GAMESERVER = "conf/system/realmserver.json";
-    public static final String PATH_WEBSERVER = "conf/system/webserver.json";
-    public static final String PATH_ROUTING = "conf/system/routingserver.json";
+    public static final String PATH_AUTHSERVER = "conf/service/authserver.json";
+    public static final String PATH_LOGSERVER = "conf/service/logserver.json";
+    public static final String PATH_PATCHSERVER = "conf/service/patchserver.json";
+    public static final String PATH_REALMSERVER = "conf/service/realmserver.json";
+    public static final String PATH_WEBSERVER = "conf/service/webserver.json";
+    public static final String PATH_ROUTING = "conf/service/routingserver.json";
+
+    public static final String PATH_LAUNCHER = "conf/system/launcher.json";
+    public static final String PATH_DEPLOY = "conf/system/deployment.json";
     public static final String PATH_VERTX = "conf/system/vertx.json";
     public static final String PATH_REALM = "conf/realm/";
-    public static final String PATH_INSTANCE = "conf/game/world";
+    public static final String PATH_INSTANCE = "conf/game/instances";
     public static final String PATH_CLASSES = "conf/game/class";
     public static final String PATH_AFFLICTIONS = "conf/game/player/affliction.json";
     public static final String PATH_PLAYER_TEMPLATE = "conf/game/player/character.json";
+    public static final String PATH_GAME_OVERRIDE = "conf/realm/override/";
+    public static final String PATH_GAME = "conf/game";
 
     public static final String DIR_RESOURCES = "resources";
     public static final String DIR_WEBSITE = "website";
@@ -105,12 +110,12 @@ public class Strings {
 
     public static final String LOCAL_LOGGING = "logging.local";
 
-    public static final String VERTICLE_LOGGING = "Server";
-    public static final String VERTICLE_AUTHENTICATION = "Server";
-    public static final String VERTICLE_PATCHING = "Server";
-    public static final String VERTICLE_ROUTING = "Server";
-    public static final String VERTICLE_WEBSERVER = "Server";
-    public static final String VERTICLE_REALM = "Server";
+    public static final String VERTICLE_LOGGING = "com.codingchili.core.Logging.Server";
+    public static final String VERTICLE_AUTHENTICATION = "com.codingchili.core.Authentication.Server";
+    public static final String VERTICLE_PATCHING = "com.codingchili.core.Patching.Server";
+    public static final String VERTICLE_ROUTING = "com.codingchili.core.Routing.Server";
+    public static final String VERTICLE_WEBSERVER = "com.codingchili.core.Website.Server";
+    public static final String VERTICLE_REALM = "com.codingchili.core.Realm.Server";
     public static final String VERTICLE_ALL = "all";
 
     // Routing
@@ -180,4 +185,6 @@ public class Strings {
     public static final String ERROR_NOT_AUTHORIZED = "The requested resource requires authorization.";
     public static final String ERROR_HANDLER_MISSING = "The requested handler was not found.";
     public static final String ERROR_HANDLER_MISSING_AUTHENTICATOR = "The handler is missing an @Authenticator.";
+    public static final String ERROR_LAUNCHER_STARTUP = "Failed to start the launcher with clustering.";
+    public static final String ERRROR_LAUNCHER_SHUTDOWN = "System has been shut down..";
 }

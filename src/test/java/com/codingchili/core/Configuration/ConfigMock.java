@@ -32,7 +32,7 @@ public class ConfigMock implements ConfigurationLoader {
     }
 
     @Override
-    public RealmServerSettings getGameServerSettings() {
+    public RealmServerSettings getRealmServerSettings() {
         return new RealmServerSettings();
     }
 
@@ -54,6 +54,16 @@ public class ConfigMock implements ConfigurationLoader {
     @Override
     public RoutingSettings getRoutingSettings() {
         return new RoutingSettings();
+    }
+
+    @Override
+    public LauncherSettings getLauncherSettings() {
+        return null;
+    }
+
+    @Override
+    public DeploySettings getDeploySettings() {
+        return null;
     }
 
     public RealmSettings getRealm() {

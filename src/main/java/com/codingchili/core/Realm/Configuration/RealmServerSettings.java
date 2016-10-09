@@ -14,6 +14,7 @@ import java.util.ArrayList;
 @JsonIgnoreProperties({"realms"})
 public class RealmServerSettings implements Configurable {
     private RemoteAuthentication logserver;
+    private ArrayList<EnabledRealm> enabled = new ArrayList<>();
     private ArrayList<RealmSettings> realms = new ArrayList<>();
 
     public void setRealms(ArrayList<RealmSettings> realms) {
@@ -22,6 +23,14 @@ public class RealmServerSettings implements Configurable {
 
     public ArrayList<RealmSettings> getRealms() {
         return realms;
+    }
+
+    public ArrayList<EnabledRealm> getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(ArrayList<EnabledRealm> enabled) {
+        this.enabled = enabled;
     }
 
     @Override
@@ -35,7 +44,7 @@ public class RealmServerSettings implements Configurable {
 
     @Override
     public String getPath() {
-        return Strings.PATH_GAMESERVER;
+        return Strings.PATH_REALMSERVER;
     }
 
     @Override

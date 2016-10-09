@@ -51,6 +51,8 @@ public class ConsoleLogger {
                 case Strings.LOG_LEVEL_STARTUP:
                     setColor(GREEN);
                     break;
+                default:
+                    setColor(CYAN);
             }
         } else {
             setColor(CYAN);
@@ -72,6 +74,7 @@ public class ConsoleLogger {
                     .replaceAll(",", " ");
 
             AnsiConsole.out.println(text);
+            AnsiConsole.out.flush();
         }
     }
 

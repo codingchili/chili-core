@@ -30,14 +30,14 @@ class TokenRefresher {
 
         generateLoggingTokens(new Configurable[]{
                 configuration.getAuthSettings(),
-                configuration.getGameServerSettings(),
+                configuration.getRealmServerSettings(),
                 configuration.getLogSettings(),
                 configuration.getPatchServerSettings(),
                 configuration.getWebsiteSettings(),
                 configuration.getRoutingSettings()
         });
 
-        generateRealmTokens(configuration.getGameServerSettings());
+        generateRealmTokens(configuration.getRealmServerSettings());
 
         configuration.save();
     }
@@ -73,8 +73,10 @@ class TokenRefresher {
         for (Configurable logger : configurable) {
             RemoteAuthentication remote = logger.getLogserver();
 
-            if (remote.getToken() == null || !verifyToken(remote.getToken(), loggerTokens)) {
-                remote.setToken(new Token(loggerTokens, remote.getSystem() + Strings.LOG_AT + remote.getHost()));
+            if (remote != null) {
+                if (remote.getToken() == null || !verifyToken(remote.getToken(), loggerTokens)) {
+                    remote.setToken(new Token(loggerTokens, remote.getSystem() + Strings.LOG_AT + remote.getHost()));
+                }
             }
         }
     }

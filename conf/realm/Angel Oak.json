@@ -1,5 +1,33 @@
 {
   "template" : {
+    "inventory" : {
+      "equipped" : {
+        "head" : null,
+        "weapon" : null,
+        "chest" : null,
+        "ring" : null,
+        "legs" : null
+      },
+      "slots" : [ "head", "weapon", "chest", "legs", "ring" ],
+      "items" : [ {
+        "name" : "Newbie Manual",
+        "description" : "Good for starting out."
+      } ],
+      "space" : 64,
+      "crystals" : 1
+    },
+    "attributes" : {
+      "power" : 5,
+      "attack" : 0,
+      "spell" : 0,
+      "defence" : 0,
+      "resistance" : 0,
+      "stamina" : 5
+    },
+    "regeneration" : {
+      "health" : 0.01,
+      "energy" : 1.0
+    },
     "health" : 0.0,
     "power" : 0.0,
     "resistance" : 0.0,
@@ -7,7 +35,8 @@
     "attack" : 0.0,
     "spell" : 0.0,
     "speed" : 0.0,
-    "haste" : 0.0
+    "haste" : 0.0,
+    "level" : 1
   },
   "authentication" : {
     "token" : {
@@ -18,7 +47,7 @@
   },
   "name" : "Angel Oak",
   "description" : "Stable realm, PvP Aggressive.",
-  "resources" : "",
+  "resources" : "patching.node",
   "version" : 1.0,
   "size" : 5000,
   "type" : "PvP",

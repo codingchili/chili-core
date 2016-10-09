@@ -24,7 +24,6 @@ import static com.codingchili.core.Configuration.Strings.*;
  *         Default logging implementation.
  */
 public class DefaultLogger extends Handler implements Logger {
-    private static final int CLOSE_TIMEOUT = 1500;
     private ConsoleLogger console = new ConsoleLogger();
     private RemoteAuthentication authentication;
     private Vertx vertx;
@@ -42,12 +41,8 @@ public class DefaultLogger extends Handler implements Logger {
     }
 
     private void log(JsonObject json) {
-        log(json.encodePrettily());
-    }
-
-
-    private void log(String message) {
-        vertx.eventBus().send(LOCAL_LOGGING, message);
+        vertx.eventBus().send(LOCAL_LOGGING, json.encode());
+        console.log(withoutToken(json));
     }
 
     private JsonObject event(String name) {
@@ -87,19 +82,17 @@ public class DefaultLogger extends Handler implements Logger {
 
     @Override
     public void onServerStopped(Future<Void> future) {
-        JsonObject message = event(LOG_SERVER_STOP, LOG_LEVEL_SEVERE);
+        log(event(LOG_SERVER_STOP, LOG_LEVEL_SEVERE));
 
-        log(message);
-        console.log(withoutToken(message));
-
-        vertx.setTimer(CLOSE_TIMEOUT, handler -> {
-            future.complete();
+        vertx.setTimer(1000, shutdown -> {
+           future.complete();
         });
     }
 
     private JsonObject withoutToken(JsonObject message) {
-        message.remove(ID_TOKEN);
-        return message;
+        JsonObject clean = message.copy();
+        clean.remove(ID_TOKEN);
+        return clean;
     }
 
     @Override
@@ -184,7 +177,7 @@ public class DefaultLogger extends Handler implements Logger {
 
     @Override
     public void patchLoaded(String name, String version) {
-        log(event(LOG_PATCHER_LOADED, LOG_LEVEL_STARTUP)
+        log(event(LOG_PATCHER_LOADED)
                 .put(ID_NAME, name)
                 .put(LOG_VERSION, version));
     }

@@ -12,11 +12,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
-import static com.codingchili.core.Configuration.Strings.NODE_REALM;
+import static com.codingchili.core.Configuration.Strings.*;
 
 /**
  * @author Robin Duda
@@ -63,24 +65,28 @@ public class RealmSettings implements Serializable {
                 .setAuthentication(null);
     }
 
-    public RealmSettings load() throws IOException {
-        readInstances();
+    public RealmSettings load(EnabledRealm enabled) throws IOException {
+        readInstances(enabled.getInstances());
         readPlayerClasses();
         readAfflictions();
         readTemplate();
         return this;
     }
 
-    private void readInstances() throws IOException {
-        ArrayList<JsonObject> configurations = JsonFileStore.readDirectoryObjects(Strings.PATH_INSTANCE);
+    private void readInstances(List<String> enabled) throws IOException {
+        String path = getConfigurationOverride(PATH_INSTANCE);
+        ArrayList<JsonObject> configurations = JsonFileStore.readDirectoryObjects(path);
 
         for (JsonObject configuration : configurations) {
-            instances.add(Serializer.unpack(configuration, InstanceSettings.class));
+            if (enabled.isEmpty() || enabled.contains(configuration.getString(ID_NAME))) {
+                instances.add(Serializer.unpack(configuration, InstanceSettings.class));
+            }
         }
     }
 
     private void readPlayerClasses() throws IOException {
-        ArrayList<JsonObject> configurations = JsonFileStore.readDirectoryObjects(Strings.PATH_CLASSES);
+        String path = getConfigurationOverride(PATH_CLASSES);
+        ArrayList<JsonObject> configurations = JsonFileStore.readDirectoryObjects(path);
 
         for (JsonObject configuration : configurations) {
             classes.add(Serializer.unpack(configuration, PlayerClass.class));
@@ -88,11 +94,23 @@ public class RealmSettings implements Serializable {
     }
 
     private void readAfflictions() throws IOException {
-        JsonArray configurations = JsonFileStore.readList(Strings.PATH_AFFLICTIONS);
+        String path = getConfigurationOverride(PATH_AFFLICTIONS);
+        JsonArray configurations = JsonFileStore.readList(path);
 
         for (int i = 0; i < configurations.size(); i++) {
             Affliction affliction = Serializer.unpack(configurations.getJsonObject(i), Affliction.class);
             afflictions.add(affliction);
+        }
+    }
+
+    private String getConfigurationOverride(String path) {
+        String overridePath = path.replace(PATH_GAME, PATH_GAME_OVERRIDE + name);
+        File override = new File(overridePath);
+
+        if (override.exists()) {
+            return overridePath;
+        } else {
+            return path;
         }
     }
 
@@ -101,7 +119,8 @@ public class RealmSettings implements Serializable {
     }
 
     private void readTemplate() throws IOException {
-        this.template = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_PLAYER_TEMPLATE), PlayerCharacter.class);
+        String path = getConfigurationOverride(PATH_PLAYER_TEMPLATE);
+        this.template = Serializer.unpack(JsonFileStore.readObject(path), PlayerCharacter.class);
     }
 
     public Boolean getSecure() {
