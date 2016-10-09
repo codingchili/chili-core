@@ -33,7 +33,6 @@ import static com.codingchili.core.Protocols.Access.PUBLIC;
  */
 public class ClientHandler extends AbstractHandler {
     private Protocol<RequestHandler<ClientRequest>> protocol = new Protocol<>();
-    private Logger logger;
     private AsyncRealmStore realmStore;
     private AsyncAccountStore accounts;
     private TokenFactory tokens;

@@ -23,8 +23,8 @@ public abstract class AbstractHandler {
         } catch (AuthorizationRequiredException e) {
             request.unauthorized();
         } catch (HandlerMissingException e) {
-            logger.onHandlerMissing(request.action());
             request.error();
+            logger.onHandlerMissing(request.action());
         } catch (ProtocolException e) {
             request.error();
         }

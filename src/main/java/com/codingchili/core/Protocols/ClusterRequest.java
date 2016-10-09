@@ -49,7 +49,11 @@ public class ClusterRequest implements Request {
 
     @Override
     public void write(Object object) {
-        message.reply(Serializer.json(object).put(PROTOCOL_STATUS, ResponseStatus.ACCEPTED));
+        if (object instanceof Buffer) {
+            message.reply(object);
+        } else {
+            message.reply(Serializer.json(object).put(PROTOCOL_STATUS, ResponseStatus.ACCEPTED));
+        }
     }
 
     @Override

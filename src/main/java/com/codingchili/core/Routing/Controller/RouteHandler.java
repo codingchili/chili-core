@@ -27,6 +27,7 @@ public class RouteHandler extends AbstractHandler {
         this.vertx = provider.getVertx();
 
         protocol.use(ANY, this::dynamic)
+                .use(NODE_WEBSERVER, this::webserver)
                 .use(NODE_REALM, this::realm)
                 .use(NODE_LOGGING, this::logging)
                 .use(NODE_PATCHING, this::patching)
