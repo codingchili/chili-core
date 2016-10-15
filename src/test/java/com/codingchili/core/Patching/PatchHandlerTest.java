@@ -144,7 +144,16 @@ public class PatchHandlerTest {
                 .put(ID_FILE, filename);
     }
 
+    @Test
+    public void testPingPatchHandler(TestContext context) {
+        handle(ID_PING, ((response, status) -> {
+            context.assertEquals(status, ResponseStatus.ACCEPTED);
+        }));
+    }
 
+    private void handle(String action, ResponseListener listener) {
+        handle(action, listener, new JsonObject());
+    }
 
     private void handle(String action, ResponseListener listener, JsonObject data) {
         handler.process(RequestMock.get(action, listener, data));

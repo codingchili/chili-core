@@ -1,8 +1,6 @@
 package com.codingchili.core.Realm.Controller;
 
 import com.codingchili.core.Protocols.*;
-import com.codingchili.core.Protocols.Exception.AuthorizationRequiredException;
-import com.codingchili.core.Protocols.Exception.HandlerMissingException;
 import com.codingchili.core.Protocols.Exception.ProtocolException;
 import com.codingchili.core.Protocols.Util.Protocol;
 import com.codingchili.core.Protocols.Util.TokenFactory;
@@ -39,9 +37,9 @@ public class RealmHandler extends AbstractHandler {
         startInstances();
         registerRealm();
 
-        protocol.use(ID_PING, this::ping, Access.PUBLIC)
-                .use(REALM_CHARACTER_REQUEST, this::characterRequest)
-                .use(ANY, this::instanceHandler);
+        protocol.use(REALM_CHARACTER_REQUEST, this::characterRequest)
+                .use(ANY, this::instanceHandler)
+                .use(ID_PING, this::ping, Access.PUBLIC);
     }
 
     private void startInstances() {

@@ -8,15 +8,11 @@ import com.codingchili.core.Configuration.VertxSettings;
 import com.codingchili.core.Logging.Model.ConsoleLogger;
 import com.codingchili.core.Protocols.ClusterVerticle;
 import io.vertx.core.*;
-import io.vertx.core.metrics.MetricsOptions;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.codingchili.core.Configuration.Strings.*;
-import static java.lang.System.exit;
 
 /**
  * @author Robin Duda

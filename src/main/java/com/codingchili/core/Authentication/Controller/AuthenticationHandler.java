@@ -4,14 +4,11 @@ import com.codingchili.core.Authentication.Configuration.AuthProvider;
 import com.codingchili.core.Authentication.Configuration.AuthServerSettings;
 import com.codingchili.core.Authentication.Model.AsyncAccountStore;
 import com.codingchili.core.Authentication.Model.AsyncRealmStore;
-import com.codingchili.core.Protocols.AbstractHandler;
-import com.codingchili.core.Protocols.Access;
+import com.codingchili.core.Protocols.*;
 import com.codingchili.core.Protocols.Authentication.RealmRegister;
 import com.codingchili.core.Protocols.Exception.AuthorizationRequiredException;
 import com.codingchili.core.Protocols.Exception.HandlerMissingException;
 import com.codingchili.core.Protocols.Realm.CharacterResponse;
-import com.codingchili.core.Protocols.Request;
-import com.codingchili.core.Protocols.RequestHandler;
 import com.codingchili.core.Protocols.Util.Protocol;
 import com.codingchili.core.Protocols.Util.TokenFactory;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
@@ -34,7 +31,7 @@ public class AuthenticationHandler extends AbstractHandler {
     private TokenFactory tokens;
 
     public AuthenticationHandler(AuthProvider provider) {
-        super(NODE_AUTHENTICATION_REALMS);
+       super(NODE_AUTHENTICATION_REALMS);
 
         logger = provider.getLogger();
         accounts = provider.getAccountStore();
@@ -45,7 +42,8 @@ public class AuthenticationHandler extends AbstractHandler {
         protocol.use(REALM_REGISTER, this::register, PUBLIC)
                 .use(REALM_UPDATE, this::update)
                 .use(CLIENT_CLOSE, this::disconnected)
-                .use(REALM_CHARACTER_REQUEST, this::character);
+                .use(REALM_CHARACTER_REQUEST, this::character)
+                .use(ID_PING, Request::accept, PUBLIC);
     }
 
     private Access authenticate(Request request) {

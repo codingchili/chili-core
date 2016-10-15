@@ -3,16 +3,11 @@ package com.codingchili.core.Authentication.Model;
 import com.codingchili.core.Authentication.Configuration.AuthProvider;
 import com.codingchili.core.Authentication.Configuration.AuthServerSettings;
 import com.codingchili.core.Configuration.ConfigMock;
-import com.codingchili.core.Configuration.Strings;
 import com.codingchili.core.Logging.LoggerMock;
 import com.codingchili.core.Logging.Model.Logger;
 import com.codingchili.core.Protocols.Util.TokenFactory;
-import com.codingchili.core.Realm.Configuration.RealmSettings;
 import com.codingchili.core.Shared.AsyncMapMock;
-import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-
-import java.util.HashMap;
 
 /**
  * @author Robin Duda
@@ -24,6 +19,7 @@ public class ProviderMock extends AuthProvider {
 
     public ProviderMock() {
         super();
+
         realms = new HazelRealmDB(new AsyncMapMock<>());
         accounts = new HazelAccountDB(new AsyncMapMock<>(), Vertx.vertx());
     }

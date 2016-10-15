@@ -6,8 +6,6 @@ import com.codingchili.core.Logging.Model.ConsoleLogger;
 import com.codingchili.core.Logging.Model.ElasticLogger;
 import com.codingchili.core.Protocols.AbstractHandler;
 import com.codingchili.core.Protocols.Access;
-import com.codingchili.core.Protocols.Exception.AuthorizationRequiredException;
-import com.codingchili.core.Protocols.Exception.HandlerMissingException;
 import com.codingchili.core.Protocols.Exception.ProtocolException;
 import com.codingchili.core.Protocols.Request;
 import com.codingchili.core.Protocols.RequestHandler;
@@ -37,7 +35,8 @@ public class LogHandler extends AbstractHandler {
         this.console = new ConsoleLogger(settings.getConsole());
         this.elastic = new ElasticLogger(settings.getElastic(), provider.getVertx());
 
-        protocol.use(PROTOCOL_LOGGING, this::log);
+        protocol.use(PROTOCOL_LOGGING, this::log)
+                .use(ID_PING, Request::accept, PUBLIC);
     }
 
     private void log(Request request) {

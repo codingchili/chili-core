@@ -12,12 +12,14 @@ import static com.codingchili.core.Configuration.Strings.*;
  * @author Robin Duda
  */
 public class ClusterRequest implements Request {
+    private int timeout = 3000;
     private Buffer buffer;
     private JsonObject json;
     private Message message;
 
     public ClusterRequest(Request request) {
         this(((ClusterRequest) request).getMessage());
+        this.timeout = request.timeout();
     }
 
     public ClusterRequest(Message message) {
@@ -49,10 +51,14 @@ public class ClusterRequest implements Request {
 
     @Override
     public void write(Object object) {
-        if (object instanceof Buffer) {
-            message.reply(object);
+        if (object != null) {
+            if (object instanceof Buffer) {
+                message.reply(object);
+            } else {
+                message.reply(Serializer.json(object).put(PROTOCOL_STATUS, ResponseStatus.ACCEPTED));
+            }
         } else {
-            message.reply(Serializer.json(object).put(PROTOCOL_STATUS, ResponseStatus.ACCEPTED));
+            accept();
         }
     }
 
@@ -101,7 +107,7 @@ public class ClusterRequest implements Request {
 
     @Override
     public int timeout() {
-        return 0;
+        return timeout;
     }
 
     public Message getMessage() {

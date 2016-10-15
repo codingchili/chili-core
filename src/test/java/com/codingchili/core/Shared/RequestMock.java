@@ -4,6 +4,7 @@ import com.codingchili.core.Protocols.ClusterRequest;
 import com.codingchili.core.Protocols.ResponseStatus;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
@@ -17,7 +18,7 @@ import static com.codingchili.core.Configuration.Strings.PROTOCOL_STATUS;
 public class RequestMock {
 
     public static ClusterRequestMock get(String action, ResponseListener listener, JsonObject json) {
-        return new ClusterRequestMock(new MessageMock(listener, json, action));
+        return new ClusterRequestMock(new MessageMock(action, listener, json));
     }
 
     private static class ClusterRequestMock extends ClusterRequest {
@@ -30,7 +31,7 @@ public class RequestMock {
         private JsonObject json;
         private ResponseListener listener;
 
-        MessageMock(ResponseListener listener, JsonObject json, String action) {
+        MessageMock(String action, ResponseListener listener, JsonObject json) {
             if (json == null) {
                 this.json = new JsonObject();
             } else {
@@ -48,7 +49,15 @@ public class RequestMock {
 
         @Override
         public void reply(Object message) {
-            JsonObject data = (JsonObject) message;
+            JsonObject data = new JsonObject();
+
+            if (message instanceof JsonObject) {
+                data = (JsonObject) message;
+            } else if (message instanceof Buffer) {
+                data.put("buffer", message.toString());
+                data.put(PROTOCOL_STATUS, ResponseStatus.ACCEPTED);
+            }
+
             listener.handle(data, ResponseStatus.valueOf(data.getString(PROTOCOL_STATUS)));
         }
 

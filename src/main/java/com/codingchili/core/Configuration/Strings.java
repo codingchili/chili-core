@@ -103,6 +103,7 @@ public class Strings {
     public static final String ID_CONTENT = "content";
     public static final String ID_TITLE = "title";
     public static final String ID_LICENSE = "license";
+    public static final String ID_BUFFER = "buffer";
 
 
     //Database naming.

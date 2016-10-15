@@ -5,8 +5,6 @@ import com.codingchili.core.Patching.Configuration.PatchServerSettings;
 import com.codingchili.core.Patching.Model.PatchKeeper;
 import com.codingchili.core.Patching.Model.PatchReloadedException;
 import com.codingchili.core.Protocols.AbstractHandler;
-import com.codingchili.core.Protocols.Exception.AuthorizationRequiredException;
-import com.codingchili.core.Protocols.Exception.HandlerMissingException;
 import com.codingchili.core.Protocols.Exception.ProtocolException;
 import com.codingchili.core.Protocols.Request;
 import com.codingchili.core.Protocols.RequestHandler;
@@ -16,6 +14,7 @@ import java.nio.file.NoSuchFileException;
 
 import static com.codingchili.core.Configuration.Strings.*;
 import static com.codingchili.core.Protocols.Access.AUTHORIZED;
+import static com.codingchili.core.Protocols.Access.PUBLIC;
 
 /**
  * @author Robin Duda
@@ -35,7 +34,8 @@ public class PatchHandler extends AbstractHandler {
                 .use(PATCH_GAME_INFO, this::gameinfo)
                 .use(PATCH_NEWS, this::news)
                 .use(PATCH_DATA, this::patchdata)
-                .use(PATCH_DOWNLOAD, this::download);
+                .use(PATCH_DOWNLOAD, this::download)
+                .use(ID_PING, Request::accept, PUBLIC);
     }
 
     @Override

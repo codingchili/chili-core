@@ -1,6 +1,5 @@
 package com.codingchili.core.Authentication.Realm;
 
-import com.codingchili.core.Authentication.Configuration.AuthProvider;
 import com.codingchili.core.Authentication.Controller.AuthenticationHandler;
 import com.codingchili.core.Authentication.Model.Account;
 import com.codingchili.core.Authentication.Model.ProviderMock;
@@ -189,6 +188,12 @@ public class ServerHandlerTest {
         });
     }
 
+    @Test
+    public void testPingAuthenticationHandler(TestContext context) {
+        handle(ID_PING, ((response, status) -> {
+            context.assertEquals(status, ResponseStatus.ACCEPTED);
+        }));
+    }
 
     @Test
     public void failRealmCharacterRequest(TestContext context) {

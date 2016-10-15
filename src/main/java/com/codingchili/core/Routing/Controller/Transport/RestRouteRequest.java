@@ -83,12 +83,15 @@ public class RestRouteRequest implements Request {
         String target = NODE_WEBSERVER;
 
         try {
-            JsonObject data = context.getBodyAsJson();
+            if (!context.getBodyAsString().isEmpty()) {
+                JsonObject data = context.getBodyAsJson();
 
-            if (data != null && data.containsKey(ID_TARGET)) {
-                target = data.getString(ID_TARGET);
+                if (data != null && data.containsKey(ID_TARGET)) {
+                    target = data.getString(ID_TARGET);
+                }
             }
         } catch (DecodeException ignored) {
+            target = "";
         }
 
         return target;

@@ -10,6 +10,8 @@ import io.vertx.core.json.JsonObject;
 
 /**
  * @author Robin Duda
+ *
+ * Used to mock a request carrying a buffer only.
  */
 class WebRequestMock implements Request {
     private ResponseListener listener;
@@ -21,22 +23,6 @@ class WebRequestMock implements Request {
         this.listener = listener;
         this.data = data;
         this.action = action;
-    }
-
-    public String getAction() {
-        return action;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
-    }
-
-    public JsonObject getData() {
-        return data;
-    }
-
-    public void setData(JsonObject data) {
-        this.data = data;
     }
 
     @Override
@@ -55,7 +41,7 @@ class WebRequestMock implements Request {
         listener.handle(Serializer.json(object), ResponseStatus.ACCEPTED);
     }
 
-    public Buffer getBuffer() {
+    Buffer getBuffer() {
         return buffer;
     }
 

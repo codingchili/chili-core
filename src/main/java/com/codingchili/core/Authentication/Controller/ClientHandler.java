@@ -48,7 +48,8 @@ public class ClientHandler extends AbstractHandler {
                 .use(CLIENT_CHARACTER_REMOVE, this::characterRemove)
                 .use(CLIENT_REALM_LIST, this::realmlist, PUBLIC)
                 .use(CLIENT_REGISTER, this::register, PUBLIC)
-                .use(CLIENT_AUTHENTICATE, this::authenticate, PUBLIC);
+                .use(CLIENT_AUTHENTICATE, this::authenticate, PUBLIC)
+                .use(ID_PING, Request::accept, PUBLIC);
     }
 
     private Access authenticate(Request request) {

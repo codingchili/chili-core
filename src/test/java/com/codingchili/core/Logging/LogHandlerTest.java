@@ -8,6 +8,7 @@ import com.codingchili.core.Logging.Controller.LogHandler;
 import com.codingchili.core.Protocols.Util.Serializer;
 import com.codingchili.core.Protocols.Util.Token;
 import com.codingchili.core.Protocols.Util.TokenFactory;
+import com.codingchili.core.Shared.RequestMock;
 import com.codingchili.core.Shared.ResponseListener;
 import com.codingchili.core.Protocols.ResponseStatus;
 import io.vertx.core.json.JsonObject;
@@ -68,6 +69,6 @@ public class LogHandlerTest {
     }
 
     private void handle(String action, ResponseListener listener, JsonObject data) {
-        handler.process(new LogRequestMock(action, listener, data));
+        handler.process(RequestMock.get(action, listener, data));
     }
 }

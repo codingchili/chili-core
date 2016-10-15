@@ -32,9 +32,13 @@ public abstract class AbstractHandler {
 
     public abstract void handle(Request request) throws ProtocolException;
 
-    public void stop(Future<Void> future) {}
+    public void stop(Future<Void> future) {
+        future.complete();
+    }
 
-    public void start(Future<Void> future) {}
+    public void start(Future<Void> future) {
+        future.complete();
+    }
 
     /**
      * Get the address of which the handler is providing handlers for.

@@ -75,6 +75,4 @@ public class InstanceSettings implements Serializable {
     protected void setNpc(ArrayList<Npc> npc) {
         this.npc = npc;
     }
-
-
 }

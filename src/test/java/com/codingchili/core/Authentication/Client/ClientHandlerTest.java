@@ -53,7 +53,7 @@ public class ClientHandlerTest {
     private static ClientHandler handler;
 
     @Rule
-    public Timeout timeout = new Timeout(50, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
 
     @Before
     public void setUp(TestContext context) throws IOException {
@@ -321,6 +321,13 @@ public class ClientHandlerTest {
             context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
         }, new JsonObject()
                 .put(ID_TOKEN, getInvalidClientToken()));
+    }
+
+    @Test
+    public void testPingClientHandler(TestContext context) {
+        handle(ID_PING, ((response, status) -> {
+            context.assertEquals(status, ResponseStatus.ACCEPTED);
+        }));
     }
 
     private JsonObject getInvalidClientToken() {

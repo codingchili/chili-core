@@ -3,9 +3,7 @@ package com.codingchili.core.Authentication.Controller;
 import com.codingchili.core.Protocols.ClusterRequest;
 import com.codingchili.core.Protocols.Request;
 import com.codingchili.core.Protocols.Util.Serializer;
-import com.codingchili.core.Protocols.Util.Token;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
-import io.vertx.core.eventbus.Message;
 
 import static com.codingchili.core.Configuration.Strings.*;
 

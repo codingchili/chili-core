@@ -1,8 +1,6 @@
 package com.codingchili.core.Routing.Controller;
 
 import com.codingchili.core.Protocols.AbstractHandler;
-import com.codingchili.core.Protocols.Exception.AuthorizationRequiredException;
-import com.codingchili.core.Protocols.Exception.HandlerMissingException;
 import com.codingchili.core.Protocols.Exception.ProtocolException;
 import com.codingchili.core.Protocols.Request;
 import com.codingchili.core.Protocols.RequestHandler;
@@ -32,7 +30,8 @@ public class RouteHandler extends AbstractHandler {
                 .use(NODE_LOGGING, this::logging)
                 .use(NODE_PATCHING, this::patching)
                 .use(NODE_AUTHENTICATION_REALMS, this::realmAuthentication)
-                .use(NODE_AUTHENTICATION_CLIENTS, this::clientAuthentication);
+                .use(NODE_AUTHENTICATION_CLIENTS, this::clientAuthentication)
+                .use(ID_PING, request -> request.write(null));
     }
 
     @Override
@@ -82,9 +81,9 @@ public class RouteHandler extends AbstractHandler {
     private void sendCluster(String address, Request request) {
         DeliveryOptions options = new DeliveryOptions().setSendTimeout(request.timeout());
 
-        vertx.eventBus().send(address, request.data(), options, result -> {
-            if (result.succeeded()) {
-                request.write(result.result().body());
+        vertx.eventBus().send(address, request.data(), options, send -> {
+            if (send.succeeded()) {
+                request.write(send.result().body());
             } else {
                 request.missing();
             }

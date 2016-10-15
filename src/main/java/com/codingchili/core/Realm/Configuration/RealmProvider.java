@@ -5,8 +5,6 @@ import com.codingchili.core.Logging.Model.DefaultLogger;
 import com.codingchili.core.Logging.Model.Logger;
 import io.vertx.core.Vertx;
 
-import static com.codingchili.core.Configuration.Strings.NODE_REALM;
-
 /**
  * @author Robin Duda
  */
