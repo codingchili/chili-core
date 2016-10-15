@@ -30,7 +30,7 @@ public class WebsiteTest {
     private WebHandler handler;
 
     @Rule
-    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
 
     @Before
     public void setUp() {

@@ -1,14 +1,14 @@
 {
   "logserver" : {
     "token" : {
-      "key" : "F0A2569F04926E5B574C9EDD5FD659A44A2D531995C8B3CA1D47736A0A6037342FA64FD84337E111D437CA4FD9B021D70509C72C4CC3AE78FB266C66B97AD2A7",
-      "expiry" : 1479189657,
+      "key" : "BE87982F0E95930A41D15D2093424D2D2EB40849023BAC79EA69393966F0CB970CE6722CAF5DA873E0350507ED62D4DC016ED8DAAA50E98203362C3BDF917495",
+      "expiry" : 1479191608,
       "domain" : "authentication.node@server.1"
     },
     "system" : "authentication.node",
     "host" : "server.1"
   },
-  "clientSecret" : "OugUa0owhsg1tFX9VH1asDJgLYU9g1RNaa4jP7B6Bz+j7XeSqoP6+LsMmVUUmwCQf/qoE8Q2sNPS5ipR4UCbuw==",
-  "realmSecret" : "xUr5qsI1+lX5duwMH84Xi/BwIGPWZ5KOKeMucZI+SNVAwZJQ/aWuLphpDPxV3X0tXG4Ts4TqGWrjV9MWBSfemw==",
+  "clientSecret" : "/yUdD323AlpGKJI2ftxywwuLhXoUVvkPRNXkuk8mVkBrvcGOBoUKQ561+oGWiKMtnr/woFXn3QJROoqpvpIYHw==",
+  "realmSecret" : "I/Bb3tN+ZI3N+ZpXdZagI3V5Sr9nh5dM7N7MWkqWWUAy4l0Ot3lcdLscR5xiq0ZZV0p4GPPOHFuerXFKH3CpOw==",
   "realms" : [ "Angel Oak", "Developer Realm", "Iron Oak", "Staging Realm", "Wisteria", "Red Maple" ]
 }

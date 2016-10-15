@@ -32,7 +32,7 @@ public class PatchHandlerTest {
     private static Vertx vertx;
 
     @Rule
-    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
 
     @BeforeClass
     public static void startUp() {
