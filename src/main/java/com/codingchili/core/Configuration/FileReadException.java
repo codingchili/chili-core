@@ -6,7 +6,7 @@ package com.codingchili.core.Configuration;
 class FileReadException extends RuntimeException {
 
     FileReadException(String path) {
-        super(Strings.ERROR_READ_FILE_FAIL.replace("%file%", path));
+        super(Strings.getFileReadError(path));
     }
 
 }

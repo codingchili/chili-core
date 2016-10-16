@@ -1,11 +1,6 @@
 package com.codingchili.core.Authentication.Model;
 
-import com.codingchili.core.Realm.Instance.Model.PlayerCharacter;
-
-import java.util.HashMap;
-
 public class Account {
-    private HashMap<String, HashMap<String, PlayerCharacter>> characters = new HashMap<>();
     private String username;
     private String password;
     private String email;
@@ -21,21 +16,11 @@ public class Account {
     public Account(Account account) {
         this.username = account.getUsername();
         this.email = account.getEmail();
-        this.characters = account.getCharacters();
     }
 
     public Account(AccountMapping account) {
         this.username = account.getUsername();
         this.email = account.getEmail();
-        this.characters = account.getRealms();
-    }
-
-    public HashMap<String, HashMap<String, PlayerCharacter>> getCharacters() {
-        return characters;
-    }
-
-    public void setCharacters(HashMap<String, HashMap<String, PlayerCharacter>> characters) {
-        this.characters = characters;
     }
 
     public String getUsername() {
@@ -63,10 +48,5 @@ public class Account {
     public Account setEmail(String email) {
         this.email = email;
         return this;
-    }
-
-    public void addCharacter(String realmName, PlayerCharacter playerCharacter) {
-        characters.putIfAbsent(realmName, new HashMap<>());
-        characters.get(realmName).put(playerCharacter.getName(), playerCharacter);
     }
 }

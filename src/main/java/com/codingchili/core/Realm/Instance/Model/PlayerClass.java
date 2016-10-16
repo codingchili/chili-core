@@ -1,7 +1,6 @@
 package com.codingchili.core.Realm.Instance.Model;
 
 import com.codingchili.core.Configuration.LoadableConfigurable;
-import com.codingchili.core.Configuration.Strings;
 
 import java.io.Serializable;
 import java.util.ArrayList;

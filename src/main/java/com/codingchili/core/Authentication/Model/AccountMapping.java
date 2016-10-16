@@ -1,16 +1,12 @@
 package com.codingchili.core.Authentication.Model;
 
-import com.codingchili.core.Realm.Instance.Model.PlayerCharacter;
-
 import java.io.Serializable;
-import java.util.HashMap;
 
 /**
  * @author Robin Duda
  *         Database mapping not shared outside storage.
  */
 class AccountMapping implements Serializable {
-    private HashMap<String, HashMap<String, PlayerCharacter>> realms = new HashMap<>();
     private String username;
     private String email;
     private String salt;
@@ -22,15 +18,6 @@ class AccountMapping implements Serializable {
     public AccountMapping(Account account) {
         this.username = account.getUsername();
         this.email = account.getEmail();
-        this.realms = account.getCharacters();
-    }
-
-    public HashMap<String, HashMap<String, PlayerCharacter>> getRealms() {
-        return realms;
-    }
-
-    public void setRealms(HashMap<String, HashMap<String, PlayerCharacter>> realms) {
-        this.realms = realms;
     }
 
     public String getSalt() {

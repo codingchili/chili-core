@@ -1,8 +1,8 @@
 package com.codingchili.core.Authentication;
 
 import com.codingchili.core.Authentication.Configuration.AuthProvider;
-import com.codingchili.core.Authentication.Controller.ClientHandler;
 import com.codingchili.core.Authentication.Controller.AuthenticationHandler;
+import com.codingchili.core.Authentication.Controller.ClientHandler;
 import com.codingchili.core.Protocols.ClusterListener;
 import com.codingchili.core.Protocols.ClusterVerticle;
 import io.vertx.core.Future;

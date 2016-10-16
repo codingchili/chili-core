@@ -41,8 +41,6 @@ import static com.codingchili.core.Configuration.Strings.*;
 
 @RunWith(VertxUnitRunner.class)
 public class ClientHandlerTest {
-    private static final String CHARACTER_NAME = "character";
-    private static final String CHARACTER_NAME_DELETED = "character-deleted";
     private static final String PASSWORD = "password";
     private static final String USERNAME = "username";
     private static final String USERNAME_NEW = "new-username";
@@ -63,7 +61,7 @@ public class ClientHandlerTest {
                 .setTemplate(new PlayerCharacter().setName("realm 1").setClassName(CLASS_NAME))
                 .setName(REALM_NAME)
                 .setType("test-type")
-                .setResources("ao.pathing.node");
+                .setResources("ao.patching.node");
 
         ArrayList<PlayerClass> classes = new ArrayList<>();
         classes.add(new PlayerClass().setName(CLASS_NAME));
@@ -87,14 +85,10 @@ public class ClientHandlerTest {
     private static void addAccount(TestContext context) {
         Async async = context.async();
         AsyncAccountStore accounts = provider.getAccountStore();
-        PlayerCharacter add = new PlayerCharacter().setName(CHARACTER_NAME);
-        PlayerCharacter delete = new PlayerCharacter().setName(CHARACTER_NAME_DELETED);
 
         Future<Account> future = Future.future();
 
         future.setHandler(result -> {
-            accounts.upsertCharacter(Future.future(), REALM_NAME, USERNAME, add);
-            accounts.upsertCharacter(Future.future(), REALM_NAME, USERNAME, delete);
             async.complete();
         });
 
@@ -177,119 +171,8 @@ public class ClientHandlerTest {
         });
     }
 
-    @Test
-    public void removeCharacter(TestContext context) {
-        Async async = context.async();
-
-        handle(CLIENT_CHARACTER_REMOVE, (response, status) -> {
-            context.assertEquals(ResponseStatus.ACCEPTED, status);
-            async.complete();
-        }, new JsonObject()
-                .put(ID_CHARACTER, CHARACTER_NAME_DELETED)
-                .put(ID_TOKEN, getClientToken())
-                .put(ID_REALM, REALM_NAME));
-    }
-
     private JsonObject getClientToken() {
         return Serializer.json(new Token(clientToken, USERNAME));
-    }
-
-    @Test
-    public void failToRemoveMissingCharacter(TestContext context) {
-        Async async = context.async();
-
-        handle(CLIENT_CHARACTER_REMOVE, (response, status) -> {
-            context.assertEquals(ResponseStatus.ERROR, status);
-            async.complete();
-        }, new JsonObject()
-                .put(ID_CHARACTER, CHARACTER_NAME + ".MISSING")
-                .put(ID_TOKEN, getClientToken())
-                .put(ID_REALM, REALM_NAME));
-    }
-
-    @Test
-    public void createCharacter(TestContext context) {
-        Async async = context.async();
-
-        handle(CLIENT_CHARACTER_CREATE, (response, status) -> {
-            context.assertEquals(ResponseStatus.ACCEPTED, status);
-            async.complete();
-        }, new JsonObject()
-                .put(ID_CHARACTER, CHARACTER_NAME + ".NEW")
-                .put(ID_CLASS, CLASS_NAME)
-                .put(ID_TOKEN, getClientToken())
-                .put(ID_REALM, REALM_NAME));
-    }
-
-    @Test
-    public void failOverwriteExistingCharacter(TestContext context) {
-        Async async = context.async();
-        handle(CLIENT_CHARACTER_CREATE, (response, status) -> {
-            context.assertEquals(ResponseStatus.CONFLICT, status);
-            async.complete();
-        }, new JsonObject()
-                .put(ID_CHARACTER, CHARACTER_NAME)
-                .put(ID_TOKEN, getClientToken())
-                .put(ID_REALM, REALM_NAME));
-    }
-
-    @Test
-    public void listCharactersOnRealm(TestContext context) {
-        Async async = context.async();
-
-        handle(CLIENT_CHARACTER_LIST, (response, status) -> {
-            context.assertEquals(ResponseStatus.ACCEPTED, status);
-            context.assertTrue(characterInJsonArray(CHARACTER_NAME, response.getJsonArray(ID_CHARACTERS)));
-            async.complete();
-        }, new JsonObject()
-                .put(ID_TOKEN, getClientToken())
-                .put(ID_REALM, REALM_NAME));
-    }
-
-    private boolean characterInJsonArray(String charname, JsonArray characters) {
-        Boolean found = false;
-
-        for (int i = 0; i < characters.size(); i++) {
-            if (characters.getJsonObject(i).getString(ID_NAME).equals(charname))
-                found = true;
-        }
-        return found;
-    }
-
-    @Test
-    public void realmDataOnCharacterList(TestContext context) {
-        Async async = context.async();
-
-        handle(CLIENT_CHARACTER_LIST, (response, status) -> {
-            JsonObject realm = response.getJsonObject(ID_REALM);
-
-            context.assertEquals(ResponseStatus.ACCEPTED, status);
-            context.assertTrue(realm.containsKey(ID_CLASSES));
-            context.assertTrue(realm.containsKey(ID_NAME));
-            context.assertTrue(realm.containsKey(ID_AFFLICTIONS));
-            context.assertTrue(realm.containsKey(ID_TEMPLATE));
-
-            async.complete();
-        }, new JsonObject()
-                .put(ID_TOKEN, getClientToken())
-                .put(ID_REALM, REALM_NAME));
-    }
-
-    @Test
-    public void realmDataDoesNotIncludeTokenOnCharacterList(TestContext context) {
-        Async async = context.async();
-
-        handle(CLIENT_CHARACTER_LIST, (response, status) -> {
-            JsonObject realm = response.getJsonObject(ID_REALM);
-
-            context.assertEquals(ResponseStatus.ACCEPTED, status);
-            context.assertFalse(realm.containsKey(ID_AUTHENTICATION));
-            context.assertFalse(realm.containsKey(ID_TOKEN));
-
-            async.complete();
-        }, new JsonObject()
-                .put(ID_TOKEN, getClientToken())
-                .put(ID_REALM, REALM_NAME));
     }
 
     @Test
@@ -311,30 +194,6 @@ public class ClientHandlerTest {
     @Test
     public void failCreateRealmTokenWhenInvalidToken(TestContext context) {
         handle(Strings.CLIENT_REALM_TOKEN, (response, status) -> {
-            context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
-        }, new JsonObject()
-                .put(ID_TOKEN, getInvalidClientToken()));
-    }
-
-    @Test
-    public void failListCharactersOnRealmWhenInvalidToken(TestContext context) {
-        handle(Strings.CLIENT_CHARACTER_LIST, (response, status) -> {
-            context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
-        }, new JsonObject()
-                .put(ID_TOKEN, Serializer.json(getInvalidClientToken())));
-    }
-
-    @Test
-    public void failToCreateCharacterWhenInvalidToken(TestContext context) {
-        handle(Strings.CLIENT_CHARACTER_CREATE, (response, status) -> {
-            context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
-        }, new JsonObject()
-                .put(ID_TOKEN, getInvalidClientToken()));
-    }
-
-    @Test
-    public void failToRemoveCharacterWhenInvalidToken(TestContext context) {
-        handle(Strings.CLIENT_CHARACTER_REMOVE, (response, status) -> {
             context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
         }, new JsonObject()
                 .put(ID_TOKEN, getInvalidClientToken()));

@@ -14,9 +14,7 @@ import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import static com.codingchili.core.Configuration.Strings.ID_CONFIGURATION;
-import static com.codingchili.core.Configuration.Strings.PATH_GAME;
-import static com.codingchili.core.Configuration.Strings.PATH_GAME_OVERRIDE;
+import static com.codingchili.core.Configuration.Strings.*;
 
 /**
  * @author Robin Duda

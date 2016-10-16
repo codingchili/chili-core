@@ -55,7 +55,19 @@ public class ClusterRequest implements Request {
             if (object instanceof Buffer) {
                 message.reply(object);
             } else {
-                message.reply(Serializer.json(object).put(PROTOCOL_STATUS, ResponseStatus.ACCEPTED));
+                JsonObject reply;
+
+                if (object instanceof JsonObject) {
+                    reply = (JsonObject) object;
+                } else {
+                    reply = Serializer.json(object);
+                }
+
+                if (!reply.containsKey(PROTOCOL_STATUS)) {
+                    reply.put(PROTOCOL_STATUS, ResponseStatus.ACCEPTED);
+                }
+
+                message.reply(reply);
             }
         } else {
             accept();

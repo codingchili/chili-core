@@ -1,7 +1,7 @@
 package com.codingchili.core.Configuration.System;
 
 import com.codingchili.core.Configuration.LoadableConfigurable;
-import com.codingchili.core.Protocols.Util.Validator.*;
+import com.codingchili.core.Protocols.Util.Validator.RegexAction;
 
 import java.util.ArrayList;
 import java.util.List;

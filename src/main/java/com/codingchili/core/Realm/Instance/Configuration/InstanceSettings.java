@@ -1,7 +1,6 @@
 package com.codingchili.core.Realm.Instance.Configuration;
 
 import com.codingchili.core.Configuration.LoadableConfigurable;
-import com.codingchili.core.Configuration.Strings;
 import com.codingchili.core.Realm.Instance.Model.Node;
 import com.codingchili.core.Realm.Instance.Model.Npc;
 import com.codingchili.core.Realm.Instance.Model.Portal;

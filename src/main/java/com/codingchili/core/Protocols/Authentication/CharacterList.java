@@ -3,18 +3,19 @@ package com.codingchili.core.Protocols.Authentication;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
 import com.codingchili.core.Realm.Instance.Model.PlayerCharacter;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author Robin Duda
  */
 public class CharacterList {
     private RealmSettings realm;
-    private ArrayList<PlayerCharacter> characters;
+    private Collection<PlayerCharacter> characters;
 
-    public CharacterList(RealmSettings realm, ArrayList<PlayerCharacter> characters) {
+    public CharacterList(RealmSettings realm, Map<String, PlayerCharacter> characters) {
         this.realm = realm.removeAuthentication();
-        this.characters = characters;
+        this.characters = characters.values();
     }
 
     public RealmSettings getRealm() {
@@ -25,11 +26,11 @@ public class CharacterList {
         this.realm = realm;
     }
 
-    public ArrayList<PlayerCharacter> getCharacters() {
+    public Collection<PlayerCharacter> getCharacters() {
         return characters;
     }
 
-    public void setCharacters(ArrayList<PlayerCharacter> characters) {
+    public void setCharacters(Collection<PlayerCharacter> characters) {
         this.characters = characters;
     }
 }

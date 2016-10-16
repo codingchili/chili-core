@@ -81,9 +81,7 @@ public class Strings {
     public static final String ID_FILE = "file";
     public static final String ID_RESOURCES = "resources";
     public static final String ID_DATA = "data";
-    public static final String ID_INSTANCE = "instance";
     public static final String ID_MESSAGE = "message";
-    public static final String ID_ERROR = "error";
     public static final String ID_ACTION = "action";
     public static final String ID_TARGET = "target";
     public static final String ID_VERSION = "version";
@@ -108,21 +106,13 @@ public class Strings {
     public static final String ID_BUFFER = "buffer";
     public static final String ID_DESCRIPTION = "description";
     public static final String ID_TYPE = "type";
-    public static final String ID_SECURE = "secure";
-    public static final String ID_TRUSTED = "trusted";
     public static final String ID_REMOTE = "remote";
     public static final String ID_ATTRIBUTES = "attributes";
     public static final String ID_PATCHER = "patcher";
     public static final String ID_CONFIGURATION = "configuration";
-    public static final String ID_FILESTORE = "filestore";
-
 
     //Database naming.
-    public static final String DB_ACCOUNTS = "accounts";
     public static final String DB_USER = "username";
-    public static final String DB_SALT = "salt";
-    public static final String DB_HASH = "hash";
-    public static final String DB_CHARACTERS = "characters";
 
     // Cluster addressing.
     public static final String NODE_AUTHENTICATION_CLIENTS = "client.authentication.node";
@@ -143,12 +133,11 @@ public class Strings {
     public static final String VERTICLE_REALM = "com.codingchili.core.Realm.Server";
     public static final String VERTICLE_ALL = "all";
 
-    // Routing
-    public static final String ROUTER_MISSING_MAP = "router.missing";
-
     // Shared memory maps.
     public static final String MAP_REALMS = "realms";
     public static final String MAP_ACCOUNTS = "accounts";
+    public static final String MAP_CHARACTERS = "characters";
+    public static final String MAP_ID = ".map";
 
     // Logging
     public static final String LOG_ID = "LOG_ID";
@@ -182,8 +171,6 @@ public class Strings {
     public static final String LOG_PATCHER_RELOAD = "patcher.reload";
     public static final String LOG_PATCHER_RELOADED = "patcher.reloaded";
     public static final String LOG_PATCHER_LOADED = "patcher.loaded";
-    public static final String LOG_DATABASE_ERROR = "database.error";
-    public static final String LOG_CONNECTION_ERROR = "connection.error";
     public static final String LOG_LEVEL = "level";
     public static final String LOG_LEVEL_SEVERE = "SEVERE";
     public static final String LOG_LEVEL_WARNING = "WARNING";
@@ -212,12 +199,24 @@ public class Strings {
     // Error messages.
     public static final String ERROR_TOKEN_FACTORY = "Token factory failed to generate token.";
     public static final String ERROR_CLUSTERING_REQUIRED = "Clustering required but not enabled.";
-    public static final String ERROR_IN_ADDRESS = "The requested node was not found in the cluster.";
     public static final String ERROR_NOT_AUTHORIZED = "The requested resource requires authorization.";
     public static final String ERROR_HANDLER_MISSING = "The requested handler was not found.";
-    public static final String ERROR_HANDLER_MISSING_AUTHENTICATOR = "The handler is missing an @Authenticator.";
     public static final String ERROR_LAUNCHER_STARTUP = "Failed to start the launcher with clustering.";
     public static final String ERRROR_LAUNCHER_SHUTDOWN = "System has been shut down..";
-    public static final String ERROR_REALM_DEPLOYMENT_FAILED = "Failed to deploy %realm%, already deployed in cluster.";
-    public static final String ERROR_READ_FILE_FAIL = "Failed to read file %file%.";
+
+    public static String getCharacterExistsError(String name) {
+        return "Character " + name + " already exists.";
+    }
+
+    public static String getDeployFailError(String service) {
+        return "Failed to deploy " + service + ", already deployed in cluster";
+    }
+
+    public static String getFileReadError(String file) {
+        return "Failed to read file " + file + ".";
+    }
+
+    public static String getCharacterMissingError(String character) {
+        return "Character " + character + " does not exist.";
+    }
 }

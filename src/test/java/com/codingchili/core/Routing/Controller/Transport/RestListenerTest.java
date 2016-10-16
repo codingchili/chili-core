@@ -12,7 +12,6 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +28,6 @@ public class RestListenerTest {
     private RoutingSettings settings;
     private RouteProvider provider;
     private ListenerSettings listener;
-    private String deployId;
 
     @Before
     public void setUp(TestContext context) {
@@ -52,15 +50,9 @@ public class RestListenerTest {
             settings.setTransport(transport);
 
             vertx.deployVerticle(new RestListener(new RouteHandler(provider), settings), deploy -> {
-                deployId = deploy.result();
                 async.complete();
             });
         });
-    }
-
-    @After
-    public void tearDown() {
-        vertx.close();
     }
 
     @Test

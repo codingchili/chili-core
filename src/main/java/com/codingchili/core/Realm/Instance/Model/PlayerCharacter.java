@@ -11,6 +11,7 @@ import static com.codingchili.core.Configuration.Strings.PATH_GAME_PLAYERTEMPLAT
  *         Model for player characters.
  */
 public class PlayerCharacter extends Attributes implements Serializable, LoadableConfigurable {
+    private String account;
     private String name;
     private String className;
     private Inventory inventory;
@@ -49,6 +50,14 @@ public class PlayerCharacter extends Attributes implements Serializable, Loadabl
 
     public void setInventory(Inventory inventory) {
         this.inventory = inventory;
+    }
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
     }
 
     @Override

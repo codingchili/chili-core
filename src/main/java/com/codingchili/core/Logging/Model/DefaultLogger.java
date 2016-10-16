@@ -3,10 +3,11 @@ package com.codingchili.core.Logging.Model;
 import com.codingchili.core.Authentication.Model.Account;
 import com.codingchili.core.Configuration.FileConfiguration;
 import com.codingchili.core.Configuration.RemoteAuthentication;
+import com.codingchili.core.Configuration.Strings;
 import com.codingchili.core.Configuration.System.VertxSettings;
 import com.codingchili.core.Protocols.Util.Serializer;
-import com.codingchili.core.Realm.Instance.Configuration.InstanceSettings;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
+import com.codingchili.core.Realm.Instance.Configuration.InstanceSettings;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.DeliveryOptions;
@@ -219,7 +220,7 @@ public class DefaultLogger extends Handler implements Logger {
     @Override
     public void onDeployRealmFailure(RealmSettings realm) {
         log(event(LOG_REALM_DEPLOY_ERROR, LOG_LEVEL_SEVERE)
-                .put(LOG_MESSAGE, ERROR_REALM_DEPLOYMENT_FAILED.replace("%realm%", realm.getName())));
+                .put(LOG_MESSAGE, Strings.getDeployFailError(realm.getName())));
     }
 
     @Override

@@ -62,19 +62,22 @@ public class Server extends ClusterVerticle {
      * @param realm    the realm to be deployed dynamically.
      */
     public static void deploy(Future future, Vertx vertx, RealmServerSettings settings, RealmSettings realm) {
-        RealmProvider provider = new RealmProvider(vertx, settings, realm);
-
         // Check if the routing id for the realm is unique
         vertx.eventBus().send(realm.getRemote(), getPing(), getDeliveryOptions(), response -> {
 
             if (response.failed()) {
                 // If no response then the id is not already in use.
-                vertx.deployVerticle(new ClusterListener(new RealmHandler(provider)), deploy -> {
-                    if (deploy.failed()) {
-                        throw new RuntimeException(deploy.cause());
-                    }
+                Future<RealmProvider> providerFuture = Future.future();
+
+                providerFuture.setHandler(provider -> {
+                    vertx.deployVerticle(new ClusterListener(new RealmHandler(provider.result())), deploy -> {
+                        if (deploy.failed()) {
+                            throw new RuntimeException(deploy.cause());
+                        }
+                    });
                 });
 
+                RealmProvider.create(providerFuture, settings, realm, vertx);
             } else {
                 future.fail(new RealmNotUniqueException());
             }

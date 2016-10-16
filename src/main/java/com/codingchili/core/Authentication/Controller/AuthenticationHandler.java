@@ -2,17 +2,17 @@ package com.codingchili.core.Authentication.Controller;
 
 import com.codingchili.core.Authentication.Configuration.AuthProvider;
 import com.codingchili.core.Authentication.Configuration.AuthServerSettings;
-import com.codingchili.core.Authentication.Model.AsyncAccountStore;
 import com.codingchili.core.Authentication.Model.AsyncRealmStore;
-import com.codingchili.core.Protocols.*;
+import com.codingchili.core.Protocols.AbstractHandler;
+import com.codingchili.core.Protocols.Access;
 import com.codingchili.core.Protocols.Authentication.RealmRegister;
 import com.codingchili.core.Protocols.Exception.AuthorizationRequiredException;
 import com.codingchili.core.Protocols.Exception.HandlerMissingException;
-import com.codingchili.core.Protocols.Realm.CharacterResponse;
+import com.codingchili.core.Protocols.Request;
+import com.codingchili.core.Protocols.RequestHandler;
 import com.codingchili.core.Protocols.Util.Protocol;
 import com.codingchili.core.Protocols.Util.TokenFactory;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
-import com.codingchili.core.Realm.Instance.Model.PlayerCharacter;
 import io.vertx.core.Future;
 
 import static com.codingchili.core.Configuration.Strings.*;
@@ -26,7 +26,6 @@ import static com.codingchili.core.Protocols.Access.PUBLIC;
 public class AuthenticationHandler extends AbstractHandler {
     private final Protocol<RequestHandler<AuthenticationRequest>> protocol = new Protocol<>();
     private final AsyncRealmStore realmStore;
-    private final AsyncAccountStore accounts;
     private final AuthServerSettings settings;
     private final TokenFactory tokens;
 
@@ -34,7 +33,6 @@ public class AuthenticationHandler extends AbstractHandler {
        super(NODE_AUTHENTICATION_REALMS);
 
         logger = provider.getLogger();
-        accounts = provider.getAccountStore();
         settings = provider.getAuthserverSettings();
         realmStore = provider.getRealmStore();
         tokens = provider.getRealmTokenFactory();
@@ -42,7 +40,6 @@ public class AuthenticationHandler extends AbstractHandler {
         protocol.use(REALM_REGISTER, this::register, PUBLIC)
                 .use(REALM_UPDATE, this::update)
                 .use(CLIENT_CLOSE, this::disconnected)
-                .use(REALM_CHARACTER_REQUEST, this::character)
                 .use(ID_PING, Request::accept, PUBLIC);
     }
 
@@ -106,17 +103,5 @@ public class AuthenticationHandler extends AbstractHandler {
         });
 
         realmStore.remove(realmFuture, request.realmName());
-    }
-
-    private void character(AuthenticationRequest request) {
-        Future<PlayerCharacter> find = Future.future();
-
-        find.setHandler(result -> {
-            if (result.succeeded()) {
-                request.write(new CharacterResponse(result.result()));
-            } else
-                request.error();
-        });
-        accounts.findCharacter(find, request.realmName(), request.account(), request.name());
     }
 }
