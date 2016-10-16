@@ -1,6 +1,5 @@
 package com.codingchili.core.Realm.Configuration;
 
-import com.codingchili.core.Configuration.FileConfiguration;
 import com.codingchili.core.Configuration.JsonFileStore;
 import com.codingchili.core.Configuration.LoadableConfigurable;
 import com.codingchili.core.Configuration.RemoteAuthentication;
@@ -14,12 +13,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
+import static com.codingchili.core.Configuration.FileConfiguration.*;
 import static com.codingchili.core.Configuration.Strings.*;
 
 /**
@@ -76,51 +74,37 @@ public class RealmSettings extends Attributes implements LoadableConfigurable {
     }
 
     private void readInstances(List<String> enabled) throws IOException {
-        String path = getConfigurationOverride(PATH_INSTANCE);
-        ArrayList<JsonObject> configurations = JsonFileStore.readDirectoryObjects(path);
-
-        Collection<String> files = FileConfiguration.available(path);
-
-        for (JsonObject configuration : configurations) {
-            if (enabled.isEmpty() || enabled.contains(configuration.getString(ID_NAME))) {
-                instances.add(Serializer.unpack(configuration, InstanceSettings.class));
-            }
-        }
+        available(PATH_INSTANCE).stream()
+                .map(path -> override(path, name))
+                .map(path -> (InstanceSettings) get(path, InstanceSettings.class))
+                .filter(instance -> enabled.contains(instance.getName()) || enabled.isEmpty())
+                .forEach(instances::add);
     }
 
     private void readPlayerClasses() throws IOException {
-        String path = getConfigurationOverride(PATH_GAME_CLASSES);
-        ArrayList<JsonObject> configurations = JsonFileStore.readDirectoryObjects(path);
-
-        for (JsonObject configuration : configurations) {
-            classes.add(Serializer.unpack(configuration, PlayerClass.class));
-        }
+        available(PATH_GAME_CLASSES).stream()
+                .map(path -> override(path, name))
+                .map(path -> (PlayerClass) get(path, PlayerClass.class))
+                .forEach(classes::add);
     }
 
     private void readAfflictions() throws IOException {
-        String path = getConfigurationOverride(PATH_GAME_AFFLICTIONS);
-        JsonArray configurations = JsonFileStore.readList(path);
-
-        for (int i = 0; i < configurations.size(); i++) {
-            Affliction affliction = Serializer.unpack(configurations.getJsonObject(i), Affliction.class);
-            afflictions.add(affliction);
-        }
+        available(PATH_GAME_AFFLICTIONS).stream()
+                .map(path -> override(path, name))
+                .map(path -> {
+                    try {
+                        return JsonFileStore.readList(path);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .flatMap(JsonArray::stream)
+                .map(json -> (JsonObject) json)
+                .forEach(affliction -> afflictions.add(Serializer.unpack(affliction, Affliction.class)));
     }
 
     private void readTemplate() throws IOException {
-        String path = getConfigurationOverride(PATH_GAME_PLAYERTEMPLATE);
-        this.template = Serializer.unpack(JsonFileStore.readObject(path), PlayerCharacter.class);
-    }
-
-    private String getConfigurationOverride(String path) {
-        String overridePath = path.replace(PATH_GAME, PATH_GAME_OVERRIDE + name);
-        File override = new File(overridePath);
-
-        if (override.exists()) {
-            return overridePath;
-        } else {
-            return path;
-        }
+        this.template = get(override(PATH_GAME_PLAYERTEMPLATE, name), PlayerCharacter.class);
     }
 
     public String getRemote() {

@@ -1,7 +1,9 @@
 package com.codingchili.core.Realm;
 
-import com.codingchili.core.Configuration.FileConfiguration;
+import com.codingchili.core.Configuration.RemoteAuthentication;
 import com.codingchili.core.Protocols.ResponseStatus;
+import com.codingchili.core.Protocols.Util.Token;
+import com.codingchili.core.Protocols.Util.TokenFactory;
 import com.codingchili.core.Realm.Configuration.RealmProvider;
 import com.codingchili.core.Realm.Configuration.RealmServerSettings;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
@@ -21,7 +23,6 @@ import org.junit.runner.RunWith;
 import java.util.concurrent.TimeUnit;
 
 import static com.codingchili.core.Configuration.Strings.ID_PING;
-import static com.codingchili.core.Configuration.Strings.PATH_REALMSERVER;
 
 /**
  * @author Robin Duda
@@ -39,9 +40,10 @@ public class RealmHandlerTest {
     @Before
     public void setUp() {
         vertx = Vertx.vertx();
-        RealmServerSettings serverSettings = FileConfiguration.get(PATH_REALMSERVER, RealmServerSettings.class);
-        RealmSettings realmSettings = FileConfiguration
-                .get(serverSettings.getEnabled().get(0).getPath(), RealmSettings.class);
+        RealmServerSettings serverSettings = new RealmServerSettings();
+        RealmSettings realmSettings = new RealmSettings()
+                .setAuthentication(new RemoteAuthentication()
+                .setToken(new Token(new TokenFactory("s".getBytes()), "realmName")));
 
         handler = new RealmHandler(new RealmProvider(vertx, serverSettings, realmSettings));
     }

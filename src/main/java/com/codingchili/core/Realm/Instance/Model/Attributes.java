@@ -15,6 +15,8 @@ public abstract class Attributes {
     private final HashMap<String, Double> doubleAttributes = new HashMap<>();
     @JsonIgnore
     private final HashMap<String, String> stringAttributes = new HashMap<>();
+    @JsonIgnore
+    private final HashMap<String, Boolean> boolAttributes = new HashMap<>();
 
     public void setAttributes(HashMap<String, Object> attributes) {
         this.attributes = attributes;
@@ -28,6 +30,8 @@ public abstract class Attributes {
                 doubleAttributes.put(key, (Double) object);
             } else if (object instanceof Integer) {
                 intAttributes.put(key, (Integer) object);
+            } else if (object instanceof Boolean) {
+                boolAttributes.put(key, (Boolean) object);
             }
         }
     }
@@ -46,6 +50,10 @@ public abstract class Attributes {
 
     public Double getDouble(String attribute) {
         return doubleAttributes.get(attribute);
+    }
+
+    public Boolean getBool(String attribute) {
+        return boolAttributes.get(attribute);
     }
 
     public Object getObject(String attribute) {

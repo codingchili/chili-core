@@ -24,6 +24,7 @@ public interface LoadableConfigurable {
      *
      * @return a JsonObject that is equal to the JsonObject loaded from disk.
      */
+    @JsonIgnore
     default JsonObject serialize() {
         return Serializer.json(this);
     }

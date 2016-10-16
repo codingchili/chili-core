@@ -1,13 +1,19 @@
 package com.codingchili.core.Realm.Instance.Model;
 
+import com.codingchili.core.Configuration.LoadableConfigurable;
+import com.codingchili.core.Configuration.Strings;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+
+import static com.codingchili.core.Configuration.Strings.EXT_JSON;
+import static com.codingchili.core.Configuration.Strings.PATH_GAME_CLASSES;
 
 /**
  * @author Robin Duda
  *         Model for player classes.
  */
-public class PlayerClass implements Serializable {
+public class PlayerClass implements Serializable, LoadableConfigurable {
     private String name;
     private String description;
     private ArrayList<Spell> spells;
@@ -53,5 +59,10 @@ public class PlayerClass implements Serializable {
 
     public void setWeapons(ArrayList<String> weapons) {
         this.weapons = weapons;
+    }
+
+    @Override
+    public String getPath() {
+        return PATH_GAME_CLASSES + name + EXT_JSON;
     }
 }

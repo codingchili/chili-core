@@ -39,7 +39,7 @@ public class RealmHandler extends AbstractHandler {
 
         protocol.use(REALM_CHARACTER_REQUEST, this::characterRequest)
                 .use(ANY, this::instanceHandler)
-                .use(ID_PING, this::ping, Access.PUBLIC);
+                .use(ID_PING, Request::accept, Access.PUBLIC);
     }
 
     private void startInstances() {
@@ -47,10 +47,6 @@ public class RealmHandler extends AbstractHandler {
             InstanceProvider provider = new InstanceProvider(realm, instance, vertx);
             vertx.deployVerticle(new ClusterListener(new InstanceHandler(provider)));
         }
-    }
-
-    private void ping(RealmRequest request) {
-        request.accept();
     }
 
     private void registerRealm() {

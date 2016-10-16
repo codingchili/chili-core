@@ -1,5 +1,7 @@
 package com.codingchili.core.Realm.Instance.Configuration;
 
+import com.codingchili.core.Configuration.LoadableConfigurable;
+import com.codingchili.core.Configuration.Strings;
 import com.codingchili.core.Realm.Instance.Model.Node;
 import com.codingchili.core.Realm.Instance.Model.Npc;
 import com.codingchili.core.Realm.Instance.Model.Portal;
@@ -7,11 +9,14 @@ import com.codingchili.core.Realm.Instance.Model.Portal;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import static com.codingchili.core.Configuration.Strings.EXT_JSON;
+import static com.codingchili.core.Configuration.Strings.PATH_INSTANCE;
+
 /**
  * @author Robin Duda
  *         Contains settings for an instance of a get.
  */
-public class InstanceSettings implements Serializable {
+public class InstanceSettings implements Serializable, LoadableConfigurable {
     private ArrayList<Portal> portals;
     private ArrayList<Node> nodes;
     private ArrayList<Npc> npc;
@@ -74,5 +79,10 @@ public class InstanceSettings implements Serializable {
 
     protected void setNpc(ArrayList<Npc> npc) {
         this.npc = npc;
+    }
+
+    @Override
+    public String getPath() {
+        return PATH_INSTANCE + name + EXT_JSON;
     }
 }

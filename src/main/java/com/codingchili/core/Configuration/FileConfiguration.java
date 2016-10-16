@@ -4,6 +4,7 @@ import com.codingchili.core.Logging.Model.DefaultLogger;
 import com.codingchili.core.Logging.Model.Logger;
 import com.codingchili.core.Protocols.Util.Serializer;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,6 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import static com.codingchili.core.Configuration.Strings.ID_CONFIGURATION;
+import static com.codingchili.core.Configuration.Strings.PATH_GAME;
+import static com.codingchili.core.Configuration.Strings.PATH_GAME_OVERRIDE;
 
 /**
  * @author Robin Duda
@@ -35,6 +38,36 @@ public class FileConfiguration {
             return (T) cache.get(path).configurable;
         } else {
             return load(path, clazz);
+        }
+    }
+
+    private static <T extends LoadableConfigurable> T load(String path, Class clazz) {
+        try {
+            T config = Serializer.unpack(JsonFileStore.readObject(path), clazz);
+            cache.put(path, new ConfigEntry(config, clazz));
+            logger.onFileLoaded(ID_CONFIGURATION, path);
+            return config;
+        } catch (IOException e) {
+            logger.onFileLoadError(path);
+            throw new FileReadException(path);
+        }
+    }
+
+    /**
+     * Checks if an overriden resource exist in PATH_GAME_OVERRIDE for the
+     * specified realm.
+     * @param path to the file to look if overriden.
+     * @param realm the name of the realm.
+     * @return a path to the overriden resource or the path itself.
+     */
+    public static String override(String path, String realm) {
+        String overridePath = path.replace(PATH_GAME, PATH_GAME_OVERRIDE + realm);
+        File override = new File(overridePath);
+
+        if (override.exists()) {
+            return overridePath;
+        } else {
+            return path;
         }
     }
 
@@ -98,18 +131,6 @@ public class FileConfiguration {
      */
     public static Collection<String> available() {
         return available("");
-    }
-
-    private static <T extends LoadableConfigurable> T load(String path, Class clazz) {
-        try {
-            T config = Serializer.unpack(JsonFileStore.readObject(path), clazz);
-            cache.put(path, new ConfigEntry(config, clazz));
-            logger.onFileLoaded(ID_CONFIGURATION, path);
-            return config;
-        } catch (IOException e) {
-            logger.onFileLoadError(path);
-            throw new FileReadException(path);
-        }
     }
 
     /**

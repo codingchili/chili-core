@@ -54,7 +54,7 @@ class TokenRefresher {
 
         generateRealmTokens(FileConfiguration.get(PATH_REALMSERVER, RealmServerSettings.class));
 
-        FileConfiguration.loaded().stream()
+        FileConfiguration.<LoadableConfigurable>loaded().stream()
                 .forEach(FileConfiguration::save);
     }
 

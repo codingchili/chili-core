@@ -1,12 +1,16 @@
 package com.codingchili.core.Realm.Instance.Model;
 
+import com.codingchili.core.Configuration.LoadableConfigurable;
+
 import java.io.Serializable;
+
+import static com.codingchili.core.Configuration.Strings.PATH_GAME_PLAYERTEMPLATE;
 
 /**
  * @author Robin Duda
  *         Model for player characters.
  */
-public class PlayerCharacter extends Attributes implements Serializable {
+public class PlayerCharacter extends Attributes implements Serializable, LoadableConfigurable {
     private String name;
     private String className;
     private Inventory inventory;
@@ -45,5 +49,10 @@ public class PlayerCharacter extends Attributes implements Serializable {
 
     public void setInventory(Inventory inventory) {
         this.inventory = inventory;
+    }
+
+    @Override
+    public String getPath() {
+        return PATH_GAME_PLAYERTEMPLATE;
     }
 }

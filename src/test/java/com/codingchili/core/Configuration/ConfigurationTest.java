@@ -24,7 +24,7 @@ import static com.codingchili.core.Configuration.Strings.*;
  *         tests the loading of json files used for configuration storage.
  */
 
-public class ConfigurationTester {
+public class ConfigurationTest {
 
     @Rule
     public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);

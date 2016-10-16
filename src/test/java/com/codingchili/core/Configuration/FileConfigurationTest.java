@@ -166,6 +166,22 @@ public class FileConfigurationTest {
                 .anyMatch(config -> true));
     }
 
+    @Test
+    public void getOverriddenFilePath() {
+        Assert.assertEquals(
+                PATH_GAME_PLAYERTEMPLATE.replace(PATH_GAME, PATH_GAME_OVERRIDE + "sample"),
+                FileConfiguration.override(PATH_GAME_PLAYERTEMPLATE, "sample")
+        );
+    }
+
+    @Test
+    public void getNonOverridenFilePath() {
+        Assert.assertNotEquals(
+                PATH_GAME_PLAYERTEMPLATE.replace(PATH_GAME, PATH_GAME_OVERRIDE + "sample-nx"),
+                FileConfiguration.override(PATH_GAME_PLAYERTEMPLATE, "sample-nx")
+        );
+    }
+
     private LoadableConfigurable load(String path, Class clazz) {
         return FileConfiguration.get(path, clazz);
     }
