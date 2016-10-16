@@ -1,10 +1,10 @@
 package com.codingchili.core.Routing;
 
+import com.codingchili.core.Protocols.ResponseStatus;
 import com.codingchili.core.Routing.Configuration.RouteProvider;
 import com.codingchili.core.Routing.Controller.RouteHandler;
 import com.codingchili.core.Shared.RequestMock;
 import com.codingchili.core.Shared.ResponseListener;
-import com.codingchili.core.Protocols.ResponseStatus;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
@@ -125,6 +125,17 @@ public class RouteHandlerTest {
         });
     }
 
+    @Test
+    public void testValidationFail(TestContext context) {
+        Async async = context.async();
+
+        handle(ID_PING, (response, status) -> {
+            context.assertEquals(ResponseStatus.BAD, status);
+            async.complete();
+        }, new JsonObject()
+                .put(ID_NAME, "invalid characters #*#&(@"));
+    }
+
     private void handle(String target, ResponseListener listener) {
         handle(target, listener, new JsonObject());
     }
@@ -141,6 +152,7 @@ public class RouteHandlerTest {
 
     /**
      * mock a cluster node with target name.
+     *
      * @param target routing id of the node to mock.
      */
     private void mockNode(String target) {

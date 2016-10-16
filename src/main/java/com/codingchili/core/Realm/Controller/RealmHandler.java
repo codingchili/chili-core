@@ -20,10 +20,10 @@ import static com.codingchili.core.Configuration.Strings.*;
  *         Handles traveling between instances.
  */
 public class RealmHandler extends AbstractHandler {
-    private Protocol<RequestHandler<RealmRequest>> protocol = new Protocol<>();
-    private RealmSettings realm;
-    private TokenFactory tokenFactory;
-    private Vertx vertx;
+    private final Protocol<RequestHandler<RealmRequest>> protocol = new Protocol<>();
+    private final RealmSettings realm;
+    private final TokenFactory tokenFactory;
+    private final Vertx vertx;
 
 
     public RealmHandler(RealmProvider provider) {

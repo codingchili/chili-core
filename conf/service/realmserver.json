@@ -1,15 +1,6 @@
 {
-  "logserver" : {
-    "token" : {
-      "key" : "57F641E899410713AF63DFE3863BCB994722E92683D3589CDBD4401BAF629545B35E5374BA97D0EA82505039B1D67E9239CEFDF53D6E82FFBC3EF01AC7500A6A",
-      "expiry" : 1479191608,
-      "domain" : "realm.node@server.1"
-    },
-    "system" : "realm.node",
-    "host" : "server.1"
-  },
   "enabled" : [ {
-    "realm" : "Angel Oak",
-    "instances" : [ ]
+    "realm" : "testRealm",
+    "instances" : [ "test-instance" ]
   } ]
 }

@@ -1,9 +1,9 @@
 package com.codingchili.core.Logging;
 
 import com.codingchili.core.Authentication.Model.Account;
-import com.codingchili.core.Realm.Instance.Configuration.InstanceSettings;
-import com.codingchili.core.Realm.Configuration.RealmSettings;
 import com.codingchili.core.Logging.Model.Logger;
+import com.codingchili.core.Realm.Configuration.RealmSettings;
+import com.codingchili.core.Realm.Instance.Configuration.InstanceSettings;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonObject;
@@ -15,12 +15,12 @@ public class LoggerMock implements Logger {
 
     @Override
     public void onServerStarted(Future<Void> future) {
-
+        future.complete();
     }
 
     @Override
     public void onServerStopped(Future<Void> future) {
-        future.complete();
+        //future.complete();
     }
 
     @Override
@@ -84,17 +84,17 @@ public class LoggerMock implements Logger {
     }
 
     @Override
-    public void patchReloading(String name, String version) {
+    public void onPatchReloading(String name, String version) {
 
     }
 
     @Override
-    public void patchReloaded(String name, String version) {
+    public void onPatchReloaded(String name, String version) {
 
     }
 
     @Override
-    public void patchLoaded(String name, String version) {
+    public void onPatchLoaded(String name, String version) {
 
     }
 
@@ -115,6 +115,21 @@ public class LoggerMock implements Logger {
 
     @Override
     public void onDeployRealmFailure(RealmSettings realm) {
+
+    }
+
+    @Override
+    public void onFileLoaded(String loader, String path) {
+
+    }
+
+    @Override
+    public void onCacheCleared(String component) {
+
+    }
+
+    @Override
+    public void onFileSaved(String component, String path) {
 
     }
 }

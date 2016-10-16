@@ -1,15 +1,18 @@
-package com.codingchili.core.Configuration;
+package com.codingchili.core.Configuration.System;
 
+import com.codingchili.core.Configuration.LoadableConfigurable;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.metrics.MetricsOptions;
 
+import static com.codingchili.core.Configuration.Strings.PATH_VERTX;
+
 /**
  * @author Robin Duda
  */
-public class VertxSettings {
+public class VertxSettings implements LoadableConfigurable {
     public static int METRIC_RATE = 0;
-    public static boolean METRICS_ENABLED;
+    private static boolean metrics;
     private JsonArray help;
     private int poolSize;
     private int deployTimeout;
@@ -17,7 +20,7 @@ public class VertxSettings {
     private int shutdownHookTimeout;
 
     public static VertxOptions Configuration() {
-        return new VertxOptions().setMetricsOptions(new MetricsOptions().setEnabled(METRICS_ENABLED));
+        return new VertxOptions().setMetricsOptions(new MetricsOptions().setEnabled(metrics));
     }
 
     public JsonArray getHelp() {
@@ -29,11 +32,11 @@ public class VertxSettings {
     }
 
     public boolean isMetrics() {
-        return METRICS_ENABLED;
+        return metrics;
     }
 
     public void setMetrics(boolean metrics) {
-        VertxSettings.METRICS_ENABLED = metrics;
+        VertxSettings.metrics = metrics;
     }
 
     public int getRate() {
@@ -78,7 +81,12 @@ public class VertxSettings {
 
     public VertxOptions getOptions() {
         return new VertxOptions()
-                .setMetricsOptions(new MetricsOptions().setEnabled(METRICS_ENABLED))
+                .setMetricsOptions(new MetricsOptions().setEnabled(metrics))
                 .setWorkerPoolSize(poolSize);
+    }
+
+    @Override
+    public String getPath() {
+        return PATH_VERTX;
     }
 }

@@ -11,7 +11,7 @@ import io.vertx.core.Future;
  */
 public abstract class AbstractHandler {
     protected Logger logger;
-    private String address;
+    private final String address;
 
     protected AbstractHandler(String address) {
         this.address = address;

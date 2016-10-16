@@ -5,16 +5,16 @@ import com.codingchili.core.Authentication.Controller.ClientHandler;
 import com.codingchili.core.Authentication.Model.Account;
 import com.codingchili.core.Authentication.Model.AsyncAccountStore;
 import com.codingchili.core.Authentication.Model.ProviderMock;
-import com.codingchili.core.Configuration.ConfigMock;
 import com.codingchili.core.Configuration.Strings;
+import com.codingchili.core.Protocols.ResponseStatus;
+import com.codingchili.core.Protocols.Util.Serializer;
 import com.codingchili.core.Protocols.Util.Token;
 import com.codingchili.core.Protocols.Util.TokenFactory;
-import com.codingchili.core.Protocols.Util.Serializer;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
 import com.codingchili.core.Realm.Instance.Model.PlayerCharacter;
+import com.codingchili.core.Realm.Instance.Model.PlayerClass;
 import com.codingchili.core.Shared.RequestMock;
 import com.codingchili.core.Shared.ResponseListener;
-import com.codingchili.core.Protocols.ResponseStatus;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -28,6 +28,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import static com.codingchili.core.Configuration.Strings.*;
@@ -57,11 +59,28 @@ public class ClientHandlerTest {
 
     @Before
     public void setUp(TestContext context) throws IOException {
+        RealmSettings realm = new RealmSettings()
+                .setTemplate(new PlayerCharacter().setName("realm 1").setClassName(CLASS_NAME))
+                .setName(REALM_NAME)
+                .setType("test-type")
+                .setResources("ao.pathing.node");
+
+        ArrayList<PlayerClass> classes = new ArrayList<>();
+        classes.add(new PlayerClass().setName(CLASS_NAME));
+
+        realm.setClasses(classes);
+        realm.getAuthentication().setToken(new Token().setKey("test-key"));
+
+        HashMap<String, Object> attributes = new HashMap<>();
+        attributes.put(ID_DESCRIPTION, "Text description :) ");
+        realm.setAttributes(attributes);
+
         provider = new ProviderMock();
-        handler = new ClientHandler(provider);
-        RealmSettings realm = new ConfigMock.RealmSettingsMock();
         provider.getRealmStore().put(Future.future(), realm);
-        clientToken = new TokenFactory(provider.getAuthserverSettings().getClientSecret());
+
+        handler = new ClientHandler(provider);
+
+        clientToken = provider.getClientTokenFactory();
         addAccount(context);
     }
 
@@ -140,9 +159,7 @@ public class ClientHandlerTest {
     @Test
     public void retrieveRealmList(TestContext context) {
         Async async = context.async();
-        String[] keys = {
-                "classes", "description", "name", "resources", "type",
-                "secure", "trusted", "proxy", "version"};
+        String[] keys = {ID_NAME, ID_RESOURCES, ID_TYPE, ID_VERSION, ID_REMOTE, ID_PLAYERS, ID_SIZE, ID_ATTRIBUTES};
 
         handle(CLIENT_REALM_LIST, (response, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);

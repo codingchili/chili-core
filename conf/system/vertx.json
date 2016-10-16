@@ -1,17 +1,73 @@
 {
-  "help": {
-    "Authentication.Server": "Start the authentication node.",
-    "Logging.Server": "Start the logger node.",
-    "Routing.Server": "Start the cluster router node.",
-    "Patching.Server": "Start the patch-service node.",
-    "Website.Server": "Start the website server.",
-    "Realm.Server": "Start the realm/gameserver node.",
-    "all": "Start all available nodes in a single cluster on the same machine."
+  "help" : {
+    "list" : [ ],
+    "empty" : true
   },
-  "metrics": true,
-  "rate": 30000,
-  "poolSize": 16,
-  "deployTimeout": 3500,
-  "shutdownLogTimeout": 2000,
-  "shutdownHookTimeout": 2000
+  "poolSize" : 16,
+  "deployTimeout" : 3500,
+  "shutdownLogTimeout" : 2000,
+  "shutdownHookTimeout" : 2000,
+  "rate" : 30000,
+  "options" : {
+    "eventLoopPoolSize" : 8,
+    "workerPoolSize" : 16,
+    "internalBlockingPoolSize" : 20,
+    "blockedThreadCheckInterval" : 1000,
+    "maxEventLoopExecuteTime" : 2000000000,
+    "maxWorkerExecuteTime" : 60000000000,
+    "quorumSize" : 1,
+    "metricsOptions" : {
+      "enabled" : true
+    },
+    "warningExceptionTime" : 5000000000,
+    "eventBusOptions" : {
+      "sendBufferSize" : -1,
+      "receiveBufferSize" : -1,
+      "trafficClass" : -1,
+      "reuseAddress" : true,
+      "logActivity" : false,
+      "tcpNoDelay" : true,
+      "tcpKeepAlive" : false,
+      "soLinger" : -1,
+      "usePooledBuffers" : false,
+      "idleTimeout" : 0,
+      "ssl" : false,
+      "enabledCipherSuites" : [ ],
+      "crlPaths" : [ ],
+      "crlValues" : [ ],
+      "useAlpn" : false,
+      "enabledSecureTransportProtocols" : [ ],
+      "clustered" : false,
+      "clusterPublicPort" : -1,
+      "clusterPingInterval" : 20000,
+      "clusterPingReplyInterval" : 20000,
+      "port" : 0,
+      "host" : "localhost",
+      "acceptBacklog" : -1,
+      "clientAuth" : "NONE",
+      "reconnectAttempts" : 0,
+      "reconnectInterval" : 1000,
+      "connectTimeout" : 60000,
+      "trustAll" : true
+    },
+    "addressResolverOptions" : {
+      "optResourceEnabled" : true,
+      "cacheMinTimeToLive" : 0,
+      "cacheMaxTimeToLive" : 2147483647,
+      "cacheNegativeTimeToLive" : 0,
+      "queryTimeout" : 5000,
+      "maxQueries" : 3,
+      "rdFlag" : true,
+      "ndots" : -1
+    },
+    "clusterPublicPort" : -1,
+    "clusterPingInterval" : 20000,
+    "clusterPingReplyInterval" : 20000,
+    "clustered" : false,
+    "clusterHost" : "localhost",
+    "clusterPort" : 0,
+    "haenabled" : false,
+    "hagroup" : "__DEFAULT__"
+  },
+  "metrics" : true
 }

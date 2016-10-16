@@ -29,10 +29,10 @@ import static com.codingchili.core.Protocols.Access.PUBLIC;
  *         Routing used to authenticate users and create/delete characters.
  */
 public class ClientHandler extends AbstractHandler {
-    private Protocol<RequestHandler<ClientRequest>> protocol = new Protocol<>();
-    private AsyncRealmStore realmStore;
-    private AsyncAccountStore accounts;
-    private TokenFactory tokens;
+    private final Protocol<RequestHandler<ClientRequest>> protocol = new Protocol<>();
+    private final AsyncRealmStore realmStore;
+    private final AsyncAccountStore accounts;
+    private final TokenFactory tokens;
 
     public ClientHandler(AuthProvider provider) {
         super(NODE_AUTHENTICATION_CLIENTS);

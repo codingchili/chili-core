@@ -20,8 +20,8 @@ import static com.codingchili.core.Configuration.Strings.NODE_WEBSERVER;
  * @author Robin Duda
  */
 public class WebHandler extends AbstractHandler {
-    private Protocol<RequestHandler<Request>> protocol = new Protocol<>();
-    private CachedFileStore files;
+    private final Protocol<RequestHandler<Request>> protocol = new Protocol<>();
+    private final CachedFileStore files;
 
     public WebHandler(WebserverProvider provider) {
         super(NODE_WEBSERVER);

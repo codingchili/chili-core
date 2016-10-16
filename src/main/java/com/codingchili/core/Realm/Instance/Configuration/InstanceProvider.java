@@ -9,17 +9,19 @@ import com.codingchili.core.Realm.Configuration.RealmServerSettings;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
 import io.vertx.core.Vertx;
 
+import static com.codingchili.core.Configuration.Strings.PATH_REALMSERVER;
+
 /**
  * @author Robin Duda
  */
 public class InstanceProvider implements Provider {
-    private RealmServerSettings server;
-    private RealmSettings realm;
-    private InstanceSettings instance;
-    private Vertx vertx;
+    private final RealmServerSettings server;
+    private final RealmSettings realm;
+    private final InstanceSettings instance;
+    private final Vertx vertx;
 
     public InstanceProvider(RealmSettings realm, InstanceSettings instance, Vertx vertx) {
-        this.server = FileConfiguration.instance().getRealmServerSettings();
+        this.server = FileConfiguration.get(PATH_REALMSERVER, RealmServerSettings.class);
         this.vertx = vertx;
         this.realm = realm;
         this.instance = instance;

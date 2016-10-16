@@ -15,10 +15,10 @@ import static java.nio.file.StandardWatchEventKinds.*;
  * @author Robin Duda
  */
 public class CachedFileStore {
-    private HashMap<String, Buffer> files = new HashMap<>();
+    private final HashMap<String, Buffer> files = new HashMap<>();
     private static CachedFileStore instance;
-    private String directory;
-    private Vertx vertx;
+    private final String directory;
+    private final Vertx vertx;
 
     public static CachedFileStore instance(Vertx vertx, String directory) {
         if (instance == null) {

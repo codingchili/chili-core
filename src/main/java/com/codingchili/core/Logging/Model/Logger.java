@@ -93,17 +93,17 @@ public interface Logger {
     /**
      * Emit when a change in patch files are detected and files have started to reload.
      */
-    void patchReloading(String name, String version);
+    void onPatchReloading(String name, String version);
 
     /**
      * Emit when the reloading of patch files have completed.
      */
-    void patchReloaded(String name, String version);
+    void onPatchReloaded(String name, String version);
 
     /**
      * Emit when patch version is loaded.
      */
-    void patchLoaded(String name, String version);
+    void onPatchLoaded(String name, String version);
 
     /**
      * Emit when failing to load specified fileName;
@@ -126,4 +126,24 @@ public interface Logger {
      * Emit when a realm has failed deployment.
      */
     void onDeployRealmFailure(RealmSettings realm);
+
+    /**
+     * Emit when a file has been loaded from the file-system.
+     * @param loader name of the component which loaded the file.
+     * @param path a path to the loaded file.
+     */
+    void onFileLoaded(String loader, String path);
+
+    /**
+     * Emit when the cache of a component has been cleared.
+     * @param component the name of the component.
+     */
+    void onCacheCleared(String component);
+
+    /**
+     * Emit when a file has been saved to file.
+     * @param component the component that saved the file.
+     * @param path to the saved file.
+     */
+    void onFileSaved(String component, String path);
 }

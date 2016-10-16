@@ -15,15 +15,6 @@ import java.util.ArrayList;
 public class RealmServerSettings implements Configurable {
     private RemoteAuthentication logserver;
     private ArrayList<EnabledRealm> enabled = new ArrayList<>();
-    private ArrayList<RealmSettings> realms = new ArrayList<>();
-
-    public void setRealms(ArrayList<RealmSettings> realms) {
-        this.realms = realms;
-    }
-
-    public ArrayList<RealmSettings> getRealms() {
-        return realms;
-    }
 
     public ArrayList<EnabledRealm> getEnabled() {
         return enabled;

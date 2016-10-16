@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  */
 public class HazelRealmDB implements AsyncRealmStore {
     // A standard map is stored within the map so that it is possible to enumerate available realms.
-    private AsyncMap<String, HashMap<String, RealmSettings>> realms;
+    private final AsyncMap<String, HashMap<String, RealmSettings>> realms;
 
     public static void create(Future<AsyncRealmStore> future, Vertx vertx) {
         vertx.sharedData().<String, HashMap<String, RealmSettings>>getClusterWideMap(Strings.MAP_REALMS, cluster -> {

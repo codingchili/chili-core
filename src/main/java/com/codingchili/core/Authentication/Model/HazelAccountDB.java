@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
  * @author Robin Duda
  */
 public class HazelAccountDB implements AsyncAccountStore {
-    private AsyncMap<String, AccountMapping> accounts;
-    private HashHelper hasher;
+    private final AsyncMap<String, AccountMapping> accounts;
+    private final HashHelper hasher;
 
 
     public static void create(Future<AsyncAccountStore> future, Vertx vertx) {

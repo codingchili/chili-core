@@ -4,17 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @author Robin Duda
- *         Used to write changes to configuration files.
  */
-public interface Configurable {
-    /**
-     * Get the path of a loaded configuration file.
-     *
-     * @return the directory path to the configuration file.
-     */
-    @JsonIgnore
-    String getPath();
-
+public interface Configurable extends LoadableConfigurable {
 
     /**
      * Get the name of the service within the configurable.
@@ -24,11 +15,11 @@ public interface Configurable {
     @JsonIgnore
     String getName();
 
-
     /**
      * Get the logserver configuration for the configurable.
      *
      * @return configuration of a logging server.
      */
     RemoteAuthentication getLogserver();
+
 }

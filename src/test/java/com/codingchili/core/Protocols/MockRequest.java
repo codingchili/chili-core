@@ -38,6 +38,11 @@ public class MockRequest implements Request {
     }
 
     @Override
+    public void bad() {
+
+    }
+
+    @Override
     public String action() {
         return null;
     }

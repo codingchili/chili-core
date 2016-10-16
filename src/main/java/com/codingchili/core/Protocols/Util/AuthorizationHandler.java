@@ -10,8 +10,8 @@ import java.util.HashMap;
  * @author Robin Duda
  */
 class AuthorizationHandler<T> {
-    private HashMap<String, T> authorized = new HashMap<>();
-    private HashMap<String, T> unauthorized = new HashMap<>();
+    private final HashMap<String, T> authorized = new HashMap<>();
+    private final HashMap<String, T> unauthorized = new HashMap<>();
 
     public void use(String action, T handler, Access access) {
         switch (access) {

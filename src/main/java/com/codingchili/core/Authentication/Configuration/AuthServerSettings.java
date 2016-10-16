@@ -3,6 +3,9 @@ package com.codingchili.core.Authentication.Configuration;
 import com.codingchili.core.Configuration.Configurable;
 import com.codingchili.core.Configuration.RemoteAuthentication;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.codingchili.core.Configuration.Strings.PATH_AUTHSERVER;
 
 
@@ -10,7 +13,7 @@ public class AuthServerSettings implements Configurable {
     private RemoteAuthentication logserver;
     private byte[] clientSecret;
     private byte[] realmSecret;
-    private String[] realms = new String[]{};
+    private List<String> realms = new ArrayList<>();
 
     public boolean isTrustedRealm(String name) {
         boolean result = false;
@@ -34,11 +37,11 @@ public class AuthServerSettings implements Configurable {
     }
 
 
-    public String[] getRealms() {
+    public List<String> getRealms() {
         return realms;
     }
 
-    protected void setRealms(String[] realms) {
+    protected void setRealms(List<String> realms) {
         this.realms = realms;
     }
 
@@ -55,15 +58,17 @@ public class AuthServerSettings implements Configurable {
         return realmSecret;
     }
 
-    public void setRealmSecret(byte[] realmSecret) {
+    public AuthServerSettings setRealmSecret(byte[] realmSecret) {
         this.realmSecret = realmSecret;
+        return this;
     }
 
     public byte[] getClientSecret() {
         return clientSecret;
     }
 
-    public void setClientSecret(byte[] clientSecret) {
+    public AuthServerSettings setClientSecret(byte[] clientSecret) {
         this.clientSecret = clientSecret;
+        return this;
     }
 }

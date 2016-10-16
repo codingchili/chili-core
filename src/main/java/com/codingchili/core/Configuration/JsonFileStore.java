@@ -53,7 +53,7 @@ public abstract class JsonFileStore {
         return new String(Files.readAllBytes(FileSystems.getDefault().getPath(currentPath() + Strings.DIR_SEPARATOR + path)));
     }
 
-    public static void writeObject(JsonObject json, String path) {
+    static void writeObject(JsonObject json, String path) {
         Path file = Paths.get(path);
         try {
             Files.write(file, json.encodePrettily().getBytes());
@@ -66,8 +66,8 @@ public abstract class JsonFileStore {
         return Paths.get("").toAbsolutePath().normalize().toString();
     }
 
-    public static void deleteObject(String s) {
-        File file = new File(s);
+    static void deleteObject(String path) {
+        File file = new File(path);
         file.delete();
     }
 }

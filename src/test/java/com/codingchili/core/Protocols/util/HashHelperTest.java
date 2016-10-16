@@ -1,4 +1,4 @@
-package com.codingchili.core.Protocols;
+package com.codingchili.core.Protocols.util;
 
 import com.codingchili.core.Protocols.Util.HashHelper;
 import io.vertx.core.Vertx;

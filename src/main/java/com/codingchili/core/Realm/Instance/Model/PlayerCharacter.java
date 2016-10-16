@@ -25,8 +25,9 @@ public class PlayerCharacter extends Attributes implements Serializable {
         return className;
     }
 
-    public void setClassName(String className) {
+    public PlayerCharacter setClassName(String className) {
         this.className = className;
+        return this;
     }
 
     public String getName() {

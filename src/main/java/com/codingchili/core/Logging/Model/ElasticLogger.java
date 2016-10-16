@@ -8,8 +8,8 @@ import io.vertx.core.json.JsonObject;
  * @author Robin Duda
  */
 public class ElasticLogger {
-    private Vertx vertx;
-    private ElasticSettings settings;
+    private final Vertx vertx;
+    private final ElasticSettings settings;
 
     public ElasticLogger(ElasticSettings settings, Vertx vertx) {
         this.vertx = vertx;

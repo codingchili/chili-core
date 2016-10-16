@@ -6,16 +6,18 @@ import com.codingchili.core.Logging.Model.DefaultLogger;
 import com.codingchili.core.Logging.Model.Logger;
 import io.vertx.core.Vertx;
 
+import static com.codingchili.core.Configuration.Strings.PATH_ROUTING;
+
 /**
  * @author Robin Duda
  */
 public class RouteProvider implements Provider {
-    private RoutingSettings settings;
-    private Logger logger;
-    private Vertx vertx;
+    private final RoutingSettings settings;
+    private final Logger logger;
+    private final Vertx vertx;
 
     public RouteProvider(Vertx vertx) {
-        this.settings = FileConfiguration.instance().getRoutingSettings();
+        this.settings = FileConfiguration.get(PATH_ROUTING, RoutingSettings.class);
         this.logger = new DefaultLogger(vertx, settings.getLogserver());
         this.vertx = vertx;
     }

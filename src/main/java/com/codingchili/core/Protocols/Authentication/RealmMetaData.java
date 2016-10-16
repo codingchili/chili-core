@@ -1,6 +1,7 @@
 package com.codingchili.core.Protocols.Authentication;
 
 import com.codingchili.core.Realm.Configuration.RealmSettings;
+import com.codingchili.core.Realm.Instance.Model.Attributes;
 import com.codingchili.core.Realm.Instance.Model.PlayerClass;
 
 import java.util.ArrayList;
@@ -9,8 +10,8 @@ import java.util.ArrayList;
  * @author Robin Duda
  *         Contains realmName metadata used in the realmName-list.
  */
-public class RealmMetaData {
-    private ArrayList<String> classes = new ArrayList<>();
+public class RealmMetaData extends Attributes {
+    private ArrayList<String> classes;
     private String name;
     private String description;
     private String remote;
@@ -19,9 +20,6 @@ public class RealmMetaData {
     private int size;
     private String type;
     private String lifetime;
-    private double drop;
-    private double leveling;
-    private int proxy;
     private int players = 0;
     private Boolean trusted;
     private Boolean secure;
@@ -36,14 +34,18 @@ public class RealmMetaData {
                 .setSize(settings.getSize())
                 .setType(settings.getType())
                 .setLifetime(settings.getLifetime())
-                .setDrop(settings.getDrop())
-                .setLeveling(settings.getLeveling())
                 .setPlayers(settings.getPlayers())
                 .setTrusted(settings.getTrusted())
                 .setSecure(settings.getSecure());
 
-        for (PlayerClass pc : settings.getClasses())
+        this.setAttributes(settings.getAttributes());
+
+        for (PlayerClass pc : settings.getClasses()) {
+            if (classes == null) {
+                classes = new ArrayList<>();
+            }
             classes.add(pc.getName());
+        }
     }
 
     public Boolean getSecure() {
@@ -133,34 +135,6 @@ public class RealmMetaData {
 
     public RealmMetaData setLifetime(String lifetime) {
         this.lifetime = lifetime;
-        return this;
-    }
-
-    public double getDrop() {
-        return drop;
-    }
-
-    public RealmMetaData setDrop(double drop) {
-        this.drop = drop;
-        return this;
-    }
-
-    public double getLeveling() {
-        return leveling;
-    }
-
-    public RealmMetaData setLeveling(double leveling) {
-        this.leveling = leveling;
-        return this;
-    }
-
-
-    public int getProxy() {
-        return proxy;
-    }
-
-    public RealmMetaData setProxy(int proxy) {
-        this.proxy = proxy;
         return this;
     }
 

@@ -2,8 +2,8 @@ package com.codingchili.core.Patching.Model;
 
 import com.codingchili.core.Configuration.FileConfiguration;
 import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Logging.Model.Logger;
 import com.codingchili.core.Patching.Configuration.PatchNotes;
+import com.codingchili.core.Patching.Configuration.PatchServerSettings;
 import com.codingchili.core.Protocols.Util.Serializer;
 import io.vertx.core.Vertx;
 
@@ -13,28 +13,30 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 
+import static com.codingchili.core.Configuration.Strings.PATH_PATCHSERVER;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 /**
  * @author Robin Duda
  */
 public class PatchKeeper {
-    private HashMap<String, PatchFile> files = new HashMap<>();
+    private final HashMap<String, PatchFile> files = new HashMap<>();
     private static PatchKeeper instance;
-    private Logger logger;
+    private final PatchListener listener;
     private PatchDetails details;
     private PatchNotes notes;
-    private Vertx vertx;
+    private final Vertx vertx;
 
-    private PatchKeeper(Vertx vertx, Logger logger, PatchNotes notes) {
+    private PatchKeeper(Vertx vertx, PatchListener listener) {
+        PatchServerSettings settings = FileConfiguration.get(PATH_PATCHSERVER, PatchServerSettings.class);
         this.vertx = vertx;
-        this.logger = logger;
-        this.notes = notes;
+        this.listener = listener;
+        this.notes = settings.getPatch();
 
         try {
             loadFiles();
             watchFiles();
-            logger.patchLoaded(notes.getName(), notes.getVersion());
+            listener.onPatchLoaded(notes.getName(), notes.getVersion());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -47,13 +49,13 @@ public class PatchKeeper {
         vertx.setPeriodic(2500, handler -> {
 
             for (WatchEvent<?> event : watchKey.pollEvents()) {
-                if (Strings.PATH_PATCHSERVER.endsWith(event.context().toString())) {
+                if (PATH_PATCHSERVER.endsWith(event.context().toString())) {
                     try {
-                        logger.patchReloading(notes.getName(), notes.getVersion());
+                        listener.onPatchReloading(notes.getName(), notes.getVersion());
                         synchronized (this) {
                             loadFiles();
                         }
-                        logger.patchReloaded(notes.getName(), notes.getVersion());
+                        listener.onPatchReloaded(notes.getName(), notes.getVersion());
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -62,9 +64,9 @@ public class PatchKeeper {
         });
     }
 
-    public static PatchKeeper instance(Vertx vertx, Logger logger, PatchNotes notes) {
+    public static PatchKeeper instance(Vertx vertx, PatchListener listener) {
         if (instance == null) {
-            instance = new PatchKeeper(vertx, logger, notes);
+            instance = new PatchKeeper(vertx, listener);
         }
         return instance;
     }
@@ -89,6 +91,7 @@ public class PatchKeeper {
                 byte[] fileBytes = Files.readAllBytes(path);
 
                 files.put(filePath, new PatchFile(filePath, fileSize, fileModified, Serializer.gzip(fileBytes)));
+                listener.onFileLoaded(filePath);
 
                 return FileVisitResult.CONTINUE;
             }
@@ -99,7 +102,8 @@ public class PatchKeeper {
             }
         });
 
-        notes = FileConfiguration.loadPatchSettings().getPatch();
+        FileConfiguration.reload(PATH_PATCHSERVER);
+        notes = FileConfiguration.<PatchServerSettings>get(PATH_PATCHSERVER, PatchServerSettings.class).getPatch();
         details = new PatchDetails(files, notes.getName(), notes.getVersion());
     }
 

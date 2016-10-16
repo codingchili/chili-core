@@ -1,10 +1,13 @@
 package com.codingchili.core.Realm.Configuration;
 
+import com.codingchili.core.Configuration.FileConfiguration;
 import com.codingchili.core.Configuration.JsonFileStore;
+import com.codingchili.core.Configuration.LoadableConfigurable;
 import com.codingchili.core.Configuration.RemoteAuthentication;
 import com.codingchili.core.Protocols.Util.Serializer;
 import com.codingchili.core.Realm.Instance.Configuration.InstanceSettings;
 import com.codingchili.core.Realm.Instance.Model.Affliction;
+import com.codingchili.core.Realm.Instance.Model.Attributes;
 import com.codingchili.core.Realm.Instance.Model.PlayerCharacter;
 import com.codingchili.core.Realm.Instance.Model.PlayerClass;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -13,8 +16,8 @@ import io.vertx.core.json.JsonObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static com.codingchili.core.Configuration.Strings.*;
@@ -25,8 +28,8 @@ import static com.codingchili.core.Configuration.Strings.*;
  *         Contains the settings for a realmName.
  */
 @JsonIgnoreProperties({"instance"})
-public class RealmSettings implements Serializable {
-    private ArrayList<InstanceSettings> instances = new ArrayList<>();
+public class RealmSettings extends Attributes implements LoadableConfigurable {
+    private final ArrayList<InstanceSettings> instances = new ArrayList<>();
     private ArrayList<PlayerClass> classes = new ArrayList<>();
     private ArrayList<Affliction> afflictions = new ArrayList<>();
     private PlayerCharacter template = new PlayerCharacter();
@@ -38,14 +41,12 @@ public class RealmSettings implements Serializable {
     private int size;
     private String type;
     private String lifetime;
-    private double drop;
-    private double leveling;
     private int players = 0;
     private Boolean trusted;
     private Boolean secure;
 
     public RealmSettings removeAuthentication() {
-        return new RealmSettings()
+        RealmSettings copy = new RealmSettings()
                 .setClasses(classes)
                 .setAfflictions(afflictions)
                 .setTemplate(template)
@@ -56,16 +57,18 @@ public class RealmSettings implements Serializable {
                 .setSize(size)
                 .setType(type)
                 .setLifetime(lifetime)
-                .setDrop(drop)
-                .setLeveling(leveling)
                 .setPlayers(players)
                 .setTrusted(trusted)
                 .setSecure(secure)
                 .setAuthentication(null);
+
+        copy.setAttributes(attributes);
+
+        return copy;
     }
 
-    public RealmSettings load(EnabledRealm enabled) throws IOException {
-        readInstances(enabled.getInstances());
+    public RealmSettings load(List<String> instances) throws IOException {
+        readInstances(instances);
         readPlayerClasses();
         readAfflictions();
         readTemplate();
@@ -75,6 +78,8 @@ public class RealmSettings implements Serializable {
     private void readInstances(List<String> enabled) throws IOException {
         String path = getConfigurationOverride(PATH_INSTANCE);
         ArrayList<JsonObject> configurations = JsonFileStore.readDirectoryObjects(path);
+
+        Collection<String> files = FileConfiguration.available(path);
 
         for (JsonObject configuration : configurations) {
             if (enabled.isEmpty() || enabled.contains(configuration.getString(ID_NAME))) {
@@ -198,7 +203,7 @@ public class RealmSettings implements Serializable {
         return description;
     }
 
-    protected RealmSettings setDescription(String description) {
+    public RealmSettings setDescription(String description) {
         this.description = description;
         return this;
     }
@@ -225,7 +230,7 @@ public class RealmSettings implements Serializable {
         return type;
     }
 
-    protected RealmSettings setType(String type) {
+    public RealmSettings setType(String type) {
         this.type = type;
         return this;
     }
@@ -236,24 +241,6 @@ public class RealmSettings implements Serializable {
 
     protected RealmSettings setLifetime(String lifetime) {
         this.lifetime = lifetime;
-        return this;
-    }
-
-    public double getDrop() {
-        return drop;
-    }
-
-    protected RealmSettings setDrop(double drop) {
-        this.drop = drop;
-        return this;
-    }
-
-    public double getLeveling() {
-        return leveling;
-    }
-
-    protected RealmSettings setLeveling(double leveling) {
-        this.leveling = leveling;
         return this;
     }
 
@@ -273,6 +260,21 @@ public class RealmSettings implements Serializable {
     @Override
     public boolean equals(Object other) {
         return other instanceof RealmSettings && (((RealmSettings) other).getName().equals(name));
+    }
 
+    @Override
+    public String getPath() {
+        return PATH_REALM + name + EXT_JSON;
+    }
+
+    @Override
+    public JsonObject serialize() {
+        JsonObject json = Serializer.json(this);
+
+        json.remove(ID_AFFLICTIONS);
+        json.remove(ID_CLASSES);
+        json.remove(ID_TEMPLATE);
+
+        return json;
     }
 }

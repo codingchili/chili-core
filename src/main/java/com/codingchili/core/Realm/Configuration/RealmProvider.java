@@ -9,10 +9,10 @@ import io.vertx.core.Vertx;
  * @author Robin Duda
  */
 public class RealmProvider implements Provider {
-    private RealmServerSettings server;
-    private RealmSettings realm;
-    private Logger logger;
-    private Vertx vertx;
+    private final RealmServerSettings server;
+    private final RealmSettings realm;
+    private final Logger logger;
+    private final Vertx vertx;
 
     public RealmProvider(Vertx vertx, RealmServerSettings server, RealmSettings realm) {
         this.server = server;

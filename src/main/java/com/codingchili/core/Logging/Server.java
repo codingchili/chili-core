@@ -12,6 +12,8 @@ import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 
+import static com.codingchili.core.Configuration.Strings.PATH_LOGSERVER;
+
 /**
  * @author Robin Duda
  *         Receives logging data from the other components and writes it to an elasticsearch cluster or console.
@@ -22,7 +24,7 @@ public class Server extends ClusterVerticle {
     @Override
     public void init(Vertx vertx, Context context) {
         super.init(vertx, context);
-        this.settings = FileConfiguration.instance().getLogSettings();
+        this.settings = FileConfiguration.get(PATH_LOGSERVER, LogServerSettings.class);
         this.logger = new DefaultLogger(vertx, settings.getLogserver());
     }
 

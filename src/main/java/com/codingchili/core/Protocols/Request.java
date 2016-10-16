@@ -20,6 +20,8 @@ public interface Request {
 
     void conflict();
 
+    void bad();
+
     String action();
 
     String target();

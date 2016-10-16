@@ -14,10 +14,10 @@ import static com.codingchili.core.Configuration.Strings.*;
 public class ClusterRequest implements Request {
     private int timeout = 3000;
     private Buffer buffer;
-    private JsonObject json;
-    private Message message;
+    private final JsonObject json;
+    private final Message message;
 
-    public ClusterRequest(Request request) {
+    protected ClusterRequest(Request request) {
         this(((ClusterRequest) request).getMessage());
         this.timeout = request.timeout();
     }
@@ -75,6 +75,11 @@ public class ClusterRequest implements Request {
     @Override
     public void conflict() {
         message.reply(message(ResponseStatus.CONFLICT));
+    }
+
+    @Override
+    public void bad() {
+        message.reply(message(ResponseStatus.BAD));
     }
 
     @Override

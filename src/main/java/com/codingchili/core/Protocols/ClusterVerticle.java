@@ -29,6 +29,11 @@ public abstract class ClusterVerticle implements Verticle {
     }
 
     @Override
+    public void start(Future<Void> start) throws Exception {
+        start.complete();
+    }
+
+    @Override
     public Vertx getVertx() {
         return vertx;
     }

@@ -14,6 +14,7 @@ public class Strings {
     public static final String PATH_WEBSERVER = "conf/service/webserver.json";
     public static final String PATH_ROUTING = "conf/service/routingserver.json";
 
+    public static final String PATH_VALIDATOR = "conf/system/validator.json";
     public static final String PATH_LAUNCHER = "conf/system/launcher.json";
     public static final String PATH_DEPLOY = "conf/system/deployment.json";
     public static final String PATH_VERTX = "conf/system/vertx.json";
@@ -24,6 +25,7 @@ public class Strings {
     public static final String PATH_GAME_PLAYERTEMPLATE = "conf/game/player/character.json";
     public static final String PATH_GAME_OVERRIDE = "conf/realm/override/";
     public static final String PATH_GAME = "conf/game";
+    public static final String PATH_ROOT = "/";
 
     public static final String DIR_RESOURCES = "resources";
     public static final String DIR_WEBSITE = "website";
@@ -104,6 +106,15 @@ public class Strings {
     public static final String ID_TITLE = "title";
     public static final String ID_LICENSE = "license";
     public static final String ID_BUFFER = "buffer";
+    public static final String ID_DESCRIPTION = "description";
+    public static final String ID_TYPE = "type";
+    public static final String ID_SECURE = "secure";
+    public static final String ID_TRUSTED = "trusted";
+    public static final String ID_REMOTE = "remote";
+    public static final String ID_ATTRIBUTES = "attributes";
+    public static final String ID_PATCHER = "patcher";
+    public static final String ID_CONFIGURATION = "configuration";
+    public static final String ID_FILESTORE = "filestore";
 
 
     //Database naming.
@@ -183,6 +194,13 @@ public class Strings {
     public static final String LOG_TRACE = "trace";
     public static final String LOG_HANDLER_MISSING = "handler.missing";
     public static final String LOG_REALM_DEPLOY_ERROR = "realm.deploy.error";
+    public static final String LOG_FILE_LOADBY = "loaded-by";
+    public static final String LOG_FILE_SAVEBY = "saved-by";
+    public static final String LOG_CACHE_CLEARBY = "cleared-by";
+    public static final String LOG_FILE_LOADED = "file.load";
+    public static final String LOG_FILE_SAVED = "file.save";
+    public static final String LOG_CACHE_CLEARED = "cache.clear";
+    public static final String LOG_FILE_PATH = "path";
 
     //Patching
     public static final String PATCH_IDENTIFIER = "patch";
@@ -201,4 +219,5 @@ public class Strings {
     public static final String ERROR_LAUNCHER_STARTUP = "Failed to start the launcher with clustering.";
     public static final String ERRROR_LAUNCHER_SHUTDOWN = "System has been shut down..";
     public static final String ERROR_REALM_DEPLOYMENT_FAILED = "Failed to deploy %realm%, already deployed in cluster.";
+    public static final String ERROR_READ_FILE_FAIL = "Failed to read file %file%.";
 }

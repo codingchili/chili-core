@@ -9,7 +9,6 @@ import com.codingchili.core.Configuration.Strings;
  *         Contains settings for the patchserver.
  */
 public class PatchServerSettings implements Configurable {
-    private RemoteAuthentication authserver;
     private RemoteAuthentication logserver;
     private GameInfo gameinfo;
     private PatchNotes patch;
@@ -24,14 +23,6 @@ public class PatchServerSettings implements Configurable {
     @Override
     public String getName() {
         return logserver.getSystem();
-    }
-
-    public RemoteAuthentication getAuthserver() {
-        return authserver;
-    }
-
-    public void setAuthserver(RemoteAuthentication authserver) {
-        this.authserver = authserver;
     }
 
     public GameInfo getGameinfo() {

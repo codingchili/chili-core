@@ -1,16 +1,16 @@
 package com.codingchili.core.Logging;
 
-import com.codingchili.core.Configuration.ConfigMock;
+import com.codingchili.core.Configuration.FileConfiguration;
 import com.codingchili.core.Configuration.Strings;
 import com.codingchili.core.Logging.Configuration.LogProvider;
 import com.codingchili.core.Logging.Configuration.LogServerSettings;
 import com.codingchili.core.Logging.Controller.LogHandler;
+import com.codingchili.core.Protocols.ResponseStatus;
 import com.codingchili.core.Protocols.Util.Serializer;
 import com.codingchili.core.Protocols.Util.Token;
 import com.codingchili.core.Protocols.Util.TokenFactory;
 import com.codingchili.core.Shared.RequestMock;
 import com.codingchili.core.Shared.ResponseListener;
-import com.codingchili.core.Protocols.ResponseStatus;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import java.util.concurrent.TimeUnit;
 
 import static com.codingchili.core.Configuration.Strings.ID_TOKEN;
+import static com.codingchili.core.Configuration.Strings.PATH_LOGSERVER;
 
 /**
  * @author Robin Duda
@@ -33,15 +34,14 @@ import static com.codingchili.core.Configuration.Strings.ID_TOKEN;
 public class LogHandlerTest {
     private TokenFactory factory;
     private LogHandler handler;
-    private LogServerSettings settings;
 
     @Rule
     public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
 
     @Before
     public void setUp() {
-        settings = new ConfigMock.LogServerSettingsMock();
-        LogProvider provider = new ProviderMock();
+        LogServerSettings settings = FileConfiguration.get(PATH_LOGSERVER, LogServerSettings.class);
+        LogProvider provider = new ProviderMock(settings);
         factory = new TokenFactory(settings.getSecret());
         handler = new LogHandler(provider);
     }

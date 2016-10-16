@@ -20,9 +20,9 @@ import static com.codingchili.core.Protocols.Access.PUBLIC;
  * @author Robin Duda
  */
 public class PatchHandler extends AbstractHandler {
-    private Protocol<RequestHandler<PatchRequest>> protocol = new Protocol<>();
-    private PatchServerSettings settings;
-    private PatchKeeper patcher;
+    private final Protocol<RequestHandler<PatchRequest>> protocol = new Protocol<>();
+    private final PatchServerSettings settings;
+    private final PatchKeeper patcher;
 
     public PatchHandler(PatchProvider provider) {
         super(NODE_PATCHING);

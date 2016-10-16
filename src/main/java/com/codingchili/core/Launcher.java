@@ -4,7 +4,7 @@ import com.codingchili.core.Authentication.Server;
 import com.codingchili.core.Configuration.FileConfiguration;
 import com.codingchili.core.Configuration.JsonFileStore;
 import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Configuration.VertxSettings;
+import com.codingchili.core.Configuration.System.VertxSettings;
 import com.codingchili.core.Logging.Model.ConsoleLogger;
 import com.codingchili.core.Protocols.ClusterVerticle;
 import io.vertx.core.*;
@@ -31,7 +31,7 @@ public class Launcher extends ClusterVerticle {
 
 
     public static void main(String[] args) {
-        VertxSettings settings = FileConfiguration.instance().getVertxSettings();
+        VertxSettings settings = FileConfiguration.get(PATH_VERTX, VertxSettings.class);
 
         Vertx.clusteredVertx(settings.getOptions(), (clustered) -> {
             if (clustered.succeeded()) {

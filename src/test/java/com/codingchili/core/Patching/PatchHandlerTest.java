@@ -1,11 +1,11 @@
 package com.codingchili.core.Patching;
 
 import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Patching.Controller.PatchHandler;
 import com.codingchili.core.Patching.Configuration.PatchProvider;
+import com.codingchili.core.Patching.Controller.PatchHandler;
+import com.codingchili.core.Protocols.ResponseStatus;
 import com.codingchili.core.Shared.RequestMock;
 import com.codingchili.core.Shared.ResponseListener;
-import com.codingchili.core.Protocols.ResponseStatus;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -13,7 +13,10 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeUnit;
@@ -39,7 +42,6 @@ public class PatchHandlerTest {
         vertx = Vertx.vertx();
         PatchProvider provider = new ProviderMock(vertx);
         handler = new PatchHandler(provider);
-        new PatchHandler(provider);
     }
 
     @AfterClass

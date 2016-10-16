@@ -2,7 +2,9 @@ package com.codingchili.core.Routing.Controller.Transport;
 
 import com.codingchili.core.Protocols.Request;
 import com.codingchili.core.Protocols.Util.Token;
-import com.codingchili.core.Routing.Model.ListenerSettings;
+import com.codingchili.core.Protocols.Util.Validator;
+import com.codingchili.core.Routing.Configuration.ListenerSettings;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
@@ -14,13 +16,16 @@ import static com.codingchili.core.Configuration.Strings.ID_ACTION;
 import static com.codingchili.core.Configuration.Strings.ID_TARGET;
 import static com.codingchili.core.Configuration.Strings.NODE_WEBSERVER;
 
+import static io.netty.handler.codec.http.HttpResponseStatus.*;
+
 /**
  * @author Robin Duda
  */
 public class RestRouteRequest implements Request {
-    private RoutingContext context;
-    private HttpServerRequest request;
-    private ListenerSettings settings;
+    private final RoutingContext context;
+    private final HttpServerRequest request;
+    private final ListenerSettings settings;
+    private JsonObject data;
 
     public RestRouteRequest(RoutingContext context, HttpServerRequest request, ListenerSettings settings) {
         this.context = context;
@@ -30,36 +35,41 @@ public class RestRouteRequest implements Request {
 
     @Override
     public void error() {
-        send(request, HttpResponseStatus.INTERNAL_SERVER_ERROR);
+        send(INTERNAL_SERVER_ERROR);
     }
 
     @Override
     public void unauthorized() {
-        send(request, HttpResponseStatus.UNAUTHORIZED);
+        send(UNAUTHORIZED);
     }
 
     @Override
     public void write(Object object) {
         if (object instanceof Buffer) {
-            send(request, (Buffer) object);
+            send((Buffer) object);
         } else {
-            send(request, object);
+            send(object);
         }
     }
 
     @Override
     public void accept() {
-        send(request, HttpResponseStatus.OK);
+        send(OK);
     }
 
     @Override
     public void missing() {
-        send(request, HttpResponseStatus.NOT_FOUND);
+        send(NOT_FOUND);
     }
 
     @Override
     public void conflict() {
-        send(request, HttpResponseStatus.CONFLICT);
+        send(CONFLICT);
+    }
+
+    @Override
+    public void bad() {
+        send(BAD_REQUEST);
     }
 
     @Override
@@ -104,11 +114,15 @@ public class RestRouteRequest implements Request {
 
     @Override
     public JsonObject data() {
-        try {
-            return context.getBodyAsJson().put(ID_ACTION, action());
-        } catch (DecodeException e) {
-            return new JsonObject().put(ID_ACTION, request.path());
+        if (data == null) {
+            try {
+                data = context.getBodyAsJson().put(ID_ACTION, action());
+            } catch (DecodeException e) {
+                data = new JsonObject().put(ID_ACTION, request.path());
+            }
         }
+
+        return data;
     }
 
     @Override
@@ -116,15 +130,15 @@ public class RestRouteRequest implements Request {
         return settings.getTimeout();
     }
 
-    private void send(HttpServerRequest request, HttpResponseStatus status) {
+    private void send(HttpResponseStatus status) {
         request.response().setStatusCode(status.code()).end();
     }
 
-    private void send(HttpServerRequest request, Buffer buffer) {
+    private void send(Buffer buffer) {
         request.response().end(buffer);
     }
 
-    private void send(HttpServerRequest request, Object object) {
+    private void send(Object object) {
         request.response().end(Buffer.buffer(object.toString()));
     }
 }

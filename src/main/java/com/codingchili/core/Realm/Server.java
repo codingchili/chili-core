@@ -2,10 +2,11 @@ package com.codingchili.core.Realm;
 
 import com.codingchili.core.Configuration.FileConfiguration;
 import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Logging.Model.ConsoleLogger;
+import com.codingchili.core.Configuration.System.VertxSettings;
 import com.codingchili.core.Logging.Model.DefaultLogger;
 import com.codingchili.core.Protocols.ClusterListener;
 import com.codingchili.core.Protocols.ClusterVerticle;
+import com.codingchili.core.Realm.Configuration.EnabledRealm;
 import com.codingchili.core.Realm.Configuration.RealmProvider;
 import com.codingchili.core.Realm.Configuration.RealmServerSettings;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
@@ -17,6 +18,10 @@ import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
 
+import java.io.IOException;
+
+import static com.codingchili.core.Configuration.Strings.PATH_VERTX;
+
 /**
  * @author Robin Duda
  *         root game server, deploys realmName servers.
@@ -27,13 +32,15 @@ public class Server extends ClusterVerticle {
     @Override
     public void init(Vertx vertx, Context context) {
         super.init(vertx, context);
-        this.settings = FileConfiguration.instance().getRealmServerSettings();
+        this.settings = FileConfiguration.get(Strings.PATH_REALMSERVER, RealmServerSettings.class);
         this.logger = new DefaultLogger(vertx, settings.getLogserver());
     }
 
     @Override
-    public void start(Future<Void> start) throws Exception {
-        for (RealmSettings realm : settings.getRealms()) {
+    public void start(Future<Void> start) throws IOException {
+        for (EnabledRealm enabled : settings.getEnabled()) {
+            RealmSettings realm = FileConfiguration.get(enabled.getPath(), RealmSettings.class);
+            realm.load(enabled.getInstances());
             Future<Void> future = Future.future();
 
             future.setHandler(result -> {
@@ -64,7 +71,7 @@ public class Server extends ClusterVerticle {
                 // If no response then the id is not already in use.
                 vertx.deployVerticle(new ClusterListener(new RealmHandler(provider)), deploy -> {
                     if (deploy.failed()) {
-                      throw new RuntimeException(deploy.cause());
+                        throw new RuntimeException(deploy.cause());
                     }
                 });
 
@@ -80,9 +87,9 @@ public class Server extends ClusterVerticle {
     }
 
     private static DeliveryOptions getDeliveryOptions() {
-        int timeout = FileConfiguration.instance().getVertxSettings().getDeployTimeout();
+        VertxSettings vertxSettings = FileConfiguration.get(PATH_VERTX, VertxSettings.class);
 
         return new DeliveryOptions()
-                .setSendTimeout(timeout);
+                .setSendTimeout(vertxSettings.getDeployTimeout());
     }
 }

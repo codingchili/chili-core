@@ -4,6 +4,8 @@ import com.codingchili.core.Configuration.Strings;
 import io.vertx.core.json.JsonObject;
 import org.fusesource.jansi.AnsiConsole;
 
+import static com.codingchili.core.Configuration.Strings.ID_TOKEN;
+
 /**
  * @author Robin Duda
  */
@@ -18,7 +20,7 @@ public class ConsoleLogger {
     private static final String CYAN = "\u001B[36m";
     private static final String WHITE = "\u001B[37m";
     private Style style = Style.COMPRESSED;
-    private boolean enabled;
+    private final boolean enabled;
 
 
     public ConsoleLogger() {
@@ -64,9 +66,20 @@ public class ConsoleLogger {
         return this;
     }
 
+    public void log(String line) {
+        if (enabled) {
+            setColor(CYAN);
+
+            AnsiConsole.out.println(line);
+            AnsiConsole.out.flush();
+        }
+    }
+
     public void log(JsonObject data) {
         if (enabled) {
             setColor(data);
+
+            data.remove(ID_TOKEN);
 
             String text = ((style == Style.PRETTY) ? data.encodePrettily() : data.encode())
                     .replaceAll("(\":\")", "=")

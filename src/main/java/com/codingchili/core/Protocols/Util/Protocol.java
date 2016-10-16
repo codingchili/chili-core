@@ -11,7 +11,7 @@ import static com.codingchili.core.Configuration.Strings.ANY;
  * @author Robin Duda
  */
 public class Protocol<Handler extends RequestHandler> {
-    private AuthorizationHandler<Handler> handlers = new AuthorizationHandler<>();
+    private final AuthorizationHandler<Handler> handlers = new AuthorizationHandler<>();
 
     public Handler get(Access access, String target) throws AuthorizationRequiredException, HandlerMissingException {
         if (handlers.contains(target)) {

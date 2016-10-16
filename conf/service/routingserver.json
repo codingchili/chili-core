@@ -1,8 +1,8 @@
 {
   "logserver" : {
     "token" : {
-      "key" : "3CF78E8ACBB202BCA9D50917D2A39CA5483ABAB742EFE00FE5C0BD2162B11F42DA9BFE3BC220EFD7388946B6D7C7445344A13FCF16A17D5F638F68AC73EE0791",
-      "expiry" : 1479191608,
+      "key" : "C454207F9C5827F45B91C47E009173766838E1633B01F949001BB53A8564DD4A01EF95E9A8A75B0EFE6B7E51ABADD9CEC6D4B4E494771D2D86111A312A746328",
+      "expiry" : 1479291284,
       "domain" : "routing.node@server.1"
     },
     "system" : "routing.node",
@@ -11,18 +11,22 @@
   "transport" : [ {
     "type" : "UDP",
     "port" : 80,
-    "timeout" : 2000
+    "timeout" : 2000,
+    "maxRequestBytes" : 512
   }, {
     "type" : "TCP",
     "port" : 8010,
-    "timeout" : 2000
+    "timeout" : 2000,
+    "maxRequestBytes" : 512
   }, {
     "type" : "WEBSOCKET",
     "port" : 80,
-    "timeout" : 4000
+    "timeout" : 4000,
+    "maxRequestBytes" : 512
   }, {
     "type" : "REST",
     "port" : 80,
-    "timeout" : 6000
+    "timeout" : 6000,
+    "maxRequestBytes" : 512
   } ]
 }

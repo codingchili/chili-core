@@ -13,6 +13,8 @@ import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 
+import static com.codingchili.core.Configuration.Strings.PATH_AUTHSERVER;
+
 /**
  * @author Robin Duda
  */
@@ -29,7 +31,7 @@ public class AuthProvider implements Provider {
     private AuthProvider(AsyncRealmStore realms, AsyncAccountStore accounts, Vertx vertx) {
         this.realms = realms;
         this.accounts = accounts;
-        this.settings = FileConfiguration.instance().getAuthSettings();
+        this.settings = FileConfiguration.get(PATH_AUTHSERVER, AuthServerSettings.class);
         this.logger = new DefaultLogger(vertx, settings.getLogserver());
         this.vertx = vertx;
     }

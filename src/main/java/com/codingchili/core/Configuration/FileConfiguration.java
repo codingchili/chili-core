@@ -1,171 +1,132 @@
 package com.codingchili.core.Configuration;
 
-import com.codingchili.core.Authentication.Configuration.AuthServerSettings;
-import com.codingchili.core.Logging.Configuration.LogServerSettings;
-import com.codingchili.core.Patching.Configuration.PatchServerSettings;
+import com.codingchili.core.Logging.Model.DefaultLogger;
+import com.codingchili.core.Logging.Model.Logger;
 import com.codingchili.core.Protocols.Util.Serializer;
-import com.codingchili.core.Realm.Configuration.EnabledRealm;
-import com.codingchili.core.Realm.Configuration.RealmServerSettings;
-import com.codingchili.core.Realm.Configuration.RealmSettings;
-import com.codingchili.core.Routing.Configuration.RoutingSettings;
-import com.codingchili.core.Website.Configuration.WebserverSettings;
-import io.vertx.core.json.JsonObject;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
-import static com.codingchili.core.Configuration.Strings.PATH_REALM;
-
+import static com.codingchili.core.Configuration.Strings.ID_CONFIGURATION;
 
 /**
  * @author Robin Duda
  *         Handles loading and parsing of the configuration files.
  */
-public class FileConfiguration implements ConfigurationLoader {
-    private static ConfigurationLoader instance;
-    private AuthServerSettings authentication;
-    private LogServerSettings logserver;
-    private RealmServerSettings realmserver;
-    private PatchServerSettings patchserver;
-    private WebserverSettings webserver;
-    private RoutingSettings routing;
-    private LauncherSettings launcher;
-    private DeploySettings deploy;
-    private VertxSettings vertxSettings;
+public class FileConfiguration {
+    private static final ConcurrentHashMap<String, ConfigEntry> cache = new ConcurrentHashMap<>();
+    private static final Logger logger = new DefaultLogger();
 
-    private FileConfiguration() throws IOException {
-        launcher = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_LAUNCHER), LauncherSettings.class);
-        deploy = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_DEPLOY), DeploySettings.class);
-        authentication = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_AUTHSERVER), AuthServerSettings.class);
-        realmserver = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_REALMSERVER), RealmServerSettings.class);
-        logserver = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_LOGSERVER), LogServerSettings.class);
-        webserver = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_WEBSERVER), WebserverSettings.class);
-        routing = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_ROUTING), RoutingSettings.class);
-        vertxSettings = Serializer.unpack(JsonFileStore.readObject(Strings.PATH_VERTX), VertxSettings.class);
-        patchserver = loadPatchSettings();
-        loadRealms(realmserver);
+    /**
+     * Loads a configurable from specified path and instantiates a settings object.
+     *
+     * @param path  the path to the json configuration.
+     * @param clazz a class with settings that extends a Configurable.
+     * @return an instantiated configurable.
+     */
+    public static <T extends LoadableConfigurable> T get(String path, Class clazz) {
+        if (cache.containsKey(path)) {
+            return (T) cache.get(path).configurable;
+        } else {
+            return load(path, clazz);
+        }
     }
 
     /**
-     * Expose the loader for loading settings during runtime.
+     * Reloads a configuration file from specified path.
      *
-     * @return PatchServerSettings instantiated from JSON at #Strings.PATH_PATCHSERVER
+     * @param path of the configurable to reload.
+     * @return an instantiated configurable.
      */
-    public static PatchServerSettings loadPatchSettings() throws IOException {
-        return Serializer.unpack(JsonFileStore.readObject(Strings.PATH_PATCHSERVER), PatchServerSettings.class);
+    public static void reload(String path) {
+        if (cache.containsKey(path)) {
+            FileConfiguration.load(path, cache.get(path).clazz);
+        }
     }
 
-    private void loadRealms(RealmServerSettings realmserver) {
-        ArrayList<RealmSettings> realms = new ArrayList<>();
+    /**
+     * Saves a configuration to file without updating the cache.
+     *
+     * @param configurable the configurable to be written.
+     */
+    public static void save(LoadableConfigurable configurable) {
+        JsonFileStore.writeObject(configurable.serialize(), configurable.getPath());
+        logger.onFileSaved(ID_CONFIGURATION, configurable.getPath());
+    }
+
+    /**
+     * Get all loaded configurables, useful for modifying them before saving.
+     *
+     * @return a list of all the configurables loaded.
+     */
+    public static Collection<LoadableConfigurable> loaded() {
+        ArrayList<LoadableConfigurable> loaded = new ArrayList<>();
+
+        cache.values().forEach(entry -> loaded.add(entry.configurable));
+
+        return loaded;
+    }
+
+    /**
+     * List all available configuration files.
+     *
+     * @param path root path to search from.
+     * @return a list of paths to configuration files.
+     */
+    public static Collection<String> available(String path) {
         try {
-            for (EnabledRealm enabled : realmserver.getEnabled()) {
-                JsonObject configuration = JsonFileStore.readObject(getRealmPath(enabled.getRealm()));
-                RealmSettings realm = (Serializer.unpack(configuration, RealmSettings.class));
-                realm.load(enabled);
-                realms.add(realm);
-            }
-
-            realmserver.setRealms(realms);
+            return Files.walk(Paths.get(path))
+                    .filter(file -> !file.toFile().isDirectory())
+                    .map(Path::toString)
+                    .map(text -> text.replaceAll("\\\\", Strings.DIR_SEPARATOR))
+                    .collect(Collectors.toList());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new FileReadException(path);
         }
     }
 
-    public static synchronized ConfigurationLoader instance() {
-        if (instance == null) {
-            try {
-                instance = new FileConfiguration();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            TokenRefresher.refresh();
-        }
-        return instance;
+    /**
+     * List all available configuration files from the server root.
+     *
+     * @return a list of paths to configuration files.
+     */
+    public static Collection<String> available() {
+        return available("");
     }
 
-    public static synchronized void unload() {
-        instance = null;
-    }
-
-    @Override
-    public VertxSettings getVertxSettings() {
-        return vertxSettings;
-    }
-
-    @Override
-    public PatchServerSettings getPatchServerSettings() {
-        return patchserver;
-    }
-
-    @Override
-    public RealmServerSettings getRealmServerSettings() {
-        return realmserver;
-    }
-
-    @Override
-    public LogServerSettings getLogSettings() {
-        return logserver;
-    }
-
-    @Override
-    public AuthServerSettings getAuthSettings() {
-        return authentication;
-    }
-
-    @Override
-    public WebserverSettings getWebsiteSettings() {
-        return webserver;
-    }
-
-    @Override
-    public RoutingSettings getRoutingSettings() {
-        return routing;
-    }
-
-    @Override
-    public LauncherSettings getLauncherSettings() {
-        return launcher;
-    }
-
-    @Override
-    public DeploySettings getDeploySettings() {
-        return deploy;
-    }
-
-    @Override
-    public void save() {
-        Configurable[] configurables = {authentication, logserver, realmserver, patchserver, webserver, routing};
-
-        for (Configurable configurable : configurables) {
-            JsonFileStore.writeObject(Serializer.json(configurable), getConfigPath(configurable));
-        }
-
-        for (RealmSettings realm : realmserver.getRealms()) {
-            JsonObject json = Serializer.json(realm);
-
-            json.remove(Strings.ID_AFFLICTIONS);
-            json.remove(Strings.ID_CLASSES);
-            json.remove(Strings.ID_TEMPLATE);
-
-            JsonFileStore.writeObject(json, getRealmPath(realm));
+    private static <T extends LoadableConfigurable> T load(String path, Class clazz) {
+        try {
+            T config = Serializer.unpack(JsonFileStore.readObject(path), clazz);
+            cache.put(path, new ConfigEntry(config, clazz));
+            logger.onFileLoaded(ID_CONFIGURATION, path);
+            return config;
+        } catch (IOException e) {
+            logger.onFileLoadError(path);
+            throw new FileReadException(path);
         }
     }
 
-    @Override
-    public Configurable[] getConfigurables() {
-        return new Configurable[]{authentication, logserver, realmserver, patchserver, webserver, routing};
+    /**
+     * Clears all loaded configuration and reloads on next get.
+     */
+    public static void unload() {
+        cache.clear();
+        logger.onCacheCleared(ID_CONFIGURATION);
     }
 
-    private String getRealmPath(RealmSettings realm) {
-        return getRealmPath(realm.getName());
-    }
+    private static class ConfigEntry {
+        final LoadableConfigurable configurable;
+        final Class clazz;
 
-    private String getRealmPath(String name) {
-        return PATH_REALM + name + Strings.EXT_JSON;
-    }
-
-    private String getConfigPath(Configurable configurable) {
-        return configurable.getPath();
+        ConfigEntry(LoadableConfigurable configurable, Class clazz) {
+            this.configurable = configurable;
+            this.clazz = clazz;
+        }
     }
 }

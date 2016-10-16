@@ -15,7 +15,7 @@ public class RealmRegister {
     private RealmSettings realm;
     private Boolean registered;
 
-    public RealmRegister() {
+    private RealmRegister() {
         this.header = new Header(ACTION);
     }
 

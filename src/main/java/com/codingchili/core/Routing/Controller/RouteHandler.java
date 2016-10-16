@@ -5,6 +5,7 @@ import com.codingchili.core.Protocols.Exception.ProtocolException;
 import com.codingchili.core.Protocols.Request;
 import com.codingchili.core.Protocols.RequestHandler;
 import com.codingchili.core.Protocols.Util.Protocol;
+import com.codingchili.core.Protocols.Util.Validator;
 import com.codingchili.core.Routing.Configuration.RouteProvider;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.DeliveryOptions;
@@ -16,8 +17,9 @@ import static com.codingchili.core.Protocols.Access.AUTHORIZED;
  * @author Robin Duda
  */
 public class RouteHandler extends AbstractHandler {
-    private Protocol<RequestHandler<Request>> protocol = new Protocol<>();
-    private Vertx vertx;
+    private Validator validator = new Validator();
+    private final Protocol<RequestHandler<Request>> protocol = new Protocol<>();
+    private final Vertx vertx;
 
     public RouteHandler(RouteProvider provider) {
         super(NODE_ROUTING);
@@ -36,7 +38,12 @@ public class RouteHandler extends AbstractHandler {
 
     @Override
     public void handle(Request request) throws ProtocolException {
-        protocol.get(AUTHORIZED, request.target()).handle(request);
+        try {
+            validator.validate(request.data());
+            protocol.get(AUTHORIZED, request.target()).handle(request);
+        } catch (Validator.RequestValidationException e) {
+            request.bad();
+        }
     }
 
     /**

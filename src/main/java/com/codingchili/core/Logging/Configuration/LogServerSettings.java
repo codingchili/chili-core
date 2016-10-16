@@ -14,9 +14,7 @@ public class LogServerSettings implements Configurable {
     private RemoteAuthentication logserver;
     private ElasticSettings elastic;
     private byte[] secret;
-    private Integer port;
     private Boolean console;
-
 
     @Override
     public String getPath() {
@@ -36,20 +34,13 @@ public class LogServerSettings implements Configurable {
         this.console = console;
     }
 
-    public Integer getPort() {
-        return port;
-    }
-
-    protected void setPort(Integer port) {
-        this.port = port;
-    }
-
     public byte[] getSecret() {
         return secret;
     }
 
-    public void setSecret(byte[] secret) {
+    public LogServerSettings setSecret(byte[] secret) {
         this.secret = secret;
+        return this;
     }
 
     public ElasticSettings getElastic() {

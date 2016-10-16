@@ -3,7 +3,7 @@ package com.codingchili.core.Logging.Model;
 import com.codingchili.core.Authentication.Model.Account;
 import com.codingchili.core.Configuration.FileConfiguration;
 import com.codingchili.core.Configuration.RemoteAuthentication;
-import com.codingchili.core.Configuration.VertxSettings;
+import com.codingchili.core.Configuration.System.VertxSettings;
 import com.codingchili.core.Protocols.Util.Serializer;
 import com.codingchili.core.Realm.Instance.Configuration.InstanceSettings;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
@@ -25,7 +25,8 @@ import static com.codingchili.core.Configuration.Strings.*;
  *         Default logging implementation.
  */
 public class DefaultLogger extends Handler implements Logger {
-    private ConsoleLogger console = new ConsoleLogger();
+    private VertxSettings vertxSettings;
+    private final ConsoleLogger console = new ConsoleLogger();
     private RemoteAuthentication authentication;
     private Vertx vertx;
 
@@ -33,6 +34,8 @@ public class DefaultLogger extends Handler implements Logger {
     }
 
     public DefaultLogger(Vertx vertx, RemoteAuthentication authentication) {
+        vertxSettings = FileConfiguration.get(PATH_VERTX, VertxSettings.class);
+
         this.authentication = authentication;
         this.vertx = vertx;
 
@@ -42,7 +45,10 @@ public class DefaultLogger extends Handler implements Logger {
     }
 
     private void log(JsonObject json) {
-        vertx.eventBus().send(LOCAL_LOGGING, json.encode());
+        if (vertx != null) {
+            vertx.eventBus().send(LOCAL_LOGGING, json.encode());
+        }
+
         console.log(withoutToken(json));
     }
 
@@ -178,30 +184,24 @@ public class DefaultLogger extends Handler implements Logger {
     }
 
     @Override
-    public void patchReloading(String name, String version) {
+    public void onPatchReloading(String name, String version) {
         log(event(LOG_PATCHER_RELOAD)
                 .put(ID_NAME, name)
                 .put(LOG_VERSION, version));
     }
 
     @Override
-    public void patchReloaded(String name, String version) {
+    public void onPatchReloaded(String name, String version) {
         log(event(LOG_PATCHER_RELOADED)
                 .put(ID_NAME, name)
                 .put(LOG_VERSION, version));
     }
 
     @Override
-    public void patchLoaded(String name, String version) {
+    public void onPatchLoaded(String name, String version) {
         log(event(LOG_PATCHER_LOADED)
                 .put(ID_NAME, name)
                 .put(LOG_VERSION, version));
-    }
-
-    @Override
-    public void onFileLoadError(String fileName) {
-        log(event(LOG_FILE_ERROR, LOG_LEVEL_SEVERE)
-                .put(LOG_MESSAGE, fileName));
     }
 
     @Override
@@ -223,10 +223,37 @@ public class DefaultLogger extends Handler implements Logger {
     }
 
     @Override
+    public void onFileLoaded(String loader, String path) {
+        console.log(event(LOG_FILE_LOADED, LOG_LEVEL_INFO)
+                .put(LOG_FILE_LOADBY, loader)
+                .put(LOG_FILE_PATH, path));
+    }
+
+    @Override
+    public void onCacheCleared(String component) {
+        log(event(LOG_CACHE_CLEARED, LOG_LEVEL_WARNING)
+                .put(LOG_CACHE_CLEARBY, component));
+    }
+
+    @Override
+    public void onFileSaved(String saver, String path) {
+        console.log(event(LOG_FILE_SAVED, LOG_LEVEL_INFO)
+                .put(LOG_FILE_SAVEBY, saver)
+                .put(LOG_FILE_PATH, path));
+    }
+
+    @Override
     public void publish(LogRecord record) {
         console.log(addTrace(event(LOG_VERTX, record.getLevel().getName()), record)
                 .put(LOG_MESSAGE, record.getMessage()));
     }
+
+    @Override
+    public void onFileLoadError(String fileName) {
+        log(event(LOG_FILE_ERROR, LOG_LEVEL_SEVERE)
+                .put(LOG_FILE_PATH, fileName));
+    }
+
 
     private JsonObject addTrace(JsonObject log, LogRecord record) {
 
@@ -247,9 +274,7 @@ public class DefaultLogger extends Handler implements Logger {
     }
 
     private void delay(Future<Void> future) {
-        VertxSettings settings = FileConfiguration.instance().getVertxSettings();
-
-        vertx.setTimer(settings.getShutdownLogTimeout(), shutdown -> {
+        vertx.setTimer(vertxSettings.getShutdownLogTimeout(), shutdown -> {
             future.complete();
         });
     }

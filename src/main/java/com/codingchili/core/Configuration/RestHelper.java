@@ -8,7 +8,7 @@ import io.vertx.ext.web.RoutingContext;
 /**
  * @author Robin Duda
  */
-public abstract class Routing {
+public abstract class RestHelper {
 
     public static void EnableCors(Router router) {
         router.options("/*").handler(routing -> {

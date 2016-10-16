@@ -2,12 +2,18 @@ package com.codingchili.core.Configuration;
 
 import com.codingchili.core.Authentication.Configuration.AuthServerSettings;
 import com.codingchili.core.Logging.Configuration.LogServerSettings;
+import com.codingchili.core.Patching.Configuration.PatchServerSettings;
 import com.codingchili.core.Protocols.Util.Token;
 import com.codingchili.core.Protocols.Util.TokenFactory;
+import com.codingchili.core.Realm.Configuration.EnabledRealm;
 import com.codingchili.core.Realm.Configuration.RealmServerSettings;
 import com.codingchili.core.Realm.Configuration.RealmSettings;
+import com.codingchili.core.Routing.Configuration.RoutingSettings;
+import com.codingchili.core.Website.Configuration.WebserverSettings;
 
 import java.security.SecureRandom;
+
+import static com.codingchili.core.Configuration.Strings.*;
 
 /**
  * @author Robin Duda
@@ -18,6 +24,10 @@ class TokenRefresher {
     private TokenFactory loggerTokens;
     private TokenFactory realmTokens;
 
+    public static void main(String[] args) {
+        refresh();
+    }
+
     static void refresh() {
         new TokenRefresher().generate(false);
     }
@@ -27,23 +37,25 @@ class TokenRefresher {
     }
 
     private void generate(boolean replaceSecrets) {
-        FileConfiguration configuration = (FileConfiguration) FileConfiguration.instance();
+        AuthServerSettings authServerSettings = FileConfiguration.get(PATH_AUTHSERVER, AuthServerSettings.class);
+        LogServerSettings logServerSettings = FileConfiguration.get(PATH_LOGSERVER, LogServerSettings.class);
 
-        generateAuthSecrets(configuration.getAuthSettings(), replaceSecrets);
-        generateLoggingSecret(configuration.getLogSettings(), replaceSecrets);
+        generateAuthSecrets(authServerSettings, replaceSecrets);
+        generateLoggingSecret(logServerSettings, replaceSecrets);
 
         generateLoggingTokens(new Configurable[]{
-                configuration.getAuthSettings(),
-                configuration.getRealmServerSettings(),
-                configuration.getLogSettings(),
-                configuration.getPatchServerSettings(),
-                configuration.getWebsiteSettings(),
-                configuration.getRoutingSettings()
+                FileConfiguration.get(PATH_AUTHSERVER, AuthServerSettings.class),
+                FileConfiguration.get(PATH_REALMSERVER, RealmServerSettings.class),
+                FileConfiguration.get(PATH_LOGSERVER, LogServerSettings.class),
+                FileConfiguration.get(PATH_PATCHSERVER, PatchServerSettings.class),
+                FileConfiguration.get(PATH_WEBSERVER, WebserverSettings.class),
+                FileConfiguration.get(PATH_ROUTING, RoutingSettings.class)
         });
 
-        generateRealmTokens(configuration.getRealmServerSettings());
+        generateRealmTokens(FileConfiguration.get(PATH_REALMSERVER, RealmServerSettings.class));
 
-        configuration.save();
+        FileConfiguration.loaded().stream()
+                .forEach(FileConfiguration::save);
     }
 
     private void generateAuthSecrets(AuthServerSettings authserver, boolean replace) {
@@ -78,22 +90,23 @@ class TokenRefresher {
             RemoteAuthentication remote = logger.getLogserver();
 
             if (remote != null) {
-                if (remote.getToken() == null || !verifyToken(remote.getToken(), loggerTokens)) {
+                if (remote.getToken() == null || invalidToken(remote.getToken(), loggerTokens)) {
                     remote.setToken(new Token(loggerTokens, remote.getSystem() + Strings.LOG_AT + remote.getHost()));
                 }
             }
         }
     }
 
-    private boolean verifyToken(Token token, TokenFactory factory) {
-        return factory.verifyToken(token);
+    private boolean invalidToken(Token token, TokenFactory factory) {
+        return !factory.verifyToken(token);
     }
 
     private void generateRealmTokens(RealmServerSettings gameserver) {
-        for (RealmSettings realm : gameserver.getRealms()) {
+        for (EnabledRealm enabled : gameserver.getEnabled()) {
+            RealmSettings realm = FileConfiguration.get(enabled.getPath(), RealmSettings.class);
             RemoteAuthentication remote = realm.getAuthentication();
 
-            if (remote.getToken() == null || !verifyToken(remote.getToken(), realmTokens)) {
+            if (remote.getToken() == null || invalidToken(remote.getToken(), realmTokens)) {
                 remote.setToken(new Token(realmTokens, realm.getName()));
             }
         }

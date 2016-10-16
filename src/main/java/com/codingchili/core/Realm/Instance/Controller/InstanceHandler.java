@@ -19,10 +19,10 @@ import static com.codingchili.core.Configuration.Strings.ID_PING;
  *         Handles players in a get.
  */
 public class InstanceHandler extends AbstractHandler {
-    private Protocol<RequestHandler<InstanceRequest>> protocol = new Protocol<>();
-    private TokenFactory tokens;
-    private InstanceSettings instance;
-    private RealmSettings realm;
+    private final Protocol<RequestHandler<InstanceRequest>> protocol = new Protocol<>();
+    private final TokenFactory tokens;
+    private final InstanceSettings instance;
+    private final RealmSettings realm;
 
 
     public InstanceHandler(InstanceProvider provider) {

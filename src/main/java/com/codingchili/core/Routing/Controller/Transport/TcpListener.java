@@ -2,7 +2,7 @@ package com.codingchili.core.Routing.Controller.Transport;
 
 import com.codingchili.core.Protocols.ClusterVerticle;
 import com.codingchili.core.Routing.Controller.RouteHandler;
-import com.codingchili.core.Routing.Model.ListenerSettings;
+import com.codingchili.core.Routing.Configuration.ListenerSettings;
 import io.vertx.core.Future;
 
 /**
@@ -14,7 +14,7 @@ public class TcpListener extends ClusterVerticle {
     }
 
     @Override
-    public void start(Future<Void> startFuture) throws Exception {
-
+    public void start(Future<Void> start) {
+        start.complete();
     }
 }

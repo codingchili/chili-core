@@ -7,7 +7,7 @@ import io.vertx.core.Future;
  * @author Robin Duda
  */
 public class ClusterListener extends AbstractVerticle {
-    private AbstractHandler handler;
+    private final AbstractHandler handler;
 
     public ClusterListener(AbstractHandler handler) {
         this.handler = handler;

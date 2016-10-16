@@ -10,20 +10,22 @@ import com.codingchili.core.Routing.Controller.Transport.RestListener;
 import com.codingchili.core.Routing.Controller.Transport.TcpListener;
 import com.codingchili.core.Routing.Controller.Transport.UdpListener;
 import com.codingchili.core.Routing.Controller.Transport.WebsocketListener;
-import com.codingchili.core.Routing.Model.ListenerSettings;
+import com.codingchili.core.Routing.Configuration.ListenerSettings;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+
+import static com.codingchili.core.Configuration.Strings.PATH_ROUTING;
 
 /**
  * @author Robin Duda
  *         root game server, deploys realmName servers.
  */
 public class Server extends ClusterVerticle {
-    private RoutingSettings settings;
+    private final RoutingSettings settings;
 
     public Server() {
-        this.settings = FileConfiguration.instance().getRoutingSettings();
+        this.settings = FileConfiguration.get(PATH_ROUTING, RoutingSettings.class);
     }
 
     @Override

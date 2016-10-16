@@ -19,7 +19,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeUnit;
-import static com.codingchili.core.Configuration.Strings.*;
+
+import static com.codingchili.core.Configuration.Strings.ID_BUFFER;
 
 /**
  * @author Robin Duda

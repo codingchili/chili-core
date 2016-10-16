@@ -1,20 +1,23 @@
 {
+  "attributes" : {
+    "drop" : 1.0,
+    "classes" : [ "Paladin" ],
+    "description" : "Stable realm, PvP Aggressive.",
+    "leveling" : 1.0
+  },
   "authentication" : {
     "token" : {
-      "key" : "486D4DAEA2D294A87BEAC92ADF485CBAE3BC867759D648152BE7996CF4ED3F6C9A1A270D70BA03E3A191E8D96A9993DD7D7C6B4FD688C53CFDE7C9AF0AD6E4E7",
-      "expiry" : 1479191608,
+      "key" : "35AB15668A87FAFEB661CD7E1609CA5CFD47CE97E8211835A480D8F561B26256C7A2D58DF23506E1698BACD55E43227C581A5FE50E278FCD052DECC4120E7616",
+      "expiry" : 1479277776,
       "domain" : "Angel Oak"
     }
   },
   "name" : "Angel Oak",
-  "description" : "Stable realm, PvP Aggressive.",
   "resources" : "patching.node",
   "version" : 1.0,
   "size" : 5000,
   "type" : "PvP",
   "lifetime" : "weekly",
-  "drop" : 1.0,
-  "leveling" : 1.0,
   "players" : 0,
   "remote" : "Angel Oak.realm.node"
 }

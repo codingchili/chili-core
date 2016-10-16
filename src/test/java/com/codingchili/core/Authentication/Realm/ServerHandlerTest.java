@@ -3,22 +3,23 @@ package com.codingchili.core.Authentication.Realm;
 import com.codingchili.core.Authentication.Controller.AuthenticationHandler;
 import com.codingchili.core.Authentication.Model.Account;
 import com.codingchili.core.Authentication.Model.ProviderMock;
-import com.codingchili.core.Configuration.ConfigMock;
+import com.codingchili.core.Protocols.ResponseStatus;
 import com.codingchili.core.Protocols.Util.Serializer;
-import com.codingchili.core.Realm.Configuration.RealmSettings;
 import com.codingchili.core.Protocols.Util.Token;
 import com.codingchili.core.Protocols.Util.TokenFactory;
+import com.codingchili.core.Realm.Configuration.RealmSettings;
 import com.codingchili.core.Realm.Instance.Model.PlayerCharacter;
 import com.codingchili.core.Shared.RequestMock;
 import com.codingchili.core.Shared.ResponseListener;
-import com.codingchili.core.Protocols.ResponseStatus;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.HashMap;
@@ -36,7 +37,8 @@ public class ServerHandlerTest {
     private static final String ACCOUNT_NAME = "name";
     private static final String ACCOUNT_PASSWORD = "pass";
     private static final String CHARACTER_NAME = "character.name";
-    private RealmSettings realmconfig = new ConfigMock().getRealm();
+    private static final String REALM_NAME = "test-realm";
+    private RealmSettings realmconfig = new RealmSettings();
     private AuthenticationHandler handler;
     private TokenFactory factory;
     private ProviderMock provider;
@@ -49,6 +51,9 @@ public class ServerHandlerTest {
         provider = new ProviderMock();
         handler = new AuthenticationHandler(provider);
         factory = provider.getRealmTokenFactory();
+
+        realmconfig.setName(REALM_NAME);
+        realmconfig.getAuthentication().setToken(new Token(provider.getRealmTokenFactory(), REALM_NAME));
     }
 
     @Test
@@ -76,7 +81,7 @@ public class ServerHandlerTest {
             context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
         });
 
-        realmconfig = new ConfigMock.RealmSettingsMock();
+        realmconfig = new RealmSettings();
     }
 
     @Test
@@ -232,6 +237,6 @@ public class ServerHandlerTest {
     }
 
     private JsonObject getToken() {
-        return Serializer.json(new Token(factory, realmconfig.getName()));
+        return Serializer.json(new Token(factory, REALM_NAME));
     }
 }

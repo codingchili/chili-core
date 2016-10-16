@@ -22,10 +22,10 @@ import static com.codingchili.core.Protocols.Access.PUBLIC;
  * @author Robin Duda
  */
 public class LogHandler extends AbstractHandler {
-    private Protocol<RequestHandler<Request>> protocol = new Protocol<>();
-    private TokenFactory tokenFactory;
-    private ConsoleLogger console;
-    private ElasticLogger elastic;
+    private final Protocol<RequestHandler<Request>> protocol = new Protocol<>();
+    private final TokenFactory tokenFactory;
+    private final ConsoleLogger console;
+    private final ElasticLogger elastic;
 
     public LogHandler(LogProvider provider) {
         super(NODE_LOGGING);

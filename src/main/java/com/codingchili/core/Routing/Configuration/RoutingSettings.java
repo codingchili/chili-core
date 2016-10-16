@@ -3,7 +3,6 @@ package com.codingchili.core.Routing.Configuration;
 import com.codingchili.core.Configuration.Configurable;
 import com.codingchili.core.Configuration.RemoteAuthentication;
 import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Routing.Model.ListenerSettings;
 import com.codingchili.core.Routing.Model.WireType;
 
 import java.util.ArrayList;

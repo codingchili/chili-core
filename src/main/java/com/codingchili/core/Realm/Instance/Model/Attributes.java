@@ -8,13 +8,13 @@ import java.util.HashMap;
  * @author Robin Duda
  */
 public abstract class Attributes {
-    protected HashMap attributes = new HashMap<>();
+    protected HashMap<String, Object> attributes = new HashMap<>();
     @JsonIgnore
-    protected HashMap<String, Integer> intAttributes = new HashMap<>();
+    private final HashMap<String, Integer> intAttributes = new HashMap<>();
     @JsonIgnore
-    protected HashMap<String, Double> doubleAttributes = new HashMap<>();
+    private final HashMap<String, Double> doubleAttributes = new HashMap<>();
     @JsonIgnore
-    protected HashMap<String, String> stringAttributes = new HashMap<>();
+    private final HashMap<String, String> stringAttributes = new HashMap<>();
 
     public void setAttributes(HashMap<String, Object> attributes) {
         this.attributes = attributes;
@@ -32,7 +32,7 @@ public abstract class Attributes {
         }
     }
 
-    public HashMap getAttributes() {
+    public HashMap<String, Object> getAttributes() {
         return attributes;
     }
 

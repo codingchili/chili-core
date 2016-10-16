@@ -24,11 +24,11 @@ import static com.codingchili.core.Protocols.Access.PUBLIC;
  *         Routing used to authenticate realms and generate realmName lists.
  */
 public class AuthenticationHandler extends AbstractHandler {
-    private Protocol<RequestHandler<AuthenticationRequest>> protocol = new Protocol<>();
-    private AsyncRealmStore realmStore;
-    private AsyncAccountStore accounts;
-    private AuthServerSettings settings;
-    private TokenFactory tokens;
+    private final Protocol<RequestHandler<AuthenticationRequest>> protocol = new Protocol<>();
+    private final AsyncRealmStore realmStore;
+    private final AsyncAccountStore accounts;
+    private final AuthServerSettings settings;
+    private final TokenFactory tokens;
 
     public AuthenticationHandler(AuthProvider provider) {
        super(NODE_AUTHENTICATION_REALMS);
@@ -63,7 +63,7 @@ public class AuthenticationHandler extends AbstractHandler {
             Future<Void> realmFuture = Future.future();
             RealmSettings realm = request.realm();
 
-            realm.setTrusted(settings.isTrustedRealm(realm.getName()));
+            realm.setTrusted(settings.isTrustedRealm(request.token().getDomain()));
 
             realmFuture.setHandler(insert -> {
                 if (insert.succeeded()) {

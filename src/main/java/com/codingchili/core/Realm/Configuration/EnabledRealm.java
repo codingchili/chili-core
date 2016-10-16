@@ -1,7 +1,12 @@
 package com.codingchili.core.Realm.Configuration;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.codingchili.core.Configuration.Strings.EXT_JSON;
+import static com.codingchili.core.Configuration.Strings.PATH_REALM;
 
 /**
  * @author Robin Duda
@@ -24,5 +29,10 @@ public class EnabledRealm {
 
     public void setInstances(List<String> instances) {
         this.instances = instances;
+    }
+
+    @JsonIgnore
+    public String getPath() {
+        return PATH_REALM + realm + EXT_JSON;
     }
 }

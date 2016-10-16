@@ -14,7 +14,7 @@ import java.time.Instant;
  *         berifies and generates tokens for access.
  */
 public class TokenFactory {
-    private byte[] secret;
+    private final byte[] secret;
     private static final String ALGORITHM = "HmacSHA512";
 
     public TokenFactory(byte[] secret) {

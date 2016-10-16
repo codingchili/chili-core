@@ -1,6 +1,7 @@
 package com.codingchili.core.Protocols.Util;
 
 import com.codingchili.core.Configuration.FileConfiguration;
+import com.codingchili.core.Configuration.System.VertxSettings;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.WorkerExecutor;
@@ -11,6 +12,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
+
+import static com.codingchili.core.Configuration.Strings.PATH_VERTX;
 
 /**
  * @author Robin Duda
@@ -24,10 +27,10 @@ public class HashHelper {
     private final static int KEY_BITS = 512;
     private final static int SALT_BYTES = 32;
     private final static String ALGORITHM = "PBKDF2WithHmacSHA1";
-    private WorkerExecutor executor;
+    private final WorkerExecutor executor;
 
     public HashHelper(Vertx vertx) {
-        int workers = FileConfiguration.instance().getVertxSettings().getPoolSize();
+        int workers = FileConfiguration.<VertxSettings>get(PATH_VERTX, VertxSettings.class).getPoolSize();
         executor = vertx.createSharedWorkerExecutor("hashhelper.workers", workers);
     }
 
