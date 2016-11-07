@@ -1,4 +1,8 @@
 {
+<<<<<<< HEAD
+  "identity" : {
+    "node" : "website.node",
+=======
   "logserver" : {
     "token" : {
       "key" : "AAE6AEEFED3CCF57C6C83AF6295553B66C95F0C39CB8C318692087343D83B38744572990758E0B8D6D0AEC660F134FEC8CC689980EE9CB10262662D539D694B5",
@@ -6,8 +10,10 @@
       "domain" : "website.node@server.1"
     },
     "system" : "website.node",
+>>>>>>> origin/cluster-deploytool
     "host" : "server.1"
   },
-  "cache" : false,
-  "compress" : false
+  "startPage" : "/index.html",
+  "missingPage" : "/404.html",
+  "gzip" : false
 }

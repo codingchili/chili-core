@@ -1,0 +1,13 @@
+{
+  "identity" : {
+    "node" : "social.node",
+    "host" : "server.1"
+  },
+  "message" : "hello world!!!",
+  "global" : "Q1R1dnFaRTZHaStscG1GYWJYQUYvOU5WUlV1ZTljZjQvRHRHa1hHQThhUjJyQmJEUUNidnlTOHBBc2pFS0J0dnk4ZVpSZ29KK25nQWhGSFFTWTRHc2c9PQ==",
+  "logging" : {
+    "key" : "73137D384D81C827CDF1D5C84BBA587CC387AE02E5D503057EF6E5EDE1D8784BC47613F0B35E5A39F16B54EBEC23DE4C30F3425C243BF0B6AFE7E69DBD40FE45",
+    "expiry" : 1480834622,
+    "domain" : "social.node@server.1"
+  }
+}

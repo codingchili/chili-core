@@ -2,22 +2,57 @@
   "attributes" : {
     "drop" : 1.0,
     "classes" : [ "Paladin" ],
+    "lifetime" : "weekly",
     "description" : "Stable realm, PvP Aggressive.",
-    "leveling" : 1.0
+    "leveling" : 1.0,
+    "type" : "PvP"
+  },
+  "identity" : {
+    "node" : "Angel Oak.realm.node",
+    "host" : "server.1"
   },
   "authentication" : {
+<<<<<<< HEAD
+    "key" : "6A2273025286A48363CE119CD132B56E345482699281626FBE0C86F1D996C2649B0E95D4156E9374914B94FF680F2B60D7AD148CEF5B875CC1205E682B14A471",
+    "expiry" : 1480834622,
+    "domain" : "Angel Oak.realm.node@server.1"
+=======
     "token" : {
       "key" : "0AB719D99183BA6CFCB3D599F2568E0A95A0B0081BC41B8981CF5281A49242D1648D8E187E4C1278EA72D2F0946EEFACF090F739067FC8E2A90D0832DD9D58BB",
       "expiry" : 1479311512,
       "domain" : "Angel Oak"
     }
+>>>>>>> origin/cluster-deploytool
   },
-  "name" : "Angel Oak",
   "resources" : "patching.node",
   "version" : 1.0,
   "size" : 5000,
-  "type" : "PvP",
-  "lifetime" : "weekly",
   "players" : 0,
+  "name" : "Angel Oak",
+  "instance" : [ {
+    "portals" : [ ],
+    "nodes" : [ ],
+    "npc" : [ ],
+    "name" : "level 1",
+    "limit" : 50,
+    "width" : 3000,
+    "height" : 3000
+  }, {
+    "portals" : [ ],
+    "nodes" : [ ],
+    "npc" : [ ],
+    "name" : "level 2",
+    "limit" : 50,
+    "width" : 3000,
+    "height" : 3000
+  }, {
+    "portals" : [ ],
+    "nodes" : [ ],
+    "npc" : [ ],
+    "name" : "level 3",
+    "limit" : 50,
+    "width" : 3000,
+    "height" : 3000
+  } ],
   "remote" : "Angel Oak.realm.node"
 }

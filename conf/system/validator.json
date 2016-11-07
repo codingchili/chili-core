@@ -1,36 +1,21 @@
 {
-  "validators": {
-    "display-name": {
-      "keys": [
-        "username",
-        "name"
-      ],
-      "length": [
-        4,
-        32
-      ],
-      "regex": [
-        {
-          "line": "[A-Z,a-z,0-9]*",
-          "action": "REJECT"
-        }
-      ]
+  "validators" : {
+    "display-name" : {
+      "regex" : [ {
+        "action" : "REJECT",
+        "line" : "[A-Z,a-z,0-9]*"
+      } ],
+      "keys" : [ "username", "name" ],
+      "length" : [ 4, 32 ]
     },
-    "chat-messages": {
-      "keys": [
-        "message"
-      ],
-      "length": [
-        1,
-        76
-      ],
-      "regex": [
-        {
-          "line": "(f..(c|k))",
-          "action": "REPLACE",
-          "replacement": "*^$#!?"
-        }
-      ]
+    "chat-messages" : {
+      "regex" : [ {
+        "action" : "REPLACE",
+        "line" : "(f..(c|k))",
+        "replacement" : "*^$#!?"
+      } ],
+      "keys" : [ "message" ],
+      "length" : [ 1, 76 ]
     }
   }
 }

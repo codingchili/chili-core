@@ -31,5 +31,6 @@
   "drop" : 1.0,
   "leveling" : 1.0,
   "players" : 0,
-  "secure" : false
+  "secure" : false,
+  "secret" : "yielVLHeIdF3fJM1gZPTJ+AqF3hQ/ZAHNgT1jfw/YTFZdh7lnmThldovjONQnUJQ6QQhqTlKpjIF+CjTRQ/ylw=="
 }

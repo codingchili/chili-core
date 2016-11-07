@@ -1,0 +1,11 @@
+{
+  "metricRate": 1500,
+  "handlers": 1,
+  "metrics": true,
+  "deployTimeout": 3000,
+  "shutdownLogTimeout": 3000,
+  "shutdownHookTimeout": 3000,
+  "configurationPoll": 1500,
+  "cachedFilePoll": 2000,
+  "consoleLogging": true
+}
