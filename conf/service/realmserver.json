@@ -1,11 +1,6 @@
 {
-  "logserver" : {
-    "token" : {
-      "key" : "2FEB64C027C210D61432CAE01C507E44EBBA4686C0B28D77848CCFB2F5701AE96751F95D091062B3F84D6991B3FF009A55BD88FEDD803A7CB0C082A8FE9ECF86",
-      "expiry" : 1479311512,
-      "domain" : "realm.node@server.1"
-    },
-    "system" : "realm.node",
+  "identity" : {
+    "node" : "realmserver.node",
     "host" : "server.1"
   },
   "enabled" : [ {

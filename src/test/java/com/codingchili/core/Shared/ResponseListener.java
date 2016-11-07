@@ -1,7 +1,8 @@
 package com.codingchili.core.Shared;
 
-import com.codingchili.core.Protocols.ResponseStatus;
 import io.vertx.core.json.JsonObject;
+
+import com.codingchili.core.Protocol.ResponseStatus;
 
 /**
  * @author Robin Duda

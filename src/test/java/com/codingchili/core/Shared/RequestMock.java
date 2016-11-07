@@ -1,7 +1,5 @@
 package com.codingchili.core.Shared;
 
-import com.codingchili.core.Protocols.ClusterRequest;
-import com.codingchili.core.Protocols.ResponseStatus;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
@@ -9,8 +7,10 @@ import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 
-import static com.codingchili.core.Configuration.Strings.ID_ACTION;
-import static com.codingchili.core.Configuration.Strings.PROTOCOL_STATUS;
+import com.codingchili.core.Protocol.ClusterRequest;
+import com.codingchili.core.Protocol.ResponseStatus;
+
+import static com.codingchili.core.Configuration.Strings.*;
 
 /**
  * @author Robin Duda

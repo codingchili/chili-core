@@ -7,12 +7,8 @@
     </group>
     <management-center enabled="false">http://localhost:8080/mancenter</management-center>
     <network>
-        <port auto-increment="true" port-count="100">5060</port>
+        <port auto-increment="true" port-count="100">5701</port>
         <outbound-ports>
-            <!--
-            Allowed port range when connecting to other nodes.
-            0 or * means use system provided port.
-            -->
             <ports>0</ports>
         </outbound-ports>
         <join>
@@ -21,8 +17,29 @@
                 <multicast-port>54327</multicast-port>
             </multicast>
             <tcp-ip enabled="false">
+                <interface>127.0.0.1</interface>
             </tcp-ip>
+            <aws enabled="false">
+                <access-key>my-access-key</access-key>
+                <secret-key>my-secret-key</secret-key>
+                <region>us-west-1</region>
+                <host-header>ec2.amazonaws.com</host-header>
+                <security-group-name>hazelcast-sg</security-group-name>
+                <tag-key>type</tag-key>
+                <tag-value>hz-nodes</tag-value>
+            </aws>
         </join>
+        <interfaces enabled="false">
+            <interface>10.10.1.*</interface>
+        </interfaces>
+        <ssl enabled="false" />
+        <socket-interceptor enabled="false" />
+        <symmetric-encryption enabled="false">
+            <algorithm>PBEWithMD5AndDES</algorithm>
+            <salt>thesalt</salt>
+            <password>thepass</password>
+            <iteration-count>19</iteration-count>
+        </symmetric-encryption>
     </network>
     <properties>
         <property name="hazelcast.map.partition.count">61</property>

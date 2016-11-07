@@ -3,12 +3,18 @@ package com.codingchili.core.Configuration;
 /**
  * @author Robin Duda
  */
-class TestConfig implements LoadableConfigurable {
+public class TestConfig implements Configurable {
+    private String path = "test.json";
     private String data;
 
     @Override
     public String getPath() {
-        return "test.json";
+        return path;
+    }
+
+    @Override
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public String getData() {

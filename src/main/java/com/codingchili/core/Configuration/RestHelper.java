@@ -1,7 +1,6 @@
 package com.codingchili.core.Configuration;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
-import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 
@@ -22,12 +21,12 @@ public abstract class RestHelper {
         });
     }
 
-    private static HttpServerResponse setHeaders(RoutingContext context) {
-        return context.response()
+    private static void setHeaders(RoutingContext context) {
+        context.response()
                 .putHeader("Access-Control-Allow-Origin", "*")
                 .putHeader("Access-Control-Allow-Methods", "POST, GET")
                 .putHeader("Access-Control-Allow-Headers",
-                        "Content-Type, Access-Control-Allow-Headers, Util, X-Requested-With");
+                        "Content-Type, Access-Control-Allow-Headers, Files, X-Requested-With");
     }
 
 }

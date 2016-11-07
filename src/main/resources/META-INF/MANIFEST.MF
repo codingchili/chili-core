@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
-Main-Class: io.vertx.core.Launcher
-
+Class-Path: .
+Main-Class: com.codingchili.core.Launcher

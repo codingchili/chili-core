@@ -1,11 +1,6 @@
 {
-  "logserver" : {
-    "token" : {
-      "key" : "27EE3C93FA55C61AC246F42393AFA5E0349E29065A6DC5DEDAFCF14ECF4C67B34E4EA4CEFEBF2E593D1D79830516AB3A90D2424A4B06F29559DD24B4B1B1319F",
-      "expiry" : 1479311512,
-      "domain" : "logging.node@server.1"
-    },
-    "system" : "logging.node",
+  "identity" : {
+    "node" : "logging.node",
     "host" : "server.1"
   },
   "elastic" : {
@@ -25,6 +20,6 @@
     },
     "enabled" : false
   },
-  "secret" : "qWgXM2muRKxP3N6GbFxmAKP7zUaBWQu5fvLAC5eM//YPraVh1SAGE/MtLXELz772r6qABujkMmSbzaJJLdGM3Q==",
+  "secret" : "Z1w9WOcr2p9dW5+F8UMMpe74PaeqZufIVTGxgjat7HSftuSwZKs6HLg0AokvStZDkJCHBUHC99zNJENdQ7PzUA==",
   "console" : true
 }
