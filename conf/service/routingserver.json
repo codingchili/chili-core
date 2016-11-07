@@ -1,8 +1,4 @@
 {
-<<<<<<< HEAD
-  "identity" : {
-    "node" : "routing.node",
-=======
   "logserver" : {
     "token" : {
       "key" : "DA47A6237DE65AEB7B560F40B9EC1EED7ADA18A985F3F34FDDE2A7FC5CDFD3E2F3778B741687DEE470EABEEC3B7CB5A9CB83DC1B8E88869CC47437BD04FF7A4E",
@@ -10,7 +6,6 @@
       "domain" : "routing.node@server.1"
     },
     "system" : "routing.node",
->>>>>>> origin/cluster-deploytool
     "host" : "server.1"
   },
   "transport" : [ {

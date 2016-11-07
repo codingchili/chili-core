@@ -1,8 +1,4 @@
 {
-<<<<<<< HEAD
-  "identity" : {
-    "node" : "patching.node",
-=======
   "logserver" : {
     "token" : {
       "key" : "7397067FA834986CBA66D025F42EACA402C55C43A136B1720384EC20CC1C2C933A469DBA200892E7C996D70434E6B00DAA799DB5F8F66EDA39047B0853C4D241",
@@ -10,7 +6,6 @@
       "domain" : "patching.node@server.1"
     },
     "system" : "patching.node",
->>>>>>> origin/cluster-deploytool
     "host" : "server.1"
   },
   "gameinfo" : {
