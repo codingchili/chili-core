@@ -58,7 +58,7 @@ public class Strings extends com.codingchili.core.Configuration.Strings {
     public static final String NODE_WEBSERVER = "webserver.node";
     public static final String NODE_PATCHING = "patching.node";
     public static final String NODE_REALM = ".realm.node";
-    public static final String NODE_LOGGING = "logging.node";
+    public static final String NODE_LOGGING = "syslog.node";
     public static final String NODE_CLIENT_LOGGING = "client.logging.node";
     public static final String NODE_ROUTING = "routing.node";
     public static final String SOCIAL_NODE = "social.node";
