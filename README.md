@@ -29,7 +29,7 @@ If you do not have a local **ElasticSearch server** running on the default port 
 
 To start the packaged JAR run
 ```
-java -jar <file
+java -jar <filename>.jar
 ```
 This will start up services configured in the 'default' block of **conf/system/launcher.json**; routing, authentication, gameserver, realms, instances, logserver, webserver and patcher. 
 
