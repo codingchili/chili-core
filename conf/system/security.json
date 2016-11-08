@@ -1,0 +1,45 @@
+{
+  "secretBytes": 64,
+  "dependencies": {
+    "authserver": {
+      "secrets": [
+        "clientSecret",
+        "realmSecret"
+      ]
+    },
+    "logserver": {
+      "secrets": [
+        "secret"
+      ]
+    },
+    "conf/service/[^\/]*": {
+      "preshare": [
+        "global"
+      ],
+      "tokens": {
+        "logging": {
+          "service": "logserver",
+          "secret": "secret"
+        }
+      }
+    },
+    "conf/realm/[^\/]*": {
+      "preshare": [
+        "global"
+      ],
+      "secrets": [
+        "secret"
+      ],
+      "tokens": {
+        "authentication": {
+          "service": "authserver",
+          "secret": "realmSecret"
+        },
+        "logging": {
+          "service": "logserver",
+          "secret": "secret"
+        }
+      }
+    }
+  }
+}

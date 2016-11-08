@@ -1,175 +1,98 @@
 {
-  "name": "Necromancer",
-  "description": "Death and dark magics is only fit for such a tainted soul, swings two-handed swords of pure evil.",
-  "weapons": ["2h-sword"],
-  "keywords": [
-    "self-healing",
-    "anti-tank",
-    "anti-healing"
-  ],
-  "spells": [
-    {
-      "name": "touch of death",
-      "description": "Attacks inflicts soulless.",
-      "passive": true,
-      "affliction": [
-        {
-          "name": "soulless",
-          "everlasting": true
-        }
-      ]
+  "name" : "Necromancer",
+  "description" : "Death and dark magics is only fit for such a tainted soul, swings two-handed swords of pure evil.",
+  "spells" : [ {
+    "name" : "touch of death",
+    "description" : "Attacks inflicts soulless.",
+    "passive" : true
+  }, {
+    "name" : "deathbringer",
+    "description" : "Gains deathbringer on nearby death.",
+    "passive" : true
+  }, {
+    "name" : "drain",
+    "description" : "Drains the life of all in an area and heals the caster.",
+    "target" : "area",
+    "cooldown" : 8.0,
+    "modifier" : [ {
+      "modifies" : "target",
+      "attribute" : "health",
+      "using" : {
+        "source" : "caster",
+        "attribute" : "spell",
+        "value" : -1.0
+      }
+    } ],
+    "passive" : false
+  }, {
+    "name" : "necrotic bolt",
+    "description" : "Deals spell damage and inflicts poison.",
+    "target" : "missile",
+    "cooldown" : 6.0,
+    "modifier" : [ {
+      "modifies" : "target",
+      "attribute" : "health",
+      "using" : {
+        "source" : "caster",
+        "attribute" : "spell",
+        "value" : -1.0
+      }
+    } ],
+    "passive" : false
+  }, {
+    "name" : "necrotic prayer",
+    "description" : "Deals spell damage and stuns nearby.",
+    "target" : "host",
+    "cooldown" : 12.0,
+    "modifier" : [ {
+      "modifies" : "target",
+      "attribute" : "health",
+      "using" : {
+        "source" : "caster",
+        "attribute" : "spell",
+        "value" : -3.0
+      }
+    } ],
+    "passive" : false
+  }, {
+    "name" : "soul contract",
+    "description" : "Turns energy into health.",
+    "cooldown" : 8.0,
+    "cost" : {
+      "value" : 25
     },
-    {
-      "name": "deathbringer",
-      "description": "Gains deathbringer on nearby death.",
-      "passive": true,
-      "affliction": [
-        {
-          "name": "Deathbringer",
-          "everlasting": true
-        }
-      ]
-    },
-    {
-      "name": "drain",
-      "description": "Drains the life of all in an area and heals the caster.",
-      "target": "area",
-      "trigger": [
-        {
-          "on": "hit",
-          "modifier": {
-            "modifies": "caster",
-            "attribute": "health",
-            "using": {
-              "source": "caster",
-              "attribute": "health",
-              "value": 0.05
-            }
-          }
-        }
-      ],
-      "modifier": [
-        {
-          "modifies": "target",
-          "attribute": "health",
-          "using": {
-            "source": "caster",
-            "attribute": "spell",
-            "value": -1.0
-          }
-        }
-      ],
-      "affliction": [
-        {
-          "name": "slow",
-          "duration": 3
-        }
-      ],
-      "cooldown": 8
-    },
-    {
-      "name": "necrotic bolt",
-      "description": "Deals spell damage and inflicts poison.",
-      "target": "missile",
-      "modifier": [
-        {
-          "modifies": "target",
-          "attribute": "health",
-          "using": {
-            "source": "caster",
-            "attribute": "spell",
-            "value": -1.0
-          }
-        }
-      ],
-      "affliction": [
-        {
-          "name": "poison",
-          "duration": 6
-        }
-      ],
-      "cooldown": 6
-    },
-    {
-      "name": "necrotic prayer",
-      "description": "Deals spell damage and stuns nearby.",
-      "target": "host",
-      "modifier": [
-        {
-          "modifies": "target",
-          "attribute": "health",
-          "using": {
-            "source": "caster",
-            "attribute": "spell",
-            "value": -3.0
-          }
-        }
-      ],
-      "affliction": [
-        {
-          "name": "stun",
-          "duration": 4
-        }
-      ],
-      "cooldown": 12
-    },
-    {
-      "name": "soul contract",
-      "description": "Turns energy into health.",
-      "modifier": [
-        {
-          "modifies": "caster",
-          "attribute": "health",
-          "using": {
-            "source": "caster",
-            "attribute": "energy",
-            "value": 0.10
-          }
-        }
-      ],
-      "cost": {
-        "modifies": "energy",
-        "value": 25
-      },
-      "cooldown": 8
-    },
-    {
-      "name": "deaths emissary",
-      "description": "Deals damage based on targets missing health.",
-      "target": "selected",
-      "modifier": [
-        {
-          "modifies": "target",
-          "attribute": "health",
-          "using": {
-            "source": "target",
-            "attribute": "health",
-            "as": "missing",
-            "value": -0.15
-          }
-        }
-      ],
-      "cooldown": 8
-    },
-    {
-      "name": "consuming bolt",
-      "description": "Conjure a bolt that restores energy on hit",
-      "target": "missile",
-      "trigger": [
-        {
-          "on": "hit",
-          "modifier": {
-            "modifies": "target",
-            "attribute": "energy",
-            "using": {
-              "source": "target",
-              "attribute": "energy",
-              "value": -0.1
-            }
-          }
-        }
-      ],
-      "cooldown": 6
-    }
-  ]
+    "modifier" : [ {
+      "modifies" : "caster",
+      "attribute" : "health",
+      "using" : {
+        "source" : "caster",
+        "attribute" : "energy",
+        "value" : 0.1
+      }
+    } ],
+    "passive" : false
+  }, {
+    "name" : "deaths emissary",
+    "description" : "Deals damage based on targets missing health.",
+    "target" : "selected",
+    "cooldown" : 8.0,
+    "modifier" : [ {
+      "modifies" : "target",
+      "attribute" : "health",
+      "using" : {
+        "source" : "target",
+        "attribute" : "health",
+        "value" : -0.15
+      }
+    } ],
+    "passive" : false
+  }, {
+    "name" : "consuming bolt",
+    "description" : "Conjure a bolt that restores energy on hit",
+    "target" : "missile",
+    "cooldown" : 6.0,
+    "passive" : false
+  } ],
+  "keywords" : [ "self-healing", "anti-tank", "anti-healing" ],
+  "weapons" : [ "2h-sword" ]
 }

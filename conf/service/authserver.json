@@ -1,0 +1,16 @@
+{
+  "identity" : {
+    "node" : "authentication.node",
+    "host" : "server.1"
+  },
+  "realms" : [ "Angel Oak", "Developer Realm", "Iron Oak", "Staging Realm", "Wisteria", "Red Maple" ],
+  "clientSecret" : "sm8nF4dw9/r27o/fqqBzI/HSY7NUKvkoKSg+peZpXlekEjHwmiCq39okoqptoj7HpCyh0lFmm9d4OAXrPoQwcQ==",
+  "realmSecret" : "g1dKuNdm+Y+2nkDQ/izLZ0Z7CyEd3D0i7mJYkvxxNpo2gRGpb/kRQME0dOdzY0tLVk6L9Tg8IlUo3M2nb/HuWQ==",
+  "realmTimeout" : 7000,
+  "global" : "Z0lRU0JNYkladHBmYUNxUnRpN1FQS0M0aFFHRzh1M0Y1Z0NmVU5YeVZlTFVPWU8ybThDY3A5bERObUlJL3NET0lwOUluMEQ3VnZmUUV2VmIzNStnZ0E9PQ==",
+  "logging" : {
+    "key" : "F9B49D5AC87FE142B3A7DFB1CF82146D088A83E2A9D0026F2E3C1D7FA55195BE85716BB05CE651F7BB884DB112B8630B68686FB725CC667799FF1CF7F8DA20A7",
+    "expiry" : 1481266171,
+    "domain" : "authentication.node@server.1"
+  }
+}

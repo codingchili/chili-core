@@ -1,5 +1,7 @@
 /**
- * Created by Robin on 2016-04-07.
+ * @author Robin Duda
+ *
+ * Game.js0 20
  */
 
 var resources = {};

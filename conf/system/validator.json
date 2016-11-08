@@ -1,0 +1,21 @@
+{
+  "validators" : {
+    "display-name" : {
+      "regex" : [ {
+        "action" : "REJECT",
+        "line" : "[A-Z,a-z,0-9]*"
+      } ],
+      "keys" : [ "username", "name" ],
+      "length" : [ 4, 32 ]
+    },
+    "chat-messages" : {
+      "regex" : [ {
+        "action" : "REPLACE",
+        "line" : "(f..(c|k))",
+        "replacement" : "*^$#!?"
+      } ],
+      "keys" : [ "message" ],
+      "length" : [ 1, 76 ]
+    }
+  }
+}

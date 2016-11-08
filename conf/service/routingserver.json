@@ -1,0 +1,46 @@
+{
+  "identity" : {
+    "node" : "routing.node",
+    "host" : "server.1"
+  },
+  "transport" : [ {
+    "api" : { },
+    "type" : "UDP",
+    "port" : 80,
+    "timeout" : 2000,
+    "maxRequestBytes" : 512
+  }, {
+    "api" : { },
+    "type" : "TCP",
+    "port" : 8010,
+    "timeout" : 2000,
+    "maxRequestBytes" : 512
+  }, {
+    "api" : { },
+    "type" : "WEBSOCKET",
+    "port" : 80,
+    "timeout" : 4000,
+    "maxRequestBytes" : 512
+  }, {
+    "api" : {
+      "/webseed" : {
+        "target" : "patching.node",
+        "action" : "webseed"
+      },
+      "/patching" : {
+        "target" : "patching.node"
+      }
+    },
+    "type" : "REST",
+    "port" : 80,
+    "timeout" : 8000,
+    "maxRequestBytes" : 512
+  } ],
+  "hidden" : [ "syslog.node" ],
+  "global" : "Z0lRU0JNYkladHBmYUNxUnRpN1FQS0M0aFFHRzh1M0Y1Z0NmVU5YeVZlTFVPWU8ybThDY3A5bERObUlJL3NET0lwOUluMEQ3VnZmUUV2VmIzNStnZ0E9PQ==",
+  "logging" : {
+    "key" : "4DCAC77C0378731BCCA67A14F792C0F54DBF43CD990367F785A7A3A7C9A9B02FA558B7ABA8817CDD7CA08B0C1345CA397F6E656CE02B1DB97F5AFDEDE81CFD48",
+    "expiry" : 1481266171,
+    "domain" : "routing.node@server.1"
+  }
+}

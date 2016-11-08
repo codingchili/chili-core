@@ -1,0 +1,29 @@
+{
+  "level" : 1,
+  "attributes" : {
+    "stamina" : 5,
+    "power" : 5,
+    "spell" : 0,
+    "attack" : 0,
+    "resistance" : 0,
+    "defence" : 0,
+    "override" : true,
+    "boost" : 0.5
+  },
+  "inventory" : {
+    "crystals" : 1,
+    "slots" : [ "head", "weapon", "chest", "legs", "ring" ],
+    "space" : 64,
+    "items" : [ {
+      "name" : "Newbie Manual",
+      "description" : "Good for starting out."
+    } ],
+    "equipped" : {
+      "head" : null,
+      "weapon" : null,
+      "chest" : null,
+      "legs" : null,
+      "ring" : null
+    }
+  },
+}
