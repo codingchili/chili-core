@@ -20,6 +20,12 @@
     },
     "enabled" : false
   },
-  "secret" : "Z1w9WOcr2p9dW5+F8UMMpe74PaeqZufIVTGxgjat7HSftuSwZKs6HLg0AokvStZDkJCHBUHC99zNJENdQ7PzUA==",
-  "console" : true
+  "secret" : "b2QBkdoIdghunIFKtPbeOMDqDeVGAF3WDH6ebijIEUe1E1mpilugPdGvhfntreR+7pEMQbfs5OKzvW69ILm09A==",
+  "console" : true,
+  "global" : "Z0lRU0JNYkladHBmYUNxUnRpN1FQS0M0aFFHRzh1M0Y1Z0NmVU5YeVZlTFVPWU8ybThDY3A5bERObUlJL3NET0lwOUluMEQ3VnZmUUV2VmIzNStnZ0E9PQ==",
+  "logging" : {
+    "key" : "8688924CBA40D2D56BEFF632D1B305EF8372B76F359B4B8D82CC3D5E1A148CEC927E358C38BA49E75FE9E0443F352E1CBF713DD69EEBC4EFF215AAFA31F74B97",
+    "expiry" : 1481266171,
+    "domain" : "logging.node@server.1"
+  }
 }

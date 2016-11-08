@@ -7,5 +7,11 @@
     "realm" : "Angel Oak",
     "instances" : [ ]
   } ],
-  "realmUpdates" : 5000
+  "realmUpdates" : 5000,
+  "global" : "Z0lRU0JNYkladHBmYUNxUnRpN1FQS0M0aFFHRzh1M0Y1Z0NmVU5YeVZlTFVPWU8ybThDY3A5bERObUlJL3NET0lwOUluMEQ3VnZmUUV2VmIzNStnZ0E9PQ==",
+  "logging" : {
+    "key" : "F1737BD1530671F93495E96331F3016255DD52A9BBA1565A51F76540E70FA0E5EE21D1B9000B3843D471B24757D762C7B69B07C517FA12E7C3C734D5C91CCACE",
+    "expiry" : 1481266171,
+    "domain" : "realmserver.node@server.1"
+  }
 }

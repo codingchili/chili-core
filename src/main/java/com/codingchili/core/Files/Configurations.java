@@ -46,6 +46,7 @@ public class Configurations {
     }
 
     private static int getConfigurationPoll() {
+
         return system().getConfigurationPoll();
     }
 
