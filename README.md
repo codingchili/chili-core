@@ -25,27 +25,23 @@ mvn package
 
 If you wish to create a fatjar with bundled resources move **conf/**, **resources/** or **website/** to **src/main/resources**.
 
-If you do not have a local **ElasticSearch server** running on the default port log messages will be dropped.
+If you do not have a local **ElasticSearch server** running on the default port log messages will be dropped unless consoleLogging is set in **conf/system/system.json**.
 
 To start the packaged JAR run
 ```
-java -jar <filename>.jar run Launcher
+java -jar <file
 ```
-This will start up all the services; routing, authentication, gameserver, realms, instances, logserver, webserver (+resources). The configuration files **conf/* will be used to setup the connections and load the game data. 
+This will start up services configured in the 'default' block of **conf/system/launcher.json**; routing, authentication, gameserver, realms, instances, logserver, webserver and patcher. 
 
 To start only a single component use any of the following,
 ```
-java -jar <filename>.jar run Routing.Server
-java -jar <filename>.jar run Authentication.Server
-java -jar <filename>.jar run Realm.Server
-java -jar <filename>.jar run Logging.Server
-java -jar <filename>.jar run Patching.Server
-java -jar <filename>.jar run Website.Server
+java -jar <filename>.jar <block or host>
 ```
+To see all available commands run with --help.
 
-The authentication tokens are stored in **/conf/system/{service}.json** and certificates for the router in **conf/cert/**.
+The authentication tokens are stored in **/conf/services/{service}.json** and certificates for the router in **conf/cert/**.
 
-When components are started configuration files in **conf/system/{service}.json** are used.
+.
 
 ## Background
 The purpose of the project is to provide a stable core for game development. There are many aspects of creating games, backend architecture, user interfaces, game resources (graphics, sounds) and then the design which includes the story/quests etc. The core is designed to be easily integrated with and modified in each of these aspects. In order to provide this, the core includes somewhat complete subsystems for each of these points. Additionally the core will be delivered as a "complete" game, to further increase the availability/modability and broaden the audience. As such it is the aim of the project to be complete enough both in documentation and code so that it may be used as a learning platform. 
@@ -129,8 +125,12 @@ The configuration structure
 |   ├── gui/
 ├── website/
 |   ├── bower.json
-├── config/
-│   ├── system/
+├── conf/
+│   ├──system/
+│   │   ├── launcher.json
+│   │   ├── validator.json
+│   │   ├── system.json
+│   ├── services/
 │   │   ├── authserver.json
 │   │   ├── logserver.json
 │   │   ├── patchserver.json
@@ -167,7 +167,9 @@ The configuration structure
 
 **website/** contains the website used for the web-game, could be reused for desktop games for registration/forums etc.
 
-**conf/system/** sets up the bindings between the components with host/proxy numbers, logging and authentication tokens between the components.
+**conf/system/** contains configuration for the core.
+
+**conf/services/** contains configuration for services.
 
 **conf/realm/** each represents a realm/server to be registered to the master authentication server. Each of these must have a valid authentication signed by the authentication servers secret key. The name of the realm file must also correspond to the "name" attribute in the configuration file.
 
