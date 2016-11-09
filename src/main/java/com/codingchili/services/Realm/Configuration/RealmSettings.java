@@ -285,7 +285,7 @@ public class RealmSettings extends AttributeConfigurable {
         json.remove(ID_AFFLICTIONS);
         json.remove(ID_CLASSES);
         json.remove(ID_TEMPLATE);
-        json.remove(ID_INSTANCES);
+        json.remove(ID_INSTANCE);
 
         return json;
     }

@@ -14,7 +14,7 @@ import com.codingchili.services.Logging.Controller.ServiceLogHandler;
  * @author Robin Duda
  *         Receives logging data from the other components and writes it to an elasticsearch cluster or logger.
  */
-public class Server extends ClusterNode {
+public class Service extends ClusterNode {
 
     @Override
     public void init(Vertx vertx, Context context) {

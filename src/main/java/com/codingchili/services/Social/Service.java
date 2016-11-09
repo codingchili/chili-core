@@ -7,7 +7,7 @@ import com.codingchili.core.Protocol.ClusterNode;
 import com.codingchili.services.Social.Configuration.SocialContext;
 import com.codingchili.services.Social.Controller.SocialHandler;
 
-public class Server extends ClusterNode {
+public class Service extends ClusterNode {
 
     @Override
     public void start(Future<Void> start) {

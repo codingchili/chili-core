@@ -22,7 +22,7 @@ import static com.codingchili.services.Realm.Configuration.RealmServerSettings.P
  * @author Robin Duda
  *         root game server, deploys realmName servers.
  */
-public class Server extends ClusterNode {
+public class Service extends ClusterNode {
 
     @Override
     public void start(Future<Void> start) throws IOException {

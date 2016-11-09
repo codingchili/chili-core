@@ -13,7 +13,7 @@ import com.codingchili.services.Authentication.Controller.ClientHandler;
  * @author Robin Duda
  *         Starts up the client handler and the realmName handler.
  */
-public class Server extends ClusterNode {
+public class Service extends ClusterNode {
 
     @Override
     public void start(Future<Void> start) {

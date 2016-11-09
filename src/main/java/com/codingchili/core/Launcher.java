@@ -40,7 +40,7 @@ public class Launcher extends ClusterNode {
                 exit();
             } else {
                 nodes = context.block((context.args().length == 0) ? null : context.args()[0]);
-                nodes = nodes.stream().map(node -> node + VERTICLE_POSTFIX).collect(Collectors.toList());
+                nodes = nodes.stream().map(node -> node).collect(Collectors.toList());
             }
         } catch (RemoteBlockNotConfiguredException | BlockNotConfiguredException e) {
             logger.log("\t\t" + e.getMessage(), Level.SEVERE);

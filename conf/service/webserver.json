@@ -5,11 +5,5 @@
   },
   "startPage" : "/index.html",
   "missingPage" : "/404.html",
-  "gzip" : false,
-  "global" : "Z0lRU0JNYkladHBmYUNxUnRpN1FQS0M0aFFHRzh1M0Y1Z0NmVU5YeVZlTFVPWU8ybThDY3A5bERObUlJL3NET0lwOUluMEQ3VnZmUUV2VmIzNStnZ0E9PQ==",
-  "logging" : {
-    "key" : "3F963FBF8601E419BBCC963227E5E5D6CD7700AA9F676B282650FA3828889B437BCC6C7A8AAC4CB70E6AE35BC109B4E1223B8894698BEEDD7A9C9FCF6D06D4B7",
-    "expiry" : 1481266171,
-    "domain" : "website.node@server.1"
-  }
+  "gzip" : false
 }

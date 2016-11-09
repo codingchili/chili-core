@@ -22,9 +22,6 @@ public class Strings {
 
     public static final String EXT_JSON = ".json";
 
-    public static final String VERTICLE_POSTFIX = ".Server";
-    public static final String VERTICLE_LOGGING = "logging";
-
     public static final String ANY = "*";
 
     public static final String PROTOCOL_REAL_IP = "X-Real-IP";

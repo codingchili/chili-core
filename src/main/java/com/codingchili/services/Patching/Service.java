@@ -12,13 +12,13 @@ import com.codingchili.services.Patching.Controller.PatchHandler;
  * @author Robin Duda
  *         website and resource server.
  */
-public class Server extends ClusterNode {
+public class Service extends ClusterNode {
     private PatchContext context;
 
-    public Server() {
+    public Service() {
     }
 
-    public Server(PatchContext context) {
+    public Service(PatchContext context) {
         this.context = context;
     }
 

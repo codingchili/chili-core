@@ -7,21 +7,31 @@
     "leveling" : 1.0,
     "type" : "PvP"
   },
-  "identity" : {
-    "node" : "Angel Oak.realm.node",
-    "host" : "server.1"
-  },
-  "authentication" : {
-    "key" : "2B76D6A277F93238889C95C73030685A4439D6313EA53B9C02AF1E0E6CCC23CDE202718B3451A48BB025594FC9C028872927E829CC492D16D8CCF5A9A8A6BEEE",
-    "expiry" : 1481266171,
-    "domain" : "Angel Oak.realm.node@server.1"
-  },
-  "resources" : "patching.node",
-  "version" : 1.0,
-  "size" : 5000,
-  "players" : 0,
-  "name" : "Angel Oak",
-  "instance" : [ {
+  "instances" : [ {
+    "portals" : [ ],
+    "nodes" : [ ],
+    "npc" : [ ],
+    "name" : "level 1",
+    "limit" : 50,
+    "width" : 3000,
+    "height" : 3000
+  }, {
+    "portals" : [ ],
+    "nodes" : [ ],
+    "npc" : [ ],
+    "name" : "level 2",
+    "limit" : 50,
+    "width" : 3000,
+    "height" : 3000
+  }, {
+    "portals" : [ ],
+    "nodes" : [ ],
+    "npc" : [ ],
+    "name" : "level 3",
+    "limit" : 50,
+    "width" : 3000,
+    "height" : 3000
+  }, {
     "portals" : [ ],
     "nodes" : [ ],
     "npc" : [ ],
@@ -46,12 +56,19 @@
     "width" : 3000,
     "height" : 3000
   } ],
-  "remote" : "Angel Oak.realm.node",
-  "secret" : "sZ+A4NryJqI+sIVoZztDVXlboQ4JmUu6SD4wdP3JE7A8mOzP77bY3esZOICm1JLZaYhUV3Ekc0CVdY+/DveQlg==",
-  "global" : "Z0lRU0JNYkladHBmYUNxUnRpN1FQS0M0aFFHRzh1M0Y1Z0NmVU5YeVZlTFVPWU8ybThDY3A5bERObUlJL3NET0lwOUluMEQ3VnZmUUV2VmIzNStnZ0E9PQ==",
-  "logging" : {
-    "key" : "7A839D6E7E12F86D506C284CE4CA441FC921E9540D1364D6BAF0EA7FA7EEAF0EDAC5A5876365C717B3D62A6E3D1C4DD803C406B6C871AAF70392C831856DE82E",
-    "expiry" : 1481266170,
+  "identity" : {
+    "node" : "Angel Oak.realm.node",
+    "host" : "server.1"
+  },
+  "authentication" : {
+    "key" : "88F2DB5C2E84FC25D3879301E28266854CE16B7C9235B7939FA9DA45B6C4E8EE1AF82D962A9C651327627A0D80038EFECDCFEE64BCE46A4640FFB3236CD6BAF4",
+    "expiry" : 1481313788,
     "domain" : "Angel Oak.realm.node@server.1"
-  }
+  },
+  "resources" : "patching.node",
+  "version" : 1.0,
+  "size" : 5000,
+  "players" : 0,
+  "name" : "Angel Oak",
+  "remote" : "Angel Oak.realm.node"
 }

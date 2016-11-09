@@ -13,7 +13,7 @@ import com.codingchili.services.Router.Controller.Transport.*;
  * @author Robin Duda
  *         root game server, deploys realmName servers.
  */
-public class Server extends ClusterNode {
+public class Service extends ClusterNode {
 
     @Override
     public void start(Future<Void> start) {

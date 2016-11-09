@@ -11,12 +11,12 @@ import com.codingchili.services.Website.Controller.WebHandler;
 /**
  * @author Robin Duda
  */
-public class Server extends ClusterNode {
+public class Service extends ClusterNode {
     private WebserverContext context;
 
-    public Server() {}
+    public Service() {}
 
-    public Server(WebserverContext context) {
+    public Service(WebserverContext context) {
         this.context = context;
     }
 
