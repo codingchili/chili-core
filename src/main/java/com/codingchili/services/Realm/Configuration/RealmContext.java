@@ -70,7 +70,7 @@ public class RealmContext extends ServiceContext {
     }
 
     public ArrayList<InstanceSettings> instances() {
-        return realm().getInstance();
+        return realm().getInstances();
     }
 
     public ArrayList<PlayerClass> getClasses() {

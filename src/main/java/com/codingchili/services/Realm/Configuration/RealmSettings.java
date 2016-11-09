@@ -1,6 +1,7 @@
 package com.codingchili.services.Realm.Configuration;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -26,6 +27,7 @@ import static com.codingchili.services.Shared.Strings.*;
  *         <p>
  *         Contains the settings for a realmName.
  */
+@JsonIgnoreProperties({"instances"})
 public class RealmSettings extends AttributeConfigurable {
     private final ArrayList<InstanceSettings> instances = new ArrayList<>();
     private RemoteIdentity identity;
@@ -257,10 +259,6 @@ public class RealmSettings extends AttributeConfigurable {
         return this;
     }
 
-    public ArrayList<InstanceSettings> getInstance() {
-        return instances;
-    }
-
     public ArrayList<InstanceSettings> getInstances() {
         return instances;
     }
@@ -285,7 +283,7 @@ public class RealmSettings extends AttributeConfigurable {
         json.remove(ID_AFFLICTIONS);
         json.remove(ID_CLASSES);
         json.remove(ID_TEMPLATE);
-        json.remove(ID_INSTANCE);
+        json.remove(ID_INSTANCES);
 
         return json;
     }
