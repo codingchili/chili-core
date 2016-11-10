@@ -5,8 +5,11 @@ The chili core is a lightweight distributed **architecture** for creating micros
 For documentation and tutorials visit [the website](https://codingchili.com/), for a live demo visit [demo](https://beta.codingchili.com).
 
 **Beware!**
+
 Until the first pre-release master will be unstable!
+
 This project is currently in development!
+
 Things may not work even if the build is green!
 
 ## Installation
