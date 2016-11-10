@@ -5,7 +5,8 @@ The chili core is a lightweight **architecture** for creating online games with 
 For documentation and tutorials visit [the website](https://codingchili.com/), for a live demo visit [demo](https://beta.codingchili.com).
 
 **Beware!**
-Until the first RC master will be unstable.
+Until the first pre-release master will be unstable!
+This project is currently in development!
 
 ## Installation
 To install chili-core clone this repository with **git**,
@@ -13,7 +14,7 @@ To install chili-core clone this repository with **git**,
 git clone https://github.com/codingchili/chili-core.git
 ```
 
-The webserver requires dependencies in **website/** run the following in that directory,
+The website service requires dependencies in **website/** run the following in that directory,
 ```
 bower install
 ```
@@ -42,21 +43,24 @@ This will start up services configured in the given or 'default' block in **conf
 To see all available commands run with --help.
 
 ## Background
-The project consists of two parts. The core, which is a framework built on the vertx toolkit. The purpose of wrapping vertx in a framework is to increase productivity. This is done by providinng common functionality that can be used to build microservices on. With all the logic packed into core, it is possible to create distributed microservices capable of handling authentication, request routing and storage in 66 lines of code. If you are interested in vertx, I recommend using it directly instead. This framework is intended to improve productivity in a very specific use case. In order to achieve this it is much more invasive than the vertx toolkit.
+The project consists of two parts. The core, which is a framework built on top of the vertx toolkit. The purpose of wrapping vertx in a framework is to increase productivity. This is done by providinng common functionality that can be used to build microservices on. With all the logic packed into core, it is possible to create distributed microservices capable of handling authentication, request routing and storage in 66 lines of code. If you are interested in vertx, I recommend using it directly instead. This framework is intended to improve productivity in a very specific use case. In order to achieve this it is much more invasive than the vertx toolkit.
  
-The purpose of the project is to provide a stable core for game development. There are many aspects of creating games, backend architecture, user interfaces, game resources (graphics, sounds) and then the design which includes the story/quests etc. The core is designed to be easily integrated with and modified in each of these aspects. In order to provide this, the core includes somewhat complete subsystems for each of these points. Additionally the core will be delivered as a "complete" game, to further increase the availability/modability and broaden the audience. As such it is the aim of the project to be complete enough both in documentation and code so that it may be used as a learning platform. 
+The purpose of the service part of the project is to provide implementations for use in (mainly) game servers. Each service may be distributed on different hosts. Communication channels is provided by the core, with support for various transports and storage plugins. Breaking down the system into microservices improves maintainability, testability and ultimately, productivity.
+
+Additionally, on top of these services an actual game and server will be implemented.
 
 ###### Summary
-* Learning through modding
-* Creating new content with existing material
-* High modularity (MVC & Distributed architecture)
-* Availability, Java backend and Browser clients.
-* Primarily for top-down 2D MMORPG games, may be modded for other games.
-* Low complexity promotes maintenance and growth
+* Built on the high-performance reactive toolkit vertx
+* Clustering improves scalability
+* Text based protocols with JSON
+* High availability with support for multiple transports
+* Adopts the microservice pattern
 
 ###### Audience
-* Learning programming, game graphics or design, web development
-* Bootstrap package for game development, creating a prototype for a 2D game.
+* Game developers seeking to implement multiplayer from the start with minimal overhead.
+* Programmers seeking to create microservices productively in a very specific use case.
+* Aspiring game developers with an interest in backend development.
+* Players who are into simplistic 2D MMORPG's.
 
 ## Features
 The complete feature list may change during development. 
@@ -67,8 +71,6 @@ The complete feature list may change during development.
 * AI enabled for npcs.
 * Inventory, trading & looting system
 * Crafting system 
-* Achievements
-* In-game chat
 * Player classes and spells 
  * Programming knowledge not required to create/edit 
  * Configuration-based using JSON
@@ -98,19 +100,18 @@ The complete feature list may change during development.
  * Zero thread programming required (!!!) 
 
 ###### Services
-* Authentication server: Account/character creation & available realms
-* Routing server: Routes client requests in/out of the cluster.
-* Realm Server: Handles incoming connections, instance travel
- * Instance Server: Handles game logic
-* Webserver: Provides an interface for account/character/realmlist
-* Resource server: Provides game resources, graphics & logic (scripts)
-* Logging server: Receives logging data from the other components
+* Authentication: Account creation and available realms.
+* Routing: Routes client requests in/out of the cluster.
+* Realms: Handles incoming connections, instance travel.
+ * Instances: Handles game logic.
+* Website: Provides an interface for account/character/realmlist.
+* Patching: Game updates through sendFile, webseed and BitTorrent.
+* Logging: Receives logging data from the other components.
+* Social: Achievements, chat, guilds.
+* Auction house: Handles asynchronous trading with orders/offers.
+* Serverstatus: Provides a quick overview of system uptime.
 
-When completed the items will be marked in some way, as no items are done yet the marker is undecided.
-
-The authentication server exposes an API through REST to clients. Communication within the system and with the game servers is handled with websockets. Using websockets within the system reduces overhead and latency compared to REST, complexity is reduced and availability increased compared to UDP or TCP. This could be changed to UDP or TCP if more performance is desired and if the frontend is replaced with a desktop client. The project aims to be transport and protocol independent, replacing these parts of the core is simple.
-
-The resources may be served from the webserver if desired.
+Communication between services is done over the cluster, other available transports such as websock, tcp, udp and rest is available but not recommended unless a service is remote.
 
 All communication between services uses a text-protocol based on JSON for simplicity.
 
