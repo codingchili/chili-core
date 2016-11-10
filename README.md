@@ -27,21 +27,19 @@ If you wish to create a fatjar with bundled resources move **conf/**, **resource
 
 If you do not have a local **ElasticSearch server** running on the default port log messages will be dropped unless consoleLogging is set in **conf/system/system.json**.
 
-To start the packaged JAR run
+Before starting it up new tokens/secrets should be generated,
 ```
-java -jar <filename>.jar
+java -jar <filename>.jar --generate
 ```
-This will start up services configured in the 'default' block of **conf/system/launcher.json**; routing, authentication, gameserver, realms, instances, logserver, webserver and patcher. 
+The authentication tokens are stored in **/conf/services/{service}.json**. See **conf/system/security.json** for setting up token/secret dependencies between services. 
 
-To start only a single component use any of the following,
+Start the launcher with, 
 ```
 java -jar <filename>.jar <block or host>
 ```
+This will start up services configured in the given or 'default' block in **conf/system/launcher.json**.
+
 To see all available commands run with --help.
-
-The authentication tokens are stored in **/conf/services/{service}.json** and certificates for the router in **conf/cert/**.
-
-.
 
 ## Background
 The purpose of the project is to provide a stable core for game development. There are many aspects of creating games, backend architecture, user interfaces, game resources (graphics, sounds) and then the design which includes the story/quests etc. The core is designed to be easily integrated with and modified in each of these aspects. In order to provide this, the core includes somewhat complete subsystems for each of these points. Additionally the core will be delivered as a "complete" game, to further increase the availability/modability and broaden the audience. As such it is the aim of the project to be complete enough both in documentation and code so that it may be used as a learning platform. 
