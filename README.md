@@ -1,12 +1,13 @@
 # chili-core [![Build Status](https://travis-ci.org/codingchili/chili-core.svg?branch=master)](https://travis-ci.org/codingchili/chili-core)
 
-The chili core is a lightweight **architecture** for creating online games with focus on **modularity**, **security** and **scalability**. The backend uses **Vert.x** with **Hazelcast**. The frontend prototype is based on **Polymer**, **websockets** and **HTML5**. 
+The chili core is a lightweight distributed **architecture** for creating microservices with focus on **modularity**, **security** and **scalability**. The backend uses **Vert.x** with **Hazelcast** as its cluster manager. The game prototype built using the core is based on **Polymer**, **websockets** and **HTML5** with WebGL. 
 
 For documentation and tutorials visit [the website](https://codingchili.com/), for a live demo visit [demo](https://beta.codingchili.com).
 
 **Beware!**
 Until the first pre-release master will be unstable!
 This project is currently in development!
+Things may not work even if the build is green!
 
 ## Installation
 To install chili-core clone this repository with **git**,
@@ -43,7 +44,7 @@ This will start up services configured in the given or 'default' block in **conf
 To see all available commands run with --help.
 
 ## Background
-The project consists of two parts. The core, which is a framework built on top of the vertx toolkit. The purpose of wrapping vertx in a framework is to increase productivity. This is done by providinng common functionality that can be used to build microservices on. With all the logic packed into core, it is possible to create distributed microservices capable of handling authentication, request routing and storage in 66 lines of code. If you are interested in vertx, I recommend using it directly instead. This framework is intended to improve productivity in a very specific use case. In order to achieve this it is much more invasive than the vertx toolkit.
+The project consists of two parts. The core, which is a framework built on top of the vertx toolkit. The purpose of wrapping vertx in a framework is to increase productivity. This is done by providing common functionality that can be used to build microservices on. With all the logic packed into core, it is possible to create distributed microservices capable of handling authentication, request routing and storage in 66 lines of code. If you are interested in vertx, I recommend using it directly instead. This framework is intended to improve productivity in a very specific use case. In order to achieve this it is much more invasive than the vertx toolkit.
  
 The purpose of the service part of the project is to provide implementations for use in (mainly) game servers. Each service may be distributed on different hosts. Communication channels is provided by the core, with support for various transports and storage plugins. Breaking down the system into microservices improves maintainability, testability and ultimately, productivity.
 
@@ -78,22 +79,18 @@ The complete feature list may change during development.
 
 ###### Core
 * Distributed realms/servers
-* Centralized authentication server (per region)
 * Statistics API and visualizations
 * Transport & protocol independent logic
 * Authentication server supports third-party realms
-  * Keys available and bound only to registered users.
-  * Allows players to try out player-modified worlds.
-  * Realms may only edit characters bound to them.
 * Support for instanced game worlds
- * Support for on-demand deployment
- * Support for matchmaking. 
+* Support for on-demand deployment
+* Support for matchmaking. 
 * Security, non-cheatable server
  * Single-threaded in-memory transactions
  * Server authorized model
 * Logging system for data analysis
  * JSON output, ElasticSearch & Kibana ready.
-* Basic website with JSON templates for news/changelist
+* Basic website with JSON templates for news and account management.
 * Highly performant backend
  * Variable tickrate, uses time & vectors for collisions.
  * Concurrency using the actor model
@@ -111,7 +108,7 @@ The complete feature list may change during development.
 * Auction house: Handles asynchronous trading with orders/offers.
 * Serverstatus: Provides a quick overview of system uptime.
 
-Communication between services is done over the cluster, other available transports such as websock, tcp, udp and rest is available but not recommended unless a service is remote.
+Communication between services is done over the cluster, other available transports such as websock, tcp, udp and rest is available but not recommended unless a service is not able to join the cluster.
 
 All communication between services uses a text-protocol based on JSON for simplicity.
 
