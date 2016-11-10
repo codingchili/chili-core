@@ -135,6 +135,7 @@ The configuration structure
 │   │   ├── patchserver.json
 │   │   ├── realmserver.json
 │   │   ├── webserver.json
+│   │   ├── routingserver.json
 │   ├── realm/
 │   │   ├── {name}.json
 │   │   ├── {name}.json
@@ -163,13 +164,13 @@ The configuration structure
 │   │   │   ├── {name}.json
 ```
 **Explanation**
-'resources/' is used by the patching service to store files.
-'website/' contains website files used in the prototype.
-'conf/' contains all configuration files.
-'conf/system/' contains framework configuration.
-'conf/services/' contains service configuration if any.
-'conf/realm/' contains realm configurations for the realm service.
-'conf/game/' contains game configuration, may be overriden in 'conf/realm/override'
+- 'resources/' is used by the patching service to store files.
+- 'website/' contains website files used in the prototype.
+- 'conf/' contains all configuration files.
+- 'conf/system/' contains framework configuration.
+- 'conf/services/' contains service configuration if any.
+- 'conf/realm/' contains realm configurations for the realm service.
+- 'conf/game/' contains game configuration, may be overriden in 'conf/realm/override'
 
 All configuration files are loaded by their respective service with support for reloading changes at runtime. Minimally the framework configuration in **conf/system/** must exist as it is required by the launcher. 
 
