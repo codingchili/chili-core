@@ -110,10 +110,10 @@ The authentication server exposes an API through REST to clients. Communication 
 
 The resources may be served from the webserver if desired.
 
-All communication within the system uses a text-protocol based on JSON for simplicity.
+All communication between services uses a text-protocol based on JSON for simplicity.
 
 ## Configuration
-The configuration directory **'conf' & 'resources' must be in the same directory as the jar file** or **in the classpath**.
+The configuration directory **'conf' must be in the same directory as the jar file** or **on the classpath**.
 
 The configuration structure
 ```
@@ -127,6 +127,7 @@ The configuration structure
 │   ├──system/
 │   │   ├── launcher.json
 │   │   ├── validator.json
+│   │   ├── security.json
 │   │   ├── system.json
 │   ├── services/
 │   │   ├── authserver.json
@@ -145,7 +146,7 @@ The configuration structure
 │   │   ├── crafting/
 │   │   │   ├── {name}.json
 │   │   ├── item/
-│   │   │   ├── {type}.json
+│   │   │   ├── {name}.json
 │   │   ├── npc/
 │   │   │   ├── character.json
 │   │   │   ├── dialog.json
@@ -158,26 +159,19 @@ The configuration structure
 │   │   │   ├── affliction.json
 │   │   │   ├── characters.json
 │   │   │   ├── spells.json
-│   │   ├── world/
+│   │   ├── instances/
 │   │   │   ├── {name}.json
 ```
-**resources/patch.json** contains the patch data, subfolders **game** contains the game files and **gui** contains graphics used in character list/create.
+**Explanation**
+'resources/' is used by the patching service to store files.
+'website/' contains website files used in the prototype.
+'conf/' contains all configuration files.
+'conf/system/' contains framework configuration.
+'conf/services/' contains service configuration if any.
+'conf/realm/' contains realm configurations for the realm service.
+'conf/game/' contains game configuration, may be overriden in 'conf/realm/override'
 
-**website/** contains the website used for the web-game, could be reused for desktop games for registration/forums etc.
-
-**conf/system/** contains configuration for the core.
-
-**conf/services/** contains configuration for services.
-
-**conf/realm/** each represents a realm/server to be registered to the master authentication server. Each of these must have a valid authentication signed by the authentication servers secret key. The name of the realm file must also correspond to the "name" attribute in the configuration file.
-
-**conf/game** directly relates to game logic, such as player classes, items, npcs, quests and the game world (maps). 
-
-**conf/game/class** must have the same name as the "name" attribute within them. 
-
-**conf/game/items** may have any name, preferrably names describing the type of items within the configuration file, splitting the files in this folder only provides structure.
-
-All configuration files are loaded by their respective component on startup. Minimally the files in **/conf/system** must exist for the component that is to be run. For the gameserver the **/conf/game configuration** files must also exist.
+All configuration files are loaded by their respective service with support for reloading changes at runtime. Minimally the framework configuration in **conf/system/** must exist as it is required by the launcher. 
 
 ## Mods
 Brief introduction on how the core may be modified to fit your needs.
