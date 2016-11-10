@@ -42,6 +42,8 @@ This will start up services configured in the given or 'default' block in **conf
 To see all available commands run with --help.
 
 ## Background
+The project consists of two parts. The core, which is a framework built on the vertx toolkit. The purpose of wrapping vertx in a framework is to increase productivity. This is done by providinng common functionality that can be used to build microservices on. With all the logic packed into core, it is possible to create distributed microservices capable of handling authentication, request routing and storage in 66 lines of code. If you are interested in vertx, I recommend using it directly instead. This framework is intended to improve productivity in a very specific use case. In order to achieve this it is much more invasive than the vertx toolkit.
+ 
 The purpose of the project is to provide a stable core for game development. There are many aspects of creating games, backend architecture, user interfaces, game resources (graphics, sounds) and then the design which includes the story/quests etc. The core is designed to be easily integrated with and modified in each of these aspects. In order to provide this, the core includes somewhat complete subsystems for each of these points. Additionally the core will be delivered as a "complete" game, to further increase the availability/modability and broaden the audience. As such it is the aim of the project to be complete enough both in documentation and code so that it may be used as a learning platform. 
 
 ###### Summary
