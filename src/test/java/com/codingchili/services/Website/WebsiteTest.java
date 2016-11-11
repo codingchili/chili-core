@@ -14,8 +14,8 @@ import java.util.concurrent.TimeUnit;
 import com.codingchili.services.Shared.Strings;
 import com.codingchili.core.Exception.AuthorizationRequiredException;
 import com.codingchili.core.Protocol.ResponseStatus;
-import com.codingchili.core.Shared.RequestMock;
-import com.codingchili.core.Shared.ResponseListener;
+import com.codingchili.core.Testing.RequestMock;
+import com.codingchili.core.Testing.ResponseListener;
 
 import com.codingchili.services.Website.Controller.WebHandler;
 

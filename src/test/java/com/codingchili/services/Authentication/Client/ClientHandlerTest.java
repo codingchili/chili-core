@@ -18,8 +18,8 @@ import java.util.concurrent.TimeUnit;
 import com.codingchili.core.Protocol.ResponseStatus;
 import com.codingchili.core.Protocol.Serializer;
 import com.codingchili.core.Security.*;
-import com.codingchili.core.Shared.RequestMock;
-import com.codingchili.core.Shared.ResponseListener;
+import com.codingchili.core.Testing.RequestMock;
+import com.codingchili.core.Testing.ResponseListener;
 
 import com.codingchili.services.Authentication.Configuration.AuthContext;
 import com.codingchili.services.Authentication.Controller.ClientHandler;

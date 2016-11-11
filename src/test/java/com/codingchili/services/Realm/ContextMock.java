@@ -3,7 +3,7 @@ package com.codingchili.services.Realm;
 import io.vertx.core.Vertx;
 
 import com.codingchili.core.Security.*;
-import com.codingchili.core.Shared.AsyncMapMock;
+import com.codingchili.core.Testing.AsyncMapMock;
 
 import com.codingchili.services.Realm.Configuration.RealmContext;
 import com.codingchili.services.Realm.Configuration.RealmSettings;

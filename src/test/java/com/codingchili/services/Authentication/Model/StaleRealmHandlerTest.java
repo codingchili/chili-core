@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 
 import java.time.Instant;
 
-import com.codingchili.core.Shared.AsyncMapMock;
+import com.codingchili.core.Testing.AsyncMapMock;
 
 import com.codingchili.services.Realm.Configuration.RealmSettings;
 

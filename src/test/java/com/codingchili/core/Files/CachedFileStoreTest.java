@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 
 import com.codingchili.core.Configuration.CachedFileStoreSettings;
 import com.codingchili.core.Exception.FileMissingException;
-import com.codingchili.core.Shared.ContextMock;
+import com.codingchili.core.Testing.ContextMock;
 
 /**
  * @author Robin Duda

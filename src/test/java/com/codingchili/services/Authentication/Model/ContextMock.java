@@ -3,7 +3,7 @@ package com.codingchili.services.Authentication.Model;
 import io.vertx.core.Vertx;
 
 import com.codingchili.core.Security.TokenFactory;
-import com.codingchili.core.Shared.AsyncMapMock;
+import com.codingchili.core.Testing.AsyncMapMock;
 
 import com.codingchili.services.Authentication.Configuration.AuthContext;
 import com.codingchili.services.Authentication.Configuration.AuthServerSettings;

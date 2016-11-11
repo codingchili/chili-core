@@ -12,8 +12,8 @@ import java.util.concurrent.TimeUnit;
 import com.codingchili.services.Shared.Strings;
 import com.codingchili.core.Files.Configurations;
 import com.codingchili.core.Protocol.ResponseStatus;
-import com.codingchili.core.Shared.RequestMock;
-import com.codingchili.core.Shared.ResponseListener;
+import com.codingchili.core.Testing.RequestMock;
+import com.codingchili.core.Testing.ResponseListener;
 
 import com.codingchili.services.Logging.Configuration.LogContext;
 import com.codingchili.services.Logging.Configuration.LogServerSettings;

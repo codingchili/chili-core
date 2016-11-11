@@ -1,4 +1,4 @@
-package com.codingchili.core.Shared;
+package com.codingchili.core.Testing;
 
 import io.vertx.core.Vertx;
 
