@@ -1,11 +1,16 @@
 # chili-core [![Build Status](https://travis-ci.org/codingchili/chili-core.svg?branch=master)](https://travis-ci.org/codingchili/chili-core)
 
-The chili core is a lightweight **architecture** for creating online games with focus on **modularity**, **security** and **scalability**. The backend uses **Vert.x** with **Hazelcast**. The frontend prototype is based on **Polymer**, **websockets** and **HTML5**. 
+The chili core is a lightweight distributed **architecture** for creating microservices with focus on **modularity**, **security** and **scalability**. The backend uses **Vert.x** with **Hazelcast** as its cluster manager. The game prototype built using the core is based on **Polymer**, **websockets** and **HTML5** with WebGL. 
 
 For documentation and tutorials visit [the website](https://codingchili.com/), for a live demo visit [demo](https://beta.codingchili.com).
 
 **Beware!**
-Until the first RC master will be unstable.
+
+Until the first pre-release master will be unstable!
+
+This project is currently in development!
+
+Things may not work even if the build is green!
 
 ## Installation
 To install chili-core clone this repository with **git**,
@@ -13,7 +18,7 @@ To install chili-core clone this repository with **git**,
 git clone https://github.com/codingchili/chili-core.git
 ```
 
-The webserver requires dependencies in **website/** run the following in that directory,
+The website service requires dependencies in **website/** run the following in that directory,
 ```
 bower install
 ```
@@ -27,36 +32,39 @@ If you wish to create a fatjar with bundled resources move **conf/**, **resource
 
 If you do not have a local **ElasticSearch server** running on the default port log messages will be dropped unless consoleLogging is set in **conf/system/system.json**.
 
-To start the packaged JAR run
+Before starting it up new tokens/secrets should be generated,
 ```
-java -jar <filename>.jar
+java -jar <filename>.jar --generate
 ```
-This will start up services configured in the 'default' block of **conf/system/launcher.json**; routing, authentication, gameserver, realms, instances, logserver, webserver and patcher. 
+The authentication tokens are stored in **/conf/services/{service}.json**. See **conf/system/security.json** for setting up token/secret dependencies between services. 
 
-To start only a single component use any of the following,
+Start the launcher with, 
 ```
 java -jar <filename>.jar <block or host>
 ```
+This will start up services configured in the given or 'default' block in **conf/system/launcher.json**.
+
 To see all available commands run with --help.
 
-The authentication tokens are stored in **/conf/services/{service}.json** and certificates for the router in **conf/cert/**.
-
-.
-
 ## Background
-The purpose of the project is to provide a stable core for game development. There are many aspects of creating games, backend architecture, user interfaces, game resources (graphics, sounds) and then the design which includes the story/quests etc. The core is designed to be easily integrated with and modified in each of these aspects. In order to provide this, the core includes somewhat complete subsystems for each of these points. Additionally the core will be delivered as a "complete" game, to further increase the availability/modability and broaden the audience. As such it is the aim of the project to be complete enough both in documentation and code so that it may be used as a learning platform. 
+The project consists of two parts. The core, which is a framework built on top of the vertx toolkit. The purpose of wrapping vertx in a framework is to increase productivity. This is done by providing common functionality that can be used to build microservices on. With all the logic packed into core, it is possible to create distributed microservices capable of handling authentication, request routing and storage in 66 lines of code. If you are interested in vertx, I recommend using it directly instead. This framework is intended to improve productivity in a very specific use case. In order to achieve this it is much more invasive than the vertx toolkit.
+ 
+The purpose of the service part of the project is to provide implementations for use in (mainly) game servers. Each service may be distributed on different hosts. Communication channels is provided by the core, with support for various transports and storage plugins. Breaking down the system into microservices improves maintainability, testability and ultimately, productivity.
+
+Additionally, on top of these services an actual game and server will be implemented.
 
 ###### Summary
-* Learning through modding
-* Creating new content with existing material
-* High modularity (MVC & Distributed architecture)
-* Availability, Java backend and Browser clients.
-* Primarily for top-down 2D MMORPG games, may be modded for other games.
-* Low complexity promotes maintenance and growth
+* Built on the high-performance reactive toolkit vertx
+* Clustering improves scalability
+* Text based protocols with JSON
+* High availability with support for multiple transports
+* Adopts the microservice pattern
 
 ###### Audience
-* Learning programming, game graphics or design, web development
-* Bootstrap package for game development, creating a prototype for a 2D game.
+* Game developers seeking to implement multiplayer from the start with minimal overhead.
+* Programmers seeking to create microservices productively in a very specific use case.
+* Aspiring game developers with an interest in backend development.
+* Players who are into simplistic 2D MMORPG's.
 
 ## Features
 The complete feature list may change during development. 
@@ -67,8 +75,6 @@ The complete feature list may change during development.
 * AI enabled for npcs.
 * Inventory, trading & looting system
 * Crafting system 
-* Achievements
-* In-game chat
 * Player classes and spells 
  * Programming knowledge not required to create/edit 
  * Configuration-based using JSON
@@ -76,46 +82,41 @@ The complete feature list may change during development.
 
 ###### Core
 * Distributed realms/servers
-* Centralized authentication server (per region)
 * Statistics API and visualizations
 * Transport & protocol independent logic
 * Authentication server supports third-party realms
-  * Keys available and bound only to registered users.
-  * Allows players to try out player-modified worlds.
-  * Realms may only edit characters bound to them.
 * Support for instanced game worlds
- * Support for on-demand deployment
- * Support for matchmaking. 
+* Support for on-demand deployment
+* Support for matchmaking. 
 * Security, non-cheatable server
  * Single-threaded in-memory transactions
  * Server authorized model
 * Logging system for data analysis
  * JSON output, ElasticSearch & Kibana ready.
-* Basic website with JSON templates for news/changelist
+* Basic website with JSON templates for news and account management.
 * Highly performant backend
  * Variable tickrate, uses time & vectors for collisions.
  * Concurrency using the actor model
  * Zero thread programming required (!!!) 
 
 ###### Services
-* Authentication server: Account/character creation & available realms
-* Routing server: Routes client requests in/out of the cluster.
-* Realm Server: Handles incoming connections, instance travel
- * Instance Server: Handles game logic
-* Webserver: Provides an interface for account/character/realmlist
-* Resource server: Provides game resources, graphics & logic (scripts)
-* Logging server: Receives logging data from the other components
+* Authentication: Account creation and available realms.
+* Routing: Routes client requests in/out of the cluster.
+* Realms: Handles incoming connections, instance travel.
+ * Instances: Handles game logic.
+* Website: Provides an interface for account/character/realmlist.
+* Patching: Game updates through sendFile, webseed and BitTorrent.
+* Logging: Receives logging data from the other components.
+* Social: Achievements, chat, guilds.
+* Auction house: Handles asynchronous trading with orders/offers.
+* Serverstatus: Provides a quick overview of system uptime.
 
-When completed the items will be marked in some way, as no items are done yet the marker is undecided.
+Communication between services is done over the cluster, other available transports such as websock, tcp, udp and rest is available but not recommended unless a service is not able to join the cluster.
 
-The authentication server exposes an API through REST to clients. Communication within the system and with the game servers is handled with websockets. Using websockets within the system reduces overhead and latency compared to REST, complexity is reduced and availability increased compared to UDP or TCP. This could be changed to UDP or TCP if more performance is desired and if the frontend is replaced with a desktop client. The project aims to be transport and protocol independent, replacing these parts of the core is simple.
-
-The resources may be served from the webserver if desired.
-
-All communication within the system uses a text-protocol based on JSON for simplicity.
+All communication between services uses a text-protocol based on JSON for simplicity.
 
 ## Configuration
-The configuration directory **'conf' & 'resources' must be in the same directory as the jar file** or **in the classpath**.
+The configuration directory **'conf' must be in the same directory as the jar file** or **on the classpath**.
 
 The configuration structure
 ```
@@ -129,6 +130,7 @@ The configuration structure
 │   ├──system/
 │   │   ├── launcher.json
 │   │   ├── validator.json
+│   │   ├── security.json
 │   │   ├── system.json
 │   ├── services/
 │   │   ├── authserver.json
@@ -136,6 +138,7 @@ The configuration structure
 │   │   ├── patchserver.json
 │   │   ├── realmserver.json
 │   │   ├── webserver.json
+│   │   ├── routingserver.json
 │   ├── realm/
 │   │   ├── {name}.json
 │   │   ├── {name}.json
@@ -147,7 +150,7 @@ The configuration structure
 │   │   ├── crafting/
 │   │   │   ├── {name}.json
 │   │   ├── item/
-│   │   │   ├── {type}.json
+│   │   │   ├── {name}.json
 │   │   ├── npc/
 │   │   │   ├── character.json
 │   │   │   ├── dialog.json
@@ -160,26 +163,19 @@ The configuration structure
 │   │   │   ├── affliction.json
 │   │   │   ├── characters.json
 │   │   │   ├── spells.json
-│   │   ├── world/
+│   │   ├── instances/
 │   │   │   ├── {name}.json
 ```
-**resources/patch.json** contains the patch data, subfolders **game** contains the game files and **gui** contains graphics used in character list/create.
+**Explanation**
+- 'resources/' is used by the patching service to store files.
+- 'website/' contains website files used in the prototype.
+- 'conf/' contains all configuration files.
+- 'conf/system/' contains framework configuration.
+- 'conf/services/' contains service configuration if any.
+- 'conf/realm/' contains realm configurations for the realm service.
+- 'conf/game/' contains game configuration, may be overriden in 'conf/realm/override'
 
-**website/** contains the website used for the web-game, could be reused for desktop games for registration/forums etc.
-
-**conf/system/** contains configuration for the core.
-
-**conf/services/** contains configuration for services.
-
-**conf/realm/** each represents a realm/server to be registered to the master authentication server. Each of these must have a valid authentication signed by the authentication servers secret key. The name of the realm file must also correspond to the "name" attribute in the configuration file.
-
-**conf/game** directly relates to game logic, such as player classes, items, npcs, quests and the game world (maps). 
-
-**conf/game/class** must have the same name as the "name" attribute within them. 
-
-**conf/game/items** may have any name, preferrably names describing the type of items within the configuration file, splitting the files in this folder only provides structure.
-
-All configuration files are loaded by their respective component on startup. Minimally the files in **/conf/system** must exist for the component that is to be run. For the gameserver the **/conf/game configuration** files must also exist.
+All configuration files are loaded by their respective service with support for reloading changes at runtime. Minimally the framework configuration in **conf/system/** must exist as it is required by the launcher. 
 
 ## Mods
 Brief introduction on how the core may be modified to fit your needs.
