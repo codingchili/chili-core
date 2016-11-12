@@ -23,8 +23,9 @@ import com.codingchili.core.Testing.ContextMock;
 @RunWith(VertxUnitRunner.class)
 public class CachedFileStoreTest {
     private static final String TEST_DIRECTORY = "src/main/resources/META-INF";
-    private static final String TEST_FILE = "src/main/resources/META-INF/MANIFEST.MF";
-    private static final String TEST_FILE_TRAVERSAL = "src/main/resources/cluster.xml";
+    private static final String TEST_FILE_ABSOLUTE = "src/main/resources/META-INF/MANIFEST.MF";
+    private static final String TEST_FILE = "/MANIFEST.MF";
+    private static final String TEST_FILE_TRAVERSAL = "../cluster.xml";
     private Vertx vertx;
 
     @Before
@@ -60,7 +61,7 @@ public class CachedFileStoreTest {
     }
 
     private Buffer getFromDisk() throws IOException {
-        Path path = Paths.get(TEST_FILE);
+        Path path = Paths.get(TEST_FILE_ABSOLUTE);
         return Buffer.buffer(Files.readAllBytes(path));
     }
 

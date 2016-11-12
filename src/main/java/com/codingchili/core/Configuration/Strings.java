@@ -137,8 +137,8 @@ public class Strings {
      */
     public static String format(Path path, String root) {
         return (path.toString()
-                .replaceFirst(root, ""))
-                .replace("\\", Strings.DIR_SEPARATOR);
+                .replace("\\", Strings.DIR_SEPARATOR)
+                .replaceFirst(root, ""));
     }
 
     public static String getRemoteBlockNotConfigured(String remote, String block) {
