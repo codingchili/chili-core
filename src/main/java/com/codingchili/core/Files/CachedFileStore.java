@@ -27,7 +27,12 @@ public class CachedFileStore<T> implements FileStoreListener {
     private final SystemContext context;
 
     /**
-     * Maintain a singleton for each root directory.
+     * Maintain a CachedFileStore for each loaded directory.
+     * @param context the context requesting the feature.
+     * @param settings the settings to use for the CachedFileStore, if conflicting with
+     *                 any existing configuration for the given path the configuration is
+     *                 ignored.
+     * @return A loaded CachedFileStore.
      */
     @SuppressWarnings("unchecked")
     public static <T> CachedFileStore<T> instance(SystemContext context, CachedFileStoreSettings settings) {

@@ -23,7 +23,8 @@ import static com.codingchili.core.Configuration.Strings.*;
 
 /**
  * @author Robin Duda
- *         Handles loading and parsing of the configuration files.
+ *
+ * Handles loading and parsing of the configuration files.
  */
 public class Configurations {
     private static final ConcurrentHashMap<String, ConfigEntry> configs = new ConcurrentHashMap<>();

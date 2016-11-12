@@ -12,15 +12,13 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.codingchili.core.Security.HashHelper;
-
 /**
  * @author Robin Duda
  */
 @RunWith(VertxUnitRunner.class)
 public class HashHelperTest {
-    private static final int HASH_TIME_LIMIT = 5000;
-    private static final int HASH_TIME_MIN = 200;
+    private static final int HASH_TIME_LIMIT = 10000;
+    private static final int HASH_TIME_MIN = 100;
     private static final String password = "pass";
     private static final String wrong = "wrong";
     private static final String salt = "salt";
