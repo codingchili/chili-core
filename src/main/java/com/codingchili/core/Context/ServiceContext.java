@@ -9,6 +9,8 @@ import com.codingchili.core.Security.RemoteIdentity;
 
 /**
  * @author Robin Duda
+ *
+ * Provides basic context requirements for all service-contexts.
  */
 public abstract class ServiceContext extends SystemContext {
     protected final Logger logger;
@@ -23,6 +25,11 @@ public abstract class ServiceContext extends SystemContext {
         this.logger = new RemoteLogger(this);
     }
 
+    /**
+     * @return the configuration associated with the current context.
+     */
+    protected abstract ServiceConfigurable service();
+
     public Logger logger() {
         return logger;
     }
@@ -31,8 +38,6 @@ public abstract class ServiceContext extends SystemContext {
     public RemoteIdentity identity() {
         return new RemoteIdentity(service().node(), service().host());
     }
-
-    protected abstract ServiceConfigurable service();
 
     @Override
     protected void onMetricsSnapshot(JsonObject json) {
