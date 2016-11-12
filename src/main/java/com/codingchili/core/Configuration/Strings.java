@@ -4,16 +4,18 @@ import java.nio.file.Path;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Store json keys and protocol headers so that they are easily maintained.
+ *
+ * Store json keys and protocol headers so that they are easily maintained.
+ * Extend this class in service implementations to add more constants.
  */
 public class Strings {
-    // Locations to configuration files.
+    // paths to configuration files.
     public static final String PATH_VALIDATOR = "conf/system/validator.json";
     public static final String PATH_LAUNCHER = "conf/system/launcher.json";
     public static final String PATH_SECURITY = "conf/system/security.json";
     public static final String PATH_VERTX = "conf/system/system.json";
 
+    // common directories.
     public static final String DIR_ROOT = "/";
     public static final String DIR_SEPARATOR = "/";
     public static final String DIR_CONFIG = "conf/";
@@ -21,15 +23,23 @@ public class Strings {
     public static final String DIR_SERVICES = "conf/service/";
 
     public static final String EXT_JSON = ".json";
-
     public static final String ANY = "*";
 
+    // protocol constants.
     public static final String PROTOCOL_REAL_IP = "X-Real-IP";
     public static final String PROTOCOL_CONNECTION = "connection";
     public static final String PROTOCOL_STATUS = "status";
     public static final String PROTOCOL_ACTION = "action";
     public static final String PROTOCOL_LOGGING = "logging";
 
+    // launcher commands.
+    public static final String GENERATE_SECRETS = "--generate-secrets";
+    public static final String GENERATE_TOKENS = "--generate-tokens";
+    public static final String GENERATE_PRESHARED = "--generate-preshared";
+    public static final String GENERATE = "--generate";
+    public static final String HELP = "--help";
+
+    // keys used in json objects.
     public static final String ID_TOKEN = "token";
     public static final String ID_NAME = "name";
     public static final String ID_FILE = "file";
@@ -53,6 +63,7 @@ public class Strings {
     public static final String ID_DEFAULT = "default";
     public static final String ID_IDENTITY = "identity";
 
+    // logging constants
     public static final String LOG_AT = "@";
     public static final String LOG_EVENT = "event";
     public static final String LOG_VERSION = "version";
@@ -80,13 +91,6 @@ public class Strings {
     public static final String LOG_NEW = "new";
     public static final String[] LOG_HIDDEN_TAGS = new String[]{"dev", "LOCAL", "3.6.3"};
 
-    public static String replaceTags(String text, String[] tags) {
-        for (String tag : tags) {
-            text = text.replaceAll(" ?(\\[" + tag + "\\]) ?", "");
-        }
-        return text;
-    }
-
     public static final String ERROR_TOKEN_FACTORY = "Token factory failed to generate token.";
     public static final String ERROR_CLUSTERING_REQUIRED = "Clustering required but not enabled.";
     public static final String ERROR_NOT_AUTHORIZED = "Insufficient authorization level to access resource.";
@@ -100,6 +104,19 @@ public class Strings {
     public static final String ERROR_ALREADY_INITIALIZED = "Error already initialized.";
     public static final String CONFIGURED_BLOCKS = "Configured deployment blocks";
 
+    /**
+     * Replaces tags in a logging message.
+     * @param text the source text
+     * @param tags the name of the tag without enclosing brackets.
+     * @return the source text with any matching tags removed.
+     */
+    public static String replaceTags(String text, String[] tags) {
+        for (String tag : tags) {
+            text = text.replaceAll(" ?(\\[" + tag + "\\]) ?", "");
+        }
+        return text;
+    }
+
     public static String getDeployFailError(String service) {
         return "Failed to deploy " + service + ", already deployed in cluster";
     }
@@ -112,6 +129,12 @@ public class Strings {
         return "Could not find file " + filename;
     }
 
+    /**
+     * Formats a path object using a base root.
+     * @param path the path to be formatted
+     * @param root the relative root to remove from the path
+     * @return a relative path string that is the same on all filesystems.
+     */
     public static String format(Path path, String root) {
         return (path.toString()
                 .replaceFirst(root, ""))

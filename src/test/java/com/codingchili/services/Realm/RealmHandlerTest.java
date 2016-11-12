@@ -12,7 +12,6 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeUnit;
 
-import com.codingchili.services.Shared.Strings;
 import com.codingchili.core.Protocol.ResponseStatus;
 import com.codingchili.core.Protocol.Serializer;
 import com.codingchili.core.Security.Token;
@@ -23,6 +22,7 @@ import com.codingchili.core.Testing.ResponseListener;
 import com.codingchili.services.Realm.Controller.RealmHandler;
 import com.codingchili.services.Realm.Instance.Model.PlayerCharacter;
 import com.codingchili.services.Realm.Model.AsyncCharacterStore;
+import com.codingchili.services.Shared.Strings;
 
 import static com.codingchili.services.Shared.Strings.*;
 
@@ -50,7 +50,7 @@ public class RealmHandlerTest {
         Async async = context.async();
         vertx = Vertx.vertx();
         ContextMock provider = new ContextMock();
-        handler = new RealmHandler(provider);
+        handler = new RealmHandler<>(provider);
         clientToken = provider.getClientFactory();
         characters = provider.getCharacterStore();
         createCharacters(async);

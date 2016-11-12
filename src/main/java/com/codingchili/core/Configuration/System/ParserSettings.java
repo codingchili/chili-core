@@ -7,6 +7,8 @@ import com.codingchili.core.Configuration.RegexComponent;
 
 /**
  * @author Robin Duda
+ *
+ * Contains settings for validating strings with regexes, length and field names.
  */
 public class ParserSettings {
     public List<RegexComponent> regex;

@@ -8,6 +8,8 @@ import com.codingchili.core.Configuration.WritableConfigurable;
 
 /**
  * @author Robin Duda
+ *
+ * Contains settings for the core system.
  */
 public class SystemSettings extends WritableConfigurable {
     private int metricRate = 15000;

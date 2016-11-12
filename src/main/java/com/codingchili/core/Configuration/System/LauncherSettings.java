@@ -11,6 +11,8 @@ import static com.codingchili.core.Configuration.Strings.PATH_LAUNCHER;
 
 /**
  * @author Robin Duda
+ *
+ * Contains the settings for the launcher.
  */
 public class LauncherSettings implements Configurable {
     private String version;

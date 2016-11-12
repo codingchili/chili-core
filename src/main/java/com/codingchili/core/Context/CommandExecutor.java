@@ -8,28 +8,28 @@ import com.codingchili.core.Exception.NoSuchCommandException;
 import com.codingchili.core.Logging.*;
 import com.codingchili.core.Security.TokenRefresher;
 
+import static com.codingchili.core.Configuration.Strings.*;
+
 /**
  * @author Robin Duda
+ *
+ * Parses and executes commands from the command line.
  */
 public class CommandExecutor {
-    private static final String GENERATE_SECRETS = "--generate-secrets";
-    private static final String GENERATE_TOKENS = "--generate-tokens";
-    private static final String GENERATE_PRESHARED = "--generate-preshared";
-    private static final String GENERATE = "--generate";
-    private static final String HELP = "--help";
-    private final Logger logger = new ConsoleLogger();
     private final LaunchContext context;
     private final LauncherSettings settings;
-    private boolean success = true;
+    private Logger logger = new ConsoleLogger();
+    private boolean handled = true;
 
     public CommandExecutor(LaunchContext context) {
         this.context = context;
         this.settings = context.settings();
+        this.logger = context.console();
 
         if (context.args().length != 0) {
             execute();
         } else {
-            success = false;
+            handled = false;
         }
     }
 
@@ -51,7 +51,7 @@ public class CommandExecutor {
                 help();
                 break;
             default:
-                success = false;
+                handled = false;
         }
     }
 
@@ -109,11 +109,11 @@ public class CommandExecutor {
         }
     }
 
-    public boolean success() {
-        return success;
+    public boolean isHandled() {
+        return handled;
     }
 
-    public String getMessage() {
+    public String getError() {
         return new NoSuchCommandException((context.args().length == 0) ? "" : context.args()[0]).getMessage();
     }
 }

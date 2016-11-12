@@ -2,6 +2,8 @@ package com.codingchili.core.Configuration;
 
 /**
  * @author Robin Duda
+ *
+ * Test class required for json serialization of interface.
  */
-public class AttributeImpl extends Attributes {
+class AttributeImpl extends Attributes {
 }

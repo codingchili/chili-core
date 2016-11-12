@@ -5,6 +5,8 @@ import java.util.Optional;
 
 /**
  * @author Robin Duda
+ *
+ * Extended by classes with dynamic attributes.
  */
 public abstract class Attributes {
     protected HashMap<String, Object> attributes = new HashMap<>();

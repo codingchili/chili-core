@@ -10,7 +10,8 @@ import com.codingchili.core.Protocol.Serializer;
 
 /**
  * @author Robin Duda
- *         Used to write changes to configuration files.
+ *
+ * Base configuration interface.
  */
 public interface Configurable extends Serializable {
     /**

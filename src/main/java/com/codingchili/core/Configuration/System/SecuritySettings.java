@@ -7,6 +7,8 @@ import com.codingchili.core.Configuration.WritableConfigurable;
 
 /**
  * @author Robin Duda
+ *
+ * Maps services to authentication dependencies.
  */
 public class SecuritySettings extends WritableConfigurable {
     private HashMap<String, AuthenticationDependency> dependencies = new HashMap<>();

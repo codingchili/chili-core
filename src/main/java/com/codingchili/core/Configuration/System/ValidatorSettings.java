@@ -6,6 +6,8 @@ import com.codingchili.core.Configuration.WritableConfigurable;
 
 /**
  * @author Robin Duda
+ *
+ * Contains a set of of named validators.
  */
 public class ValidatorSettings extends WritableConfigurable {
     private Map<String, ParserSettings> validators;

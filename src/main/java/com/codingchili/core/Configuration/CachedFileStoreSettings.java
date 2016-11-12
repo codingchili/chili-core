@@ -2,6 +2,8 @@ package com.codingchili.core.Configuration;
 
 /**
  * @author Robin Duda
+ *
+ * Contains settings used in the CachedFileStore.
  */
 public class CachedFileStoreSettings {
     private String directory;
