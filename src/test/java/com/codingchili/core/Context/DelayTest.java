@@ -8,6 +8,7 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
+import com.codingchili.core.Configuration.System.SystemSettings;
 import com.codingchili.core.Testing.ContextMock;
 
 /**
@@ -21,7 +22,14 @@ public class DelayTest {
 
     @Before
     public void setUp() {
-        this.context = new ContextMock(Vertx.vertx());
+        this.context = new ContextMock(Vertx.vertx()) {
+            @Override
+            public SystemSettings system() {
+                SystemSettings settings = new SystemSettings();
+                settings.setShutdownLogTimeout(1);
+                return settings;
+            }
+        };
         Delay.initialize(context);
     }
 

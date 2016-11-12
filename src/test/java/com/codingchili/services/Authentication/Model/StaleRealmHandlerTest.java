@@ -21,45 +21,45 @@ public class StaleRealmHandlerTest {
     private static final String REALM_NAME = "REALM_NAME";
     private static final int STALE_TIMEOUT = 250;
     private static AsyncRealmStore realms;
-    private static WritableContextMock mock;
+    private static WritableContextMock context;
 
     @Before
     public void setUp() {
         realms = new HazelRealmDB(new AsyncMapMock<>());
+        context = new WritableContextMock();
 
-        mock = new WritableContextMock();
-
-        StaleRealmHandler.watch(mock, realms);
+        StaleRealmHandler.watch(context, realms);
     }
 
     @After
-    public void tearDown() {
+    public void tearDown(TestContext test) {
         StaleRealmHandler.stop();
+        context.vertx().close(test.asyncAssertSuccess());
     }
 
     private void updateRealm() {
         realms.put(Future.future(), new RealmSettings()
                 .setName(REALM_NAME)
-                .setUpdated(Instant.now().toEpochMilli() + mock.timeout * 2));
+                .setUpdated(Instant.now().toEpochMilli() + context.timeout * 2));
     }
 
     private void setRealmStale() {
         realms.put(Future.future(), new RealmSettings()
                 .setName(REALM_NAME)
-                .setUpdated(Instant.now().toEpochMilli() - mock.timeout * 2));
+                .setUpdated(Instant.now().toEpochMilli() - context.timeout * 2));
     }
 
     @Test
-    public void testRealmRemovedWhenStale(TestContext context) {
-        Async async = context.async();
+    public void testRealmRemovedWhenStale(TestContext test) {
+        Async async = test.async();
         setRealmStale();
 
-        mock.vertx().setTimer(mock.realmTimeout() + 400, handler -> {
+        context.vertx().setTimer(context.realmTimeout() + 400, handler -> {
             Future<RealmSettings> future = Future.future();
 
             future.setHandler(event -> {
-                context.assertTrue(event.succeeded());
-                context.assertNull(event.result());
+                test.assertTrue(event.succeeded());
+                test.assertNull(event.result());
                 async.complete();
             });
 
@@ -68,30 +68,30 @@ public class StaleRealmHandlerTest {
     }
 
     @Test
-    public void testRealmNotRemovedWhenNotStale(TestContext context) {
+    public void testRealmNotRemovedWhenNotStale(TestContext test) {
         updateRealm();
-        assertRealmExistsAfterMS(context, context.async(), mock.timeout + 400);
+        assertRealmExistsAfterMS(test, test.async(), context.timeout + 400);
     }
 
     @Test
     public void testTimeoutUpdatesWithConfiguration(TestContext context) {
         Async async = context.async();
         updateRealm();
-        mock.timeout = 1000;
+        StaleRealmHandlerTest.context.timeout = 1000;
 
-        mock.vertx().setTimer(325, event -> {
+        StaleRealmHandlerTest.context.vertx().setTimer(325, event -> {
             setRealmStale();
             assertRealmExistsAfterMS(context, async, 325);
         });
     }
 
-    private void assertRealmExistsAfterMS(TestContext context, Async async, int ms) {
-        mock.vertx().setTimer(ms, handler -> {
+    private void assertRealmExistsAfterMS(TestContext test, Async async, int ms) {
+        context.vertx().setTimer(ms, handler -> {
             Future<RealmSettings> future = Future.future();
 
             future.setHandler(event -> {
-                context.assertTrue(event.succeeded());
-                context.assertNotNull(event.result());
+                test.assertTrue(event.succeeded());
+                test.assertNotNull(event.result());
                 async.complete();
             });
 
