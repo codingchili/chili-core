@@ -20,6 +20,7 @@ import com.codingchili.core.Logging.ConsoleLogger;
 import com.codingchili.core.Protocol.Serializer;
 import com.codingchili.core.Testing.ContextMock;
 
+import static com.codingchili.core.Configuration.Strings.DIR_SERVICES;
 import static com.codingchili.core.Configuration.Strings.testFile;
 
 /**
@@ -40,6 +41,7 @@ public class AuthenticationGeneratorTest {
     private static final String SERVICE_2_TOKEN = "service2token";
     private static final String SERVICE1_JSON = "service1.json";
     private static final String SERVICE2_JSON = "service2.json";
+    private static String DIR_SERVICES;
     private AuthenticationGenerator generator;
 
     @Before
@@ -47,16 +49,24 @@ public class AuthenticationGeneratorTest {
         SystemContext context = new ContextMock(Vertx.vertx());
         Configurations.initialize(context);
 
-        HashMap<String, AuthenticationDependency> dependencies = new HashMap<>();
+        mockConfigurationPath();
+
+        Configurations.put(createSecuritySettings());
+
+        generator = new AuthenticationGenerator(Strings.testDirectory(AUTHENTICATION_GENERATOR),
+                new ConsoleLogger());
+    }
+
+    private SecuritySettings createSecuritySettings() {
         SecuritySettings security = new SecuritySettings();
-        Strings.DIR_SERVICES = Strings.testDirectory(AUTHENTICATION_GENERATOR);
+        HashMap<String, AuthenticationDependency> dependencies = new HashMap<>();
+
         security.setPath(Strings.PATH_SECURITY);
         security.setSecretBytes(64);
 
         dependencies.put(SERVICE_REGEX, new AuthenticationDependency()
                 .addPreshare(GLOBAL)
                 .addSecret(LOCAL)
-
         );
 
         dependencies.put(SERVICE_1, new AuthenticationDependency()
@@ -69,16 +79,19 @@ public class AuthenticationGeneratorTest {
         );
 
         security.setDependencies(dependencies);
-        Configurations.put(security);
+        return security;
+    }
 
-        generator = new AuthenticationGenerator(Strings.testDirectory(AUTHENTICATION_GENERATOR),
-                new ConsoleLogger());
+    private void mockConfigurationPath() {
+        DIR_SERVICES = Strings.DIR_SERVICES;
+        Strings.DIR_SERVICES = Strings.testDirectory(AUTHENTICATION_GENERATOR);
     }
 
     @After
     public void tearDown() {
         JsonFileStore.writeObject(new JsonObject(), testFile("AuthenticationGenerator", "service1.json"));
         JsonFileStore.writeObject(new JsonObject(), testFile("AuthenticationGenerator", "service2.json"));
+        Strings.DIR_SERVICES = DIR_SERVICES;
     }
 
     @Test
