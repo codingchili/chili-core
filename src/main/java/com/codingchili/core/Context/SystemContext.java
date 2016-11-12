@@ -16,12 +16,14 @@ import com.codingchili.core.Security.RemoteIdentity;
 
 /**
  * @author Robin Duda
+ *
+ * Implementation of the CoreContext.
  */
 public abstract class SystemContext implements CoreContext {
     private final ConsoleLogger console;
     protected Vertx vertx;
 
-    public SystemContext(CoreContext context) {
+    SystemContext(CoreContext context) {
         this.vertx = context.vertx();
         this.console = new ConsoleLogger(this);
     }
@@ -66,14 +68,14 @@ public abstract class SystemContext implements CoreContext {
 
     @Override
     public void periodic(TimerSource timeout, String name, Handler<Long> handler) {
-        final int initial = timeout.get();
+        final int initial = timeout.getMS();
 
-        vertx.setPeriodic(timeout.get(), event -> {
-            if (timeout.get() != initial) {
+        vertx.setPeriodic(timeout.getMS(), event -> {
+            if (timeout.getMS() != initial) {
                 vertx.cancelTimer(event);
                 periodic(timeout, name, handler);
 
-                console().onTimerSourceChanged(name, initial, timeout.get());
+                console().onTimerSourceChanged(name, initial, timeout.getMS());
             }
             handler.handle(event);
         });
@@ -82,6 +84,12 @@ public abstract class SystemContext implements CoreContext {
     @Override
     public long timer(long ms, Handler<Long> handler) {
         return vertx.setTimer(ms, handler);
+    }
+
+
+    @Override
+    public void cancel(long timer) {
+        vertx.cancelTimer(timer);
     }
 
     @Override

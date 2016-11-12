@@ -8,34 +8,36 @@ import com.codingchili.core.Configuration.System.LauncherSettings;
 import com.codingchili.core.Exception.BlockNotConfiguredException;
 import com.codingchili.core.Exception.RemoteBlockNotConfiguredException;
 import com.codingchili.core.Files.Configurations;
-import com.codingchili.core.Protocol.ClusterNode;
 import com.codingchili.core.Security.RemoteIdentity;
 
 import static com.codingchili.core.Configuration.Strings.ID_DEFAULT;
 
 /**
  * @author Robin Duda
+ *
+ * Provides context for the Launcher system.
  */
 public class LaunchContext extends SystemContext {
     private Vertx vertx;
     private String[] args;
 
-
+    /**
+     * @param args process arguments to create a launcher for.
+     */
     public LaunchContext(String[] args) {
         super(Vertx.vertx());
         this.args = args;
     }
 
+    /**
+     * @param vertx creates a launcher context from a vertx instance.
+     */
     public LaunchContext(Vertx vertx) {
         super(vertx);
         this.vertx = vertx;
     }
 
     @Override
-    public void cancel(long timer) {
-        vertx.cancelTimer(timer);
-    }
-
     public void deploy(String node, Handler<AsyncResult<String>> handler) {
         vertx.deployVerticle(node, handler);
     }
@@ -43,10 +45,6 @@ public class LaunchContext extends SystemContext {
     @Override
     public RemoteIdentity identity() {
         return new RemoteIdentity("launcher", "local");
-    }
-
-    public void deploy(ClusterNode node, Handler<AsyncResult<String>> handler) {
-        vertx.deployVerticle(node, handler);
     }
 
     public LauncherSettings settings() {
@@ -85,6 +83,13 @@ public class LaunchContext extends SystemContext {
         }
     }
 
+    /**
+     * Get the configured services for the given block or remote identifier.
+     * @param block the name of the configured block or the hostname.
+     * @return a list of configured services for the given block or host.
+     * @throws RemoteBlockNotConfiguredException when no block is configured for given host.
+     * @throws BlockNotConfiguredException when no block is configured for given block-name.
+     */
     public List<String> block(String block) throws RemoteBlockNotConfiguredException, BlockNotConfiguredException {
         if (isRemoteBlock(block)) {
             return getBlockForRemote(block);
