@@ -35,7 +35,7 @@ class FileWatcher {
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attributes) throws IOException {
-                    keys.put(dir, dir.register(watcher, ENTRY_MODIFY, ENTRY_DELETE));
+                    keys.put(dir, dir.register(watcher, ENTRY_MODIFY, ENTRY_DELETE, ENTRY_CREATE));
                     return FileVisitResult.CONTINUE;
                 }
             });
@@ -55,9 +55,8 @@ class FileWatcher {
             WatchKey key = keys.get(path);
 
             key.pollEvents().stream()
-                    .filter(event -> getPath(path, event).toFile().isFile())
+                    .filter(event -> !getPath(path, event).toFile().isDirectory())
                     .forEach(event -> {
-
                         if (event.kind().equals(ENTRY_DELETE)) {
                             listener.onFileRemove(getPath(path, event));
                         } else {

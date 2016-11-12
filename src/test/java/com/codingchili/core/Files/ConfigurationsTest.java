@@ -1,12 +1,12 @@
 package com.codingchili.core.Files;
 
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.Configuration.Configurable;
+import com.codingchili.core.Configuration.*;
 import com.codingchili.core.Configuration.System.SystemSettings;
-import com.codingchili.core.Configuration.TestConfig;
 import com.codingchili.core.Exception.FileReadException;
 
 import static com.codingchili.core.Configuration.Strings.DIR_SERVICES;
@@ -20,7 +20,7 @@ import static com.codingchili.core.Configuration.Strings.DIR_SERVICES;
  */
 @RunWith(VertxUnitRunner.class)
 public class ConfigurationsTest {
-    private static final String PATH_SYSTEM_TEST = "src/test/resources/Configurations/system.json";
+    private static final String PATH_SYSTEM_TEST = Strings.testFile("Configurations", "system.json");
     private static final String NEW_DATA = "new-data";
     private static final String TEST_DATA = "test-data";
 

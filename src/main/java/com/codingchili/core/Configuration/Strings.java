@@ -21,6 +21,7 @@ public class Strings {
     public static final String DIR_CONFIG = "conf/";
     public static final String DIR_SYSTEM = "conf/system/";
     public static final String DIR_SERVICES = "conf/service/";
+    private static final String DIR_TEST = "src/test/resources/";
 
     public static final String EXT_JSON = ".json";
     public static final String ANY = "*";
@@ -188,5 +189,13 @@ public class Strings {
 
     public static String quote(String action) {
         return "'" + action + "'";
+    }
+
+    public static String testDirectory(String name) {
+        return DIR_TEST + name + DIR_SEPARATOR;
+    }
+
+    public static String testFile(String directory, String name) {
+        return testDirectory(directory) + name;
     }
 }
