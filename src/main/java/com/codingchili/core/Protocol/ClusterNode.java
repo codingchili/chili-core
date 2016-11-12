@@ -8,6 +8,9 @@ import com.codingchili.core.Files.Configurations;
 
 /**
  * @author Robin Duda
+ *
+ * A node in the cluster, all startable services should
+ * implement this class for the Launcher to accept it.
  */
 public abstract class ClusterNode implements Verticle {
     protected Vertx vertx;

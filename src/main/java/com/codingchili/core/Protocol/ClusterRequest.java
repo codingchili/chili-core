@@ -10,6 +10,8 @@ import static com.codingchili.core.Configuration.Strings.*;
 
 /**
  * @author Robin Duda
+ *
+ * A request in the cluster.
  */
 public class ClusterRequest implements Request {
     private int timeout = 3000;
@@ -22,6 +24,10 @@ public class ClusterRequest implements Request {
         this.timeout = request.timeout();
     }
 
+    /**
+     * Creates a cluster request from an eventbus message.
+     * @param message the eventbus message
+     */
     public ClusterRequest(Message message) {
         if (message.body() instanceof Buffer) {
             this.buffer = (Buffer) message.body();
@@ -36,8 +42,8 @@ public class ClusterRequest implements Request {
     }
 
     @Override
-    public void error(Throwable e) {
-        message.reply(message(ResponseStatus.ERROR).put(ID_MESSAGE, e.getMessage()));
+    public void error(Throwable exception) {
+        message.reply(message(ResponseStatus.ERROR).put(ID_MESSAGE, exception.getMessage()));
     }
 
     private JsonObject message(ResponseStatus message) {
@@ -51,8 +57,8 @@ public class ClusterRequest implements Request {
     }
 
     @Override
-    public void unauthorized(Throwable e) {
-        message.reply(message(ResponseStatus.UNAUTHORIZED, e));
+    public void unauthorized(Throwable exception) {
+        message.reply(message(ResponseStatus.UNAUTHORIZED, exception));
     }
 
     @Override
@@ -61,22 +67,22 @@ public class ClusterRequest implements Request {
     }
 
     @Override
-    public void missing(Throwable e) {
-        message.reply(message(ResponseStatus.MISSING, e));
+    public void missing(Throwable exception) {
+        message.reply(message(ResponseStatus.MISSING, exception));
     }
 
     @Override
-    public void conflict(Throwable e) {
-        message.reply(message(ResponseStatus.CONFLICT, e));
+    public void conflict(Throwable exception) {
+        message.reply(message(ResponseStatus.CONFLICT, exception));
     }
 
     @Override
-    public void bad(Throwable e) {
-        message.reply(message(ResponseStatus.BAD, e));
+    public void bad(Throwable exception) {
+        message.reply(message(ResponseStatus.BAD, exception));
     }
 
     @Override
-    public String action() {
+    public String route() {
         return json.getString(ID_ACTION);
     }
 
@@ -124,6 +130,9 @@ public class ClusterRequest implements Request {
         return json;
     }
 
+    /**
+     * @return the buffer attached to the requests when sending files.
+     */
     public Buffer buffer() {
         return buffer;
     }

@@ -90,28 +90,28 @@ class RestRouteRequest implements Request {
     }
 
     @Override
-    public void error(Throwable e) {
-        send(ResponseStatus.ERROR, e);
+    public void error(Throwable exception) {
+        send(ResponseStatus.ERROR, exception);
     }
 
     @Override
-    public void unauthorized(Throwable e) {
+    public void unauthorized(Throwable exception) {
         send(ResponseStatus.UNAUTHORIZED);
     }
 
     @Override
-    public void missing(Throwable e) {
-        send(ResponseStatus.MISSING, e);
+    public void missing(Throwable exception) {
+        send(ResponseStatus.MISSING, exception);
     }
 
     @Override
-    public void conflict(Throwable e) {
-        send(ResponseStatus.CONFLICT, e);
+    public void conflict(Throwable exception) {
+        send(ResponseStatus.CONFLICT, exception);
     }
 
     @Override
-    public void bad(Throwable e) {
-        send(ResponseStatus.BAD,e );
+    public void bad(Throwable exception) {
+        send(ResponseStatus.BAD, exception);
     }
 
     @Override
@@ -124,7 +124,7 @@ class RestRouteRequest implements Request {
     }
 
     @Override
-    public String action() {
+    public String route() {
         return data().getString(ID_ACTION);
     }
 

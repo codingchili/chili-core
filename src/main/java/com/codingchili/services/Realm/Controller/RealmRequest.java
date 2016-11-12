@@ -35,10 +35,10 @@ class RealmRequest extends ClusterRequest {
         return Serializer.unpack(data().getJsonObject(ID_ACCOUNT), Account.class);
     }
 
-    public void error(Throwable error) {
+    public void error(Throwable exception) {
         request.write(new JsonObject()
                 .put(PROTOCOL_STATUS, ResponseStatus.ERROR)
-                .put(ID_MESSAGE, error.getMessage()));
+                .put(ID_MESSAGE, exception.getMessage()));
     }
 
     public String instance() {

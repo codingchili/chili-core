@@ -36,7 +36,7 @@ public class InstanceHandler<T extends InstanceContext> extends AbstractHandler<
 
     @Override
     public void handle(Request request) throws CoreException {
-        protocol.get(authenticator(request), request.action()).handle(new InstanceRequest(request));
+        protocol.get(authenticator(request), request.route()).handle(new InstanceRequest(request));
     }
 
     @Override

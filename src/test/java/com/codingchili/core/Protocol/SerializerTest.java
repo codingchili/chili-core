@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Protocol.Serializer;
 import com.codingchili.core.Security.Token;
 import com.codingchili.core.Security.TokenFactory;
 
@@ -17,12 +16,14 @@ import com.codingchili.core.Security.TokenFactory;
  */
 @RunWith(VertxUnitRunner.class)
 public class SerializerTest {
+    private static final String TEST = "test";
+    private static final String SECRET = "secret";
     private Token token;
 
     @Before
     public void setUp() {
-        TokenFactory factory = new TokenFactory("secret".getBytes());
-        token = new Token(factory, "test");
+        TokenFactory factory = new TokenFactory(SECRET.getBytes());
+        token = new Token(factory, TEST);
     }
 
     @Test
@@ -38,7 +39,7 @@ public class SerializerTest {
         String packed = Serializer.pack(token);
         token = Serializer.unpack(packed, Token.class);
 
-        context.assertEquals("test", token.getDomain());
+        context.assertEquals(TEST, token.getDomain());
     }
 
     @Test
@@ -46,14 +47,14 @@ public class SerializerTest {
         String packed = Serializer.pack(token);
         Token token = Serializer.unpack(new JsonObject(packed), Token.class);
 
-        context.assertEquals("test", token.getDomain());
+        context.assertEquals(TEST, token.getDomain());
     }
 
     @Test
     public void testObjectToJson(TestContext context) {
         JsonObject json = Serializer.json(token);
 
-        context.assertEquals("test", json.getString(Strings.ID_DOMAIN));
+        context.assertEquals(TEST, json.getString(Strings.ID_DOMAIN));
     }
 
     @Test

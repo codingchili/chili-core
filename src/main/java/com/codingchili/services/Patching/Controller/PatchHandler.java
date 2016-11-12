@@ -35,7 +35,7 @@ public class PatchHandler<T extends PatchContext> extends AbstractHandler<T> {
 
     @Override
     public void handle(Request request) throws CoreException {
-        protocol.get(AUTHORIZED, request.action()).handle(new PatchRequest(request));
+        protocol.get(AUTHORIZED, request.route()).handle(new PatchRequest(request));
     }
 
     private void patchinfo(PatchRequest request) {

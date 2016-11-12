@@ -94,7 +94,7 @@ public abstract class SystemContext implements CoreContext {
 
     @Override
     public void deploy(AbstractHandler handler) {
-        deploy(new ClusterListener(handler), result -> {
+        deploy(ClusterListener.with(handler), result -> {
             if (result.failed()) {
                 throw new RuntimeException(result.cause());
             }
@@ -117,7 +117,7 @@ public abstract class SystemContext implements CoreContext {
 
     @Override
     public void deploy(AbstractHandler handler, Handler<AsyncResult<String>> result) {
-        vertx.deployVerticle(new ClusterListener(handler), result);
+        vertx.deployVerticle(ClusterListener.with(handler), result);
     }
 
     @Override

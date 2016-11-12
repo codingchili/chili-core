@@ -25,6 +25,6 @@ public class SocialHandler<T extends SocialContext> extends AbstractHandler<T> {
 
     @Override
     public void handle(Request request) throws CoreException {
-        protocol.get(request.action()).handle(request);
+        protocol.get(request.route()).handle(request);
     }
 }

@@ -5,11 +5,23 @@ import io.vertx.core.Future;
 
 /**
  * @author Robin Duda
+ *
+ * Listens for requests addressed to the attached handler and forwards
+ * the requests to it.
  */
 public class ClusterListener extends AbstractVerticle {
     private final AbstractHandler handler;
 
-    public ClusterListener(AbstractHandler handler) {
+    /**
+     * Creates a new ClusterListener with the given handler.
+     * @param handler the handler to be used for received messages.
+     * @return a ClusterListener instance with the handler attached.
+     */
+    public static ClusterListener with(AbstractHandler handler) {
+        return new ClusterListener(handler);
+    }
+
+    private ClusterListener(AbstractHandler handler) {
         this.handler = handler;
     }
 

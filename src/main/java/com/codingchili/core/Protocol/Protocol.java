@@ -32,5 +32,9 @@ public class Protocol<Handler extends RequestHandler> {
         handlers.use(action, handler, access);
         return this;
     }
+
+    public ProtocolMapping list() {
+        return handlers.list();
+    }
 }
 

@@ -1,21 +1,22 @@
-package com.codingchili.core.Protocol;
+package com.codingchili.core.Testing;
 
 import io.vertx.core.json.JsonObject;
 
+import com.codingchili.core.Protocol.Request;
 import com.codingchili.core.Security.Token;
 
 
 /**
  * @author Robin Duda
  */
-public class MockRequest implements Request {
+public class EmptyRequest implements Request {
     @Override
-    public void error(Throwable e) {
+    public void error(Throwable exception) {
 
     }
 
     @Override
-    public void unauthorized(Throwable e) {
+    public void unauthorized(Throwable exception) {
 
     }
 
@@ -30,22 +31,22 @@ public class MockRequest implements Request {
     }
 
     @Override
-    public void missing(Throwable e) {
+    public void missing(Throwable exception) {
 
     }
 
     @Override
-    public void conflict(Throwable e) {
+    public void conflict(Throwable exception) {
 
     }
 
     @Override
-    public void bad(Throwable e) {
+    public void bad(Throwable exception) {
 
     }
 
     @Override
-    public String action() {
+    public String route() {
         return null;
     }
 

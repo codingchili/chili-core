@@ -9,15 +9,17 @@ import org.junit.runner.RunWith;
 
 import com.codingchili.core.Exception.AuthorizationRequiredException;
 import com.codingchili.core.Exception.HandlerMissingException;
+import com.codingchili.core.Testing.EmptyRequest;
 
-import static com.codingchili.core.Protocol.Access.AUTHORIZED;
-import static com.codingchili.core.Protocol.Access.PUBLIC;
+import static com.codingchili.core.Protocol.Access.*;
 
 /**
  * @author Robin Duda
  */
 @RunWith(VertxUnitRunner.class)
 public class ProtocolTest {
+    private static final String TEST = "test";
+    private static final String ANOTHER = "another";
     private Protocol<RequestHandler<Request>> protocol;
 
     @Before
@@ -26,39 +28,39 @@ public class ProtocolTest {
     }
 
     @Test
-    public void testHandlerMissing(TestContext context) throws Exception {
-        Async async = context.async();
+    public void testHandlerMissing(TestContext test) throws Exception {
+        Async async = test.async();
 
         try {
-            protocol.use("test", Request::accept, PUBLIC)
-                    .get(PUBLIC, "another").handle(new MockRequest());
+            protocol.use(TEST, Request::accept, PUBLIC)
+                    .get(PUBLIC, ANOTHER).handle(new EmptyRequest());
 
-            context.fail("Should throw handler missing exception.");
+            test.fail("Should throw handler missing exception.");
         } catch (HandlerMissingException e) {
             async.complete();
         }
     }
 
     @Test
-    public void testPrivateRouteNoAccess(TestContext context) throws Exception {
-        Async async = context.async();
+    public void testPrivateRouteNoAccess(TestContext test) throws Exception {
+        Async async = test.async();
 
         try {
-            protocol.use("test", Request::accept, AUTHORIZED)
-                    .get(PUBLIC, "test").handle(new MockRequest());
+            protocol.use(TEST, Request::accept, AUTHORIZED)
+                    .get(PUBLIC, TEST).handle(new EmptyRequest());
 
-            context.fail("Should throw authorization exception.");
+            test.fail("Should throw authorization exception.");
         } catch (AuthorizationRequiredException e) {
             async.complete();
         }
     }
 
     @Test
-    public void testPublicRouteWithAccess(TestContext context) throws Exception {
-        Async async = context.async();
+    public void testPublicRouteWithAccess(TestContext test) throws Exception {
+        Async async = test.async();
 
-        protocol.use("test", Request::accept, PUBLIC)
-                .get(PUBLIC, "test").handle(new MockRequest() {
+        protocol.use(TEST, Request::accept, PUBLIC)
+                .get(PUBLIC, TEST).handle(new EmptyRequest() {
             @Override
             public void accept() {
                 async.complete();
@@ -67,11 +69,11 @@ public class ProtocolTest {
     }
 
     @Test
-    public void testPrivateRoute(TestContext context) throws Exception {
-        Async async = context.async();
+    public void testPrivateRoute(TestContext test) throws Exception {
+        Async async = test.async();
 
-        protocol.use("test", Request::accept, AUTHORIZED)
-                .get(AUTHORIZED, "test").handle(new MockRequest() {
+        protocol.use(TEST, Request::accept, AUTHORIZED)
+                .get(AUTHORIZED, TEST).handle(new EmptyRequest() {
             @Override
             public void accept() {
                 async.complete();
@@ -80,15 +82,29 @@ public class ProtocolTest {
     }
 
     @Test
-    public void testPublicRoute(TestContext context) throws Exception {
-        Async async = context.async();
+    public void testPublicRoute(TestContext test) throws Exception {
+        Async async = test.async();
 
-        protocol.use("test", Request::accept, PUBLIC)
-                .get(PUBLIC, "test").handle(new MockRequest() {
+        protocol.use(TEST, Request::accept, PUBLIC)
+                .get(PUBLIC, TEST).handle(new EmptyRequest() {
             @Override
             public void accept() {
                 async.complete();
             }
         });
+    }
+
+    @Test
+    public void testListRoutes(TestContext test) {
+        protocol.use(TEST, Request::accept, PUBLIC)
+                .use(ANOTHER, Request::accept, AUTHORIZED);
+
+        ProtocolMapping mapping = protocol.list();
+
+        test.assertEquals(2, mapping.getRoutes().size());
+        test.assertEquals(AUTHORIZED, mapping.getRoutes().get(0).getAccess());
+        test.assertEquals(ANOTHER, mapping.getRoutes().get(0).getAction());
+        test.assertEquals(PUBLIC, mapping.getRoutes().get(1).getAccess());
+        test.assertEquals(TEST, mapping.getRoutes().get(1).getAction());
     }
 }

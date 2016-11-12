@@ -6,6 +6,8 @@ import static com.codingchili.core.Protocol.ResponseStatus.ACCEPTED;
 
 /**
  * @author Robin Duda
+ *
+ * Basic form of a request response.
  */
 public class ProtocolMessage {
     private ResponseStatus status = ACCEPTED;

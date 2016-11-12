@@ -1,12 +1,14 @@
 package com.codingchili.core.Protocol;
 
-import java.util.HashMap;
+import java.util.*;
 
 import com.codingchili.core.Exception.AuthorizationRequiredException;
 import com.codingchili.core.Exception.HandlerMissingException;
 
 /**
  * @author Robin Duda
+ *
+ * Handles authorization for a protoocol.
  */
 class AuthorizationHandler<T> {
     private final HashMap<String, T> authorized = new HashMap<>();
@@ -23,7 +25,7 @@ class AuthorizationHandler<T> {
         }
     }
 
-    public T get(String action, Access access) throws AuthorizationRequiredException, HandlerMissingException {
+    T get(String action, Access access) throws AuthorizationRequiredException, HandlerMissingException {
         switch (access) {
             case PUBLIC:
                 return unauthorized(action);
@@ -34,7 +36,7 @@ class AuthorizationHandler<T> {
         }
     }
 
-    public boolean contains(String action) {
+    boolean contains(String action) {
         return (authorized.containsKey(action) || unauthorized.containsKey(action));
     }
 
@@ -58,10 +60,11 @@ class AuthorizationHandler<T> {
         }
     }
 
-    public HashMap<String, T> list() {
-        HashMap<String, T> list = new HashMap<>();
-        list.putAll(authorized);
-        list.putAll(unauthorized);
+    ProtocolMapping list() {
+        ProtocolMapping list = new ProtocolMapping();
+
+        authorized.entrySet().forEach(entry -> list.add(entry.getKey(), Access.AUTHORIZED));
+        unauthorized.entrySet().forEach(entry -> list.add(entry.getKey(), Access.PUBLIC));
         return list;
     }
 }

@@ -43,7 +43,7 @@ public class ClientHandler<T extends AuthContext> extends AbstractHandler<T> {
 
     @Override
     public void handle(Request request) throws CoreException {
-        protocol.get(authenticate(request), request.action()).handle(new ClientRequest(request));
+        protocol.get(authenticate(request), request.route()).handle(new ClientRequest(request));
     }
 
     private void realmToken(ClientRequest request) {

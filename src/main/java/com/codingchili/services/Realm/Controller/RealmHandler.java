@@ -154,7 +154,7 @@ public class RealmHandler<T extends RealmContext> extends AbstractHandler<T> {
 
     @Override
     public void handle(Request request) throws CoreException {
-        protocol.get(authenticator(request), request.action()).handle(new RealmRequest(request));
+        protocol.get(authenticator(request), request.route()).handle(new RealmRequest(request));
     }
 
     @Override

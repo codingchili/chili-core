@@ -12,6 +12,8 @@ import com.codingchili.core.Testing.ContextMock;
 
 /**
  * @author Robin Duda
+ *
+ * Verifies the console logger can write.
  */
 @RunWith(VertxUnitRunner.class)
 public class ConsoleLoggerTest {

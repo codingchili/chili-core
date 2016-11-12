@@ -13,6 +13,8 @@ import static com.codingchili.core.Configuration.Strings.*;
 
 /**
  * @author Robin Duda
+ *
+ * Verifies the creation of logging events in DefaultLogger.
  */
 @RunWith(VertxUnitRunner.class)
 public class DefaultLoggerTest {

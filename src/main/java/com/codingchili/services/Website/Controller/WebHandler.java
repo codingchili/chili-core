@@ -30,9 +30,9 @@ public class WebHandler<T extends WebserverContext> extends AbstractHandler<T> {
 
     private void serve(Request request) {
         try {
-            String file = request.action();
+            String file = request.route();
 
-            if (request.action().equals(DIR_ROOT)) {
+            if (request.route().equals(DIR_ROOT)) {
                 file = context.getStartPage();
                 context.onPageLoaded(request);
             }
@@ -50,7 +50,7 @@ public class WebHandler<T extends WebserverContext> extends AbstractHandler<T> {
     @Override
     public void handle(Request request) throws AuthorizationRequiredException {
         try {
-            protocol.get(Access.PUBLIC, request.action()).handle(request);
+            protocol.get(Access.PUBLIC, request.route()).handle(request);
         } catch (HandlerMissingException e) {
             serve(request);
         }

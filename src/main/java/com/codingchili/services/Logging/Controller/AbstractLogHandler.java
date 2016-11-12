@@ -32,10 +32,10 @@ abstract class AbstractLogHandler<T extends LogContext> extends AbstractHandler<
     @Override
     public void handle(Request request) throws CoreException {
         try {
-            protocol.get(AUTHORIZED, request.action()).handle(request);
+            protocol.get(AUTHORIZED, request.route()).handle(request);
         } catch (HandlerMissingException e) {
-            console.onHandlerMissing(request.action());
-            elastic.onHandlerMissing(request.action());
+            console.onHandlerMissing(request.route());
+            elastic.onHandlerMissing(request.route());
         }
     }
 

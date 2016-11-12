@@ -42,7 +42,7 @@ public class AuthenticationHandler<T extends AuthContext> extends AbstractHandle
 
     @Override
     public void handle(Request request) throws AuthorizationRequiredException, HandlerMissingException {
-        protocol.get(authenticate(request), request.action()).handle(new AuthenticationRequest(request));
+        protocol.get(authenticate(request), request.route()).handle(new AuthenticationRequest(request));
     }
 
     private void update(AuthenticationRequest request) {
