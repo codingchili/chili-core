@@ -115,9 +115,6 @@ public class CachedFileStore<T> implements FileStoreListener {
 
     @SuppressWarnings("unchecked")
     public T getFile(String path) throws FileMissingException {
-
-        files.keySet().stream().forEach(System.out::println);
-
         Buffer buffer = files.get(path);
 
         if (buffer != null) {
