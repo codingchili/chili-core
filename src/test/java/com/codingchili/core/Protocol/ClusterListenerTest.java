@@ -15,6 +15,8 @@ import com.codingchili.core.Testing.EmptyRequest;
 
 /**
  * @author Robin Duda
+ *
+ * Tests the cluster listener.
  */
 @RunWith(VertxUnitRunner.class)
 public class ClusterListenerTest {

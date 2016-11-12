@@ -15,6 +15,8 @@ import static com.codingchili.core.Protocol.Access.*;
 
 /**
  * @author Robin Duda
+ *
+ * Tests the protocol class and its authorization mechanism.
  */
 @RunWith(VertxUnitRunner.class)
 public class ProtocolTest {

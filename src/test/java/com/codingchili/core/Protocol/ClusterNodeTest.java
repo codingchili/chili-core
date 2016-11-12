@@ -13,6 +13,8 @@ import static com.codingchili.core.Configuration.Strings.ERROR_CLUSTERING_REQUIR
 
 /**
  * @author Robin Duda
+ *
+ * Tests the clusternode class to require clustering.
  */
 @RunWith(VertxUnitRunner.class)
 public class ClusterNodeTest {
