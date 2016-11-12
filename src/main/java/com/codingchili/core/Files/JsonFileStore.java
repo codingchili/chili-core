@@ -96,6 +96,11 @@ public abstract class JsonFileStore {
         return Paths.get("").toAbsolutePath().normalize().toString();
     }
 
+    /**
+     * Deletes the file at the given path.
+     * @param path to the file to be deleted.
+     * @return true if the file was deleted successfully.
+     */
     static boolean deleteObject(String path) {
         File file = new File(path);
         return file.delete();

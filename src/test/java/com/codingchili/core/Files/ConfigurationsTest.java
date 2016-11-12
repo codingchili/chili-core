@@ -5,8 +5,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.IOException;
+
 import com.codingchili.core.Configuration.*;
-import com.codingchili.core.Configuration.System.SystemSettings;
 import com.codingchili.core.Exception.FileReadException;
 
 import static com.codingchili.core.Configuration.Strings.DIR_SERVICES;
@@ -20,13 +21,27 @@ import static com.codingchili.core.Configuration.Strings.DIR_SERVICES;
  */
 @RunWith(VertxUnitRunner.class)
 public class ConfigurationsTest {
-    private static final String PATH_SYSTEM_TEST = Strings.testFile("Configurations", "system.json");
     private static final String NEW_DATA = "new-data";
     private static final String TEST_DATA = "test-data";
 
     @Test
-    public void loadVertxConfiguration() {
-        Assert.assertNotNull(load(PATH_SYSTEM_TEST, SystemSettings.class));
+    public void loadLauncherConfiguration() throws IOException {
+        Assert.assertNotNull(Configurations.launcher());
+    }
+
+    @Test
+    public void loadValidatorConfiguration() {
+        Assert.assertNotNull(Configurations.validator());
+    }
+
+    @Test
+    public void loadSystemConfiguration() {
+        Assert.assertNotNull(Configurations.system());
+    }
+
+    @Test
+    public void loadSecurityConfiguration() {
+        Assert.assertNotNull(Configurations.security());
     }
 
     @Test

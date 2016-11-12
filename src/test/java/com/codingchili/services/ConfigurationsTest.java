@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import com.codingchili.core.Configuration.Configurable;
-import com.codingchili.core.Configuration.System.LauncherSettings;
 import com.codingchili.core.Files.Configurations;
 import com.codingchili.core.Files.JsonFileStore;
 import com.codingchili.core.Protocol.Serializer;
@@ -144,11 +143,6 @@ public class ConfigurationsTest {
     @Test
     public void loadPatchingConfiguration() {
         Assert.assertNotNull(load(PATH_PATCHSERVER, PatchServerSettings.class));
-    }
-
-    @Test
-    public void loadLauncherConfiguration() {
-        Assert.assertNotNull(load(PATH_LAUNCHER, LauncherSettings.class));
     }
 
     private Configurable load(String path, Class clazz) {
