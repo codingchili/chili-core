@@ -17,6 +17,8 @@ import com.codingchili.core.Protocol.Serializer;
 
 /**
  * @author Robin Duda
+ *
+ * Caches files from disk in memory and reloads them on change.
  */
 public class CachedFileStore<T> implements FileStoreListener {
     private static final HashMap<String, CachedFileStore> stores = new HashMap<>();
@@ -24,22 +26,28 @@ public class CachedFileStore<T> implements FileStoreListener {
     private final CachedFileStoreSettings settings;
     private final SystemContext context;
 
-
     /**
      * Maintain a singleton for each root directory.
      */
-    public static CachedFileStore instance(SystemContext context, CachedFileStoreSettings settings) {
+    @SuppressWarnings("unchecked")
+    public static <T> CachedFileStore<T> instance(SystemContext context, CachedFileStoreSettings settings) {
         CachedFileStore store = stores.get(settings.getDirectory());
 
         if (store == null) {
-            stores.put(settings.getDirectory(), new CachedFileStore(context, settings));
+            stores.put(settings.getDirectory(), new CachedFileStore<T>(context, settings));
         } else {
             if (!store.settings.equals(settings)) {
                 context.console().onError(new ConfigurationMismatchException());
             }
         }
+        return (CachedFileStore<T>) stores.get(settings.getDirectory());
+    }
 
-        return stores.get(settings.getDirectory());
+    /**
+     * Unloads all loaded files.
+     */
+    public static void reset() {
+        stores.clear();
     }
 
     protected CachedFileStore(SystemContext context, CachedFileStoreSettings settings) {
