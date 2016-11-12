@@ -2,9 +2,18 @@ package com.codingchili.core.Logging;
 
 /**
  * @author Robin Duda
+ *
+ * Interface for text-only logger.
  */
-public interface StringLogger {
-    StringLogger log(String line);
+interface StringLogger {
+    /**
+     * @param line the text line to be logged.
+     */
+    Logger log(String line);
 
-    StringLogger log(String line, Level level);
+    /**
+     * @param line the text line to be logged.
+     * @param level the logging level to log with.
+     */
+    Logger log(String line, Level level);
 }

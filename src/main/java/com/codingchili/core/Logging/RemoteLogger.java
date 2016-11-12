@@ -9,6 +9,8 @@ import static com.codingchili.services.Shared.Strings.NODE_LOGGING;
 
 /**
  * @author Robin Duda
+ *
+ * A logger that logs to a remote host.
  */
 public class RemoteLogger extends DefaultLogger {
     private final DeliveryOptions options;

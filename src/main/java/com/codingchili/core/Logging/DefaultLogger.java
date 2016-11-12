@@ -15,12 +15,13 @@ import static com.codingchili.core.Configuration.Strings.*;
 
 /**
  * @author Robin Duda
- *         Default logging implementation.
+ *
+ * Default logging implementation.
  */
 public abstract class DefaultLogger extends Handler implements Logger {
+    private Level level;
     CoreContext context;
     JsonLogger logger;
-    private Level level;
 
     protected DefaultLogger() {
     }
@@ -29,6 +30,7 @@ public abstract class DefaultLogger extends Handler implements Logger {
         this.context = context;
     }
 
+    @Override
     public Logger log(JsonObject json) {
         logger.log(json
                 .put(PROTOCOL_ACTION, PROTOCOL_LOGGING)
@@ -40,6 +42,7 @@ public abstract class DefaultLogger extends Handler implements Logger {
         return event(name, Level.INFO);
     }
 
+    @Override
     public JsonObject event(String name, Level level) {
         JsonObject event = new JsonObject()
                 .put(PROTOCOL_ACTION, PROTOCOL_LOGGING)

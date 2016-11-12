@@ -12,6 +12,8 @@ import static com.codingchili.core.Configuration.Strings.*;
 
 /**
  * @author Robin Duda
+ *
+ * Implementation of a console logger.
  */
 public class ConsoleLogger extends DefaultLogger implements StringLogger {
     private static final String RESET = "\u001B[0m";
