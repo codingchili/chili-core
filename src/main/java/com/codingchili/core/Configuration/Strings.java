@@ -198,4 +198,8 @@ public class Strings {
     public static String testFile(String directory, String name) {
         return testDirectory(directory) + name;
     }
+
+    public static String getSystemNotInitialized(String name) {
+        return "System '" + name + "' has not been initialized!";
+    }
 }

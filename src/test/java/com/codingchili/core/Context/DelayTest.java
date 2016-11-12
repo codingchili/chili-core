@@ -9,6 +9,7 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 
 import com.codingchili.core.Configuration.System.SystemSettings;
+import com.codingchili.core.Exception.SystemNotInitializedException;
 import com.codingchili.core.Testing.ContextMock;
 
 /**
@@ -60,5 +61,15 @@ public class DelayTest {
         future.setHandler(result -> async.complete());
 
         Delay.forShutdown(future);
+    }
+
+    @Test
+    public void testDelayNotInitialized(TestContext test) {
+        try {
+            Delay.initialize(null);
+            Delay.forMS(Future.future(), 1);
+        } catch (SystemNotInitializedException e) {
+            test.assertTrue(e.getMessage().contains(Delay.class.getSimpleName()));
+        }
     }
 }

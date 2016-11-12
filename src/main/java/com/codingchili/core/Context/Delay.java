@@ -3,6 +3,8 @@ package com.codingchili.core.Context;
 import io.vertx.core.Future;
 import io.vertx.ext.unit.Async;
 
+import com.codingchili.core.Exception.SystemNotInitializedException;
+
 /**
  * @author Robin Duda
  *
@@ -19,8 +21,16 @@ public class Delay {
         Delay.context = context;
     }
 
+    private static CoreContext context() {
+        if (context == null) {
+            throw new SystemNotInitializedException(Delay.class);
+        } else {
+            return context;
+        }
+    }
+
     private static void future(Future future, long ms) {
-        context.timer(ms, handler -> {
+        context().timer(ms, handler -> {
             future.complete();
         });
     }
@@ -31,7 +41,7 @@ public class Delay {
      * @param ms milliseconds to wait before completing the async.
      */
     public static void forMS(Async async, long ms) {
-        context.timer(ms, handler -> {
+        context().timer(ms, handler -> {
             async.complete();
         });
     }
@@ -50,6 +60,6 @@ public class Delay {
      * @param future the future to be delayed.
      */
     public static void forShutdown(Future<Void> future) {
-        Delay.future(future, context.system().getShutdownLogTimeout());
+        Delay.future(future, context().system().getShutdownLogTimeout());
     }
 }
