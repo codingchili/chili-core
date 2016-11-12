@@ -3,11 +3,16 @@ package com.codingchili.core.Configuration;
 /**
  * @author Robin Duda
  *
- * Simplest form of configurable, only contains the path from where it
- * was loaded.
+ * Represents a basic configurable that is saveable.
  */
 public class BaseConfigurable implements Configurable {
-    private String path;
+    protected String path;
+
+    public BaseConfigurable() {}
+
+    public BaseConfigurable(String path) {
+        this.path = path;
+    }
 
     @Override
     public String getPath() {
@@ -15,7 +20,8 @@ public class BaseConfigurable implements Configurable {
     }
 
     @Override
-    public void setPath(String path) {
+    public BaseConfigurable setPath(String path) {
         this.path = path;
+        return this;
     }
 }

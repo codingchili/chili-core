@@ -4,8 +4,10 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.shareddata.AsyncMap;
 
-import com.codingchili.services.Shared.Strings;
+import com.codingchili.core.Security.ByteComparator;
 import com.codingchili.core.Security.HashHelper;
+
+import com.codingchili.services.Shared.Strings;
 
 /**
  * @author Robin Duda
@@ -60,7 +62,7 @@ public class HazelAccountDB implements AsyncAccountStore {
     @Override
     public void register(Future<Account> future, Account account) {
         Future<String> hashing = Future.future();
-        String salt = HashHelper.generateSalt();
+        String salt = HashHelper.salt();
         AccountMapping mapping = new AccountMapping(account);
 
         hashing.setHandler(hash -> {
@@ -89,7 +91,7 @@ public class HazelAccountDB implements AsyncAccountStore {
         Future<String> hashing = Future.future();
 
         hashing.setHandler(hash -> {
-            boolean verified = HashHelper.compare(hash.result(), authenticated.getHash());
+            boolean verified = ByteComparator.compare(hash.result(), authenticated.getHash());
 
             if (verified) {
                 future.complete(filter(authenticated));

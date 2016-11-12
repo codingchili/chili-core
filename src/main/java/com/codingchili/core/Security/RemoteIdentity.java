@@ -8,10 +8,12 @@ import com.codingchili.core.Configuration.Strings;
 
 /**
  * @author Robin Duda
+ *
+ * Defines a remote identity as the node/service name and the hostname.
  */
 public class RemoteIdentity implements Serializable {
-    private String node;
-    private String host;
+    private String node = "unconfigured";
+    private String host = "unconfigured";
 
     public RemoteIdentity() {}
 

@@ -36,8 +36,8 @@ public class ContextMock extends RealmContext {
         return characters;
     }
 
-    public TokenFactory getClientFactory() {
-        return new TokenFactory(realm.getAuthentication());
+    TokenFactory getClientFactory() {
+        return new TokenFactory(realm.getTokenBytes());
     }
 
     @Override

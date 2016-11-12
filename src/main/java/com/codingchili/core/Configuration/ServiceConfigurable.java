@@ -10,7 +10,7 @@ import com.codingchili.core.Security.RemoteIdentity;
  *
  * Service configurables are loaded by service contexts for use in services.
  */
-public class ServiceConfigurable extends WritableConfigurable {
+public abstract class ServiceConfigurable extends BaseConfigurable {
     private RemoteIdentity identity = new RemoteIdentity("unconfigured", "unconfigured");
 
     @JsonIgnore

@@ -2,16 +2,17 @@ package com.codingchili.core.Security;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
+import java.util.Base64;
 
 import com.codingchili.core.Exception.TokenException;
 
 /**
  * @author Robin Duda
- *         berifies and generates tokens for access.
+ *
+ * Verifies and generates tokens for access.
  */
 public class TokenFactory {
     private final byte[] secret;
@@ -21,30 +22,6 @@ public class TokenFactory {
         this.secret = secret;
     }
 
-    public TokenFactory(Token authentication) {
-        this.secret = authentication.getKey().getBytes();
-    }
-
-    /**
-     * Checks if a token and its parameters is valid against the secret.
-     *
-     * @param token  hex encoded token to be verified.
-     * @param domain context name of the requestor.
-     * @param expiry the unix epoch time in which it is expired.
-     * @return true if the token is accepted.
-     */
-    private boolean verifyToken(String token, String domain, Long expiry) {
-        if (expiry > Instant.now().getEpochSecond()) {
-            try {
-                byte[] result = DatatypeConverter.printHexBinary(generateToken(domain, expiry)).getBytes();
-
-                return constantTimeCompare(result, token.toUpperCase().getBytes());
-            } catch (NoSuchAlgorithmException | InvalidKeyException ignored) {
-            }
-        }
-        return false;
-    }
-
     /**
      * @param token Containing token data.
      * @return true if the token is accepted.
@@ -52,6 +29,26 @@ public class TokenFactory {
      */
     public boolean verifyToken(Token token) {
         return token != null && (verifyToken(token.getKey(), token.getDomain(), token.getExpiry()));
+    }
+
+    /**
+     * Checks if a token and its parameters is valid against the secret.
+     *
+     * @param key hex encoded token to be verified.
+     * @param domain context name of the requestor.
+     * @param expiry the unix epoch time in which it is expired.
+     * @return true if the token is accepted.
+     */
+    private boolean verifyToken(String key, String domain, Long expiry) {
+        if (expiry > Instant.now().getEpochSecond()) {
+            try {
+                byte[] result = Base64.getEncoder().encode(generateToken(domain, expiry));
+
+                return ByteComparator.compare(result, key.getBytes());
+            } catch (NoSuchAlgorithmException | InvalidKeyException ignored) {
+            }
+        }
+        return false;
     }
 
     private byte[] generateToken(String domain, Long expiry) throws NoSuchAlgorithmException, InvalidKeyException {
@@ -75,21 +72,9 @@ public class TokenFactory {
      */
     String signToken(String domain, long expiry) throws TokenException {
         try {
-            return DatatypeConverter.printHexBinary(generateToken(domain, expiry));
+            return Base64.getEncoder().encodeToString(generateToken(domain, expiry));
         } catch (InvalidKeyException | NoSuchAlgorithmException e) {
             throw new TokenException();
         }
-    }
-
-    private boolean constantTimeCompare(byte[] first, byte[] second) {
-        int result = 0;
-
-        if (first.length != second.length)
-            return false;
-
-        for (int i = 0; i < first.length; i++)
-            result |= (first[i] ^ second[i]);
-
-        return result == 0;
     }
 }

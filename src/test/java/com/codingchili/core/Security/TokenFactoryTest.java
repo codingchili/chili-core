@@ -5,11 +5,11 @@ import org.junit.*;
 import java.time.Instant;
 
 import com.codingchili.core.Exception.TokenException;
-import com.codingchili.core.Security.Token;
-import com.codingchili.core.Security.TokenFactory;
 
 /**
  * @author Robin Duda
+ *         <p>
+ *         Tests for the Token Factory
  */
 public class TokenFactoryTest {
     private TokenFactory tokenFactory;
@@ -18,7 +18,7 @@ public class TokenFactoryTest {
     private byte[] secret2 = "the_secret_2".getBytes();
     private String domain = "domain";
     private String domain2 = "domain2";
-    private Long now = Instant.now().toEpochMilli();
+    private Long now = Instant.now().getEpochSecond();
 
     @Before
     public void setUp() {
@@ -62,9 +62,12 @@ public class TokenFactoryTest {
     }
 
     @Test
-    public void failVerifyOutDatedToken() {
-        Token token = new Token(tokenFactory, domain);
-        token.setExpiry(now - 5000);
+    public void failVerifyOutDatedToken() throws TokenException {
+        String key = tokenFactory.signToken(domain, now - 10);
+        Token token = new Token()
+                .setDomain(domain)
+                .setKey(key)
+                .setExpiry(now - 10);
 
         Assert.assertFalse(tokenFactory.verifyToken(token));
     }

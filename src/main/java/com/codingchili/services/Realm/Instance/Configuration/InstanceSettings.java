@@ -6,8 +6,7 @@ import com.codingchili.core.Configuration.BaseConfigurable;
 
 import com.codingchili.services.Realm.Instance.Model.*;
 
-import static com.codingchili.services.Shared.Strings.EXT_JSON;
-import static com.codingchili.services.Shared.Strings.PATH_INSTANCE;
+import static com.codingchili.services.Shared.Strings.*;
 
 /**
  * @author Robin Duda

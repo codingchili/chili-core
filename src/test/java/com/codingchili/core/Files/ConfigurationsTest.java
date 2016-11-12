@@ -1,5 +1,6 @@
 package com.codingchili.core.Files;
 
+import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Assert;
 import org.junit.Test;
@@ -7,7 +8,8 @@ import org.junit.runner.RunWith;
 
 import java.io.IOException;
 
-import com.codingchili.core.Configuration.*;
+import com.codingchili.core.Configuration.Configurable;
+import com.codingchili.core.Configuration.TestConfigurable;
 import com.codingchili.core.Exception.FileReadException;
 
 import static com.codingchili.core.Configuration.Strings.DIR_SERVICES;
@@ -15,12 +17,13 @@ import static com.codingchili.core.Configuration.Strings.DIR_SERVICES;
 
 /**
  * @author Robin Duda
- *
- * Most configuration files are mocked during test, this suite
- * verifies that the configuration files exists and are loaded correctly.
+ *         <p>
+ *         Most configuration files are mocked during test, this suite
+ *         verifies that the configuration files exists and are loaded correctly.
  */
 @RunWith(VertxUnitRunner.class)
 public class ConfigurationsTest {
+    private static final String TEST_PATH = "/test";
     private static final String NEW_DATA = "new-data";
     private static final String TEST_DATA = "test-data";
 
@@ -47,7 +50,7 @@ public class ConfigurationsTest {
     @Test
     public void loadMissingFile() {
         try {
-            load("x", TestConfig.class);
+            load("x", TestConfigurable.class);
             throw new RuntimeException("Should throw FileReadEx on missing file.");
         } catch (FileReadException ignored) {
         }
@@ -55,10 +58,10 @@ public class ConfigurationsTest {
 
     @Test
     public void reloadSingleFile() {
-        TestConfig config = new TestConfig();
+        TestConfigurable config = new TestConfigurable();
 
         Configurations.save(config);
-        config = Configurations.get(config.getPath(), TestConfig.class);
+        config = Configurations.get(config.getPath(), TestConfigurable.class);
 
         config.setData(NEW_DATA);
         Configurations.save(config);
@@ -66,32 +69,32 @@ public class ConfigurationsTest {
 
         Configurations.reload(config.getPath());
 
-        config = Configurations.get(config.getPath(), TestConfig.class);
+        config = Configurations.get(config.getPath(), TestConfigurable.class);
 
         Assert.assertTrue(config.getData().equals(NEW_DATA));
     }
 
     @Test
     public void fileCachedAndNotAlwaysReloaded() {
-        TestConfig config = new TestConfig();
+        TestConfigurable config = new TestConfigurable();
 
         Configurations.save(config);
-        config = Configurations.get(config.getPath(), TestConfig.class);
+        config = Configurations.get(config.getPath(), TestConfigurable.class);
 
         config.setData(NEW_DATA);
         Configurations.save(config);
         config.setData(TEST_DATA);    // restore memory copy
-        config = Configurations.get(config.getPath(), TestConfig.class);
+        config = Configurations.get(config.getPath(), TestConfigurable.class);
 
         Assert.assertFalse(config.getData().equals(NEW_DATA));
     }
 
     @Test
     public void saveAConfigurableToFile() {
-        TestConfig config = new TestConfig();
+        TestConfigurable config = new TestConfigurable();
 
         Configurations.save(config);
-        config = Configurations.get(config.getPath(), TestConfig.class);
+        config = Configurations.get(config.getPath(), TestConfigurable.class);
 
         Assert.assertTrue(config.getData().equals(TEST_DATA));
     }
@@ -127,6 +130,17 @@ public class ConfigurationsTest {
         Assert.assertFalse(Configurations.loaded().stream()
                 .map(Configurable::getPath)
                 .anyMatch(config -> true));
+    }
+
+    @Test
+    public void testPutConfiguration(TestContext test) {
+        TestConfigurable configurable = new TestConfigurable(TEST_PATH);
+        configurable.setData(NEW_DATA);
+
+        Configurations.put(configurable);
+
+        TestConfigurable loaded = Configurations.get(TEST_PATH, TestConfigurable.class);
+        test.assertEquals(NEW_DATA, loaded.getData());
     }
 
     private Configurable load(String path, Class clazz) {

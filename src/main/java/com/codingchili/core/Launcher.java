@@ -19,14 +19,18 @@ import static com.codingchili.core.Configuration.Strings.*;
 
 /**
  * @author Robin Duda
- *         Launches all the components of the system on a single host.
+ *
+ * Launches all the components of the system on a single host.
  */
 public class Launcher extends ClusterNode {
     private static final ConsoleLogger logger = new ConsoleLogger();
     private static List<String> nodes = new ArrayList<>();
     private static SystemContext context;
 
-
+    /**
+     * Starts the launcher with the given arguments.
+     * @param args specifies which commands the launcher will execute.
+     */
     public static void main(String[] args) {
         new Launcher(new LaunchContext(args));
     }

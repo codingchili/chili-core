@@ -10,7 +10,7 @@ import com.codingchili.core.Exception.SystemNotInitializedException;
  *
  * Delays given futures to allow for cleanup or to implement backoff timers.
  */
-public class Delay {
+public abstract class Delay {
     private static CoreContext context;
 
     /**

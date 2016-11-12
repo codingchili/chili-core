@@ -1,16 +1,14 @@
 package com.codingchili.services.Realm.Instance.Model;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
-import com.codingchili.core.Configuration.Configurable;
+import com.codingchili.core.Configuration.AttributeConfigurable;
 
 /**
  * @author Robin Duda
  *         Model for player classes.
  */
-public class PlayerClass implements Serializable, Configurable {
-    private String path;
+public class PlayerClass extends AttributeConfigurable {
     private String name;
     private String description;
     private ArrayList<Spell> spells;
@@ -56,15 +54,5 @@ public class PlayerClass implements Serializable, Configurable {
 
     public void setWeapons(ArrayList<String> weapons) {
         this.weapons = weapons;
-    }
-
-    @Override
-    public String getPath() {
-        return path;
-    }
-
-    @Override
-    public void setPath(String path) {
-        this.path = path;
     }
 }

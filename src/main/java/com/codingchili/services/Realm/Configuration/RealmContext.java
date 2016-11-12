@@ -82,7 +82,7 @@ public class RealmContext extends ServiceContext {
     }
 
     public boolean verifyToken(Token token) {
-        return new TokenFactory(realm().getAuthentication()).verifyToken(token);
+        return new TokenFactory(realm().getTokenBytes()).verifyToken(token);
     }
 
     public int updateRate() {

@@ -12,6 +12,8 @@ import com.codingchili.core.Files.Configurations;
 
 /**
  * @author Robin Duda
+ *
+ * Validates the contents of a json object according to the validation configuration.
  */
 public class Validator {
     private static final int MIN = 0;

@@ -15,7 +15,7 @@ import static com.codingchili.core.Configuration.Strings.*;
 /**
  * @author Robin Duda
  */
-public class RequestMock {
+public abstract class RequestMock {
 
     public static ClusterRequestMock get(String route, ResponseListener listener, JsonObject json) {
         return new ClusterRequestMock(new MessageMock(route, listener, json));

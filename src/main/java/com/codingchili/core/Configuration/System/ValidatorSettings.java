@@ -2,14 +2,14 @@ package com.codingchili.core.Configuration.System;
 
 import java.util.Map;
 
-import com.codingchili.core.Configuration.WritableConfigurable;
+import com.codingchili.core.Configuration.BaseConfigurable;
 
 /**
  * @author Robin Duda
  *
  * Contains a set of of named validators.
  */
-public class ValidatorSettings extends WritableConfigurable {
+public class ValidatorSettings extends BaseConfigurable {
     private Map<String, ParserSettings> validators;
 
     public Map<String, ParserSettings> getValidators() {

@@ -19,7 +19,7 @@ import static com.codingchili.core.Configuration.Strings.*;
  * Default logging implementation.
  */
 public abstract class DefaultLogger extends Handler implements Logger {
-    private Level level;
+    private Level level = Level.INFO;
     CoreContext context;
     JsonLogger logger;
 

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.HashMap;
 import java.util.List;
 
-import com.codingchili.core.Configuration.Configurable;
+import com.codingchili.core.Configuration.BaseConfigurable;
 
 import static com.codingchili.core.Configuration.Strings.PATH_LAUNCHER;
 
@@ -14,11 +14,14 @@ import static com.codingchili.core.Configuration.Strings.PATH_LAUNCHER;
  *
  * Contains the settings for the launcher.
  */
-public class LauncherSettings implements Configurable {
+public class LauncherSettings extends BaseConfigurable {
     private String version;
-    private String path = PATH_LAUNCHER;
     private HashMap<String, List<String>> blocks;
     private HashMap<String, String> hosts = new HashMap<>();
+
+    public LauncherSettings() {
+        super(PATH_LAUNCHER);
+    }
 
     public String getVersion() {
         return version;
@@ -52,15 +55,5 @@ public class LauncherSettings implements Configurable {
     @JsonIgnore
     public HashMap<String, List<String>> blocks() {
         return getBlocks();
-    }
-
-    @Override
-    public String getPath() {
-        return path;
-    }
-
-    @Override
-    public void setPath(String path) {
-        this.path = path;
     }
 }

@@ -13,8 +13,9 @@ import static com.codingchili.core.Configuration.Strings.*;
 
 /**
  * @author Robin Duda
+ *
+ * Tests the validation mechanism.
  */
-
 @RunWith(VertxUnitRunner.class)
 public class ValidatorTest {
     private static Validator validator = new Validator();

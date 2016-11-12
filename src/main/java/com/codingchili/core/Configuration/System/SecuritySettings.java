@@ -3,14 +3,14 @@ package com.codingchili.core.Configuration.System;
 
 import java.util.HashMap;
 
-import com.codingchili.core.Configuration.WritableConfigurable;
+import com.codingchili.core.Configuration.BaseConfigurable;
 
 /**
  * @author Robin Duda
  *
  * Maps services to authentication dependencies.
  */
-public class SecuritySettings extends WritableConfigurable {
+public class SecuritySettings extends BaseConfigurable {
     private HashMap<String, AuthenticationDependency> dependencies = new HashMap<>();
     private int secretBytes;
 

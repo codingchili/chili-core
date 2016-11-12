@@ -36,5 +36,11 @@
     "timeout" : 8000,
     "maxRequestBytes" : 512
   } ],
-  "hidden" : [ "syslog.node" ]
+  "hidden" : [ "syslog.node" ],
+  "global" : "G5ox3EyqFREvKZGlIwKAAgzcu/RJ1t5yql18n3mM7SFQtio0e21mz07WfhUlFumWCZDKtEZuiZ1BgZ6B0JdpnA==",
+  "logging" : {
+    "key" : "l6Zni1+P+4zwH0Nkh/8mmGk4npqxIIMGXdQ2wiFQJStWG/Q+65vdwah9Plu8iG9R6yHgfZV1cRXuGo0L5h5igg==",
+    "expiry" : 1481652213,
+    "domain" : "routing.node@server.1"
+  }
 }

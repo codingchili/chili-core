@@ -13,9 +13,10 @@ import static com.codingchili.core.Files.Configurations.system;
 
 /**
  * @author Robin Duda
- *         Handles the hashing of passwords and the generation
- *         of the salts used in the hashing.
- *         reference: https://crackstation.net/hashing-security.htm#javasourcecode
+ *
+ * Handles the hashing of passwords and the generation
+ * of the salts used in the hashing.
+ * reference: https://crackstation.net/hashing-security.htm#javasourcecode
  */
 
 public class HashHelper {
@@ -26,8 +27,7 @@ public class HashHelper {
     private final WorkerExecutor executor;
 
     public HashHelper(Vertx vertx) {
-        int workers = system().getOptions().getWorkerPoolSize();
-
+        int workers = system().getWorkerPoolSize();
         executor = vertx.createSharedWorkerExecutor("hashhelper.workers", workers);
     }
 
@@ -37,7 +37,7 @@ public class HashHelper {
      * @param password plaintext password to be hashed.
      * @param salt     for the hashing.
      */
-    public static String hash(String password, String salt) {
+    static String hash(String password, String salt) {
         try {
             PBEKeySpec key = new PBEKeySpec(password.toCharArray(), salt.getBytes(), ITERATIONS, KEY_BITS);
             SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(ALGORITHM);
@@ -71,29 +71,9 @@ public class HashHelper {
      *
      * @return A generated salt of 512 bits.
      */
-    public static String generateSalt() {
+    public static String salt() {
         byte[] salt = new byte[SALT_BYTES];
         new SecureRandom().nextBytes(salt);
         return Base64.getEncoder().encodeToString(salt);
-    }
-
-    /**
-     * Constant time comparison of two strings.
-     *
-     * @param hash1 one hash to be compared.
-     * @param hash2 the other hash to compare to.
-     * @return true if the strings match.
-     */
-    public static boolean compare(String hash1, String hash2) {
-        int equals = 0;
-
-        if (hash1.length() != hash2.length())
-            return false;
-
-        for (int i = 0; i < hash1.length(); i++) {
-            equals |= hash1.charAt(i) ^ hash2.charAt(i);
-        }
-
-        return (equals == 0);
     }
 }

@@ -6,7 +6,7 @@ import com.codingchili.core.Configuration.Strings;
 import com.codingchili.core.Configuration.System.LauncherSettings;
 import com.codingchili.core.Exception.NoSuchCommandException;
 import com.codingchili.core.Logging.*;
-import com.codingchili.core.Security.TokenRefresher;
+import com.codingchili.core.Security.AuthenticationGenerator;
 
 import static com.codingchili.core.Configuration.Strings.*;
 
@@ -18,7 +18,7 @@ import static com.codingchili.core.Configuration.Strings.*;
 public class CommandExecutor {
     private final LaunchContext context;
     private final LauncherSettings settings;
-    private Logger logger = new ConsoleLogger();
+    private Logger logger;
     private boolean handled = true;
 
     public CommandExecutor(LaunchContext context) {
@@ -34,18 +34,20 @@ public class CommandExecutor {
     }
 
     private void execute() {
+        AuthenticationGenerator refresher = new AuthenticationGenerator(DIR_CONFIG, logger);
+
         switch (context.args()[0]) {
             case GENERATE_PRESHARED:
-                new TokenRefresher(logger).preshare();
+                refresher.preshare();
                 break;
             case GENERATE_SECRETS:
-                new TokenRefresher(logger).secrets();
+                refresher.secrets();
                 break;
             case GENERATE_TOKENS:
-                new TokenRefresher(logger).tokens();
+                refresher.tokens();
                 break;
             case GENERATE:
-                new TokenRefresher(logger).all();
+                refresher.all();
                 break;
             case HELP:
                 help();

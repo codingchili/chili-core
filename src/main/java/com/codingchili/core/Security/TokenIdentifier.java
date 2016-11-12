@@ -2,10 +2,19 @@ package com.codingchili.core.Security;
 
 /**
  * @author Robin Duda
+ *
+ *
  */
 public class TokenIdentifier {
     private String service;
     private String secret;
+
+    public TokenIdentifier() {}
+
+    public TokenIdentifier(String service, String secret) {
+        this.service = service;
+        this.secret = secret;
+    }
 
     public String getService() {
         return service;

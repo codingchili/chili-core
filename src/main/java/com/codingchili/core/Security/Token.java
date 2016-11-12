@@ -7,7 +7,8 @@ import com.codingchili.core.Configuration.Strings;
 
 /**
  * @author Robin Duda
- *         used to request authentication by token.
+ *
+ * Used to authenticate requests between services.
  */
 public class Token implements Serializable {
     private String key;
@@ -24,7 +25,7 @@ public class Token implements Serializable {
     public Token(TokenFactory factory, String domain) {
         try {
             this.domain = domain;
-            this.expiry = Instant.now().getEpochSecond() + 3600 * 24 * 31;
+            this.expiry = Instant.now().getEpochSecond() + 3600 * 24 * 7;
             this.key = factory.signToken(domain, this.expiry);
         } catch (Throwable e) {
             throw new RuntimeException(Strings.ERROR_TOKEN_FACTORY);
@@ -44,8 +45,9 @@ public class Token implements Serializable {
         return expiry;
     }
 
-    public void setExpiry(long expiry) {
+    public Token setExpiry(long expiry) {
         this.expiry = expiry;
+        return this;
     }
 
     public String getDomain() {

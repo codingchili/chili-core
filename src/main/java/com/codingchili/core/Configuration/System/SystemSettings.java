@@ -4,14 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.metrics.MetricsOptions;
 
-import com.codingchili.core.Configuration.WritableConfigurable;
+import com.codingchili.core.Configuration.BaseConfigurable;
 
 /**
  * @author Robin Duda
  *
  * Contains settings for the core system.
  */
-public class SystemSettings extends WritableConfigurable {
+public class SystemSettings extends BaseConfigurable {
     private int metricRate = 15000;
     private int handlers = 1;
     private boolean metrics = false;
@@ -21,6 +21,7 @@ public class SystemSettings extends WritableConfigurable {
     private int configurationPoll = 2000;
     private int cachedFilePoll = 2000;
     private boolean consoleLogging;
+    private int workerPoolSize = 16;
 
     public int getMetricRate() {
         return metricRate;
@@ -97,5 +98,13 @@ public class SystemSettings extends WritableConfigurable {
 
     public void setCachedFilePoll(int cachedFilePoll) {
         this.cachedFilePoll = cachedFilePoll;
+    }
+
+    public int getWorkerPoolSize() {
+        return workerPoolSize;
+    }
+
+    public void setWorkerPoolSize(int workerPoolSize) {
+        this.workerPoolSize = workerPoolSize;
     }
 }

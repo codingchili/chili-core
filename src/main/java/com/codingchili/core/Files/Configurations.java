@@ -26,7 +26,7 @@ import static com.codingchili.core.Configuration.Strings.*;
  *
  * Handles loading and parsing of the configuration files.
  */
-public class Configurations {
+public abstract class Configurations {
     private static final ConcurrentHashMap<String, ConfigEntry> configs = new ConcurrentHashMap<>();
     private static final AtomicBoolean initialized = new AtomicBoolean(false);
     private static final AtomicBoolean monitoring = new AtomicBoolean(true);
@@ -47,11 +47,10 @@ public class Configurations {
     }
 
     private static int getConfigurationPoll() {
-
         return system().getConfigurationPoll();
     }
 
-    private static class ConfigurationFileWatcher implements FileStoreListener {
+   private static class ConfigurationFileWatcher implements FileStoreListener {
         @Override
         public void onFileModify(Path path) {
             if (monitoring.get()) {
@@ -81,6 +80,14 @@ public class Configurations {
         } else {
             return load(path, clazz);
         }
+    }
+
+    /**
+     * Inserts a configuration file from memory into the configuration store.
+     * @param configurable the configurable to be stored.
+     */
+    public static void put(Configurable configurable) {
+        configs.put(configurable.getPath(), new ConfigEntry(configurable, configurable.getClass()));
     }
 
     /**

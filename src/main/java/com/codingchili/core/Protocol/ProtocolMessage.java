@@ -9,7 +9,7 @@ import static com.codingchili.core.Protocol.ResponseStatus.ACCEPTED;
  *
  * Basic form of a request response.
  */
-public class ProtocolMessage {
+public abstract class ProtocolMessage {
     private ResponseStatus status = ACCEPTED;
 
     public ProtocolMessage() {

@@ -31,5 +31,11 @@
       "date" : "2016-05-22"
     } ]
   },
-  "gzip" : false
+  "gzip" : false,
+  "global" : "G5ox3EyqFREvKZGlIwKAAgzcu/RJ1t5yql18n3mM7SFQtio0e21mz07WfhUlFumWCZDKtEZuiZ1BgZ6B0JdpnA==",
+  "logging" : {
+    "key" : "0apdouzZHvRS2/8XsPleaG8vsuavxJt+YsqcktIFL5WnQZSaPFUHfTEMO29nT5s5Ri9AeXo90gOluv0TVTunDA==",
+    "expiry" : 1481652213,
+    "domain" : "patching.node@server.1"
+  }
 }

@@ -7,5 +7,6 @@
   "shutdownHookTimeout" : 3000,
   "configurationPoll" : 1500,
   "cachedFilePoll" : 2000,
-  "consoleLogging" : false
+  "consoleLogging" : true,
+  "workerPoolSize": 16
 }

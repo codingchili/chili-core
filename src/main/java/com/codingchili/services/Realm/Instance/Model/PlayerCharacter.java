@@ -7,7 +7,6 @@ import com.codingchili.core.Configuration.AttributeConfigurable;
  *         Model for player characters.
  */
 public class PlayerCharacter extends AttributeConfigurable {
-    private String path;
     private String account;
     private String name;
     private String className;
@@ -55,15 +54,5 @@ public class PlayerCharacter extends AttributeConfigurable {
 
     public void setAccount(String account) {
         this.account = account;
-    }
-
-    @Override
-    public String getPath() {
-        return path;
-    }
-
-    @Override
-    public void setPath(String path) {
-        this.path = path;
     }
 }

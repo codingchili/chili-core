@@ -10,7 +10,7 @@ import com.codingchili.core.Protocol.AbstractHandler;
  *
  * Provides a shorthand for deploying a created handler.
  */
-public class Deploy {
+public abstract class Deploy {
 
     /**
      * Deploys the given handler with its contained context.

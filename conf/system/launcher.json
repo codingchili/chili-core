@@ -1,16 +1,38 @@
 {
-  "version" : "CORE-0.0.1a",
-  "blocks" : {
-    "default" : [ "com.codingchili.services.Logging.Service", "com.codingchili.services.Authentication.Service", "com.codingchili.services.Patching.Service", "com.codingchili.services.Realm.Service", "com.codingchili.services.Router.Service", "com.codingchili.services.Social.Service", "com.codingchili.services.Website.Service" ],
-    "router" : [ "com.codingchili.services.Router.Service" ],
-    "website" : [ "com.codingchili.services.Website.Service" ],
-    "patcher" : [ "com.codingchili.services.Patching.Service" ],
-    "social" : [ "com.codingchili.services.Social.Service" ],
-    "logger" : [ "com.codingchili.services.Logging.Service" ],
-    "realm" : [ "com.codingchili.services.Realm.Service" ],
-    "authentication" : [ "com.codingchili.services.Authentication.Service" ]
+  "version": "CORE-0.0.1a",
+  "blocks": {
+    "default": [
+      "com.codingchili.services.Logging.Service",
+      "com.codingchili.services.Authentication.Service",
+      "com.codingchili.services.Patching.Service",
+      "com.codingchili.services.Realm.Service",
+      "com.codingchili.services.Router.Service",
+      "com.codingchili.services.Social.Service",
+      "com.codingchili.services.Website.Service"
+    ],
+    "router": [
+      "com.codingchili.services.Router.Service"
+    ],
+    "website": [
+      "com.codingchili.services.Website.Service"
+    ],
+    "patcher": [
+      "com.codingchili.services.Patching.Service"
+    ],
+    "social": [
+      "com.codingchili.services.Social.Service"
+    ],
+    "logger": [
+      "com.codingchili.services.Logging.Service"
+    ],
+    "realm": [
+      "com.codingchili.services.Realm.Service"
+    ],
+    "authentication": [
+      "com.codingchili.services.Authentication.Service"
+    ]
   },
-  "hosts" : {
-    "localhost" : "default"
+  "hosts": {
+    "localhost": "default"
   }
 }

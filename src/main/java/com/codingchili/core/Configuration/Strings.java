@@ -8,7 +8,7 @@ import java.nio.file.Path;
  * Store json keys and protocol headers so that they are easily maintained.
  * Extend this class in service implementations to add more constants.
  */
-public class Strings {
+public abstract class Strings {
     // paths to configuration files.
     public static final String PATH_VALIDATOR = "conf/system/validator.json";
     public static final String PATH_LAUNCHER = "conf/system/launcher.json";
@@ -20,8 +20,8 @@ public class Strings {
     public static final String DIR_SEPARATOR = "/";
     public static final String DIR_CONFIG = "conf/";
     public static final String DIR_SYSTEM = "conf/system/";
-    public static final String DIR_SERVICES = "conf/service/";
     private static final String DIR_TEST = "src/test/resources/";
+    public static String DIR_SERVICES = "conf/service/";
 
     public static final String EXT_JSON = ".json";
     public static final String ANY = "*";
@@ -184,7 +184,7 @@ public class Strings {
 
     public static String getStartupText(String version) {
         return "\n\t\t\t\tSystem: Starting launcher [" + version + "] ..\n" +
-                "\t\t\t\t\t    Robin Duda &copy2016;\n";
+                "\t\t\t\t\t     Robin Duda © 2016\n";
     }
 
     public static String quote(String string) {
@@ -200,6 +200,10 @@ public class Strings {
     }
 
     public static String getSystemNotInitialized(String name) {
-        return "System '" + name + "' has not been initialized!";
+        return "Subsystem '" + name + "' has not been initialized!";
+    }
+
+    public static String getIdentityNotConfigured(String name) {
+        return  "[" + name + "] Error: Identity must be configured.";
     }
 }

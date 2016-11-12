@@ -297,4 +297,9 @@ public class RealmSettings extends AttributeConfigurable {
     public long getUpdated() {
         return updated;
     }
+
+    @JsonIgnore
+    public byte[] getTokenBytes() {
+        return getAuthentication().getKey().getBytes();
+    }
 }

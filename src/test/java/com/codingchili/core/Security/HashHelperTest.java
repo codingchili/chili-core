@@ -1,7 +1,6 @@
 package com.codingchili.core.Security;
 
-import io.vertx.core.Vertx;
-import io.vertx.core.WorkerExecutor;
+import io.vertx.core.*;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -14,6 +13,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Robin Duda
+ *
+ * Tests for the HashHelper
  */
 @RunWith(VertxUnitRunner.class)
 public class HashHelperTest {
@@ -29,7 +30,6 @@ public class HashHelperTest {
     @Before
     public void setUp() {
         vertx = Vertx.vertx();
-
         executor = vertx.createSharedWorkerExecutor("worker_pool_name", 8);
     }
 
@@ -43,7 +43,7 @@ public class HashHelperTest {
         HashMap<String, Boolean> salts = new HashMap<>();
 
         for (int i = 0; i < 1000; i++) {
-            String salt = HashHelper.generateSalt();
+            String salt = HashHelper.salt();
 
             Assert.assertFalse(salts.containsKey(salt));
             salts.put(salt, true);
@@ -110,21 +110,22 @@ public class HashHelperTest {
         }
     }
 
+    @Test
+    public void checkHashWithWorkerPool(TestContext test) {
+        Async async = test.async();
+        HashHelper hasher = new HashHelper(vertx);
+        Future<String> future = Future.future();
+
+        future.setHandler(hash -> {
+            test.assertTrue(hash.succeeded());
+            test.assertNotNull(hash.result());
+            async.complete();
+        });
+
+        hasher.hash(future, password, salt);
+    }
+
     private long getTimeMS() {
         return Instant.now().toEpochMilli();
-    }
-
-    @Test
-    public void verifyHashCompareSuccess() {
-        String hash = HashHelper.hash(password, salt);
-        Assert.assertTrue(HashHelper.compare(hash, hash));
-    }
-
-    @Test
-    public void verifyHashCompareFailure() {
-        String hash1 = HashHelper.hash(password, salt);
-        String hash2 = HashHelper.hash(wrong, salt2);
-
-        Assert.assertFalse(HashHelper.compare(hash1, hash2));
     }
 }

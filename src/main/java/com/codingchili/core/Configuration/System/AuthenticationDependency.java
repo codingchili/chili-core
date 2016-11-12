@@ -39,4 +39,19 @@ public class AuthenticationDependency {
     public void setTokens(HashMap<String, TokenIdentifier> tokens) {
         this.tokens = tokens;
     }
+
+    public AuthenticationDependency addPreshare(String name) {
+        preshare.add(name);
+        return this;
+    }
+
+    public AuthenticationDependency addSecret(String name) {
+        secrets.add(name);
+        return this;
+    }
+
+    public AuthenticationDependency addToken(String name, String service, String secret) {
+        tokens.put(name, new TokenIdentifier(service, secret));
+        return this;
+    }
 }
