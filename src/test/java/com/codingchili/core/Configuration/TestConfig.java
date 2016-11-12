@@ -4,7 +4,7 @@ package com.codingchili.core.Configuration;
  * @author Robin Duda
  */
 public class TestConfig implements Configurable {
-    private String path = "test.json";
+    private String path = "src/test/resources/Configurations/testconfig.json";
     private String data;
 
     @Override

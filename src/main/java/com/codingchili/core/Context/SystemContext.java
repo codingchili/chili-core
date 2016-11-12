@@ -28,7 +28,7 @@ public abstract class SystemContext implements CoreContext {
         this.console = new ConsoleLogger(this);
     }
 
-    public SystemContext(Vertx vertx) {
+    SystemContext(Vertx vertx) {
         this.vertx = vertx;
         this.console = new ConsoleLogger(this);
 

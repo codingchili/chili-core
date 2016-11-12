@@ -13,7 +13,7 @@ public class Strings {
     public static final String PATH_VALIDATOR = "conf/system/validator.json";
     public static final String PATH_LAUNCHER = "conf/system/launcher.json";
     public static final String PATH_SECURITY = "conf/system/security.json";
-    public static final String PATH_VERTX = "conf/system/system.json";
+    public static final String PATH_SYSTEM = "conf/system/system.json";
 
     // common directories.
     public static final String DIR_ROOT = "/";

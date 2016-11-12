@@ -4,12 +4,12 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.Configuration.*;
+import com.codingchili.core.Configuration.Configurable;
 import com.codingchili.core.Configuration.System.SystemSettings;
+import com.codingchili.core.Configuration.TestConfig;
 import com.codingchili.core.Exception.FileReadException;
 
 import static com.codingchili.core.Configuration.Strings.DIR_SERVICES;
-import static com.codingchili.core.Configuration.Strings.PATH_VERTX;
 
 
 /**
@@ -19,18 +19,14 @@ import static com.codingchili.core.Configuration.Strings.PATH_VERTX;
  * verifies that the configuration files exists and are loaded correctly.
  */
 @RunWith(VertxUnitRunner.class)
-public class FileLoadConfigurationTest {
+public class ConfigurationsTest {
+    private static final String PATH_SYSTEM_TEST = "src/test/resources/Configurations/system.json";
     private static final String NEW_DATA = "new-data";
     private static final String TEST_DATA = "test-data";
 
-    @AfterClass
-    public static void tearDown() {
-        JsonFileStore.deleteObject(new TestConfig().getPath());
-    }
-
     @Test
     public void loadVertxConfiguration() {
-        Assert.assertNotNull(load(PATH_VERTX, SystemSettings.class));
+        Assert.assertNotNull(load(PATH_SYSTEM_TEST, SystemSettings.class));
     }
 
     @Test

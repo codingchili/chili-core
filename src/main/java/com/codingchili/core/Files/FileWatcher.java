@@ -1,7 +1,5 @@
 package com.codingchili.core.Files;
 
-import com.hazelcast.util.Preconditions;
-
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -21,60 +19,15 @@ import static java.nio.file.StandardWatchEventKinds.*;
 class FileWatcher {
     private final HashMap<Path, WatchKey> keys = new HashMap<>();
     private final CoreContext context;
-    private FileStoreListener listener;
-    private String directory;
-    private TimerSource rate;
+    FileStoreListener listener;
+    String directory;
+    TimerSource rate;
 
-    static class FileWatcherBuilder {
-        private final FileWatcher watcher;
-
-        FileWatcherBuilder(CoreContext context) {
-            this.watcher = new FileWatcher(context);
-        }
-
-        /**
-         * Sets the listener that is called on file changes.
-         * @param listener the listener to be used.
-         */
-        FileWatcherBuilder withListener(FileStoreListener listener) {
-            watcher.setListener(listener);
-            return this;
-        }
-
-        /**
-         * Defines the directory that should be watched relative from the application root.
-         * @param directory the directory to be watched, includes its subdirectories.
-         */
-        FileWatcherBuilder onDirectory(String directory) {
-            watcher.setDirectory(directory);
-            return this;
-        }
-
-        /**
-         * The rate in which to poll the file change events.
-         * @param rate a timersource in milliseconds.
-         */
-        FileWatcherBuilder rate(TimerSource rate) {
-            watcher.setRate(rate);
-            return this;
-        }
-
-        /**
-         * Constructs the new FileWatcher.
-         */
-        void build() {
-            Preconditions.checkNotNull(watcher.directory);
-            Preconditions.checkNotNull(watcher.listener);
-            Preconditions.checkNotNull(watcher.rate);
-            watcher.initialize();
-        }
-    }
-
-    private FileWatcher(CoreContext context) {
+    FileWatcher(CoreContext context) {
         this.context = context;
     }
 
-    private void initialize() {
+    void initialize() {
         try {
             WatchService watcher = FileSystems.getDefault().newWatchService();
             Path path = Paths.get(directory);
@@ -118,15 +71,15 @@ class FileWatcher {
         return Paths.get(path + DIR_SEPARATOR + event.context());
     }
 
-    private void setRate(TimerSource rate) {
+    void setRate(TimerSource rate) {
         this.rate = rate;
     }
 
-    private void setDirectory(String directory) {
+    void setDirectory(String directory) {
         this.directory = directory;
     }
 
-    private void setListener(FileStoreListener listener) {
+    void setListener(FileStoreListener listener) {
         this.listener = listener;
     }
 }

@@ -36,7 +36,7 @@ public class Configurations {
         if (initialized.get()) {
             context.console().onAlreadyInitialized();
         } else {
-            new FileWatcher.FileWatcherBuilder(context)
+            new FileWatcherBuilder(context)
                     .rate(Configurations::getConfigurationPoll)
                     .onDirectory(Strings.DIR_CONFIG)
                     .withListener(new ConfigurationFileWatcher())
@@ -196,7 +196,7 @@ public class Configurations {
     }
 
     public static SystemSettings system() {
-        return get(PATH_VERTX, SystemSettings.class);
+        return get(PATH_SYSTEM, SystemSettings.class);
     }
 
     public static SecuritySettings security() {

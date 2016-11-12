@@ -67,7 +67,7 @@ public class CachedFileStore<T> implements FileStoreListener {
     }
 
     private void watchDirectory() {
-        new FileWatcher.FileWatcherBuilder(context)
+        new FileWatcherBuilder(context)
                 .onDirectory(settings.getDirectory())
                 .rate(context.system()::getCachedFilePoll)
                 .withListener(this)

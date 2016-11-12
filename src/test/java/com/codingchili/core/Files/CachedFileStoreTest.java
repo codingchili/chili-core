@@ -22,10 +22,10 @@ import com.codingchili.core.Testing.ContextMock;
  */
 @RunWith(VertxUnitRunner.class)
 public class CachedFileStoreTest {
-    private static final String TEST_DIRECTORY = "src/main/resources/META-INF";
-    private static final String TEST_FILE_ABSOLUTE = "src/main/resources/META-INF/MANIFEST.MF";
-    private static final String TEST_FILE = "/MANIFEST.MF";
-    private static final String TEST_FILE_TRAVERSAL = "../cluster.xml";
+    private static final String TEST_DIRECTORY = "src/test/resources/CachedFileStore/";
+    private static final String TEST_FILE_ABSOLUTE = "src/test/resources/CachedFileStore/test.txt";
+    private static final String TEST_FILE = "test.txt";
+    private static final String TEST_FILE_TRAVERSAL = "../TraversalTestFile.txt";
     private Vertx vertx;
 
     @Before
