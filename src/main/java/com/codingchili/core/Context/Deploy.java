@@ -8,13 +8,23 @@ import com.codingchili.core.Protocol.AbstractHandler;
 /**
  * @author Robin Duda
  *
- * deploytool to deploy to remote and generate configuration files for each host.
+ * Provides a shorthand for deploying a created handler.
  */
 public class Deploy {
+
+    /**
+     * Deploys the given handler with its contained context.
+     * @param handler the handler to be deployed.
+     */
     public static void service(AbstractHandler handler) {
         handler.context().deploy(handler);
     }
 
+    /**
+     * Deploys the given handler with its contained context.
+     * @param handler the handler to be deployed.
+     * @param result the handler to call when deployment is completed.
+     */
     public static void service(AbstractHandler handler, Handler<AsyncResult<String>> result) {
         handler.context().deploy(handler, result);
     }
