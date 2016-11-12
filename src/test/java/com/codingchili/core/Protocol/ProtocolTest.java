@@ -103,8 +103,8 @@ public class ProtocolTest {
 
         test.assertEquals(2, mapping.getRoutes().size());
         test.assertEquals(AUTHORIZED, mapping.getRoutes().get(0).getAccess());
-        test.assertEquals(ANOTHER, mapping.getRoutes().get(0).getAction());
+        test.assertEquals(ANOTHER, mapping.getRoutes().get(0).getRoute());
         test.assertEquals(PUBLIC, mapping.getRoutes().get(1).getAccess());
-        test.assertEquals(TEST, mapping.getRoutes().get(1).getAction());
+        test.assertEquals(TEST, mapping.getRoutes().get(1).getRoute());
     }
 }

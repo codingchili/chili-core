@@ -1,6 +1,6 @@
 package com.codingchili.core.Configuration;
 
-import com.codingchili.core.Security.Validator;
+import com.codingchili.core.Security.RegexAction;
 
 /**
  * @author Robin Duda
@@ -8,18 +8,18 @@ import com.codingchili.core.Security.Validator;
  * Contains settings used for a single regex validator action.
  */
 public class RegexComponent {
-    public Validator.RegexAction action;
+    public RegexAction action;
     public String line;
     public String replacement;
 
     public RegexComponent() {
     }
 
-    public Validator.RegexAction getAction() {
+    public RegexAction getAction() {
         return action;
     }
 
-    public void setAction(Validator.RegexAction action) {
+    public void setAction(RegexAction action) {
         this.action = action;
     }
 

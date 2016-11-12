@@ -33,7 +33,7 @@ public abstract class DefaultLogger extends Handler implements Logger {
     @Override
     public Logger log(JsonObject json) {
         logger.log(json
-                .put(PROTOCOL_ACTION, PROTOCOL_LOGGING)
+                .put(PROTOCOL_ROUTE, PROTOCOL_LOGGING)
                 .put(LOG_TIME, Instant.now().toEpochMilli()));
         return this;
     }
@@ -45,7 +45,7 @@ public abstract class DefaultLogger extends Handler implements Logger {
     @Override
     public JsonObject event(String name, Level level) {
         JsonObject event = new JsonObject()
-                .put(PROTOCOL_ACTION, PROTOCOL_LOGGING)
+                .put(PROTOCOL_ROUTE, PROTOCOL_LOGGING)
                 .put(LOG_EVENT, name)
                 .put(LOG_LEVEL, level)
                 .put(LOG_TIME, Instant.now().toEpochMilli());
@@ -83,9 +83,9 @@ public abstract class DefaultLogger extends Handler implements Logger {
     }
 
     @Override
-    public void onHandlerMissing(String action) {
+    public void onHandlerMissing(String route) {
         log(event(LOG_HANDLER_MISSING, Level.WARNING)
-                .put(LOG_MESSAGE, Strings.quote(action)));
+                .put(LOG_MESSAGE, Strings.quote(route)));
     }
 
     @Override

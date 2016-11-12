@@ -59,6 +59,4 @@ public class Validator {
         }
         return text.trim();
     }
-
-    public enum RegexAction {REJECT, REPLACE}
 }

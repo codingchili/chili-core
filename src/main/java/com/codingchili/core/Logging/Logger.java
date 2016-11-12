@@ -44,9 +44,9 @@ public interface Logger extends JsonLogger, StringLogger {
     /**
      * Throw when a requested handler was not found.
      *
-     * @param action the name of the missing handler.
+     * @param route the name of the missing handler.
      */
-    void onHandlerMissing(String action);
+    void onHandlerMissing(String route);
 
     /**
      * Emit when a file has been loaded from the file-system.

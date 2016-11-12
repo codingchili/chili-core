@@ -36,7 +36,7 @@ public class RealmUpdate {
         this.token = token;
     }
 
-    public String getAction() {
+    public String getRoute() {
         return REALM_UPDATE;
     }
 }

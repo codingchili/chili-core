@@ -22,7 +22,7 @@ public class ServiceLogHandler<T extends LogContext> extends AbstractLogHandler<
         JsonObject logdata = request.data();
         String node = logdata.getString(LOG_NODE);
 
-        logdata.remove(PROTOCOL_ACTION);
+        logdata.remove(PROTOCOL_ROUTE);
 
         if (!NODE_LOGGING.equals(node)) {
             console.log(logdata);

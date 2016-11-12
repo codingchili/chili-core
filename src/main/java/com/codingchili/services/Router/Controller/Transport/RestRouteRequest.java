@@ -52,8 +52,8 @@ class RestRouteRequest implements Request {
 
         parseApi();
 
-        if (!data.containsKey(ID_ACTION)) {
-            data.put(ID_ACTION, context.request().path());
+        if (!data.containsKey(ID_ROUTE)) {
+            data.put(ID_ROUTE, context.request().path());
         }
 
         if (!data.containsKey(ID_TARGET)) {
@@ -72,8 +72,8 @@ class RestRouteRequest implements Request {
                     if (end.getTarget() != null)
                         data.put(ID_TARGET, end.getTarget());
 
-                    if (end.getAction() != null)
-                        data.put(ID_ACTION, end.getAction());
+                    if (end.getRoute() != null)
+                        data.put(ID_ROUTE, end.getRoute());
                 });
     }
 
@@ -125,7 +125,7 @@ class RestRouteRequest implements Request {
 
     @Override
     public String route() {
-        return data().getString(ID_ACTION);
+        return data().getString(ID_ROUTE);
     }
 
     @Override

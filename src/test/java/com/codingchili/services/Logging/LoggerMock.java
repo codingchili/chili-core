@@ -37,7 +37,7 @@ public class LoggerMock extends DefaultLogger {
     }
 
     @Override
-    public void onHandlerMissing(String action) {
+    public void onHandlerMissing(String route) {
 
     }
 

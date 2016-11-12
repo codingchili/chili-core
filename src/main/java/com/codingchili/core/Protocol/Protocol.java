@@ -23,13 +23,13 @@ public class Protocol<Handler extends RequestHandler> {
         return get(Access.AUTHORIZED, target);
     }
 
-    public Protocol<Handler> use(String action, Handler handler) {
-        use(action, handler, Access.AUTHORIZED);
+    public Protocol<Handler> use(String route, Handler handler) {
+        use(route, handler, Access.AUTHORIZED);
         return this;
     }
 
-    public Protocol<Handler> use(String action, Handler handler, Access access) {
-        handlers.use(action, handler, access);
+    public Protocol<Handler> use(String route, Handler handler, Access access) {
+        handlers.use(route, handler, access);
         return this;
     }
 

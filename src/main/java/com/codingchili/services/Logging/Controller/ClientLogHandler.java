@@ -22,7 +22,7 @@ public class ClientLogHandler<T extends LogContext> extends AbstractLogHandler<T
         JsonObject logdata = request.data();
 
         logdata.remove(ID_TOKEN);
-        logdata.remove(PROTOCOL_ACTION);
+        logdata.remove(PROTOCOL_ROUTE);
 
 
         console.log(logdata);

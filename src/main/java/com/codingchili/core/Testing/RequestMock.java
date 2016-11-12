@@ -17,8 +17,8 @@ import static com.codingchili.core.Configuration.Strings.*;
  */
 public class RequestMock {
 
-    public static ClusterRequestMock get(String action, ResponseListener listener, JsonObject json) {
-        return new ClusterRequestMock(new MessageMock(action, listener, json));
+    public static ClusterRequestMock get(String route, ResponseListener listener, JsonObject json) {
+        return new ClusterRequestMock(new MessageMock(route, listener, json));
     }
 
     private static class ClusterRequestMock extends ClusterRequest {
@@ -31,14 +31,14 @@ public class RequestMock {
         private JsonObject json;
         private ResponseListener listener;
 
-        MessageMock(String action, ResponseListener listener, JsonObject json) {
+        MessageMock(String route, ResponseListener listener, JsonObject json) {
             if (json == null) {
                 this.json = new JsonObject();
             } else {
                 this.json = json;
             }
 
-            this.json.put(ID_ACTION, action);
+            this.json.put(ID_ROUTE, route);
             this.listener = listener;
         }
 

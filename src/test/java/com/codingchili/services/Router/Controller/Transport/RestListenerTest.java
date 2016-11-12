@@ -128,7 +128,7 @@ public class  RestListenerTest {
     public void testRouterSupportsGet(TestContext context) {
         Async async = context.async();
 
-        sendGetRequest("/?" + ID_ACTION + "=" + ID_PING + "&" + ID_TARGET + "=" + NODE_ROUTING, (result, status) -> {
+        sendGetRequest("/?" + ID_ROUTE + "=" + ID_PING + "&" + ID_TARGET + "=" + NODE_ROUTING, (result, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
             async.complete();
         });

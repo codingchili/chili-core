@@ -83,7 +83,7 @@ public class ClusterRequest implements Request {
 
     @Override
     public String route() {
-        return json.getString(ID_ACTION);
+        return json.getString(ID_ROUTE);
     }
 
     @Override

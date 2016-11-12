@@ -30,7 +30,7 @@ public class Strings {
     public static final String PROTOCOL_REAL_IP = "X-Real-IP";
     public static final String PROTOCOL_CONNECTION = "connection";
     public static final String PROTOCOL_STATUS = "status";
-    public static final String PROTOCOL_ACTION = "route";
+    public static final String PROTOCOL_ROUTE = "route";
     public static final String PROTOCOL_LOGGING = "logging";
 
     // launcher commands.
@@ -46,7 +46,7 @@ public class Strings {
     public static final String ID_FILE = "file";
     public static final String ID_DATA = "data";
     public static final String ID_MESSAGE = "message";
-    public static final String ID_ACTION = "route";
+    public static final String ID_ROUTE = "route";
     public static final String ID_TARGET = "target";
     public static final String ID_VERSION = "version";
     public static final String ID_BYTES = "bytes";
@@ -187,8 +187,8 @@ public class Strings {
                 "\t\t\t\t\t    Robin Duda &copy2016;\n";
     }
 
-    public static String quote(String action) {
-        return "'" + action + "'";
+    public static String quote(String string) {
+        return "'" + string + "'";
     }
 
     public static String testDirectory(String name) {

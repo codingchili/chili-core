@@ -5,7 +5,7 @@ package com.codingchili.services.Router.Model;
  */
 public class Endpoint {
     private String target;
-    private String action;
+    private String route;
 
     public String getTarget() {
         return target;
@@ -16,12 +16,12 @@ public class Endpoint {
         return this;
     }
 
-    public String getAction() {
-        return action;
+    public String getRoute() {
+        return route;
     }
 
-    public Endpoint setAction(String action) {
-        this.action = action;
+    public Endpoint setRoute(String route) {
+        this.route = route;
         return this;
     }
 }
