@@ -142,7 +142,7 @@ public class Strings {
     }
 
     public static String getRemoteBlockNotConfigured(String remote, String block) {
-        return "Error: host block '" + remote + "' or launcher block '" + block + "' not found in" + PATH_LAUNCHER;
+        return "Error: host block '" + remote + "' or launcher block '" + block + "' not found in " + PATH_LAUNCHER;
     }
 
     public static String getBlockNotConfigured(String block) {

@@ -30,6 +30,7 @@ public abstract class ServiceContext extends SystemContext {
      */
     protected abstract ServiceConfigurable service();
 
+
     public Logger logger() {
         return logger;
     }

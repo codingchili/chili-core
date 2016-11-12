@@ -2,16 +2,21 @@ package com.codingchili.core.Testing;
 
 import io.vertx.core.Vertx;
 
-import com.codingchili.core.Context.CoreContext;
-import com.codingchili.core.Context.SystemContext;
+import com.codingchili.core.Configuration.ServiceConfigurable;
+import com.codingchili.core.Context.*;
 import com.codingchili.core.Security.RemoteIdentity;
 
 /**
  * @author Robin Duda
  */
-public class ContextMock extends SystemContext implements CoreContext {
+public class ContextMock extends ServiceContext implements CoreContext {
     public ContextMock(Vertx vertx) {
         super(vertx);
+    }
+
+    @Override
+    protected ServiceConfigurable service() {
+        return new ServiceConfigurable();
     }
 
     @Override

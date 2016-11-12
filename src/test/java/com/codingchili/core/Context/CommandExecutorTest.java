@@ -6,11 +6,6 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.*;
-
-import com.codingchili.core.Configuration.System.LauncherSettings;
-import com.codingchili.core.Logging.Logger;
-import com.codingchili.core.Testing.LoggerMock;
 import com.codingchili.core.Testing.MockLogListener;
 
 import static com.codingchili.core.Configuration.Strings.HELP;
@@ -81,38 +76,5 @@ public class CommandExecutorTest {
         });
 
         return message[0];
-    }
-
-    private class LaunchContextMock extends LaunchContext {
-        private LoggerMock logger;
-
-        LaunchContextMock(String[] args, MockLogListener listener) {
-            super(args);
-            this.logger = new LoggerMock(listener);
-        }
-
-        @Override
-        public LauncherSettings settings() {
-            HashMap<String, List<String>> blocks = new HashMap<>();
-            HashMap<String, String> hosts = new HashMap<>();
-            LauncherSettings settings = new LauncherSettings();
-
-            hosts.put("host1", "block1");
-            hosts.put("host2", "block1");
-            hosts.put("host3", "block-null");
-
-            blocks.put("block1", new ArrayList<>());
-            blocks.put("block2", new ArrayList<>());
-
-            settings.setHosts(hosts);
-            settings.setBlocks(blocks);
-
-            return settings;
-        }
-
-        @Override
-        public Logger console() {
-            return logger;
-        }
     }
 }

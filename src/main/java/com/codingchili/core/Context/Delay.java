@@ -1,6 +1,7 @@
 package com.codingchili.core.Context;
 
 import io.vertx.core.Future;
+import io.vertx.ext.unit.Async;
 
 /**
  * @author Robin Duda
@@ -22,6 +23,26 @@ public class Delay {
         context.timer(ms, handler -> {
             future.complete();
         });
+    }
+
+    /**
+     * Delays the given async for the specified ms.
+     * @param async the async to be delayed.
+     * @param ms milliseconds to wait before completing the async.
+     */
+    public static void forMS(Async async, long ms) {
+        context.timer(ms, handler -> {
+            async.complete();
+        });
+    }
+
+    /**
+     * Delays the given future for the specified ms.
+     * @param future the future to be delayed.
+     * @param ms milliseconds to wait before completing the future.
+     */
+    public static void forMS(Future<Void> future, long ms) {
+        Delay.future(future, ms);
     }
 
     /**

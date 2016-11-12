@@ -50,7 +50,7 @@ public abstract class SystemContext implements CoreContext {
         return system().getMetricRate();
     }
 
-    void onMetricsSnapshot(JsonObject json) {
+    protected void onMetricsSnapshot(JsonObject json) {
         if (json != null) {
             console.log(json);
         }
