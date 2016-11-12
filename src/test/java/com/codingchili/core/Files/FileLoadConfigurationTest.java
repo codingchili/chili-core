@@ -14,12 +14,14 @@ import static com.codingchili.core.Configuration.Strings.PATH_VERTX;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Most configuration files are mocked during test, this suite
- *         verifies that the configuration files exists and are loaded correctly.
+ *
+ * Most configuration files are mocked during test, this suite
+ * verifies that the configuration files exists and are loaded correctly.
  */
 @RunWith(VertxUnitRunner.class)
 public class FileLoadConfigurationTest {
+    private static final String NEW_DATA = "new-data";
+    private static final String TEST_DATA = "test-data";
 
     @AfterClass
     public static void tearDown() {
@@ -30,7 +32,6 @@ public class FileLoadConfigurationTest {
     public void loadVertxConfiguration() {
         Assert.assertNotNull(load(PATH_VERTX, SystemSettings.class));
     }
-
 
     @Test
     public void loadMissingFile() {
@@ -48,14 +49,15 @@ public class FileLoadConfigurationTest {
         Configurations.save(config);
         config = Configurations.get(config.getPath(), TestConfig.class);
 
-        config.setData("new-data");
+        config.setData(NEW_DATA);
         Configurations.save(config);
-        config.setData("test-data");    // restore memory copy
+        config.setData(TEST_DATA);    // restore memory copy
 
         Configurations.reload(config.getPath());
+
         config = Configurations.get(config.getPath(), TestConfig.class);
 
-        Assert.assertTrue(config.getData().equals("new-data"));
+        Assert.assertTrue(config.getData().equals(NEW_DATA));
     }
 
     @Test
@@ -65,12 +67,12 @@ public class FileLoadConfigurationTest {
         Configurations.save(config);
         config = Configurations.get(config.getPath(), TestConfig.class);
 
-        config.setData("new-data");
+        config.setData(NEW_DATA);
         Configurations.save(config);
-        config.setData("test-data");    // restore memory copy
+        config.setData(TEST_DATA);    // restore memory copy
         config = Configurations.get(config.getPath(), TestConfig.class);
 
-        Assert.assertFalse(config.getData().equals("new-data"));
+        Assert.assertFalse(config.getData().equals(NEW_DATA));
     }
 
     @Test
@@ -80,7 +82,7 @@ public class FileLoadConfigurationTest {
         Configurations.save(config);
         config = Configurations.get(config.getPath(), TestConfig.class);
 
-        Assert.assertTrue(config.getData().equals("test-data"));
+        Assert.assertTrue(config.getData().equals(TEST_DATA));
     }
 
     @Test
