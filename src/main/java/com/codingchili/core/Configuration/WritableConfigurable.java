@@ -2,6 +2,8 @@ package com.codingchili.core.Configuration;
 
 /**
  * @author Robin Duda
+ *
+ * Represents a basic configurable that is saveable.
  */
 public class WritableConfigurable implements Configurable {
     private String path;
