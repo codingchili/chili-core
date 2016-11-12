@@ -31,6 +31,11 @@ public class LaunchContext extends SystemContext {
         this.vertx = vertx;
     }
 
+    @Override
+    public void cancel(long timer) {
+        vertx.cancelTimer(timer);
+    }
+
     public void deploy(String node, Handler<AsyncResult<String>> handler) {
         vertx.deployVerticle(node, handler);
     }
