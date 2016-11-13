@@ -18,6 +18,7 @@ import com.codingchili.core.Testing.ResponseListener;
 
 import com.codingchili.services.Logging.Configuration.LogContext;
 import com.codingchili.services.Logging.Configuration.LogServerSettings;
+import com.codingchili.services.Logging.Controller.ClientLogHandler;
 import com.codingchili.services.Logging.Controller.ServiceLogHandler;
 import com.codingchili.services.Shared.Strings;
 
@@ -29,7 +30,7 @@ import static com.codingchili.services.Shared.Strings.ID_TOKEN;
 @RunWith(VertxUnitRunner.class)
 public class ClientLogHandlerTest {
     private TokenFactory factory;
-    private ServiceLogHandler handler;
+    private ClientLogHandler handler;
 
     @Rule
     public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
@@ -40,7 +41,7 @@ public class ClientLogHandlerTest {
         settings.setSecret(new byte[]{0x0});
         LogContext provider = new ContextMock(settings);
         factory = new TokenFactory(settings.getSecret());
-        handler = new ServiceLogHandler<>(provider);
+        handler = new ClientLogHandler<>(provider);
     }
 
     @Test

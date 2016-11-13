@@ -26,7 +26,6 @@ public class ClientLogHandler<T extends LogContext> extends AbstractLogHandler<T
 
 
         console.log(logdata);
-
         elastic.log(logdata);
     }
 }
