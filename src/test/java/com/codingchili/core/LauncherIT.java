@@ -19,6 +19,7 @@ import com.codingchili.core.Testing.ContextMock;
  *         <p>
  *         Tests for the launcher.
  */
+@Ignore
 @RunWith(VertxUnitRunner.class)
 public class LauncherIT {
     public static Async async;
