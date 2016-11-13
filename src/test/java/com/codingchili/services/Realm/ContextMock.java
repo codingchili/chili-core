@@ -2,6 +2,7 @@ package com.codingchili.services.Realm;
 
 import io.vertx.core.Vertx;
 
+import com.codingchili.core.Context.StorageContext;
 import com.codingchili.core.Security.*;
 import com.codingchili.core.Storage.AsyncLocalMap;
 
@@ -27,7 +28,7 @@ public class ContextMock extends RealmContext {
 
         realm.getClasses().add(new PlayerClass().setName("class.name"));
 
-        characters = new HazelCharacterDB(new AsyncLocalMap<>(this));
+        characters = new HazelCharacterDB(new AsyncLocalMap<>(new StorageContext(this)));
     }
 
     @Override

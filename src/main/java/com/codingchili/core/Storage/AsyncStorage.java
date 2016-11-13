@@ -7,5 +7,5 @@ import io.vertx.core.shareddata.AsyncMap;
  *
  * Reuses the AsyncMap interface from hazelcast.
  */
-public interface AsyncStorage<K, V> extends AsyncMap<K, V> {
+public interface AsyncStorage<Key, Value> extends AsyncMap<Key, Value> {
 }

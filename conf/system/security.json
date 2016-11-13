@@ -1,38 +1,29 @@
 {
   "dependencies" : {
-    "conf/service/[^/]*" : {
-      "preshare" : [ "global" ],
+    "service2" : {
+      "preshare" : [ ],
       "secrets" : [ ],
       "tokens" : {
-        "logging" : {
-          "service" : "logserver",
-          "secret" : "secret"
+        "service2token" : {
+          "service" : "service1",
+          "secret" : "service1secret"
         }
       }
     },
-    "logserver" : {
+    "service1" : {
       "preshare" : [ ],
-      "secrets" : [ "secret" ],
-      "tokens" : { }
-    },
-    "authserver" : {
-      "preshare" : [ ],
-      "secrets" : [ "clientSecret", "realmSecret" ],
-      "tokens" : { }
-    },
-    "conf/realm/[^/]*" : {
-      "preshare" : [ "global" ],
-      "secrets" : [ "secret" ],
+      "secrets" : [ "service1secret" ],
       "tokens" : {
-        "logging" : {
-          "service" : "logserver",
-          "secret" : "secret"
-        },
-        "authentication" : {
-          "service" : "authserver",
-          "secret" : "realmSecret"
+        "service1token" : {
+          "service" : "service2",
+          "secret" : "local"
         }
       }
+    },
+    "service.*" : {
+      "preshare" : [ "global" ],
+      "secrets" : [ "local" ],
+      "tokens" : { }
     }
   },
   "secretBytes" : 64

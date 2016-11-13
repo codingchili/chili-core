@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 
 import java.time.Instant;
 
+import com.codingchili.core.Context.StorageContext;
 import com.codingchili.core.Storage.AsyncLocalMap;
 
 import com.codingchili.services.Realm.Configuration.RealmSettings;
@@ -28,8 +29,8 @@ public class StaleRealmHandlerTest {
 
     @Before
     public void setUp() {
-        realms = new AsyncRealmDB(new AsyncLocalMap<>(context));
         context = new WritableContextMock(Vertx.vertx());
+        realms = new AsyncRealmDB(new AsyncLocalMap<>(new StorageContext(context)));
         context.timeout = STALE_TIMEOUT;
 
         StaleRealmHandler.watch(context, realms);

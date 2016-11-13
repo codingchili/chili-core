@@ -3,8 +3,12 @@ package com.codingchili.core.Storage;
 import io.vertx.core.Future;
 
 import com.codingchili.core.Configuration.Strings;
+import com.codingchili.core.Configuration.System.LauncherSettings;
 import com.codingchili.core.Context.CoreContext;
+import com.codingchili.core.Context.StorageContext;
 import com.codingchili.core.Logging.Level;
+
+import com.codingchili.services.Realm.Configuration.RealmSettings;
 
 /**
  * @author Robin Duda
@@ -20,9 +24,12 @@ public class StorageLoader {
 
     public static <Key, Value> void load(Future<AsyncStorage<Key, Value>> future, String className, String mapName) {
         try {
+            StorageContext<Value> storage = new StorageContext<Value>(context)
+                    .setDB(mapName)
+                    .setClass(LauncherSettings.class);
+
             Class.forName(className)
-                    .getConstructor(Future.class, CoreContext.class, String.class)
-                    .<Key, Value>newInstance(future, context, mapName);
+                    .getConstructor(Future.class, StorageContext.class).<Key, Value>newInstance(future, storage);
         } catch (ReflectiveOperationException e) {
             context.console().log(Strings.getStorageLoaderError(className, mapName), Level.SEVERE);
             System.exit(0);

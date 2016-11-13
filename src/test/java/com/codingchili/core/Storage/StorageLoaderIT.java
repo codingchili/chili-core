@@ -8,13 +8,13 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 
 
+import com.codingchili.core.Configuration.System.LauncherSettings;
 import com.codingchili.core.Context.CoreContext;
 import com.codingchili.core.Context.SystemContext;
 
 import com.codingchili.services.Shared.Strings;
 
-import static com.codingchili.core.Configuration.Strings.STORAGE_HAZELMAP;
-import static com.codingchili.core.Configuration.Strings.STORAGE_LOCALMAP;
+import static com.codingchili.core.Configuration.Strings.*;
 
 /**
  * @author Robin Duda
@@ -58,5 +58,19 @@ public class StorageLoaderIT {
         }));
 
         StorageLoader.load(future, STORAGE_HAZELMAP, Strings.MAP_ACCOUNTS);
+    }
+
+    @Ignore
+    @Test
+    public void testLoadMongoMap(TestContext test) {
+        Async async = test.async();
+        Future<AsyncStorage<String, LauncherSettings>> future = Future.future();
+
+        future.setHandler(storage -> storage.result().put("KEY", new LauncherSettings(), result -> {
+            test.assertTrue(result.succeeded());
+            async.complete();
+        }));
+
+        StorageLoader.load(future, STORAGE_MONGODB, Strings.MAP_ACCOUNTS);
     }
 }

@@ -9,15 +9,7 @@ import io.vertx.core.Handler;
  * Map backed by a json-file.
  */
 public class AsyncJsonMap<Key, Value> implements AsyncStorage<Key, Value> {
-    @Override
-    public void clear(Handler handler) {
 
-    }
-
-    @Override
-    public void size(Handler handler) {
-
-    }
 
     @Override
     public void get(Key key, Handler<AsyncResult<Value>> asyncResultHandler) {
@@ -61,6 +53,16 @@ public class AsyncJsonMap<Key, Value> implements AsyncStorage<Key, Value> {
 
     @Override
     public void replaceIfPresent(Key key, Value oldValue, Value newValue, Handler<AsyncResult<Boolean>> resultHandler) {
+
+    }
+
+    @Override
+    public void clear(Handler<AsyncResult<Void>> resultHandler) {
+
+    }
+
+    @Override
+    public void size(Handler<AsyncResult<Integer>> resultHandler) {
 
     }
 }

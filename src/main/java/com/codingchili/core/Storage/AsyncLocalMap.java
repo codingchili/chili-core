@@ -5,47 +5,48 @@ import io.vertx.core.*;
 import java.util.HashMap;
 
 import com.codingchili.core.Context.CoreContext;
+import com.codingchili.core.Context.StorageContext;
 
 /**
  * @author Robin Duda
  *
  * Mocks an async map used by Hazelcast to enable testing of storage logic.
  */
-public class AsyncLocalMap<Key, Value> implements AsyncStorage<Key, Value> {
-    private HashMap<Key, Value> map = new HashMap<>();
-    private CoreContext context;
+public class AsyncLocalMap<String, Value> implements AsyncStorage<String, Value> {
+    private HashMap<String, Value> map = new HashMap<>();
+    private StorageContext context;
 
-    public AsyncLocalMap(CoreContext context) {
+    public AsyncLocalMap(StorageContext context) {
         this.context = context;
     }
 
-    public AsyncLocalMap(Future<AsyncStorage<Key, Value>> future, CoreContext context, String db) {
+    public AsyncLocalMap(Future<AsyncStorage<String, Value>> future, StorageContext<Value> context) {
         this.context = context;
         future.complete(this);
     }
 
     @Override
-    public void get(Key key, Handler<AsyncResult<Value>> handler) {
+    public void get(String key, Handler<AsyncResult<Value>> handler) {
         Future<Value> future = Future.future();
         future.setHandler(handler).complete(map.get(key));
     }
 
     @Override
-    public void put(Key key, Value value, Handler<AsyncResult<Void>> handler) {
+    public void put(String key, Value value, Handler<AsyncResult<Void>> handler) {
         Future<Void> future = Future.future();
         map.put(key, value);
         future.setHandler(handler).complete();
     }
 
     @Override
-    public void put(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
+    public void put(String key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
         put(key, value, handler);
 
         context.timer(ttl, event -> remove(key, (result) -> {}));
     }
 
     @Override
-    public void putIfAbsent(Key key, Value value, Handler<AsyncResult<Value>> handler) {
+    public void putIfAbsent(String key, Value value, Handler<AsyncResult<Value>> handler) {
         Future<Value> future = Future.future();
         future.setHandler(handler);
 
@@ -58,14 +59,14 @@ public class AsyncLocalMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void putIfAbsent(Key key, Value value, long ttl, Handler<AsyncResult<Value>> handler) {
+    public void putIfAbsent(String key, Value value, long ttl, Handler<AsyncResult<Value>> handler) {
         putIfAbsent(key, value, handler);
 
         context.timer(ttl, event -> remove(key, (result) -> {}));
     }
 
     @Override
-    public void remove(Key key, Handler<AsyncResult<Value>> handler) {
+    public void remove(String key, Handler<AsyncResult<Value>> handler) {
         Future<Value> future = Future.future();
         future.setHandler(handler);
 
@@ -73,7 +74,7 @@ public class AsyncLocalMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void removeIfPresent(Key key, Value value, Handler<AsyncResult<Boolean>> handler) {
+    public void removeIfPresent(String key, Value value, Handler<AsyncResult<Boolean>> handler) {
         Future<Boolean> future = Future.future();
         future.setHandler(handler);
 
@@ -87,7 +88,7 @@ public class AsyncLocalMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void replace(Key key, Value value, Handler<AsyncResult<Value>> handler) {
+    public void replace(String key, Value value, Handler<AsyncResult<Value>> handler) {
         Future<Value> future = Future.future();
         future.setHandler(handler);
 
@@ -101,7 +102,7 @@ public class AsyncLocalMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void replaceIfPresent(Key key, Value value, Value newValue, Handler<AsyncResult<Boolean>> handler) {
+    public void replaceIfPresent(String key, Value value, Value newValue, Handler<AsyncResult<Boolean>> handler) {
         Future<Boolean> future = Future.future();
         future.setHandler(handler);
 

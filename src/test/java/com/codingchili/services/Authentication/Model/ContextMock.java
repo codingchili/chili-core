@@ -2,6 +2,7 @@ package com.codingchili.services.Authentication.Model;
 
 import io.vertx.core.Vertx;
 
+import com.codingchili.core.Context.StorageContext;
 import com.codingchili.core.Security.TokenFactory;
 import com.codingchili.core.Storage.AsyncLocalMap;
 
@@ -22,8 +23,8 @@ public class ContextMock extends AuthContext {
         settings.setRealmSecret("realm-secret".getBytes());
         settings.setClientSecret("client-secret".getBytes());
 
-        realms = new AsyncRealmDB(new AsyncLocalMap<>(this));
-        accounts = new AsyncAccountDB(new AsyncLocalMap<>(this), Vertx.vertx());
+        realms = new AsyncRealmDB(new AsyncLocalMap<>(new StorageContext(this)));
+        accounts = new AsyncAccountDB(new AsyncLocalMap<>(new StorageContext(this)), Vertx.vertx());
     }
 
     @Override

@@ -67,6 +67,8 @@ public abstract class Strings {
     public static final String ID_DEFAULT = "default";
     public static final String ID_IDENTITY = "identity";
     public static final String ID_SYSTEM = "system";
+    public static final String ID = "id";
+
 
     // Node names.
     public static final String NODE_LOCAL = "local";
@@ -74,6 +76,7 @@ public abstract class Strings {
     // Storage plugin contants.
     public static final String STORAGE_LOCALMAP = "com.codingchili.core.Storage.AsyncLocalMap";
     public static final String STORAGE_HAZELMAP = "com.codingchili.core.Storage.AsyncHazelMap";
+    public static final String STORAGE_MONGODB =  "com.codingchili.core.Storage.AsyncMongoMap";
 
     // logging constants
     public static final String LOG_AT = "@";
