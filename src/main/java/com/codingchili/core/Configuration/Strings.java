@@ -63,6 +63,14 @@ public abstract class Strings {
     public static final String ID_RANGE = "Range";
     public static final String ID_DEFAULT = "default";
     public static final String ID_IDENTITY = "identity";
+    public static final String ID_SYSTEM = "system";
+
+    // Node names.
+    public static final String NODE_LOCAL = "local";
+
+    // Storage plugin contants.
+    public static final String STORAGE_LOCALMAP = "com.codingchili.core.Storage.AsyncLocalMap";
+    public static final String STORAGE_HAZELMAP = "com.codingchili.core.Storage.AsyncHazelMap";
 
     // logging constants
     public static final String LOG_AT = "@";
@@ -98,7 +106,6 @@ public abstract class Strings {
     public static final String ERROR_HANDLER_MISSING = "The requested handler was not found.";
     public static final String ERROR_LAUNCHER_STARTUP = "Failed to start the launcher with clustering.";
     public static final String ERRROR_LAUNCHER_SHUTDOWN = "System has been shut down..";
-    public static final String ERROR_PROTOCOL_ATTRIBUTE_MISSING = "A required field was missing in request.";
     public static final String ERROR_VALIDATION_FAILURE = "Provided data did not pass validation.";
     public static final String ERROR_REQUEST_SIZE_TOO_LARGE = "Maximum request size exceeded.";
     public static final String ERROR_CONFIGURATION_MISMATCH = "Configuration mismatches with currently loaded.";
@@ -151,7 +158,7 @@ public abstract class Strings {
     }
 
     public static String getNodeNotVerticle(String node) {
-        return "Error: Configured node is not of acceptable type '" + node + "', must extend 'ClusterNode'.";
+        return "Error: Configured node is not of acceptable type '" + node + "' must extend 'ClusterNode'.";
     }
 
     public static String getNodeNotFound(String node) {
@@ -205,5 +212,9 @@ public abstract class Strings {
 
     public static String getIdentityNotConfigured(String name) {
         return  "[" + name + "] Error: Identity must be configured.";
+    }
+
+    public static String getStorageLoaderError(String className, String mapName) {
+        return "Error: Failed to load storage plugin " + className + " for collection " + mapName;
     }
 }

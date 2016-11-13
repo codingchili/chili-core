@@ -3,7 +3,7 @@ package com.codingchili.services.Realm;
 import io.vertx.core.Vertx;
 
 import com.codingchili.core.Security.*;
-import com.codingchili.core.Testing.AsyncMapMock;
+import com.codingchili.core.Storage.AsyncLocalMap;
 
 import com.codingchili.services.Realm.Configuration.RealmContext;
 import com.codingchili.services.Realm.Configuration.RealmSettings;
@@ -27,7 +27,7 @@ public class ContextMock extends RealmContext {
 
         realm.getClasses().add(new PlayerClass().setName("class.name"));
 
-        characters = new HazelCharacterDB(new AsyncMapMock<>());
+        characters = new HazelCharacterDB(new AsyncLocalMap<>(this));
         vertx = Vertx.vertx();
     }
 

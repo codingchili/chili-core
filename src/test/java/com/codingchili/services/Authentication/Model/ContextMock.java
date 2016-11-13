@@ -3,7 +3,7 @@ package com.codingchili.services.Authentication.Model;
 import io.vertx.core.Vertx;
 
 import com.codingchili.core.Security.TokenFactory;
-import com.codingchili.core.Testing.AsyncMapMock;
+import com.codingchili.core.Storage.AsyncLocalMap;
 
 import com.codingchili.services.Authentication.Configuration.AuthContext;
 import com.codingchili.services.Authentication.Configuration.AuthServerSettings;
@@ -22,8 +22,8 @@ public class ContextMock extends AuthContext {
         settings.setRealmSecret("realm-secret".getBytes());
         settings.setClientSecret("client-secret".getBytes());
 
-        realms = new HazelRealmDB(new AsyncMapMock<>());
-        accounts = new HazelAccountDB(new AsyncMapMock<>(), Vertx.vertx());
+        realms = new AsyncRealmDB(new AsyncLocalMap<>(this));
+        accounts = new AsyncAccountDB(new AsyncLocalMap<>(this), Vertx.vertx());
     }
 
     @Override

@@ -21,12 +21,5 @@
   "size" : 5000,
   "players" : 0,
   "name" : "Angel Oak",
-  "remote" : "Angel Oak.realm.node",
-  "secret" : "KLI6hQghXh9DFF4brEwbMx4yNhDskuszSHxyvIeVZeFrjkwALRFlb4F6hIYsB1ECkeTRZGh0iEPhM6XzjAYYDA==",
-  "global" : "G5ox3EyqFREvKZGlIwKAAgzcu/RJ1t5yql18n3mM7SFQtio0e21mz07WfhUlFumWCZDKtEZuiZ1BgZ6B0JdpnA==",
-  "logging" : {
-    "key" : "vK7gb6jzCNgZptcmagoYfFP8Fa6Vaw/g+9aH7a8KuzUOe0CN0VBa8xih88qnBMSauaXgnUmv2v4Q9yl+ywj8Vg==",
-    "expiry" : 1481652213,
-    "domain" : "Angel Oak.realm.node@server.1"
-  }
+  "remote" : "Angel Oak.realm.node"
 }

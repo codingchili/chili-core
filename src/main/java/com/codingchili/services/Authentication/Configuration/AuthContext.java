@@ -2,13 +2,19 @@ package com.codingchili.services.Authentication.Configuration;
 
 import io.vertx.core.*;
 
+import java.util.HashMap;
+
 import com.codingchili.core.Context.ServiceContext;
+import com.codingchili.core.Context.SystemContext;
 import com.codingchili.core.Files.Configurations;
 import com.codingchili.core.Logging.Level;
 import com.codingchili.core.Security.Token;
 import com.codingchili.core.Security.TokenFactory;
+import com.codingchili.core.Storage.*;
 
 import com.codingchili.services.Authentication.Model.*;
+import com.codingchili.services.Realm.Configuration.RealmSettings;
+import com.codingchili.services.Shared.Strings;
 
 import static com.codingchili.services.Authentication.Configuration.AuthServerSettings.PATH_AUTHSERVER;
 import static com.codingchili.services.Shared.Strings.*;
@@ -32,18 +38,19 @@ public class AuthContext extends ServiceContext {
     }
 
     public static void create(Future<AuthContext> future, Vertx vertx) {
-        Future<AsyncRealmStore> realmFuture = Future.future();
-        Future<AsyncAccountStore> accountFuture = Future.future();
+        Future<AsyncStorage<String, HashMap<String, RealmSettings>>> realmFuture = Future.future();
+        Future<AsyncStorage<String, AccountMapping>> accountFuture = Future.future();
 
         CompositeFuture.all(realmFuture, accountFuture).setHandler(initialization -> {
-            AsyncRealmStore realms = (AsyncRealmStore) initialization.result().list().get(0);
-            AsyncAccountStore accounts = (AsyncAccountStore) initialization.result().list().get(1);
+
+            AsyncRealmStore realms = new AsyncRealmDB(realmFuture.result());
+            AsyncAccountStore accounts = new AsyncAccountDB(accountFuture.result(), vertx);
 
             future.complete(new AuthContext(realms, accounts, vertx));
         });
 
-        HazelAccountDB.create(accountFuture, vertx);
-        HazelRealmDB.create(realmFuture, vertx);
+        StorageLoader.load(realmFuture, "com.codingchili.core.Storage.AsyncHazelMap", "realms");
+        StorageLoader.load(accountFuture, "com.codingchili.core.Storage.AsyncHazelMap", "accounts");
     }
 
     public AsyncRealmStore getRealmStore() {

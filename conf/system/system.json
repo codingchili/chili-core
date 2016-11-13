@@ -8,5 +8,5 @@
   "configurationPoll" : 1500,
   "cachedFilePoll" : 2000,
   "consoleLogging" : true,
-  "workerPoolSize": 16
+  "workerPoolSize" : 16
 }

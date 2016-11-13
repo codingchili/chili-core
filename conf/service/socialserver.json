@@ -3,11 +3,5 @@
     "node" : "social.node",
     "host" : "server.1"
   },
-  "message" : "hello world!!!",
-  "global" : "G5ox3EyqFREvKZGlIwKAAgzcu/RJ1t5yql18n3mM7SFQtio0e21mz07WfhUlFumWCZDKtEZuiZ1BgZ6B0JdpnA==",
-  "logging" : {
-    "key" : "Rg2+aJFXjPm2H/h+6R1PYIIzriAD+7PIJdnPEKQsZTBMiXlzmiozZDFUSFv0wps5JffFNJUMbPv7j8hrbMjbUA==",
-    "expiry" : 1481652213,
-    "domain" : "social.node@server.1"
-  }
+  "message" : "hello world!!!"
 }

@@ -20,7 +20,6 @@ import com.codingchili.core.Logging.ConsoleLogger;
 import com.codingchili.core.Protocol.Serializer;
 import com.codingchili.core.Testing.ContextMock;
 
-import static com.codingchili.core.Configuration.Strings.DIR_SERVICES;
 import static com.codingchili.core.Configuration.Strings.testFile;
 
 /**

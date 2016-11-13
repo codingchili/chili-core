@@ -14,6 +14,7 @@ import com.codingchili.core.Files.Configurations;
 import com.codingchili.core.Logging.ConsoleLogger;
 import com.codingchili.core.Logging.Level;
 import com.codingchili.core.Protocol.ClusterNode;
+import com.codingchili.core.Storage.StorageLoader;
 
 import static com.codingchili.core.Configuration.Strings.*;
 
@@ -25,7 +26,7 @@ import static com.codingchili.core.Configuration.Strings.*;
 public class Launcher extends ClusterNode {
     private static final ConsoleLogger logger = new ConsoleLogger();
     private static List<String> nodes = new ArrayList<>();
-    private static SystemContext context;
+    private static CoreContext context;
 
     /**
      * Starts the launcher with the given arguments.
@@ -35,7 +36,7 @@ public class Launcher extends ClusterNode {
         new Launcher(new LaunchContext(args));
     }
 
-    private Launcher(LaunchContext context) {
+    Launcher(LaunchContext context) {
         logger.log(Strings.getStartupText(context.settings().getVersion()), Level.STARTUP);
 
         CommandExecutor executor = new CommandExecutor(context);
@@ -54,7 +55,7 @@ public class Launcher extends ClusterNode {
         }
     }
 
-    private void exit() {
+    void exit() {
         logger.reset();
         System.exit(0);
     }
@@ -108,7 +109,8 @@ public class Launcher extends ClusterNode {
             boolean isClusteredVerticle = clazz.getSuperclass().equals(ClusterNode.class);
 
             if (!isClusteredVerticle) {
-                logger.log(Strings.getNodeNotVerticle(node));
+                logger.log(Strings.getNodeNotVerticle(node), Level.SEVERE);
+                exit();
             }
 
             return isClusteredVerticle;
@@ -145,6 +147,7 @@ public class Launcher extends ClusterNode {
     private void initialize() {
         Configurations.initialize(context);
         Delay.initialize(context);
+        StorageLoader.initialize(context);
     }
 
     @Override

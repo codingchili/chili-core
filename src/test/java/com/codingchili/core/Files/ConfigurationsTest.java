@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 
 import com.codingchili.core.Configuration.Configurable;
-import com.codingchili.core.Configuration.TestConfigurable;
+import com.codingchili.core.Configuration.ConfigurableTest;
 import com.codingchili.core.Exception.FileReadException;
 
 import static com.codingchili.core.Configuration.Strings.DIR_SERVICES;
@@ -50,7 +50,7 @@ public class ConfigurationsTest {
     @Test
     public void loadMissingFile() {
         try {
-            load("x", TestConfigurable.class);
+            load("x", ConfigurableTest.class);
             throw new RuntimeException("Should throw FileReadEx on missing file.");
         } catch (FileReadException ignored) {
         }
@@ -58,10 +58,10 @@ public class ConfigurationsTest {
 
     @Test
     public void reloadSingleFile() {
-        TestConfigurable config = new TestConfigurable();
+        ConfigurableTest config = new ConfigurableTest();
 
         Configurations.save(config);
-        config = Configurations.get(config.getPath(), TestConfigurable.class);
+        config = Configurations.get(config.getPath(), ConfigurableTest.class);
 
         config.setData(NEW_DATA);
         Configurations.save(config);
@@ -69,32 +69,32 @@ public class ConfigurationsTest {
 
         Configurations.reload(config.getPath());
 
-        config = Configurations.get(config.getPath(), TestConfigurable.class);
+        config = Configurations.get(config.getPath(), ConfigurableTest.class);
 
         Assert.assertTrue(config.getData().equals(NEW_DATA));
     }
 
     @Test
     public void fileCachedAndNotAlwaysReloaded() {
-        TestConfigurable config = new TestConfigurable();
+        ConfigurableTest config = new ConfigurableTest();
 
         Configurations.save(config);
-        config = Configurations.get(config.getPath(), TestConfigurable.class);
+        config = Configurations.get(config.getPath(), ConfigurableTest.class);
 
         config.setData(NEW_DATA);
         Configurations.save(config);
         config.setData(TEST_DATA);    // restore memory copy
-        config = Configurations.get(config.getPath(), TestConfigurable.class);
+        config = Configurations.get(config.getPath(), ConfigurableTest.class);
 
         Assert.assertFalse(config.getData().equals(NEW_DATA));
     }
 
     @Test
     public void saveAConfigurableToFile() {
-        TestConfigurable config = new TestConfigurable();
+        ConfigurableTest config = new ConfigurableTest();
 
         Configurations.save(config);
-        config = Configurations.get(config.getPath(), TestConfigurable.class);
+        config = Configurations.get(config.getPath(), ConfigurableTest.class);
 
         Assert.assertTrue(config.getData().equals(TEST_DATA));
     }
@@ -134,12 +134,12 @@ public class ConfigurationsTest {
 
     @Test
     public void testPutConfiguration(TestContext test) {
-        TestConfigurable configurable = new TestConfigurable(TEST_PATH);
+        ConfigurableTest configurable = new ConfigurableTest(TEST_PATH);
         configurable.setData(NEW_DATA);
 
         Configurations.put(configurable);
 
-        TestConfigurable loaded = Configurations.get(TEST_PATH, TestConfigurable.class);
+        ConfigurableTest loaded = Configurations.get(TEST_PATH, ConfigurableTest.class);
         test.assertEquals(NEW_DATA, loaded.getData());
     }
 

@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.codingchili.core.Configuration.CachedFileStoreSettings;
 import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Context.SystemContext;
+import com.codingchili.core.Context.CoreContext;
 import com.codingchili.core.Exception.ConfigurationMismatchException;
 import com.codingchili.core.Exception.FileMissingException;
 import com.codingchili.core.Protocol.Serializer;
@@ -24,7 +24,7 @@ public class CachedFileStore<T> implements FileStoreListener {
     private static final HashMap<String, CachedFileStore> stores = new HashMap<>();
     private final ConcurrentHashMap<String, Buffer> files = new ConcurrentHashMap<>();
     private final CachedFileStoreSettings settings;
-    private final SystemContext context;
+    private final CoreContext context;
 
     /**
      * Maintain a CachedFileStore for each loaded directory.
@@ -35,7 +35,7 @@ public class CachedFileStore<T> implements FileStoreListener {
      * @return A loaded CachedFileStore.
      */
     @SuppressWarnings("unchecked")
-    public static <T> CachedFileStore<T> instance(SystemContext context, CachedFileStoreSettings settings) {
+    public static <T> CachedFileStore<T> instance(CoreContext context, CachedFileStoreSettings settings) {
         CachedFileStore store = stores.get(settings.getDirectory());
 
         if (store == null) {
@@ -55,7 +55,7 @@ public class CachedFileStore<T> implements FileStoreListener {
         stores.clear();
     }
 
-    protected CachedFileStore(SystemContext context, CachedFileStoreSettings settings) {
+    protected CachedFileStore(CoreContext context, CachedFileStoreSettings settings) {
         this.settings = settings;
         this.context = context;
         try {

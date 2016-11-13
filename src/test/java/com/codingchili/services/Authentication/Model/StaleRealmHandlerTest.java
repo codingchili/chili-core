@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 
 import java.time.Instant;
 
-import com.codingchili.core.Testing.AsyncMapMock;
+import com.codingchili.core.Storage.AsyncLocalMap;
 
 import com.codingchili.services.Realm.Configuration.RealmSettings;
 
@@ -25,7 +25,7 @@ public class StaleRealmHandlerTest {
 
     @Before
     public void setUp() {
-        realms = new HazelRealmDB(new AsyncMapMock<>());
+        realms = new AsyncRealmDB(new AsyncLocalMap<>(context));
         context = new WritableContextMock();
 
         StaleRealmHandler.watch(context, realms);

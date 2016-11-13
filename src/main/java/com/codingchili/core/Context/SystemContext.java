@@ -19,7 +19,7 @@ import com.codingchili.core.Security.RemoteIdentity;
  *
  * Implementation of the CoreContext.
  */
-public abstract class SystemContext implements CoreContext {
+public class SystemContext implements CoreContext {
     private final ConsoleLogger console;
     protected Vertx vertx;
 
@@ -30,7 +30,7 @@ public abstract class SystemContext implements CoreContext {
         initialize();
     }
 
-    SystemContext(Vertx vertx) {
+    public SystemContext(Vertx vertx) {
         this.vertx = vertx;
         this.console = new ConsoleLogger(this);
 
@@ -147,5 +147,7 @@ public abstract class SystemContext implements CoreContext {
     }
 
     @Override
-    public abstract RemoteIdentity identity();
+    public RemoteIdentity identity() {
+        return new RemoteIdentity(Strings.ID_SYSTEM, Strings.NODE_LOCAL);
+    }
 }

@@ -24,7 +24,7 @@ public class ServiceLogHandler<T extends LogContext> extends AbstractLogHandler<
 
         logdata.remove(PROTOCOL_ROUTE);
 
-        if (!NODE_LOGGING.equals(node)) {
+        if (!NODE_LOGGING.equals(node) && context().consoleEnabled()) {
             console.log(logdata);
         }
 

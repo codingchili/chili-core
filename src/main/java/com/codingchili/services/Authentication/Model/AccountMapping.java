@@ -6,7 +6,7 @@ import java.io.Serializable;
  * @author Robin Duda
  *         Database mapping not shared outside storage.
  */
-class AccountMapping implements Serializable {
+public class AccountMapping implements Serializable {
     private String username;
     private String email;
     private String salt;
