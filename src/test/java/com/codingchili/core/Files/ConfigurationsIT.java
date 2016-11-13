@@ -23,7 +23,7 @@ import static com.codingchili.core.Configuration.Strings.*;
  */
 @RunWith(VertxUnitRunner.class)
 public class ConfigurationsIT {
-    private static final String TEST_PATH = "src/main/test/resources/Configurations/testfile.json";
+    private static final String TEST_PATH = testFile("Configurations", "testfile.json");
     private static final String NEW_DATA = "new-data";
     private static final String TEST_DATA = "test-data";
     private static final String CONFIGURATIONS = "Configurations";

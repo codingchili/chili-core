@@ -173,7 +173,7 @@ public abstract class Configurations {
     public static void reset() {
         configs.clear();
         init();
-        saveAll();
+        reloadAll();
     }
 
     /**
