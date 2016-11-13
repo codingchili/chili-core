@@ -5,6 +5,7 @@ import java.util.*;
 import com.codingchili.core.Configuration.Strings;
 import com.codingchili.core.Configuration.System.LauncherSettings;
 import com.codingchili.core.Exception.NoSuchCommandException;
+import com.codingchili.core.Files.Configurations;
 import com.codingchili.core.Logging.*;
 import com.codingchili.core.Security.AuthenticationGenerator;
 
@@ -49,6 +50,9 @@ public class CommandExecutor {
             case GENERATE:
                 refresher.all();
                 break;
+            case RECONFIGURE:
+                Configurations.reset();
+                break;
             case HELP:
                 help();
                 break;
@@ -66,6 +70,7 @@ public class CommandExecutor {
                 .log("\t\t" + GENERATE_SECRETS + "\tgenerates authentication secrets")
                 .log("\t\t" + GENERATE_TOKENS + "\tgenerates tokens from existing secrets.")
                 .log("\t\t" + GENERATE + "\t\tgenerate secrets, tokens and preshared keys.")
+                .log("\t\t" + RECONFIGURE + "\t\tresets system configuration files.")
                 .log("\t\t" + HELP + "\t\t\tprints this help text.")
                 .log("");
 

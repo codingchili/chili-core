@@ -1,0 +1,20 @@
+[
+  {
+    "name": "natures blessing",
+    "description": "Chance to avoid afflictions set to 50%.",
+    "trigger": [
+      {
+        "on": "affliction",
+        "chance": 0.5,
+        "modifier": [
+          {
+            "attribute": "affliction",
+            "using": {
+              "cancel": true
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

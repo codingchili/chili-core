@@ -17,12 +17,14 @@ import static com.codingchili.core.Configuration.Strings.*;
 
 /**
  * @author Robin Duda
+ *
+ * Tests the JSON file store.
  */
 @RunWith(VertxUnitRunner.class)
 public class JsonFileStoreTest {
 
     @Rule
-    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
 
     @Test
     public void testReadObject(TestContext test) throws IOException {
@@ -54,9 +56,9 @@ public class JsonFileStoreTest {
     }
 
     @Test
-    public void testDeleteObject() {
+    public void testDeleteObject(TestContext test) {
         JsonFileStore.writeObject(new JsonObject(), testFile("JsonFileStore", "tmp.json"));
-        assert JsonFileStore.deleteObject(testFile("JsonFileStore", "tmp.json"));
+        test.assertTrue(JsonFileStore.deleteObject(testFile("JsonFileStore", "tmp.json")));
     }
 
 }

@@ -1,6 +1,7 @@
 package com.codingchili.core.Configuration;
 
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import io.vertx.ext.unit.TestContext;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
@@ -11,6 +12,8 @@ import com.codingchili.core.Protocol.Serializer;
 
 /**
  * @author Robin Duda
+ *
+ * Tests the implementation of attributes.
  */
 @RunWith(VertxUnitRunner.class)
 public class AttributesTest {
@@ -58,12 +61,12 @@ public class AttributesTest {
     }
 
     @Test
-    public void testAddIntegers() {
+    public void testAddIntegers(TestContext test) {
         attributes.put(KEY, 1);
         Optional<Integer> integer = attributes.getInt(KEY);
 
         Assert.assertTrue(integer.isPresent());
-        assert integer.get().equals(1);
+        test.assertTrue(integer.get().equals(1));
     }
 
     @Test
@@ -84,40 +87,40 @@ public class AttributesTest {
     }
 
     @Test
-    public void testAddDoubles() {
+    public void testAddDoubles(TestContext test) {
         attributes.put(KEY, 1d);
         Optional<Double> adoub = attributes.getDouble(KEY);
 
         Assert.assertTrue(adoub.isPresent());
-        assert adoub.get().equals(1d);
+        test.assertTrue(adoub.get().equals(1d));
     }
 
     @Test
-    public void testAddStrings() {
+    public void testAddStrings(TestContext test) {
         attributes.put(KEY, "s");
         Optional<String> string = attributes.getString(KEY);
 
         Assert.assertTrue(string.isPresent());
-        assert string.get().equals("s");
+        test.assertTrue(string.get().equals("s"));
     }
 
     @Test
-    public void testAddBooleans() {
+    public void testAddBooleans(TestContext test) {
         attributes.put(KEY, true);
         Optional<Boolean> bool = attributes.getBool(KEY);
 
         Assert.assertTrue(bool.isPresent());
-        assert bool.get().equals(true);
+        test.assertTrue(bool.get().equals(true));
     }
 
     @Test
-    public void testSerializeAttributes() {
+    public void testSerializeAttributes(TestContext test) {
         attributes.put("K1", "str");
         attributes.put("K2", 0);
         attributes.put("K3", 0d);
         attributes.put("K4", true);
 
         Attributes attr = Serializer.unpack(Serializer.json(attributes), AttributeImpl.class);
-        assert attr.size() == 4;
+        test.assertTrue(attr.size() == 4);
     }
 }

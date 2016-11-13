@@ -6,8 +6,8 @@ import io.vertx.core.json.JsonObject;
 
 /**
  * @author Robin Duda
- *
- * Interface to generate logging messages.
+ *         <p>
+ *         Interface to generate logging messages.
  */
 public interface Logger extends JsonLogger, StringLogger {
 
@@ -50,20 +50,40 @@ public interface Logger extends JsonLogger, StringLogger {
 
     /**
      * Emit when a file has been loaded from the file-system.
+     *
      * @param path a path to the loaded file.
      */
     void onFileLoaded(String path);
 
     /**
+     * Emit when a configuration was not found on disk and its defaults was
+     * loaded from memory.
+     *
+     * @param path  the path to the configurable that was not found.
+     * @param clazz the class of the configurable.
+     */
+    void onConfigurationDefaultsLoaded(String path, Class<?> clazz);
+
+    /**
+     * Throw when a configuration was not found and the attempt to instantiate
+     * default configuration from the given class has failed.
+     *
+     * @param clazz a class that is not of Configurable type.
+     */
+    void onInvalidConfigurable(Class<?> clazz);
+
+    /**
      * Emit when the cache of a component has been cleared.
+     *
      * @param component the name of the component.
      */
     void onCacheCleared(String component);
 
     /**
      * Emit when a file has been saved to file.
+     *
      * @param component the component that saved the file.
-     * @param path to the saved file.
+     * @param path      to the saved file.
      */
     void onFileSaved(String component, String path);
 
@@ -74,6 +94,7 @@ public interface Logger extends JsonLogger, StringLogger {
 
     /**
      * Log general errors.
+     *
      * @param cause the cause for throw.
      */
     void onError(Throwable cause);

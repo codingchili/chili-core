@@ -35,6 +35,10 @@ public class WebserverContext extends ServiceContext {
         return service().getGzip();
     }
 
+    public String resources() {
+        return service().getResources();
+    }
+
     public void onPageLoaded(Request request) {
         log(event(LOG_PAGE_LOAD)
                 .put(LOG_AGENT, request.data().getString(LOG_USER_AGENT)));

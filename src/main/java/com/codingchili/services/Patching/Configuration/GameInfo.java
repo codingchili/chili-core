@@ -5,8 +5,8 @@ package com.codingchili.services.Patching.Configuration;
  * Configuration file holds content and title of the website.
  */
 class GameInfo {
-    private String content;
-    private String title;
+    private String content = "content";
+    private String title = "title";
 
     public String getTitle() {
         return title;

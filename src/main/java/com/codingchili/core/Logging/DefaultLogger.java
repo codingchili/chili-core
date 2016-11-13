@@ -15,8 +15,8 @@ import static com.codingchili.core.Configuration.Strings.*;
 
 /**
  * @author Robin Duda
- *
- * Default logging implementation.
+ *         <p>
+ *         Default logging implementation.
  */
 public abstract class DefaultLogger extends Handler implements Logger {
     private Level level = Level.INFO;
@@ -129,6 +129,18 @@ public abstract class DefaultLogger extends Handler implements Logger {
     public void onFileSaveError(String fileName) {
         log(event(LOG_FILE_SAVED, Level.SEVERE)
                 .put(LOG_MESSAGE, fileName));
+    }
+
+    @Override
+    public void onConfigurationDefaultsLoaded(String path, Class<?> clazz) {
+        log(event(Strings.LOG_CONFIG_DEFAULTED, Level.WARNING)
+                .put(ID_MESSAGE, Strings.getFileLoadDefaults(path, clazz)));
+    }
+
+    @Override
+    public void onInvalidConfigurable(Class<?> clazz) {
+        log(event(Strings.LOG_CONFIGURATION_INVALID, Level.SEVERE)
+                .put(ID_MESSAGE, Strings.getErrorInvalidConfigurable(clazz)));
     }
 
     @Override

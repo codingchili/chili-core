@@ -25,7 +25,7 @@ import com.codingchili.core.Testing.ContextMock;
 public class CachedFileStoreTest {
     private static final String TEST_DIRECTORY = Strings.testDirectory("CachedFileStore");
     private static final String TEST_FILE_ABSOLUTE = Strings.testFile("CachedFileStore", "test.txt");
-    private static final String TEST_FILE = "test.txt";
+    private static final String TEST_FILE = "/test.txt";
     private static final String TEST_FILE_TRAVERSAL = "../TraversalTestFile.txt";
     private Vertx vertx;
 
@@ -85,8 +85,8 @@ public class CachedFileStoreTest {
     }
 
     private CachedFileStore<Buffer> getStore(String directory, boolean isGzip) {
-        return CachedFileStore.instance(new ContextMock(vertx), new CachedFileStoreSettings()
+        return new CachedFileStore<Buffer>(new ContextMock(vertx), new CachedFileStoreSettings()
                 .setDirectory(directory)
-                .setGzip(isGzip));
+                .setGzip(isGzip)).initialize();
     }
 }

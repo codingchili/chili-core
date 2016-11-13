@@ -74,7 +74,7 @@ public class FileWatcherIT {
         JsonFileStore.writeObject(new JsonObject(), TOUCH_JSON);
 
         context.timer(400, event -> {
-            assert JsonFileStore.deleteObject(TOUCH_JSON);
+            test.assertTrue(JsonFileStore.deleteObject(TOUCH_JSON));
         });
     }
 
@@ -111,7 +111,7 @@ public class FileWatcherIT {
         });
 
         JsonFileStore.writeObject(new JsonObject(), NOT_WATCHED_FILE);
-        assert JsonFileStore.deleteObject(NOT_WATCHED_FILE);
+        test.assertTrue(JsonFileStore.deleteObject(NOT_WATCHED_FILE));
 
         Delay.forMS(async, 400);
     }

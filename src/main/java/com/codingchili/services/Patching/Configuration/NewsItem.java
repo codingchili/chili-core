@@ -1,13 +1,15 @@
 package com.codingchili.services.Patching.Configuration;
 
+import java.time.Instant;
+
 /**
  * @author Robin Duda
  *         Contains configuration data for a news object on the website.
  */
 class NewsItem {
-    private String title;
-    private String content;
-    private String date;
+    private String title = "title";
+    private String content = "content";
+    private String date = Instant.now().toString();
 
     public String getDate() {
         return date;

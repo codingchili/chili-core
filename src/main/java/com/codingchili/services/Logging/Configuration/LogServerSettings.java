@@ -10,8 +10,8 @@ import com.codingchili.services.Shared.Strings;
 public class LogServerSettings extends ServiceConfigurable {
     public static final String PATH_LOGSERVER = Strings.getService("logserver");
     private ElasticSettings elastic = new ElasticSettings();
-    private byte[] secret;
-    private Boolean console;
+    private byte[] secret = new byte[] {0x53,0x48};
+    private Boolean console = true;
 
     public Boolean getConsole() {
         return console;

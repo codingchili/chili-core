@@ -5,8 +5,7 @@ import io.vertx.core.*;
 import java.util.List;
 
 import com.codingchili.core.Configuration.System.LauncherSettings;
-import com.codingchili.core.Exception.BlockNotConfiguredException;
-import com.codingchili.core.Exception.RemoteBlockNotConfiguredException;
+import com.codingchili.core.Exception.*;
 import com.codingchili.core.Files.Configurations;
 import com.codingchili.core.Security.RemoteIdentity;
 
@@ -14,10 +13,11 @@ import static com.codingchili.core.Configuration.Strings.ID_DEFAULT;
 
 /**
  * @author Robin Duda
- *
- * Provides context for the Launcher system.
+ *         <p>
+ *         Provides context for the Launcher system.
  */
 public class LaunchContext extends SystemContext {
+    private static final String BLOCK_DEFAULT = "default";
     private Vertx vertx;
     private String[] args;
 
@@ -85,20 +85,33 @@ public class LaunchContext extends SystemContext {
 
     /**
      * Get the configured services for the given block or remote identifier.
+     *
      * @param block the name of the configured block or the hostname.
      * @return a list of configured services for the given block or host.
      * @throws RemoteBlockNotConfiguredException when no block is configured for given host.
-     * @throws BlockNotConfiguredException when no block is configured for given block-name.
+     * @throws BlockNotConfiguredException       when no block is configured for given block-name.
      */
-    public List<String> block(String block) throws RemoteBlockNotConfiguredException, BlockNotConfiguredException {
+    protected List<String> block(String block) throws CoreException {
+        List<String> blocks;
+
         if (isRemoteBlock(block)) {
-            return getBlockForRemote(block);
+            blocks = getBlockForRemote(block);
         } else {
-            return getBlock(block);
+            blocks = getBlock(block);
         }
+
+        if (blocks.size() == 0) {
+            throw new NoServicesConfiguredForBlock(block);
+        }
+
+        return blocks;
     }
 
     public String[] args() {
         return args;
+    }
+
+    public List<String> block(String[] args) throws CoreException {
+        return block((args.length == 0) ? BLOCK_DEFAULT : args[0]);
     }
 }

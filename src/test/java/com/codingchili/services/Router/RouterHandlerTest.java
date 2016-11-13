@@ -16,6 +16,7 @@ import com.codingchili.core.Testing.RequestMock;
 import com.codingchili.core.Testing.ResponseListener;
 
 import com.codingchili.services.Router.Configuration.RouterContext;
+import com.codingchili.services.Router.Configuration.RouterSettings;
 import com.codingchili.services.Router.Controller.RouterHandler;
 
 import static com.codingchili.services.Shared.Strings.*;
@@ -34,7 +35,13 @@ public class RouterHandlerTest {
     @Before
     public void setUp() {
         vertx = Vertx.vertx();
-        handler = new RouterHandler<>(new RouterContext(vertx));
+
+        handler = new RouterHandler<>(new RouterContext(vertx) {
+            @Override
+            public boolean isRouteHidden(String route) {
+                return route.equals(NODE_LOGGING);
+            }
+        });
     }
 
     @After
@@ -91,10 +98,8 @@ public class RouterHandlerTest {
     }
 
     @Test
-    public void testRouteServiceLogger(TestContext context) {
+    public void testRouteHidden(TestContext context) {
         Async async = context.async();
-
-        mockNode(NODE_LOGGING);
 
         handle(NODE_LOGGING, (response, status) -> {
             context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
@@ -155,16 +160,6 @@ public class RouterHandlerTest {
             async.complete();
         }, new JsonObject()
                 .put(ID_NAME, "invalid characters #*#&(@"));
-    }
-
-    @Test
-    public void testRouteHidden(TestContext context) {
-        Async async = context.async();
-
-        handle(NODE_LOGGING, (response, status) -> {
-            context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
-            async.complete();
-        });
     }
 
     private void handle(String target, ResponseListener listener) {

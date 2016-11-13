@@ -22,6 +22,8 @@ public abstract class Strings {
     public static final String DIR_SYSTEM = "conf/system/";
     private static final String DIR_TEST = "src/test/resources/";
     public static String DIR_SERVICES = "conf/service/";
+    public static final String EMPTY = "";
+
 
     public static final String EXT_JSON = ".json";
     public static final String ANY = "*";
@@ -38,6 +40,7 @@ public abstract class Strings {
     public static final String GENERATE_TOKENS = "--generate-tokens";
     public static final String GENERATE_PRESHARED = "--generate-preshared";
     public static final String GENERATE = "--generate";
+    public static final String RECONFIGURE = "--reconfigure";
     public static final String HELP = "--help";
 
     // keys used in json objects.
@@ -85,7 +88,6 @@ public abstract class Strings {
     public static final String LOG_SERVER_START = "server.start";
     public static final String LOG_SERVER_STOP = "server.stop";
     public static final String LOG_MESSAGE = "message";
-    public static final String LOG_FILE_ERROR = "file.error";
     public static final String LOG_LEVEL = "level";
     public static final String LOG_VERTX = "vertx";
     public static final String LOG_METRICS = "metrics";
@@ -93,6 +95,9 @@ public abstract class Strings {
     public static final String LOG_HANDLER_MISSING = "handler.missing";
     public static final String LOG_FILE_LOADED = "file.load";
     public static final String LOG_FILE_SAVED = "file.save";
+    public static final String LOG_FILE_ERROR = "file.error";
+    public static final String LOG_CONFIG_DEFAULTED = "config.defaults";
+    public static final String LOG_CONFIGURATION_INVALID = "config.error";
     public static final String LOG_CACHE_CLEARED = "cache.clear";
     public static final String LOG_ERROR = "error";
     public static final String LOG_TIMER_CHANGE = "timer.changed";
@@ -157,8 +162,12 @@ public abstract class Strings {
         return "Error: Service block '" + block + "' missing in " + PATH_LAUNCHER;
     }
 
+    public static String getNoServicesConfiguredForBlock(String block) {
+        return "Error: no services are configured for block '" + block + "'.";
+    }
+
     public static String getNodeNotVerticle(String node) {
-        return "Error: Configured node is not of acceptable type '" + node + "' must extend 'ClusterNode'.";
+        return "Error: Service '" + node + "' must extend 'ClusterNode'.";
     }
 
     public static String getNodeNotFound(String node) {
@@ -182,7 +191,7 @@ public abstract class Strings {
     }
 
     public static String getService(String config) {
-        return Strings.DIR_SERVICES + config + EXT_JSON;
+        return Strings.DIR_SERVICES + DIR_SEPARATOR + config + EXT_JSON;
     }
 
     public static String format(Path path) {
@@ -199,11 +208,11 @@ public abstract class Strings {
     }
 
     public static String testDirectory(String name) {
-        return DIR_TEST + name + DIR_SEPARATOR;
+        return DIR_TEST + name;
     }
 
     public static String testFile(String directory, String name) {
-        return testDirectory(directory) + name;
+        return testDirectory(directory) + DIR_SEPARATOR + name;
     }
 
     public static String getSystemNotInitialized(String name) {
@@ -216,5 +225,17 @@ public abstract class Strings {
 
     public static String getStorageLoaderError(String className, String mapName) {
         return "Error: Failed to load storage plugin '" + className + "' for collection '" + mapName + "'.";
+    }
+
+    public static String getErrorCreateDirectory(String target) {
+        return "Error: Failed to create directories for '" + target + "'.";
+    }
+
+    public static String getErrorInvalidConfigurable(Class clazz) {
+        return "The given class '" + clazz.getSimpleName() + "' is not of configurable type.";
+    }
+
+    public static String getFileLoadDefaults(String path, Class<?> clazz) {
+        return "Configuration '" + path + "' not found, using defaults from '" + clazz.getSimpleName() + "'.";
     }
 }

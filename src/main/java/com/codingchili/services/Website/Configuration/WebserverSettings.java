@@ -11,7 +11,8 @@ public class WebserverSettings extends ServiceConfigurable {
     public static final String PATH_WEBSERVER = Strings.getService("webserver");
     private String startPage = "/index.html";
     private String missingPage = "/missing.html";
-    private boolean gzip;
+    private String resources = "website/";
+    private boolean gzip = false;
 
     public boolean getGzip() {
         return gzip;
@@ -35,5 +36,13 @@ public class WebserverSettings extends ServiceConfigurable {
 
     public void setMissingPage(String missingPage) {
         this.missingPage = missingPage;
+    }
+
+    public String getResources() {
+        return resources;
+    }
+
+    public void setResources(String resources) {
+        this.resources = resources;
     }
 }

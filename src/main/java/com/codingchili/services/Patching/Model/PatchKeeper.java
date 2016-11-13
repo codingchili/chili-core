@@ -17,27 +17,20 @@ import com.codingchili.services.Patching.Configuration.PatchContext;
 import com.codingchili.services.Patching.Configuration.PatchNotes;
 import com.codingchili.services.Shared.Strings;
 
-import static com.codingchili.services.Shared.Strings.DIR_RESOURCES;
-
 
 /**
  * @author Robin Duda
  */
 public class PatchKeeper<T extends PatchFile> extends CachedFileStore {
-    private static final ConcurrentHashMap<String, PatchFile> files = new ConcurrentHashMap<>();
-    private static PatchKeeper instance;
-    private static PatchContext context;
+    private ConcurrentHashMap<String, PatchFile> files = new ConcurrentHashMap<>();
+    private PatchContext context;
 
-    public static PatchKeeper instance(PatchContext context) {
-        if (instance == null) {
-            PatchKeeper.context = context;
-            instance = new PatchKeeper();
-        }
-        return instance;
-    }
+    public PatchKeeper(PatchContext context) {
+        super(context, new CachedFileStoreSettings().setDirectory(context.directory()));
 
-    private PatchKeeper() {
-        super(context, new CachedFileStoreSettings().setDirectory(DIR_RESOURCES));
+        this.context = context;
+        initialize();
+
         context.onPatchLoaded(getName(), getVersion());
     }
 
@@ -51,18 +44,18 @@ public class PatchKeeper<T extends PatchFile> extends CachedFileStore {
             }
 
             File file = path.toFile();
-            String relativePath = Strings.format(path, DIR_RESOURCES);
+            String relativePath = Strings.format(path, context.directory());
             files.put(relativePath, new PatchFile(relativePath, file.length(), file.lastModified(), bytes));
 
             context.console().onFileLoaded(relativePath);
         } catch (IOException e) {
-            context.console().onFileLoadError(Strings.format(path, DIR_RESOURCES));
+            context.console().onFileLoadError(Strings.format(path, context.directory()));
         }
     }
 
     @Override
     public void onFileRemove(Path path) {
-        files.remove(Strings.format(path, DIR_RESOURCES));
+        files.remove(Strings.format(path, context.directory()));
     }
 
     @Override

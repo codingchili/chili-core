@@ -9,14 +9,18 @@ import com.codingchili.core.Testing.MockLogListener;
 
 /**
  * @author Robin Duda
+ *
+ * Mock of a launcher context.
  */
 class LaunchContextMock extends LaunchContext {
     static final String HOST_1 = "host1";
     static final String HOST_2 = "host2";
     static final String HOST_3 = "host3";
     static final String BLOCK_1 = "block1";
-    static final String BLOCK_NULL = "block-null";
     static final String BLOCK_2 = "block2";
+    static final String BLOCK_EMPTY = "block_empty";
+    static final String BLOCK_NULL = "block-null";
+    static final String BLOCK_DEFAULT = "default";
     static final String SERVICE_1 = "service_1";
     static final String SERVICE_2 = "service_2";
     private LoggerMock logger;
@@ -47,6 +51,8 @@ class LaunchContextMock extends LaunchContext {
 
         blocks.put(BLOCK_1, services1);
         blocks.put(BLOCK_2, services2);
+        blocks.put(BLOCK_EMPTY, new ArrayList<>());
+        blocks.put(BLOCK_DEFAULT, new ArrayList<>());
 
         settings.setHosts(hosts);
         settings.setBlocks(blocks);

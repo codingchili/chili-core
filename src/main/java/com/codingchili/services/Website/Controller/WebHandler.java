@@ -20,10 +20,11 @@ public class WebHandler<T extends WebserverContext> extends AbstractHandler<T> {
     public WebHandler(T context) {
         super(context, NODE_WEBSERVER);
 
-        this.files = CachedFileStore.instance(context, new CachedFileStoreSettings()
-                .setDirectory(DIR_WEBSITE)
-                .setGzip(context.isGzip())
-        );
+        this.files = new CachedFileStore(context, new CachedFileStoreSettings()
+                .setDirectory(context.resources())
+                .setGzip(context.isGzip()));
+
+        files.initialize();
 
         protocol.use(Strings.ID_PING, Request::accept, Access.PUBLIC);
     }

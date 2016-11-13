@@ -3,17 +3,20 @@ package com.codingchili.services.Patching.Configuration;
 import com.codingchili.core.Configuration.ServiceConfigurable;
 import com.codingchili.services.Shared.Strings;
 
+import static com.codingchili.services.Shared.Strings.DIR_RESOURCES;
+
 /**
  * @author Robin Duda
  *         Contains settings for the patchserver.
  */
 public class PatchServerSettings extends ServiceConfigurable {
     public static final String PATH_PATCHSERVER = Strings.getService("patchserver");
-    private GameInfo gameinfo;
-    private PatchNotes patchNotes;
-    private NewsList news;
-    private Boolean cache;
-    private boolean gzip;
+    private GameInfo gameinfo = new GameInfo();
+    private PatchNotes patchNotes = new PatchNotes();
+    private NewsList news = new NewsList();
+    private Boolean cache = false;
+    private boolean gzip = false;
+    private String directory = DIR_RESOURCES;
 
     public GameInfo getGameinfo() {
         return gameinfo;
@@ -53,5 +56,13 @@ public class PatchServerSettings extends ServiceConfigurable {
 
     public void setGzip(boolean gzip) {
         this.gzip = gzip;
+    }
+
+    public String getDirectory() {
+        return directory;
+    }
+
+    public void setDirectory(String directory) {
+        this.directory = directory;
     }
 }

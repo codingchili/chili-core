@@ -14,10 +14,10 @@ import com.codingchili.services.Router.Model.WireType;
 public class ListenerSettings {
     private HttpServerOptions httpOptions = new HttpServerOptions();
     private HashMap<String, Endpoint> api = new HashMap<>();
-    private WireType type;
-    private int port;
-    private int timeout;
-    private int maxRequestBytes;
+    private WireType type = WireType.REST;
+    private int port = 8080;
+    private int timeout = 3000;
+    private int maxRequestBytes = 64;
 
     public int getTimeout() {
         return timeout;

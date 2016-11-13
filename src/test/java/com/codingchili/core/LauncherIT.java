@@ -56,7 +56,7 @@ public class LauncherIT {
     public LaunchContext getLaunchContextFor(String node) {
         return new LaunchContext(new String[]{node}) {
             @Override
-            public List<String> block(String block) {
+            protected List<String> block(String block) {
                 List<String> list = new ArrayList<>();
                 list.add(node);
                 return list;

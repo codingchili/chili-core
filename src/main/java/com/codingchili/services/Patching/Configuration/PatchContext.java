@@ -14,9 +14,11 @@ import static com.codingchili.services.Shared.Strings.*;
  * @author Robin Duda
  */
 public class PatchContext extends ServiceContext {
+    private PatchKeeper keeper;
 
     public PatchContext(Vertx vertx) {
         super(vertx);
+        this.keeper = new PatchKeeper(this);
     }
 
     protected PatchServerSettings service() {
@@ -24,7 +26,7 @@ public class PatchContext extends ServiceContext {
     }
 
     public PatchKeeper getPatchKeeper() {
-        return PatchKeeper.instance(this);
+        return keeper;
     }
 
     public PatchNotes notes() {
@@ -47,5 +49,9 @@ public class PatchContext extends ServiceContext {
         log(event(LOG_PATCHER_LOADED)
                 .put(ID_NAME, name)
                 .put(LOG_VERSION, version));
+    }
+
+    public String directory() {
+        return service().getDirectory();
     }
 }

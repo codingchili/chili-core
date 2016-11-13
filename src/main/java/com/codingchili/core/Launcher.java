@@ -8,8 +8,7 @@ import java.util.stream.Collectors;
 
 import com.codingchili.core.Configuration.Strings;
 import com.codingchili.core.Context.*;
-import com.codingchili.core.Exception.BlockNotConfiguredException;
-import com.codingchili.core.Exception.RemoteBlockNotConfiguredException;
+import com.codingchili.core.Exception.*;
 import com.codingchili.core.Files.Configurations;
 import com.codingchili.core.Logging.ConsoleLogger;
 import com.codingchili.core.Logging.Level;
@@ -20,8 +19,8 @@ import static com.codingchili.core.Configuration.Strings.*;
 
 /**
  * @author Robin Duda
- *
- * Launches all the components of the system on a single host.
+ *         <p>
+ *         Launches all the components of the system on a single host.
  */
 public class Launcher extends ClusterNode {
     private static final ConsoleLogger logger = new ConsoleLogger();
@@ -30,6 +29,7 @@ public class Launcher extends ClusterNode {
 
     /**
      * Starts the launcher with the given arguments.
+     *
      * @param args specifies which commands the launcher will execute.
      */
     public static void main(String[] args) {
@@ -44,11 +44,12 @@ public class Launcher extends ClusterNode {
             if (executor.isHandled()) {
                 exit();
             } else {
-                nodes = context.block((context.args().length == 0) ? null : context.args()[0]);
+                nodes = context.block(context.args());
                 nodes = nodes.stream().map(node -> node).collect(Collectors.toList());
+
                 cluster();
             }
-        } catch (RemoteBlockNotConfiguredException | BlockNotConfiguredException e) {
+        } catch (CoreException e) {
             logger.log("\t\t" + e.getMessage(), Level.SEVERE);
             logger.log("\t\t" + executor.getError(), Level.SEVERE);
             exit();

@@ -12,7 +12,7 @@ import com.codingchili.core.Configuration.Configurable;
 import com.codingchili.core.Configuration.ConfigurableTest;
 import com.codingchili.core.Exception.FileReadException;
 
-import static com.codingchili.core.Configuration.Strings.DIR_SERVICES;
+import static com.codingchili.core.Configuration.Strings.*;
 
 
 /**
@@ -26,6 +26,7 @@ public class ConfigurationsIT {
     private static final String TEST_PATH = "src/main/test/resources/Configurations/testfile.json";
     private static final String NEW_DATA = "new-data";
     private static final String TEST_DATA = "test-data";
+    private static final String CONFIGURATIONS = "Configurations";
 
     @Test
     public void reloadSingleFile() {
@@ -85,8 +86,10 @@ public class ConfigurationsIT {
 
     @Test
     public void listAllAvailableOnSubpath() {
-        Configurations.available(DIR_SERVICES).stream()
-                .forEach(path -> Assert.assertTrue(path.startsWith(DIR_SERVICES)));
+        String directory = testDirectory(CONFIGURATIONS);
+
+        Configurations.available(directory).stream()
+                .forEach(path -> Assert.assertTrue(path.startsWith(directory)));
     }
 
     @Test
@@ -99,6 +102,7 @@ public class ConfigurationsIT {
         Configurations.unload();
 
         Assert.assertFalse(Configurations.loaded().stream()
+                .filter(configurable -> !configurable.getPath().startsWith(DIR_SYSTEM))
                 .map(Configurable::getPath)
                 .anyMatch(config -> true));
     }

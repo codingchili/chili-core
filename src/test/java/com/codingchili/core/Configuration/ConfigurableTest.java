@@ -2,12 +2,14 @@ package com.codingchili.core.Configuration;
 
 /**
  * @author Robin Duda
+ *
+ * A configurable implementation for use in tests.
  */
 public class ConfigurableTest extends BaseConfigurable {
-    private String data;
+    private String data = "default-data";
 
     public ConfigurableTest() {
-        this.path = "src/test/resources/Configurations/testconfig.json";
+        this.path = Strings.testFile("Configurations", "testfile.json");
     }
 
     public ConfigurableTest(String path) {

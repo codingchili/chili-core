@@ -13,7 +13,7 @@ import com.codingchili.services.Router.Model.WireType;
  */
 public class RouterSettings extends ServiceConfigurable {
     public static final String PATH_ROUTING = Strings.getService("routingserver");
-    private ArrayList<ListenerSettings> transport;
+    private ArrayList<ListenerSettings> transport = defaultTransport();
     private HashSet<String> hidden = new HashSet<>();
 
     public ArrayList<ListenerSettings> getTransport() {
@@ -39,5 +39,11 @@ public class RouterSettings extends ServiceConfigurable {
             }
         }
         throw new RuntimeException("No listener configured for " + type.name());
+    }
+
+    private ArrayList<ListenerSettings> defaultTransport() {
+        ArrayList<ListenerSettings> transports = new ArrayList<>();
+        transports.add(new ListenerSettings());
+        return transports;
     }
 }

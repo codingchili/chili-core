@@ -1,0 +1,11 @@
+{
+  "identity" : {
+    "node" : "realmserver.node",
+    "host" : "server.1"
+  },
+  "enabled" : [ {
+    "realm" : "Angel Oak",
+    "instances" : [ ]
+  } ],
+  "realmUpdates" : 5000
+}

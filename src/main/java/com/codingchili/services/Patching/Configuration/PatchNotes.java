@@ -1,5 +1,6 @@
 package com.codingchili.services.Patching.Configuration;
 
+import java.time.Instant;
 import java.util.ArrayList;
 
 /**
@@ -7,10 +8,10 @@ import java.util.ArrayList;
  *         Contains a list of patch notes, version and name for the website.
  */
 public class PatchNotes {
-    private String version;
-    private String name;
-    private String date;
-    private ArrayList<PatchChange> changes;
+    private String version = "0";
+    private String name = "default";
+    private String date = Instant.now().toString();
+    private ArrayList<PatchChange> changes = new ArrayList<>();
 
     public String getVersion() {
         return version;

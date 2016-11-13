@@ -1,30 +1,4 @@
 {
-  "dependencies" : {
-    "service2" : {
-      "preshare" : [ ],
-      "secrets" : [ ],
-      "tokens" : {
-        "service2token" : {
-          "service" : "service1",
-          "secret" : "service1secret"
-        }
-      }
-    },
-    "service1" : {
-      "preshare" : [ ],
-      "secrets" : [ "service1secret" ],
-      "tokens" : {
-        "service1token" : {
-          "service" : "service2",
-          "secret" : "local"
-        }
-      }
-    },
-    "service.*" : {
-      "preshare" : [ "global" ],
-      "secrets" : [ "local" ],
-      "tokens" : { }
-    }
-  },
+  "dependencies" : { },
   "secretBytes" : 64
 }

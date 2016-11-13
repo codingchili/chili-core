@@ -11,59 +11,65 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.codingchili.core.Configuration.CachedFileStoreSettings;
 import com.codingchili.core.Configuration.Strings;
 import com.codingchili.core.Context.CoreContext;
+import com.codingchili.core.Context.SystemContext;
 import com.codingchili.core.Exception.ConfigurationMismatchException;
 import com.codingchili.core.Exception.FileMissingException;
 import com.codingchili.core.Protocol.Serializer;
 
 /**
  * @author Robin Duda
- *
- * Caches files from disk in memory and reloads them on change.
+ *         <p>
+ *         Caches files from disk in memory and reloads them on change.
  */
 public class CachedFileStore<T> implements FileStoreListener {
     private static final HashMap<String, CachedFileStore> stores = new HashMap<>();
-    private final ConcurrentHashMap<String, Buffer> files = new ConcurrentHashMap<>();
-    private final CachedFileStoreSettings settings;
-    private final CoreContext context;
+    private ConcurrentHashMap<String, Buffer> files = new ConcurrentHashMap<>();
+    private CachedFileStoreSettings settings;
+    protected CoreContext context;
 
     /**
      * Maintain a CachedFileStore for each loaded directory.
-     * @param context the context requesting the feature.
+     *
+     * @param context  the context requesting the feature.
      * @param settings the settings to use for the CachedFileStore, if conflicting with
      *                 any existing configuration for the given path the configuration is
      *                 ignored.
      * @return A loaded CachedFileStore.
      */
     @SuppressWarnings("unchecked")
-    public static <T> CachedFileStore<T> instance(CoreContext context, CachedFileStoreSettings settings) {
+    public CachedFileStore(CoreContext context, CachedFileStoreSettings settings) {
         CachedFileStore store = stores.get(settings.getDirectory());
 
+        this.context = context;
+        this.settings = settings;
+
         if (store == null) {
-            stores.put(settings.getDirectory(), new CachedFileStore<T>(context, settings));
+            stores.put(settings.getDirectory(), this);
         } else {
             if (!store.settings.equals(settings)) {
                 context.console().onError(new ConfigurationMismatchException());
             }
         }
-        return (CachedFileStore<T>) stores.get(settings.getDirectory());
+        this.files = stores.get(settings.getDirectory()).files;
+    }
+
+    public CachedFileStore<T> initialize() {
+        try {
+            if (files.size() == 0) {
+                loadFiles();
+            }
+            watchDirectory();
+        } catch (IOException e) {
+            context.console().onFileLoadError(e.getMessage());
+        }
+        return this;
     }
 
     /**
      * Unloads all loaded files.
      */
-    public static void reset() {
+    static void reset() {
         stores.clear();
-    }
-
-    protected CachedFileStore(CoreContext context, CachedFileStoreSettings settings) {
-        this.settings = settings;
-        this.context = context;
-        try {
-            loadFiles();
-            watchDirectory();
-        } catch (IOException e) {
-            context.console().onFileLoadError(e.getMessage());
-        }
     }
 
     private void watchDirectory() {
@@ -71,7 +77,7 @@ public class CachedFileStore<T> implements FileStoreListener {
                 .onDirectory(settings.getDirectory())
                 .rate(context.system()::getCachedFilePoll)
                 .withListener(this)
-        .build();
+                .build();
     }
 
     private void loadFiles() throws IOException {

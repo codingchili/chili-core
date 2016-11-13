@@ -73,7 +73,7 @@ public class WebsiteTest {
 
         handle(ONE_MISSING_FILE, (response, status) -> {
             JsonObject bower = new JsonObject(response.getString(ID_BUFFER));
-            context.assertEquals(bower.getString(Strings.ID_LICENSE), "MIT");
+            context.assertEquals(bower.getString(Strings.ID_LICENSE), "404");
             async.complete();
         });
     }

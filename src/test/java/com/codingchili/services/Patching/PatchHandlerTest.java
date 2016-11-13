@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import java.util.concurrent.TimeUnit;
 
 import com.codingchili.core.Protocol.ResponseStatus;
+import com.codingchili.core.Security.RemoteIdentity;
 import com.codingchili.core.Testing.RequestMock;
 import com.codingchili.core.Testing.ResponseListener;
 
@@ -31,7 +32,7 @@ import static com.codingchili.services.Shared.Strings.*;
 
 @RunWith(VertxUnitRunner.class)
 public class PatchHandlerTest {
-    private static final String TEST_FILE = "/game.js";
+    private static final String TEST_FILE = "/file.html";
     private static final String MAX_VERSION = "99999999";
     private static final String MISSING_FILE = "missing-file";
     private static final String MIN_VERSION = "-1";
@@ -46,7 +47,19 @@ public class PatchHandlerTest {
     @BeforeClass
     public static void startUp() {
         vertx = Vertx.vertx();
-        PatchContext provider = new ContextMock(vertx);
+
+        PatchContext provider = new ContextMock(vertx) {
+            @Override
+            public String directory() {
+                return testDirectory("Services/patcher");
+            }
+
+            @Override
+            public RemoteIdentity identity() {
+                return new RemoteIdentity("PatchHandlerTest", "");
+            }
+        };
+
         handler = new PatchHandler<>(provider);
     }
 

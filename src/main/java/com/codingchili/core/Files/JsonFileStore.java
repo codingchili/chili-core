@@ -80,14 +80,19 @@ public abstract class JsonFileStore {
     /**
      * Writes a json-object to the given path.
      * @param json the json-object to write.
-     * @param path the path to where the json-object is written to.
+     * @param target the path to where the json-object is written to.
      * @throws RuntimeException on failure to write.
      */
-    public static void writeObject(JsonObject json, String path) {
-        Path file = Paths.get(path);
+    public static void writeObject(JsonObject json, String target) {
+        Path path = Paths.get(target);
         try {
-            assert file.getParent().toFile().mkdirs();
-            Files.write(file, json.encodePrettily().getBytes());
+            boolean pathExists = path.getParent().toFile().exists() || path.getParent().toFile().mkdirs();
+
+            if (pathExists) {
+                Files.write(path, json.encodePrettily().getBytes());
+            } else {
+                throw new IOException(Strings.getErrorCreateDirectory(target));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -102,8 +107,12 @@ public abstract class JsonFileStore {
      * @param path to the file to be deleted.
      * @return true if the file was deleted successfully.
      */
-    public static boolean deleteObject(String path) {
+    static boolean deleteObject(String path) {
         File file = new File(path);
         return file.delete();
+    }
+
+    static boolean exists(String path) {
+        return Paths.get(path).toFile().exists();
     }
 }

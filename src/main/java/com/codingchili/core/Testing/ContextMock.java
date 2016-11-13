@@ -14,6 +14,10 @@ public class ContextMock extends ServiceContext implements CoreContext {
         super(vertx);
     }
 
+    public ContextMock(CoreContext context) {
+        super(context);
+    }
+
     @Override
     protected ServiceConfigurable service() {
         return new ServiceConfigurable() {};

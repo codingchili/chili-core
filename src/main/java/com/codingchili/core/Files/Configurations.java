@@ -16,7 +16,9 @@ import com.codingchili.core.Configuration.Strings;
 import com.codingchili.core.Configuration.System.*;
 import com.codingchili.core.Context.CoreContext;
 import com.codingchili.core.Exception.FileReadException;
+import com.codingchili.core.Exception.InvalidConfigurableException;
 import com.codingchili.core.Logging.ConsoleLogger;
+import com.codingchili.core.Logging.Logger;
 import com.codingchili.core.Protocol.Serializer;
 
 import static com.codingchili.core.Configuration.Strings.*;
@@ -30,7 +32,7 @@ public abstract class Configurations {
     private static final ConcurrentHashMap<String, ConfigEntry> configs = new ConcurrentHashMap<>();
     private static final AtomicBoolean initialized = new AtomicBoolean(false);
     private static final AtomicBoolean monitoring = new AtomicBoolean(true);
-    private static final ConsoleLogger logger = new ConsoleLogger();
+    private static Logger logger = new ConsoleLogger();
 
     /**
      * When uninitialized default in-memory configuration is used, this configuration is
@@ -39,17 +41,27 @@ public abstract class Configurations {
      * Also allows configuration files to not be present at startup and reset.
      */
     static {
+        init();
+        reloadAll();
+    }
+
+    private static void init() {
         configs.put(PATH_LAUNCHER, new ConfigEntry(new LauncherSettings(), LauncherSettings.class));
         configs.put(PATH_SECURITY, new ConfigEntry(new SecuritySettings(), SecuritySettings.class));
         configs.put(PATH_SYSTEM, new ConfigEntry(new SystemSettings(), SystemSettings.class));
         configs.put(PATH_VALIDATOR, new ConfigEntry(new ValidatorSettings(), ValidatorSettings.class));
     }
 
+    /**
+     * Sets the context of the configurator and enables file watching and logging.
+     *
+     * @param context the context to set for the configuration system.
+     */
     public static void initialize(CoreContext context) {
         if (initialized.get()) {
             context.console().onAlreadyInitialized();
         } else {
-            unload();
+            logger = context.console();
 
             new FileWatcherBuilder(context)
                     .rate(Configurations::getConfigurationPoll)
@@ -59,6 +71,10 @@ public abstract class Configurations {
 
             initialized.set(true);
         }
+    }
+
+    private static void reloadAll() {
+        loaded().stream().forEach(configurable -> reload(configurable.getPath()));
     }
 
     private static int getConfigurationPoll() {
@@ -89,7 +105,7 @@ public abstract class Configurations {
      * @return an instantiated configurable.
      */
     @SuppressWarnings("unchecked")
-    public static <T extends Configurable> T get(String path, Class clazz) {
+    public static <T extends Configurable> T get(String path, Class<T> clazz) {
         if (configs.containsKey(path) && configs.get(path).clazz.equals(clazz)) {
             return (T) configs.get(path).configurable;
         } else {
@@ -111,13 +127,37 @@ public abstract class Configurations {
      */
     public static void shutdown() {
         monitoring.set(false);
+        initialized.set(false);
+        saveAll();
+        init();
+    }
+
+    private static void saveAll() {
         loaded().stream().forEach(Configurations::save);
     }
 
-    private static <T extends Configurable> T load(String path, Class clazz) {
+    /**
+     * Reads a configurable from the given path into loaded configurables. If the
+     * given path does not resolve to a configuration file the configuration file
+     * is instead instantiated from the given class.
+     * @param path the path to the class to instantiate.
+     * @param clazz the configurable class on the path.
+     */
+    private static <T extends Configurable> T load(String path, Class<T> clazz) {
         try {
-            JsonObject json = JsonFileStore.readObject(path);
-            T config = Serializer.unpack(json, clazz);
+            T config;
+            if (JsonFileStore.exists(path)) {
+                JsonObject json = JsonFileStore.readObject(path);
+                config = Serializer.unpack(json, clazz);
+            } else {
+                try {
+                    logger.onConfigurationDefaultsLoaded(path, clazz);
+                    config = clazz.<T>newInstance();
+                } catch (ReflectiveOperationException e) {
+                    logger.onInvalidConfigurable(clazz);
+                    throw new InvalidConfigurableException(clazz);
+                }
+            }
 
             config.setPath(path);
 
@@ -128,6 +168,12 @@ public abstract class Configurations {
             logger.onFileLoadError(Strings.getFileReadError(path));
             throw new FileReadException(path);
         }
+    }
+
+    public static void reset() {
+        configs.clear();
+        init();
+        saveAll();
     }
 
     /**
@@ -155,7 +201,7 @@ public abstract class Configurations {
      * @param path of the configurable to reload.
      */
     static void reload(String path) {
-        if (configs.containsKey(path)) {
+        if (configs.containsKey(path) && JsonFileStore.exists(path)) {
             Configurations.load(path, configs.get(path).clazz);
         }
     }
@@ -215,6 +261,7 @@ public abstract class Configurations {
      */
     static void unload() {
         configs.clear();
+        init();
         logger.onCacheCleared(ID_CONFIGURATION);
     }
 
