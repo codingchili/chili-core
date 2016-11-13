@@ -67,7 +67,7 @@ public class AsyncMapTest {
     }
 
     private void waitForExpiry(TestContext test, Async async) {
-        context.timer(150, event -> store.get(KEY, get -> {
+        context.timer(800, event -> store.get(KEY, get -> {
             test.assertNull(get.result());
             test.assertTrue(get.succeeded());
             async.complete();
