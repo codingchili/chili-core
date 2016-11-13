@@ -116,6 +116,7 @@ public class Launcher extends ClusterNode {
             return isClusteredVerticle;
         } catch (ClassNotFoundException e) {
             logger.log(Strings.getNodeNotFound(node), Level.SEVERE);
+            exit();
             return false;
         }
     }

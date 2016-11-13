@@ -25,6 +25,7 @@ public class StorageLoader {
                     .<Key, Value>newInstance(future, context, mapName);
         } catch (ReflectiveOperationException e) {
             context.console().log(Strings.getStorageLoaderError(className, mapName), Level.SEVERE);
+            System.exit(0);
         }
     }
 }

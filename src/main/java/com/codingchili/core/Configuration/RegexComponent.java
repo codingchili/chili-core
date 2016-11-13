@@ -19,23 +19,26 @@ public class RegexComponent {
         return action;
     }
 
-    public void setAction(RegexAction action) {
+    public RegexComponent setAction(RegexAction action) {
         this.action = action;
+        return this;
     }
 
     public String getLine() {
         return line;
     }
 
-    public void setLine(String line) {
+    public RegexComponent setLine(String line) {
         this.line = line;
+        return this;
     }
 
     public String getReplacement() {
         return replacement;
     }
 
-    public void setReplacement(String replacement) {
+    public RegexComponent setReplacement(String replacement) {
         this.replacement = replacement;
+        return this;
     }
 }

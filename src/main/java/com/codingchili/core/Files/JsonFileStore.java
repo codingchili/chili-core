@@ -86,6 +86,7 @@ public abstract class JsonFileStore {
     public static void writeObject(JsonObject json, String path) {
         Path file = Paths.get(path);
         try {
+            assert file.getParent().toFile().mkdirs();
             Files.write(file, json.encodePrettily().getBytes());
         } catch (IOException e) {
             throw new RuntimeException(e);

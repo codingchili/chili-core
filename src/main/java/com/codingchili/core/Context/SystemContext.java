@@ -40,7 +40,7 @@ public class SystemContext implements CoreContext {
     private void initialize() {
         MetricsService metrics = MetricsService.create(vertx);
 
-        periodic(this::getMetricTimer, Strings.LOG_METRICS,handler -> {
+        periodic(this::getMetricTimer, Strings.LOG_METRICS, handler -> {
             if (system().isMetrics()) {
                 JsonObject json = metrics.getMetricsSnapshot(vertx);
                 onMetricsSnapshot(json);

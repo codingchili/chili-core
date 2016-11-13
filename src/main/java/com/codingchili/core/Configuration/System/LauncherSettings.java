@@ -2,8 +2,7 @@ package com.codingchili.core.Configuration.System;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import com.codingchili.core.Configuration.BaseConfigurable;
 
@@ -15,9 +14,9 @@ import static com.codingchili.core.Configuration.Strings.PATH_LAUNCHER;
  * Contains the settings for the launcher.
  */
 public class LauncherSettings extends BaseConfigurable {
-    private String version;
-    private HashMap<String, List<String>> blocks;
-    private HashMap<String, String> hosts = new HashMap<>();
+    private String version = "CORE-1.0.0-PR";
+    private HashMap<String, List<String>> blocks = defaultBlockConfiguration();
+    private HashMap<String, String> hosts = defaultHostConfiguration();
 
     public LauncherSettings() {
         super(PATH_LAUNCHER);
@@ -56,4 +55,17 @@ public class LauncherSettings extends BaseConfigurable {
     public HashMap<String, List<String>> blocks() {
         return getBlocks();
     }
+
+    private HashMap<String, List<String>> defaultBlockConfiguration() {
+        HashMap<String, List<String>> map = new HashMap<>();
+        map.put("default", new ArrayList<>());
+        return map;
+    }
+
+    private HashMap<String, String> defaultHostConfiguration() {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("localhost", "default");
+        return map;
+    }
+
 }

@@ -26,7 +26,7 @@ public class SystemContextTest {
     public void setUp() {
         this.settings = new SystemSettings();
 
-        settings.setMetricRate(250);
+        settings.setMetricRate(100);
         settings.setMetrics(true);
 
         this.context = new ContextMock(Vertx.vertx()) {
@@ -98,8 +98,8 @@ public class SystemContextTest {
             countdown[0]--;
         });
 
-        context.timer(interval * 3, event -> {
-            test.assertEquals(0, countdown[0]);
+        context.timer(90, event -> {
+            test.assertTrue(0 == countdown[0]);
             async.complete();
         });
     }

@@ -23,7 +23,7 @@ abstract class AsyncStorageBase<Key, Value> implements AsyncStorage<Key, Value> 
 
     @Override
     public void put(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        map.put(key, value, handler);
+        map.put(key, value, ttl, handler);
     }
 
     @Override

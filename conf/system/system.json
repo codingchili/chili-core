@@ -1,7 +1,7 @@
 {
-  "metricRate" : 5000,
+  "metricRate" : 15000,
   "handlers" : 1,
-  "metrics" : true,
+  "metrics" : false,
   "deployTimeout" : 3000,
   "shutdownLogTimeout" : 3000,
   "shutdownHookTimeout" : 3000,

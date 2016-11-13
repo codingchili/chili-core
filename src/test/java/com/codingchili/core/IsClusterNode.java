@@ -4,7 +4,7 @@ import io.vertx.core.Future;
 
 import com.codingchili.core.Protocol.ClusterNode;
 
-import static com.codingchili.core.LauncherTest.async;
+import static com.codingchili.core.LauncherIT.async;
 
 /**
  * @author Robin Duda

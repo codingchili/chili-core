@@ -1,5 +1,6 @@
 package com.codingchili.services.Logging;
 
+import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
@@ -29,6 +30,7 @@ import static com.codingchili.services.Logging.Configuration.LogServerSettings.P
 @RunWith(VertxUnitRunner.class)
 public class ServiceLogHandlerTest {
     private ServiceLogHandler handler;
+    private LogContext context;
 
     @Rule
     public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
@@ -36,8 +38,13 @@ public class ServiceLogHandlerTest {
     @Before
     public void setUp() {
         LogServerSettings settings = Configurations.get(PATH_LOGSERVER, LogServerSettings.class);
-        LogContext provider = new ContextMock(settings);
-        handler = new ServiceLogHandler<>(provider);
+        context = new ContextMock(settings, Vertx.vertx());
+        handler = new ServiceLogHandler<>(context);
+    }
+
+    @After
+    public void tearDown(TestContext test) {
+        context.vertx().close(test.asyncAssertSuccess());
     }
 
     @Test

@@ -1,7 +1,6 @@
 package com.codingchili.core.Storage;
 
-import io.vertx.core.Future;
-import io.vertx.core.Vertx;
+import io.vertx.core.*;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -10,6 +9,10 @@ import org.junit.runner.RunWith;
 
 import com.codingchili.core.Context.CoreContext;
 import com.codingchili.core.Testing.ContextMock;
+
+import com.codingchili.services.Shared.Strings;
+
+import static com.codingchili.core.Configuration.Strings.STORAGE_LOCALMAP;
 
 /**
  * @author Robin Duda
@@ -26,9 +29,19 @@ public class AsyncMapTest {
     private CoreContext context;
 
     @Before
-    public void setUp() {
+    public void setUp(TestContext test) {
+        Async async = test.async();
+
+        Future<AsyncStorage<String, String>> future = Future.future();
         context = new ContextMock(Vertx.vertx());
-        store = new AsyncLocalMap<>(context);
+        StorageLoader.initialize(context);
+
+        future.setHandler(result -> {
+            store = result.result();
+            async.complete();
+        });
+
+        StorageLoader.load(future, STORAGE_LOCALMAP, Strings.MAP_ACCOUNTS);
     }
 
     @After
@@ -40,8 +53,23 @@ public class AsyncMapTest {
     public void testPut(TestContext test) {
         Async async = test.async();
 
-        store.put(KEY, VALUE, handler -> store.get(KEY, get -> {
+        store.put(KEY, VALUE, put -> store.get(KEY, get -> {
             test.assertEquals(VALUE, get.result());
+            test.assertTrue(get.succeeded());
+            async.complete();
+        }));
+    }
+
+    @Test
+    public void testPutWithTTL(TestContext test) {
+        Async async = test.async();
+        store.put(KEY, VALUE, 1, put -> waitForExpiry(test, async));
+    }
+
+    private void waitForExpiry(TestContext test, Async async) {
+        context.timer(150, event -> store.get(KEY, get -> {
+            test.assertNull(get.result());
+            test.assertTrue(get.succeeded());
             async.complete();
         }));
     }
@@ -52,8 +80,15 @@ public class AsyncMapTest {
 
         store.putIfAbsent(KEY, VALUE, put -> store.get(KEY, get -> {
             test.assertEquals(VALUE, get.result());
+            test.assertTrue(get.succeeded());
             async.complete();
         }));
+    }
+
+    @Test
+    public void testPutIfAbsentTTL(TestContext test) {
+        Async async = test.async();
+        store.putIfAbsent(KEY, VALUE, 1, handler -> waitForExpiry(test, async));
     }
 
     @Test
@@ -65,6 +100,7 @@ public class AsyncMapTest {
 
             store.putIfAbsent(KEY, VALUE_OTHER, inner -> {
                 test.assertEquals(VALUE, inner.result());
+                test.assertTrue(inner.succeeded());
                 async.complete();
             });
         });
@@ -77,6 +113,7 @@ public class AsyncMapTest {
         store.put(KEY, VALUE, outer -> {
             store.remove(KEY, inner -> {
                 test.assertEquals(VALUE, inner.result());
+                test.assertTrue(inner.succeeded());
                 async.complete();
             });
         });
@@ -86,8 +123,9 @@ public class AsyncMapTest {
     public void testRemoveNonExisting(TestContext test) {
         Async async = test.async();
 
-        store.put(KEY, VALUE, inner -> {
-            test.assertEquals(null, inner.result());
+        store.put(KEY, VALUE, put -> {
+            test.assertEquals(null, put.result());
+            test.assertTrue(put.succeeded());
             async.complete();
         });
     }
@@ -96,9 +134,10 @@ public class AsyncMapTest {
     public void testRemoveIfPresent(TestContext test) {
         Async async = test.async();
 
-        store.put(KEY, VALUE, outer -> {
-            store.removeIfPresent(KEY, VALUE, inner -> {
-                test.assertTrue(inner.result());
+        store.put(KEY, VALUE, put -> {
+            store.removeIfPresent(KEY, VALUE, remove -> {
+                test.assertTrue(remove.result());
+                test.assertTrue(remove.succeeded());
                 async.complete();
             });
         });
@@ -108,8 +147,9 @@ public class AsyncMapTest {
     public void testRemoveIfPresentNotPresent(TestContext test) {
         Async async = test.async();
 
-        store.removeIfPresent(KEY, VALUE, inner -> {
-            test.assertFalse(inner.result());
+        store.removeIfPresent(KEY, VALUE, remove -> {
+            test.assertFalse(remove.result());
+            test.assertTrue(remove.succeeded());
             async.complete();
         });
     }
@@ -118,8 +158,9 @@ public class AsyncMapTest {
     public void testRemoveIfAnotherValuePresent(TestContext test) {
         Async async = test.async();
 
-        store.put(KEY, VALUE_OTHER, outer -> store.removeIfPresent(KEY, VALUE, inner -> {
-            test.assertFalse(inner.result());
+        store.put(KEY, VALUE_OTHER, put -> store.removeIfPresent(KEY, VALUE, remove -> {
+            test.assertFalse(remove.result());
+            test.assertTrue(remove.succeeded());
             async.complete();
         }));
     }
@@ -128,8 +169,9 @@ public class AsyncMapTest {
     public void testReplace(TestContext test) {
         Async async = test.async();
 
-        store.put(KEY, VALUE, outer -> store.replace(KEY, VALUE_OTHER, replace -> {
+        store.put(KEY, VALUE, put -> store.replace(KEY, VALUE_OTHER, replace -> {
             test.assertEquals(VALUE, replace.result());
+            test.assertTrue(replace.succeeded());
             async.complete();
         }));
     }
@@ -138,8 +180,9 @@ public class AsyncMapTest {
     public void testReplaceIfPresent(TestContext test) {
         Async async = test.async();
 
-        store.put(KEY, VALUE, outer -> store.replaceIfPresent(KEY, VALUE, VALUE_OTHER, replace -> {
+        store.put(KEY, VALUE, put -> store.replaceIfPresent(KEY, VALUE, VALUE_OTHER, replace -> {
             test.assertTrue(replace.result());
+            test.assertTrue(replace.succeeded());
             async.complete();
         }));
     }
@@ -150,6 +193,7 @@ public class AsyncMapTest {
 
         store.replaceIfPresent(KEY, VALUE, VALUE_OTHER, replace -> {
             test.assertFalse(replace.result());
+            test.assertTrue(replace.succeeded());
             async.complete();
         });
     }
@@ -158,8 +202,9 @@ public class AsyncMapTest {
     public void testReplaceIfAnotherValuePresent(TestContext test) {
         Async async = test.async();
 
-        store.put(KEY, VALUE, outer -> store.replaceIfPresent(KEY, VALUE_OTHER, VALUE_OTHER, replace -> {
+        store.put(KEY, VALUE, put -> store.replaceIfPresent(KEY, VALUE_OTHER, VALUE_OTHER, replace -> {
             test.assertFalse(replace.result());
+            test.assertTrue(replace.succeeded());
             async.complete();
         }));
     }
@@ -168,8 +213,9 @@ public class AsyncMapTest {
     public void testClear(TestContext test) {
         Async async = test.async();
 
-        store.put(KEY, VALUE, outer -> store.clear(clear -> store.size(size -> {
+        store.put(KEY, VALUE, put -> store.clear(clear -> store.size(size -> {
             test.assertEquals(0, size.result());
+            test.assertTrue(size.succeeded());
             async.complete();
         })));
     }
@@ -181,6 +227,7 @@ public class AsyncMapTest {
         store.put(KEY, VALUE, put -> {
             store.size(size -> {
                 test.assertEquals(1, size.result());
+                test.assertTrue(size.succeeded());
                 async.complete();
             });
         });

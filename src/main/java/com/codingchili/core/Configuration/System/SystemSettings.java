@@ -5,6 +5,7 @@ import io.vertx.core.VertxOptions;
 import io.vertx.core.metrics.MetricsOptions;
 
 import com.codingchili.core.Configuration.BaseConfigurable;
+import com.codingchili.core.Configuration.Strings;
 
 /**
  * @author Robin Duda
@@ -15,13 +16,17 @@ public class SystemSettings extends BaseConfigurable {
     private int metricRate = 15000;
     private int handlers = 1;
     private boolean metrics = false;
-    private int deployTimeout = 2000;
-    private int shutdownLogTimeout = 2000;
-    private int shutdownHookTimeout = 2000;
-    private int configurationPoll = 2000;
+    private int deployTimeout = 3000;
+    private int shutdownLogTimeout = 3000;
+    private int shutdownHookTimeout = 3000;
+    private int configurationPoll = 1500;
     private int cachedFilePoll = 2000;
-    private boolean consoleLogging;
+    private boolean consoleLogging = true;
     private int workerPoolSize = 16;
+
+    public SystemSettings() {
+        path = Strings.PATH_SYSTEM;
+    }
 
     public int getMetricRate() {
         return metricRate;

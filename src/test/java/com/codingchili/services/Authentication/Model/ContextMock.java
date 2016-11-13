@@ -17,8 +17,8 @@ public class ContextMock extends AuthContext {
     private AsyncRealmStore realms;
     private AsyncAccountStore accounts;
 
-    public ContextMock() {
-        super(Vertx.vertx());
+    public ContextMock(Vertx vertx) {
+        super(vertx);
         settings.setRealmSecret("realm-secret".getBytes());
         settings.setClientSecret("client-secret".getBytes());
 

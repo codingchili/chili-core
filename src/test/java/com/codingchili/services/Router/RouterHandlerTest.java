@@ -34,7 +34,7 @@ public class RouterHandlerTest {
     @Before
     public void setUp() {
         vertx = Vertx.vertx();
-        handler = new RouterHandler(new RouterContext(vertx));
+        handler = new RouterHandler<>(new RouterContext(vertx));
     }
 
     @After

@@ -1,5 +1,6 @@
 package com.codingchili.services.Authentication.Realm;
 
+import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
@@ -41,12 +42,17 @@ public class ServerHandlerTest {
 
     @Before
     public void setUp() {
-        mock = new ContextMock();
+        mock = new ContextMock(Vertx.vertx());
         handler = new AuthenticationHandler<>(mock);
         factory = mock.getRealmFactory();
 
         realmconfig.setAuthentication(new Token(mock.getRealmFactory(), REALM_NAME));
         realmconfig.setName(REALM_NAME);
+    }
+
+    @After
+    public void tearDown(TestContext test) {
+        mock.vertx().close(test.asyncAssertSuccess());
     }
 
     @Test

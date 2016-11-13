@@ -215,6 +215,6 @@ public abstract class Strings {
     }
 
     public static String getStorageLoaderError(String className, String mapName) {
-        return "Error: Failed to load storage plugin " + className + " for collection " + mapName;
+        return "Error: Failed to load storage plugin '" + className + "' for collection '" + mapName + "'.";
     }
 }

@@ -5,7 +5,29 @@
         <name>dev</name>
         <password>dev-pass</password>
     </group>
+
+    <map name="accounts">
+        <backup-count>0</backup-count>
+        <max-idle-seconds>0</max-idle-seconds>
+        <eviction-policy>LRU</eviction-policy>
+        <time-to-live-seconds>2678400</time-to-live-seconds>
+        <max-size>55000</max-size>
+        <eviction-percentage>30</eviction-percentage>
+        <merge-policy>com.hazelcast.map.merge.PutIfAbsentMapMergePolicy</merge-policy>
+    </map>
+
+    <map name="realms">
+        <backup-count>0</backup-count>
+        <max-idle-seconds>0</max-idle-seconds>
+        <eviction-policy>LRU</eviction-policy>
+        <time-to-live-seconds>60</time-to-live-seconds>
+        <max-size>300</max-size>
+        <eviction-percentage>30</eviction-percentage>
+        <merge-policy>com.hazelcast.map.merge.PutIfAbsentMapMergePolicy</merge-policy>
+    </map>
+
     <management-center enabled="false">http://localhost:8080/mancenter</management-center>
+
     <network>
         <port auto-increment="true" port-count="100">5701</port>
         <outbound-ports>
@@ -41,6 +63,7 @@
             <iteration-count>19</iteration-count>
         </symmetric-encryption>
     </network>
+
     <properties>
         <property name="hazelcast.map.partition.count">61</property>
     </properties>

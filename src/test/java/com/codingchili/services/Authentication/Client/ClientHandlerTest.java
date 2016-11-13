@@ -1,6 +1,7 @@
 package com.codingchili.services.Authentication.Client;
 
 import io.vertx.core.Future;
+import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
@@ -45,14 +46,14 @@ public class ClientHandlerTest {
     private static final String PASSWORD_WRONG = "wrong-password";
     private static final String REALM_NAME = "realmName.name";
     private static final String CLASS_NAME = "class.name";
-    private static AuthContext provider;
+    private static AuthContext context;
     private static ClientHandler handler;
 
     @Rule
     public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
 
     @Before
-    public void setUp(TestContext context) throws IOException {
+    public void setUp(TestContext test) throws IOException {
         RealmSettings realm = new RealmSettings()
                 .setTemplate(new PlayerCharacter().setName("realm 1").setClassName(CLASS_NAME))
                 .setAuthentication(new Token().setDomain(REALM_NAME))
@@ -70,17 +71,22 @@ public class ClientHandlerTest {
         attributes.put(ID_DESCRIPTION, "Text description :) ");
         realm.setAttributes(attributes);
 
-        provider = new ContextMock();
-        provider.getRealmStore().put(Future.future(), realm);
+        context = new ContextMock(Vertx.vertx());
+        context.getRealmStore().put(Future.future(), realm);
 
-        handler = new ClientHandler<>(provider);
+        handler = new ClientHandler<>(context);
 
-        addAccount(context);
+        addAccount(test);
     }
 
-    private static void addAccount(TestContext context) {
-        Async async = context.async();
-        AsyncAccountStore accounts = provider.getAccountStore();
+    @After
+    public void tearDown(TestContext test) {
+        context.vertx().close(test.asyncAssertSuccess());
+    }
+    
+    private static void addAccount(TestContext test) {
+        Async async = test.async();
+        AsyncAccountStore accounts = context.getAccountStore();
 
         Future<Account> future = Future.future();
 
@@ -93,41 +99,41 @@ public class ClientHandlerTest {
 
 
     @Test
-    public void authenticateAccount(TestContext context) {
-        Async async = context.async();
+    public void authenticateAccount(TestContext test) {
+        Async async = test.async();
 
         handle(CLIENT_AUTHENTICATE, (response, status) -> {
-            context.assertEquals(ResponseStatus.ACCEPTED, status);
+            test.assertEquals(ResponseStatus.ACCEPTED, status);
             async.complete();
         }, account(USERNAME, PASSWORD));
     }
 
     @Test
-    public void failtoAuthenticateAccountWithWrongPassword(TestContext context) {
-        Async async = context.async();
+    public void failtoAuthenticateAccountWithWrongPassword(TestContext test) {
+        Async async = test.async();
 
         handle(CLIENT_AUTHENTICATE, (response, status) -> {
-            context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
+            test.assertEquals(ResponseStatus.UNAUTHORIZED, status);
             async.complete();
         }, account(USERNAME, PASSWORD_WRONG));
     }
 
     @Test
-    public void failtoAuthenticateAccountWithMissing(TestContext context) {
-        Async async = context.async();
+    public void failtoAuthenticateAccountWithMissing(TestContext test) {
+        Async async = test.async();
 
         handle(CLIENT_AUTHENTICATE, (response, status) -> {
-            context.assertEquals(ResponseStatus.MISSING, status);
+            test.assertEquals(ResponseStatus.MISSING, status);
             async.complete();
         }, account(USERNAME_MISSING, PASSWORD));
     }
 
     @Test
-    public void registerAccount(TestContext context) {
-        Async async = context.async();
+    public void registerAccount(TestContext test) {
+        Async async = test.async();
 
         handle(CLIENT_REGISTER, (response, status) -> {
-            context.assertEquals(ResponseStatus.ACCEPTED, status);
+            test.assertEquals(ResponseStatus.ACCEPTED, status);
             async.complete();
         }, account(USERNAME_NEW, PASSWORD));
     }
@@ -137,22 +143,22 @@ public class ClientHandlerTest {
     }
 
     @Test
-    public void failRegisterAccountExists(TestContext context) {
-        Async async = context.async();
+    public void failRegisterAccountExists(TestContext test) {
+        Async async = test.async();
 
         handle(CLIENT_REGISTER, (response, status) -> {
-            context.assertEquals(ResponseStatus.CONFLICT, status);
+            test.assertEquals(ResponseStatus.CONFLICT, status);
             async.complete();
         }, account(USERNAME, PASSWORD));
     }
 
     @Test
-    public void retrieveRealmList(TestContext context) {
-        Async async = context.async();
+    public void retrieveRealmList(TestContext test) {
+        Async async = test.async();
         String[] keys = {ID_NAME, ID_RESOURCES, ID_TYPE, ID_VERSION, ID_REMOTE, ID_PLAYERS, ID_SIZE, ID_ATTRIBUTES};
 
         handle(CLIENT_REALM_LIST, (response, status) -> {
-            context.assertEquals(ResponseStatus.ACCEPTED, status);
+            test.assertEquals(ResponseStatus.ACCEPTED, status);
 
             JsonArray list = response.getJsonArray(ID_REALMS);
 
@@ -160,7 +166,7 @@ public class ClientHandlerTest {
                 JsonObject realm = list.getJsonObject(i);
 
                 for (String key : keys)
-                    context.assertTrue(realm.containsKey(key));
+                    test.assertTrue(realm.containsKey(key));
             }
 
             async.complete();
@@ -168,18 +174,18 @@ public class ClientHandlerTest {
     }
 
     private JsonObject getClientToken() {
-        return Serializer.json(provider.signClientToken(USERNAME));
+        return Serializer.json(context.signClientToken(USERNAME));
     }
 
     @Test
-    public void createRealmToken(TestContext context) {
-        Async async = context.async();
+    public void createRealmToken(TestContext test) {
+        Async async = test.async();
 
         handle(CLIENT_REALM_TOKEN, (response, status) -> {
             Token token = Serializer.unpack(response, Token.class);
 
-            context.assertEquals(ResponseStatus.ACCEPTED, status);
-            context.assertEquals(USERNAME, token.getDomain());
+            test.assertEquals(ResponseStatus.ACCEPTED, status);
+            test.assertEquals(USERNAME, token.getDomain());
 
             async.complete();
         }, new JsonObject()
@@ -188,17 +194,17 @@ public class ClientHandlerTest {
     }
 
     @Test
-    public void failCreateRealmTokenWhenInvalidToken(TestContext context) {
+    public void failCreateRealmTokenWhenInvalidToken(TestContext test) {
         handle(Strings.CLIENT_REALM_TOKEN, (response, status) -> {
-            context.assertEquals(ResponseStatus.UNAUTHORIZED, status);
+            test.assertEquals(ResponseStatus.UNAUTHORIZED, status);
         }, new JsonObject()
                 .put(ID_TOKEN, getInvalidClientToken()));
     }
 
     @Test
-    public void testPingClientHandler(TestContext context) {
+    public void testPingClientHandler(TestContext test) {
         handle(ID_PING, ((response, status) -> {
-            context.assertEquals(status, ResponseStatus.ACCEPTED);
+            test.assertEquals(status, ResponseStatus.ACCEPTED);
         }));
     }
 

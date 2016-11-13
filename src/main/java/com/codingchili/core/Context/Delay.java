@@ -30,9 +30,7 @@ public abstract class Delay {
     }
 
     private static void future(Future future, long ms) {
-        context().timer(ms, handler -> {
-            future.complete();
-        });
+        context().timer(ms, handler -> future.complete());
     }
 
     /**
@@ -41,9 +39,7 @@ public abstract class Delay {
      * @param ms milliseconds to wait before completing the async.
      */
     public static void forMS(Async async, long ms) {
-        context().timer(ms, handler -> {
-            async.complete();
-        });
+        context().timer(ms, handler -> async.complete());
     }
 
     /**

@@ -18,8 +18,8 @@ public class ContextMock extends RealmContext {
     private RealmSettings realm = new RealmSettings();
     private AsyncCharacterStore characters;
 
-    public ContextMock() {
-        super(Vertx.vertx());
+    public ContextMock(Vertx vertx) {
+        super(vertx);
 
         realm = new RealmSettings()
                 .setName("realmName")
@@ -28,7 +28,6 @@ public class ContextMock extends RealmContext {
         realm.getClasses().add(new PlayerClass().setName("class.name"));
 
         characters = new HazelCharacterDB(new AsyncLocalMap<>(this));
-        vertx = Vertx.vertx();
     }
 
     @Override

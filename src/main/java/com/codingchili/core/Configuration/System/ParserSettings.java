@@ -1,5 +1,7 @@
 package com.codingchili.core.Configuration.System;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,9 +13,9 @@ import com.codingchili.core.Configuration.RegexComponent;
  * Contains settings for validating strings with regexes, length and field names.
  */
 public class ParserSettings {
-    public List<RegexComponent> regex;
-    public ArrayList<String> keys;
-    public int[] length;
+    public ArrayList<String> keys = new ArrayList<>();
+    public List<RegexComponent> regex = new ArrayList<>();
+    public int[] length = new int[2];
 
     public ParserSettings() {}
 
@@ -39,5 +41,24 @@ public class ParserSettings {
 
     public void setLength(int[] length) {
         this.length = length;
+    }
+
+    @JsonIgnore
+    ParserSettings addKey(String key) {
+        keys.add(key);
+        return this;
+    }
+
+    @JsonIgnore
+    ParserSettings length(int min, int max) {
+        length[0] = min;
+        length[1] = max;
+        return this;
+    }
+
+    @JsonIgnore
+    ParserSettings addRegex(RegexComponent component) {
+        regex.add(component);
+        return this;
     }
 }

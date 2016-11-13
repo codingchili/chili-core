@@ -11,8 +11,8 @@ import com.codingchili.services.Logging.Configuration.LogServerSettings;
 class ContextMock extends LogContext {
     private LogServerSettings settings;
 
-    ContextMock(LogServerSettings settings) {
-        super(Vertx.vertx());
+    ContextMock(LogServerSettings settings, Vertx vertx) {
+        super(vertx);
         settings.getElastic().setEnabled(false);
         this.settings = settings;
     }

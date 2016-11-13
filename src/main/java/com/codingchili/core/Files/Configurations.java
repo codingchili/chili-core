@@ -23,8 +23,8 @@ import static com.codingchili.core.Configuration.Strings.*;
 
 /**
  * @author Robin Duda
- *
- * Handles loading and parsing of the configuration files.
+ *         <p>
+ *         Handles loading and parsing of the configuration files.
  */
 public abstract class Configurations {
     private static final ConcurrentHashMap<String, ConfigEntry> configs = new ConcurrentHashMap<>();
@@ -32,10 +32,25 @@ public abstract class Configurations {
     private static final AtomicBoolean monitoring = new AtomicBoolean(true);
     private static final ConsoleLogger logger = new ConsoleLogger();
 
+    /**
+     * When uninitialized default in-memory configuration is used, this configuration is
+     * flushed on initialization. This allows testing against the default configuration and
+     * without file access or modification to configuration paths when testing.
+     * Also allows configuration files to not be present at startup and reset.
+     */
+    static {
+        configs.put(PATH_LAUNCHER, new ConfigEntry(new LauncherSettings(), LauncherSettings.class));
+        configs.put(PATH_SECURITY, new ConfigEntry(new SecuritySettings(), SecuritySettings.class));
+        configs.put(PATH_SYSTEM, new ConfigEntry(new SystemSettings(), SystemSettings.class));
+        configs.put(PATH_VALIDATOR, new ConfigEntry(new ValidatorSettings(), ValidatorSettings.class));
+    }
+
     public static void initialize(CoreContext context) {
         if (initialized.get()) {
             context.console().onAlreadyInitialized();
         } else {
+            unload();
+
             new FileWatcherBuilder(context)
                     .rate(Configurations::getConfigurationPoll)
                     .onDirectory(Strings.DIR_CONFIG)
@@ -50,7 +65,7 @@ public abstract class Configurations {
         return system().getConfigurationPoll();
     }
 
-   private static class ConfigurationFileWatcher implements FileStoreListener {
+    private static class ConfigurationFileWatcher implements FileStoreListener {
         @Override
         public void onFileModify(Path path) {
             if (monitoring.get()) {
@@ -84,6 +99,7 @@ public abstract class Configurations {
 
     /**
      * Inserts a configuration file from memory into the configuration store.
+     *
      * @param configurable the configurable to be stored.
      */
     public static void put(Configurable configurable) {
@@ -117,7 +133,7 @@ public abstract class Configurations {
     /**
      * Checks if an alternate file with the same name exists in another folder.
      *
-     * @param filePath  The file to check if exists in another directory.
+     * @param filePath    The file to check if exists in another directory.
      * @param overrideDir The other directory to check in.
      * @return a path to the overridden resource if exists or the filePath itself.
      */
@@ -197,7 +213,7 @@ public abstract class Configurations {
     /**
      * Clears all loaded configuration and reloads on next get.
      */
-    public static void unload() {
+    static void unload() {
         configs.clear();
         logger.onCacheCleared(ID_CONFIGURATION);
     }
