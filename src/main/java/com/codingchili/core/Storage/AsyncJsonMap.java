@@ -3,8 +3,10 @@ package com.codingchili.core.Storage;
 import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 
+import java.io.IOException;
 import java.util.Optional;
 
+import com.codingchili.core.Configuration.Strings;
 import com.codingchili.core.Context.StorageContext;
 import com.codingchili.core.Files.JsonFileStore;
 
@@ -16,12 +18,20 @@ import com.codingchili.core.Files.JsonFileStore;
 public class AsyncJsonMap<Key, Value> implements AsyncStorage<Key, Value> {
     private static final String ASYNCJSONMAP_WORKERS = "asyncjsonmap.workers";
     private final WorkerExecutor fileWriter;
-    private JsonObject db = new JsonObject();
+    private JsonObject db;
     private StorageContext<Value> context;
 
     public AsyncJsonMap(Future<AsyncStorage<Key, Value>> future, StorageContext<Value> context) {
         this.context = context;
         this.fileWriter = context.vertx().createSharedWorkerExecutor(ASYNCJSONMAP_WORKERS);
+
+        try {
+            db = JsonFileStore.readObject(context.DB());
+        } catch (IOException e) {
+            db = new JsonObject();
+            context.console().log(Strings.getFileReadError(context.DB()));
+        }
+
         future.complete(this);
     }
 
