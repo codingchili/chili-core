@@ -21,6 +21,7 @@ import com.codingchili.core.Context.SystemContext;
 public class StorageLoaderIT {
     private static CoreContext context;
     private static final String TEST_MAP = "test";
+    private static final String TEST_COLLECTION = "collection";
 
     @BeforeClass
     public static void setUp(TestContext test) {
@@ -51,7 +52,11 @@ public class StorageLoaderIT {
     @Test
     public void testLoadHazelAsyncMap(TestContext test) {
         loadStoragePlugin(test.async(), AsyncHazelMap.class);
+    }
 
+    @Test
+    public void testLoadElasticMap(TestContext test) {
+        loadStoragePlugin(test.async(), AsyncElasticMap.class);
     }
 
     @Test
@@ -69,6 +74,7 @@ public class StorageLoaderIT {
                 .withContext(context)
                 .withPlugin(plugin)
                 .withDB(TEST_MAP)
+                .withCollection(TEST_COLLECTION)
                 .withClass(AsyncPrivateMapTest.class)
                 .build(future);
     }

@@ -18,6 +18,7 @@ public class StorageLoader {
     private CoreContext context;
     private String DB;
     private Class clazz;
+    private String collection;
     private String plugin;
 
     private StorageLoader() {
@@ -27,6 +28,7 @@ public class StorageLoader {
         try {
             StorageContext<Value> storage = new StorageContext<Value>(context)
                     .setDB(DB)
+                    .setCollection(collection)
                     .setClass(clazz);
 
             Class.forName(plugin)
@@ -63,6 +65,11 @@ public class StorageLoader {
         return this;
     }
 
+    public StorageLoader withCollection(String collection) {
+        this.collection = collection;
+        return this;
+    }
+
     public StorageLoader withPlugin(String plugin) {
         this.plugin = plugin;
         return this;
@@ -73,6 +80,7 @@ public class StorageLoader {
         checkIsSet(DB, ID_DB);
         checkIsSet(clazz, ID_CLASS);
         checkIsSet(plugin, ID_PLUGIN);
+        checkIsSet(collection, ID_COLLECTION);
 
         this.load(future);
     }

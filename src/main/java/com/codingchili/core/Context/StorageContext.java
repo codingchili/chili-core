@@ -7,8 +7,8 @@ import com.codingchili.core.Protocol.Serializer;
 
 /**
  * @author Robin Duda
- *
- * Context used for storage plugins.
+ *         <p>
+ *         Context used for storage plugins.
  */
 public class StorageContext<Value> extends SystemContext {
     private String DB;
@@ -28,7 +28,7 @@ public class StorageContext<Value> extends SystemContext {
         return this;
     }
 
-    public StorageContext<Value>  setCollection(String collection) {
+    public StorageContext<Value> setCollection(String collection) {
         this.collection = collection;
         return this;
     }
@@ -38,6 +38,7 @@ public class StorageContext<Value> extends SystemContext {
         return this;
     }
 
+    @SuppressWarnings("unchecked")
     public Value toValue(JsonObject json) {
         return Serializer.unpack(json, clazz);
     }

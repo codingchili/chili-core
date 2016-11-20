@@ -1,6 +1,10 @@
 package com.codingchili.core.Configuration;
 
+import io.vertx.core.json.JsonObject;
+
 import java.nio.file.Path;
+
+import com.codingchili.core.Storage.AsyncElasticMap;
 
 /**
  * @author Robin Duda
@@ -111,7 +115,10 @@ public abstract class Strings {
     public static final String ERROR_REQUEST_SIZE_TOO_LARGE = "Maximum request size exceeded.";
     public static final String ERROR_CONFIGURATION_MISMATCH = "Configuration mismatches with currently loaded.";
     public static final String ERROR_ALREADY_INITIALIZED = "Error already initialized.";
+    public static final String ERROR_STORAGE_EXCEPTION = "Failed to perform a storage operation.";
     public static final String CONFIGURED_BLOCKS = "Configured deployment blocks";
+
+
 
     /**
      * Replaces tags in a logging message.
@@ -237,5 +244,9 @@ public abstract class Strings {
 
     public static String getStorageLoaderMissingArgument(String type) {
         return "Storage loader is missing argument for attribute '" + type + "'.";
+    }
+
+    public static String getStorageConnectError(Class clazz, String remote) {
+        return "Failed to connect to storage '" + clazz.getName() + "' with remote '" + remote + "'";
     }
 }

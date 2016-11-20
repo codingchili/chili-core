@@ -17,7 +17,6 @@ import com.codingchili.core.Context.StorageContext;
 public class AsyncMongoMap<Key, Value> implements AsyncStorage<Key, Value> {
     private static final JsonObject ALL_FIELDS = new JsonObject();
     private static final String ID = "_id";
-
     private StorageContext<Value> context;
     private MongoClient client;
     private String DB;
