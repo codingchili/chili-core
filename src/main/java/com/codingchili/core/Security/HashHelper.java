@@ -20,6 +20,7 @@ import static com.codingchili.core.Files.Configurations.system;
  */
 
 public class HashHelper {
+    private static final String HASHHELPER_WORKERS = "hashhelper.workers";
     private final static int ITERATIONS = 2048;
     private final static int KEY_BITS = 512;
     private final static int SALT_BYTES = 32;
@@ -28,7 +29,7 @@ public class HashHelper {
 
     public HashHelper(Vertx vertx) {
         int workers = system().getWorkerPoolSize();
-        executor = vertx.createSharedWorkerExecutor("hashhelper.workers", workers);
+        executor = vertx.createSharedWorkerExecutor(HASHHELPER_WORKERS, workers);
     }
 
     /**

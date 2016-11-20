@@ -1,4 +1,4 @@
-package com.codingchili.services.Authentication.Client;
+package com.codingchili.services.Authentication.Controller;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;

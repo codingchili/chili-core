@@ -3,12 +3,11 @@ package com.codingchili.core.Storage;
 import io.vertx.core.Future;
 
 import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Configuration.System.LauncherSettings;
 import com.codingchili.core.Context.CoreContext;
 import com.codingchili.core.Context.StorageContext;
 import com.codingchili.core.Logging.Level;
 
-import com.codingchili.services.Realm.Configuration.RealmSettings;
+import static com.codingchili.services.Shared.Strings.*;
 
 /**
  * @author Robin Duda
@@ -16,23 +15,71 @@ import com.codingchili.services.Realm.Configuration.RealmSettings;
  *         Loads the given storage subsystem.
  */
 public class StorageLoader {
-    private static CoreContext context;
+    private CoreContext context;
+    private String DB;
+    private Class clazz;
+    private String plugin;
 
-    public static void initialize(CoreContext context) {
-        StorageLoader.context = context;
+    private StorageLoader() {
     }
 
-    public static <Key, Value> void load(Future<AsyncStorage<Key, Value>> future, String className, String mapName) {
+    private <Key, Value> void load(Future<AsyncStorage<Key, Value>> future) {
         try {
             StorageContext<Value> storage = new StorageContext<Value>(context)
-                    .setDB(mapName)
-                    .setClass(LauncherSettings.class);
+                    .setDB(DB)
+                    .setClass(clazz);
 
-            Class.forName(className)
-                    .getConstructor(Future.class, StorageContext.class).<Key, Value>newInstance(future, storage);
+            Class.forName(plugin)
+                    .getConstructor(Future.class, StorageContext.class)
+                    .<Key, Value>newInstance(future, storage);
+
         } catch (ReflectiveOperationException e) {
-            context.console().log(Strings.getStorageLoaderError(className, mapName), Level.SEVERE);
+            context.console().log(Strings.getStorageLoaderError(plugin, DB), Level.SEVERE);
             System.exit(0);
+        }
+    }
+
+    public static StorageLoader prepare() {
+        return new StorageLoader();
+    }
+
+    public StorageLoader withContext(CoreContext context) {
+        this.context = context;
+        return this;
+    }
+
+    public StorageLoader withDB(String DB) {
+        this.DB = DB;
+        return this;
+    }
+
+    public StorageLoader withClass(Class clazz) {
+        this.clazz = clazz;
+        return this;
+    }
+
+    public StorageLoader withPlugin(Class plugin) {
+        this.plugin = plugin.getCanonicalName();
+        return this;
+    }
+
+    public StorageLoader withPlugin(String plugin) {
+        this.plugin = plugin;
+        return this;
+    }
+
+    public <Key, Value> void build(Future<AsyncStorage<Key, Value>> future) {
+        checkIsSet(context, ID_CONTEXT);
+        checkIsSet(DB, ID_DB);
+        checkIsSet(clazz, ID_CLASS);
+        checkIsSet(plugin, ID_PLUGIN);
+
+        this.load(future);
+    }
+
+    private void checkIsSet(Object object, String type) {
+        if (object == null) {
+            throw new RuntimeException(Strings.getStorageLoaderMissingArgument(type));
         }
     }
 }

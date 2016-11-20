@@ -1,4 +1,4 @@
-package com.codingchili.services.Authentication.Realm;
+package com.codingchili.services.Authentication.Controller;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;

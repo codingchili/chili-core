@@ -12,6 +12,7 @@ import com.codingchili.core.Protocol.Serializer;
  */
 public class StorageContext<Value> extends SystemContext {
     private String DB;
+    private String collection;
     private Class clazz;
 
     public StorageContext(CoreContext context) {
@@ -27,12 +28,9 @@ public class StorageContext<Value> extends SystemContext {
         return this;
     }
 
-    private Value serialize(JsonObject json) {
-        return Serializer.unpack(json, clazz);
-    }
-
-    public JsonObject serialize(Value object) {
-        return Serializer.json(object);
+    public StorageContext<Value>  setCollection(String collection) {
+        this.collection = collection;
+        return this;
     }
 
     public StorageContext<Value> setDB(String DB) {
@@ -40,23 +38,35 @@ public class StorageContext<Value> extends SystemContext {
         return this;
     }
 
+    public Value toValue(JsonObject json) {
+        return Serializer.unpack(json, clazz);
+    }
+
+    public JsonObject toJson(Value object) {
+        return Serializer.json(object);
+    }
+
     public AsyncResult<Value> convertJson(AsyncResult<JsonObject> json) {
         if (json.succeeded()) {
-            return Future.succeededFuture(serialize(json.result()));
+            return Future.succeededFuture(toValue(json.result()));
         } else {
             return Future.failedFuture(json.cause());
         }
     }
 
-    public AsyncResult<Void> convertVoid(AsyncResult<String> string) {
-        if (string.succeeded()) {
+    public AsyncResult<Void> convertVoid(AsyncResult<?> result) {
+        if (result.succeeded()) {
             return Future.succeededFuture();
         } else {
-            return Future.failedFuture(string.cause());
+            return Future.failedFuture(result.cause());
         }
     }
 
     public String DB() {
         return DB;
+    }
+
+    public String collection() {
+        return collection;
     }
 }

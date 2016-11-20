@@ -1,6 +1,7 @@
 package com.codingchili.core.Storage;
 
 import io.vertx.core.*;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import io.vertx.ext.unit.TestContext;
@@ -8,20 +9,18 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 
 
-import com.codingchili.core.Configuration.System.LauncherSettings;
 import com.codingchili.core.Context.CoreContext;
 import com.codingchili.core.Context.SystemContext;
 
-import com.codingchili.services.Shared.Strings;
-
-import static com.codingchili.core.Configuration.Strings.*;
-
 /**
  * @author Robin Duda
+ *
+ * Tests the loading of the available storage plugins.
  */
 @RunWith(VertxUnitRunner.class)
 public class StorageLoaderIT {
     private static CoreContext context;
+    private static final String TEST_MAP = "test";
 
     @BeforeClass
     public static void setUp(TestContext test) {
@@ -29,48 +28,48 @@ public class StorageLoaderIT {
 
         Vertx.clusteredVertx(new VertxOptions(), vertx -> {
             context = new SystemContext(vertx.result());
-            StorageLoader.initialize(context);
             async.complete();
         });
     }
 
     @Test
     public void testLoadLocalAsyncMap(TestContext test) {
-        Async async = test.async();
-        Future<AsyncStorage<String, String>> future = Future.future();
+        loadStoragePlugin(test.async(), AsyncPrivateMap.class);
+    }
 
-        future.setHandler(storage -> storage.result().put("KEY", "VALUE", result -> {
-            test.assertTrue(result.succeeded());
-            async.complete();
-        }));
+    @Test
+    public void testLoadJsonMap(TestContext test) {
+        loadStoragePlugin(test.async(), AsyncJsonMap.class);
 
-        StorageLoader.load(future, STORAGE_LOCALMAP, Strings.MAP_ACCOUNTS);
+    }
+
+    @Test
+    public void testLoadSharedMap(TestContext test) {
+        loadStoragePlugin(test.async(), AsyncSharedMap.class);
     }
 
     @Test
     public void testLoadHazelAsyncMap(TestContext test) {
-        Async async = test.async();
-        Future<AsyncStorage<String, String>> future = Future.future();
+        loadStoragePlugin(test.async(), AsyncHazelMap.class);
 
-        future.setHandler(storage -> storage.result().put("KEY", "VALUE", result -> {
-            test.assertTrue(result.succeeded());
-            async.complete();
-        }));
-
-        StorageLoader.load(future, STORAGE_HAZELMAP, Strings.MAP_ACCOUNTS);
     }
 
-    @Ignore
     @Test
     public void testLoadMongoMap(TestContext test) {
-        Async async = test.async();
-        Future<AsyncStorage<String, LauncherSettings>> future = Future.future();
+        loadStoragePlugin(test.async(), AsyncMongoMap.class);
 
-        future.setHandler(storage -> storage.result().put("KEY", new LauncherSettings(), result -> {
-            test.assertTrue(result.succeeded());
-            async.complete();
-        }));
+    }
 
-        StorageLoader.load(future, STORAGE_MONGODB, Strings.MAP_ACCOUNTS);
+    private void loadStoragePlugin(Async async, Class plugin) {
+        Future<AsyncStorage<String, String>> future = Future.future();
+
+        future.setHandler(completed -> async.complete());
+
+        StorageLoader.prepare()
+                .withContext(context)
+                .withPlugin(plugin)
+                .withDB(TEST_MAP)
+                .withClass(AsyncPrivateMapTest.class)
+                .build(future);
     }
 }

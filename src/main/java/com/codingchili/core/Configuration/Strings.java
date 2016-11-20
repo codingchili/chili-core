@@ -67,16 +67,9 @@ public abstract class Strings {
     public static final String ID_DEFAULT = "default";
     public static final String ID_IDENTITY = "identity";
     public static final String ID_SYSTEM = "system";
-    public static final String ID = "id";
-
 
     // Node names.
     public static final String NODE_LOCAL = "local";
-
-    // Storage plugin contants.
-    public static final String STORAGE_LOCALMAP = "com.codingchili.core.Storage.AsyncLocalMap";
-    public static final String STORAGE_HAZELMAP = "com.codingchili.core.Storage.AsyncHazelMap";
-    public static final String STORAGE_MONGODB =  "com.codingchili.core.Storage.AsyncMongoMap";
 
     // logging constants
     public static final String LOG_AT = "@";
@@ -226,8 +219,8 @@ public abstract class Strings {
         return  "[" + name + "] Error: Identity must be configured.";
     }
 
-    public static String getStorageLoaderError(String className, String mapName) {
-        return "Error: Failed to load storage plugin '" + className + "' for collection '" + mapName + "'.";
+    public static String getStorageLoaderError(String plugin, String mapName) {
+        return "Error: Failed to load storage plugin '" + plugin + "' for collection '" + mapName + "'.";
     }
 
     public static String getErrorCreateDirectory(String target) {
@@ -240,5 +233,9 @@ public abstract class Strings {
 
     public static String getFileLoadDefaults(String path, Class<?> clazz) {
         return "Configuration '" + path + "' not found, using defaults from '" + clazz.getSimpleName() + "'.";
+    }
+
+    public static String getStorageLoaderMissingArgument(String type) {
+        return "Storage loader is missing argument for attribute '" + type + "'.";
     }
 }

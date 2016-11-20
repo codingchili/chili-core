@@ -40,7 +40,11 @@ public class Strings extends com.codingchili.core.Configuration.Strings {
     public static final String ID_AFFLICTIONS = "afflictions";
     public static final String ID_CLASSES = "classes";
     public static final String ID_TEMPLATE = "template";
-    public static final String ID_CLASS = "className";
+    public static final String ID_PLUGIN = "plugin";
+    public static final String ID_DB = "DB";
+    public static final String ID_COLLECTION = "collection";
+    public static final String ID_CLASS = "class";
+    public static final String ID_CONTEXT = "context";
     public static final String ID_AUTHENTICATION = "authentication";
     public static final String ID_LIST = "list";
     public static final String ID_FILES = "files";

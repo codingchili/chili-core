@@ -38,6 +38,8 @@ public class AuthContext extends ServiceContext {
     }
 
     public static void create(Future<AuthContext> future, Vertx vertx) {
+        AuthContext context = new AuthContext(vertx);
+
         Future<AsyncStorage<String, HashMap<String, RealmSettings>>> realmFuture = Future.future();
         Future<AsyncStorage<String, AccountMapping>> accountFuture = Future.future();
 
@@ -49,8 +51,19 @@ public class AuthContext extends ServiceContext {
             future.complete(new AuthContext(realms, accounts, vertx));
         });
 
-        StorageLoader.load(realmFuture, "com.codingchili.core.Storage.AsyncHazelMap", "realms");
-        StorageLoader.load(accountFuture, "com.codingchili.core.Storage.AsyncHazelMap", "accounts");
+        StorageLoader.prepare()
+                .withContext(context)
+                .withDB(MAP_REALMS)
+                .withClass(RealmSettings.class)
+                .withPlugin(AsyncMongoMap.class)
+        .build(realmFuture);
+
+        StorageLoader.prepare()
+                .withContext(context)
+                .withDB(MAP_REALMS)
+                .withClass(AccountMapping.class)
+                .withPlugin(AsyncMongoMap.class)
+                .build(realmFuture);
     }
 
     public AsyncRealmStore getRealmStore() {

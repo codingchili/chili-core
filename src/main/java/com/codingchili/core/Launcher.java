@@ -25,7 +25,7 @@ import static com.codingchili.core.Configuration.Strings.*;
 public class Launcher extends ClusterNode {
     private static final ConsoleLogger logger = new ConsoleLogger();
     private static List<String> nodes = new ArrayList<>();
-    private static CoreContext context;
+    private CoreContext context;
 
     /**
      * Starts the launcher with the given arguments.
@@ -37,6 +37,8 @@ public class Launcher extends ClusterNode {
     }
 
     Launcher(LaunchContext context) {
+        this.context = context;
+
         logger.log(Strings.getStartupText(context.settings().getVersion()), Level.STARTUP);
 
         CommandExecutor executor = new CommandExecutor(context);
@@ -122,7 +124,7 @@ public class Launcher extends ClusterNode {
         }
     }
 
-    private static void addShutdownHook(Vertx vertx) {
+    private void addShutdownHook(Vertx vertx) {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 AtomicBoolean cleanup = new AtomicBoolean(true);
@@ -149,7 +151,6 @@ public class Launcher extends ClusterNode {
     private void initialize() {
         Configurations.initialize(context);
         Delay.initialize(context);
-        StorageLoader.initialize(context);
     }
 
     @Override

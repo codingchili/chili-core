@@ -1,18 +1,18 @@
 package com.codingchili.core.Storage;
 
-import io.vertx.core.*;
+import io.vertx.core.Future;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
+import com.codingchili.core.Configuration.Strings;
 import com.codingchili.core.Context.CoreContext;
 import com.codingchili.core.Testing.ContextMock;
-
-import com.codingchili.services.Shared.Strings;
-
-import static com.codingchili.core.Configuration.Strings.STORAGE_LOCALMAP;
 
 /**
  * @author Robin Duda
@@ -21,27 +21,39 @@ import static com.codingchili.core.Configuration.Strings.STORAGE_LOCALMAP;
  *         storage subsystems are implemented using the StorageLoader.
  */
 @RunWith(VertxUnitRunner.class)
-public class AsyncMapTest {
-    private static final String VALUE = "value";
-    private static final String VALUE_OTHER = "value_other";
+public class SharedMapTest {
+    private static final JsonObject VALUE = new JsonObject().put("value", "value");
+    private static final JsonObject VALUE_OTHER = new JsonObject().put("value", "other");
     private static final String KEY = "key";
-    private AsyncStorage<String, String> store;
+    private static final String DB = "DB.json";
+    private static final String STORAGE = "Storage";
+    private AsyncStorage<String, JsonObject> store;
     private CoreContext context;
+
+    @Rule
+    public Timeout timeout = Timeout.seconds(5);
 
     @Before
     public void setUp(TestContext test) {
         Async async = test.async();
 
-        Future<AsyncStorage<String, String>> future = Future.future();
-        context = new ContextMock(Vertx.vertx());
-        StorageLoader.initialize(context);
+        Future<AsyncStorage<String, JsonObject>> future = Future.future();
 
-        future.setHandler(result -> {
-            store = result.result();
-            async.complete();
-        });
+        //Vertx.clusteredVertx(new VertxOptions(), clustered -> {
+            context = new ContextMock(Vertx.vertx());
 
-        StorageLoader.load(future, STORAGE_LOCALMAP, Strings.MAP_ACCOUNTS);
+            future.setHandler(result -> {
+                store = result.result();
+                store.clear(clear -> async.complete());
+            });
+
+            StorageLoader.prepare()
+                    .withDB(Strings.testFile(STORAGE, DB))
+                    .withClass(JsonObject.class)
+                    .withContext(context)
+                    .withPlugin(AsyncSharedMap.class)
+                    .build(future);
+        //});
     }
 
     @After
