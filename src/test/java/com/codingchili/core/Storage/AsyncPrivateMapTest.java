@@ -6,6 +6,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 
+import com.codingchili.core.Testing.MapTestCases;
+
 /**
  * @author Robin Duda
  *         <p>

@@ -1,4 +1,4 @@
-package com.codingchili.core.Storage;
+package com.codingchili.core.Testing;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -7,13 +7,18 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
 import com.codingchili.core.Context.StorageContext;
+import com.codingchili.core.Storage.*;
+
 
 /**
  * @author Robin Duda
+ *         <p>
+ *         Common test cases for the map implementations.
  */
 @Ignore
 @RunWith(VertxUnitRunner.class)
@@ -21,13 +26,18 @@ public class MapTestCases {
     private static final JsonObject VALUE = new JsonObject().put("value", "value");
     private static final JsonObject VALUE_OTHER = new JsonObject().put("value", "other");
     private static final String KEY = "key";
-    private static final String TEST = "test";
+    private static final String DB_NAME = "test";
     private static final String COLLECTION = "testcollection";
     private AsyncStorage<String, JsonObject> store;
     protected StorageContext<JsonObject> context;
 
     @Rule
-    public Timeout timeout = Timeout.seconds(5);
+    public Timeout timeout = Timeout.seconds(3);
+
+    @Before
+    public void setUp(TestContext test) {
+        setUp(test, AsyncElasticMap.class);
+    }
 
     protected void setUp(TestContext test, Class plugin) {
         Async async = test.async();
@@ -41,7 +51,7 @@ public class MapTestCases {
         });
 
         StorageLoader.prepare()
-                .withDB(TEST)
+                .withDB(DB_NAME)
                 .withCollection(COLLECTION)
                 .withClass(JsonObject.class)
                 .withContext(context)
@@ -49,7 +59,8 @@ public class MapTestCases {
                 .build(future);
     }
 
-    protected void tearDown(TestContext test) {
+    @After
+    public void tearDown(TestContext test) {
         context.vertx().close(test.asyncAssertSuccess());
     }
 
@@ -68,7 +79,7 @@ public class MapTestCases {
     public void testPutWithTTL(TestContext test) {
         Async async = test.async();
 
-        store.put(KEY, VALUE, 1, put -> waitForExpiry(test, async));
+        store.put(KEY, VALUE, 50, put -> waitForExpiry(test, async));
     }
 
     private void waitForExpiry(TestContext test, Async async) {
@@ -93,7 +104,7 @@ public class MapTestCases {
     @Test
     public void testPutIfAbsentTTL(TestContext test) {
         Async async = test.async();
-        store.putIfAbsent(KEY, VALUE, 1, handler -> waitForExpiry(test, async));
+        store.putIfAbsent(KEY, VALUE, 50, handler -> waitForExpiry(test, async));
     }
 
     @Test
@@ -230,11 +241,16 @@ public class MapTestCases {
         Async async = test.async();
 
         store.put(KEY, VALUE, put -> {
-            store.size(size -> {
-                test.assertEquals(1, size.result());
-                test.assertTrue(size.succeeded());
-                async.complete();
-            });
+
+            if (put.succeeded()) {
+                store.size(size -> {
+                    test.assertEquals(1, size.result());
+                    test.assertTrue(size.succeeded());
+                    async.complete();
+                });
+            } else {
+                test.fail("Failed to put test data for size test.");
+            }
         });
     }
 }

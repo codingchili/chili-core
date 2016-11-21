@@ -6,7 +6,6 @@ import io.vertx.core.json.JsonObject;
 
 import com.codingchili.core.Context.StorageContext;
 import com.codingchili.core.Exception.StorageFailureException;
-import com.codingchili.core.Testing.ContextMock;
 
 import static com.codingchili.core.Configuration.Strings.DIR_SEPARATOR;
 
@@ -23,27 +22,9 @@ public class AsyncElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
     private static final String ID_RESULT = "result";
     private static final String ID_FOUND = "found";
     private static final String PARAM_SOURCE = "_source";
-    private static final String PARAM_COUNT = "_count";
+    private static final String PARAM_COUNT = "_search?size=0";
     private static final String OP_CREATE = "?op_type=create";
     private StorageContext<Value> context;
-
-    public static void main(String[] args) {
-        Future<AsyncStorage<String, JsonObject>> future = Future.future();
-
-        future.setHandler(map -> {
-            AsyncStorage<String, JsonObject> storage = map.result();
-            storage.put("key", new JsonObject().put("one", "two"), get -> {
-
-            });
-        });
-
-        StorageLoader.prepare()
-                .withContext(new StorageContext<>(new ContextMock(Vertx.vertx())))
-                .withDB("test-db")
-                .withPlugin(AsyncElasticMap.class)
-                .withClass(JsonObject.class)
-                .build(future);
-    }
 
     public AsyncElasticMap(Future<AsyncStorage<Key, Value>> future, StorageContext<Value> context) {
         this.context = context;
@@ -67,7 +48,7 @@ public class AsyncElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     private String entryPath(Key key) {
-        return context.DB() + DIR_SEPARATOR +
+        return  DIR_SEPARATOR + context.DB() + DIR_SEPARATOR +
                 context.collection() + DIR_SEPARATOR +
                 key.toString();
     }
@@ -122,32 +103,93 @@ public class AsyncElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
 
     @Override
     public void putIfAbsent(Key key, Value value, Handler<AsyncResult<Value>> handler) {
+        context.vertx().createHttpClient().put(9200, "localhost", putIfAbsentPath(key)).handler(response -> {
+            response.bodyHandler(body -> {
+                if (isCreated(body.toJsonObject())) {
+                    handler.handle(Future.succeededFuture());
+                } else {
+                    get(key, handler);
+                }
+            });
+        }).end(context.toJson(value).encodePrettily());
+    }
 
+    private Value valueFromBody(Buffer body) {
+        return context.toValue(body.toJsonObject().getJsonObject(PARAM_SOURCE));
+    }
+
+    private boolean isCreated(JsonObject reply) {
+        return (STATUS_CREATED.equals(reply.getString(ID_RESULT)));
     }
 
     @Override
     public void putIfAbsent(Key key, Value value, long ttl, Handler<AsyncResult<Value>> handler) {
+        putIfAbsent(key, value, handler);
 
+        context.timer(ttl, event -> {
+           remove(key, remove -> {});
+        });
     }
 
     @Override
     public void remove(Key key, Handler<AsyncResult<Value>> handler) {
+        get(key, found -> {
+            if (found.result() != null) {
+                context.vertx().createHttpClient().delete(9200, "localhost", entryPath(key), response -> {
+                    response.bodyHandler(body -> {
 
+                        if (isRemoved(body.toJsonObject())) {
+                            handler.handle(Future.succeededFuture(found.result()));
+                        } else {
+                            handler.handle(Future.succeededFuture());
+                        }
+
+                    });
+                }).end();
+            } else {
+                handler.handle(Future.succeededFuture());
+            }
+        });
+    }
+
+    private boolean isRemoved(JsonObject json) {
+        return json.getBoolean(ID_FOUND);
     }
 
     @Override
     public void removeIfPresent(Key key, Value value, Handler<AsyncResult<Boolean>> handler) {
+        context.vertx().createHttpClient().delete(9200, "localhost", entryPath(key), response -> {
+            response.bodyHandler(body -> {
 
+                if (isRemoved(body.toJsonObject())) {
+                    handler.handle(Future.succeededFuture(true));
+                } else {
+                    handler.handle(Future.succeededFuture(false));
+                }
+
+            });
+        }).end();
     }
 
     @Override
     public void replace(Key key, Value value, Handler<AsyncResult<Value>> handler) {
+        get(key, get -> {
+            put(key, value, replace -> {
 
+                // todo add query parameters to get request to match the given doc!
+
+                if (replace.succeeded() && get.result() != null) {
+                    handler.handle(Future.succeededFuture(get.result()));
+                } else {
+                    handler.handle(Future.succeededFuture());
+                }
+            });
+        });
     }
 
     @Override
     public void replaceIfPresent(Key key, Value oldValue, Value newValue, Handler<AsyncResult<Boolean>> handler) {
-
+        handler.handle(Future.succeededFuture());
     }
 
     @Override
