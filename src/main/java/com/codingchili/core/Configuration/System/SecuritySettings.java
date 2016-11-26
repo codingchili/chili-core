@@ -1,10 +1,10 @@
-package com.codingchili.core.Configuration.System;
+package com.codingchili.core.configuration.system;
 
 
 import java.util.HashMap;
 
-import com.codingchili.core.Configuration.BaseConfigurable;
-import com.codingchili.core.Configuration.Strings;
+import com.codingchili.core.configuration.BaseConfigurable;
+import com.codingchili.core.configuration.Strings;
 
 /**
  * @author Robin Duda

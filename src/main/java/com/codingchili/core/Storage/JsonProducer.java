@@ -1,4 +1,4 @@
-package com.codingchili.core.Storage;
+package com.codingchili.core.storage;
 
 /**
  * @author Robin Duda

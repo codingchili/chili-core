@@ -1,11 +1,11 @@
-package com.codingchili.services.Authentication.Controller;
+package com.codingchili.services.authentication.controller;
 
-import com.codingchili.core.Protocol.ClusterRequest;
-import com.codingchili.core.Protocol.Request;
-import com.codingchili.core.Protocol.Serializer;
-import com.codingchili.core.Security.Token;
+import com.codingchili.core.protocol.ClusterRequest;
+import com.codingchili.core.protocol.Request;
+import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.security.Token;
 
-import com.codingchili.services.Realm.Configuration.RealmSettings;
+import com.codingchili.services.realm.configuration.RealmSettings;
 
 import static com.codingchili.services.Shared.Strings.*;
 

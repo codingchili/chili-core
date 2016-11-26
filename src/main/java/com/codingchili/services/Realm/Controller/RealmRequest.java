@@ -1,10 +1,10 @@
-package com.codingchili.services.Realm.Controller;
+package com.codingchili.services.realm.controller;
 
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.Protocol.*;
+import com.codingchili.core.protocol.*;
 
-import com.codingchili.services.Authentication.Model.Account;
+import com.codingchili.services.authentication.model.Account;
 
 import static com.codingchili.services.Shared.Strings.*;
 

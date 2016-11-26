@@ -1,11 +1,11 @@
-package com.codingchili.core.Context;
+package com.codingchili.core.context;
 
 import java.util.*;
 
-import com.codingchili.core.Configuration.System.LauncherSettings;
-import com.codingchili.core.Logging.Logger;
-import com.codingchili.core.Testing.LoggerMock;
-import com.codingchili.core.Testing.MockLogListener;
+import com.codingchili.core.configuration.system.LauncherSettings;
+import com.codingchili.core.logging.Logger;
+import com.codingchili.core.testing.LoggerMock;
+import com.codingchili.core.testing.MockLogListener;
 
 /**
  * @author Robin Duda

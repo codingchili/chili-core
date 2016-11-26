@@ -1,13 +1,11 @@
-package com.codingchili.core.Context;
+package com.codingchili.core.context;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.dropwizard.MetricsService;
 
-import com.codingchili.core.Configuration.ServiceConfigurable;
-import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Logging.*;
-import com.codingchili.core.Security.RemoteIdentity;
+import com.codingchili.core.configuration.ServiceConfigurable;
+import com.codingchili.core.logging.*;
+import com.codingchili.core.security.RemoteIdentity;
 
 /**
  * @author Robin Duda

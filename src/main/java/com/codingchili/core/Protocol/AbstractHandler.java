@@ -1,10 +1,12 @@
-package com.codingchili.core.Protocol;
+package com.codingchili.core.protocol;
 
 import io.vertx.core.Future;
 
-import com.codingchili.core.Context.ServiceContext;
-import com.codingchili.core.Exception.*;
-import com.codingchili.core.Logging.Logger;
+import com.codingchili.core.context.CoreException;
+import com.codingchili.core.context.ServiceContext;
+import com.codingchili.core.logging.Logger;
+import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
+import com.codingchili.core.protocol.exception.HandlerMissingException;
 
 /**
  * @author Robin Duda

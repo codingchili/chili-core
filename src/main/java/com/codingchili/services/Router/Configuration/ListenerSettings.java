@@ -1,12 +1,12 @@
-package com.codingchili.services.Router.Configuration;
+package com.codingchili.services.router.configuration;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.vertx.core.http.HttpServerOptions;
 
 import java.util.HashMap;
 
-import com.codingchili.services.Router.Model.Endpoint;
-import com.codingchili.services.Router.Model.WireType;
+import com.codingchili.services.router.model.Endpoint;
+import com.codingchili.services.router.model.WireType;
 
 /**
  * @author Robin Duda

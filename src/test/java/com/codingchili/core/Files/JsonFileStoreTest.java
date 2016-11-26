@@ -1,4 +1,4 @@
-package com.codingchili.core.Files;
+package com.codingchili.core.files;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-import static com.codingchili.core.Configuration.Strings.*;
+import static com.codingchili.core.configuration.Strings.*;
 
 /**
  * @author Robin Duda

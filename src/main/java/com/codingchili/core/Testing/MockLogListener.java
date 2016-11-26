@@ -1,4 +1,4 @@
-package com.codingchili.core.Testing;
+package com.codingchili.core.testing;
 
 /**
  * @author Robin Duda

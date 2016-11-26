@@ -1,10 +1,10 @@
-package com.codingchili.services.Logging.Configuration;
+package com.codingchili.services.logging.configuration;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * @author Robin Duda
- *         Contains configuration for the ElasticSearch cluster when logging is enabled.
+ *         Contains configuration for the elastic cluster when logging is enabled.
  */
 public class ElasticSettings {
     private String remote;

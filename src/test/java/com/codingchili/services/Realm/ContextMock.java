@@ -1,16 +1,16 @@
-package com.codingchili.services.Realm;
+package com.codingchili.services.realm;
 
 import io.vertx.core.Vertx;
 
-import com.codingchili.core.Context.StorageContext;
-import com.codingchili.core.Security.*;
-import com.codingchili.core.Storage.AsyncPrivateMap;
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.security.*;
+import com.codingchili.core.storage.PrivateMap;
 
-import com.codingchili.services.Realm.Configuration.RealmContext;
-import com.codingchili.services.Realm.Configuration.RealmSettings;
-import com.codingchili.services.Realm.Instance.Model.PlayerClass;
-import com.codingchili.services.Realm.Model.AsyncCharacterStore;
-import com.codingchili.services.Realm.Model.HazelCharacterDB;
+import com.codingchili.services.realm.configuration.RealmContext;
+import com.codingchili.services.realm.configuration.RealmSettings;
+import com.codingchili.services.realm.instance.model.PlayerClass;
+import com.codingchili.services.realm.model.AsyncCharacterStore;
+import com.codingchili.services.realm.model.CharacterDB;
 
 /**
  * @author Robin Duda
@@ -28,7 +28,7 @@ public class ContextMock extends RealmContext {
 
         realm.getClasses().add(new PlayerClass().setName("class.name"));
 
-        characters = new HazelCharacterDB(new AsyncPrivateMap<>(new StorageContext(this)));
+        characters = new CharacterDB(new PrivateMap<>(new StorageContext(this)));
     }
 
     @Override

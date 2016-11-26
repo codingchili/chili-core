@@ -1,12 +1,12 @@
-package com.codingchili.services.Authentication.Model;
+package com.codingchili.services.authentication.model;
 
 import io.vertx.core.Future;
 
 import java.util.ArrayList;
 
-import com.codingchili.core.Security.Token;
+import com.codingchili.core.security.Token;
 
-import com.codingchili.services.Realm.Configuration.RealmSettings;
+import com.codingchili.services.realm.configuration.RealmSettings;
 
 /**
  * @author Robin Duda

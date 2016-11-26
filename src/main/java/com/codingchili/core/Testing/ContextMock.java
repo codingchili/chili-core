@@ -1,10 +1,10 @@
-package com.codingchili.core.Testing;
+package com.codingchili.core.testing;
 
 import io.vertx.core.Vertx;
 
-import com.codingchili.core.Configuration.ServiceConfigurable;
-import com.codingchili.core.Context.*;
-import com.codingchili.core.Security.RemoteIdentity;
+import com.codingchili.core.configuration.ServiceConfigurable;
+import com.codingchili.core.context.*;
+import com.codingchili.core.security.RemoteIdentity;
 
 /**
  * @author Robin Duda

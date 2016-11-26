@@ -1,9 +1,9 @@
-package com.codingchili.core.Configuration;
+package com.codingchili.core.configuration;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import com.codingchili.core.Security.RemoteIdentity;
+import com.codingchili.core.security.RemoteIdentity;
 
 /**
  * @author Robin Duda

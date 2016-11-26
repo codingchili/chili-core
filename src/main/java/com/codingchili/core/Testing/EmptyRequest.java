@@ -1,9 +1,9 @@
-package com.codingchili.core.Testing;
+package com.codingchili.core.testing;
 
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.Protocol.Request;
-import com.codingchili.core.Security.Token;
+import com.codingchili.core.protocol.Request;
+import com.codingchili.core.security.Token;
 
 
 /**

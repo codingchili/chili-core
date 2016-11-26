@@ -1,14 +1,14 @@
-package com.codingchili.core.Context;
+package com.codingchili.core.context;
 
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import io.vertx.ext.unit.TestContext;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.Exception.*;
+import com.codingchili.core.configuration.exception.*;
 
-import static com.codingchili.core.Configuration.Strings.getNoServicesConfiguredForBlock;
-import static com.codingchili.core.Context.LaunchContextMock.*;
+import static com.codingchili.core.configuration.Strings.getNoServicesConfiguredForBlock;
+import static com.codingchili.core.context.LaunchContextMock.*;
 
 /**
  * @author Robin Duda

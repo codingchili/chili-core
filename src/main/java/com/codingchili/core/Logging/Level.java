@@ -1,8 +1,8 @@
-package com.codingchili.core.Logging;
+package com.codingchili.core.logging;
 
 /**
  * @author Robin Duda
  *
- * Logging level definitions.
+ * logging level definitions.
  */
 public enum Level {INFO, WARNING, STARTUP, SEVERE, PURPLE, BLUE, WHITE}

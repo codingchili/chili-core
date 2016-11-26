@@ -1,4 +1,4 @@
-package com.codingchili.core.Security;
+package com.codingchili.core.security;
 
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Assert;

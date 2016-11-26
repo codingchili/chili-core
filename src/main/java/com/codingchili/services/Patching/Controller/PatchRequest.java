@@ -1,12 +1,12 @@
-package com.codingchili.services.Patching.Controller;
+package com.codingchili.services.patching.controller;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.codingchili.core.Protocol.ClusterRequest;
-import com.codingchili.core.Protocol.Request;
+import com.codingchili.core.protocol.ClusterRequest;
+import com.codingchili.core.protocol.Request;
 
-import com.codingchili.services.Patching.Model.PatchFile;
+import com.codingchili.services.patching.model.PatchFile;
 
 import static com.codingchili.services.Shared.Strings.*;
 

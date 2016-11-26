@@ -1,4 +1,4 @@
-package com.codingchili.services.Authentication.Model;
+package com.codingchili.services.authentication.model;
 
 public class Account {
     private String username;

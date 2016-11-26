@@ -1,4 +1,4 @@
-package com.codingchili.services.Patching;
+package com.codingchili.services.patching;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
@@ -12,13 +12,13 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeUnit;
 
-import com.codingchili.core.Protocol.ResponseStatus;
-import com.codingchili.core.Security.RemoteIdentity;
-import com.codingchili.core.Testing.RequestMock;
-import com.codingchili.core.Testing.ResponseListener;
+import com.codingchili.core.protocol.ResponseStatus;
+import com.codingchili.core.security.RemoteIdentity;
+import com.codingchili.core.testing.RequestMock;
+import com.codingchili.core.testing.ResponseListener;
 
-import com.codingchili.services.Patching.Configuration.PatchContext;
-import com.codingchili.services.Patching.Controller.PatchHandler;
+import com.codingchili.services.patching.configuration.PatchContext;
+import com.codingchili.services.patching.controller.PatchHandler;
 import com.codingchili.services.Shared.Strings;
 
 import static com.codingchili.services.Shared.Strings.*;

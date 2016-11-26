@@ -1,4 +1,4 @@
-package com.codingchili.core.Protocol;
+package com.codingchili.core.protocol;
 
 /**
  * @author Robin Duda

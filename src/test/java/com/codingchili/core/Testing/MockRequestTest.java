@@ -1,4 +1,4 @@
-package com.codingchili.core.Testing;
+package com.codingchili.core.testing;
 
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Test;

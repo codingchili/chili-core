@@ -1,6 +1,6 @@
-package com.codingchili.services.Logging.Configuration;
+package com.codingchili.services.logging.configuration;
 
-import com.codingchili.core.Configuration.ServiceConfigurable;
+import com.codingchili.core.configuration.ServiceConfigurable;
 import com.codingchili.services.Shared.Strings;
 
 /**

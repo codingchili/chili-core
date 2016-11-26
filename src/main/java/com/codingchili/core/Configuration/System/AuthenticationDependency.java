@@ -1,9 +1,9 @@
-package com.codingchili.core.Configuration.System;
+package com.codingchili.core.configuration.system;
 
 import java.util.HashMap;
 import java.util.HashSet;
 
-import com.codingchili.core.Security.TokenIdentifier;
+import com.codingchili.core.security.TokenIdentifier;
 
 /**
  * @author Robin Duda

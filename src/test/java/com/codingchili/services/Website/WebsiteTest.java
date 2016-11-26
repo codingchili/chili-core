@@ -1,4 +1,4 @@
-package com.codingchili.services.Website;
+package com.codingchili.services.website;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
@@ -12,12 +12,12 @@ import org.junit.runner.RunWith;
 import java.util.concurrent.TimeUnit;
 
 import com.codingchili.services.Shared.Strings;
-import com.codingchili.core.Exception.AuthorizationRequiredException;
-import com.codingchili.core.Protocol.ResponseStatus;
-import com.codingchili.core.Testing.RequestMock;
-import com.codingchili.core.Testing.ResponseListener;
+import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
+import com.codingchili.core.protocol.ResponseStatus;
+import com.codingchili.core.testing.RequestMock;
+import com.codingchili.core.testing.ResponseListener;
 
-import com.codingchili.services.Website.Controller.WebHandler;
+import com.codingchili.services.website.controller.WebHandler;
 
 import static com.codingchili.services.Shared.Strings.ID_BUFFER;
 

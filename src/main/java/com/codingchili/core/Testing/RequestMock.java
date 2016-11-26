@@ -1,4 +1,4 @@
-package com.codingchili.core.Testing;
+package com.codingchili.core.testing;
 
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
@@ -7,10 +7,10 @@ import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.Protocol.ClusterRequest;
-import com.codingchili.core.Protocol.ResponseStatus;
+import com.codingchili.core.protocol.ClusterRequest;
+import com.codingchili.core.protocol.ResponseStatus;
 
-import static com.codingchili.core.Configuration.Strings.*;
+import static com.codingchili.core.configuration.Strings.*;
 
 /**
  * @author Robin Duda

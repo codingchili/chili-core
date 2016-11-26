@@ -1,10 +1,10 @@
-package com.codingchili.services.Realm.Configuration;
+package com.codingchili.services.realm.configuration;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.ArrayList;
 
-import com.codingchili.core.Configuration.ServiceConfigurable;
+import com.codingchili.core.configuration.ServiceConfigurable;
 
 /**
  * @author Robin Duda

@@ -1,9 +1,9 @@
-package com.codingchili.core.Protocol;
+package com.codingchili.core.protocol;
 
-import com.codingchili.core.Exception.AuthorizationRequiredException;
-import com.codingchili.core.Exception.HandlerMissingException;
+import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
+import com.codingchili.core.protocol.exception.HandlerMissingException;
 
-import static com.codingchili.core.Configuration.Strings.ANY;
+import static com.codingchili.core.configuration.Strings.ANY;
 
 /**
  * @author Robin Duda

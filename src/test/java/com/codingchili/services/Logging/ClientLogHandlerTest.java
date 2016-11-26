@@ -1,4 +1,4 @@
-package com.codingchili.services.Logging;
+package com.codingchili.services.logging;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
@@ -10,18 +10,16 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeUnit;
 
-import com.codingchili.core.Context.CoreContext;
-import com.codingchili.core.Protocol.ResponseStatus;
-import com.codingchili.core.Protocol.Serializer;
-import com.codingchili.core.Security.Token;
-import com.codingchili.core.Security.TokenFactory;
-import com.codingchili.core.Testing.RequestMock;
-import com.codingchili.core.Testing.ResponseListener;
+import com.codingchili.core.protocol.ResponseStatus;
+import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.security.Token;
+import com.codingchili.core.security.TokenFactory;
+import com.codingchili.core.testing.RequestMock;
+import com.codingchili.core.testing.ResponseListener;
 
-import com.codingchili.services.Logging.Configuration.LogContext;
-import com.codingchili.services.Logging.Configuration.LogServerSettings;
-import com.codingchili.services.Logging.Controller.ClientLogHandler;
-import com.codingchili.services.Logging.Controller.ServiceLogHandler;
+import com.codingchili.services.logging.configuration.LogContext;
+import com.codingchili.services.logging.configuration.LogServerSettings;
+import com.codingchili.services.logging.controller.ClientLogHandler;
 import com.codingchili.services.Shared.Strings;
 
 import static com.codingchili.services.Shared.Strings.ID_TOKEN;

@@ -1,4 +1,4 @@
-package com.codingchili.core.Security;
+package com.codingchili.core.security;
 
 import io.vertx.core.*;
 
@@ -9,7 +9,7 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 
-import static com.codingchili.core.Files.Configurations.system;
+import static com.codingchili.core.files.Configurations.system;
 
 /**
  * @author Robin Duda

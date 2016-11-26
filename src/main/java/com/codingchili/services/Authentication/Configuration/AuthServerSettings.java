@@ -1,9 +1,9 @@
-package com.codingchili.services.Authentication.Configuration;
+package com.codingchili.services.authentication.configuration;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.codingchili.core.Configuration.ServiceConfigurable;
+import com.codingchili.core.configuration.ServiceConfigurable;
 import com.codingchili.services.Shared.Strings;
 
 

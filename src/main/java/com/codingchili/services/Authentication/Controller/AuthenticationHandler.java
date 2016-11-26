@@ -1,18 +1,18 @@
-package com.codingchili.services.Authentication.Controller;
+package com.codingchili.services.authentication.controller;
 
 import io.vertx.core.Future;
 
 import java.time.Instant;
 
-import com.codingchili.core.Exception.AuthorizationRequiredException;
-import com.codingchili.core.Exception.HandlerMissingException;
-import com.codingchili.core.Protocol.*;
+import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
+import com.codingchili.core.protocol.exception.HandlerMissingException;
+import com.codingchili.core.protocol.*;
 
-import com.codingchili.services.Authentication.Configuration.AuthContext;
-import com.codingchili.services.Authentication.Model.*;
-import com.codingchili.services.Realm.Configuration.RealmSettings;
+import com.codingchili.services.authentication.configuration.AuthContext;
+import com.codingchili.services.authentication.model.*;
+import com.codingchili.services.realm.configuration.RealmSettings;
 
-import static com.codingchili.core.Protocol.Access.*;
+import static com.codingchili.core.protocol.Access.*;
 import static com.codingchili.services.Shared.Strings.*;
 
 /**

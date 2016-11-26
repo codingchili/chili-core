@@ -1,8 +1,8 @@
-package com.codingchili.core.Protocol;
+package com.codingchili.core.protocol;
 
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.Security.Token;
+import com.codingchili.core.security.Token;
 
 /**
  * @author Robin Duda

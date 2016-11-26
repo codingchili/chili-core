@@ -1,10 +1,6 @@
-package com.codingchili.core.Configuration;
-
-import io.vertx.core.json.JsonObject;
+package com.codingchili.core.configuration;
 
 import java.nio.file.Path;
-
-import com.codingchili.core.Storage.AsyncElasticMap;
 
 /**
  * @author Robin Duda
@@ -110,10 +106,10 @@ public abstract class Strings {
     public static final String ERROR_NOT_AUTHORIZED = "Insufficient authorization level to access resource.";
     public static final String ERROR_HANDLER_MISSING = "The requested handler was not found.";
     public static final String ERROR_LAUNCHER_STARTUP = "Failed to start the launcher with clustering.";
-    public static final String ERRROR_LAUNCHER_SHUTDOWN = "System has been shut down..";
+    public static final String ERRROR_LAUNCHER_SHUTDOWN = "system has been shut down..";
     public static final String ERROR_VALIDATION_FAILURE = "Provided data did not pass validation.";
     public static final String ERROR_REQUEST_SIZE_TOO_LARGE = "Maximum request size exceeded.";
-    public static final String ERROR_CONFIGURATION_MISMATCH = "Configuration mismatches with currently loaded.";
+    public static final String ERROR_CONFIGURATION_MISMATCH = "configuration mismatches with currently loaded.";
     public static final String ERROR_ALREADY_INITIALIZED = "Error already initialized.";
     public static final String ERROR_STORAGE_EXCEPTION = "Failed to perform a storage operation.";
     public static final String CONFIGURED_BLOCKS = "Configured deployment blocks";
@@ -202,7 +198,7 @@ public abstract class Strings {
     }
 
     public static String getStartupText(String version) {
-        return "\n\t\t\t\tSystem: Starting launcher [" + version + "] ..\n" +
+        return "\n\t\t\t\tsystem: Starting launcher [" + version + "] ..\n" +
                 "\t\t\t\t\t     Robin Duda © 2016\n";
     }
 
@@ -226,8 +222,8 @@ public abstract class Strings {
         return  "[" + name + "] Error: Identity must be configured.";
     }
 
-    public static String getStorageLoaderError(String plugin, String mapName) {
-        return "Error: Failed to load storage plugin '" + plugin + "' for collection '" + mapName + "'.";
+    public static String getStorageLoaderError(String plugin, String mapName, String collection) {
+        return "Error: Failed to load storage plugin '" + plugin + "' for db '" + mapName + "." + collection + "'.";
     }
 
     public static String getErrorCreateDirectory(String target) {
@@ -239,14 +235,26 @@ public abstract class Strings {
     }
 
     public static String getFileLoadDefaults(String path, Class<?> clazz) {
-        return "Configuration '" + path + "' not found, using defaults from '" + clazz.getSimpleName() + "'.";
+        return "configuration '" + path + "' not found, using defaults from '" + clazz.getSimpleName() + "'.";
     }
 
     public static String getStorageLoaderMissingArgument(String type) {
-        return "Storage loader is missing argument for attribute '" + type + "'.";
+        return "storage loader is missing argument for attribute '" + type + "'.";
     }
 
-    public static String getStorageConnectError(Class clazz, String remote) {
-        return "Failed to connect to storage '" + clazz.getName() + "' with remote '" + remote + "'";
+    public static String getNothingToReplaceException(String key) {
+        return "Error: nothing to replace for given key '" + key + "'.";
+    }
+
+    public static String getNothingToRemoveException(String id) {
+        return "Error: nothing to remove for given key '" + id + "'.";
+    }
+
+    public static String getValueAlreadyPresent(String key) {
+        return "Error: could not put value, already present.";
+    }
+
+    public static String getMissingEntity(String key) {
+        return "Error: could not find '" + key + "' in storage.";
     }
 }

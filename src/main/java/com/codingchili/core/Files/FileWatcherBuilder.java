@@ -1,9 +1,9 @@
-package com.codingchili.core.Files;
+package com.codingchili.core.files;
 
 import com.hazelcast.util.Preconditions;
 
-import com.codingchili.core.Context.CoreContext;
-import com.codingchili.core.Context.TimerSource;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.TimerSource;
 
 /**
  * @author Robin Duda

@@ -1,4 +1,4 @@
-package com.codingchili.core.Files;
+package com.codingchili.core.files;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
@@ -12,9 +12,9 @@ import org.junit.runner.RunWith;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
-import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Context.Delay;
-import com.codingchili.core.Testing.ContextMock;
+import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.context.Delay;
+import com.codingchili.core.testing.ContextMock;
 
 
 /**

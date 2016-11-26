@@ -1,15 +1,15 @@
-package com.codingchili.core.Context;
+package com.codingchili.core.context;
 
 import io.vertx.core.*;
 
 import java.util.List;
 
-import com.codingchili.core.Configuration.System.LauncherSettings;
-import com.codingchili.core.Exception.*;
-import com.codingchili.core.Files.Configurations;
-import com.codingchili.core.Security.RemoteIdentity;
+import com.codingchili.core.configuration.exception.*;
+import com.codingchili.core.configuration.system.LauncherSettings;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.security.RemoteIdentity;
 
-import static com.codingchili.core.Configuration.Strings.ID_DEFAULT;
+import static com.codingchili.core.configuration.Strings.ID_DEFAULT;
 
 /**
  * @author Robin Duda

@@ -1,15 +1,15 @@
-package com.codingchili.services.Logging.Controller;
+package com.codingchili.services.logging.controller;
 
-import com.codingchili.core.Exception.CoreException;
-import com.codingchili.core.Exception.HandlerMissingException;
-import com.codingchili.core.Logging.ConsoleLogger;
-import com.codingchili.core.Protocol.*;
+import com.codingchili.core.context.CoreException;
+import com.codingchili.core.protocol.exception.HandlerMissingException;
+import com.codingchili.core.logging.ConsoleLogger;
+import com.codingchili.core.protocol.*;
 
-import com.codingchili.services.Logging.Configuration.LogContext;
-import com.codingchili.services.Logging.Model.ElasticLogger;
+import com.codingchili.services.logging.configuration.LogContext;
+import com.codingchili.services.logging.model.ElasticLogger;
 
 import static com.codingchili.services.Shared.Strings.*;
-import static com.codingchili.core.Protocol.Access.*;
+import static com.codingchili.core.protocol.Access.*;
 
 /**
  * @author Robin Duda

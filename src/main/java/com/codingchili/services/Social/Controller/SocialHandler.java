@@ -1,10 +1,10 @@
-package com.codingchili.services.Social.Controller;
+package com.codingchili.services.Social.controller;
 
-import com.codingchili.core.Exception.CoreException;
-import com.codingchili.core.Protocol.*;
+import com.codingchili.core.context.CoreException;
+import com.codingchili.core.protocol.*;
 
 import com.codingchili.services.Shared.Strings;
-import com.codingchili.services.Social.Configuration.SocialContext;
+import com.codingchili.services.Social.configuration.SocialContext;
 
 /**
  * @author Robin Duda

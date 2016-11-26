@@ -1,15 +1,15 @@
-package com.codingchili.core.Storage;
+package com.codingchili.core.storage;
 
 import io.vertx.core.*;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.Context.CoreContext;
-import com.codingchili.core.Context.SystemContext;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.SystemContext;
+import com.codingchili.core.storage.internal.*;
 
 /**
  * @author Robin Duda
@@ -34,33 +34,34 @@ public class StorageLoaderIT {
 
     @Test
     public void testLoadLocalAsyncMap(TestContext test) {
-        loadStoragePlugin(test.async(), AsyncPrivateMap.class);
+        loadStoragePlugin(test.async(), PrivateMap.class);
     }
 
     @Test
     public void testLoadJsonMap(TestContext test) {
-        loadStoragePlugin(test.async(), AsyncJsonMap.class);
+        loadStoragePlugin(test.async(), JsonMap.class);
 
     }
 
     @Test
     public void testLoadSharedMap(TestContext test) {
-        loadStoragePlugin(test.async(), AsyncSharedMap.class);
+        loadStoragePlugin(test.async(), SharedMap.class);
     }
 
     @Test
     public void testLoadHazelAsyncMap(TestContext test) {
-        loadStoragePlugin(test.async(), AsyncHazelMap.class);
+        loadStoragePlugin(test.async(), HazelMap.class);
     }
 
+    @Ignore("Requires an available ElasticSearch database.")
     @Test
     public void testLoadElasticMap(TestContext test) {
-        loadStoragePlugin(test.async(), AsyncElasticMap.class);
+        loadStoragePlugin(test.async(), ElasticMap.class);
     }
 
     @Test
     public void testLoadMongoMap(TestContext test) {
-        loadStoragePlugin(test.async(), AsyncMongoMap.class);
+        loadStoragePlugin(test.async(), MongoDBMap.class);
 
     }
 
@@ -74,7 +75,7 @@ public class StorageLoaderIT {
                 .withPlugin(plugin)
                 .withDB(TEST_MAP)
                 .withCollection(TEST_COLLECTION)
-                .withClass(AsyncPrivateMapTest.class)
+                .withClass(PrivateMapTest.class)
                 .build(future);
     }
 }

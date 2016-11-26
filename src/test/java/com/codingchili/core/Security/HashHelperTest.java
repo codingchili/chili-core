@@ -1,4 +1,4 @@
-package com.codingchili.core.Security;
+package com.codingchili.core.security;
 
 import io.vertx.core.*;
 import io.vertx.ext.unit.Async;

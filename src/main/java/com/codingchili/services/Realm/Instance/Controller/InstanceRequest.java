@@ -1,7 +1,7 @@
-package com.codingchili.services.Realm.Instance.Controller;
+package com.codingchili.services.realm.instance.controller;
 
-import com.codingchili.core.Protocol.ClusterRequest;
-import com.codingchili.core.Protocol.Request;
+import com.codingchili.core.protocol.ClusterRequest;
+import com.codingchili.core.protocol.Request;
 
 /**
  * @author Robin Duda

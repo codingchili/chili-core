@@ -1,4 +1,4 @@
-package com.codingchili.services.Patching.Model;
+package com.codingchili.services.patching.model;
 
 import io.vertx.core.buffer.Buffer;
 
@@ -8,13 +8,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.codingchili.core.Configuration.CachedFileStoreSettings;
-import com.codingchili.core.Exception.FileMissingException;
-import com.codingchili.core.Files.CachedFileStore;
-import com.codingchili.core.Protocol.Serializer;
+import com.codingchili.core.configuration.CachedFileStoreSettings;
+import com.codingchili.core.configuration.exception.FileMissingException;
+import com.codingchili.core.files.CachedFileStore;
+import com.codingchili.core.protocol.Serializer;
 
-import com.codingchili.services.Patching.Configuration.PatchContext;
-import com.codingchili.services.Patching.Configuration.PatchNotes;
+import com.codingchili.services.patching.configuration.PatchContext;
+import com.codingchili.services.patching.configuration.PatchNotes;
 import com.codingchili.services.Shared.Strings;
 
 

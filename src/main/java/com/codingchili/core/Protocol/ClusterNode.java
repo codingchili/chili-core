@@ -1,10 +1,10 @@
-package com.codingchili.core.Protocol;
+package com.codingchili.core.protocol;
 
 import io.vertx.core.*;
 
-import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Configuration.System.SystemSettings;
-import com.codingchili.core.Files.Configurations;
+import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.system.SystemSettings;
+import com.codingchili.core.files.Configurations;
 
 /**
  * @author Robin Duda

@@ -1,4 +1,4 @@
-package com.codingchili.core.Security;
+package com.codingchili.core.security;
 
 /**
  * @author Robin Duda

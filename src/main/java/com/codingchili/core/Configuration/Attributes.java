@@ -1,4 +1,4 @@
-package com.codingchili.core.Configuration;
+package com.codingchili.core.configuration;
 
 import java.util.HashMap;
 import java.util.Optional;

@@ -1,8 +1,8 @@
-package com.codingchili.services.Authentication.Model;
+package com.codingchili.services.authentication.model;
 
 import java.util.ArrayList;
 
-import com.codingchili.core.Security.Token;
+import com.codingchili.core.security.Token;
 
 /**
  * @author Robin Duda

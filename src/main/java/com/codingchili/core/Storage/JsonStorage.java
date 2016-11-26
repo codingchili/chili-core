@@ -1,4 +1,4 @@
-package com.codingchili.core.Storage;
+package com.codingchili.core.storage;
 
 import io.vertx.core.json.JsonObject;
 

@@ -1,4 +1,4 @@
-package com.codingchili.core.Context;
+package com.codingchili.core.context;
 
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -6,9 +6,9 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.Testing.MockLogListener;
+import com.codingchili.core.testing.MockLogListener;
 
-import static com.codingchili.core.Configuration.Strings.HELP;
+import static com.codingchili.core.configuration.Strings.HELP;
 
 /**
  * @author Robin Duda

@@ -1,12 +1,12 @@
-package com.codingchili.services.Website;
+package com.codingchili.services.website;
 
 import io.vertx.core.*;
 
-import com.codingchili.core.Protocol.ClusterNode;
-import com.codingchili.core.Context.Deploy;
+import com.codingchili.core.protocol.ClusterNode;
+import com.codingchili.core.context.Deploy;
 
-import com.codingchili.services.Website.Configuration.WebserverContext;
-import com.codingchili.services.Website.Controller.WebHandler;
+import com.codingchili.services.website.configuration.WebserverContext;
+import com.codingchili.services.website.controller.WebHandler;
 
 /**
  * @author Robin Duda

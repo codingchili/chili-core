@@ -1,4 +1,4 @@
-package com.codingchili.services.Authentication.Model;
+package com.codingchili.services.authentication.model;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -10,10 +10,10 @@ import org.junit.runner.RunWith;
 
 import java.time.Instant;
 
-import com.codingchili.core.Context.StorageContext;
-import com.codingchili.core.Storage.AsyncPrivateMap;
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.storage.PrivateMap;
 
-import com.codingchili.services.Realm.Configuration.RealmSettings;
+import com.codingchili.services.realm.configuration.RealmSettings;
 
 /**
  * @author Robin Duda
@@ -30,7 +30,7 @@ public class StaleRealmHandlerTest {
     @Before
     public void setUp() {
         context = new WritableContextMock(Vertx.vertx());
-        realms = new AsyncRealmDB(new AsyncPrivateMap<>(new StorageContext(context)));
+        realms = new RealmDB(new PrivateMap<>(new StorageContext(context)));
         context.timeout = STALE_TIMEOUT;
 
         StaleRealmHandler.watch(context, realms);

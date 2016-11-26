@@ -1,6 +1,6 @@
-package com.codingchili.core.Testing;
+package com.codingchili.core.testing;
 
-import com.codingchili.core.Logging.*;
+import com.codingchili.core.logging.*;
 
 /**
  * @author Robin Duda

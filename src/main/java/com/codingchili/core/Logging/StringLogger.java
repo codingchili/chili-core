@@ -1,4 +1,4 @@
-package com.codingchili.core.Logging;
+package com.codingchili.core.logging;
 
 /**
  * @author Robin Duda

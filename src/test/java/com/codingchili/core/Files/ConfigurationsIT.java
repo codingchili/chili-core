@@ -1,4 +1,4 @@
-package com.codingchili.core.Files;
+package com.codingchili.core.files;
 
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -6,13 +6,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.IOException;
+import com.codingchili.core.configuration.Configurable;
+import com.codingchili.core.configuration.ConfigurableTest;
 
-import com.codingchili.core.Configuration.Configurable;
-import com.codingchili.core.Configuration.ConfigurableTest;
-import com.codingchili.core.Exception.FileReadException;
-
-import static com.codingchili.core.Configuration.Strings.*;
+import static com.codingchili.core.configuration.Strings.*;
 
 
 /**

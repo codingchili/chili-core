@@ -1,4 +1,4 @@
-package com.codingchili.core.Protocol;
+package com.codingchili.core.protocol;
 
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
@@ -7,9 +7,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Security.Token;
-import com.codingchili.core.Security.TokenFactory;
+import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.security.Token;
+import com.codingchili.core.security.TokenFactory;
 
 /**
  * @author Robin Duda

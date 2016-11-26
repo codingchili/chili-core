@@ -2,7 +2,7 @@ package com.codingchili.core;
 
 import io.vertx.core.Future;
 
-import com.codingchili.core.Protocol.ClusterNode;
+import com.codingchili.core.protocol.ClusterNode;
 
 import static com.codingchili.core.LauncherIT.async;
 

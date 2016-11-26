@@ -1,4 +1,4 @@
-package com.codingchili.core.Protocol;
+package com.codingchili.core.protocol;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -15,6 +15,13 @@ import java.util.zip.GZIPOutputStream;
  *         serializes objects to JSON and back.
  */
 public class Serializer {
+    private static ObjectMapper mapper = new ObjectMapper();
+
+    static {
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
 
     /**
      * Serializes an object as JSON.
@@ -24,9 +31,6 @@ public class Serializer {
      */
     public static String pack(Object object) {
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
             return mapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -43,8 +47,6 @@ public class Serializer {
     @SuppressWarnings("unchecked")
     public static <T> T unpack(String data, Class clazz) {
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             return (T) mapper.readValue(data, clazz);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -61,7 +63,6 @@ public class Serializer {
     public static <T> T unpack(JsonObject json, Class clazz) {
         return (json == null) ? null : unpack(json.encode(), clazz);
     }
-
 
     /**
      * Converts an object into a json object.
@@ -105,7 +106,7 @@ public class Serializer {
             byte[] buffer = new byte[1024];
             int len;
 
-            while((len = gzip.read(buffer)) != -1){
+            while ((len = gzip.read(buffer)) != -1) {
                 out.write(buffer, 0, len);
             }
 

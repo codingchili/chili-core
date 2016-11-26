@@ -1,12 +1,12 @@
-package com.codingchili.services.Social.Configuration;
+package com.codingchili.services.Social.configuration;
 
 import io.vertx.core.Vertx;
 
-import com.codingchili.core.Files.Configurations;
+import com.codingchili.core.files.Configurations;
 
-import com.codingchili.core.Context.ServiceContext;
+import com.codingchili.core.context.ServiceContext;
 
-import static com.codingchili.services.Social.Configuration.SocialSettings.PATH_SOCIAL;
+import static com.codingchili.services.Social.configuration.SocialSettings.PATH_SOCIAL;
 
 /**
  * @author Robin Duda

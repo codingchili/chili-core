@@ -1,15 +1,15 @@
-package com.codingchili.services.Router.Configuration;
+package com.codingchili.services.router.configuration;
 
 import io.vertx.core.Vertx;
 
 import java.util.ArrayList;
 
-import com.codingchili.core.Context.ServiceContext;
-import com.codingchili.core.Files.Configurations;
+import com.codingchili.core.context.ServiceContext;
+import com.codingchili.core.files.Configurations;
 
-import com.codingchili.services.Router.Model.WireType;
+import com.codingchili.services.router.model.WireType;
 
-import static com.codingchili.services.Router.Configuration.RouterSettings.PATH_ROUTING;
+import static com.codingchili.services.router.configuration.RouterSettings.PATH_ROUTING;
 
 /**
  * @author Robin Duda

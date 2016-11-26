@@ -1,9 +1,9 @@
-package com.codingchili.core.Security;
+package com.codingchili.core.security;
 
 import java.io.Serializable;
 import java.time.Instant;
 
-import com.codingchili.core.Configuration.Strings;
+import com.codingchili.core.configuration.Strings;
 
 /**
  * @author Robin Duda

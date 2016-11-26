@@ -1,24 +1,24 @@
-package com.codingchili.services.Realm.Configuration;
+package com.codingchili.services.realm.configuration;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 
-import java.util.ArrayList;
+import java.util.*;
 
-import com.codingchili.core.Context.Delay;
-import com.codingchili.core.Context.ServiceContext;
-import com.codingchili.core.Files.Configurations;
-import com.codingchili.core.Logging.Level;
-import com.codingchili.core.Security.Token;
-import com.codingchili.core.Security.TokenFactory;
+import com.codingchili.core.context.*;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.logging.Level;
+import com.codingchili.core.security.Token;
+import com.codingchili.core.security.TokenFactory;
+import com.codingchili.core.storage.*;
 
-import com.codingchili.services.Realm.Instance.Configuration.InstanceSettings;
-import com.codingchili.services.Realm.Instance.Model.PlayerCharacter;
-import com.codingchili.services.Realm.Instance.Model.PlayerClass;
-import com.codingchili.services.Realm.Model.AsyncCharacterStore;
-import com.codingchili.services.Realm.Model.HazelCharacterDB;
+import com.codingchili.services.realm.instance.configuration.InstanceSettings;
+import com.codingchili.services.realm.instance.model.PlayerCharacter;
+import com.codingchili.services.realm.instance.model.PlayerClass;
+import com.codingchili.services.realm.model.AsyncCharacterStore;
+import com.codingchili.services.realm.model.CharacterDB;
 
-import static com.codingchili.services.Realm.Configuration.RealmServerSettings.PATH_REALMSERVER;
+import static com.codingchili.services.realm.configuration.RealmServerSettings.PATH_REALMSERVER;
 import static com.codingchili.services.Shared.Strings.*;
 
 /**
@@ -40,13 +40,19 @@ public class RealmContext extends ServiceContext {
     }
 
     public static void create(Future<RealmContext> future, RealmSettings realm, Vertx vertx) {
-        Future<AsyncCharacterStore> create = Future.future();
+        Future<AsyncStorage<String, Map<String, PlayerCharacter>>> create = Future.future();
 
         create.setHandler(map -> {
-            future.complete(new RealmContext(create.result(), realm, vertx));
+            future.complete(new RealmContext(new CharacterDB(map.result()), realm, vertx));
         });
 
-        HazelCharacterDB.create(create, vertx, realm.getName());
+        StorageLoader.prepare()
+                .withClass(PlayerCharacter.class)
+                .withPlugin(PrivateMap.class)
+                .withDB("chilicore")
+                .withCollection("characters")
+                .withContext(new StorageContext<>(vertx))
+                .build(create);
     }
 
     public ArrayList<EnabledRealm> getEnabled() {

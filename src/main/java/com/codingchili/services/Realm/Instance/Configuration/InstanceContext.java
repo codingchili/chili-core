@@ -1,14 +1,14 @@
-package com.codingchili.services.Realm.Instance.Configuration;
+package com.codingchili.services.realm.instance.configuration;
 
 import io.vertx.core.Future;
 
-import com.codingchili.core.Context.Delay;
-import com.codingchili.core.Context.ServiceContext;
-import com.codingchili.core.Files.Configurations;
-import com.codingchili.core.Logging.Level;
-import com.codingchili.core.Security.Token;
+import com.codingchili.core.context.Delay;
+import com.codingchili.core.context.ServiceContext;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.logging.Level;
+import com.codingchili.core.security.Token;
 
-import com.codingchili.services.Realm.Configuration.*;
+import com.codingchili.services.realm.configuration.*;
 
 import static com.codingchili.services.Shared.Strings.*;
 

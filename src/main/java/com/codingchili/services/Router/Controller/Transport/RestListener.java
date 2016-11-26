@@ -1,18 +1,18 @@
-package com.codingchili.services.Router.Controller.Transport;
+package com.codingchili.services.router.controller.transport;
 
 import io.vertx.core.*;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 
-import com.codingchili.core.Configuration.RestHelper;
-import com.codingchili.core.Exception.RequestPayloadSizeException;
-import com.codingchili.core.Protocol.ClusterNode;
+import com.codingchili.core.configuration.RestHelper;
+import com.codingchili.core.protocol.exception.RequestPayloadSizeException;
+import com.codingchili.core.protocol.ClusterNode;
 
-import com.codingchili.services.Router.Configuration.ListenerSettings;
-import com.codingchili.services.Router.Configuration.RouterContext;
-import com.codingchili.services.Router.Controller.RouterHandler;
-import com.codingchili.services.Router.Model.WireType;
+import com.codingchili.services.router.configuration.ListenerSettings;
+import com.codingchili.services.router.configuration.RouterContext;
+import com.codingchili.services.router.controller.RouterHandler;
+import com.codingchili.services.router.model.WireType;
 
 /**
  * @author Robin Duda

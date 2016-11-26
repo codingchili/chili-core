@@ -1,4 +1,4 @@
-package com.codingchili.core.Protocol;
+package com.codingchili.core.protocol;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;

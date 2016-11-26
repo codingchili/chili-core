@@ -1,4 +1,4 @@
-package com.codingchili.services.Realm.Model;
+package com.codingchili.services.realm.model;
 
 /**
  * @author Robin Duda

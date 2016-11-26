@@ -1,6 +1,6 @@
-package com.codingchili.core.Configuration;
+package com.codingchili.core.configuration;
 
-import com.codingchili.core.Security.RegexAction;
+import com.codingchili.core.security.RegexAction;
 
 /**
  * @author Robin Duda

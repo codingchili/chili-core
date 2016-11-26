@@ -1,10 +1,10 @@
-package com.codingchili.services.Authentication.Controller;
+package com.codingchili.services.authentication.controller;
 
 
-import com.codingchili.core.Protocol.*;
-import com.codingchili.core.Security.Token;
+import com.codingchili.core.protocol.*;
+import com.codingchili.core.security.Token;
 
-import com.codingchili.services.Authentication.Model.Account;
+import com.codingchili.services.authentication.model.Account;
 import com.codingchili.services.Shared.Strings;
 
 import static com.codingchili.services.Shared.Strings.*;

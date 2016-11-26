@@ -1,4 +1,4 @@
-package com.codingchili.core.Security;
+package com.codingchili.core.security;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -7,7 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.Base64;
 
-import com.codingchili.core.Exception.TokenException;
+import com.codingchili.core.security.exception.TokenException;
 
 /**
  * @author Robin Duda

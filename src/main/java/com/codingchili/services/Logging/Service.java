@@ -1,14 +1,14 @@
-package com.codingchili.services.Logging;
+package com.codingchili.services.logging;
 
 
 import io.vertx.core.*;
 
-import com.codingchili.core.Protocol.ClusterNode;
-import com.codingchili.core.Context.Deploy;
+import com.codingchili.core.protocol.ClusterNode;
+import com.codingchili.core.context.Deploy;
 
-import com.codingchili.services.Logging.Configuration.LogContext;
-import com.codingchili.services.Logging.Controller.ClientLogHandler;
-import com.codingchili.services.Logging.Controller.ServiceLogHandler;
+import com.codingchili.services.logging.configuration.LogContext;
+import com.codingchili.services.logging.controller.ClientLogHandler;
+import com.codingchili.services.logging.controller.ServiceLogHandler;
 
 /**
  * @author Robin Duda

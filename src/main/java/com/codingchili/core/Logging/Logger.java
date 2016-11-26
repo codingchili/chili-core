@@ -1,4 +1,4 @@
-package com.codingchili.core.Logging;
+package com.codingchili.core.logging;
 
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;

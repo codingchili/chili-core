@@ -1,9 +1,9 @@
-package com.codingchili.core.Context;
+package com.codingchili.core.context;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
-import com.codingchili.core.Protocol.AbstractHandler;
+import com.codingchili.core.protocol.AbstractHandler;
 
 /**
  * @author Robin Duda

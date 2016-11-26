@@ -1,9 +1,9 @@
-package com.codingchili.services.Realm.Model;
+package com.codingchili.services.realm.model;
 
 
-import com.codingchili.core.Security.Token;
+import com.codingchili.core.security.Token;
 
-import com.codingchili.services.Realm.Configuration.RealmSettings;
+import com.codingchili.services.realm.configuration.RealmSettings;
 
 import static com.codingchili.services.Shared.Strings.REALM_UPDATE;
 

@@ -1,11 +1,11 @@
-package com.codingchili.services.Authentication.Model;
+package com.codingchili.services.authentication.model;
 
 import java.util.ArrayList;
 
-import com.codingchili.core.Configuration.Attributes;
+import com.codingchili.core.configuration.Attributes;
 
-import com.codingchili.services.Realm.Configuration.RealmSettings;
-import com.codingchili.services.Realm.Instance.Model.PlayerClass;
+import com.codingchili.services.realm.configuration.RealmSettings;
+import com.codingchili.services.realm.instance.model.PlayerClass;
 
 /**
  * @author Robin Duda

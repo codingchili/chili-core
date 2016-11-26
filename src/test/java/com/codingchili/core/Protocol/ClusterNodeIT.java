@@ -1,4 +1,4 @@
-package com.codingchili.core.Protocol;
+package com.codingchili.core.protocol;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -8,7 +8,7 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
-import static com.codingchili.core.Configuration.Strings.ERROR_CLUSTERING_REQUIRED;
+import static com.codingchili.core.configuration.Strings.ERROR_CLUSTERING_REQUIRED;
 
 /**
  * @author Robin Duda

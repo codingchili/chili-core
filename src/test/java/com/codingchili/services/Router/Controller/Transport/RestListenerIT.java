@@ -1,4 +1,4 @@
-package com.codingchili.services.Router.Controller.Transport;
+package com.codingchili.services.router.controller.transport;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -16,14 +16,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-import com.codingchili.core.Protocol.ResponseStatus;
-import com.codingchili.core.Security.RemoteIdentity;
+import com.codingchili.core.protocol.ResponseStatus;
+import com.codingchili.core.security.RemoteIdentity;
 
-import com.codingchili.services.Router.Configuration.ListenerSettings;
-import com.codingchili.services.Router.Configuration.RouterSettings;
-import com.codingchili.services.Router.Controller.RouterHandler;
-import com.codingchili.services.Router.Model.Endpoint;
-import com.codingchili.services.Router.Model.WireType;
+import com.codingchili.services.router.configuration.ListenerSettings;
+import com.codingchili.services.router.configuration.RouterSettings;
+import com.codingchili.services.router.controller.RouterHandler;
+import com.codingchili.services.router.model.Endpoint;
+import com.codingchili.services.router.model.WireType;
 import com.codingchili.services.Shared.Strings;
 
 import static com.codingchili.services.Shared.Strings.*;

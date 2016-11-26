@@ -1,4 +1,4 @@
-package com.codingchili.core.Configuration;
+package com.codingchili.core.configuration;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.ext.web.Router;
@@ -28,7 +28,7 @@ public abstract class RestHelper {
                 .putHeader("Access-Control-Allow-Origin", "*")
                 .putHeader("Access-Control-Allow-Methods", "POST, GET")
                 .putHeader("Access-Control-Allow-Headers",
-                        "Content-Type, Access-Control-Allow-Headers, Files, X-Requested-With");
+                        "Content-Type, Access-Control-Allow-Headers, files, X-Requested-With");
     }
 
 }

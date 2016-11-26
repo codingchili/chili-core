@@ -1,11 +1,11 @@
-package com.codingchili.services.Realm.Instance.Controller;
+package com.codingchili.services.realm.instance.controller;
 
 import io.vertx.core.Future;
 
-import com.codingchili.core.Exception.CoreException;
-import com.codingchili.core.Protocol.*;
+import com.codingchili.core.context.CoreException;
+import com.codingchili.core.protocol.*;
 
-import com.codingchili.services.Realm.Instance.Configuration.InstanceContext;
+import com.codingchili.services.realm.instance.configuration.InstanceContext;
 
 import static com.codingchili.services.Shared.Strings.ID_PING;
 

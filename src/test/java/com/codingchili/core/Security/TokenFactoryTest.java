@@ -1,10 +1,10 @@
-package com.codingchili.core.Security;
+package com.codingchili.core.security;
 
 import org.junit.*;
 
 import java.time.Instant;
 
-import com.codingchili.core.Exception.TokenException;
+import com.codingchili.core.security.exception.TokenException;
 
 /**
  * @author Robin Duda

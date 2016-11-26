@@ -1,4 +1,4 @@
-package com.codingchili.core.Logging;
+package com.codingchili.core.logging;
 
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
@@ -7,9 +7,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.Testing.LoggerMock;
+import com.codingchili.core.testing.LoggerMock;
 
-import static com.codingchili.core.Configuration.Strings.*;
+import static com.codingchili.core.configuration.Strings.*;
 
 /**
  * @author Robin Duda

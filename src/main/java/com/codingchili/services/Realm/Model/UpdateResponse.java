@@ -1,12 +1,12 @@
-package com.codingchili.services.Realm.Model;
+package com.codingchili.services.realm.model;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.Protocol.*;
+import com.codingchili.core.protocol.*;
 
-import static com.codingchili.core.Protocol.ResponseStatus.ERROR;
+import static com.codingchili.core.protocol.ResponseStatus.ERROR;
 
 /**
  * @author Robin Duda

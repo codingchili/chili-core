@@ -1,16 +1,16 @@
-package com.codingchili.services.Patching.Controller;
+package com.codingchili.services.patching.controller;
 
-import com.codingchili.core.Exception.CoreException;
-import com.codingchili.core.Exception.FileMissingException;
-import com.codingchili.core.Protocol.*;
+import com.codingchili.core.context.CoreException;
+import com.codingchili.core.configuration.exception.FileMissingException;
+import com.codingchili.core.protocol.*;
 
-import com.codingchili.services.Patching.Configuration.PatchContext;
-import com.codingchili.services.Patching.Model.PatchKeeper;
-import com.codingchili.services.Patching.Model.PatchReloadedException;
+import com.codingchili.services.patching.configuration.PatchContext;
+import com.codingchili.services.patching.model.PatchKeeper;
+import com.codingchili.services.patching.model.PatchReloadedException;
 
 import static com.codingchili.services.Shared.Strings.*;
-import static com.codingchili.core.Protocol.Access.AUTHORIZED;
-import static com.codingchili.core.Protocol.Access.PUBLIC;
+import static com.codingchili.core.protocol.Access.AUTHORIZED;
+import static com.codingchili.core.protocol.Access.PUBLIC;
 
 /**
  * @author Robin Duda

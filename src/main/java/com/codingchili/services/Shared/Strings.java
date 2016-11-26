@@ -3,7 +3,7 @@ package com.codingchili.services.Shared;
 /**
  * @author Robin Duda
  */
-public class Strings extends com.codingchili.core.Configuration.Strings {
+public class Strings extends com.codingchili.core.configuration.Strings {
     public static final String PATH_REALM = "conf/realm/";
     public static final String PATH_INSTANCE = "conf/game/instances/";
     public static final String PATH_GAME_CLASSES = "conf/game/class/";
@@ -95,7 +95,7 @@ public class Strings extends com.codingchili.core.Configuration.Strings {
     public static final String ID_PIECE = "piece";
     public static final String LOG_USER = "user";
 
-    //Patching
+    //patching
     public static final String PATCH_IDENTIFIER = "patch";
     public static final String PATCH_GAME_INFO = "gameinfo";
     public static final String PATCH_NEWS = "news";

@@ -1,4 +1,4 @@
-package com.codingchili.core.Configuration;
+package com.codingchili.core.configuration;
 
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import io.vertx.ext.unit.TestContext;
@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 import java.util.HashMap;
 import java.util.Optional;
 
-import com.codingchili.core.Protocol.Serializer;
+import com.codingchili.core.protocol.Serializer;
 
 /**
  * @author Robin Duda

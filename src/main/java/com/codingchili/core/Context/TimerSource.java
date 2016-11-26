@@ -1,4 +1,4 @@
-package com.codingchili.core.Context;
+package com.codingchili.core.context;
 
 /**
  * @author Robin Duda

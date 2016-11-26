@@ -1,20 +1,17 @@
-package com.codingchili.services.Authentication.Model;
+package com.codingchili.services.authentication.model;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import io.vertx.core.shareddata.AsyncMap;
 
-import com.codingchili.core.Security.ByteComparator;
-import com.codingchili.core.Security.HashHelper;
-import com.codingchili.core.Storage.AsyncStorage;
-
-import com.codingchili.services.Shared.Strings;
+import com.codingchili.core.security.ByteComparator;
+import com.codingchili.core.security.HashHelper;
+import com.codingchili.core.storage.AsyncStorage;
 
 /**
  * @author Robin Duda
  */
 public class AsyncAccountDB implements AsyncAccountStore {
-    private final AsyncMap<String, AccountMapping> accounts;
+    private final AsyncStorage<String, AccountMapping> accounts;
     private final HashHelper hasher;
 
 
@@ -39,11 +36,7 @@ public class AsyncAccountDB implements AsyncAccountStore {
     public void authenticate(Future<Account> future, Account account) {
         accounts.get(account.getUsername(), map -> {
             if (map.succeeded()) {
-                if (map.result() != null) {
-                    authenticate(future, map.result(), account);
-                } else {
-                    future.fail(new AccountMissingException());
-                }
+                authenticate(future, map.result(), account);
             } else {
                 future.fail(map.cause());
             }
@@ -62,12 +55,7 @@ public class AsyncAccountDB implements AsyncAccountStore {
 
             accounts.putIfAbsent(account.getUsername(), mapping, map -> {
                 if (map.succeeded()) {
-
-                    if (map.result() == null) {
-                        future.complete(filter(account));
-                    } else {
-                        future.fail(new AccountExistsException());
-                    }
+                    future.complete(filter(account));
                 } else {
                     future.fail(map.cause());
                 }
@@ -76,7 +64,6 @@ public class AsyncAccountDB implements AsyncAccountStore {
 
         hasher.hash(hashing, account.getPassword(), salt);
     }
-
 
     private void authenticate(Future<Account> future, AccountMapping authenticated, Account unauthenticated) {
         Future<String> hashing = Future.future();
@@ -90,7 +77,6 @@ public class AsyncAccountDB implements AsyncAccountStore {
                 future.fail(new AccountPasswordException());
             }
         });
-
         hasher.hash(hashing, unauthenticated.getPassword(), authenticated.getSalt());
     }
 

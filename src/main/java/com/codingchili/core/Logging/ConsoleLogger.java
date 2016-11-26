@@ -1,4 +1,4 @@
-package com.codingchili.core.Logging;
+package com.codingchili.core.logging;
 
 import io.vertx.core.json.JsonObject;
 import org.fusesource.jansi.AnsiConsole;
@@ -6,9 +6,9 @@ import org.fusesource.jansi.AnsiConsole;
 import java.time.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.codingchili.core.Context.CoreContext;
+import com.codingchili.core.context.CoreContext;
 
-import static com.codingchili.core.Configuration.Strings.*;
+import static com.codingchili.core.configuration.Strings.*;
 
 /**
  * @author Robin Duda

@@ -1,10 +1,10 @@
-package com.codingchili.services.Realm.Instance.Model;
+package com.codingchili.services.realm.instance.model;
 
-import com.codingchili.core.Configuration.AttributeConfigurable;
+import com.codingchili.core.configuration.AttributeConfigurable;
 
 /**
  * @author Robin Duda
- *         Model for player characters.
+ *         model for player characters.
  */
 public class PlayerCharacter extends AttributeConfigurable {
     private String account;

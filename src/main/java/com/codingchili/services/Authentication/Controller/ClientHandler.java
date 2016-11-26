@@ -1,17 +1,17 @@
-package com.codingchili.services.Authentication.Controller;
+package com.codingchili.services.authentication.controller;
 
 import io.vertx.core.Future;
 
 import java.util.ArrayList;
 
-import com.codingchili.core.Exception.CoreException;
-import com.codingchili.core.Protocol.*;
-import com.codingchili.core.Security.Token;
+import com.codingchili.core.context.CoreException;
+import com.codingchili.core.protocol.*;
+import com.codingchili.core.security.Token;
 
-import com.codingchili.services.Authentication.Configuration.AuthContext;
-import com.codingchili.services.Authentication.Model.*;
+import com.codingchili.services.authentication.configuration.AuthContext;
+import com.codingchili.services.authentication.model.*;
 
-import static com.codingchili.core.Protocol.Access.PUBLIC;
+import static com.codingchili.core.protocol.Access.PUBLIC;
 import static com.codingchili.services.Shared.Strings.*;
 
 /**

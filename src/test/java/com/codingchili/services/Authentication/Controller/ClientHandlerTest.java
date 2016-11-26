@@ -1,4 +1,4 @@
-package com.codingchili.services.Authentication.Controller;
+package com.codingchili.services.authentication.controller;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -16,19 +16,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-import com.codingchili.core.Protocol.ResponseStatus;
-import com.codingchili.core.Protocol.Serializer;
-import com.codingchili.core.Security.*;
-import com.codingchili.core.Testing.RequestMock;
-import com.codingchili.core.Testing.ResponseListener;
+import com.codingchili.core.protocol.ResponseStatus;
+import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.security.*;
+import com.codingchili.core.testing.RequestMock;
+import com.codingchili.core.testing.ResponseListener;
 
-import com.codingchili.services.Authentication.Configuration.AuthContext;
-import com.codingchili.services.Authentication.Controller.ClientHandler;
-import com.codingchili.services.Authentication.Model.*;
+import com.codingchili.services.authentication.configuration.AuthContext;
+import com.codingchili.services.authentication.model.*;
 import com.codingchili.services.Shared.Strings;
-import com.codingchili.services.Realm.Configuration.RealmSettings;
-import com.codingchili.services.Realm.Instance.Model.PlayerCharacter;
-import com.codingchili.services.Realm.Instance.Model.PlayerClass;
+import com.codingchili.services.realm.configuration.RealmSettings;
+import com.codingchili.services.realm.instance.model.PlayerCharacter;
+import com.codingchili.services.realm.instance.model.PlayerClass;
 
 import static com.codingchili.services.Shared.Strings.*;
 

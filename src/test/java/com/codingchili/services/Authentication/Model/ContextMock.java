@@ -1,13 +1,13 @@
-package com.codingchili.services.Authentication.Model;
+package com.codingchili.services.authentication.model;
 
 import io.vertx.core.Vertx;
 
-import com.codingchili.core.Context.StorageContext;
-import com.codingchili.core.Security.TokenFactory;
-import com.codingchili.core.Storage.AsyncPrivateMap;
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.security.TokenFactory;
+import com.codingchili.core.storage.PrivateMap;
 
-import com.codingchili.services.Authentication.Configuration.AuthContext;
-import com.codingchili.services.Authentication.Configuration.AuthServerSettings;
+import com.codingchili.services.authentication.configuration.AuthContext;
+import com.codingchili.services.authentication.configuration.AuthServerSettings;
 
 
 /**
@@ -23,8 +23,8 @@ public class ContextMock extends AuthContext {
         settings.setRealmSecret("realm-secret".getBytes());
         settings.setClientSecret("client-secret".getBytes());
 
-        realms = new AsyncRealmDB(new AsyncPrivateMap<>(new StorageContext(this)));
-        accounts = new AsyncAccountDB(new AsyncPrivateMap<>(new StorageContext(this)), Vertx.vertx());
+        realms = new RealmDB(new PrivateMap<>(new StorageContext(this)));
+        accounts = new AsyncAccountDB(new PrivateMap<>(new StorageContext(this)), Vertx.vertx());
     }
 
     @Override

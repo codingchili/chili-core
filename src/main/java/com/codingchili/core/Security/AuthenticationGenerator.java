@@ -1,4 +1,4 @@
-package com.codingchili.core.Security;
+package com.codingchili.core.security;
 
 import io.vertx.core.json.JsonObject;
 
@@ -8,19 +8,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Configuration.System.AuthenticationDependency;
-import com.codingchili.core.Configuration.System.SecuritySettings;
-import com.codingchili.core.Configuration.BaseConfigurable;
-import com.codingchili.core.Files.Configurations;
-import com.codingchili.core.Files.JsonFileStore;
-import com.codingchili.core.Logging.Logger;
-import com.codingchili.core.Protocol.Serializer;
+import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.system.AuthenticationDependency;
+import com.codingchili.core.configuration.system.SecuritySettings;
+import com.codingchili.core.configuration.BaseConfigurable;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.files.JsonFileStore;
+import com.codingchili.core.logging.Logger;
 
-import static com.codingchili.core.Configuration.Strings.*;
-import static com.codingchili.core.Files.Configurations.security;
-import static com.codingchili.core.Protocol.Serializer.json;
-import static com.codingchili.core.Protocol.Serializer.unpack;
+import static com.codingchili.core.configuration.Strings.*;
+import static com.codingchili.core.files.Configurations.security;
+import static com.codingchili.core.protocol.Serializer.json;
+import static com.codingchili.core.protocol.Serializer.unpack;
 
 /**
  * @author Robin Duda

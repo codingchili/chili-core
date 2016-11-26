@@ -1,4 +1,4 @@
-package com.codingchili.core.Context;
+package com.codingchili.core.context;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -8,9 +8,9 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.Configuration.System.SystemSettings;
-import com.codingchili.core.Exception.SystemNotInitializedException;
-import com.codingchili.core.Testing.ContextMock;
+import com.codingchili.core.configuration.system.SystemSettings;
+import com.codingchili.core.context.exception.SystemNotInitializedException;
+import com.codingchili.core.testing.ContextMock;
 
 /**
  * @author Robin Duda

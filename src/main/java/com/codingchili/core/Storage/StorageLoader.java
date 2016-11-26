@@ -1,11 +1,11 @@
-package com.codingchili.core.Storage;
+package com.codingchili.core.storage;
 
 import io.vertx.core.Future;
 
-import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Context.CoreContext;
-import com.codingchili.core.Context.StorageContext;
-import com.codingchili.core.Logging.Level;
+import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.logging.Level;
 
 import static com.codingchili.services.Shared.Strings.*;
 
@@ -36,7 +36,7 @@ public class StorageLoader {
                     .<Key, Value>newInstance(future, storage);
 
         } catch (ReflectiveOperationException e) {
-            context.console().log(Strings.getStorageLoaderError(plugin, DB), Level.SEVERE);
+            context.console().log(Strings.getStorageLoaderError(plugin, DB, collection), Level.SEVERE);
             System.exit(0);
         }
     }

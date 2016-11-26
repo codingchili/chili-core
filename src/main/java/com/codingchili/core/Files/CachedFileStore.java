@@ -1,4 +1,4 @@
-package com.codingchili.core.Files;
+package com.codingchili.core.files;
 
 import io.vertx.core.buffer.Buffer;
 
@@ -8,13 +8,12 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.codingchili.core.Configuration.CachedFileStoreSettings;
-import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Context.CoreContext;
-import com.codingchili.core.Context.SystemContext;
-import com.codingchili.core.Exception.ConfigurationMismatchException;
-import com.codingchili.core.Exception.FileMissingException;
-import com.codingchili.core.Protocol.Serializer;
+import com.codingchili.core.configuration.CachedFileStoreSettings;
+import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.configuration.exception.ConfigurationMismatchException;
+import com.codingchili.core.configuration.exception.FileMissingException;
+import com.codingchili.core.protocol.Serializer;
 
 /**
  * @author Robin Duda

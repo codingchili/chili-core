@@ -1,4 +1,4 @@
-package com.codingchili.services.Patching.Model;
+package com.codingchili.services.patching.model;
 
 /**
  * @author Robin Duda

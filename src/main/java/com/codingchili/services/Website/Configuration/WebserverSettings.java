@@ -1,6 +1,6 @@
-package com.codingchili.services.Website.Configuration;
+package com.codingchili.services.website.configuration;
 
-import com.codingchili.core.Configuration.ServiceConfigurable;
+import com.codingchili.core.configuration.ServiceConfigurable;
 
 import com.codingchili.services.Shared.Strings;
 

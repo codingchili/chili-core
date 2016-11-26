@@ -1,4 +1,4 @@
-package com.codingchili.core.Testing;
+package com.codingchili.core.testing;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -7,12 +7,12 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.Context.StorageContext;
-import com.codingchili.core.Storage.*;
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.storage.*;
+import com.codingchili.core.storage.exception.*;
 
 
 /**
@@ -23,27 +23,26 @@ import com.codingchili.core.Storage.*;
 @Ignore
 @RunWith(VertxUnitRunner.class)
 public class MapTestCases {
+    protected StorageContext<JsonObject> context;
     private static final JsonObject VALUE = new JsonObject().put("value", "value");
     private static final JsonObject VALUE_OTHER = new JsonObject().put("value", "other");
     private static final String KEY = "key";
-    private static final String DB_NAME = "test";
-    private static final String COLLECTION = "testcollection";
+    private static final String DB_NAME = "spinach";
+    private static final String COLLECTION = "leaves";
     private AsyncStorage<String, JsonObject> store;
-    protected StorageContext<JsonObject> context;
 
     @Rule
-    public Timeout timeout = Timeout.seconds(3);
+    public Timeout timeout = Timeout.seconds(6);
 
     @Before
     public void setUp(TestContext test) {
-        setUp(test, AsyncElasticMap.class);
+        setUp(test, SharedMap.class);
     }
 
-    protected void setUp(TestContext test, Class plugin) {
-        Async async = test.async();
+    public void setUp(Async async, Class plugin, Vertx vertx) {
         Future<AsyncStorage<String, JsonObject>> future = Future.future();
 
-        context = new StorageContext<>(Vertx.vertx());
+        context = new StorageContext<>(vertx);
 
         future.setHandler(map -> {
             store = map.result();
@@ -59,33 +58,70 @@ public class MapTestCases {
                 .build(future);
     }
 
+    protected void setUp(TestContext test, Class plugin) {
+        setUp(test.async(), plugin, Vertx.vertx());
+    }
+
     @After
     public void tearDown(TestContext test) {
         context.vertx().close(test.asyncAssertSuccess());
     }
 
     @Test
+    public void testGet(TestContext test) {
+        Async async = test.async();
+
+        store.put(KEY, VALUE, put -> {
+            test.assertTrue(put.succeeded());
+
+            store.get(KEY, get -> {
+                test.assertTrue(get.succeeded());
+                test.assertEquals(VALUE, get.result());
+                async.complete();
+            });
+        });
+    }
+
+    @Test
+    public void testGetMissing(TestContext test) {
+        Async async = test.async();
+
+        store.get(KEY, get -> {
+            test.assertTrue(get.failed());
+            test.assertNull(get.result());
+            test.assertEquals(MissingEntityException.class, get.cause().getClass());
+            async.complete();
+        });
+    }
+
+    @Test
     public void testPut(TestContext test) {
         Async async = test.async();
 
-        store.put(KEY, VALUE, put -> store.get(KEY, get -> {
-            test.assertEquals(VALUE, get.result());
-            test.assertTrue(get.succeeded());
-            async.complete();
-        }));
+        store.put(KEY, VALUE, put -> {
+            test.assertTrue(put.succeeded());
+
+            store.get(KEY, get -> {
+                test.assertEquals(VALUE, get.result());
+                test.assertTrue(get.succeeded());
+                async.complete();
+            });
+        });
     }
 
     @Test
     public void testPutWithTTL(TestContext test) {
         Async async = test.async();
 
-        store.put(KEY, VALUE, 50, put -> waitForExpiry(test, async));
+        store.put(KEY, VALUE, 50, put -> {
+            test.assertTrue(put.succeeded());
+            waitForExpiry(test, async);
+        });
     }
 
     private void waitForExpiry(TestContext test, Async async) {
         context.timer(800, event -> store.get(KEY, get -> {
-            test.assertNull(get.result());
-            test.assertTrue(get.succeeded());
+            test.assertTrue(get.failed());
             async.complete();
         }));
     }
@@ -94,17 +130,24 @@ public class MapTestCases {
     public void testPutIfAbsent(TestContext test) {
         Async async = test.async();
 
-        store.putIfAbsent(KEY, VALUE, put -> store.get(KEY, get -> {
-            test.assertEquals(VALUE, get.result());
-            test.assertTrue(get.succeeded());
-            async.complete();
-        }));
+        store.putIfAbsent(KEY, VALUE, put -> {
+            test.assertTrue(put.succeeded());
+
+            store.get(KEY, get -> {
+                test.assertTrue(get.succeeded());
+                async.complete();
+            });
+        });
     }
 
     @Test
     public void testPutIfAbsentTTL(TestContext test) {
         Async async = test.async();
-        store.putIfAbsent(KEY, VALUE, 50, handler -> waitForExpiry(test, async));
+
+        store.putIfAbsent(KEY, VALUE, 50, put -> {
+            test.assertTrue(put.succeeded());
+            waitForExpiry(test, async);
+        });
     }
 
     @Test
@@ -112,11 +155,11 @@ public class MapTestCases {
         Async async = test.async();
 
         store.putIfAbsent(KEY, VALUE, outer -> {
-            test.assertNull(outer.result());
+            test.assertTrue(outer.succeeded());
 
             store.putIfAbsent(KEY, VALUE_OTHER, inner -> {
-                test.assertEquals(VALUE, inner.result());
-                test.assertTrue(inner.succeeded());
+                test.assertTrue(inner.failed());
+                test.assertEquals(ValueAlreadyPresentException.class, inner.cause().getClass());
                 async.complete();
             });
         });
@@ -127,113 +170,77 @@ public class MapTestCases {
         Async async = test.async();
 
         store.put(KEY, VALUE, outer -> {
+            test.assertTrue(outer.succeeded());
+
             store.remove(KEY, inner -> {
-                test.assertEquals(VALUE, inner.result());
                 test.assertTrue(inner.succeeded());
-                async.complete();
+
+                store.get(KEY, result -> {
+                    test.assertTrue(result.failed());
+                    async.complete();
+                });
             });
         });
     }
 
     @Test
-    public void testRemoveNX(TestContext test) {
+    public void testRemoveNotPresent(TestContext test) {
         Async async = test.async();
 
-        store.put(KEY, VALUE, put -> {
-            test.assertEquals(null, put.result());
-            test.assertTrue(put.succeeded());
+        store.remove(KEY, remove -> {
+            test.assertTrue(remove.failed());
+            test.assertEquals(NothingToRemoveException.class, remove.cause().getClass());
             async.complete();
         });
-    }
-
-    @Test
-    public void testRemoveIfPresent(TestContext test) {
-        Async async = test.async();
-
-        store.put(KEY, VALUE, put -> {
-            store.removeIfPresent(KEY, VALUE, remove -> {
-                test.assertTrue(remove.result());
-                test.assertTrue(remove.succeeded());
-                async.complete();
-            });
-        });
-    }
-
-    @Test
-    public void testRemoveIfPresentNotPresent(TestContext test) {
-        Async async = test.async();
-
-        store.removeIfPresent(KEY, VALUE, remove -> {
-            test.assertFalse(remove.result());
-            test.assertTrue(remove.succeeded());
-            async.complete();
-        });
-    }
-
-    @Test
-    public void testRemoveIfAnotherValuePresent(TestContext test) {
-        Async async = test.async();
-
-        store.put(KEY, VALUE_OTHER, put -> store.removeIfPresent(KEY, VALUE, remove -> {
-            test.assertFalse(remove.result());
-            test.assertTrue(remove.succeeded());
-            async.complete();
-        }));
     }
 
     @Test
     public void testReplace(TestContext test) {
         Async async = test.async();
 
-        store.put(KEY, VALUE, put -> store.replace(KEY, VALUE_OTHER, replace -> {
-            test.assertEquals(VALUE, replace.result());
-            test.assertTrue(replace.succeeded());
-            async.complete();
-        }));
-    }
+        store.put(KEY, VALUE, result -> {
+            test.assertTrue(result.succeeded());
 
-    @Test
-    public void testReplaceIfPresent(TestContext test) {
-        Async async = test.async();
+            store.replace(KEY, VALUE_OTHER, replace -> {
+                test.assertTrue(replace.succeeded());
 
-        store.put(KEY, VALUE, put -> store.replaceIfPresent(KEY, VALUE, VALUE_OTHER, replace -> {
-            test.assertTrue(replace.result());
-            test.assertTrue(replace.succeeded());
-            async.complete();
-        }));
+                store.get(KEY, get -> {
+                    test.assertEquals(VALUE_OTHER, get.result());
+                    test.assertTrue(get.succeeded());
+                    async.complete();
+                });
+            });
+        });
     }
 
     @Test
     public void testReplaceIfNotPresent(TestContext test) {
         Async async = test.async();
 
-        store.replaceIfPresent(KEY, VALUE, VALUE_OTHER, replace -> {
-            test.assertFalse(replace.result());
-            test.assertTrue(replace.succeeded());
+        store.replace(KEY, VALUE, replace -> {
+            test.assertTrue(replace.failed());
+            test.assertEquals(NothingToReplaceException.class, replace.cause().getClass());
             async.complete();
         });
-    }
-
-    @Test
-    public void testReplaceIfAnotherValuePresent(TestContext test) {
-        Async async = test.async();
-
-        store.put(KEY, VALUE, put -> store.replaceIfPresent(KEY, VALUE_OTHER, VALUE_OTHER, replace -> {
-            test.assertFalse(replace.result());
-            test.assertTrue(replace.succeeded());
-            async.complete();
-        }));
     }
 
     @Test
     public void testClear(TestContext test) {
         Async async = test.async();
 
-        store.put(KEY, VALUE, put -> store.clear(clear -> store.size(size -> {
-            test.assertEquals(0, size.result());
-            test.assertTrue(size.succeeded());
-            async.complete();
-        })));
+        store.put(KEY, VALUE, put -> {
+            test.assertTrue(put.succeeded());
+
+            store.clear(clear -> {
+                test.assertTrue(clear.succeeded());
+
+                store.size(size -> {
+                    test.assertEquals(0, size.result());
+                    test.assertTrue(size.succeeded());
+                    async.complete();
+                });
+            });
+        });
     }
 
     @Test
@@ -241,16 +248,28 @@ public class MapTestCases {
         Async async = test.async();
 
         store.put(KEY, VALUE, put -> {
+            test.assertTrue(put.succeeded());
 
-            if (put.succeeded()) {
-                store.size(size -> {
-                    test.assertEquals(1, size.result());
-                    test.assertTrue(size.succeeded());
-                    async.complete();
-                });
-            } else {
-                test.fail("Failed to put test data for size test.");
-            }
+            store.size(size -> {
+                test.assertEquals(1, size.result());
+                test.assertTrue(size.succeeded());
+                async.complete();
+            });
         });
+    }
+
+    @Test
+    public void testQueryExact() {
+
+    }
+
+    @Test
+    public void testQuerySimilar() {
+
+    }
+
+    @Test
+    public void testQueryRange() {
+
     }
 }

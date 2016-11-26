@@ -1,10 +1,10 @@
-package com.codingchili.services.Realm.Instance.Configuration;
+package com.codingchili.services.realm.instance.configuration;
 
 import java.util.ArrayList;
 
-import com.codingchili.core.Configuration.BaseConfigurable;
+import com.codingchili.core.configuration.BaseConfigurable;
 
-import com.codingchili.services.Realm.Instance.Model.*;
+import com.codingchili.services.realm.instance.model.*;
 
 import static com.codingchili.services.Shared.Strings.*;
 

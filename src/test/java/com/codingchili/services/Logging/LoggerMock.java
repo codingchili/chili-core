@@ -1,13 +1,13 @@
-package com.codingchili.services.Logging;
+package com.codingchili.services.logging;
 
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.Logging.*;
+import com.codingchili.core.logging.*;
 
 
 /**
- * Authentication.Mock implementation of a logger to disable logging.
+ * authentication.Mock implementation of a logger to disable logging.
  */
 public class LoggerMock extends DefaultLogger {
 

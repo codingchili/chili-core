@@ -1,4 +1,4 @@
-package com.codingchili.services.Router;
+package com.codingchili.services.router;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
@@ -11,13 +11,12 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeUnit;
 
-import com.codingchili.core.Protocol.ResponseStatus;
-import com.codingchili.core.Testing.RequestMock;
-import com.codingchili.core.Testing.ResponseListener;
+import com.codingchili.core.protocol.ResponseStatus;
+import com.codingchili.core.testing.RequestMock;
+import com.codingchili.core.testing.ResponseListener;
 
-import com.codingchili.services.Router.Configuration.RouterContext;
-import com.codingchili.services.Router.Configuration.RouterSettings;
-import com.codingchili.services.Router.Controller.RouterHandler;
+import com.codingchili.services.router.configuration.RouterContext;
+import com.codingchili.services.router.controller.RouterHandler;
 
 import static com.codingchili.services.Shared.Strings.*;
 

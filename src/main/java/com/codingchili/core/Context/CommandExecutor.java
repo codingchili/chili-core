@@ -1,15 +1,15 @@
-package com.codingchili.core.Context;
+package com.codingchili.core.context;
 
 import java.util.*;
 
-import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Configuration.System.LauncherSettings;
-import com.codingchili.core.Exception.NoSuchCommandException;
-import com.codingchili.core.Files.Configurations;
-import com.codingchili.core.Logging.*;
-import com.codingchili.core.Security.AuthenticationGenerator;
+import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.system.LauncherSettings;
+import com.codingchili.core.context.exception.NoSuchCommandException;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.logging.*;
+import com.codingchili.core.security.AuthenticationGenerator;
 
-import static com.codingchili.core.Configuration.Strings.*;
+import static com.codingchili.core.configuration.Strings.*;
 
 /**
  * @author Robin Duda

@@ -1,4 +1,4 @@
-package com.codingchili.services.Patching.Configuration;
+package com.codingchili.services.patching.configuration;
 
 import java.util.ArrayList;
 

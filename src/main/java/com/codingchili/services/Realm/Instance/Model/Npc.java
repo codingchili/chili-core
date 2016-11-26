@@ -1,4 +1,4 @@
-package com.codingchili.services.Realm.Instance.Model;
+package com.codingchili.services.realm.instance.model;
 
 import java.io.Serializable;
 

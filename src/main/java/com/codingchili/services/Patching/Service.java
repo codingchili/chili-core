@@ -1,12 +1,12 @@
-package com.codingchili.services.Patching;
+package com.codingchili.services.patching;
 
 import io.vertx.core.*;
 
-import com.codingchili.core.Protocol.ClusterNode;
-import com.codingchili.core.Context.Deploy;
+import com.codingchili.core.protocol.ClusterNode;
+import com.codingchili.core.context.Deploy;
 
-import com.codingchili.services.Patching.Configuration.PatchContext;
-import com.codingchili.services.Patching.Controller.PatchHandler;
+import com.codingchili.services.patching.configuration.PatchContext;
+import com.codingchili.services.patching.controller.PatchHandler;
 
 /**
  * @author Robin Duda

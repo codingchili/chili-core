@@ -6,16 +6,14 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Context.*;
-import com.codingchili.core.Exception.*;
-import com.codingchili.core.Files.Configurations;
-import com.codingchili.core.Logging.ConsoleLogger;
-import com.codingchili.core.Logging.Level;
-import com.codingchili.core.Protocol.ClusterNode;
-import com.codingchili.core.Storage.StorageLoader;
+import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.context.*;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.logging.ConsoleLogger;
+import com.codingchili.core.logging.Level;
+import com.codingchili.core.protocol.ClusterNode;
 
-import static com.codingchili.core.Configuration.Strings.*;
+import static com.codingchili.core.configuration.Strings.*;
 
 /**
  * @author Robin Duda

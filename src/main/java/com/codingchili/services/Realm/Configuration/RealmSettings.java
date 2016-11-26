@@ -1,4 +1,4 @@
-package com.codingchili.services.Realm.Configuration;
+package com.codingchili.services.realm.configuration;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -10,16 +10,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.codingchili.core.Configuration.AttributeConfigurable;
-import com.codingchili.core.Files.JsonFileStore;
-import com.codingchili.core.Protocol.Serializer;
-import com.codingchili.core.Security.RemoteIdentity;
-import com.codingchili.core.Security.Token;
+import com.codingchili.core.configuration.AttributeConfigurable;
+import com.codingchili.core.files.JsonFileStore;
+import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.security.RemoteIdentity;
+import com.codingchili.core.security.Token;
 
-import com.codingchili.services.Realm.Instance.Configuration.InstanceSettings;
-import com.codingchili.services.Realm.Instance.Model.*;
+import com.codingchili.services.realm.instance.configuration.InstanceSettings;
+import com.codingchili.services.realm.instance.model.*;
 
-import static com.codingchili.core.Files.Configurations.*;
+import static com.codingchili.core.files.Configurations.*;
 import static com.codingchili.services.Shared.Strings.*;
 
 /**

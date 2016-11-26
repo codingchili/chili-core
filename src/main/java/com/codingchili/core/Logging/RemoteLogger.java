@@ -1,9 +1,9 @@
-package com.codingchili.core.Logging;
+package com.codingchili.core.logging;
 
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.Context.CoreContext;
+import com.codingchili.core.context.CoreContext;
 
 import static com.codingchili.services.Shared.Strings.NODE_LOGGING;
 

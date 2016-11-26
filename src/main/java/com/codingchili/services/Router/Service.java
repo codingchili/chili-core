@@ -1,13 +1,13 @@
-package com.codingchili.services.Router;
+package com.codingchili.services.router;
 
 import io.vertx.core.*;
 
-import com.codingchili.core.Protocol.ClusterNode;
+import com.codingchili.core.protocol.ClusterNode;
 
-import com.codingchili.services.Router.Configuration.ListenerSettings;
-import com.codingchili.services.Router.Configuration.RouterContext;
-import com.codingchili.services.Router.Controller.RouterHandler;
-import com.codingchili.services.Router.Controller.Transport.*;
+import com.codingchili.services.router.configuration.ListenerSettings;
+import com.codingchili.services.router.configuration.RouterContext;
+import com.codingchili.services.router.controller.RouterHandler;
+import com.codingchili.services.router.controller.transport.*;
 
 /**
  * @author Robin Duda

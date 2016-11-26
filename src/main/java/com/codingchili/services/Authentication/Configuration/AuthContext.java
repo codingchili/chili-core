@@ -1,22 +1,21 @@
-package com.codingchili.services.Authentication.Configuration;
+package com.codingchili.services.authentication.configuration;
 
 import io.vertx.core.*;
 
 import java.util.HashMap;
 
-import com.codingchili.core.Context.ServiceContext;
-import com.codingchili.core.Context.SystemContext;
-import com.codingchili.core.Files.Configurations;
-import com.codingchili.core.Logging.Level;
-import com.codingchili.core.Security.Token;
-import com.codingchili.core.Security.TokenFactory;
-import com.codingchili.core.Storage.*;
+import com.codingchili.core.context.ServiceContext;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.logging.Level;
+import com.codingchili.core.security.Token;
+import com.codingchili.core.security.TokenFactory;
+import com.codingchili.core.storage.*;
+import com.codingchili.core.storage.MongoDBMap;
 
-import com.codingchili.services.Authentication.Model.*;
-import com.codingchili.services.Realm.Configuration.RealmSettings;
-import com.codingchili.services.Shared.Strings;
+import com.codingchili.services.authentication.model.*;
+import com.codingchili.services.realm.configuration.RealmSettings;
 
-import static com.codingchili.services.Authentication.Configuration.AuthServerSettings.PATH_AUTHSERVER;
+import static com.codingchili.services.authentication.configuration.AuthServerSettings.PATH_AUTHSERVER;
 import static com.codingchili.services.Shared.Strings.*;
 
 /**
@@ -45,7 +44,7 @@ public class AuthContext extends ServiceContext {
 
         CompositeFuture.all(realmFuture, accountFuture).setHandler(initialization -> {
 
-            AsyncRealmStore realms = new AsyncRealmDB(realmFuture.result());
+            AsyncRealmStore realms = new RealmDB(realmFuture.result());
             AsyncAccountStore accounts = new AsyncAccountDB(accountFuture.result(), vertx);
 
             future.complete(new AuthContext(realms, accounts, vertx));
@@ -55,14 +54,14 @@ public class AuthContext extends ServiceContext {
                 .withContext(context)
                 .withDB(MAP_REALMS)
                 .withClass(RealmSettings.class)
-                .withPlugin(AsyncMongoMap.class)
+                .withPlugin(MongoDBMap.class)
         .build(realmFuture);
 
         StorageLoader.prepare()
                 .withContext(context)
                 .withDB(MAP_REALMS)
                 .withClass(AccountMapping.class)
-                .withPlugin(AsyncMongoMap.class)
+                .withPlugin(MongoDBMap.class)
                 .build(realmFuture);
     }
 

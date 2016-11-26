@@ -1,4 +1,4 @@
-package com.codingchili.core.Files;
+package com.codingchili.core.files;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
 
-import com.codingchili.core.Configuration.Strings;
+import com.codingchili.core.configuration.Strings;
 
 /**
  * @author Robin Duda

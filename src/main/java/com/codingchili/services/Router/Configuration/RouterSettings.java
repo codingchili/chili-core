@@ -1,12 +1,12 @@
-package com.codingchili.services.Router.Configuration;
+package com.codingchili.services.router.configuration;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import com.codingchili.core.Configuration.ServiceConfigurable;
+import com.codingchili.core.configuration.ServiceConfigurable;
 import com.codingchili.services.Shared.Strings;
 
-import com.codingchili.services.Router.Model.WireType;
+import com.codingchili.services.router.model.WireType;
 
 /**
  * @author Robin Duda

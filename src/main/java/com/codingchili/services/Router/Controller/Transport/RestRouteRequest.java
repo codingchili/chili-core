@@ -1,4 +1,4 @@
-package com.codingchili.services.Router.Controller.Transport;
+package com.codingchili.services.router.controller.transport;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.buffer.Buffer;
@@ -9,13 +9,13 @@ import io.vertx.ext.web.RoutingContext;
 
 import java.util.HashMap;
 
-import com.codingchili.core.Protocol.Request;
-import com.codingchili.core.Protocol.ResponseStatus;
-import com.codingchili.core.Protocol.Serializer;
-import com.codingchili.core.Security.Token;
+import com.codingchili.core.protocol.Request;
+import com.codingchili.core.protocol.ResponseStatus;
+import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.security.Token;
 
-import com.codingchili.services.Router.Configuration.ListenerSettings;
-import com.codingchili.services.Router.Model.Endpoint;
+import com.codingchili.services.router.configuration.ListenerSettings;
+import com.codingchili.services.router.model.Endpoint;
 
 import static com.codingchili.services.Shared.Strings.*;
 

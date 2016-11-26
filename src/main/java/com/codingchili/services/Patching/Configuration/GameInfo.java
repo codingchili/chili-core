@@ -1,8 +1,8 @@
-package com.codingchili.services.Patching.Configuration;
+package com.codingchili.services.patching.configuration;
 
 /**
  * @author Robin Duda
- * Configuration file holds content and title of the website.
+ * configuration file holds content and title of the website.
  */
 class GameInfo {
     private String content = "content";

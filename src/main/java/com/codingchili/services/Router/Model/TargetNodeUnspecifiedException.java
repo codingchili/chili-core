@@ -1,4 +1,4 @@
-package com.codingchili.services.Router.Model;
+package com.codingchili.services.router.model;
 
 /**
  * @author Robin Duda\

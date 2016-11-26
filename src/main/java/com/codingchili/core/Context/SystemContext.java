@@ -1,18 +1,18 @@
-package com.codingchili.core.Context;
+package com.codingchili.core.context;
 
 import io.vertx.core.*;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.dropwizard.MetricsService;
 
-import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Configuration.System.SystemSettings;
-import com.codingchili.core.Files.Configurations;
-import com.codingchili.core.Logging.ConsoleLogger;
-import com.codingchili.core.Logging.Logger;
-import com.codingchili.core.Protocol.AbstractHandler;
-import com.codingchili.core.Protocol.ClusterListener;
-import com.codingchili.core.Security.RemoteIdentity;
+import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.system.SystemSettings;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.logging.ConsoleLogger;
+import com.codingchili.core.logging.Logger;
+import com.codingchili.core.protocol.AbstractHandler;
+import com.codingchili.core.protocol.ClusterListener;
+import com.codingchili.core.security.RemoteIdentity;
 
 /**
  * @author Robin Duda

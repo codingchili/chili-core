@@ -1,12 +1,12 @@
-package com.codingchili.services.Logging.Model;
+package com.codingchili.services.logging.model;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.Logging.*;
+import com.codingchili.core.logging.*;
 
-import com.codingchili.services.Logging.Configuration.ElasticSettings;
-import com.codingchili.services.Logging.Configuration.LogContext;
+import com.codingchili.services.logging.configuration.ElasticSettings;
+import com.codingchili.services.logging.configuration.LogContext;
 
 /**
  * @author Robin Duda

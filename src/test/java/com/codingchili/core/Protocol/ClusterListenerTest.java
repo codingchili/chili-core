@@ -1,4 +1,4 @@
-package com.codingchili.core.Protocol;
+package com.codingchili.core.protocol;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -8,10 +8,10 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.Context.ServiceContext;
-import com.codingchili.core.Exception.CoreException;
-import com.codingchili.core.Testing.ContextMock;
-import com.codingchili.core.Testing.EmptyRequest;
+import com.codingchili.core.context.ServiceContext;
+import com.codingchili.core.context.CoreException;
+import com.codingchili.core.testing.ContextMock;
+import com.codingchili.core.testing.EmptyRequest;
 
 /**
  * @author Robin Duda

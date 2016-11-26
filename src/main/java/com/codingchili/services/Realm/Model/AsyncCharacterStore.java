@@ -1,10 +1,10 @@
-package com.codingchili.services.Realm.Model;
+package com.codingchili.services.realm.model;
 
 import io.vertx.core.Future;
 
 import java.util.Map;
 
-import com.codingchili.services.Realm.Instance.Model.PlayerCharacter;
+import com.codingchili.services.realm.instance.model.PlayerCharacter;
 
 /**
  * @author Robin Duda

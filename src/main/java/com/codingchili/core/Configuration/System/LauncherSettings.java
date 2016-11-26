@@ -1,12 +1,12 @@
-package com.codingchili.core.Configuration.System;
+package com.codingchili.core.configuration.system;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.*;
 
-import com.codingchili.core.Configuration.BaseConfigurable;
+import com.codingchili.core.configuration.BaseConfigurable;
 
-import static com.codingchili.core.Configuration.Strings.PATH_LAUNCHER;
+import static com.codingchili.core.configuration.Strings.PATH_LAUNCHER;
 
 /**
  * @author Robin Duda

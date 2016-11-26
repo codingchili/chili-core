@@ -1,9 +1,9 @@
-package com.codingchili.core.Context;
+package com.codingchili.core.context;
 
 import io.vertx.core.Future;
 import io.vertx.ext.unit.Async;
 
-import com.codingchili.core.Exception.SystemNotInitializedException;
+import com.codingchili.core.context.exception.SystemNotInitializedException;
 
 /**
  * @author Robin Duda

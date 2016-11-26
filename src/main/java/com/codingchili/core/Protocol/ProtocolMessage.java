@@ -1,8 +1,8 @@
-package com.codingchili.core.Protocol;
+package com.codingchili.core.protocol;
 
 import io.vertx.core.json.JsonObject;
 
-import static com.codingchili.core.Protocol.ResponseStatus.ACCEPTED;
+import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
 
 /**
  * @author Robin Duda

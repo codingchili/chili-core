@@ -1,23 +1,23 @@
-package com.codingchili.services.Realm.Controller;
+package com.codingchili.services.realm.controller;
 
 import io.vertx.core.Future;
 
 import java.util.Map;
 
-import com.codingchili.core.Exception.CoreException;
-import com.codingchili.core.Protocol.*;
+import com.codingchili.core.context.CoreException;
+import com.codingchili.core.protocol.*;
 
-import com.codingchili.services.Authentication.Model.PlayerClassDisabledException;
-import com.codingchili.services.Realm.Configuration.RealmContext;
-import com.codingchili.services.Realm.Instance.Configuration.InstanceContext;
-import com.codingchili.services.Realm.Instance.Configuration.InstanceSettings;
-import com.codingchili.services.Realm.Instance.Controller.InstanceHandler;
-import com.codingchili.services.Realm.Instance.Model.PlayerCharacter;
-import com.codingchili.services.Realm.Instance.Model.PlayerClass;
-import com.codingchili.services.Realm.Model.*;
+import com.codingchili.services.authentication.model.PlayerClassDisabledException;
+import com.codingchili.services.realm.configuration.RealmContext;
+import com.codingchili.services.realm.instance.configuration.InstanceContext;
+import com.codingchili.services.realm.instance.configuration.InstanceSettings;
+import com.codingchili.services.realm.instance.controller.InstanceHandler;
+import com.codingchili.services.realm.instance.model.PlayerCharacter;
+import com.codingchili.services.realm.instance.model.PlayerClass;
+import com.codingchili.services.realm.model.*;
 
 import static com.codingchili.services.Shared.Strings.*;
-import static com.codingchili.core.Protocol.ResponseStatus.ACCEPTED;
+import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
 
 /**
  * @author Robin Duda

@@ -1,13 +1,12 @@
-package com.codingchili.core.Configuration.System;
+package com.codingchili.core.configuration.system;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.codingchili.core.Configuration.*;
-import com.codingchili.core.Security.RegexAction;
+import com.codingchili.core.configuration.*;
 
-import static com.codingchili.core.Security.RegexAction.REJECT;
-import static com.codingchili.core.Security.RegexAction.REPLACE;
+import static com.codingchili.core.security.RegexAction.REJECT;
+import static com.codingchili.core.security.RegexAction.REPLACE;
 
 /**
  * @author Robin Duda

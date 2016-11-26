@@ -1,9 +1,9 @@
-package com.codingchili.core.Protocol;
+package com.codingchili.core.protocol;
 
 import java.util.*;
 
-import com.codingchili.core.Exception.AuthorizationRequiredException;
-import com.codingchili.core.Exception.HandlerMissingException;
+import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
+import com.codingchili.core.protocol.exception.HandlerMissingException;
 
 /**
  * @author Robin Duda

@@ -1,6 +1,6 @@
-package com.codingchili.services.Patching.Configuration;
+package com.codingchili.services.patching.configuration;
 
-import com.codingchili.core.Configuration.ServiceConfigurable;
+import com.codingchili.core.configuration.ServiceConfigurable;
 import com.codingchili.services.Shared.Strings;
 
 import static com.codingchili.services.Shared.Strings.DIR_RESOURCES;

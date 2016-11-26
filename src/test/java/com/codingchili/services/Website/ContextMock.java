@@ -1,11 +1,11 @@
-package com.codingchili.services.Website;
+package com.codingchili.services.website;
 
 import io.vertx.core.Vertx;
 
-import com.codingchili.core.Configuration.Strings;
+import com.codingchili.core.configuration.Strings;
 
-import com.codingchili.services.Website.Configuration.WebserverContext;
-import com.codingchili.services.Website.Configuration.WebserverSettings;
+import com.codingchili.services.website.configuration.WebserverContext;
+import com.codingchili.services.website.configuration.WebserverSettings;
 
 /**
  * @author Robin Duda

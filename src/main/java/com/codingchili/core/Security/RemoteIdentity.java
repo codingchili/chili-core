@@ -1,10 +1,10 @@
-package com.codingchili.core.Security;
+package com.codingchili.core.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
 
-import com.codingchili.core.Configuration.Strings;
+import com.codingchili.core.configuration.Strings;
 
 /**
  * @author Robin Duda

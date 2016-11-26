@@ -1,4 +1,4 @@
-package com.codingchili.services.Realm;
+package com.codingchili.services.realm;
 
 import io.vertx.core.Future;
 import io.vertx.core.eventbus.DeliveryOptions;
@@ -6,17 +6,17 @@ import io.vertx.core.json.JsonObject;
 
 import java.io.IOException;
 
-import com.codingchili.core.Context.Deploy;
-import com.codingchili.core.Files.Configurations;
-import com.codingchili.core.Protocol.ClusterNode;
+import com.codingchili.core.context.Deploy;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.protocol.ClusterNode;
 
-import com.codingchili.services.Realm.Configuration.*;
-import com.codingchili.services.Realm.Controller.RealmHandler;
-import com.codingchili.services.Realm.Model.RealmNotUniqueException;
+import com.codingchili.services.realm.configuration.*;
+import com.codingchili.services.realm.controller.RealmHandler;
+import com.codingchili.services.realm.model.RealmNotUniqueException;
 import com.codingchili.services.Shared.Strings;
 
-import static com.codingchili.core.Files.Configurations.system;
-import static com.codingchili.services.Realm.Configuration.RealmServerSettings.PATH_REALMSERVER;
+import static com.codingchili.core.files.Configurations.system;
+import static com.codingchili.services.realm.configuration.RealmServerSettings.PATH_REALMSERVER;
 
 /**
  * @author Robin Duda
@@ -39,7 +39,7 @@ public class Service extends ClusterNode {
     }
 
     /**
-     * Dynamically deploy a new Realm, verifies that no existing nodes are already listening
+     * Dynamically deploy a new realm, verifies that no existing nodes are already listening
      * on the same address by sending a ping.
      *
      * @param realm    the realm to be deployed dynamically.

@@ -1,15 +1,15 @@
-package com.codingchili.core.Security;
+package com.codingchili.core.security;
 
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.Configuration.System.ValidatorSettings;
-import com.codingchili.core.Exception.RequestValidationException;
-import com.codingchili.core.Files.Configurations;
+import com.codingchili.core.configuration.system.ValidatorSettings;
+import com.codingchili.core.protocol.exception.RequestValidationException;
+import com.codingchili.core.files.Configurations;
 
-import static com.codingchili.core.Configuration.Strings.*;
+import static com.codingchili.core.configuration.Strings.*;
 
 /**
  * @author Robin Duda

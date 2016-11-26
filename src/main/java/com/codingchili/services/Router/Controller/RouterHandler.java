@@ -1,15 +1,17 @@
-package com.codingchili.services.Router.Controller;
+package com.codingchili.services.router.controller;
 
 import io.vertx.core.eventbus.DeliveryOptions;
 
-import com.codingchili.core.Exception.*;
-import com.codingchili.core.Protocol.*;
-import com.codingchili.core.Security.Validator;
+import com.codingchili.core.context.CoreException;
+import com.codingchili.core.protocol.*;
+import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
+import com.codingchili.core.protocol.exception.RequestValidationException;
+import com.codingchili.core.security.Validator;
 
-import com.codingchili.services.Router.Configuration.RouterContext;
+import com.codingchili.services.router.configuration.RouterContext;
 
 import static com.codingchili.services.Shared.Strings.*;
-import static com.codingchili.core.Protocol.Access.AUTHORIZED;
+import static com.codingchili.core.protocol.Access.AUTHORIZED;
 
 /**
  * @author Robin Duda

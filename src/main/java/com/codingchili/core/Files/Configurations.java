@@ -1,4 +1,4 @@
-package com.codingchili.core.Files;
+package com.codingchili.core.files;
 
 import io.vertx.core.json.JsonObject;
 
@@ -11,17 +11,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import com.codingchili.core.Configuration.Configurable;
-import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Configuration.System.*;
-import com.codingchili.core.Context.CoreContext;
-import com.codingchili.core.Exception.FileReadException;
-import com.codingchili.core.Exception.InvalidConfigurableException;
-import com.codingchili.core.Logging.ConsoleLogger;
-import com.codingchili.core.Logging.Logger;
-import com.codingchili.core.Protocol.Serializer;
+import com.codingchili.core.configuration.Configurable;
+import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.system.*;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.configuration.exception.FileReadException;
+import com.codingchili.core.configuration.exception.InvalidConfigurableException;
+import com.codingchili.core.logging.ConsoleLogger;
+import com.codingchili.core.logging.Logger;
+import com.codingchili.core.protocol.Serializer;
 
-import static com.codingchili.core.Configuration.Strings.*;
+import static com.codingchili.core.configuration.Strings.*;
 
 /**
  * @author Robin Duda

@@ -1,9 +1,9 @@
-package com.codingchili.services.Logging;
+package com.codingchili.services.logging;
 
 import io.vertx.core.Vertx;
 
-import com.codingchili.services.Logging.Configuration.LogContext;
-import com.codingchili.services.Logging.Configuration.LogServerSettings;
+import com.codingchili.services.logging.configuration.LogContext;
+import com.codingchili.services.logging.configuration.LogServerSettings;
 
 /**
  * @author Robin Duda

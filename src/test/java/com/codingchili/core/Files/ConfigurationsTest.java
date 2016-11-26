@@ -1,4 +1,4 @@
-package com.codingchili.core.Files;
+package com.codingchili.core.files;
 
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Async;
@@ -11,12 +11,12 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import com.codingchili.core.Configuration.*;
-import com.codingchili.core.Context.CoreContext;
-import com.codingchili.core.Exception.InvalidConfigurableException;
-import com.codingchili.core.Logging.ConsoleLogger;
-import com.codingchili.core.Logging.Logger;
-import com.codingchili.core.Testing.ContextMock;
+import com.codingchili.core.configuration.*;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.configuration.exception.InvalidConfigurableException;
+import com.codingchili.core.logging.ConsoleLogger;
+import com.codingchili.core.logging.Logger;
+import com.codingchili.core.testing.ContextMock;
 
 /**
  * @author Robin Duda
@@ -25,10 +25,12 @@ import com.codingchili.core.Testing.ContextMock;
  */
 @RunWith(VertxUnitRunner.class)
 public class ConfigurationsTest {
+    private static final String CONFIGURATIONS = "Configurations";
+    private static final String DEFAULT_JSON = "default.json";
     private CoreContext context;
 
     @Rule
-    public Timeout timeout = new Timeout(50, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(6, TimeUnit.SECONDS);
 
     @Before
     public void setUp() {
@@ -73,7 +75,7 @@ public class ConfigurationsTest {
 
                     @Override
                     public void onConfigurationDefaultsLoaded(String path, Class<?> clazz) {
-                        if (path.equals(Strings.testFile("Configurations", "default.json"))) {
+                        if (path.equals(Strings.testFile(CONFIGURATIONS, DEFAULT_JSON))) {
                             Configurations.reset();
                             async.complete();
                         }
@@ -81,7 +83,7 @@ public class ConfigurationsTest {
                 };
             }
         });
-        load(Strings.testFile("Configurations", "default.json"), ConfigurableTest.class);
+        load(Strings.testFile(CONFIGURATIONS, DEFAULT_JSON), ConfigurableTest.class);
     }
 
     @Test

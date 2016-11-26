@@ -1,13 +1,13 @@
-package com.codingchili.services.Authentication;
+package com.codingchili.services.authentication;
 
 import io.vertx.core.Future;
 
-import com.codingchili.core.Protocol.ClusterNode;
-import com.codingchili.core.Context.Deploy;
+import com.codingchili.core.protocol.ClusterNode;
+import com.codingchili.core.context.Deploy;
 
-import com.codingchili.services.Authentication.Configuration.AuthContext;
-import com.codingchili.services.Authentication.Controller.AuthenticationHandler;
-import com.codingchili.services.Authentication.Controller.ClientHandler;
+import com.codingchili.services.authentication.configuration.AuthContext;
+import com.codingchili.services.authentication.controller.AuthenticationHandler;
+import com.codingchili.services.authentication.controller.ClientHandler;
 
 /**
  * @author Robin Duda

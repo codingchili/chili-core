@@ -1,4 +1,4 @@
-package com.codingchili.services.Authentication.Controller;
+package com.codingchili.services.authentication.controller;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
@@ -10,16 +10,15 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeUnit;
 
-import com.codingchili.core.Protocol.ResponseStatus;
-import com.codingchili.core.Protocol.Serializer;
-import com.codingchili.core.Security.Token;
-import com.codingchili.core.Security.TokenFactory;
-import com.codingchili.core.Testing.RequestMock;
-import com.codingchili.core.Testing.ResponseListener;
+import com.codingchili.core.protocol.ResponseStatus;
+import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.security.Token;
+import com.codingchili.core.security.TokenFactory;
+import com.codingchili.core.testing.RequestMock;
+import com.codingchili.core.testing.ResponseListener;
 
-import com.codingchili.services.Authentication.Controller.AuthenticationHandler;
-import com.codingchili.services.Authentication.Model.ContextMock;
-import com.codingchili.services.Realm.Configuration.RealmSettings;
+import com.codingchili.services.authentication.model.ContextMock;
+import com.codingchili.services.realm.configuration.RealmSettings;
 
 import static com.codingchili.services.Shared.Strings.*;
 

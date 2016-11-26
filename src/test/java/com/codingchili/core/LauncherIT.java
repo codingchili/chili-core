@@ -10,9 +10,9 @@ import org.junit.runner.RunWith;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.codingchili.core.Context.Delay;
-import com.codingchili.core.Context.LaunchContext;
-import com.codingchili.core.Testing.ContextMock;
+import com.codingchili.core.context.Delay;
+import com.codingchili.core.context.LaunchContext;
+import com.codingchili.core.testing.ContextMock;
 
 /**
  * @author Robin Duda

@@ -1,6 +1,6 @@
-package com.codingchili.services.Patching.Model;
+package com.codingchili.services.patching.model;
 
-import com.codingchili.services.Patching.Configuration.PatchNotes;
+import com.codingchili.services.patching.configuration.PatchNotes;
 
 /**
  * @author Robin Duda

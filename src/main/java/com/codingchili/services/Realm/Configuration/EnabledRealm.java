@@ -1,4 +1,4 @@
-package com.codingchili.services.Realm.Configuration;
+package com.codingchili.services.realm.configuration;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

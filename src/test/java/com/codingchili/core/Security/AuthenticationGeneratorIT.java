@@ -1,4 +1,4 @@
-package com.codingchili.core.Security;
+package com.codingchili.core.security;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
@@ -10,17 +10,17 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 import java.util.HashMap;
 
-import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Configuration.System.AuthenticationDependency;
-import com.codingchili.core.Configuration.System.SecuritySettings;
-import com.codingchili.core.Context.SystemContext;
-import com.codingchili.core.Files.Configurations;
-import com.codingchili.core.Files.JsonFileStore;
-import com.codingchili.core.Logging.ConsoleLogger;
-import com.codingchili.core.Protocol.Serializer;
-import com.codingchili.core.Testing.ContextMock;
+import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.system.AuthenticationDependency;
+import com.codingchili.core.configuration.system.SecuritySettings;
+import com.codingchili.core.context.SystemContext;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.files.JsonFileStore;
+import com.codingchili.core.logging.ConsoleLogger;
+import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.testing.ContextMock;
 
-import static com.codingchili.core.Configuration.Strings.testFile;
+import static com.codingchili.core.configuration.Strings.testFile;
 
 /**
  * @author Robin Duda

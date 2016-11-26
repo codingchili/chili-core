@@ -1,14 +1,14 @@
-package com.codingchili.services.Website.Configuration;
+package com.codingchili.services.website.configuration;
 
 import io.vertx.core.Vertx;
 
-import com.codingchili.core.Files.Configurations;
-import com.codingchili.core.Protocol.Request;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.protocol.Request;
 
-import com.codingchili.core.Context.ServiceContext;
+import com.codingchili.core.context.ServiceContext;
 
 import static com.codingchili.services.Shared.Strings.*;
-import static com.codingchili.services.Website.Configuration.WebserverSettings.PATH_WEBSERVER;
+import static com.codingchili.services.website.configuration.WebserverSettings.PATH_WEBSERVER;
 
 /**
  * @author Robin Duda

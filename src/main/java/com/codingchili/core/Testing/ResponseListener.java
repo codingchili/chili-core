@@ -1,8 +1,8 @@
-package com.codingchili.core.Testing;
+package com.codingchili.core.testing;
 
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.Protocol.ResponseStatus;
+import com.codingchili.core.protocol.ResponseStatus;
 
 /**
  * @author Robin Duda

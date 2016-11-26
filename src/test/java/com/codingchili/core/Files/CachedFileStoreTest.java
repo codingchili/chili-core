@@ -1,4 +1,4 @@
-package com.codingchili.core.Files;
+package com.codingchili.core.files;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
@@ -10,11 +10,11 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 import java.nio.file.*;
 
-import com.codingchili.core.Configuration.CachedFileStoreSettings;
-import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Exception.FileMissingException;
-import com.codingchili.core.Protocol.Serializer;
-import com.codingchili.core.Testing.ContextMock;
+import com.codingchili.core.configuration.CachedFileStoreSettings;
+import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.exception.FileMissingException;
+import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.testing.ContextMock;
 
 /**
  * @author Robin Duda

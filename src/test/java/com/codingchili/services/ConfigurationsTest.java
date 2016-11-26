@@ -9,29 +9,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-import com.codingchili.core.Configuration.Configurable;
-import com.codingchili.core.Configuration.Strings;
-import com.codingchili.core.Files.Configurations;
-import com.codingchili.core.Files.JsonFileStore;
-import com.codingchili.core.Protocol.Serializer;
+import com.codingchili.core.configuration.Configurable;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.files.JsonFileStore;
+import com.codingchili.core.protocol.Serializer;
 
-import com.codingchili.services.Authentication.Configuration.AuthServerSettings;
-import com.codingchili.services.Logging.Configuration.LogServerSettings;
-import com.codingchili.services.Patching.Configuration.PatchServerSettings;
-import com.codingchili.services.Realm.Configuration.RealmServerSettings;
-import com.codingchili.services.Realm.Instance.Model.*;
-import com.codingchili.services.Router.Configuration.RouterSettings;
-import com.codingchili.services.Social.Configuration.SocialSettings;
-import com.codingchili.services.Website.Configuration.WebserverSettings;
+import com.codingchili.services.authentication.configuration.AuthServerSettings;
+import com.codingchili.services.logging.configuration.LogServerSettings;
+import com.codingchili.services.patching.configuration.PatchServerSettings;
+import com.codingchili.services.realm.configuration.RealmServerSettings;
+import com.codingchili.services.realm.instance.model.*;
+import com.codingchili.services.router.configuration.RouterSettings;
+import com.codingchili.services.Social.configuration.SocialSettings;
+import com.codingchili.services.website.configuration.WebserverSettings;
 
-import static com.codingchili.services.Authentication.Configuration.AuthServerSettings.PATH_AUTHSERVER;
-import static com.codingchili.services.Logging.Configuration.LogServerSettings.PATH_LOGSERVER;
-import static com.codingchili.services.Patching.Configuration.PatchServerSettings.PATH_PATCHSERVER;
-import static com.codingchili.services.Realm.Configuration.RealmServerSettings.PATH_REALMSERVER;
-import static com.codingchili.services.Router.Configuration.RouterSettings.PATH_ROUTING;
 import static com.codingchili.services.Shared.Strings.*;
-import static com.codingchili.services.Social.Configuration.SocialSettings.PATH_SOCIAL;
-import static com.codingchili.services.Website.Configuration.WebserverSettings.PATH_WEBSERVER;
 
 /**
  * @author Robin Duda

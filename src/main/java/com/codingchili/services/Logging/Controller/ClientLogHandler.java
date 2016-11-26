@@ -1,10 +1,10 @@
-package com.codingchili.services.Logging.Controller;
+package com.codingchili.services.logging.controller;
 
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.Protocol.Request;
+import com.codingchili.core.protocol.Request;
 
-import com.codingchili.services.Logging.Configuration.LogContext;
+import com.codingchili.services.logging.configuration.LogContext;
 
 import static com.codingchili.services.Shared.Strings.*;
 

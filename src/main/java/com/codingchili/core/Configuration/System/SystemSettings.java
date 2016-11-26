@@ -1,11 +1,11 @@
-package com.codingchili.core.Configuration.System;
+package com.codingchili.core.configuration.system;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.metrics.MetricsOptions;
 
-import com.codingchili.core.Configuration.BaseConfigurable;
-import com.codingchili.core.Configuration.Strings;
+import com.codingchili.core.configuration.BaseConfigurable;
+import com.codingchili.core.configuration.Strings;
 
 /**
  * @author Robin Duda

@@ -1,12 +1,14 @@
-package com.codingchili.services.Website.Controller;
+package com.codingchili.services.website.controller;
 
-import com.codingchili.core.Configuration.CachedFileStoreSettings;
-import com.codingchili.core.Exception.*;
-import com.codingchili.core.Files.CachedFileStore;
-import com.codingchili.core.Protocol.*;
+import com.codingchili.core.configuration.CachedFileStoreSettings;
+import com.codingchili.core.configuration.exception.FileMissingException;
+import com.codingchili.core.files.CachedFileStore;
+import com.codingchili.core.protocol.*;
+import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
+import com.codingchili.core.protocol.exception.HandlerMissingException;
 
 import com.codingchili.services.Shared.Strings;
-import com.codingchili.services.Website.Configuration.WebserverContext;
+import com.codingchili.services.website.configuration.WebserverContext;
 
 import static com.codingchili.services.Shared.Strings.*;
 

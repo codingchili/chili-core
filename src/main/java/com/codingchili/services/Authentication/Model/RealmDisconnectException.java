@@ -1,7 +1,7 @@
-package com.codingchili.services.Authentication.Model;
+package com.codingchili.services.authentication.model;
 
 import com.codingchili.services.Shared.Strings;
-import com.codingchili.core.Exception.CoreException;
+import com.codingchili.core.context.CoreException;
 
 /**
  * @author Robin Duda

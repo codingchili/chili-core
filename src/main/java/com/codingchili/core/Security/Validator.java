@@ -1,14 +1,14 @@
-package com.codingchili.core.Security;
+package com.codingchili.core.security;
 
 import io.vertx.core.json.JsonObject;
 
 import java.util.regex.Matcher;
 
-import com.codingchili.core.Configuration.RegexComponent;
-import com.codingchili.core.Configuration.System.ParserSettings;
-import com.codingchili.core.Configuration.System.ValidatorSettings;
-import com.codingchili.core.Exception.RequestValidationException;
-import com.codingchili.core.Files.Configurations;
+import com.codingchili.core.configuration.RegexComponent;
+import com.codingchili.core.configuration.system.ParserSettings;
+import com.codingchili.core.configuration.system.ValidatorSettings;
+import com.codingchili.core.protocol.exception.RequestValidationException;
+import com.codingchili.core.files.Configurations;
 
 /**
  * @author Robin Duda

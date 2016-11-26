@@ -1,14 +1,14 @@
-package com.codingchili.services.Logging.Configuration;
+package com.codingchili.services.logging.configuration;
 
 import io.vertx.core.Vertx;
 
-import com.codingchili.core.Files.Configurations;
-import com.codingchili.core.Security.Token;
-import com.codingchili.core.Security.TokenFactory;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.security.Token;
+import com.codingchili.core.security.TokenFactory;
 
-import com.codingchili.core.Context.ServiceContext;
+import com.codingchili.core.context.ServiceContext;
 
-import static com.codingchili.services.Logging.Configuration.LogServerSettings.PATH_LOGSERVER;
+import static com.codingchili.services.logging.configuration.LogServerSettings.PATH_LOGSERVER;
 
 /**
  * @author Robin Duda
