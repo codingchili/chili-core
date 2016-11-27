@@ -16,6 +16,7 @@ import org.elasticsearch.index.engine.DocumentMissingException;
 import org.elasticsearch.index.engine.VersionConflictEngineException;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.rest.RestStatus;
+import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.io.IOException;
@@ -87,7 +88,8 @@ public class ElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
     public void put(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
         put(key, value, result -> {
             if (result.succeeded()) {
-                context.timer(ttl, event -> remove(key, removed -> {}));
+                context.timer(ttl, event -> remove(key, removed -> {
+                }));
                 handler.handle(result());
             } else {
                 handler.handle(error(result.cause()));
@@ -120,7 +122,8 @@ public class ElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
     public void putIfAbsent(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
         putIfAbsent(key, value, result -> {
             if (result.succeeded()) {
-                context.timer(ttl, event -> remove(key, removed-> {}));
+                context.timer(ttl, event -> remove(key, removed -> {
+                }));
                 handler.handle(result());
             } else {
                 handler.handle(error(result.cause()));
@@ -200,18 +203,47 @@ public class ElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void queryExact(String attribute, Comparable compare, Handler<AsyncResult<Collection<Value>>> handler) {
+    public void queryExact(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler) {
+        client.prepareSearch(context.DB())
+                .setTypes(context.collection())
+                .setQuery(QueryBuilders.matchQuery(attribute, comparable))
+                .execute(new ElasticHandler<>(response -> {
+                    handler.handle(result(listFrom(response.getHits().getHits())));
+                }, exception -> handler.handle(error(exception))));
+    }
 
+    private Collection<Value> listFrom(SearchHit[] hits) {
+        List<Value> list = new ArrayList<>();
+
+        for (SearchHit hit : hits) {
+            list.add(valueFrom(hit.source()));
+        }
+
+        return list;
     }
 
     @Override
     public void querySimilar(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler) {
-
+        if (context.validate(comparable)) {
+            client.prepareSearch(context.DB())
+                    .setTypes(context.collection())
+                    .setQuery(QueryBuilders.matchPhrasePrefixQuery(attribute, comparable))
+                    .execute(new ElasticHandler<>(response -> {
+                        handler.handle(result(listFrom(response.getHits().getHits())));
+                    }, exception -> handler.handle(error(exception))));
+        } else {
+            handler.handle(result(new ArrayList<>()));
+        }
     }
 
     @Override
     public void queryRange(String attribute, int from, int to, Handler<AsyncResult<Collection<Value>>> handler) {
-
+        client.prepareSearch(context.DB())
+                .setTypes(context.collection())
+                .setQuery(QueryBuilders.rangeQuery(attribute).gte(from).lte(to))
+                .execute(new ElasticHandler<>(response -> {
+                    handler.handle(result(listFrom(response.getHits().getHits())));
+                }, exception -> handler.handle(error(exception))));
     }
 
     /**

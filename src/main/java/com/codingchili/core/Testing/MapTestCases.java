@@ -23,26 +23,28 @@ import com.codingchili.core.storage.exception.*;
 @Ignore
 @RunWith(VertxUnitRunner.class)
 public class MapTestCases {
-    protected StorageContext<StorageObject> context;
-    protected AsyncStorage<String, StorageObject> store;
-    private static final String LEVEL = "level";
-    private static final String ID = "id";
-    private static final String ONE = "one";
-    private static final String TWO = "two";
-    private static final String THREE = "three";
-    private static final String KEY_MISSING = "KEY_MISSING";
-    private static final StorageObject OBJECT_ONE = new StorageObject("one", 1);
-    private static final StorageObject OBJECT_TWO = new StorageObject("two", 2);
-    private static final StorageObject OBJECT_THREE = new StorageObject("three", 3);
+    protected static final String LEVEL = "level";
+    protected static final String ID = "id";
+    protected static final String ONE = "one";
+    protected static final String TWO = "two";
+    protected static final String THREE = "three";
+    protected static final String KEY_MISSING = "KEY_MISSING";
+    protected static final StorageObject OBJECT_ONE = new StorageObject("one", 1);
+    protected static final StorageObject OBJECT_TWO = new StorageObject("two", 2);
+    protected static final StorageObject OBJECT_THREE = new StorageObject("three", 3);
     private static final String DB_NAME = "spinach";
     private static final String COLLECTION = "leaves";
+    protected StorageContext<StorageObject> context;
+    protected AsyncStorage<String, StorageObject> store;
+    protected static Integer delay = 1;
+
 
     @Rule
     public Timeout timeout = Timeout.seconds(6);
 
     @Before
     public void setUp(TestContext test) {
-        setUp(test, PrivateMap.class);
+        setUp(test, MongoDBMap.class);
     }
 
     protected void setUp(TestContext test, Class plugin) {
@@ -72,7 +74,9 @@ public class MapTestCases {
         store.clear(result -> {
             store.put(TWO, OBJECT_TWO, object -> {
                 store.put(THREE, OBJECT_THREE, other -> {
-                    async.complete();
+                    context.timer(delay, event -> {
+                        async.complete();
+                    });
                 });
             });
         });
@@ -300,6 +304,8 @@ public class MapTestCases {
                 test.assertEquals(0, query.result().size());
                 async.complete();
             });
+        } else {
+            async.complete();
         }
     }
 

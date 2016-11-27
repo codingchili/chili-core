@@ -148,10 +148,10 @@ public class JsonMap<Key, Value> extends BaseFilter<Value> implements AsyncStora
     }
 
     @Override
-    public void queryExact(String attribute, Comparable compare, Handler<AsyncResult<Collection<Value>>> handler) {
+    public void queryExact(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler) {
         handler.handle(result(db.fieldNames().stream()
                 .map(key -> context.toValue(db.getJsonObject(key)))
-                .filter(item -> queryExact(item, attribute, compare))
+                .filter(item -> queryExact(item, attribute, comparable))
                 .collect(Collectors.toList())));
     }
 

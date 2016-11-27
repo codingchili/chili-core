@@ -98,9 +98,9 @@ public class SharedMap<Key, Value> extends BaseFilter<Value> implements AsyncSto
     }
 
     @Override
-    public void queryExact(String attribute, Comparable compare, Handler<AsyncResult<Collection<Value>>> handler) {
+    public void queryExact(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler) {
         handler.handle(result(map.values().stream()
-                .filter(item -> queryExact(item, attribute, compare))
+                .filter(item -> queryExact(item, attribute, comparable))
                 .collect(Collectors.toList())));
     }
 

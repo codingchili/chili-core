@@ -30,7 +30,7 @@ public interface AsyncStorage<Key, Value> {
 
     void size(Handler<AsyncResult<Integer>> handler);
 
-    void queryExact(String attribute, Comparable compare, Handler<AsyncResult<Collection<Value>>> handler);
+    void queryExact(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler);
 
     void querySimilar(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler);
 

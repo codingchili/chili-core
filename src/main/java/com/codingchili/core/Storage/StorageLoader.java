@@ -38,6 +38,7 @@ public class StorageLoader {
 
         } catch (ReflectiveOperationException e) {
             context.console().log(Strings.getStorageLoaderError(plugin, DB, collection), Level.SEVERE);
+            e.printStackTrace();
             System.exit(0);
         }
     }

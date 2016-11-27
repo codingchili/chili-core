@@ -126,8 +126,6 @@ public class Launcher extends ClusterNode {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 AtomicBoolean cleanup = new AtomicBoolean(true);
-                Configurations.shutdown();
-
                 vertx.deploymentIDs().forEach(vertx::undeploy);
 
                 while (cleanup.get()) {

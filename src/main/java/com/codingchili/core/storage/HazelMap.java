@@ -162,9 +162,9 @@ public class HazelMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void queryExact(String attribute, Comparable compare, Handler<AsyncResult<Collection<Value>>> handler) {
+    public void queryExact(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler) {
         executor.<Collection<Value>>executeBlocking(blocking -> {
-            blocking.complete(imap.values(Predicates.equal(attribute, compare)));
+            blocking.complete(imap.values(Predicates.equal(attribute, comparable)));
         }, false, result -> {
             if (result.succeeded()) {
                 handler.handle(result(result.result()));

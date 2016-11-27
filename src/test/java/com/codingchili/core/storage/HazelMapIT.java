@@ -26,7 +26,7 @@ public class HazelMapIT extends MapTestCases {
 
         Vertx.clusteredVertx(new VertxOptions(), cluster -> {
             vertx = cluster.result();
-            new HazelMapIT().setUp(async, HazelMap.class, vertx);
+            async.complete();
         });
     }
 
@@ -36,8 +36,16 @@ public class HazelMapIT extends MapTestCases {
     }
 
     @Before
-    public void setUp() {}
+    public void setUp(TestContext test) {
+        super.setUp(test.async(), HazelMap.class, vertx);
+    }
 
     @After
-    public void tearDown() {}
+    public void tearDown(TestContext test) {
+        Async async = test.async();
+
+        store.clear(result -> {
+            async.complete();
+        });
+    }
 }

@@ -83,7 +83,8 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
     public void put(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
         put(key, value, result -> {
             if (result.succeeded()) {
-                context.timer(ttl, expired -> remove(key, (removed) -> {}));
+                context.timer(ttl, expired -> remove(key, (removed) -> {
+                }));
                 handler.handle(result(result.result()));
             } else {
                 handler.handle(error(result.cause()));
@@ -106,7 +107,8 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
     public void putIfAbsent(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
         put(key, value, result -> {
             if (result.succeeded()) {
-                context.timer(ttl, expired -> remove(key, (removed) -> {}));
+                context.timer(ttl, expired -> remove(key, (removed) -> {
+                }));
                 handler.handle(result());
             } else {
                 handler.handle(error(result.cause()));
@@ -171,8 +173,8 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void queryExact(String attribute, Comparable compare, Handler<AsyncResult<Collection<Value>>> handler) {
-        client.find(collection, query(attribute, compare), query -> {
+    public void queryExact(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler) {
+        client.find(collection, query(attribute, comparable), query -> {
             if (query.succeeded()) {
                 handler.handle(result(toList(query.result())));
             } else {
@@ -205,7 +207,7 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     private JsonObject queryLike(String attribute, Comparable compare) {
-        return new JsonObject().put(attribute, "/^" + compare + "/");
+        return new JsonObject().put(attribute, new JsonObject().put("$regex", "^" + compare + ""));
     }
 
     @Override
