@@ -131,6 +131,7 @@ The configuration structure
 │   │   ├── launcher.json
 │   │   ├── validator.json
 │   │   ├── security.json
+│   │   ├── storage.json
 │   │   ├── system.json
 │   ├── services/
 │   │   ├── authserver.json
