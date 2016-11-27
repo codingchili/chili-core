@@ -1,7 +1,6 @@
 package com.codingchili.core.storage;
 
 import io.vertx.core.*;
-import io.vertx.core.json.JsonObject;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.DocWriteResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
@@ -9,7 +8,6 @@ import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
@@ -38,8 +36,6 @@ import static com.codingchili.core.context.FutureHelper.*;
  *         Mocks an async map used by Hazelcast to enable testing of storage logic.
  */
 public class ElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
-    private HashMap<String, Long> timers = new HashMap<>();
-    private static final int NO_TTL = -1;
     private StorageContext<Value> context;
     private TransportClient client;
 
@@ -50,7 +46,7 @@ public class ElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
                     .put("client.transport.sniff", true)
                     .build())
                     .addTransportAddress(
-                            new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300));
+                            new InetSocketTransportAddress(InetAddress.getByName(context.host()), context.port()));
 
             client.admin().indices().create(new CreateIndexRequest(context.DB())).get();
         } catch (UnknownHostException | InterruptedException | ExecutionException e) {
@@ -80,26 +76,27 @@ public class ElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
 
     @Override
     public void put(Key key, Value value, Handler<AsyncResult<Void>> handler) {
-        put(key, value, NO_TTL, handler);
-    }
-
-    @Override
-    public void put(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
         client.prepareIndex(context.DB(), context.collection(), key.toString())
                 .setSource(context.toJson(value).encode())
                 .execute(new ElasticHandler<>(response -> {
-                    scheduleTTL(key, ttl);
                     handler.handle(result());
                 }, exception -> handler.handle(error(exception))));
     }
 
     @Override
-    public void putIfAbsent(Key key, Value value, Handler<AsyncResult<Void>> handler) {
-        putIfAbsent(key, value, NO_TTL, handler);
+    public void put(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
+        put(key, value, result -> {
+            if (result.succeeded()) {
+                context.timer(ttl, event -> remove(key, removed -> {}));
+                handler.handle(result());
+            } else {
+                handler.handle(error(result.cause()));
+            }
+        });
     }
 
     @Override
-    public void putIfAbsent(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
+    public void putIfAbsent(Key key, Value value, Handler<AsyncResult<Void>> handler) {
         client.prepareIndex(context.DB(), context.collection(), key.toString())
                 .setSource(context.toJson(value).encode())
                 .setOpType(IndexRequest.OpType.CREATE)
@@ -107,7 +104,6 @@ public class ElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
 
                     if (response.getResult().equals(DocWriteResponse.Result.CREATED)) {
                         handler.handle(result());
-                        scheduleTTL(key, ttl);
                     } else {
                         handler.handle(error(new ValueAlreadyPresentException(key)));
                     }
@@ -118,6 +114,18 @@ public class ElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
                         handler.handle(error(exception));
                     }
                 }));
+    }
+
+    @Override
+    public void putIfAbsent(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
+        putIfAbsent(key, value, result -> {
+            if (result.succeeded()) {
+                context.timer(ttl, event -> remove(key, removed-> {}));
+                handler.handle(result());
+            } else {
+                handler.handle(error(result.cause()));
+            }
+        });
     }
 
     private Throwable nested(Throwable exception) {
@@ -133,27 +141,8 @@ public class ElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
                         handler.handle(error(new NothingToRemoveException(key)));
                     } else {
                         handler.handle(result());
-                        cancelTTL(key.toString());
                     }
                 }, exception -> handler.handle(error(exception))));
-    }
-
-    private void scheduleTTL(Key key, Long ttl) {
-        if (ttl != NO_TTL) {
-            timers.put(key.toString(), context.timer(ttl, event -> remove(key, handler -> {
-                if (handler.succeeded()) {
-                    context.onValueExpired(key.toString(), ttl);
-                } else {
-                    context.onValueExpiredMissing(key.toString(), ttl);
-                }
-            })));
-        }
-    }
-
-    private void cancelTTL(String key) {
-        if (timers.containsKey(key)) {
-            context.cancel(timers.get(key));
-        }
     }
 
     @Override
@@ -164,7 +153,6 @@ public class ElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
 
                     if (response.getResult().ordinal() != 0) {
                         handler.handle(result());
-                        cancelTTL(key.toString());
                     } else {
                         handler.handle(error(new NothingToReplaceException(key)));
                     }
@@ -187,7 +175,6 @@ public class ElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
         if (response.isAcknowledged()) {
             client.admin().indices().refresh(new RefreshRequest(context.DB()));
             handler.handle(result());
-            timers.keySet().forEach(this::cancelTTL);
             context.onCollectionDropped();
         } else {
             handler.handle(error(new StorageFailureException()));
@@ -213,17 +200,17 @@ public class ElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void queryExact(JsonObject attributes, Handler<AsyncResult<List<Value>>> handler) {
+    public void queryExact(String attribute, Comparable compare, Handler<AsyncResult<Collection<Value>>> handler) {
 
     }
 
     @Override
-    public void querySimilar(JsonObject attributes, Handler<AsyncResult<List<Value>>> handler) {
+    public void querySimilar(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler) {
 
     }
 
     @Override
-    public void queryRange(int from, int to, Handler<AsyncResult<List<Value>>> handler, String... attributes) {
+    public void queryRange(String attribute, int from, int to, Handler<AsyncResult<Collection<Value>>> handler) {
 
     }
 

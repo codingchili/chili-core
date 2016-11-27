@@ -11,9 +11,9 @@ public interface AsyncAccountStore {
     /**
      * Finds an account in the store.
      *
-     * @param username username of the account to find.
+     * @param username username of the account to findByUsername.
      */
-    void find(Future<Account> future, String username);
+    void get(Future<Account> future, String username);
 
     /**
      * Authenticates an user in the accountstore.

@@ -1,9 +1,9 @@
 package com.codingchili.core.storage;
 
-import io.vertx.core.*;
-import io.vertx.core.json.JsonObject;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * @author Robin Duda
@@ -30,9 +30,9 @@ public interface AsyncStorage<Key, Value> {
 
     void size(Handler<AsyncResult<Integer>> handler);
 
-    void queryExact(JsonObject attributes, Handler<AsyncResult<List<Value>>> handler);
+    void queryExact(String attribute, Comparable compare, Handler<AsyncResult<Collection<Value>>> handler);
 
-    void querySimilar(JsonObject attributes, Handler<AsyncResult<List<Value>>> handler);
+    void querySimilar(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler);
 
-    void queryRange(int from, int to, Handler<AsyncResult<List<Value>>> handler, String... attributes);
+    void queryRange(String attribute, int from, int to, Handler<AsyncResult<Collection<Value>>> handler);
 }

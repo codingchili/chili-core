@@ -6,23 +6,24 @@ import io.vertx.core.Vertx;
 import com.codingchili.core.security.ByteComparator;
 import com.codingchili.core.security.HashHelper;
 import com.codingchili.core.storage.AsyncStorage;
+import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
+import com.codingchili.core.storage.exception.ValueMissingException;
 
 /**
  * @author Robin Duda
  */
-public class AsyncAccountDB implements AsyncAccountStore {
+public class AccountDB implements AsyncAccountStore {
     private final AsyncStorage<String, AccountMapping> accounts;
     private final HashHelper hasher;
 
 
-    public AsyncAccountDB(AsyncStorage<String, AccountMapping> map, Vertx vertx) {
+    public AccountDB(AsyncStorage<String, AccountMapping> map, Vertx vertx) {
         this.accounts = map;
         this.hasher = new HashHelper(vertx);
     }
 
-
     @Override
-    public void find(Future<Account> future, String username) {
+    public void get(Future<Account> future, String username) {
         accounts.get(username, user -> {
             if (user.succeeded()) {
                 future.complete(filter(user.result()));
@@ -38,7 +39,13 @@ public class AsyncAccountDB implements AsyncAccountStore {
             if (map.succeeded()) {
                 authenticate(future, map.result(), account);
             } else {
-                future.fail(map.cause());
+                try {
+                    throw map.cause();
+                } catch (ValueMissingException e) {
+                    future.fail(new AccountMissingException());
+                } catch (Throwable throwable) {
+                    future.fail(throwable);
+                }
             }
         });
     }
@@ -57,7 +64,13 @@ public class AsyncAccountDB implements AsyncAccountStore {
                 if (map.succeeded()) {
                     future.complete(filter(account));
                 } else {
-                    future.fail(map.cause());
+                    try {
+                        throw map.cause();
+                    } catch (ValueAlreadyPresentException e) {
+                        future.fail(new AccountExistsException());
+                    } catch (Throwable throwable) {
+                        future.fail(map.cause());
+                    }
                 }
             });
         });

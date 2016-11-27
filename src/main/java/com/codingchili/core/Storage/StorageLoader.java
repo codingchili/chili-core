@@ -29,7 +29,8 @@ public class StorageLoader {
             StorageContext<Value> storage = new StorageContext<Value>(context)
                     .setDB(DB)
                     .setCollection(collection)
-                    .setClass(clazz);
+                    .setClass(clazz)
+                    .setPlugin(plugin);
 
             Class.forName(plugin)
                     .getConstructor(Future.class, StorageContext.class)

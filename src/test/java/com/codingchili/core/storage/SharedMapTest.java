@@ -1,4 +1,4 @@
-package com.codingchili.core.storage.internal;
+package com.codingchili.core.storage;
 
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;

@@ -1,7 +1,6 @@
 package com.codingchili.services.realm.model;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 import com.codingchili.services.realm.configuration.RealmSettings;
 import com.codingchili.services.realm.instance.model.PlayerCharacter;
@@ -13,9 +12,9 @@ public class CharacterList {
     private RealmSettings realm;
     private Collection<PlayerCharacter> characters;
 
-    public CharacterList(RealmSettings realm, Map<String, PlayerCharacter> characters) {
+    public CharacterList(RealmSettings realm, Collection<PlayerCharacter> characters) {
         this.realm = realm.removeAuthentication();
-        this.characters = characters.values();
+        this.characters = characters;
     }
 
     public RealmSettings getRealm() {

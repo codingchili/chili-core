@@ -45,7 +45,7 @@ public class AuthContext extends ServiceContext {
         CompositeFuture.all(realmFuture, accountFuture).setHandler(initialization -> {
 
             AsyncRealmStore realms = new RealmDB(realmFuture.result());
-            AsyncAccountStore accounts = new AsyncAccountDB(accountFuture.result(), vertx);
+            AsyncAccountStore accounts = new AccountDB(accountFuture.result(), vertx);
 
             future.complete(new AuthContext(realms, accounts, vertx));
         });

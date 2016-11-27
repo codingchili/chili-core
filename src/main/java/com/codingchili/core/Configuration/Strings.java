@@ -5,9 +5,9 @@ import java.time.*;
 
 /**
  * @author Robin Duda
- *
- * Store json keys and protocol headers so that they are easily maintained.
- * Extend this class in service implementations to add more constants.
+ *         <p>
+ *         Store json keys and protocol headers so that they are easily maintained.
+ *         Extend this class in service implementations to add more constants.
  */
 public abstract class Strings {
     // paths to configuration files.
@@ -15,6 +15,7 @@ public abstract class Strings {
     public static final String PATH_LAUNCHER = "conf/system/launcher.json";
     public static final String PATH_SECURITY = "conf/system/security.json";
     public static final String PATH_SYSTEM = "conf/system/system.json";
+    public static final String PATH_STORAGE = "conf/system/storage.json";
 
     // common directories.
     public static final String DIR_ROOT = "/";
@@ -22,7 +23,7 @@ public abstract class Strings {
     public static final String DIR_CONFIG = "conf/";
     public static final String DIR_SYSTEM = "conf/system/";
     private static final String DIR_TEST = "src/test/resources/";
-    public static String DIR_SERVICES = "conf/service/";
+    public static final String DIR_SERVICES = "conf/service/";
     public static final String EMPTY = "";
 
 
@@ -124,9 +125,9 @@ public abstract class Strings {
     public static final String CONFIGURED_BLOCKS = "Configured deployment blocks";
 
 
-
     /**
      * Replaces tags in a logging message.
+     *
      * @param text the source text
      * @param tags the name of the tag without enclosing brackets.
      * @return the source text with any matching tags removed.
@@ -147,11 +148,12 @@ public abstract class Strings {
     }
 
     public static String getFileMissingError(String filename) {
-        return "Could not find file " + filename;
+        return "Could not findByUsername file " + filename;
     }
 
     /**
      * Formats a path object using a base root.
+     *
      * @param path the path to be formatted
      * @param root the relative root to remove from the path
      * @return a relative path string that is the same on all filesystems.
@@ -228,7 +230,7 @@ public abstract class Strings {
     }
 
     public static String getIdentityNotConfigured(String name) {
-        return  "[" + name + "] Error: Identity must be configured.";
+        return "[" + name + "] Error: Identity must be configured.";
     }
 
     public static String getStorageLoaderError(String plugin, String mapName, String collection) {
@@ -264,10 +266,10 @@ public abstract class Strings {
     }
 
     public static String getMissingEntity(String key) {
-        return "Error: could not find '" + key + "' in storage.";
+        return "Error: could not get '" + key + "' in storage.";
     }
 
     public static String timestamp(long ms) {
-            return LocalDateTime.ofInstant(Instant.ofEpochMilli(ms), ZoneOffset.UTC).toString().split("T")[1];
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(ms), ZoneOffset.UTC).toString().split("T")[1];
     }
 }

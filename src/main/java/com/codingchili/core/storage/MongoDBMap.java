@@ -4,10 +4,12 @@ import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.*;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.storage.exception.*;
 
 import static com.codingchili.core.context.FutureHelper.error;
@@ -23,15 +25,15 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
     private static final String ID = "_id";
     private StorageContext<Value> context;
     private MongoClient client;
-    private String DB;
+    private String collection;
 
     public MongoDBMap(Future<AsyncStorage<Key, Value>> future, StorageContext<Value> context) {
-        client = MongoClient.createShared(context.vertx(), new JsonObject());
+        client = MongoClient.createShared(context.vertx(), Serializer.json(context.storage()));
 
-        this.DB = context.DB();
+        this.collection = context.collection();
         this.context = context;
 
-        client.createIndexWithOptions(DB, new JsonObject().put(ID, 1), index(), index -> {
+        client.createIndexWithOptions(collection, new JsonObject().put(ID, 1), index(), index -> {
             future.complete(this);
         });
     }
@@ -43,7 +45,7 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
 
     @Override
     public void get(Key key, Handler<AsyncResult<Value>> handler) {
-        client.findOne(DB, query(key), ALL_FIELDS, query -> {
+        client.findOne(collection, query(key), ALL_FIELDS, query -> {
             if (query.succeeded()) {
                 if (query.result() != null) {
                     handler.handle(result(context.toValue(query.result())));
@@ -62,7 +64,15 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
 
     @Override
     public void put(Key key, Value value, Handler<AsyncResult<Void>> handler) {
-        put(key, value, Long.MAX_VALUE, handler);
+        client.replaceDocumentsWithOptions(collection, getKey(key), document(key, value),
+                new UpdateOptions().setUpsert(true),
+                update -> {
+                    if (update.succeeded()) {
+                        handler.handle(result());
+                    } else {
+                        handler.handle(error(update.cause()));
+                    }
+                });
     }
 
     private JsonObject document(Key key, Value value) {
@@ -71,28 +81,20 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
 
     @Override
     public void put(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        client.replaceDocumentsWithOptions(DB, getKey(key), document(key, value),
-                new UpdateOptions().setUpsert(true),
-                update -> {
-                    if (update.succeeded()) {
-                        context.timer(ttl, expired -> remove(key, (removed) -> {}));
-                        handler.handle(FutureHelper.result());
-                    } else {
-                        handler.handle(error(update.cause()));
-                    }
-                });
+        put(key, value, result -> {
+            if (result.succeeded()) {
+                context.timer(ttl, expired -> remove(key, (removed) -> {}));
+                handler.handle(result(result.result()));
+            } else {
+                handler.handle(error(result.cause()));
+            }
+        });
     }
 
     @Override
     public void putIfAbsent(Key key, Value value, Handler<AsyncResult<Void>> handler) {
-        putIfAbsent(key, value, Long.MAX_VALUE, handler);
-    }
-
-    @Override
-    public void putIfAbsent(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        client.insert(DB, document(key, value), put -> {
+        client.insert(collection, document(key, value), put -> {
             if (put.succeeded()) {
-                context.timer(ttl, expired -> remove(key, (removed) -> {}));
                 handler.handle(FutureHelper.result());
             } else {
                 handler.handle(error(new ValueAlreadyPresentException(key)));
@@ -101,8 +103,20 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
+    public void putIfAbsent(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
+        put(key, value, result -> {
+            if (result.succeeded()) {
+                context.timer(ttl, expired -> remove(key, (removed) -> {}));
+                handler.handle(result());
+            } else {
+                handler.handle(error(result.cause()));
+            }
+        });
+    }
+
+    @Override
     public void remove(Key key, Handler<AsyncResult<Void>> handler) {
-        client.removeDocument(DB, getKey(key), remove -> {
+        client.removeDocument(collection, getKey(key), remove -> {
             if (remove.succeeded()) {
                 if (remove.result().getRemovedCount() > 0) {
                     handler.handle(FutureHelper.result());
@@ -121,7 +135,7 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
 
     @Override
     public void replace(Key key, Value value, Handler<AsyncResult<Void>> handler) {
-        client.replaceDocuments(DB, getKey(key), document(key, value), replace -> {
+        client.replaceDocuments(collection, getKey(key), document(key, value), replace -> {
             if (replace.succeeded()) {
                 if (replace.result().getDocModified() > 0) {
                     handler.handle(FutureHelper.result());
@@ -136,7 +150,7 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
 
     @Override
     public void clear(Handler<AsyncResult<Void>> handler) {
-        client.dropCollection(DB, drop -> {
+        client.dropCollection(collection, drop -> {
             if (drop.succeeded()) {
                 handler.handle(FutureHelper.result());
             } else {
@@ -147,7 +161,7 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
 
     @Override
     public void size(Handler<AsyncResult<Integer>> handler) {
-        client.count(DB, new JsonObject(), result -> {
+        client.count(collection, new JsonObject(), result -> {
             if (result.succeeded()) {
                 handler.handle(result(result.result().intValue()));
             } else {
@@ -157,17 +171,59 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void queryExact(JsonObject attributes, Handler<AsyncResult<List<Value>>> handler) {
+    public void queryExact(String attribute, Comparable compare, Handler<AsyncResult<Collection<Value>>> handler) {
+        client.find(collection, query(attribute, compare), query -> {
+            if (query.succeeded()) {
+                handler.handle(result(toList(query.result())));
+            } else {
+                handler.handle(error(query.cause()));
+            }
+        });
+    }
 
+    private Collection<Value> toList(List<JsonObject> results) {
+        return results.stream().map(json -> context.toValue(json)).collect(Collectors.toList());
+    }
+
+    private JsonObject query(String attribute, Comparable compare) {
+        return new JsonObject().put(attribute, compare);
     }
 
     @Override
-    public void querySimilar(JsonObject attributes, Handler<AsyncResult<List<Value>>> handler) {
+    public void querySimilar(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler) {
+        if (context.validate(comparable)) {
+            client.find(collection, queryLike(attribute, comparable), query -> {
+                if (query.succeeded()) {
+                    handler.handle(result(toList(query.result())));
+                } else {
+                    handler.handle(error(query.cause()));
+                }
+            });
+        } else {
+            handler.handle(result(new ArrayList<>()));
+        }
+    }
 
+    private JsonObject queryLike(String attribute, Comparable compare) {
+        return new JsonObject().put(attribute, "/^" + compare + "/");
     }
 
     @Override
-    public void queryRange(int from, int to, Handler<AsyncResult<List<Value>>> handler, String... attributes) {
+    public void queryRange(String attribute, int from, int to, Handler<AsyncResult<Collection<Value>>> handler) {
+        client.find(collection, rangeQuery(attribute, from, to), query -> {
+            if (query.succeeded()) {
+                handler.handle(result(toList(query.result())));
+            } else {
+                handler.handle(error(query.cause()));
+            }
+        });
+    }
 
+    private JsonObject rangeQuery(String attribute, int from, int to) {
+        return new JsonObject().put(attribute,
+                new JsonObject()
+                        .put("$gte", from)
+                        .put("$lte", to)
+        );
     }
 }

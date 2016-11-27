@@ -1,117 +1,86 @@
 package com.codingchili.services.realm.model;
 
 import io.vertx.core.Future;
-import io.vertx.core.Vertx;
-import io.vertx.core.shareddata.AsyncMap;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
 
 import com.codingchili.core.storage.AsyncStorage;
 
 import com.codingchili.services.realm.instance.model.PlayerCharacter;
 
-import static com.codingchili.services.Shared.Strings.MAP_CHARACTERS;
-import static com.codingchili.services.Shared.Strings.MAP_ID;
+import static com.codingchili.services.Shared.Strings.ID_ACCOUNT;
 
 /**
  * @author Robin Duda
- *
- * Storage for characters.
+ *         <p>
+ *         Storage for characters.
  */
 public class CharacterDB implements AsyncCharacterStore {
-    private final AsyncStorage<String, Map<String, PlayerCharacter>> characters;
+    private final AsyncStorage<String, PlayerCharacter> characters;
 
-    public CharacterDB(AsyncStorage<String, Map<String, PlayerCharacter>> map) {
+    public CharacterDB(AsyncStorage<String, PlayerCharacter> map) {
         this.characters = map;
     }
 
     @Override
     public void create(Future future, String username, PlayerCharacter character) {
-        Future<Map<String, PlayerCharacter>> get = Future.future();
-
-        get.setHandler(list -> {
-            if (list.succeeded()) {
-                Map<String, PlayerCharacter> map = list.result();
-
-                if (map.containsKey(character.getName())) {
-                    future.fail(new CharacterExistsException(character.getName()));
-                } else {
-                    map.put(character.getName(), character);
-                    save(future, username, map);
-                }
-            } else {
-                future.fail(list.cause());
-            }
-        });
-
-        find(get, username);
-    }
-
-    private void save(Future future, String username, Map<String, PlayerCharacter> map) {
-        characters.put(username, map, put -> {
-            if (put.succeeded()) {
+        characters.putIfAbsent(character.getName(), character, result -> {
+            if (result.succeeded()) {
                 future.complete();
             } else {
-                future.fail(put.cause());
+                future.fail(result.cause());
             }
         });
     }
 
     @Override
-    public void find(Future<Map<String, PlayerCharacter>> future, String username) {
-        characters.get(username, get -> {
-            if (get.succeeded()) {
-                if (get.result() == null) {
-                    future.complete(new HashMap<>());
-                } else {
-                    future.complete(get.result());
-                }
+    public void findByUsername(Future<Collection<PlayerCharacter>> future, String username) {
+        characters.queryExact(ID_ACCOUNT, username, result -> {
+            if (result.succeeded()) {
+                future.complete(result.result());
             } else {
-                future.fail(get.cause());
+                future.fail(result.cause());
             }
         });
     }
 
     @Override
     public void findOne(Future<PlayerCharacter> future, String username, String character) {
-        Future<Map<String, PlayerCharacter>> get = Future.future();
+        characters.get(character, result -> {
+            if (result.succeeded()) {
+                PlayerCharacter found = result.result();
 
-        get.setHandler(list -> {
-            if (list.succeeded()) {
-                Map<String, PlayerCharacter> map = list.result();
-
-                if (map.containsKey(character)) {
-                    future.complete(map.get(character));
+                if (found.getAccount().equals(username)) {
+                    future.complete(found);
                 } else {
                     future.fail(new CharacterMissingException(character));
                 }
             } else {
-                future.fail(list.cause());
+                future.fail(new CharacterMissingException(character));
             }
         });
-
-        find(get, username);
     }
 
     @Override
     public void remove(Future future, String username, String character) {
-        Future<Map<String, PlayerCharacter>> get = Future.future();
+        characters.get(character, result -> {
+            if (result.succeeded()) {
+                PlayerCharacter found = result.result();
 
-        get.setHandler(list -> {
-            if (list.succeeded()) {
-                Map<String, PlayerCharacter> map = list.result();
-
-                if (map.containsKey(character)) {
-                    map.remove(character);
-                    save(future, username, map);
+                if (username.equals(found.getAccount())) {
+                    characters.remove(character, removed -> {
+                        if (removed.succeeded()) {
+                            future.complete();
+                        } else {
+                            future.fail(new CharacterMissingException(character));
+                        }
+                    });
                 } else {
                     future.fail(new CharacterMissingException(character));
                 }
             } else {
-                future.fail(list.cause());
+                future.fail(result.cause());
             }
         });
-        find(get, username);
     }
 }

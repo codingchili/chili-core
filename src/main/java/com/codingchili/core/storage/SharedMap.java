@@ -1,24 +1,23 @@
 package com.codingchili.core.storage;
 
 import io.vertx.core.*;
-import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.LocalMap;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.codingchili.core.context.*;
 import com.codingchili.core.storage.exception.*;
 
-import static com.codingchili.core.context.FutureHelper.error;
-import static com.codingchili.core.context.FutureHelper.result;
+import static com.codingchili.core.context.FutureHelper.*;
 
 /**
  * @author Robin Duda
- *
- * Storage implementation that uses vertx local-shared map.
+ *         <p>
+ *         Storage implementation that uses vertx local-shared map.
  */
-public class SharedMap<Key, Value> implements AsyncStorage<Key, Value> {
-    private CoreContext context;
+public class SharedMap<Key, Value> extends BaseFilter<Value> implements AsyncStorage<Key, Value> {
+    private StorageContext<Value> context;
     private LocalMap<Key, Value> map;
 
     public SharedMap(Future<AsyncStorage<Key, Value>> future, StorageContext<Value> context) {
@@ -47,7 +46,8 @@ public class SharedMap<Key, Value> implements AsyncStorage<Key, Value> {
     @Override
     public void put(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
         put(key, value, handler);
-        context.timer(ttl, event -> remove(key, (removed) -> {}));
+        context.timer(ttl, event -> remove(key, (removed) -> {
+        }));
     }
 
     @Override
@@ -62,7 +62,8 @@ public class SharedMap<Key, Value> implements AsyncStorage<Key, Value> {
     @Override
     public void putIfAbsent(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
         putIfAbsent(key, value, handler);
-        context.timer(ttl, event -> remove(key, (removed) -> {}));
+        context.timer(ttl, event -> remove(key, (removed) -> {
+        }));
     }
 
     @Override
@@ -97,17 +98,23 @@ public class SharedMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void queryExact(JsonObject attributes, Handler<AsyncResult<List<Value>>> handler) {
-
+    public void queryExact(String attribute, Comparable compare, Handler<AsyncResult<Collection<Value>>> handler) {
+        handler.handle(result(map.values().stream()
+                .filter(item -> queryExact(item, attribute, compare))
+                .collect(Collectors.toList())));
     }
 
     @Override
-    public void querySimilar(JsonObject attributes, Handler<AsyncResult<List<Value>>> handler) {
-
+    public void querySimilar(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler) {
+        handler.handle(result(map.values().stream()
+                .filter(item -> querySimilar(item, attribute, comparable))
+                .collect(Collectors.toList())));
     }
 
     @Override
-    public void queryRange(int from, int to, Handler<AsyncResult<List<Value>>> handler, String... attributes) {
-
+    public void queryRange(String attribute, int from, int to, Handler<AsyncResult<Collection<Value>>> handler) {
+        handler.handle(result(map.values().stream()
+                .filter(item -> queryRange(item, attribute, from, to))
+                .collect(Collectors.toList())));
     }
 }

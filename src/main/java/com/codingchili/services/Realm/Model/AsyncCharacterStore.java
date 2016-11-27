@@ -1,8 +1,8 @@
 package com.codingchili.services.realm.model;
 
-import io.vertx.core.Future;
+import io.vertx.core.*;
 
-import java.util.Map;
+import java.util.*;
 
 import com.codingchili.services.realm.instance.model.PlayerCharacter;
 
@@ -23,13 +23,13 @@ public interface AsyncCharacterStore {
      *
      * @param username the name of the account the characters belong to.
      */
-    void find(Future<Map<String, PlayerCharacter>> future, String username);
+    void findByUsername(Future<Collection<PlayerCharacter>> handler, String username);
 
     /**
      * Finds a single character.
      *
      * @param username the name of the account the character belongs to.
-     * @param character     the name of the character to find.
+     * @param character     the name of the character to findByUsername.
      */
     void findOne(Future<PlayerCharacter> future, String username, String character);
 

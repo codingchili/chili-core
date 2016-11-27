@@ -29,13 +29,20 @@ import static com.codingchili.services.Shared.Strings.ID_BUFFER;
 public class WebsiteTest {
     private static final String ONE_MISSING_FILE = "/one-missing-file";
     private WebHandler handler;
+    private ContextMock context;
 
     @Rule
     public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
 
     @Before
     public void setUp() {
-        handler = new WebHandler<>(new ContextMock(Vertx.vertx()));
+        context = new ContextMock(Vertx.vertx());
+        handler = new WebHandler<>(context);
+    }
+
+    @After
+    public void tearDown(TestContext test) {
+        context.vertx().close(test.asyncAssertSuccess());
     }
 
     @Test

@@ -1,29 +1,28 @@
 package com.codingchili.core.storage;
 
 import io.vertx.core.*;
-import io.vertx.core.json.JsonObject;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.storage.exception.*;
 
-import static com.codingchili.core.context.FutureHelper.error;
-import static com.codingchili.core.context.FutureHelper.result;
+import static com.codingchili.core.context.FutureHelper.*;
 
 
 /**
  * @author Robin Duda
- *
- * Mocks an async map used by Hazelcast to enable testing of storage logic.
+ *         <p>
+ *         Mocks an async map used by Hazelcast to enable testing of storage logic.
  */
-public class PrivateMap<Key, Value> implements AsyncStorage<Key, Value> {
+public class PrivateMap<Key, Value> extends BaseFilter<Value> implements AsyncStorage<Key, Value> {
     private ConcurrentHashMap<Key, Value> map = new ConcurrentHashMap<>();
-    private StorageContext context;
+    private StorageContext<Value> context;
 
-    public PrivateMap(StorageContext context) {
+    public PrivateMap(StorageContext<Value> context) {
         this.context = context;
     }
 
@@ -53,12 +52,13 @@ public class PrivateMap<Key, Value> implements AsyncStorage<Key, Value> {
     public void put(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
         put(key, value, handler);
 
-        context.timer(ttl, event -> remove(key, (removed) -> {}));
+        context.timer(ttl, event -> remove(key, (removed) -> {
+        }));
     }
 
     @Override
     public void putIfAbsent(Key key, Value value, Handler<AsyncResult<Void>> handler) {
-        if (map.containsKey(key)){
+        if (map.containsKey(key)) {
             handler.handle(error(new ValueAlreadyPresentException(key)));
         } else {
             map.put(key, value);
@@ -70,7 +70,8 @@ public class PrivateMap<Key, Value> implements AsyncStorage<Key, Value> {
     public void putIfAbsent(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
         putIfAbsent(key, value, handler);
 
-        context.timer(ttl, event -> remove(key, (removed) -> {}));
+        context.timer(ttl, event -> remove(key, (removed) -> {
+        }));
     }
 
     @Override
@@ -107,17 +108,23 @@ public class PrivateMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void queryExact(JsonObject attributes, Handler<AsyncResult<List<Value>>> handler) {
-
+    public void queryExact(String attribute, Comparable compare, Handler<AsyncResult<Collection<Value>>> handler) {
+        handler.handle(result(map.values().stream()
+                .filter(item -> queryExact(item, attribute, compare))
+                .collect(Collectors.toList())));
     }
 
     @Override
-    public void querySimilar(JsonObject attributes, Handler<AsyncResult<List<Value>>> handler) {
-
+    public void querySimilar(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler) {
+        handler.handle(result(map.values().stream()
+                .filter(item -> querySimilar(item, attribute, comparable))
+                .collect(Collectors.toList())));
     }
 
     @Override
-    public void queryRange(int from, int to, Handler<AsyncResult<List<Value>>> handler, String... attributes) {
-
+    public void queryRange(String attribute, int from, int to, Handler<AsyncResult<Collection<Value>>> handler) {
+        handler.handle(result(map.values().stream()
+                .filter(item -> queryRange(item, attribute, from, to))
+                .collect(Collectors.toList())));
     }
 }

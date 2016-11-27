@@ -40,7 +40,7 @@ public class RealmContext extends ServiceContext {
     }
 
     public static void create(Future<RealmContext> future, RealmSettings realm, Vertx vertx) {
-        Future<AsyncStorage<String, Map<String, PlayerCharacter>>> create = Future.future();
+        Future<AsyncStorage<String, PlayerCharacter>> create = Future.future();
 
         create.setHandler(map -> {
             future.complete(new RealmContext(new CharacterDB(map.result()), realm, vertx));

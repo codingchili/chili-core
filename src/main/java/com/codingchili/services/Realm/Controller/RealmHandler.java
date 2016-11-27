@@ -2,7 +2,7 @@ package com.codingchili.services.realm.controller;
 
 import io.vertx.core.Future;
 
-import java.util.Map;
+import java.util.*;
 
 import com.codingchili.core.context.CoreException;
 import com.codingchili.core.protocol.*;
@@ -88,11 +88,11 @@ public class RealmHandler<T extends RealmContext> extends AbstractHandler<T> {
     }
 
     private void characterList(RealmRequest request) {
-        Future<Map<String, PlayerCharacter>> characterFuture = Future.future();
+        Future<Collection<PlayerCharacter>> characterFuture = Future.future();
 
         characterFuture.setHandler(characters -> {
             if (characters.succeeded()) {
-                Map<String, PlayerCharacter> result = characters.result();
+                Collection<PlayerCharacter> result = characters.result();
 
                 if (result != null) {
                     request.write(new CharacterList(context.realm(), result));
@@ -103,7 +103,7 @@ public class RealmHandler<T extends RealmContext> extends AbstractHandler<T> {
                 request.error(characters.cause());
             }
         });
-        characters.find(characterFuture, request.account());
+        characters.findByUsername(characterFuture, request.account());
     }
 
     private void characterCreate(RealmRequest request) {

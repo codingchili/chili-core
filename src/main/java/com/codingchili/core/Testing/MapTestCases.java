@@ -2,7 +2,6 @@ package com.codingchili.core.testing;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
@@ -11,6 +10,7 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 
 import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.files.Configurations;
 import com.codingchili.core.storage.*;
 import com.codingchili.core.storage.exception.*;
 
@@ -23,12 +23,17 @@ import com.codingchili.core.storage.exception.*;
 @Ignore
 @RunWith(VertxUnitRunner.class)
 public class MapTestCases {
-    protected StorageContext<JsonObject> context;
-    protected AsyncStorage<String, JsonObject> store;
-    protected static final JsonObject VALUE = new JsonObject().put("value", "value");
-    protected static final JsonObject VALUE_OTHER = new JsonObject().put("value", "other");
-    protected static final String KEY = "key";
-    protected static final String KEY_NX = "key_nx";
+    protected StorageContext<StorageObject> context;
+    protected AsyncStorage<String, StorageObject> store;
+    private static final String LEVEL = "level";
+    private static final String ID = "id";
+    private static final String ONE = "one";
+    private static final String TWO = "two";
+    private static final String THREE = "three";
+    private static final String KEY_MISSING = "KEY_MISSING";
+    private static final StorageObject OBJECT_ONE = new StorageObject("one", 1);
+    private static final StorageObject OBJECT_TWO = new StorageObject("two", 2);
+    private static final StorageObject OBJECT_THREE = new StorageObject("three", 3);
     private static final String DB_NAME = "spinach";
     private static final String COLLECTION = "leaves";
 
@@ -37,30 +42,40 @@ public class MapTestCases {
 
     @Before
     public void setUp(TestContext test) {
-        setUp(test, ElasticMap.class);
+        setUp(test, PrivateMap.class);
+    }
+
+    protected void setUp(TestContext test, Class plugin) {
+        setUp(test.async(), plugin, Vertx.vertx());
     }
 
     public void setUp(Async async, Class plugin, Vertx vertx) {
-        Future<AsyncStorage<String, JsonObject>> future = Future.future();
+        Future<AsyncStorage<String, StorageObject>> future = Future.future();
 
         context = new StorageContext<>(vertx);
 
         future.setHandler(map -> {
             store = map.result();
-            map.result().clear(clear -> async.complete());
+            prepareStore(async);
         });
 
         StorageLoader.prepare()
                 .withDB(DB_NAME)
                 .withCollection(COLLECTION)
-                .withClass(JsonObject.class)
+                .withClass(StorageObject.class)
                 .withContext(context)
                 .withPlugin(plugin)
                 .build(future);
     }
 
-    protected void setUp(TestContext test, Class plugin) {
-        setUp(test.async(), plugin, Vertx.vertx());
+    private void prepareStore(Async async) {
+        store.clear(result -> {
+            store.put(TWO, OBJECT_TWO, object -> {
+                store.put(THREE, OBJECT_THREE, other -> {
+                    async.complete();
+                });
+            });
+        });
     }
 
     @After
@@ -72,14 +87,10 @@ public class MapTestCases {
     public void testGet(TestContext test) {
         Async async = test.async();
 
-        store.put(KEY, VALUE, put -> {
-            test.assertTrue(put.succeeded());
-
-            store.get(KEY, get -> {
-                test.assertTrue(get.succeeded());
-                test.assertEquals(VALUE, get.result());
-                async.complete();
-            });
+        store.get(TWO, get -> {
+            test.assertTrue(get.succeeded());
+            test.assertEquals(OBJECT_TWO, get.result());
+            async.complete();
         });
     }
 
@@ -87,7 +98,7 @@ public class MapTestCases {
     public void testGetMissing(TestContext test) {
         Async async = test.async();
 
-        store.get(KEY_NX, get -> {
+        store.get(KEY_MISSING, get -> {
             test.assertTrue(get.failed());
             test.assertNull(get.result());
             test.assertEquals(ValueMissingException.class, get.cause().getClass());
@@ -99,11 +110,11 @@ public class MapTestCases {
     public void testPut(TestContext test) {
         Async async = test.async();
 
-        store.put(KEY, VALUE, put -> {
+        store.put(ONE, OBJECT_ONE, put -> {
             test.assertTrue(put.succeeded());
 
-            store.get(KEY, get -> {
-                test.assertEquals(VALUE, get.result());
+            store.get(ONE, get -> {
+                test.assertEquals(OBJECT_ONE, get.result());
                 test.assertTrue(get.succeeded());
                 async.complete();
             });
@@ -114,14 +125,14 @@ public class MapTestCases {
     public void testPutWithTTL(TestContext test) {
         Async async = test.async();
 
-        store.put(KEY, VALUE, 50, put -> {
+        store.put(ONE, OBJECT_ONE, 50, put -> {
             test.assertTrue(put.succeeded());
             waitForExpiry(test, async);
         });
     }
 
     private void waitForExpiry(TestContext test, Async async) {
-        context.timer(800, event -> store.get(KEY, get -> {
+        context.timer(800, event -> store.get(ONE, get -> {
             test.assertTrue(get.failed());
             async.complete();
         }));
@@ -131,10 +142,10 @@ public class MapTestCases {
     public void testPutIfAbsent(TestContext test) {
         Async async = test.async();
 
-        store.putIfAbsent(KEY, VALUE, put -> {
+        store.putIfAbsent(ONE, OBJECT_ONE, put -> {
             test.assertTrue(put.succeeded());
 
-            store.get(KEY, get -> {
+            store.get(ONE, get -> {
                 test.assertTrue(get.succeeded());
                 async.complete();
             });
@@ -145,7 +156,7 @@ public class MapTestCases {
     public void testPutIfAbsentTTL(TestContext test) {
         Async async = test.async();
 
-        store.putIfAbsent(KEY, VALUE, 50, put -> {
+        store.putIfAbsent(ONE, OBJECT_ONE, 50, put -> {
             test.assertTrue(put.succeeded());
             waitForExpiry(test, async);
         });
@@ -155,14 +166,10 @@ public class MapTestCases {
     public void testPutIfAbsentNotAbsent(TestContext test) {
         Async async = test.async();
 
-        store.putIfAbsent(KEY, VALUE, outer -> {
-            test.assertTrue(outer.succeeded());
-
-            store.putIfAbsent(KEY, VALUE_OTHER, inner -> {
-                test.assertTrue(inner.failed());
-                test.assertEquals(ValueAlreadyPresentException.class, inner.cause().getClass());
-                async.complete();
-            });
+        store.putIfAbsent(TWO, OBJECT_TWO, inner -> {
+            test.assertTrue(inner.failed());
+            test.assertEquals(ValueAlreadyPresentException.class, inner.cause().getClass());
+            async.complete();
         });
     }
 
@@ -170,16 +177,12 @@ public class MapTestCases {
     public void testRemove(TestContext test) {
         Async async = test.async();
 
-        store.put(KEY, VALUE, outer -> {
-            test.assertTrue(outer.succeeded());
+        store.remove(TWO, inner -> {
+            test.assertTrue(inner.succeeded());
 
-            store.remove(KEY, inner -> {
-                test.assertTrue(inner.succeeded());
-
-                store.get(KEY, result -> {
-                    test.assertTrue(result.failed());
-                    async.complete();
-                });
+            store.get(TWO, result -> {
+                test.assertTrue(result.failed());
+                async.complete();
             });
         });
     }
@@ -188,7 +191,7 @@ public class MapTestCases {
     public void testRemoveNotPresent(TestContext test) {
         Async async = test.async();
 
-        store.remove(KEY, remove -> {
+        store.remove(KEY_MISSING, remove -> {
             test.assertTrue(remove.failed());
             test.assertEquals(NothingToRemoveException.class, remove.cause().getClass());
             async.complete();
@@ -199,17 +202,13 @@ public class MapTestCases {
     public void testReplace(TestContext test) {
         Async async = test.async();
 
-        store.put(KEY, VALUE, result -> {
-            test.assertTrue(result.succeeded());
+        store.replace(TWO, OBJECT_ONE, replace -> {
+            test.assertTrue(replace.succeeded());
 
-            store.replace(KEY, VALUE_OTHER, replace -> {
-                test.assertTrue(replace.succeeded());
-
-                store.get(KEY, get -> {
-                    test.assertEquals(VALUE_OTHER, get.result());
-                    test.assertTrue(get.succeeded());
-                    async.complete();
-                });
+            store.get(TWO, get -> {
+                test.assertEquals(OBJECT_ONE, get.result());
+                test.assertTrue(get.succeeded());
+                async.complete();
             });
         });
     }
@@ -218,7 +217,7 @@ public class MapTestCases {
     public void testReplaceIfNotPresent(TestContext test) {
         Async async = test.async();
 
-        store.replace(KEY, VALUE, replace -> {
+        store.replace(KEY_MISSING, OBJECT_ONE, replace -> {
             test.assertTrue(replace.failed());
             test.assertEquals(NothingToReplaceException.class, replace.cause().getClass());
             async.complete();
@@ -229,17 +228,13 @@ public class MapTestCases {
     public void testClear(TestContext test) {
         Async async = test.async();
 
-        store.put(KEY, VALUE, put -> {
-            test.assertTrue(put.succeeded());
+        store.clear(clear -> {
+            test.assertTrue(clear.succeeded());
 
-            store.clear(clear -> {
-                test.assertTrue(clear.succeeded());
-
-                store.size(size -> {
-                    test.assertEquals(0, size.result());
-                    test.assertTrue(size.succeeded());
-                    async.complete();
-                });
+            store.size(size -> {
+                test.assertEquals(0, size.result());
+                test.assertTrue(size.succeeded());
+                async.complete();
             });
         });
     }
@@ -248,29 +243,101 @@ public class MapTestCases {
     public void testSize(TestContext test) {
         Async async = test.async();
 
-        store.put(KEY, VALUE, put -> {
-            test.assertTrue(put.succeeded());
+        store.size(size -> {
+            test.assertEquals(2, size.result());
+            test.assertTrue(size.succeeded());
+            async.complete();
+        });
+    }
 
-            store.size(size -> {
-                test.assertEquals(1, size.result());
-                test.assertTrue(size.succeeded());
+    @Test
+    public void testQueryExact(TestContext test) {
+        Async async = test.async();
+
+        store.queryExact(ID, TWO, query -> {
+            test.assertTrue(query.succeeded());
+            test.assertEquals(1, query.result().size());
+            async.complete();
+        });
+    }
+
+    @Test
+    public void testQueryMatchNone(TestContext test) {
+        Async async = test.async();
+
+        store.queryExact(ID, ONE, query -> {
+            test.assertTrue(query.succeeded());
+            test.assertEquals(0, query.result().size());
+            async.complete();
+        });
+    }
+
+    @Test
+    public void testQuerySimilar(TestContext test) {
+        Async async = test.async();
+
+        store.querySimilar(ID, "thr", query -> {
+            test.assertTrue(query.succeeded());
+            test.assertEquals(1, query.result().size());
+
+
+            store.querySimilar(ID, "rht", inner -> {
+                test.assertTrue(inner.succeeded());
+                test.assertEquals(0, inner.result().size());
                 async.complete();
             });
         });
     }
 
     @Test
-    public void testQueryExact() {
+    public void testQuerySimilarTooShortExpression(TestContext test) {
+        Async async = test.async();
 
+        // don't test if set to 2 or less, default is 3.
+        if (Configurations.storage().getMinFeedbackChars() > 2) {
+            store.querySimilar(ID, "th", query -> {
+                test.assertTrue(query.succeeded());
+                test.assertEquals(0, query.result().size());
+                async.complete();
+            });
+        }
     }
 
     @Test
-    public void testQuerySimilar() {
+    public void testQuerySimilarInvalidExpression(TestContext test) {
+        Async async = test.async();
 
+        store.querySimilar(ID, "val.*", query -> {
+            test.assertTrue(query.succeeded());
+            test.assertEquals(0, query.result().size());
+            async.complete();
+        });
     }
 
     @Test
-    public void testQueryRange() {
+    public void testQueryRange(TestContext test) {
+        Async async = test.async();
 
+        store.queryRange(LEVEL, 2, 3, query -> {
+            test.assertTrue(query.succeeded());
+            test.assertEquals(2, query.result().size());
+
+            query.result().stream().forEach(item -> {
+                test.assertTrue(item.getLevel() == 2 || item.getLevel() == 3);
+            });
+
+            async.complete();
+        });
+    }
+
+    @Test
+    public void testQueryRangeNoMatches(TestContext test) {
+        Async async = test.async();
+
+        store.queryRange(LEVEL, 100, 200, query -> {
+            test.assertTrue(query.succeeded());
+            test.assertEquals(0, query.result().size());
+            async.complete();
+        });
     }
 }

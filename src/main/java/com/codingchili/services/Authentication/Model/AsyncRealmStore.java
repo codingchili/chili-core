@@ -29,7 +29,7 @@ public interface AsyncRealmStore {
 
     /**
      * Get all information available about a realm.
-     * @param realmName name of the realm to find.
+     * @param realmName name of the realm to findByUsername.
      */
     void get(Future<RealmSettings> future, String realmName);
 

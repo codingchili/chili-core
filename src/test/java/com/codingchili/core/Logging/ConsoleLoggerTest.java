@@ -3,8 +3,8 @@ package com.codingchili.core.logging;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.Before;
-import org.junit.Test;
+import io.vertx.ext.unit.TestContext;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 import com.codingchili.core.context.SystemContext;
@@ -18,11 +18,17 @@ import com.codingchili.core.testing.ContextMock;
 @RunWith(VertxUnitRunner.class)
 public class ConsoleLoggerTest {
     private ConsoleLogger logger;
+    private SystemContext context;
 
     @Before
     public void setUp() {
-        SystemContext context = new ContextMock(Vertx.vertx());
+        context = new ContextMock(Vertx.vertx());
         logger = new ConsoleLogger(context);
+    }
+
+    @After
+    public void tearDown(TestContext test) {
+        context.vertx().close(test.asyncAssertSuccess());
     }
 
     @Test

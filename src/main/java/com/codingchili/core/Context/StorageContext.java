@@ -3,7 +3,11 @@ package com.codingchili.core.context;
 import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 
+import com.codingchili.core.configuration.system.RemoteStorage;
+import com.codingchili.core.configuration.system.StorageSettings;
+import com.codingchili.core.files.Configurations;
 import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.security.Validator;
 
 import static com.codingchili.core.configuration.Strings.*;
 
@@ -13,9 +17,11 @@ import static com.codingchili.core.configuration.Strings.*;
  *         context used by storage plugins.
  */
 public class StorageContext<Value> extends SystemContext {
+    private Validator validator = new Validator();
     private String DB;
     private String collection;
     private Class clazz;
+    private String plugin;
 
     public StorageContext(CoreContext context) {
         super(context);
@@ -26,34 +32,17 @@ public class StorageContext<Value> extends SystemContext {
     }
 
     /**
-     * sets the class that is used for deserialization. This should be the same
-     * or a supertype of the object type in the storage.
-     *
-     * @param clazz the class template to inflate
+     * @return get the storage settings.
      */
-    public StorageContext<Value> setClass(Class clazz) {
-        this.clazz = clazz;
-        return this;
+    protected StorageSettings settings() {
+        return Configurations.storage();
     }
 
     /**
-     * sets the collection context of the storage engine.
-     *
-     * @param collection name of the collection
+     * @return get the storage settings for the current plugin.
      */
-    public StorageContext<Value> setCollection(String collection) {
-        this.collection = collection;
-        return this;
-    }
-
-    /**
-     * sets the database name to be used
-     *
-     * @param DB name as string
-     */
-    public StorageContext<Value> setDB(String DB) {
-        this.DB = DB;
-        return this;
+    public RemoteStorage storage() {
+        return settings().getStorage().get(plugin);
     }
 
     /**
@@ -124,6 +113,35 @@ public class StorageContext<Value> extends SystemContext {
     }
 
     /**
+     * @return the port of a remote database if configured.
+     */
+    public Integer port() {
+        return settings().getStorage().get(plugin).getPort();
+    }
+
+    /**
+     * @return the hostname of a remote database if configured.
+     */
+    public String host() {
+        return settings().getStorage().get(plugin).getHost();
+    }
+
+    public boolean validate(Comparable comparable) {
+        return validator.plainText(comparable) && comparable.toString().length() >= minFeedbackChars();
+    }
+
+    public Integer minFeedbackChars() {
+        return settings().getMinFeedbackChars();
+    }
+
+    /**
+     * @return the number of results all queries are limited to.
+     */
+    public Integer maxResults() {
+        return settings().getMaxResults();
+    }
+
+    /**
      * Called when a value has been expired by ttl.
      * @param key the id of the object that was expired.
      * @param ttl the time at which the object was set to expire.
@@ -154,5 +172,47 @@ public class StorageContext<Value> extends SystemContext {
 
     private void log(JsonObject json) {
         console().log(json.put(STORAGE_DATABASE, DB).put(STORAGE_COLLECTION, collection));
+    }
+
+    /**
+     * sets the class that is used for deserialization. This should be the same
+     * or a supertype of the object type in the storage.
+     *
+     * @param clazz the class template to inflate
+     */
+    public StorageContext<Value> setClass(Class clazz) {
+        this.clazz = clazz;
+        return this;
+    }
+
+    /**
+     * sets the collection context of the storage engine.
+     *
+     * @param collection name of the collection
+     */
+    public StorageContext<Value> setCollection(String collection) {
+        this.collection = collection;
+        return this;
+    }
+
+    /**
+     * sets the database name to be used
+     *
+     * @param DB name as string
+     */
+    public StorageContext<Value> setDB(String DB) {
+        this.DB = DB;
+        return this;
+    }
+
+    /**
+     * sets the storage plugin name the context is bound to so that configuration for
+     * it may be retrieved.
+     *
+     * @param plugin fully qualified class name as String.
+     */
+    public StorageContext<Value> setPlugin(String plugin) {
+        this.plugin = plugin;
+        return this;
     }
 }

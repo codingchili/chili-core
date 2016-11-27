@@ -9,7 +9,6 @@ import org.junit.runner.RunWith;
 
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.SystemContext;
-import com.codingchili.core.storage.internal.*;
 
 /**
  * @author Robin Duda
@@ -59,6 +58,7 @@ public class StorageLoaderIT {
         loadStoragePlugin(test.async(), ElasticMap.class);
     }
 
+    @Ignore("Requires an available MongoDB database.")
     @Test
     public void testLoadMongoMap(TestContext test) {
         loadStoragePlugin(test.async(), MongoDBMap.class);

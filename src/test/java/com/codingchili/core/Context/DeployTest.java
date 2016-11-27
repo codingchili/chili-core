@@ -27,10 +27,7 @@ public class DeployTest {
 
     @After
     public void tearDown(TestContext test) {
-        /**
-         * Re-enable once vertx-core #1625 is available.
-         * vertx.close(test.asyncAssertSuccess());
-         */
+        vertx.close(test.asyncAssertSuccess());
     }
 
     @Test

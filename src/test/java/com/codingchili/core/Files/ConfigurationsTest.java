@@ -42,6 +42,7 @@ public class ConfigurationsTest {
     public void tearDown(TestContext test) {
         context.vertx().close(test.asyncAssertSuccess());
         Configurations.reset();
+        Configurations.shutdown();
     }
 
     @Test
@@ -62,6 +63,11 @@ public class ConfigurationsTest {
     @Test
     public void loadSecurityConfiguration() {
         Assert.assertNotNull(Configurations.security());
+    }
+
+    @Test
+    public void loadStorageConfiguration() {
+        Assert.assertNotNull(Configurations.storage());
     }
 
     @Test

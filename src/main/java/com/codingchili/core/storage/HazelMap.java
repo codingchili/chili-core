@@ -1,17 +1,20 @@
 package com.codingchili.core.storage;
 
+import com.hazelcast.core.*;
+import com.hazelcast.query.PagingPredicate;
+import com.hazelcast.query.Predicates;
 import io.vertx.core.*;
-import io.vertx.core.json.JsonObject;
 import io.vertx.core.shareddata.AsyncMap;
 
-import java.util.List;
+import java.util.*;
 
+import com.codingchili.core.configuration.Strings;
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.storage.exception.*;
 
-import static com.codingchili.core.context.FutureHelper.error;
-import static com.codingchili.core.context.FutureHelper.result;
+import static com.codingchili.core.context.FutureHelper.*;
+import static com.codingchili.core.files.Configurations.system;
 
 /**
  * @author Robin Duda
@@ -19,7 +22,11 @@ import static com.codingchili.core.context.FutureHelper.result;
  *         Initializes a new hazel async map.
  */
 public class HazelMap<Key, Value> implements AsyncStorage<Key, Value> {
+    private static final String HAZELMAP_WORKERS = "HAZELMAP.workers";
+    private WorkerExecutor executor;
+    private StorageContext<Value> context;
     private AsyncMap<Key, Value> map;
+    private IMap<Key, Value> imap;
 
     /**
      * Initializes a new hazel async map.
@@ -27,11 +34,23 @@ public class HazelMap<Key, Value> implements AsyncStorage<Key, Value> {
      * @param context the context requesting the map to be created.
      * @param future  called when the map is created.
      */
-    public HazelMap(Future<AsyncStorage> future, StorageContext context) {
+    public HazelMap(Future<AsyncStorage> future, StorageContext<Value> context) {
+        this.executor = context.vertx().createSharedWorkerExecutor(HAZELMAP_WORKERS, system().getWorkerPoolSize());
+        this.context = context;
+
         context.vertx().sharedData().<Key, Value>getClusterWideMap(context.DB(), cluster -> {
             if (cluster.succeeded()) {
                 this.map = cluster.result();
-                future.complete(this);
+
+                Optional<HazelcastInstance> hazel = Hazelcast.getAllHazelcastInstances().stream().findFirst();
+
+                if (hazel.isPresent()) {
+                    HazelcastInstance instance = hazel.get();
+                    imap = instance.getMap(context.DB());
+                    future.complete(this);
+                } else {
+                    future.fail(Strings.ERROR_CLUSTERING_REQUIRED);
+                }
             } else {
                 future.fail(cluster.cause());
             }
@@ -66,12 +85,7 @@ public class HazelMap<Key, Value> implements AsyncStorage<Key, Value> {
 
     @Override
     public void putIfAbsent(Key key, Value value, Handler<AsyncResult<Void>> handler) {
-        putIfAbsent(key, value, Long.MAX_VALUE, handler);
-    }
-
-    @Override
-    public void putIfAbsent(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        map.putIfAbsent(key, value, ttl, put -> {
+        map.putIfAbsent(key, value, put -> {
             if (put.succeeded()) {
                 if (put.result() == null) {
                     handler.handle(FutureHelper.result());
@@ -80,6 +94,17 @@ public class HazelMap<Key, Value> implements AsyncStorage<Key, Value> {
                 }
             } else {
                 handler.handle(error(put.cause()));
+            }
+        });
+    }
+
+    @Override
+    public void putIfAbsent(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
+        map.putIfAbsent(key, value, ttl, result -> {
+            if (result.succeeded()) {
+                handler.handle(result());
+            } else {
+                handler.handle(error(result.cause()));
             }
         });
     }
@@ -137,17 +162,45 @@ public class HazelMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void queryExact(JsonObject attributes, Handler<AsyncResult<List<Value>>> handler) {
-
+    public void queryExact(String attribute, Comparable compare, Handler<AsyncResult<Collection<Value>>> handler) {
+        executor.<Collection<Value>>executeBlocking(blocking -> {
+            blocking.complete(imap.values(Predicates.equal(attribute, compare)));
+        }, false, result -> {
+            if (result.succeeded()) {
+                handler.handle(result(result.result()));
+            } else {
+                handler.handle(error(result.cause()));
+            }
+        });
     }
 
     @Override
-    public void querySimilar(JsonObject attributes, Handler<AsyncResult<List<Value>>> handler) {
-
+    public void querySimilar(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler) {
+        if (context.validate(comparable)) {
+            executor.<Collection<Value>>executeBlocking(blocking -> {
+                blocking.complete(imap.values(new PagingPredicate(Predicates.ilike(attribute, comparable + "%"), 24)));
+            }, false, result -> {
+                if (result.succeeded()) {
+                    handler.handle(result(result.result()));
+                } else {
+                    handler.handle(error(result.cause()));
+                }
+            });
+        } else {
+            handler.handle(result(new ArrayList<>()));
+        }
     }
 
     @Override
-    public void queryRange(int from, int to, Handler<AsyncResult<List<Value>>> handler, String... attributes) {
-
+    public void queryRange(String attribute, int from, int to, Handler<AsyncResult<Collection<Value>>> handler) {
+        executor.<Collection<Value>>executeBlocking(blocking -> {
+            blocking.complete(imap.values(Predicates.between(attribute, from, to)));
+        }, false, result -> {
+            if (result.succeeded()) {
+                handler.handle(result(result.result()));
+            } else {
+                handler.handle(error(result.cause()));
+            }
+        });
     }
 }

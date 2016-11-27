@@ -24,7 +24,7 @@ public class ContextMock extends AuthContext {
         settings.setClientSecret("client-secret".getBytes());
 
         realms = new RealmDB(new PrivateMap<>(new StorageContext(this)));
-        accounts = new AsyncAccountDB(new PrivateMap<>(new StorageContext(this)), Vertx.vertx());
+        accounts = new AccountDB(new PrivateMap<>(new StorageContext(this)), vertx);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.codingchili.core.security;
 
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import io.vertx.ext.unit.TestContext;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
@@ -45,6 +46,26 @@ public class ValidatorTest {
             throw new RuntimeException("Validation error to detect malicious input.");
         } catch (RequestValidationException ignored) {
         }
+    }
+
+    @Test
+    public void testPlainText(TestContext test) {
+        test.assertTrue(plaintext("abc102"));
+        test.assertTrue(plaintext("abc 102"));
+        test.assertTrue(plaintext("abc-102"));
+        test.assertTrue(plaintext(1000));
+        test.assertTrue(plaintext(1000L));
+        test.assertTrue(plaintext(new Byte("0")));
+
+        String[] invalid = {"?", "_", "%", "^", ".", "*"};
+
+        for (String character : invalid) {
+            test.assertFalse(plaintext(character));
+        }
+    }
+
+    private boolean plaintext(Comparable comparable) {
+        return validator.plainText(comparable);
     }
 
     @Test

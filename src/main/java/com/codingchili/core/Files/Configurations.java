@@ -50,6 +50,7 @@ public abstract class Configurations {
         configs.put(PATH_SECURITY, new ConfigEntry(new SecuritySettings(), SecuritySettings.class));
         configs.put(PATH_SYSTEM, new ConfigEntry(new SystemSettings(), SystemSettings.class));
         configs.put(PATH_VALIDATOR, new ConfigEntry(new ValidatorSettings(), ValidatorSettings.class));
+        configs.put(PATH_STORAGE, new ConfigEntry(new StorageSettings(), StorageSettings.class));
     }
 
     /**
@@ -265,20 +266,40 @@ public abstract class Configurations {
         logger.onCacheCleared(ID_CONFIGURATION);
     }
 
+    /**
+     * @return system settings stored in the cache.
+     */
     public static SystemSettings system() {
         return get(PATH_SYSTEM, SystemSettings.class);
     }
 
+    /**
+     *
+     * @return security settings from the cache.
+     */
     public static SecuritySettings security() {
         return get(PATH_SECURITY, SecuritySettings.class);
     }
 
+    /**
+     * @return validator settings stored in the cache.
+     */
     public static ValidatorSettings validator() {
         return get(PATH_VALIDATOR, ValidatorSettings.class);
     }
 
+    /**
+     * @return launcher settings stored in the cache.
+     */
     public static LauncherSettings launcher() {
         return get(PATH_LAUNCHER, LauncherSettings.class);
+    }
+
+    /**
+     * @return storage settings stored in the cache.
+     */
+    public static StorageSettings storage() {
+        return get(PATH_STORAGE, StorageSettings.class);
     }
 
     private static class ConfigEntry {

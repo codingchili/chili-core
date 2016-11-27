@@ -3,6 +3,7 @@ package com.codingchili.core.security;
 import io.vertx.core.json.JsonObject;
 
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.codingchili.core.configuration.RegexComponent;
 import com.codingchili.core.configuration.system.ParserSettings;
@@ -12,8 +13,8 @@ import com.codingchili.core.files.Configurations;
 
 /**
  * @author Robin Duda
- *
- * Validates the contents of a json object according to the validation configuration.
+ *         <p>
+ *         Validates the contents of a json object according to the validation configuration.
  */
 public class Validator {
     private static final int MIN = 0;
@@ -23,6 +24,16 @@ public class Validator {
         return Configurations.validator();
     }
 
+    /**
+     * Validates a json object using the regular expression that is configured for its
+     * field names. Validation fails if evaluation is set to REJECT and the field value
+     * is matching, if evaluation mode is set to REPLACE then the matching substring will be
+     * replaced.
+     *
+     * @param json the json object to check field values on.
+     * @return the json object with values that have failed validation replaced.
+     * @throws RequestValidationException when the evaluation is configured to reject a value.
+     */
     public JsonObject validate(JsonObject json) throws RequestValidationException {
 
         for (String field : json.fieldNames()) {
@@ -55,10 +66,22 @@ public class Validator {
                     if (!text.matches(regex.line))
                         throw new RequestValidationException();
                     break;
-                case REPLACE: text = text.replaceAll(regex.line, Matcher.quoteReplacement(regex.replacement));
+                case REPLACE:
+                    text = text.replaceAll(regex.line, Matcher.quoteReplacement(regex.replacement));
                     break;
             }
         }
         return text.trim();
+    }
+
+    /**
+     * tests if a comparable objects string format contains characters that are not
+     * in the accepted plaintext range of A-Z, a-z, whitespace and dash.
+     *
+     * @param value the value to test.
+     * @return true if the value is plaintext.
+     */
+    public boolean plainText(Comparable value) {
+        return value.toString().matches("[A-Za-z0-9 -].*");
     }
 }

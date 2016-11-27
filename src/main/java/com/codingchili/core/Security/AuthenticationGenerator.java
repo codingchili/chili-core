@@ -23,8 +23,8 @@ import static com.codingchili.core.protocol.Serializer.unpack;
 
 /**
  * @author Robin Duda
- *
- * Generates service security configuration based on system security mappings.
+ *         <p>
+ *         Generates service security configuration based on system security mappings.
  */
 public class AuthenticationGenerator {
     private final Logger logger;
@@ -107,6 +107,10 @@ public class AuthenticationGenerator {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String getService(String name) {
+        return directory + DIR_SEPARATOR + name + EXT_JSON;
     }
 
     private RemoteIdentity getIdentity(JsonObject config) {

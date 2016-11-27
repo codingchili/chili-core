@@ -172,7 +172,7 @@ public class PatchHandlerTest {
 
         handle(Strings.PATCH_DOWNLOAD, (response, status) -> {
 
-            context.assertEquals("Could not find file missing-file", response.getString(ID_MESSAGE));
+            context.assertEquals("Could not findByUsername file missing-file", response.getString(ID_MESSAGE));
             context.assertEquals(ResponseStatus.ERROR, status);
 
             async.complete();

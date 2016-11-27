@@ -35,6 +35,11 @@ public class ClusterListenerTest {
         context.deploy(cluster, test.asyncAssertSuccess());
     }
 
+    @After
+    public void tearDown(TestContext test) {
+        context.vertx().close(test.asyncAssertSuccess());
+    }
+
     @Test
     public void deployHandlerTest(TestContext test) throws CoreException {
         Async async = test.async();

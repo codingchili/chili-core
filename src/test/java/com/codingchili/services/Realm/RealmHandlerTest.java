@@ -43,7 +43,7 @@ public class RealmHandlerTest {
     private ContextMock context;
 
     @Rule
-    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(60, TimeUnit.SECONDS);
 
     @Before
     public void setUp(TestContext test) {
@@ -61,8 +61,8 @@ public class RealmHandlerTest {
     }
     
     private void createCharacters(Async async) {
-        PlayerCharacter add = new PlayerCharacter().setName(CHARACTER_NAME);
-        PlayerCharacter delete = new PlayerCharacter().setName(CHARACTER_NAME_DELETED);
+        PlayerCharacter add = new PlayerCharacter().setName(CHARACTER_NAME).setAccount(USERNAME);
+        PlayerCharacter delete = new PlayerCharacter().setName(CHARACTER_NAME_DELETED).setAccount(USERNAME);
         Future addFuture = Future.future();
         Future removeFuture = Future.future();
 

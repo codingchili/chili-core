@@ -1,15 +1,13 @@
-package com.codingchili.core.storage.hazel;
+package com.codingchili.core.storage;
 
-import io.vertx.core.*;
-import io.vertx.core.json.JsonObject;
+import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.storage.*;
 import com.codingchili.core.testing.MapTestCases;
 
 /**
@@ -20,18 +18,26 @@ import com.codingchili.core.testing.MapTestCases;
  */
 @RunWith(VertxUnitRunner.class)
 public class HazelMapIT extends MapTestCases {
+    private static Vertx vertx;
 
-    @Before
-    public void setUp(TestContext test) {
+    @BeforeClass
+    public static void beforeClass(TestContext test) {
         Async async = test.async();
 
         Vertx.clusteredVertx(new VertxOptions(), cluster -> {
-            super.setUp(async, HazelMap.class, cluster.result());
+            vertx = cluster.result();
+            new HazelMapIT().setUp(async, HazelMap.class, vertx);
         });
     }
 
-    @After
-    public void tearDown(TestContext test) {
-        super.tearDown(test);
+    @AfterClass
+    public static void afterClass(TestContext test) {
+        vertx.close(test.asyncAssertSuccess());
     }
+
+    @Before
+    public void setUp() {}
+
+    @After
+    public void tearDown() {}
 }

@@ -1,4 +1,4 @@
-package com.codingchili.core.storage.elastic;
+package com.codingchili.core.storage;
 
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -6,7 +6,6 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.storage.ElasticMap;
 import com.codingchili.core.testing.MapTestCases;
 
 /**
@@ -39,15 +38,11 @@ public class ElasticMapIT extends MapTestCases {
     public void testSize(TestContext test) {
         Async async = test.async();
 
-        store.put(KEY, VALUE, put -> {
-            test.assertTrue(put.succeeded());
-
-            context.timer(ELASTIC_REFRESH, event -> store.size(size -> {
-                test.assertEquals(1, size.result());
-                test.assertTrue(size.succeeded());
-                async.complete();
-            }));
-        });
+        context.timer(ELASTIC_REFRESH, event -> store.size(size -> {
+            test.assertEquals(2, size.result());
+            test.assertTrue(size.succeeded());
+            async.complete();
+        }));
     }
 
     /**
@@ -59,18 +54,14 @@ public class ElasticMapIT extends MapTestCases {
     public void testClear(TestContext test) {
         Async async = test.async();
 
-        store.put(KEY, VALUE, put -> {
-            test.assertTrue(put.succeeded());
+        store.clear(clear -> {
+            test.assertTrue(clear.succeeded());
 
-            store.clear(clear -> {
-                test.assertTrue(clear.succeeded());
-
-                context.timer(ELASTIC_REFRESH, event -> store.size(size -> {
-                    test.assertEquals(0, size.result());
-                    test.assertTrue(size.succeeded());
-                    async.complete();
-                }));
-            });
+            context.timer(ELASTIC_REFRESH, event -> store.size(size -> {
+                test.assertEquals(0, size.result());
+                test.assertTrue(size.succeeded());
+                async.complete();
+            }));
         });
     }
 }

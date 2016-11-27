@@ -40,7 +40,6 @@ public class AuthenticationGeneratorIT {
     private static final String SERVICE_2_TOKEN = "service2token";
     private static final String SERVICE1_JSON = "service1.json";
     private static final String SERVICE2_JSON = "service2.json";
-    private static String DIR_SERVICES;
     private AuthenticationGenerator generator;
     private SystemContext context;
 
@@ -48,8 +47,6 @@ public class AuthenticationGeneratorIT {
     public void setUp() {
         context = new ContextMock(Vertx.vertx());
         Configurations.initialize(context);
-
-        mockConfigurationPath();
 
         Configurations.put(createSecuritySettings());
 
@@ -87,16 +84,10 @@ public class AuthenticationGeneratorIT {
         return security;
     }
 
-    private void mockConfigurationPath() {
-        DIR_SERVICES = Strings.DIR_SERVICES;
-        Strings.DIR_SERVICES = Strings.testDirectory(AUTHENTICATION_GENERATOR);
-    }
-
     @After
     public void tearDown() {
         JsonFileStore.writeObject(new JsonObject(), testFile("AuthenticationGenerator", "service1.json"));
         JsonFileStore.writeObject(new JsonObject(), testFile("AuthenticationGenerator", "service2.json"));
-        Strings.DIR_SERVICES = DIR_SERVICES;
     }
 
     @Test

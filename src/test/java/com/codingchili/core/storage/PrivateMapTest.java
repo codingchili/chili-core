@@ -1,4 +1,4 @@
-package com.codingchili.core.storage.internal;
+package com.codingchili.core.storage;
 
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -6,7 +6,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.storage.JsonMap;
+import com.codingchili.core.storage.PrivateMap;
 import com.codingchili.core.testing.MapTestCases;
 
 /**
@@ -16,11 +16,11 @@ import com.codingchili.core.testing.MapTestCases;
  *         storage subsystems are implemented using the StorageLoader.
  */
 @RunWith(VertxUnitRunner.class)
-public class JsonMapTest extends MapTestCases {
+public class PrivateMapTest extends MapTestCases {
 
     @Before
     public void setUp(TestContext test) {
-        super.setUp(test, JsonMap.class);
+        super.setUp(test, PrivateMap.class);
     }
 
     @After
