@@ -6,11 +6,12 @@ import io.vertx.core.shareddata.AsyncMap;
 
 import java.util.List;
 
+import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.storage.exception.*;
 
-import static com.codingchili.core.context.FutureHelper.failed;
-import static com.codingchili.core.context.FutureHelper.succeeded;
+import static com.codingchili.core.context.FutureHelper.error;
+import static com.codingchili.core.context.FutureHelper.result;
 
 /**
  * @author Robin Duda
@@ -43,12 +44,12 @@ public class HazelMap<Key, Value> implements AsyncStorage<Key, Value> {
             if (get.succeeded()) {
 
                 if (get.result() != null) {
-                    handler.handle(succeeded(get.result()));
+                    handler.handle(result(get.result()));
                 } else {
-                    handler.handle(failed(new MissingEntityException(key)));
+                    handler.handle(error(new ValueMissingException(key)));
                 }
             } else {
-                handler.handle(failed(get.cause()));
+                handler.handle(error(get.cause()));
             }
         });
     }
@@ -73,12 +74,12 @@ public class HazelMap<Key, Value> implements AsyncStorage<Key, Value> {
         map.putIfAbsent(key, value, ttl, put -> {
             if (put.succeeded()) {
                 if (put.result() == null) {
-                    handler.handle(succeeded());
+                    handler.handle(FutureHelper.result());
                 } else {
-                    handler.handle(failed(new ValueAlreadyPresentException(key)));
+                    handler.handle(error(new ValueAlreadyPresentException(key)));
                 }
             } else {
-                handler.handle(failed(put.cause()));
+                handler.handle(error(put.cause()));
             }
         });
     }
@@ -88,12 +89,12 @@ public class HazelMap<Key, Value> implements AsyncStorage<Key, Value> {
         map.remove(key, remove -> {
             if (remove.succeeded()) {
                 if (remove.result() == null) {
-                    handler.handle(failed(new NothingToRemoveException(key)));
+                    handler.handle(error(new NothingToRemoveException(key)));
                 } else {
-                    handler.handle(succeeded());
+                    handler.handle(FutureHelper.result());
                 }
             } else {
-                handler.handle(failed(remove.cause()));
+                handler.handle(error(remove.cause()));
             }
         });
     }
@@ -103,12 +104,12 @@ public class HazelMap<Key, Value> implements AsyncStorage<Key, Value> {
         map.replace(key, value, replace -> {
             if (replace.succeeded()) {
                 if (replace.result() == null) {
-                    handler.handle(failed(new NothingToReplaceException(key)));
+                    handler.handle(error(new NothingToReplaceException(key)));
                 } else {
-                    handler.handle(succeeded());
+                    handler.handle(FutureHelper.result());
                 }
             } else {
-                handler.handle(failed(replace.cause()));
+                handler.handle(error(replace.cause()));
             }
         });
     }
@@ -117,9 +118,9 @@ public class HazelMap<Key, Value> implements AsyncStorage<Key, Value> {
     public void clear(Handler<AsyncResult<Void>> handler) {
         map.clear(clear -> {
             if (clear.succeeded()) {
-                handler.handle(succeeded());
+                handler.handle(FutureHelper.result());
             } else {
-                handler.handle(failed(clear.cause()));
+                handler.handle(error(clear.cause()));
             }
         });
     }
@@ -128,9 +129,9 @@ public class HazelMap<Key, Value> implements AsyncStorage<Key, Value> {
     public void size(Handler<AsyncResult<Integer>> handler) {
         map.size(size -> {
             if (size.succeeded()) {
-                handler.handle(succeeded(size.result()));
+                handler.handle(result(size.result()));
             } else {
-                handler.handle(failed(size.cause()));
+                handler.handle(error(size.cause()));
             }
         });
     }

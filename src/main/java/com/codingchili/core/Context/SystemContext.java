@@ -8,8 +8,7 @@ import io.vertx.ext.dropwizard.MetricsService;
 import com.codingchili.core.configuration.Strings;
 import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.files.Configurations;
-import com.codingchili.core.logging.ConsoleLogger;
-import com.codingchili.core.logging.Logger;
+import com.codingchili.core.logging.*;
 import com.codingchili.core.protocol.AbstractHandler;
 import com.codingchili.core.protocol.ClusterListener;
 import com.codingchili.core.security.RemoteIdentity;
@@ -149,5 +148,14 @@ public class SystemContext implements CoreContext {
     @Override
     public RemoteIdentity identity() {
         return new RemoteIdentity(Strings.ID_SYSTEM, Strings.NODE_LOCAL);
+    }
+
+
+    protected JsonObject event(String event) {
+        return event(event, Level.INFO);
+    }
+
+    protected JsonObject event(String event, Level level) {
+        return console().event(event, level);
     }
 }

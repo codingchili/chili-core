@@ -66,7 +66,7 @@ public interface Logger extends JsonLogger, StringLogger {
 
     /**
      * Throw when a configuration was not found and the attempt to instantiate
-     * default configuration from the given class has failed.
+     * default configuration from the given class has error.
      *
      * @param clazz a class that is not of Configurable type.
      */
@@ -88,7 +88,7 @@ public interface Logger extends JsonLogger, StringLogger {
     void onFileSaved(String component, String path);
 
     /**
-     * Emit when failed to save file.
+     * Emit when error to save file.
      */
     void onFileSaveError(String key);
 

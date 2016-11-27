@@ -9,8 +9,8 @@ import java.util.List;
 import com.codingchili.core.context.*;
 import com.codingchili.core.storage.exception.*;
 
-import static com.codingchili.core.context.FutureHelper.failed;
-import static com.codingchili.core.context.FutureHelper.succeeded;
+import static com.codingchili.core.context.FutureHelper.error;
+import static com.codingchili.core.context.FutureHelper.result;
 
 /**
  * @author Robin Duda
@@ -32,16 +32,16 @@ public class SharedMap<Key, Value> implements AsyncStorage<Key, Value> {
         Value value = map.get(key);
 
         if (value != null) {
-            handler.handle(succeeded(value));
+            handler.handle(result(value));
         } else {
-            handler.handle(failed(new MissingEntityException(key)));
+            handler.handle(error(new ValueMissingException(key)));
         }
     }
 
     @Override
     public void put(Key key, Value value, Handler<AsyncResult<Void>> handler) {
         map.put(key, value);
-        handler.handle(succeeded());
+        handler.handle(FutureHelper.result());
     }
 
     @Override
@@ -53,9 +53,9 @@ public class SharedMap<Key, Value> implements AsyncStorage<Key, Value> {
     @Override
     public void putIfAbsent(Key key, Value value, Handler<AsyncResult<Void>> handler) {
         if (map.putIfAbsent(key, value) == null) {
-            handler.handle(succeeded());
+            handler.handle(FutureHelper.result());
         } else {
-            handler.handle(failed(new ValueAlreadyPresentException(key)));
+            handler.handle(error(new ValueAlreadyPresentException(key)));
         }
     }
 
@@ -70,30 +70,30 @@ public class SharedMap<Key, Value> implements AsyncStorage<Key, Value> {
         Value value = map.remove(key);
 
         if (value == null) {
-            handler.handle(failed(new NothingToRemoveException(key)));
+            handler.handle(error(new NothingToRemoveException(key)));
         } else {
-            handler.handle(succeeded());
+            handler.handle(FutureHelper.result());
         }
     }
 
     @Override
     public void replace(Key key, Value value, Handler<AsyncResult<Void>> handler) {
         if (map.replace(key, value) != null) {
-            handler.handle(succeeded());
+            handler.handle(FutureHelper.result());
         } else {
-            handler.handle(failed(new NothingToReplaceException(key)));
+            handler.handle(error(new NothingToReplaceException(key)));
         }
     }
 
     @Override
     public void clear(Handler<AsyncResult<Void>> handler) {
         map.clear();
-        handler.handle(succeeded());
+        handler.handle(FutureHelper.result());
     }
 
     @Override
     public void size(Handler<AsyncResult<Integer>> handler) {
-        handler.handle(succeeded(map.size()));
+        handler.handle(result(map.size()));
     }
 
     @Override

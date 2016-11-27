@@ -7,15 +7,15 @@ import io.vertx.core.Future;
  */
 public abstract class FutureHelper {
 
-    public static <T> Future<T> failed(Throwable e) {
+    public static <T> Future<T> error(Throwable e) {
         return Future.failedFuture(e);
     }
 
-    public static <T> Future<T> succeeded(T value) {
+    public static <T> Future<T> result(T value) {
         return Future.succeededFuture(value);
     }
 
-    public static <T> Future<T> succeeded() {
+    public static <T> Future<T> result() {
         return Future.succeededFuture();
     }
 }

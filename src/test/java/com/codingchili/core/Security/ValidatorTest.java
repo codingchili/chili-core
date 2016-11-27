@@ -42,7 +42,7 @@ public class ValidatorTest {
     public void testUsernameFilterRejected() {
         try {
             getUser("invalid string with space.. #@!");
-            throw new RuntimeException("Validation failed to detect malicious input.");
+            throw new RuntimeException("Validation error to detect malicious input.");
         } catch (RequestValidationException ignored) {
         }
     }

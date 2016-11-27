@@ -5,10 +5,12 @@ import io.vertx.core.json.JsonObject;
 
 import com.codingchili.core.protocol.Serializer;
 
+import static com.codingchili.core.configuration.Strings.*;
+
 /**
  * @author Robin Duda
  *         <p>
- *         context used for storage plugins.
+ *         context used by storage plugins.
  */
 public class StorageContext<Value> extends SystemContext {
     private String DB;
@@ -97,18 +99,60 @@ public class StorageContext<Value> extends SystemContext {
 
     /**
      * handles a handler successfully with the given value.
+     *
      * @param handler the handler to be handled
-     * @param value the value to send the handler.
+     * @param value   the value to send the handler.
      */
     public void handle(Handler<AsyncResult<Value>> handler, Value value) {
         handler.handle(Future.succeededFuture(value));
     }
 
+    /**
+     * get the name of the database used by the context.
+     * @return the name of the database as a string
+     */
     public String DB() {
         return DB;
     }
 
+    /**
+     * get the name of the collection within the database used by the context.
+     * @return the name of the collection as a string.
+     */
     public String collection() {
         return collection;
+    }
+
+    /**
+     * Called when a value has been expired by ttl.
+     * @param key the id of the object that was expired.
+     * @param ttl the time at which the object was set to expire.
+     */
+    public void onValueExpired(String key, Long ttl) {
+        log(event(LOG_VALUE_EXPIRED)
+                .put(ID_KEY, key)
+                .put(ID_TIME, timestamp(ttl)));
+    }
+
+    /**
+     * Called when a value failed to expire as it was not found.
+     * @param key the id of the object that was expired.
+     * @param ttl the time at which the object was set to expire.
+     */
+    public void onValueExpiredMissing(String key, Long ttl) {
+        log(event(LOG_VALUE_EXPIRED_MISSING)
+                .put(ID_KEY, key)
+                .put(ID_TIME, timestamp(ttl)));
+    }
+
+    /**
+     * Called when the collection has been dropped/cleared.
+     */
+    public void onCollectionDropped() {
+        log(event(LOG_STORAGE_CLEARED));
+    }
+
+    private void log(JsonObject json) {
+        console().log(json.put(STORAGE_DATABASE, DB).put(STORAGE_COLLECTION, collection));
     }
 }

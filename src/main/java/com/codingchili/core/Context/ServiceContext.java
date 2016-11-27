@@ -47,12 +47,4 @@ public abstract class ServiceContext extends SystemContext {
     protected void log(JsonObject json) {
         logger.log(json);
     }
-
-    protected JsonObject event(String event) {
-        return event(event, Level.INFO);
-    }
-
-    protected JsonObject event(String event, Level level) {
-        return logger.event(event, level);
-    }
 }

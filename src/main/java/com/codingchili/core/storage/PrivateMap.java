@@ -6,11 +6,12 @@ import io.vertx.core.json.JsonObject;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.storage.exception.*;
 
-import static com.codingchili.core.context.FutureHelper.failed;
-import static com.codingchili.core.context.FutureHelper.succeeded;
+import static com.codingchili.core.context.FutureHelper.error;
+import static com.codingchili.core.context.FutureHelper.result;
 
 
 /**
@@ -36,16 +37,16 @@ public class PrivateMap<Key, Value> implements AsyncStorage<Key, Value> {
         Value value = map.get(key);
 
         if (value == null) {
-            handler.handle(failed(new MissingEntityException(key)));
+            handler.handle(error(new ValueMissingException(key)));
         } else {
-            handler.handle(succeeded(value));
+            handler.handle(result(value));
         }
     }
 
     @Override
     public void put(Key key, Value value, Handler<AsyncResult<Void>> handler) {
         map.put(key, value);
-        handler.handle(succeeded());
+        handler.handle(FutureHelper.result());
     }
 
     @Override
@@ -58,10 +59,10 @@ public class PrivateMap<Key, Value> implements AsyncStorage<Key, Value> {
     @Override
     public void putIfAbsent(Key key, Value value, Handler<AsyncResult<Void>> handler) {
         if (map.containsKey(key)){
-            handler.handle(failed(new ValueAlreadyPresentException(key)));
+            handler.handle(error(new ValueAlreadyPresentException(key)));
         } else {
             map.put(key, value);
-            handler.handle(succeeded());
+            handler.handle(FutureHelper.result());
         }
     }
 
@@ -76,9 +77,9 @@ public class PrivateMap<Key, Value> implements AsyncStorage<Key, Value> {
     public void remove(Key key, Handler<AsyncResult<Void>> handler) {
         if (map.containsKey(key)) {
             map.remove(key);
-            handler.handle(succeeded());
+            handler.handle(FutureHelper.result());
         } else {
-            handler.handle(failed(new NothingToRemoveException(key)));
+            handler.handle(error(new NothingToRemoveException(key)));
         }
     }
 
@@ -88,21 +89,21 @@ public class PrivateMap<Key, Value> implements AsyncStorage<Key, Value> {
 
         if (previous != null) {
             map.put(key, value);
-            handler.handle(succeeded());
+            handler.handle(FutureHelper.result());
         } else {
-            handler.handle(failed(new NothingToReplaceException(key)));
+            handler.handle(error(new NothingToReplaceException(key)));
         }
     }
 
     @Override
     public void clear(Handler<AsyncResult<Void>> handler) {
         map.clear();
-        handler.handle(succeeded());
+        handler.handle(FutureHelper.result());
     }
 
     @Override
     public void size(Handler<AsyncResult<Integer>> handler) {
-        handler.handle(succeeded(map.size()));
+        handler.handle(result(map.size()));
     }
 
     @Override

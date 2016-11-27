@@ -1,6 +1,7 @@
 package com.codingchili.core.configuration;
 
 import java.nio.file.Path;
+import java.time.*;
 
 /**
  * @author Robin Duda
@@ -67,9 +68,15 @@ public abstract class Strings {
     public static final String ID_DEFAULT = "default";
     public static final String ID_IDENTITY = "identity";
     public static final String ID_SYSTEM = "system";
+    public static final String ID_TIME = "time";
+    public static final String ID_KEY = "key";
 
     // Node names.
     public static final String NODE_LOCAL = "local";
+
+    // Storage constants
+    public static final String STORAGE_COLLECTION = "collection";
+    public static final String STORAGE_DATABASE = "dabatase";
 
     // logging constants
     public static final String LOG_AT = "@";
@@ -77,7 +84,6 @@ public abstract class Strings {
     public static final String LOG_VERSION = "version";
     public static final String LOG_USER_AGENT = "User-Agent";
     public static final String LOG_AGENT = "agent";
-    public static final String LOG_REMOTE = "remote";
     public static final String LOG_TIME = "time";
     public static final String LOG_NODE = "node";
     public static final String LOG_HOST = "host";
@@ -99,9 +105,12 @@ public abstract class Strings {
     public static final String LOG_TIMER_CHANGE = "timer.changed";
     public static final String LOG_PREVIOUS = "previous";
     public static final String LOG_NEW = "new";
+    public static final String LOG_VALUE_EXPIRED = "storage.expired";
+    public static final String LOG_VALUE_EXPIRED_MISSING = "storage.failure";
+    public static final String LOG_STORAGE_CLEARED = "storage.cleared";
     public static final String[] LOG_HIDDEN_TAGS = new String[]{"dev", "LOCAL", "3.6.3"};
 
-    public static final String ERROR_TOKEN_FACTORY = "Token factory failed to generate token.";
+    public static final String ERROR_TOKEN_FACTORY = "Token factory error to generate token.";
     public static final String ERROR_CLUSTERING_REQUIRED = "Clustering required but not enabled.";
     public static final String ERROR_NOT_AUTHORIZED = "Insufficient authorization level to access resource.";
     public static final String ERROR_HANDLER_MISSING = "The requested handler was not found.";
@@ -251,10 +260,14 @@ public abstract class Strings {
     }
 
     public static String getValueAlreadyPresent(String key) {
-        return "Error: could not put value, already present.";
+        return "Error: could not put value, key '" + key + "' already present.";
     }
 
     public static String getMissingEntity(String key) {
         return "Error: could not find '" + key + "' in storage.";
+    }
+
+    public static String timestamp(long ms) {
+            return LocalDateTime.ofInstant(Instant.ofEpochMilli(ms), ZoneOffset.UTC).toString().split("T")[1];
     }
 }

@@ -6,7 +6,7 @@ import com.codingchili.core.context.CoreException;
 /**
  * @author Robin Duda
  *
- * Throw when a request has failed validation.
+ * Throw when a request has error validation.
  */
 public class RequestValidationException extends CoreException {
 

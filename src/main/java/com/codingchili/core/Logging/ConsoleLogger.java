@@ -12,8 +12,8 @@ import static com.codingchili.core.configuration.Strings.*;
 
 /**
  * @author Robin Duda
- *
- * Implementation of a console logger.
+ *         <p>
+ *         Implementation of a console logger.
  */
 public class ConsoleLogger extends DefaultLogger implements StringLogger {
     private static final String RESET = "\u001B[0m";
@@ -96,7 +96,7 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
             JsonObject event = eventFromLog(data);
             setColor(event);
 
-            String text = "[" + data.getString(LOG_EVENT) + " " + timestamp() + "] -> ";
+            String text = "[" + data.getString(LOG_EVENT) + " " + timestamp(Instant.now().toEpochMilli()) + "] -> ";
             write(text + parseJsonLog(event));
         }
         return this;
@@ -159,10 +159,6 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
             }
         }
         return text;
-    }
-
-    private String timestamp() {
-        return LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC).toString().split("T")[1];
     }
 
     private void setColor(JsonObject json) {

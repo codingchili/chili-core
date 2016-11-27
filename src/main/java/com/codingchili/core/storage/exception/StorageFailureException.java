@@ -6,7 +6,7 @@ import com.codingchili.core.context.CoreException;
 /**
  * @author Robin Duda
  *
- * Generic storage error, throw when a requested operation has failed.
+ * Generic storage error, throw when a requested operation has error.
  */
 public class StorageFailureException extends CoreException {
 

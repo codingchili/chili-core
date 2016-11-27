@@ -8,12 +8,13 @@ import java.util.List;
 import java.util.Optional;
 
 import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.files.JsonFileStore;
 import com.codingchili.core.storage.exception.*;
 
-import static com.codingchili.core.context.FutureHelper.failed;
-import static com.codingchili.core.context.FutureHelper.succeeded;
+import static com.codingchili.core.context.FutureHelper.error;
+import static com.codingchili.core.context.FutureHelper.result;
 
 /**
  * @author Robin Duda
@@ -45,16 +46,16 @@ public class JsonMap<Key, Value> implements AsyncStorage<Key, Value> {
         Optional<Value> value = get(key);
 
         if (value.isPresent()) {
-            handler.handle(succeeded(value.get()));
+            handler.handle(result(value.get()));
         } else {
-            handler.handle(failed(new MissingEntityException(key)));
+            handler.handle(error(new ValueMissingException(key)));
         }
     }
 
     @Override
     public void put(Key key, Value value, Handler<AsyncResult<Void>> handler) {
         put(key, value);
-        handler.handle(succeeded());
+        handler.handle(FutureHelper.result());
     }
 
     @Override
@@ -69,10 +70,10 @@ public class JsonMap<Key, Value> implements AsyncStorage<Key, Value> {
         Optional<Value> current = get(key);
 
         if (current.isPresent()) {
-            handler.handle(failed(new ValueAlreadyPresentException(key)));
+            handler.handle(error(new ValueAlreadyPresentException(key)));
         } else {
             put(key, value);
-            handler.handle(succeeded());
+            handler.handle(FutureHelper.result());
         }
     }
 
@@ -88,10 +89,10 @@ public class JsonMap<Key, Value> implements AsyncStorage<Key, Value> {
 
         if (current.isPresent()) {
             remove(key);
-            handler.handle(succeeded());
+            handler.handle(FutureHelper.result());
             save();
         } else {
-            handler.handle(failed(new NothingToRemoveException(key)));
+            handler.handle(error(new NothingToRemoveException(key)));
         }
     }
 
@@ -101,22 +102,22 @@ public class JsonMap<Key, Value> implements AsyncStorage<Key, Value> {
 
         if (current.isPresent()) {
             put(key, value);
-            handler.handle(succeeded());
+            handler.handle(FutureHelper.result());
         } else {
-            handler.handle(failed(new NothingToReplaceException(key)));
+            handler.handle(error(new NothingToReplaceException(key)));
         }
     }
 
     @Override
     public void clear(Handler<AsyncResult<Void>> handler) {
         db.clear();
-        handler.handle(succeeded());
+        handler.handle(FutureHelper.result());
         save();
     }
 
     @Override
     public void size(Handler<AsyncResult<Integer>> handler) {
-        handler.handle(succeeded(db.size()));
+        handler.handle(result(db.size()));
     }
 
     private Optional<Value> get(Key key) {

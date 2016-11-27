@@ -24,19 +24,20 @@ import com.codingchili.core.storage.exception.*;
 @RunWith(VertxUnitRunner.class)
 public class MapTestCases {
     protected StorageContext<JsonObject> context;
-    private static final JsonObject VALUE = new JsonObject().put("value", "value");
-    private static final JsonObject VALUE_OTHER = new JsonObject().put("value", "other");
-    private static final String KEY = "key";
+    protected AsyncStorage<String, JsonObject> store;
+    protected static final JsonObject VALUE = new JsonObject().put("value", "value");
+    protected static final JsonObject VALUE_OTHER = new JsonObject().put("value", "other");
+    protected static final String KEY = "key";
+    protected static final String KEY_NX = "key_nx";
     private static final String DB_NAME = "spinach";
     private static final String COLLECTION = "leaves";
-    private AsyncStorage<String, JsonObject> store;
 
     @Rule
     public Timeout timeout = Timeout.seconds(6);
 
     @Before
     public void setUp(TestContext test) {
-        setUp(test, SharedMap.class);
+        setUp(test, ElasticMap.class);
     }
 
     public void setUp(Async async, Class plugin, Vertx vertx) {
@@ -86,10 +87,10 @@ public class MapTestCases {
     public void testGetMissing(TestContext test) {
         Async async = test.async();
 
-        store.get(KEY, get -> {
+        store.get(KEY_NX, get -> {
             test.assertTrue(get.failed());
             test.assertNull(get.result());
-            test.assertEquals(MissingEntityException.class, get.cause().getClass());
+            test.assertEquals(ValueMissingException.class, get.cause().getClass());
             async.complete();
         });
     }

@@ -8,8 +8,8 @@ import com.codingchili.core.context.CoreException;
  *
  * Throw when an entity could not be found in storage.
  */
-public class MissingEntityException extends CoreException {
-    public MissingEntityException(Object key) {
+public class ValueMissingException extends CoreException {
+    public ValueMissingException(Object key) {
         super(Strings.getMissingEntity(key.toString()));
     }
 }

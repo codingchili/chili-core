@@ -6,11 +6,12 @@ import io.vertx.ext.mongo.*;
 
 import java.util.List;
 
+import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.storage.exception.*;
 
-import static com.codingchili.core.context.FutureHelper.failed;
-import static com.codingchili.core.context.FutureHelper.succeeded;
+import static com.codingchili.core.context.FutureHelper.error;
+import static com.codingchili.core.context.FutureHelper.result;
 
 /**
  * @author Robin Duda
@@ -45,12 +46,12 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
         client.findOne(DB, query(key), ALL_FIELDS, query -> {
             if (query.succeeded()) {
                 if (query.result() != null) {
-                    handler.handle(succeeded(context.toValue(query.result())));
+                    handler.handle(result(context.toValue(query.result())));
                 } else {
-                    handler.handle(failed(new MissingEntityException(key)));
+                    handler.handle(error(new ValueMissingException(key)));
                 }
             } else {
-                handler.handle(failed(query.cause()));
+                handler.handle(error(query.cause()));
             }
         });
     }
@@ -75,9 +76,9 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
                 update -> {
                     if (update.succeeded()) {
                         context.timer(ttl, expired -> remove(key, (removed) -> {}));
-                        handler.handle(succeeded());
+                        handler.handle(FutureHelper.result());
                     } else {
-                        handler.handle(failed(update.cause()));
+                        handler.handle(error(update.cause()));
                     }
                 });
     }
@@ -92,9 +93,9 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
         client.insert(DB, document(key, value), put -> {
             if (put.succeeded()) {
                 context.timer(ttl, expired -> remove(key, (removed) -> {}));
-                handler.handle(succeeded());
+                handler.handle(FutureHelper.result());
             } else {
-                handler.handle(failed(new ValueAlreadyPresentException(key)));
+                handler.handle(error(new ValueAlreadyPresentException(key)));
             }
         });
     }
@@ -104,12 +105,12 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
         client.removeDocument(DB, getKey(key), remove -> {
             if (remove.succeeded()) {
                 if (remove.result().getRemovedCount() > 0) {
-                    handler.handle(succeeded());
+                    handler.handle(FutureHelper.result());
                 } else {
-                    handler.handle(failed(new NothingToRemoveException(key)));
+                    handler.handle(error(new NothingToRemoveException(key)));
                 }
             } else {
-                handler.handle(failed(remove.cause()));
+                handler.handle(error(remove.cause()));
             }
         });
     }
@@ -123,12 +124,12 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
         client.replaceDocuments(DB, getKey(key), document(key, value), replace -> {
             if (replace.succeeded()) {
                 if (replace.result().getDocModified() > 0) {
-                    handler.handle(succeeded());
+                    handler.handle(FutureHelper.result());
                 } else {
-                    handler.handle(failed(new NothingToReplaceException(key)));
+                    handler.handle(error(new NothingToReplaceException(key)));
                 }
             } else {
-                handler.handle(failed(replace.cause()));
+                handler.handle(error(replace.cause()));
             }
         });
     }
@@ -137,9 +138,9 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
     public void clear(Handler<AsyncResult<Void>> handler) {
         client.dropCollection(DB, drop -> {
             if (drop.succeeded()) {
-                handler.handle(succeeded());
+                handler.handle(FutureHelper.result());
             } else {
-                handler.handle(failed(drop.cause()));
+                handler.handle(error(drop.cause()));
             }
         });
     }
@@ -148,9 +149,9 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
     public void size(Handler<AsyncResult<Integer>> handler) {
         client.count(DB, new JsonObject(), result -> {
             if (result.succeeded()) {
-                handler.handle(succeeded(result.result().intValue()));
+                handler.handle(result(result.result().intValue()));
             } else {
-                handler.handle(failed(result.cause()));
+                handler.handle(error(result.cause()));
             }
         });
     }
