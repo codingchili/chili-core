@@ -26,12 +26,16 @@ public class Serializer {
     /**
      * Serializes an object as JSON.
      *
-     * @param object containing simple types that allow JSON transform.
+     * @param object containing JSON transformable types.
      * @return a JSON string representing the object.
      */
     public static String pack(Object object) {
         try {
-            return mapper.writeValueAsString(object);
+            if (object instanceof JsonObject) {
+                return ((JsonObject) object).encode();
+            } else {
+                return mapper.writeValueAsString(object);
+            }
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
