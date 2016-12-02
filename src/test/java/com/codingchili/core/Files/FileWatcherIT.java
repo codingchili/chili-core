@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.Delay;
 import com.codingchili.core.testing.ContextMock;
 
@@ -26,8 +26,8 @@ import com.codingchili.core.testing.ContextMock;
 @RunWith(VertxUnitRunner.class)
 public class FileWatcherIT {
     private static final String FILE_WATCHER_TEST = "FileWatcher";
-    private static final String TOUCH_JSON = Strings.testFile(FILE_WATCHER_TEST, "touch.json");
-    private static final String NOT_WATCHED_FILE = Strings.testFile("", "touch.json");
+    private static final String TOUCH_JSON = CoreStrings.testFile(FILE_WATCHER_TEST, "touch.json");
+    private static final String NOT_WATCHED_FILE = CoreStrings.testFile("", "touch.json");
     private ContextMock context;
 
     @Rule
@@ -118,7 +118,7 @@ public class FileWatcherIT {
 
     private void listenFiles(FileStoreListener listener) {
         new FileWatcherBuilder(context)
-                .onDirectory(Strings.testDirectory(FILE_WATCHER_TEST))
+                .onDirectory(CoreStrings.testDirectory(FILE_WATCHER_TEST))
                 .rate(() -> 25)
                 .withListener(listener)
                 .build();

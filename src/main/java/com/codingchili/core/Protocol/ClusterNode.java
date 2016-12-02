@@ -2,7 +2,7 @@ package com.codingchili.core.protocol;
 
 import io.vertx.core.*;
 
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.files.Configurations;
 
@@ -22,7 +22,7 @@ public abstract class ClusterNode implements Verticle {
         this.vertx = vertx;
 
         if (!vertx.isClustered()) {
-            throw new RuntimeException(Strings.ERROR_CLUSTERING_REQUIRED);
+            throw new RuntimeException(CoreStrings.ERROR_CLUSTERING_REQUIRED);
         }
     }
 

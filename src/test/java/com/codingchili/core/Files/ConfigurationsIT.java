@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.configuration.ConfigurableTest;
 
-import static com.codingchili.core.configuration.Strings.*;
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 
 /**

@@ -9,7 +9,7 @@ public class ConfigurableTest extends BaseConfigurable {
     private String data = "default-data";
 
     public ConfigurableTest() {
-        this.path = Strings.testFile("Configurations", "testfile.json");
+        this.path = CoreStrings.testFile("Configurations", "testfile.json");
     }
 
     public ConfigurableTest(String path) {

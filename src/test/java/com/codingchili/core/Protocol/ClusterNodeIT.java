@@ -8,7 +8,7 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
-import static com.codingchili.core.configuration.Strings.ERROR_CLUSTERING_REQUIRED;
+import static com.codingchili.core.configuration.CoreStrings.ERROR_CLUSTERING_REQUIRED;
 
 /**
  * @author Robin Duda

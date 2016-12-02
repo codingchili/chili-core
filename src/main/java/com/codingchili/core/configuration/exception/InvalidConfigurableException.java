@@ -1,6 +1,6 @@
 package com.codingchili.core.configuration.exception;
 
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 
 /**
  * @author Robin Duda
@@ -9,6 +9,6 @@ import com.codingchili.core.configuration.Strings;
  */
 public class InvalidConfigurableException extends RuntimeException {
     public InvalidConfigurableException(Class<?> clazz) {
-        super(Strings.getErrorInvalidConfigurable(clazz));
+        super(CoreStrings.getErrorInvalidConfigurable(clazz));
     }
 }

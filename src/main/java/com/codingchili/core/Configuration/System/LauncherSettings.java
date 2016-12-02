@@ -6,7 +6,7 @@ import java.util.*;
 
 import com.codingchili.core.configuration.BaseConfigurable;
 
-import static com.codingchili.core.configuration.Strings.PATH_LAUNCHER;
+import static com.codingchili.core.configuration.CoreStrings.PATH_LAUNCHER;
 
 /**
  * @author Robin Duda

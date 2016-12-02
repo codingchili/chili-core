@@ -7,11 +7,11 @@ import java.time.Instant;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.Delay;
 
-import static com.codingchili.core.configuration.Strings.*;
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
@@ -51,16 +51,16 @@ public abstract class DefaultLogger extends Handler implements Logger {
                 .put(LOG_TIME, Instant.now().toEpochMilli());
 
         if (context != null) {
-            event.put(Strings.LOG_HOST, context.identity().getHost())
-                    .put(Strings.LOG_NODE, context.identity().getNode())
-                    .put(Strings.LOG_AGENT, context.handler());
+            event.put(CoreStrings.LOG_HOST, context.identity().getHost())
+                    .put(CoreStrings.LOG_NODE, context.identity().getNode())
+                    .put(CoreStrings.LOG_AGENT, context.handler());
         }
         return event;
     }
 
     @Override
     public void onAlreadyInitialized() {
-        log(event(Strings.LOG_ERROR, Level.WARNING)
+        log(event(CoreStrings.LOG_ERROR, Level.WARNING)
                 .put(ID_MESSAGE, ERROR_ALREADY_INITIALIZED));
     }
 
@@ -85,7 +85,7 @@ public abstract class DefaultLogger extends Handler implements Logger {
     @Override
     public void onHandlerMissing(String route) {
         log(event(LOG_HANDLER_MISSING, Level.WARNING)
-                .put(LOG_MESSAGE, Strings.quote(route)));
+                .put(LOG_MESSAGE, CoreStrings.quote(route)));
     }
 
     @Override
@@ -133,14 +133,14 @@ public abstract class DefaultLogger extends Handler implements Logger {
 
     @Override
     public void onConfigurationDefaultsLoaded(String path, Class<?> clazz) {
-        log(event(Strings.LOG_CONFIG_DEFAULTED, Level.WARNING)
-                .put(ID_MESSAGE, Strings.getFileLoadDefaults(path, clazz)));
+        log(event(CoreStrings.LOG_CONFIG_DEFAULTED, Level.WARNING)
+                .put(ID_MESSAGE, CoreStrings.getFileLoadDefaults(path, clazz)));
     }
 
     @Override
     public void onInvalidConfigurable(Class<?> clazz) {
-        log(event(Strings.LOG_CONFIGURATION_INVALID, Level.SEVERE)
-                .put(ID_MESSAGE, Strings.getErrorInvalidConfigurable(clazz)));
+        log(event(CoreStrings.LOG_CONFIGURATION_INVALID, Level.SEVERE)
+                .put(ID_MESSAGE, CoreStrings.getErrorInvalidConfigurable(clazz)));
     }
 
     @Override

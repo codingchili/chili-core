@@ -1,6 +1,6 @@
 package com.codingchili.core.storage.exception;
 
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreException;
 
 /**
@@ -10,6 +10,6 @@ import com.codingchili.core.context.CoreException;
  */
 public class ValueMissingException extends CoreException {
     public ValueMissingException(Object key) {
-        super(Strings.getMissingEntity(key.toString()));
+        super(CoreStrings.getMissingEntity(key.toString()));
     }
 }

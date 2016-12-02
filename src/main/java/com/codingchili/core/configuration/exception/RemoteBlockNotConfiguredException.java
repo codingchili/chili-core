@@ -1,6 +1,6 @@
 package com.codingchili.core.configuration.exception;
 
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreException;
 
 /**
@@ -10,6 +10,6 @@ import com.codingchili.core.context.CoreException;
  */
 public class RemoteBlockNotConfiguredException extends CoreException {
     public RemoteBlockNotConfiguredException(String remote, String block) {
-        super(Strings.getRemoteBlockNotConfigured(remote, block));
+        super(CoreStrings.getRemoteBlockNotConfigured(remote, block));
     }
 }

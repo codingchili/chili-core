@@ -17,7 +17,7 @@ public class ValidatorSettings extends BaseConfigurable {
     private Map<String, ParserSettings> validators = getDefaultValidators();
 
     public ValidatorSettings() {
-        path = Strings.PATH_VALIDATOR;
+        path = CoreStrings.PATH_VALIDATOR;
     }
 
     public Map<String, ParserSettings> getValidators() {

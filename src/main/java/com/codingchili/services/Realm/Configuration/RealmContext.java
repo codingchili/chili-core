@@ -49,8 +49,7 @@ public class RealmContext extends ServiceContext {
         StorageLoader.prepare()
                 .withClass(PlayerCharacter.class)
                 .withPlugin(PrivateMap.class)
-                .withDB("chilicore")
-                .withCollection("characters")
+                .withCollection(COLLECTION_CHARACTERS)
                 .withContext(new StorageContext<>(vertx))
                 .build(create);
     }

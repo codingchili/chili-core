@@ -3,7 +3,7 @@ package com.codingchili.core.configuration.system;
 import java.util.HashMap;
 
 import com.codingchili.core.configuration.BaseConfigurable;
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.storage.ElasticMap;
 import com.codingchili.core.storage.MongoDBMap;
 
@@ -20,7 +20,7 @@ public class StorageSettings extends BaseConfigurable {
     private Integer minFeedbackChars = 3;
 
     public StorageSettings() {
-        super(Strings.PATH_STORAGE);
+        super(CoreStrings.PATH_STORAGE);
 
         storage.put(MongoDBMap.class.getCanonicalName(),
                 new RemoteStorage(LOCALHOST, 27017, CHILI));

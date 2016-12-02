@@ -1,6 +1,6 @@
 package com.codingchili.core.context.exception;
 
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreException;
 
 /**
@@ -10,6 +10,6 @@ import com.codingchili.core.context.CoreException;
  */
 public class NoSuchCommandException extends CoreException {
     public NoSuchCommandException(String command) {
-        super(Strings.getNoSuchCommand(command));
+        super(CoreStrings.getNoSuchCommand(command));
     }
 }

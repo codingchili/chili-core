@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 import java.util.HashMap;
 
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.AuthenticationDependency;
 import com.codingchili.core.configuration.system.SecuritySettings;
 import com.codingchili.core.context.SystemContext;
@@ -20,7 +20,7 @@ import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.testing.ContextMock;
 
-import static com.codingchili.core.configuration.Strings.testFile;
+import static com.codingchili.core.configuration.CoreStrings.testFile;
 
 /**
  * @author Robin Duda
@@ -50,7 +50,7 @@ public class AuthenticationGeneratorIT {
 
         Configurations.put(createSecuritySettings());
 
-        generator = new AuthenticationGenerator(Strings.testDirectory(AUTHENTICATION_GENERATOR),
+        generator = new AuthenticationGenerator(CoreStrings.testDirectory(AUTHENTICATION_GENERATOR),
                 new ConsoleLogger());
     }
 
@@ -63,7 +63,7 @@ public class AuthenticationGeneratorIT {
         SecuritySettings security = new SecuritySettings();
         HashMap<String, AuthenticationDependency> dependencies = new HashMap<>();
 
-        security.setPath(Strings.PATH_SECURITY);
+        security.setPath(CoreStrings.PATH_SECURITY);
         security.setSecretBytes(64);
 
         dependencies.put(SERVICE_REGEX, new AuthenticationDependency()

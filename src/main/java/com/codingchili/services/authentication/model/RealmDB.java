@@ -12,7 +12,7 @@ import com.codingchili.core.storage.AsyncStorage;
 
 import com.codingchili.services.realm.configuration.RealmSettings;
 
-import static com.codingchili.services.Shared.Strings.MAP_REALMS;
+import static com.codingchili.services.Shared.Strings.COLLECTION_REALMS;
 
 /**
  * @author Robin Duda
@@ -26,7 +26,7 @@ public class RealmDB implements AsyncRealmStore {
     public RealmDB(AsyncStorage<String, HashMap<String, RealmSettings>> map) {
         this.realms = map;
 
-        realms.putIfAbsent(MAP_REALMS, new HashMap<>(), put -> {
+        realms.putIfAbsent(COLLECTION_REALMS, new HashMap<>(), put -> {
             if (put.failed()) {
                 throw new RuntimeException(put.cause());
             }
@@ -34,7 +34,7 @@ public class RealmDB implements AsyncRealmStore {
     }
 
     private void save(Future<Void> future, HashMap<String, RealmSettings> map) {
-        realms.put(MAP_REALMS, map, put -> {
+        realms.put(COLLECTION_REALMS, map, put -> {
             if (put.succeeded()) {
                 future.complete();
             } else {
@@ -47,7 +47,7 @@ public class RealmDB implements AsyncRealmStore {
     public void getMetadataList(Future<ArrayList<RealmMetaData>> future) {
         ArrayList<RealmMetaData> list = new ArrayList<>();
 
-        realms.get(MAP_REALMS, map -> {
+        realms.get(COLLECTION_REALMS, map -> {
 
             if (map.succeeded()) {
 
@@ -65,7 +65,7 @@ public class RealmDB implements AsyncRealmStore {
 
     @Override
     public void signToken(Future<Token> future, String realm, String domain) {
-        realms.get(MAP_REALMS, map -> {
+        realms.get(COLLECTION_REALMS, map -> {
             if (map.succeeded()) {
                 RealmSettings settings = map.result().get(realm);
 
@@ -86,7 +86,7 @@ public class RealmDB implements AsyncRealmStore {
 
     @Override
     public void get(Future<RealmSettings> future, String realmName) {
-        realms.get(MAP_REALMS, map -> {
+        realms.get(COLLECTION_REALMS, map -> {
             if (map.succeeded()) {
                 future.complete(map.result().get(realmName));
             } else {
@@ -97,7 +97,7 @@ public class RealmDB implements AsyncRealmStore {
 
     @Override
     public void put(Future<Void> future, RealmSettings realm) {
-        realms.get(MAP_REALMS, map -> {
+        realms.get(COLLECTION_REALMS, map -> {
             if (map.succeeded()) {
                 HashMap<String, RealmSettings> list = map.result();
                 list.put(realm.getName(), realm);
@@ -110,7 +110,7 @@ public class RealmDB implements AsyncRealmStore {
 
     @Override
     public void remove(Future<RealmSettings> future, String realmName) {
-        realms.get(MAP_REALMS, get -> {
+        realms.get(COLLECTION_REALMS, get -> {
 
             if (get.succeeded()) {
                 HashMap<String, RealmSettings> map = get.result();

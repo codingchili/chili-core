@@ -4,7 +4,7 @@ package com.codingchili.core.configuration.system;
 import java.util.HashMap;
 
 import com.codingchili.core.configuration.BaseConfigurable;
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 
 /**
  * @author Robin Duda
@@ -16,7 +16,7 @@ public class SecuritySettings extends BaseConfigurable {
     private int secretBytes = 64;
 
     public SecuritySettings() {
-        super(Strings.PATH_SECURITY);
+        super(CoreStrings.PATH_SECURITY);
     }
 
     public int getSecretBytes() {

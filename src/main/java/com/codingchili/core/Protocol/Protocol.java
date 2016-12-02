@@ -3,7 +3,7 @@ package com.codingchili.core.protocol;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
 
-import static com.codingchili.core.configuration.Strings.ANY;
+import static com.codingchili.core.configuration.CoreStrings.ANY;
 
 /**
  * @author Robin Duda

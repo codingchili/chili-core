@@ -2,7 +2,7 @@ package com.codingchili.core.protocol.exception;
 
 import com.codingchili.core.context.CoreException;
 
-import static com.codingchili.core.configuration.Strings.ERROR_NOT_AUTHORIZED;
+import static com.codingchili.core.configuration.CoreStrings.ERROR_NOT_AUTHORIZED;
 
 /**
  * @author Robin Duda

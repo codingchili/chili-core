@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 
 import com.codingchili.core.configuration.exception.*;
 
-import static com.codingchili.core.configuration.Strings.getNoServicesConfiguredForBlock;
+import static com.codingchili.core.configuration.CoreStrings.getNoServicesConfiguredForBlock;
 import static com.codingchili.core.context.LaunchContextMock.*;
 
 /**

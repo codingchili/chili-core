@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.nio.file.*;
 
 import com.codingchili.core.configuration.CachedFileStoreSettings;
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.exception.FileMissingException;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.testing.ContextMock;
@@ -23,8 +23,8 @@ import com.codingchili.core.testing.ContextMock;
  */
 @RunWith(VertxUnitRunner.class)
 public class CachedFileStoreTest {
-    private static final String TEST_DIRECTORY = Strings.testDirectory("CachedFileStore");
-    private static final String TEST_FILE_ABSOLUTE = Strings.testFile("CachedFileStore", "test.txt");
+    private static final String TEST_DIRECTORY = CoreStrings.testDirectory("CachedFileStore");
+    private static final String TEST_FILE_ABSOLUTE = CoreStrings.testFile("CachedFileStore", "test.txt");
     private static final String TEST_FILE = "/test.txt";
     private static final String TEST_FILE_TRAVERSAL = "../TraversalTestFile.txt";
     private Vertx vertx;

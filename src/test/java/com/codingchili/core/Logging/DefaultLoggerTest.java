@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 
 import com.codingchili.core.testing.LoggerMock;
 
-import static com.codingchili.core.configuration.Strings.*;
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda

@@ -81,7 +81,7 @@ public class ConfigurationsTest {
 
                     @Override
                     public void onConfigurationDefaultsLoaded(String path, Class<?> clazz) {
-                        if (path.equals(Strings.testFile(CONFIGURATIONS, DEFAULT_JSON))) {
+                        if (path.equals(CoreStrings.testFile(CONFIGURATIONS, DEFAULT_JSON))) {
                             Configurations.reset();
                             async.complete();
                         }
@@ -89,14 +89,14 @@ public class ConfigurationsTest {
                 };
             }
         });
-        load(Strings.testFile(CONFIGURATIONS, DEFAULT_JSON), ConfigurableTest.class);
+        load(CoreStrings.testFile(CONFIGURATIONS, DEFAULT_JSON), ConfigurableTest.class);
     }
 
     @Test
     public void testLoadInvalidConfigurable(TestContext test) {
         Async async = test.async();
         try {
-            load("z", Strings.class);
+            load("z", CoreStrings.class);
         } catch (InvalidConfigurableException e) {
             async.complete();
         }

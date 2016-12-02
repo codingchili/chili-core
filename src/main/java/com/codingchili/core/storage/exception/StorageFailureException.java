@@ -1,6 +1,6 @@
 package com.codingchili.core.storage.exception;
 
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreException;
 
 /**
@@ -11,6 +11,6 @@ import com.codingchili.core.context.CoreException;
 public class StorageFailureException extends CoreException {
 
     public StorageFailureException() {
-        super(Strings.ERROR_STORAGE_EXCEPTION);
+        super(CoreStrings.ERROR_STORAGE_EXCEPTION);
     }
 }

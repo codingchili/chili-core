@@ -8,7 +8,7 @@ import io.vertx.core.shareddata.AsyncMap;
 
 import java.util.*;
 
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.storage.exception.*;
@@ -49,7 +49,7 @@ public class HazelMap<Key, Value> implements AsyncStorage<Key, Value> {
                     imap = instance.getMap(context.DB());
                     future.complete(this);
                 } else {
-                    future.fail(Strings.ERROR_CLUSTERING_REQUIRED);
+                    future.fail(CoreStrings.ERROR_CLUSTERING_REQUIRED);
                 }
             } else {
                 future.fail(cluster.cause());

@@ -2,7 +2,7 @@ package com.codingchili.core.storage;
 
 import io.vertx.core.Future;
 
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.logging.Level;
@@ -16,7 +16,7 @@ import static com.codingchili.services.Shared.Strings.*;
  */
 public class StorageLoader {
     private CoreContext context;
-    private String DB;
+    private String DB = DEFAULT_DB;
     private Class clazz;
     private String collection;
     private String plugin;
@@ -37,7 +37,7 @@ public class StorageLoader {
                     .<Key, Value>newInstance(future, storage);
 
         } catch (ReflectiveOperationException e) {
-            context.console().log(Strings.getStorageLoaderError(plugin, DB, collection), Level.SEVERE);
+            context.console().log(CoreStrings.getStorageLoaderError(plugin, DB, collection), Level.SEVERE);
             e.printStackTrace();
             System.exit(0);
         }
@@ -89,7 +89,7 @@ public class StorageLoader {
 
     private void checkIsSet(Object object, String type) {
         if (object == null) {
-            throw new RuntimeException(Strings.getStorageLoaderMissingArgument(type));
+            throw new RuntimeException(CoreStrings.getStorageLoaderMissingArgument(type));
         }
     }
 }

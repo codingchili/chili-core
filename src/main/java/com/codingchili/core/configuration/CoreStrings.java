@@ -3,13 +3,15 @@ package com.codingchili.core.configuration;
 import java.nio.file.Path;
 import java.time.*;
 
+import com.codingchili.core.files.Configurations;
+
 /**
  * @author Robin Duda
  *         <p>
  *         Store json keys and protocol headers so that they are easily maintained.
  *         Extend this class in service implementations to add more constants.
  */
-public abstract class Strings {
+public abstract class CoreStrings {
     // paths to configuration files.
     public static final String PATH_VALIDATOR = "conf/system/validator.json";
     public static final String PATH_LAUNCHER = "conf/system/launcher.json";
@@ -76,8 +78,7 @@ public abstract class Strings {
     public static final String NODE_LOCAL = "local";
 
     // Storage constants
-    public static final String STORAGE_COLLECTION = "collection";
-    public static final String STORAGE_DATABASE = "dabatase";
+    public static final String DEFAULT_DB = "chili";
 
     // logging constants
     public static final String LOG_AT = "@";
@@ -109,6 +110,8 @@ public abstract class Strings {
     public static final String LOG_VALUE_EXPIRED = "storage.expired";
     public static final String LOG_VALUE_EXPIRED_MISSING = "storage.failure";
     public static final String LOG_STORAGE_CLEARED = "storage.cleared";
+    public static final String LOG_STORAGE_COLLECTION = "collection";
+    public static final String LOG_STORAGE_DB = "dabatase";
     public static final String[] LOG_HIDDEN_TAGS = new String[]{"dev", "LOCAL", "3.6.3"};
 
     public static final String ERROR_TOKEN_FACTORY = "Token factory error to generate token.";
@@ -123,7 +126,6 @@ public abstract class Strings {
     public static final String ERROR_ALREADY_INITIALIZED = "Error already initialized.";
     public static final String ERROR_STORAGE_EXCEPTION = "Failed to perform a storage operation.";
     public static final String CONFIGURED_BLOCKS = "Configured deployment blocks";
-
 
     /**
      * Replaces tags in a logging message.
@@ -160,7 +162,7 @@ public abstract class Strings {
      */
     public static String format(Path path, String root) {
         return (path.toString()
-                .replace("\\", Strings.DIR_SEPARATOR)
+                .replace("\\", CoreStrings.DIR_SEPARATOR)
                 .replaceFirst(root, ""));
     }
 
@@ -201,7 +203,7 @@ public abstract class Strings {
     }
 
     public static String getService(String config) {
-        return Strings.DIR_SERVICES + DIR_SEPARATOR + config + EXT_JSON;
+        return CoreStrings.DIR_SERVICES + DIR_SEPARATOR + config + EXT_JSON;
     }
 
     public static String format(Path path) {

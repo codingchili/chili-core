@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import com.codingchili.core.configuration.Configurable;
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.*;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.configuration.exception.FileReadException;
@@ -21,7 +21,7 @@ import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.Serializer;
 
-import static com.codingchili.core.configuration.Strings.*;
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
@@ -66,7 +66,7 @@ public abstract class Configurations {
 
             new FileWatcherBuilder(context)
                     .rate(Configurations::getConfigurationPoll)
-                    .onDirectory(Strings.DIR_CONFIG)
+                    .onDirectory(CoreStrings.DIR_CONFIG)
                     .withListener(new ConfigurationFileWatcher())
                     .build();
 
@@ -86,14 +86,14 @@ public abstract class Configurations {
         @Override
         public void onFileModify(Path path) {
             if (monitoring.get()) {
-                Configurations.reload(Strings.format(path, DIR_CONFIG));
+                Configurations.reload(CoreStrings.format(path, DIR_CONFIG));
             }
         }
 
         @Override
         public void onFileRemove(Path path) {
             if (monitoring.get()) {
-                Configurations.reload(Strings.format(path, DIR_CONFIG));
+                Configurations.reload(CoreStrings.format(path, DIR_CONFIG));
             }
         }
     }
@@ -166,7 +166,7 @@ public abstract class Configurations {
             logger.onFileLoaded(path);
             return config;
         } catch (IOException e) {
-            logger.onFileLoadError(Strings.getFileReadError(path));
+            logger.onFileLoadError(CoreStrings.getFileReadError(path));
             throw new FileReadException(path);
         }
     }
@@ -190,7 +190,7 @@ public abstract class Configurations {
         File override = Paths.get(overrideFile).toFile();
 
         if (override.exists()) {
-            return Strings.format(override.toPath());
+            return CoreStrings.format(override.toPath());
         } else {
             return filePath;
         }
@@ -241,7 +241,7 @@ public abstract class Configurations {
             return Files.walk(Paths.get(path))
                     .filter(file -> !file.toFile().isDirectory())
                     .map(Path::toString)
-                    .map(text -> text.replaceAll("\\\\", Strings.DIR_SEPARATOR))
+                    .map(text -> text.replaceAll("\\\\", CoreStrings.DIR_SEPARATOR))
                     .collect(Collectors.toList());
         } catch (IOException e) {
             throw new FileReadException(path);

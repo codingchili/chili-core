@@ -2,7 +2,7 @@ package com.codingchili.services.website;
 
 import io.vertx.core.Vertx;
 
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 
 import com.codingchili.services.website.configuration.WebserverContext;
 import com.codingchili.services.website.configuration.WebserverSettings;
@@ -37,6 +37,6 @@ class ContextMock extends WebserverContext {
 
     @Override
     public String resources() {
-        return Strings.testDirectory("Services/website");
+        return CoreStrings.testDirectory("Services/website");
     }
 }

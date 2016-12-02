@@ -3,7 +3,7 @@ package com.codingchili.core.security;
 import java.io.Serializable;
 import java.time.Instant;
 
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 
 /**
  * @author Robin Duda
@@ -28,7 +28,7 @@ public class Token implements Serializable {
             this.expiry = Instant.now().getEpochSecond() + 3600 * 24 * 7;
             this.key = factory.signToken(domain, this.expiry);
         } catch (Throwable e) {
-            throw new RuntimeException(Strings.ERROR_TOKEN_FACTORY);
+            throw new RuntimeException(CoreStrings.ERROR_TOKEN_FACTORY);
         }
     }
 

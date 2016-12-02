@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.AuthenticationDependency;
 import com.codingchili.core.configuration.system.SecuritySettings;
 import com.codingchili.core.configuration.BaseConfigurable;
@@ -16,7 +16,7 @@ import com.codingchili.core.files.Configurations;
 import com.codingchili.core.files.JsonFileStore;
 import com.codingchili.core.logging.Logger;
 
-import static com.codingchili.core.configuration.Strings.*;
+import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.files.Configurations.security;
 import static com.codingchili.core.protocol.Serializer.json;
 import static com.codingchili.core.protocol.Serializer.unpack;
@@ -62,7 +62,7 @@ public class AuthenticationGenerator {
                     }
 
                     config.put(key, shared.get(key));
-                    logger.log(Strings.getGeneratingShared(key, path));
+                    logger.log(CoreStrings.getGeneratingShared(key, path));
                 });
             });
         });
@@ -92,7 +92,7 @@ public class AuthenticationGenerator {
 
                 dependency.getTokens().entrySet().forEach(entry -> {
                     TokenIdentifier identifier = entry.getValue();
-                    logger.log(Strings.getGeneratingToken(identifier.getService(), entry.getKey(), path));
+                    logger.log(CoreStrings.getGeneratingToken(identifier.getService(), entry.getKey(), path));
                     config.put(entry.getKey(), json(new Token(getFactory(identifier), getIdentity(config))));
                 });
             });
@@ -114,7 +114,7 @@ public class AuthenticationGenerator {
     }
 
     private RemoteIdentity getIdentity(JsonObject config) {
-        RemoteIdentity identity = unpack(config.getJsonObject(Strings.ID_IDENTITY), RemoteIdentity.class);
+        RemoteIdentity identity = unpack(config.getJsonObject(CoreStrings.ID_IDENTITY), RemoteIdentity.class);
 
         if (identity == null || identity.getHost() == null || identity.getNode() == null) {
             identity = new RemoteIdentity();

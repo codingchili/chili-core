@@ -5,7 +5,7 @@ import io.vertx.core.VertxOptions;
 import io.vertx.core.metrics.MetricsOptions;
 
 import com.codingchili.core.configuration.BaseConfigurable;
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 
 /**
  * @author Robin Duda
@@ -25,7 +25,7 @@ public class SystemSettings extends BaseConfigurable {
     private int workerPoolSize = 16;
 
     public SystemSettings() {
-        path = Strings.PATH_SYSTEM;
+        path = CoreStrings.PATH_SYSTEM;
     }
 
     public int getMetricRate() {

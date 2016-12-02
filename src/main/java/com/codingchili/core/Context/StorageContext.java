@@ -9,7 +9,7 @@ import com.codingchili.core.files.Configurations;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Validator;
 
-import static com.codingchili.core.configuration.Strings.*;
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
@@ -171,7 +171,7 @@ public class StorageContext<Value> extends SystemContext {
     }
 
     private void log(JsonObject json) {
-        console().log(json.put(STORAGE_DATABASE, DB).put(STORAGE_COLLECTION, collection));
+        console().log(json.put(LOG_STORAGE_DB, DB).put(LOG_STORAGE_COLLECTION, collection));
     }
 
     /**

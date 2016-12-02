@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.files.JsonFileStore;
@@ -35,7 +35,7 @@ public class JsonMap<Key, Value> extends BaseFilter<Value> implements AsyncStora
             db = JsonFileStore.readObject(context.DB());
         } catch (IOException e) {
             db = new JsonObject();
-            context.console().log(Strings.getFileReadError(context.DB()));
+            context.console().log(CoreStrings.getFileReadError(context.DB()));
         }
 
         future.complete(this);

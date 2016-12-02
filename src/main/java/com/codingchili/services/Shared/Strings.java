@@ -1,9 +1,13 @@
 package com.codingchili.services.Shared;
 
+import com.codingchili.core.configuration.CoreStrings;
+
 /**
  * @author Robin Duda
+ *
+ * Override of strings in core and adds some new service-specific.
  */
-public class Strings extends com.codingchili.core.configuration.Strings {
+public abstract class Strings extends CoreStrings {
     public static final String PATH_REALM = "conf/realm/";
     public static final String PATH_INSTANCE = "conf/game/instances/";
     public static final String PATH_GAME_CLASSES = "conf/game/class/";
@@ -67,10 +71,9 @@ public class Strings extends com.codingchili.core.configuration.Strings {
     public static final String NODE_ROUTING = "routing.node";
     public static final String SOCIAL_NODE = "social.node";
 
-    public static final String MAP_REALMS = "realms";
-    public static final String MAP_ACCOUNTS = "accounts";
-    public static final String MAP_CHARACTERS = "characters";
-    public static final String MAP_ID = ".map";
+    public static final String COLLECTION_REALMS = "realms";
+    public static final String COLLECTION_ACCOUNTS = "accounts";
+    public static final String COLLECTION_CHARACTERS = "characters";
 
     public static final String LOG_VERSION = "version";
     public static final String LOG_USER_AGENT = "User-Agent";

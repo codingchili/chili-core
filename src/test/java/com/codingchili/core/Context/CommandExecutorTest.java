@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 
 import com.codingchili.core.testing.MockLogListener;
 
-import static com.codingchili.core.configuration.Strings.HELP;
+import static com.codingchili.core.configuration.CoreStrings.HELP;
 
 /**
  * @author Robin Duda

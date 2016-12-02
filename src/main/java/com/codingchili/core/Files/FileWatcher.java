@@ -8,7 +8,7 @@ import java.util.HashMap;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.TimerSource;
 
-import static com.codingchili.core.configuration.Strings.DIR_SEPARATOR;
+import static com.codingchili.core.configuration.CoreStrings.DIR_SEPARATOR;
 import static java.nio.file.StandardWatchEventKinds.*;
 
 /**

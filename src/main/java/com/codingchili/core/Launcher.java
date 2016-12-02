@@ -6,14 +6,14 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.*;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
 import com.codingchili.core.protocol.ClusterNode;
 
-import static com.codingchili.core.configuration.Strings.*;
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
@@ -37,7 +37,7 @@ public class Launcher extends ClusterNode {
     Launcher(LaunchContext context) {
         this.context = context;
 
-        logger.log(Strings.getStartupText(context.settings().getVersion()), Level.STARTUP);
+        logger.log(CoreStrings.getStartupText(context.settings().getVersion()), Level.STARTUP);
 
         CommandExecutor executor = new CommandExecutor(context);
         try {
@@ -110,13 +110,13 @@ public class Launcher extends ClusterNode {
             boolean isClusteredVerticle = clazz.getSuperclass().equals(ClusterNode.class);
 
             if (!isClusteredVerticle) {
-                logger.log(Strings.getNodeNotVerticle(node), Level.SEVERE);
+                logger.log(CoreStrings.getNodeNotVerticle(node), Level.SEVERE);
                 exit();
             }
 
             return isClusteredVerticle;
         } catch (ClassNotFoundException e) {
-            logger.log(Strings.getNodeNotFound(node), Level.SEVERE);
+            logger.log(CoreStrings.getNodeNotFound(node), Level.SEVERE);
             exit();
             return false;
         }

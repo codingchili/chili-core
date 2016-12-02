@@ -9,7 +9,7 @@ import com.codingchili.core.configuration.system.LauncherSettings;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.security.RemoteIdentity;
 
-import static com.codingchili.core.configuration.Strings.ID_DEFAULT;
+import static com.codingchili.core.configuration.CoreStrings.ID_DEFAULT;
 
 /**
  * @author Robin Duda

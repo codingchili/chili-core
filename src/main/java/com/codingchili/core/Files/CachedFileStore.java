@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.codingchili.core.configuration.CachedFileStoreSettings;
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.configuration.exception.ConfigurationMismatchException;
 import com.codingchili.core.configuration.exception.FileMissingException;
@@ -99,7 +99,7 @@ public class CachedFileStore<T> implements FileStoreListener {
     public void onFileModify(Path path) {
         try {
             byte[] fileBytes = Files.readAllBytes(path);
-            String filePath = Strings.format(path, settings.getDirectory());
+            String filePath = CoreStrings.format(path, settings.getDirectory());
 
             if (settings.isGzip()) {
                 fileBytes = Serializer.gzip(fileBytes);
@@ -115,7 +115,7 @@ public class CachedFileStore<T> implements FileStoreListener {
 
     @Override
     public void onFileRemove(Path path) {
-        files.remove(Strings.format(path, settings.getDirectory()));
+        files.remove(CoreStrings.format(path, settings.getDirectory()));
     }
 
     @SuppressWarnings("unchecked")

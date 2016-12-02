@@ -52,15 +52,15 @@ public class AuthContext extends ServiceContext {
 
         StorageLoader.prepare()
                 .withContext(context)
-                .withDB(MAP_REALMS)
-                .withClass(RealmSettings.class)
+                .withCollection(COLLECTION_ACCOUNTS)
+                .withClass(AccountMapping.class)
                 .withPlugin(MongoDBMap.class)
         .build(realmFuture);
 
         StorageLoader.prepare()
                 .withContext(context)
-                .withDB(MAP_REALMS)
-                .withClass(AccountMapping.class)
+                .withCollection(COLLECTION_REALMS)
+                .withClass(RealmSettings.class)
                 .withPlugin(MongoDBMap.class)
                 .build(realmFuture);
     }

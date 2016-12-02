@@ -2,14 +2,14 @@ package com.codingchili.core.context;
 
 import java.util.*;
 
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.LauncherSettings;
 import com.codingchili.core.context.exception.NoSuchCommandException;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.*;
 import com.codingchili.core.security.AuthenticationGenerator;
 
-import static com.codingchili.core.configuration.Strings.*;
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
@@ -76,7 +76,7 @@ public class CommandExecutor {
 
         List<BlockRow> blocks = new ArrayList<>();
 
-        logger.log("\t\t" + Strings.CONFIGURED_BLOCKS + "\t\tremotes available", Level.WARNING);
+        logger.log("\t\t" + CoreStrings.CONFIGURED_BLOCKS + "\t\tremotes available", Level.WARNING);
         settings.getBlocks().keySet()
                 .forEach(block -> {
                     BlockRow row = new BlockRow(block);

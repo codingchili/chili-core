@@ -10,7 +10,7 @@ import com.codingchili.core.configuration.system.ValidatorSettings;
 import com.codingchili.core.protocol.exception.RequestValidationException;
 import com.codingchili.core.files.Configurations;
 
-import static com.codingchili.core.configuration.Strings.*;
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda

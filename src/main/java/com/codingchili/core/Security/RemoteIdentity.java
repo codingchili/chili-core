@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
 
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 
 /**
  * @author Robin Duda
@@ -40,6 +40,6 @@ public class RemoteIdentity implements Serializable {
 
     @JsonIgnore
     public String toString() {
-        return node + Strings.LOG_AT + host;
+        return node + CoreStrings.LOG_AT + host;
     }
 }

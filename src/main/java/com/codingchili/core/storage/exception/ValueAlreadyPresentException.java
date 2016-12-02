@@ -1,6 +1,6 @@
 package com.codingchili.core.storage.exception;
 
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreException;
 
 /**
@@ -10,6 +10,6 @@ import com.codingchili.core.context.CoreException;
  */
 public class ValueAlreadyPresentException extends CoreException {
     public ValueAlreadyPresentException(Object key) {
-        super(Strings.getValueAlreadyPresent(key.toString()));
+        super(CoreStrings.getValueAlreadyPresent(key.toString()));
     }
 }

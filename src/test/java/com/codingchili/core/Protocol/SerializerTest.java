@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.security.Token;
 import com.codingchili.core.security.TokenFactory;
 
@@ -56,7 +56,7 @@ public class SerializerTest {
     public void testObjectToJson(TestContext context) {
         JsonObject json = Serializer.json(token);
 
-        context.assertEquals(TEST, json.getString(Strings.ID_DOMAIN));
+        context.assertEquals(TEST, json.getString(CoreStrings.ID_DOMAIN));
     }
 
     @Test

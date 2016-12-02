@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
 
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 
 /**
  * @author Robin Duda
@@ -49,7 +49,7 @@ public abstract class JsonFileStore {
 
         if (files != null) {
             for (File file : files) {
-                objects.add(new JsonObject(readFile(path + Strings.DIR_SEPARATOR + file.getName())));
+                objects.add(new JsonObject(readFile(path + CoreStrings.DIR_SEPARATOR + file.getName())));
             }
         }
         return objects;
@@ -67,14 +67,14 @@ public abstract class JsonFileStore {
 
         if (files != null) {
             for (File file : files) {
-                objects.add(new JsonArray(readFile(path + Strings.DIR_SEPARATOR + file.getName())));
+                objects.add(new JsonArray(readFile(path + CoreStrings.DIR_SEPARATOR + file.getName())));
             }
         }
         return objects;
     }
 
     private static String readFile(String path) throws IOException {
-        return new String(Files.readAllBytes(FileSystems.getDefault().getPath(currentPath() + Strings.DIR_SEPARATOR + path)));
+        return new String(Files.readAllBytes(FileSystems.getDefault().getPath(currentPath() + CoreStrings.DIR_SEPARATOR + path)));
     }
 
     /**
@@ -91,7 +91,7 @@ public abstract class JsonFileStore {
             if (pathExists) {
                 Files.write(path, json.encodePrettily().getBytes());
             } else {
-                throw new IOException(Strings.getErrorCreateDirectory(target));
+                throw new IOException(CoreStrings.getErrorCreateDirectory(target));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

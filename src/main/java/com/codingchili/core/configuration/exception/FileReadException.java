@@ -1,6 +1,6 @@
 package com.codingchili.core.configuration.exception;
 
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 
 /**
  * @author Robin Duda
@@ -10,6 +10,6 @@ import com.codingchili.core.configuration.Strings;
 public class FileReadException extends RuntimeException {
 
     public FileReadException(String path) {
-        super(Strings.getFileReadError(path));
+        super(CoreStrings.getFileReadError(path));
     }
 }

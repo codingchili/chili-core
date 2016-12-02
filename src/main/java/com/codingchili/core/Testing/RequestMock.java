@@ -10,7 +10,7 @@ import io.vertx.core.json.JsonObject;
 import com.codingchili.core.protocol.ClusterRequest;
 import com.codingchili.core.protocol.ResponseStatus;
 
-import static com.codingchili.core.configuration.Strings.*;
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda

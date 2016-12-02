@@ -5,7 +5,7 @@ import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.dropwizard.MetricsService;
 
-import com.codingchili.core.configuration.Strings;
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.*;
@@ -39,7 +39,7 @@ public class SystemContext implements CoreContext {
     private void initialize() {
         MetricsService metrics = MetricsService.create(vertx);
 
-        periodic(this::getMetricTimer, Strings.LOG_METRICS, handler -> {
+        periodic(this::getMetricTimer, CoreStrings.LOG_METRICS, handler -> {
             if (system().isMetrics()) {
                 JsonObject json = metrics.getMetricsSnapshot(vertx);
                 onMetricsSnapshot(json);
@@ -147,7 +147,7 @@ public class SystemContext implements CoreContext {
 
     @Override
     public RemoteIdentity identity() {
-        return new RemoteIdentity(Strings.ID_SYSTEM, Strings.NODE_LOCAL);
+        return new RemoteIdentity(CoreStrings.ID_SYSTEM, CoreStrings.NODE_LOCAL);
     }
 
 

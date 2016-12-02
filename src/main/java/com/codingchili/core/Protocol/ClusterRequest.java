@@ -6,7 +6,7 @@ import io.vertx.core.json.JsonObject;
 
 import com.codingchili.core.security.Token;
 
-import static com.codingchili.core.configuration.Strings.*;
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
