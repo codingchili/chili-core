@@ -44,12 +44,6 @@ sourceSets {
     }
 }
 
-test {
-    filter {
-        includeTestsMatching "Test*"
-    }
-}
-
 dependencies {
     compile group: 'junit', name: 'junit', version:'4.12'
     compile group: 'io.vertx', name: 'vertx-core', version:'3.3.3'
