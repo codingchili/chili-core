@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.codingchili.core.security.ByteComparatorTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2016-12-03T11:43:08" hostname="DESKTOP-TDNIONG" time="0.036">
-  <properties/>
-  <testcase name="verifyHashCompareSuccess" classname="com.codingchili.core.security.ByteComparatorTest" time="0.016"/>
-  <testcase name="verifyHashCompareFailure" classname="com.codingchili.core.security.ByteComparatorTest" time="0.02"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

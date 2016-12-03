@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.codingchili.core.logging.DefaultLoggerTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2016-12-03T11:43:04" hostname="DESKTOP-TDNIONG" time="0.001">
-  <properties/>
-  <testcase name="testGenerateLogEvent" classname="com.codingchili.core.logging.DefaultLoggerTest" time="0.001"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

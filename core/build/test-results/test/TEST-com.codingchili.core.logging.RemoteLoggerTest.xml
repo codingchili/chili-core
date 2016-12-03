@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.codingchili.core.logging.RemoteLoggerTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2016-12-03T11:43:04" hostname="DESKTOP-TDNIONG" time="0.018">
-  <properties/>
-  <testcase name="testLogRemote" classname="com.codingchili.core.logging.RemoteLoggerTest" time="0.018"/>
-  <system-out><![CDATA[[message 11:43:04.866] -> mock.node ~ ContextMock ~ INFO	localhost ~ text ~ 
-]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
