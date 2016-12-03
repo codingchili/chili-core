@@ -16,9 +16,13 @@
       "tokens" : { }
     },
     "authserver" : {
-      "preshare" : [ ],
-      "secrets" : [ "clientSecret", "realmSecret" ],
+      "preshare" : [ "clientSecret" ],
+      "secrets" : [ ],
       "tokens" : { }
+    },
+    "realmregistry": {
+      "preshare" : [ "clientSecret" ],
+      "secrets" : [ "realmSecret" ]
     },
     "conf/realm/[^/]*" : {
       "preshare" : [ "global" ],

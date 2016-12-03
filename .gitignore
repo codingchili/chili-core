@@ -2,6 +2,6 @@
 dungeon-game.iml
 lib/
 target/
-website/bower_components/
+output/website/bower_components/
 elasticsearch/
 launcher.bat

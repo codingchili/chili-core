@@ -1,0 +1,19 @@
+group = 'com.codingchili'
+version = '1.0-SNAPSHOT'
+
+libsDirName = "../../output"
+
+description = """"""
+
+jar {
+    from {
+        (configurations.runtime).collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    manifest {
+        attributes 'Implementation-Title' : 'chili-core',
+                'Implementation-Version': version,
+                'Main-Class': 'com.codingchili.core.Launcher'
+    }
+}
