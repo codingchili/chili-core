@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - Class com.codingchili.core.security.AuthenticationGeneratorIT</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>Class com.codingchili.core.security.AuthenticationGeneratorIT</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/com.codingchili.core.security.html">com.codingchili.core.security</a> &gt; AuthenticationGeneratorIT</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">4</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">0.127s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div id="tabs">
+<ul class="tabLinks">
+<li>
+<a href="#tab0">Tests</a>
+</li>
+<li>
+<a href="#tab1">Standard output</a>
+</li>
+</ul>
+<div id="tab0" class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">testGenerateAll</td>
+<td>0.040s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testGeneratePreshared</td>
+<td>0.020s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testGenerateSecrets</td>
+<td>0.029s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testGenerateTokens</td>
+<td>0.038s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div id="tab1" class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre>[error 11:43:08.313] -&gt; mock.node ~ ContextMock ~ WARNING	localhost ~ Error already initialized. ~ 
+[file.load 11:43:08.317] -&gt; launcher ~ LaunchContext ~ INFO	local ~ ../../../../../service1.json ~ 
+[file.load 11:43:08.318] -&gt; launcher ~ LaunchContext ~ INFO	local ~ ../../../../../service2.json ~ 
+[Generating] secret 'service1secret' for ../common/testing/resources/AuthenticationGenerator/service1.json ..
+[Generating] secret 'local' for ../common/testing/resources/AuthenticationGenerator/service1.json ..
+[Generating] secret 'local' for ../common/testing/resources/AuthenticationGenerator/service2.json ..
+[error 11:43:08.342] -&gt; mock.node ~ ContextMock ~ WARNING	localhost ~ Error already initialized. ~ 
+[Generating] preshared key 'global' for ../common/testing/resources/AuthenticationGenerator/service1.json ..
+[Generating] preshared key 'global' for ../common/testing/resources/AuthenticationGenerator/service2.json ..
+[error 11:43:08.363] -&gt; mock.node ~ ContextMock ~ WARNING	localhost ~ Error already initialized. ~ 
+[Generating] secret 'service1secret' for ../common/testing/resources/AuthenticationGenerator/service1.json ..
+[Generating] secret 'local' for ../common/testing/resources/AuthenticationGenerator/service1.json ..
+[Generating] secret 'local' for ../common/testing/resources/AuthenticationGenerator/service2.json ..
+[Generating] preshared key 'global' for ../common/testing/resources/AuthenticationGenerator/service1.json ..
+[Generating] preshared key 'global' for ../common/testing/resources/AuthenticationGenerator/service2.json ..
+[Generating] token 'service2/service1token' for ../common/testing/resources/AuthenticationGenerator/service1.json ..
+[AuthenticationGenerator] Error: Identity must be configured.
+[Generating] token 'service1/service2token' for ../common/testing/resources/AuthenticationGenerator/service2.json ..
+[AuthenticationGenerator] Error: Identity must be configured.
+[error 11:43:08.401] -&gt; mock.node ~ ContextMock ~ WARNING	localhost ~ Error already initialized. ~ 
+[Generating] secret 'service1secret' for ../common/testing/resources/AuthenticationGenerator/service1.json ..
+[Generating] secret 'local' for ../common/testing/resources/AuthenticationGenerator/service1.json ..
+[Generating] secret 'local' for ../common/testing/resources/AuthenticationGenerator/service2.json ..
+[Generating] preshared key 'global' for ../common/testing/resources/AuthenticationGenerator/service1.json ..
+[Generating] preshared key 'global' for ../common/testing/resources/AuthenticationGenerator/service2.json ..
+[Generating] token 'service2/service1token' for ../common/testing/resources/AuthenticationGenerator/service1.json ..
+[AuthenticationGenerator] Error: Identity must be configured.
+[Generating] token 'service1/service2token' for ../common/testing/resources/AuthenticationGenerator/service2.json ..
+[AuthenticationGenerator] Error: Identity must be configured.
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="http://www.gradle.org">Gradle 3.2.1</a> at Dec 3, 2016 12:43:26 PM</p>
+</div>
+</div>
+</body>
+</html>

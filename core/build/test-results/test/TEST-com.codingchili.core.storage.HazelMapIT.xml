@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.codingchili.core.storage.HazelMapIT" tests="20" skipped="0" failures="0" errors="0" timestamp="2016-12-03T11:43:12" hostname="DESKTOP-TDNIONG" time="1.997">
+  <properties/>
+  <testcase name="testRemoveNotPresent" classname="com.codingchili.core.storage.HazelMapIT" time="0.034"/>
+  <testcase name="testGet" classname="com.codingchili.core.storage.HazelMapIT" time="0.018"/>
+  <testcase name="testPut" classname="com.codingchili.core.storage.HazelMapIT" time="0.022"/>
+  <testcase name="testQuerySimilarTooShortExpression" classname="com.codingchili.core.storage.HazelMapIT" time="0.008"/>
+  <testcase name="testPutIfAbsentTTL" classname="com.codingchili.core.storage.HazelMapIT" time="0.814"/>
+  <testcase name="testPutIfAbsentNotAbsent" classname="com.codingchili.core.storage.HazelMapIT" time="0.012"/>
+  <testcase name="testClear" classname="com.codingchili.core.storage.HazelMapIT" time="0.028"/>
+  <testcase name="testSize" classname="com.codingchili.core.storage.HazelMapIT" time="0.028"/>
+  <testcase name="testQueryExact" classname="com.codingchili.core.storage.HazelMapIT" time="0.031"/>
+  <testcase name="testQueryRange" classname="com.codingchili.core.storage.HazelMapIT" time="0.021"/>
+  <testcase name="testQueryMatchNone" classname="com.codingchili.core.storage.HazelMapIT" time="0.016"/>
+  <testcase name="testPutIfAbsent" classname="com.codingchili.core.storage.HazelMapIT" time="0.017"/>
+  <testcase name="testQuerySimilar" classname="com.codingchili.core.storage.HazelMapIT" time="0.031"/>
+  <testcase name="testQueryRangeNoMatches" classname="com.codingchili.core.storage.HazelMapIT" time="0.015"/>
+  <testcase name="testReplace" classname="com.codingchili.core.storage.HazelMapIT" time="0.021"/>
+  <testcase name="testQuerySimilarInvalidExpression" classname="com.codingchili.core.storage.HazelMapIT" time="0.016"/>
+  <testcase name="testPutWithTTL" classname="com.codingchili.core.storage.HazelMapIT" time="0.817"/>
+  <testcase name="testReplaceIfNotPresent" classname="com.codingchili.core.storage.HazelMapIT" time="0.017"/>
+  <testcase name="testGetMissing" classname="com.codingchili.core.storage.HazelMapIT" time="0.013"/>
+  <testcase name="testRemove" classname="com.codingchili.core.storage.HazelMapIT" time="0.015"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[Dec 03, 2016 12:43:09 PM com.hazelcast.config.AbstractXmlConfigHelper
+WARNING: Name of the hazelcast schema location incorrect using default
+Dec 03, 2016 12:43:09 PM com.hazelcast.instance.DefaultAddressPicker
+INFO: [LOCAL] [dev] [3.6.3] Prefer IPv4 stack is true.
+Dec 03, 2016 12:43:09 PM com.hazelcast.instance.DefaultAddressPicker
+INFO: [LOCAL] [dev] [3.6.3] Picked Address[192.168.1.21]:5702, using socket ServerSocket[addr=/0:0:0:0:0:0:0:0,localport=5702], bind any local is true
+Dec 03, 2016 12:43:09 PM com.hazelcast.system
+INFO: [192.168.1.21]:5702 [dev] [3.6.3] Hazelcast 3.6.3 (20160527 - 08b28c3) starting at Address[192.168.1.21]:5702
+Dec 03, 2016 12:43:09 PM com.hazelcast.system
+INFO: [192.168.1.21]:5702 [dev] [3.6.3] Copyright (c) 2008-2016, Hazelcast, Inc. All Rights Reserved.
+Dec 03, 2016 12:43:09 PM com.hazelcast.system
+INFO: [192.168.1.21]:5702 [dev] [3.6.3] Configured Hazelcast Serialization version : 1
+Dec 03, 2016 12:43:09 PM com.hazelcast.spi.OperationService
+INFO: [192.168.1.21]:5702 [dev] [3.6.3] Backpressure is disabled
+Dec 03, 2016 12:43:09 PM com.hazelcast.spi.impl.operationexecutor.classic.ClassicOperationExecutor
+INFO: [192.168.1.21]:5702 [dev] [3.6.3] Starting with 2 generic operation threads and 4 partition operation threads.
+Dec 03, 2016 12:43:09 PM com.hazelcast.instance.Node
+INFO: [192.168.1.21]:5702 [dev] [3.6.3] Creating MulticastJoiner
+Dec 03, 2016 12:43:09 PM com.hazelcast.core.LifecycleService
+INFO: [192.168.1.21]:5702 [dev] [3.6.3] Address[192.168.1.21]:5702 is STARTING
+Dec 03, 2016 12:43:09 PM com.hazelcast.nio.tcp.nonblocking.NonBlockingIOThreadingModel
+INFO: [192.168.1.21]:5702 [dev] [3.6.3] TcpIpConnectionManager configured with Non Blocking IO-threading model: 3 input threads and 3 output threads
+Dec 03, 2016 12:43:09 PM com.hazelcast.cluster.impl.MulticastJoiner
+INFO: [192.168.1.21]:5702 [dev] [3.6.3] Trying to join to discovered node: Address[192.168.1.21]:5701
+Dec 03, 2016 12:43:09 PM com.hazelcast.nio.tcp.InitConnectionTask
+INFO: [192.168.1.21]:5702 [dev] [3.6.3] Connecting to /192.168.1.21:5701, timeout: 0, bind-any: true
+Dec 03, 2016 12:43:09 PM com.hazelcast.nio.tcp.SocketAcceptorThread
+INFO: [192.168.1.21]:5701 [dev] [3.6.3] Accepting socket connection from /192.168.1.21:53486
+Dec 03, 2016 12:43:09 PM com.hazelcast.nio.tcp.TcpIpConnectionManager
+INFO: [192.168.1.21]:5702 [dev] [3.6.3] Established socket connection between /192.168.1.21:53486 and /192.168.1.21:5701
+Dec 03, 2016 12:43:09 PM com.hazelcast.nio.tcp.TcpIpConnectionManager
+INFO: [192.168.1.21]:5701 [dev] [3.6.3] Established socket connection between /192.168.1.21:5701 and /192.168.1.21:53486
+Dec 03, 2016 12:43:10 PM com.hazelcast.cluster.ClusterService
+INFO: [192.168.1.21]:5701 [dev] [3.6.3] 
+
+Members [2] {
+	Member [192.168.1.21]:5701 this
+	Member [192.168.1.21]:5702
+}
+
+Dec 03, 2016 12:43:10 PM com.hazelcast.cluster.ClusterService
+INFO: [192.168.1.21]:5702 [dev] [3.6.3] 
+
+Members [2] {
+	Member [192.168.1.21]:5701
+	Member [192.168.1.21]:5702 this
+}
+
+Dec 03, 2016 12:43:10 PM com.hazelcast.partition.InternalPartitionService
+INFO: [192.168.1.21]:5701 [dev] [3.6.3] Re-partitioning cluster data... Migration queue size: 135
+Dec 03, 2016 12:43:11 PM com.hazelcast.partition.InternalPartitionService
+INFO: [192.168.1.21]:5701 [dev] [3.6.3] All migration tasks have been completed, queues are empty.
+Dec 03, 2016 12:43:12 PM com.hazelcast.core.LifecycleService
+INFO: [192.168.1.21]:5702 [dev] [3.6.3] Address[192.168.1.21]:5702 is STARTED
+Dec 03, 2016 12:43:14 PM com.hazelcast.core.LifecycleService
+INFO: [192.168.1.21]:5702 [dev] [3.6.3] Address[192.168.1.21]:5702 is SHUTTING_DOWN
+Dec 03, 2016 12:43:14 PM com.hazelcast.instance.Node
+INFO: [192.168.1.21]:5702 [dev] [3.6.3] Shutting down multicast service...
+Dec 03, 2016 12:43:14 PM com.hazelcast.nio.tcp.TcpIpConnection
+INFO: [192.168.1.21]:5702 [dev] [3.6.3] Connection [Address[192.168.1.21]:5701] lost. Reason: java.io.EOFException[Remote socket closed!]
+Dec 03, 2016 12:43:14 PM com.hazelcast.nio.tcp.nonblocking.NonBlockingSocketReader
+WARNING: [192.168.1.21]:5702 [dev] [3.6.3] hz._hzInstance_3_dev.IO.thread-in-0 Closing socket to endpoint Address[192.168.1.21]:5701, Cause:java.io.EOFException: Remote socket closed!
+Dec 03, 2016 12:43:14 PM com.hazelcast.nio.tcp.nonblocking.NonBlockingSocketReader
+WARNING: [192.168.1.21]:5701 [dev] [3.6.3] hz._hzInstance_1_dev.IO.thread-in-1 Closing socket to endpoint Address[192.168.1.21]:5702, Cause:java.nio.channels.CancelledKeyException
+java.nio.channels.CancelledKeyException
+	at com.hazelcast.nio.tcp.nonblocking.NonBlockingIOThread.handleSelectionKey(NonBlockingIOThread.java:323)
+	at com.hazelcast.nio.tcp.nonblocking.NonBlockingIOThread.handleSelectionKeys(NonBlockingIOThread.java:314)
+	at com.hazelcast.nio.tcp.nonblocking.NonBlockingIOThread.selectLoop(NonBlockingIOThread.java:234)
+	at com.hazelcast.nio.tcp.nonblocking.NonBlockingIOThread.run(NonBlockingIOThread.java:187)
+
+Dec 03, 2016 12:43:14 PM com.hazelcast.nio.tcp.TcpIpConnection
+INFO: [192.168.1.21]:5701 [dev] [3.6.3] Connection [Address[192.168.1.21]:5702] lost. Reason: Socket explicitly closed
+Dec 03, 2016 12:43:14 PM com.hazelcast.instance.Node
+INFO: [192.168.1.21]:5702 [dev] [3.6.3] Shutting down connection manager...
+Dec 03, 2016 12:43:14 PM com.hazelcast.cluster.ClusterService
+INFO: [192.168.1.21]:5701 [dev] [3.6.3] Removing Member [192.168.1.21]:5702
+Dec 03, 2016 12:43:14 PM com.hazelcast.partition.InternalPartitionService
+INFO: [192.168.1.21]:5701 [dev] [3.6.3] Removing Member [192.168.1.21]:5702
+Dec 03, 2016 12:43:14 PM com.hazelcast.cluster.ClusterService
+INFO: [192.168.1.21]:5701 [dev] [3.6.3] 
+
+Members [1] {
+	Member [192.168.1.21]:5701 this
+}
+
+Dec 03, 2016 12:43:14 PM com.hazelcast.instance.Node
+INFO: [192.168.1.21]:5702 [dev] [3.6.3] Shutting down node engine...
+Dec 03, 2016 12:43:14 PM com.hazelcast.transaction.TransactionManagerService
+INFO: [192.168.1.21]:5701 [dev] [3.6.3] Committing/rolling-back alive transactions of Member [192.168.1.21]:5702, UUID: 8e841827-1e48-43c9-97d7-b6b14279695b
+Dec 03, 2016 12:43:14 PM com.hazelcast.instance.NodeExtension
+INFO: [192.168.1.21]:5702 [dev] [3.6.3] Destroying node NodeExtension.
+Dec 03, 2016 12:43:14 PM com.hazelcast.instance.Node
+INFO: [192.168.1.21]:5702 [dev] [3.6.3] Hazelcast Shutdown is completed in 26 ms.
+Dec 03, 2016 12:43:14 PM com.hazelcast.core.LifecycleService
+INFO: [192.168.1.21]:5702 [dev] [3.6.3] Address[192.168.1.21]:5702 is SHUTDOWN
+]]></system-err>
+</testsuite>

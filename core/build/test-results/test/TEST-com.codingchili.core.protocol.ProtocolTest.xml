@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.codingchili.core.protocol.ProtocolTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2016-12-03T11:43:08" hostname="DESKTOP-TDNIONG" time="0.011">
+  <properties/>
+  <testcase name="testPublicRoute" classname="com.codingchili.core.protocol.ProtocolTest" time="0.003"/>
+  <testcase name="testPrivateRouteNoAccess" classname="com.codingchili.core.protocol.ProtocolTest" time="0.002"/>
+  <testcase name="testHandlerMissing" classname="com.codingchili.core.protocol.ProtocolTest" time="0.001"/>
+  <testcase name="testListRoutes" classname="com.codingchili.core.protocol.ProtocolTest" time="0.002"/>
+  <testcase name="testPublicRouteWithAccess" classname="com.codingchili.core.protocol.ProtocolTest" time="0.002"/>
+  <testcase name="testPrivateRoute" classname="com.codingchili.core.protocol.ProtocolTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

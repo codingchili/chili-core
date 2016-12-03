@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.codingchili.core.configuration.AttributesTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2016-12-03T11:42:58" hostname="DESKTOP-TDNIONG" time="0.237">
+  <properties/>
+  <testcase name="testSetAttributes" classname="com.codingchili.core.configuration.AttributesTest" time="0.008"/>
+  <testcase name="testAddDoubles" classname="com.codingchili.core.configuration.AttributesTest" time="0.0"/>
+  <testcase name="testAddIntegers" classname="com.codingchili.core.configuration.AttributesTest" time="0.001"/>
+  <testcase name="testAddStrings" classname="com.codingchili.core.configuration.AttributesTest" time="0.0"/>
+  <testcase name="testClearAttributes" classname="com.codingchili.core.configuration.AttributesTest" time="0.0"/>
+  <testcase name="testTypesAreStrict" classname="com.codingchili.core.configuration.AttributesTest" time="0.0"/>
+  <testcase name="testAddBooleans" classname="com.codingchili.core.configuration.AttributesTest" time="0.001"/>
+  <testcase name="testSerializeAttributes" classname="com.codingchili.core.configuration.AttributesTest" time="0.225"/>
+  <testcase name="testAddObject" classname="com.codingchili.core.configuration.AttributesTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

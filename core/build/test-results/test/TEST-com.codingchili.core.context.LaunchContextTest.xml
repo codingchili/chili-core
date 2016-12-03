@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.codingchili.core.context.LaunchContextTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2016-12-03T11:42:59" hostname="DESKTOP-TDNIONG" time="0.042">
+  <properties/>
+  <testcase name="testGetDefaultBlockWhenNoArgs" classname="com.codingchili.core.context.LaunchContextTest" time="0.006"/>
+  <testcase name="testGetBlock" classname="com.codingchili.core.context.LaunchContextTest" time="0.006"/>
+  <testcase name="testGetEmptyBlockThrows" classname="com.codingchili.core.context.LaunchContextTest" time="0.006"/>
+  <testcase name="testGetMissingHost" classname="com.codingchili.core.context.LaunchContextTest" time="0.007"/>
+  <testcase name="testGetHostBlock" classname="com.codingchili.core.context.LaunchContextTest" time="0.008"/>
+  <testcase name="testGetMissingBlock" classname="com.codingchili.core.context.LaunchContextTest" time="0.008"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

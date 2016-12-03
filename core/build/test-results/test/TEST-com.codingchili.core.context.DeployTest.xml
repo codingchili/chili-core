@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.codingchili.core.context.DeployTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2016-12-03T11:42:59" hostname="DESKTOP-TDNIONG" time="0.039">
+  <properties/>
+  <testcase name="testDeployService" classname="com.codingchili.core.context.DeployTest" time="0.02"/>
+  <testcase name="testDeployServiceWithAsyncResult" classname="com.codingchili.core.context.DeployTest" time="0.019"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[Dec 03, 2016 12:42:59 PM io.vertx.core.impl.ContextImpl
+SEVERE: Unhandled exception
+java.lang.IllegalStateException: Result is already complete: succeeded
+	at io.vertx.core.impl.FutureImpl.checkComplete(FutureImpl.java:164)
+	at io.vertx.core.impl.FutureImpl.complete(FutureImpl.java:108)
+	at io.vertx.core.impl.FutureImpl.handle(FutureImpl.java:135)
+	at io.vertx.core.impl.FutureImpl.handle(FutureImpl.java:23)
+	at io.vertx.core.eventbus.impl.EventBusImpl.lambda$callCompletionHandlerAsync$2(EventBusImpl.java:340)
+	at io.vertx.core.impl.ContextImpl.lambda$wrapTask$2(ContextImpl.java:316)
+	at io.netty.util.concurrent.AbstractEventExecutor.safeExecute(AbstractEventExecutor.java:163)
+	at io.netty.util.concurrent.SingleThreadEventExecutor.runAllTasks(SingleThreadEventExecutor.java:418)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:440)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$5.run(SingleThreadEventExecutor.java:873)
+	at java.lang.Thread.run(Thread.java:745)
+
+]]></system-err>
+</testsuite>

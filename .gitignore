@@ -1,7 +1,7 @@
+.gradle
 .idea/
-dungeon-game.iml
 lib/
 target/
+build/
+core/conf/
 output/website/bower_components/
-elasticsearch/
-launcher.bat

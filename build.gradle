@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply plugin: 'idea'
 
 version = "1.0-SNAPSHOT"
 libsDirName = '../output'
@@ -9,11 +10,25 @@ tasks.withType(JavaCompile) {
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'idea'
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
-    libsDirName = '../../output/service'
+    libsDirName = '../../../output/service'
+
+    sourceSets {
+        main {
+            java {
+                srcDir 'main/'
+            }
+        }
+        test {
+            java {
+                srcDir 'test/'
+            }
+        }
+    }
 
     repositories {
         maven { url 'http://repo.maven.apache.org/maven2' }

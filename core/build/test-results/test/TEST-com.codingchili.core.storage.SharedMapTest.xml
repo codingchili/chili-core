@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.codingchili.core.storage.SharedMapTest" tests="20" skipped="0" failures="0" errors="0" timestamp="2016-12-03T11:43:18" hostname="DESKTOP-TDNIONG" time="1.83">
+  <properties/>
+  <testcase name="testRemoveNotPresent" classname="com.codingchili.core.storage.SharedMapTest" time="0.012"/>
+  <testcase name="testGet" classname="com.codingchili.core.storage.SharedMapTest" time="0.01"/>
+  <testcase name="testPut" classname="com.codingchili.core.storage.SharedMapTest" time="0.009"/>
+  <testcase name="testQuerySimilarTooShortExpression" classname="com.codingchili.core.storage.SharedMapTest" time="0.01"/>
+  <testcase name="testPutIfAbsentTTL" classname="com.codingchili.core.storage.SharedMapTest" time="0.812"/>
+  <testcase name="testPutIfAbsentNotAbsent" classname="com.codingchili.core.storage.SharedMapTest" time="0.013"/>
+  <testcase name="testClear" classname="com.codingchili.core.storage.SharedMapTest" time="0.012"/>
+  <testcase name="testSize" classname="com.codingchili.core.storage.SharedMapTest" time="0.01"/>
+  <testcase name="testQueryExact" classname="com.codingchili.core.storage.SharedMapTest" time="0.012"/>
+  <testcase name="testQueryRange" classname="com.codingchili.core.storage.SharedMapTest" time="0.014"/>
+  <testcase name="testQueryMatchNone" classname="com.codingchili.core.storage.SharedMapTest" time="0.013"/>
+  <testcase name="testPutIfAbsent" classname="com.codingchili.core.storage.SharedMapTest" time="0.008"/>
+  <testcase name="testQuerySimilar" classname="com.codingchili.core.storage.SharedMapTest" time="0.009"/>
+  <testcase name="testQueryRangeNoMatches" classname="com.codingchili.core.storage.SharedMapTest" time="0.01"/>
+  <testcase name="testReplace" classname="com.codingchili.core.storage.SharedMapTest" time="0.01"/>
+  <testcase name="testQuerySimilarInvalidExpression" classname="com.codingchili.core.storage.SharedMapTest" time="0.012"/>
+  <testcase name="testPutWithTTL" classname="com.codingchili.core.storage.SharedMapTest" time="0.81"/>
+  <testcase name="testReplaceIfNotPresent" classname="com.codingchili.core.storage.SharedMapTest" time="0.014"/>
+  <testcase name="testGetMissing" classname="com.codingchili.core.storage.SharedMapTest" time="0.012"/>
+  <testcase name="testRemove" classname="com.codingchili.core.storage.SharedMapTest" time="0.012"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

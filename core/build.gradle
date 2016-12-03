@@ -17,3 +17,7 @@ jar {
                 'Main-Class': 'com.codingchili.core.Launcher'
     }
 }
+
+dependencies {
+    compile project(':common:testing')
+}

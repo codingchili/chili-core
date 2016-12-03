@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.codingchili.core.context.CommandExecutorTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2016-12-03T11:42:58" hostname="DESKTOP-TDNIONG" time="0.206">
+  <properties/>
+  <testcase name="testIsHandledIfHandled" classname="com.codingchili.core.context.CommandExecutorTest" time="0.134"/>
+  <testcase name="testConfiguredBlocksListed" classname="com.codingchili.core.context.CommandExecutorTest" time="0.017"/>
+  <testcase name="testWriteHelpMessage" classname="com.codingchili.core.context.CommandExecutorTest" time="0.01"/>
+  <testcase name="testGetMessage" classname="com.codingchili.core.context.CommandExecutorTest" time="0.016"/>
+  <testcase name="testNotHandledIfNotHandled" classname="com.codingchili.core.context.CommandExecutorTest" time="0.007"/>
+  <testcase name="testConfiguredRemoteListed" classname="com.codingchili.core.context.CommandExecutorTest" time="0.021"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

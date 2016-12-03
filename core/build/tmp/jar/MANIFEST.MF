@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Implementation-Title: chili-core
+Implementation-Version: 1.0-SNAPSHOT
+Main-Class: com.codingchili.core.Launcher
+

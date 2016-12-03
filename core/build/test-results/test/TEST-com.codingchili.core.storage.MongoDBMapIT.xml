@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.codingchili.core.storage.MongoDBMapIT" tests="20" skipped="20" failures="0" errors="0" timestamp="2016-12-03T11:43:16" hostname="DESKTOP-TDNIONG" time="0.0">
+  <properties/>
+  <testcase name="testRemoveNotPresent" classname="com.codingchili.core.storage.MongoDBMapIT" time="0.0">
+    <skipped/>
+  </testcase>
+  <testcase name="testGet" classname="com.codingchili.core.storage.MongoDBMapIT" time="0.0">
+    <skipped/>
+  </testcase>
+  <testcase name="testPut" classname="com.codingchili.core.storage.MongoDBMapIT" time="0.0">
+    <skipped/>
+  </testcase>
+  <testcase name="testQuerySimilarTooShortExpression" classname="com.codingchili.core.storage.MongoDBMapIT" time="0.0">
+    <skipped/>
+  </testcase>
+  <testcase name="testPutIfAbsentTTL" classname="com.codingchili.core.storage.MongoDBMapIT" time="0.0">
+    <skipped/>
+  </testcase>
+  <testcase name="testPutIfAbsentNotAbsent" classname="com.codingchili.core.storage.MongoDBMapIT" time="0.0">
+    <skipped/>
+  </testcase>
+  <testcase name="testClear" classname="com.codingchili.core.storage.MongoDBMapIT" time="0.0">
+    <skipped/>
+  </testcase>
+  <testcase name="testSize" classname="com.codingchili.core.storage.MongoDBMapIT" time="0.0">
+    <skipped/>
+  </testcase>
+  <testcase name="testQueryExact" classname="com.codingchili.core.storage.MongoDBMapIT" time="0.0">
+    <skipped/>
+  </testcase>
+  <testcase name="testQueryRange" classname="com.codingchili.core.storage.MongoDBMapIT" time="0.0">
+    <skipped/>
+  </testcase>
+  <testcase name="testQueryMatchNone" classname="com.codingchili.core.storage.MongoDBMapIT" time="0.0">
+    <skipped/>
+  </testcase>
+  <testcase name="testPutIfAbsent" classname="com.codingchili.core.storage.MongoDBMapIT" time="0.0">
+    <skipped/>
+  </testcase>
+  <testcase name="testQuerySimilar" classname="com.codingchili.core.storage.MongoDBMapIT" time="0.0">
+    <skipped/>
+  </testcase>
+  <testcase name="testQueryRangeNoMatches" classname="com.codingchili.core.storage.MongoDBMapIT" time="0.0">
+    <skipped/>
+  </testcase>
+  <testcase name="testReplace" classname="com.codingchili.core.storage.MongoDBMapIT" time="0.0">
+    <skipped/>
+  </testcase>
+  <testcase name="testQuerySimilarInvalidExpression" classname="com.codingchili.core.storage.MongoDBMapIT" time="0.0">
+    <skipped/>
+  </testcase>
+  <testcase name="testPutWithTTL" classname="com.codingchili.core.storage.MongoDBMapIT" time="0.0">
+    <skipped/>
+  </testcase>
+  <testcase name="testReplaceIfNotPresent" classname="com.codingchili.core.storage.MongoDBMapIT" time="0.0">
+    <skipped/>
+  </testcase>
+  <testcase name="testGetMissing" classname="com.codingchili.core.storage.MongoDBMapIT" time="0.0">
+    <skipped/>
+  </testcase>
+  <testcase name="testRemove" classname="com.codingchili.core.storage.MongoDBMapIT" time="0.0">
+    <skipped/>
+  </testcase>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

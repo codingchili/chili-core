@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.codingchili.core.files.ConfigurationsIT" tests="8" skipped="0" failures="0" errors="0" timestamp="2016-12-03T11:42:59" hostname="DESKTOP-TDNIONG" time="0.063">
+  <properties/>
+  <testcase name="fileCachedAndNotAlwaysReloaded" classname="com.codingchili.core.files.ConfigurationsIT" time="0.011"/>
+  <testcase name="listAllAvailableOnSubpath" classname="com.codingchili.core.files.ConfigurationsIT" time="0.006"/>
+  <testcase name="listAllLoaded" classname="com.codingchili.core.files.ConfigurationsIT" time="0.001"/>
+  <testcase name="listAllAvailable" classname="com.codingchili.core.files.ConfigurationsIT" time="0.034"/>
+  <testcase name="saveAConfigurableToFile" classname="com.codingchili.core.files.ConfigurationsIT" time="0.002"/>
+  <testcase name="reloadSingleFile" classname="com.codingchili.core.files.ConfigurationsIT" time="0.004"/>
+  <testcase name="clearLoadedFiles" classname="com.codingchili.core.files.ConfigurationsIT" time="0.002"/>
+  <testcase name="testPutConfiguration" classname="com.codingchili.core.files.ConfigurationsIT" time="0.0"/>
+  <system-out><![CDATA[[file.save 11:42:59.990] -> configuration ~ ../../../../../testfile.json ~ INFO	
+[file.load 11:42:59.991] -> ../../../../../testfile.json ~ INFO	
+[file.save 11:42:59.995] -> configuration ~ ../../../../../testfile.json ~ INFO	
+[file.save 11:43:00.041] -> configuration ~ ../../../../../testfile.json ~ INFO	
+[file.save 11:43:00.043] -> configuration ~ ../../../../../testfile.json ~ INFO	
+[file.save 11:43:00.044] -> configuration ~ ../../../../../testfile.json ~ INFO	
+[file.load 11:43:00.045] -> ../../../../../testfile.json ~ INFO	
+[cache.clear 11:43:00.046] -> configuration ~ WARNING	
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
