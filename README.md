@@ -28,8 +28,6 @@ Create a JAR in the project root (and run tests)
 mvn package
 ```
 
-If you wish to create a fatjar with bundled resources move **conf/**, **resources/** or **website/** to **src/main/resources**.
-
 If you do not have a local **ElasticSearch server** running on the default port log messages will be dropped unless consoleLogging is set in **conf/system/system.json**.
 
 Before starting it up new tokens/secrets should be generated,
@@ -48,8 +46,6 @@ To see all available commands run with --help.
 
 ## Background
 The project consists of two parts. The core, which is a framework built on top of the vertx toolkit. The purpose of wrapping vertx in a framework is to increase productivity. This is done by providing common functionality that can be used to build microservices on. With all the logic packed into core, it is possible to create distributed microservices capable of handling authentication, request routing and storage in 66 lines of code. If you are interested in vertx, I recommend using it directly instead. This framework is intended to improve productivity in a very specific use case. In order to achieve this it is much more invasive than the vertx toolkit.
- 
-The purpose of the service part of the project is to provide implementations for use in (mainly) game servers. Each service may be distributed on different hosts. Communication channels is provided by the core, with support for various transports and storage plugins. Breaking down the system into microservices improves maintainability, testability and ultimately, productivity.
 
 Additionally, on top of these services an actual game and server will be implemented.
 
@@ -60,14 +56,11 @@ Additionally, on top of these services an actual game and server will be impleme
 * High availability with support for multiple transports
 * Adopts the microservice pattern
 
-###### Audience
-* Game developers seeking to implement multiplayer from the start with minimal overhead.
-* Programmers seeking to create microservices productively in a very specific use case.
-* Aspiring game developers with an interest in backend development.
-* Players who are into simplistic 2D MMORPG's.
-
 ## Features
 The complete feature list may change during development. 
+
+##### Audience
+- TBD
 
 ###### Realm
 * Multiplayer enabled
@@ -99,22 +92,6 @@ The complete feature list may change during development.
  * Concurrency using the actor model
  * Zero thread programming required (!!!) 
 
-###### Services
-* Authentication: Account creation and available realms.
-* Routing: Routes client requests in/out of the cluster.
-* Realms: Handles incoming connections, instance travel.
- * Instances: Handles game logic.
-* Website: Provides an interface for account/character/realmlist.
-* Patching: Game updates through sendFile, webseed and BitTorrent.
-* Logging: Receives logging data from the other components.
-* Social: Achievements, chat, guilds.
-* Auction house: Handles asynchronous trading with orders/offers.
-* Serverstatus: Provides a quick overview of system uptime.
-
-Communication between services is done over the cluster, other available transports such as websock, tcp, udp and rest is available but not recommended unless a service is not able to join the cluster.
-
-All communication between services uses a text-protocol based on JSON for simplicity.
-
 ## Configuration
 The configuration directory **'conf' must be in the same directory as the jar file** or **on the classpath**.
 
@@ -133,13 +110,6 @@ The configuration structure
 │   │   ├── security.json
 │   │   ├── storage.json
 │   │   ├── system.json
-│   ├── services/
-│   │   ├── authserver.json
-│   │   ├── logserver.json
-│   │   ├── patchserver.json
-│   │   ├── realmserver.json
-│   │   ├── webserver.json
-│   │   ├── routingserver.json
 │   ├── realm/
 │   │   ├── {name}.json
 │   │   ├── {name}.json
@@ -172,7 +142,6 @@ The configuration structure
 - 'website/' contains website files used in the prototype.
 - 'conf/' contains all configuration files.
 - 'conf/system/' contains framework configuration.
-- 'conf/services/' contains service configuration if any.
 - 'conf/realm/' contains realm configurations for the realm service.
 - 'conf/game/' contains game configuration, may be overriden in 'conf/realm/override'
 
