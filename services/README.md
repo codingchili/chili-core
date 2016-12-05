@@ -16,6 +16,7 @@ where conf is a directory in the same folder as the server jar.
 │   │   ├── logserver.json
 │   │   ├── patchserver.json
 │   │   ├── realmserver.json
+│   │   ├── realmregistry.json
 │   │   ├── webserver.json
 │   │   ├── routingserver.json
 ```
