@@ -9,7 +9,7 @@ The purpose of the service part of the project is to provide implementations for
 Services following the official guidelines should place their configuration files in;
 - 'conf/services/' 
 where conf is a directory in the same folder as the server jar.
-
+```
 ├── conf/
 │   ├── services/
 │   │   ├── authserver.json
@@ -18,7 +18,7 @@ where conf is a directory in the same folder as the server jar.
 │   │   ├── realmserver.json
 │   │   ├── webserver.json
 │   │   ├── routingserver.json
-
+```
 Some services comes with additional resources, these can be bundled within the jar if moved to **src/main/resources**. This also applies to configuration files, it is however recommended that these are easily edited. 
 
 ###### Services
