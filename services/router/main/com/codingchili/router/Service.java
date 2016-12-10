@@ -24,13 +24,13 @@ public class Service extends ClusterNode {
             for (ListenerSettings listener : context.transports()) {
                 switch (listener.getType()) {
                     case UDP:
-                        context.deploy(new UdpListener(new RouterHandler<>(context), listener));
+                        context.deploy(new UdpListener(new RouterHandler<>(context)));
                         break;
                     case TCP:
-                        context.deploy(new TcpListener(new RouterHandler<>(context), listener));
+                        context.deploy(new TcpListener(new RouterHandler<>(context)));
                         break;
                     case WEBSOCKET:
-                        context.deploy(new WebsocketListener(new RouterHandler<>(context), listener));
+                        context.deploy(new WebsocketListener(new RouterHandler<>(context)));
                         break;
                     case REST:
                         context.deploy(new RestListener(new RouterHandler<>(context)));

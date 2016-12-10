@@ -79,6 +79,7 @@ public class StaleRealmHandlerTest {
         assertRealmExistsAfterMS(test, test.async(), context.timeout * 2);
     }
 
+    @Ignore("Disabled: waiting for issue to move StaleHandler to core")
     @Test
     public void testTimeoutUpdatesWithConfiguration(TestContext test) {
         Async async = test.async();

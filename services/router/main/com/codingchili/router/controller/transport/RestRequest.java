@@ -9,10 +9,7 @@ import io.vertx.ext.web.RoutingContext;
 
 import java.util.HashMap;
 
-import com.codingchili.core.protocol.Request;
-import com.codingchili.core.protocol.ResponseStatus;
-import com.codingchili.core.protocol.Serializer;
-import com.codingchili.core.security.Token;
+import com.codingchili.core.protocol.*;
 
 import com.codingchili.router.configuration.ListenerSettings;
 import com.codingchili.router.model.Endpoint;
@@ -21,17 +18,16 @@ import static com.codingchili.common.Strings.*;
 
 /**
  * @author Robin Duda
+ *
+ * HTTP/REST request object.
  */
-class RestRouteRequest implements Request {
+class RestRequest extends BaseRequest implements Request {
     private RoutingContext context;
     private HttpServerRequest request;
     private ListenerSettings settings;
     private JsonObject data = new JsonObject();
 
-    public RestRouteRequest() {
-    }
-
-    RestRouteRequest(RoutingContext context, HttpServerRequest request, ListenerSettings settings) {
+    RestRequest(RoutingContext context, HttpServerRequest request, ListenerSettings settings) {
         this.context = context;
         this.request = request;
         this.settings = settings;
@@ -85,36 +81,6 @@ class RestRouteRequest implements Request {
     }
 
     @Override
-    public void accept() {
-        send(ResponseStatus.ACCEPTED);
-    }
-
-    @Override
-    public void error(Throwable exception) {
-        send(ResponseStatus.ERROR, exception);
-    }
-
-    @Override
-    public void unauthorized(Throwable exception) {
-        send(ResponseStatus.UNAUTHORIZED);
-    }
-
-    @Override
-    public void missing(Throwable exception) {
-        send(ResponseStatus.MISSING, exception);
-    }
-
-    @Override
-    public void conflict(Throwable exception) {
-        send(ResponseStatus.CONFLICT, exception);
-    }
-
-    @Override
-    public void bad(Throwable exception) {
-        send(ResponseStatus.BAD, exception);
-    }
-
-    @Override
     public void write(Object object) {
         if (object instanceof Buffer) {
             send((Buffer) object);
@@ -123,20 +89,6 @@ class RestRouteRequest implements Request {
         }
     }
 
-    @Override
-    public String route() {
-        return data().getString(ID_ROUTE);
-    }
-
-    @Override
-    public String target() {
-        return data().getString(ID_TARGET);
-    }
-
-    @Override
-    public Token token() {
-        return Serializer.unpack(data.getJsonObject(ID_TOKEN), Token.class);
-    }
 
     @Override
     public JsonObject data() {
@@ -148,19 +100,14 @@ class RestRouteRequest implements Request {
         return settings.getTimeout();
     }
 
-    private void send(ResponseStatus status, Throwable e) {
+    protected void send(ResponseStatus status, Throwable e) {
         request.response().setStatusCode(HttpResponseStatus.OK.code())
-                .end(new JsonObject()
-                        .put(PROTOCOL_STATUS, status)
-                        .put(ID_MESSAGE, e.getMessage())
-                        .encode());
+                .end(Protocol.response(status, e));
     }
 
-    private void send(ResponseStatus status) {
+    protected void send(ResponseStatus status) {
         request.response().setStatusCode(HttpResponseStatus.OK.code())
-                .end(new JsonObject()
-                        .put(PROTOCOL_STATUS, status)
-                        .encode());
+                .end(Protocol.response(status));
     }
 
     private void send(Buffer buffer) {

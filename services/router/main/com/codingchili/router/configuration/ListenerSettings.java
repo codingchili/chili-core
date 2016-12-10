@@ -23,40 +23,45 @@ public class ListenerSettings {
         return timeout;
     }
 
-    public void setTimeout(int timeout) {
+    public ListenerSettings setTimeout(int timeout) {
         this.timeout = timeout;
+        return this;
     }
 
     public int getMaxRequestBytes() {
         return maxRequestBytes;
     }
 
-    public void setMaxRequestBytes(int maxRequestBytes) {
+    public ListenerSettings setMaxRequestBytes(int maxRequestBytes) {
         this.maxRequestBytes = maxRequestBytes;
+        return this;
     }
 
     public WireType getType() {
         return type;
     }
 
-    public void setType(WireType type) {
+    public ListenerSettings setType(WireType type) {
         this.type = type;
+        return this;
     }
 
     public int getPort() {
         return port;
     }
 
-    public void setPort(int port) {
+    public ListenerSettings setPort(int port) {
         this.port = port;
+        return this;
     }
 
     public HashMap<String, Endpoint> getApi() {
         return api;
     }
 
-    public void setApi(HashMap<String, Endpoint> api) {
+    public ListenerSettings setApi(HashMap<String, Endpoint> api) {
         this.api = api;
+        return this;
     }
 
     @JsonIgnore

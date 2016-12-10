@@ -16,6 +16,8 @@ import com.codingchili.router.model.WireType;
 
 /**
  * @author Robin Duda
+ *
+ * HTTP/REST transport listener.
  */
 public class RestListener extends ClusterNode {
     private final RouterHandler<RouterContext> handler;
@@ -44,7 +46,7 @@ public class RestListener extends ClusterNode {
     }
 
     private void packet(RoutingContext context) {
-        RestRouteRequest request = new RestRouteRequest(context, context.request(), listener());
+        RestRequest request = new RestRequest(context, context.request(), listener());
 
         if (context.getBody().length() > listener().getMaxRequestBytes()) {
             request.bad(new RequestPayloadSizeException());

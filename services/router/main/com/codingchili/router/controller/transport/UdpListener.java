@@ -1,23 +1,51 @@
 package com.codingchili.router.controller.transport;
 
-import io.vertx.core.Future;
+import com.codingchili.router.configuration.RouterContext;
+import com.codingchili.router.model.WireType;
+import io.vertx.core.*;
 
 import com.codingchili.core.protocol.ClusterNode;
+import com.codingchili.core.protocol.exception.RequestPayloadSizeException;
 
 import com.codingchili.router.configuration.ListenerSettings;
 import com.codingchili.router.controller.RouterHandler;
+import io.vertx.core.datagram.*;
 
 /**
  * @author Robin Duda
+ *
+ * UDP transport listener.
  */
 public class UdpListener extends ClusterNode {
+    private static final String INTERFACE_IPv4 = "0.0.0.0";
+    private final RouterHandler<RouterContext> handler;
 
-    public UdpListener(RouterHandler handler, ListenerSettings listener) {
-
+    public UdpListener(RouterHandler<RouterContext> handler) {
+        this.handler = handler;
     }
 
     @Override
     public void start(Future<Void> start) {
-        start.complete();
+        vertx.createDatagramSocket().listen(listener().getPort(), INTERFACE_IPv4, listen -> {
+            if (listen.succeeded()) {
+                listen.result().handler(this::handle);
+            }
+        });
+
+        handler.start(start);
+    }
+
+    private void handle(DatagramPacket connection) {
+        UdpRequest request = new UdpRequest(handler.context(), connection);
+
+        if (connection.data().length() > listener().getMaxRequestBytes()) {
+            request.bad(new RequestPayloadSizeException());
+        } else {
+            handler.process(request);
+        }
+    }
+
+    private ListenerSettings listener() {
+        return handler.context().getListener(WireType.UDP);
     }
 }

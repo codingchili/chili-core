@@ -11,7 +11,7 @@ import com.codingchili.router.controller.RouterHandler;
  * @author Robin Duda
  */
 public class TcpListener extends ClusterNode {
-    public TcpListener(RouterHandler handler, ListenerSettings listener) {
+    public TcpListener(RouterHandler handler) {
 
     }
 
