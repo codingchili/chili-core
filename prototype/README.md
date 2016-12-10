@@ -67,8 +67,6 @@ The configuration structure
 **Explanation**
 - 'resources/' is used by the patching service to store files.
 - 'website/' contains website files used in the prototype.
-- 'conf/' contains all configuration files.
-- 'conf/system/' contains framework configuration.
 - 'conf/realm/' contains realm configurations for the realm service.
 - 'conf/game/' contains game configuration, may be overriden in 'conf/realm/override'
 
