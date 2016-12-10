@@ -1,4 +1,5 @@
 # realm service
+Handles a set of instances for a game/room. 
 ##### featureset
 - spawn instances
 - register new client connections
