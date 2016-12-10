@@ -21,7 +21,7 @@ import static com.codingchili.common.Strings.*;
  *
  * HTTP/REST request object.
  */
-class RestRequest extends BaseRequest implements Request {
+class RestRequest extends BaseRequest {
     private RoutingContext context;
     private HttpServerRequest request;
     private ListenerSettings settings;

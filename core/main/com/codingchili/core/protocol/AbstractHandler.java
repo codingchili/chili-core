@@ -29,7 +29,7 @@ public abstract class AbstractHandler<T extends ServiceContext> {
     }
 
     /**
-     * Processes an incoming request.
+     * Processes an incoming request with exception handling.
      *
      * @param request the request to be processed.
      */
@@ -47,7 +47,7 @@ public abstract class AbstractHandler<T extends ServiceContext> {
     }
 
     /**
-     * Handles an incoming request.
+     * Handles an incoming request without exception handling.
      *
      * @param request the request to be handled.
      * @throws CoreException on unhandled error.

@@ -13,7 +13,7 @@ import com.codingchili.core.protocol.*;
  *         <p>
  *         UDP request object.
  */
-class UdpRequest extends BaseRequest implements Request {
+class UdpRequest extends BaseRequest {
     private DatagramPacket packet;
     private RouterContext context;
     private JsonObject data;

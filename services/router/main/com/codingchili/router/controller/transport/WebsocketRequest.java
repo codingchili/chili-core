@@ -1,71 +1,52 @@
 package com.codingchili.router.controller.transport;
 
+import com.codingchili.router.configuration.ListenerSettings;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.protocol.Request;
+import com.codingchili.core.protocol.*;
 import com.codingchili.core.security.Token;
 
 /**
  * @author Robin Duda
+ *
+ * Websocket request object.
  */
-public class WebsocketRequest implements Request {
+class WebsocketRequest extends BaseRequest {
+    private ServerWebSocket socket;
+    private ListenerSettings settings;
+    private JsonObject data;
+
+
+    WebsocketRequest(ServerWebSocket socket, Buffer buffer, ListenerSettings settings) {
+        this.socket = socket;
+        this.data = buffer.toJsonObject();
+        this.settings = settings;
+    }
+
+    @Override
+    protected void send(ResponseStatus status, Throwable exception) {
+        socket.write(Protocol.response(status, exception));
+    }
+
+    @Override
+    protected void send(ResponseStatus status) {
+        socket.write(Protocol.response(status));
+    }
+
     @Override
     public void write(Object object) {
-
-    }
-
-    @Override
-    public void accept() {
-
-    }
-
-    @Override
-    public void error(Throwable exception) {
-
-    }
-
-    @Override
-    public void unauthorized(Throwable exception) {
-
-    }
-
-    @Override
-    public void missing(Throwable exception) {
-
-    }
-
-    @Override
-    public void conflict(Throwable exception) {
-
-    }
-
-    @Override
-    public void bad(Throwable exception) {
-
-    }
-
-    @Override
-    public String route() {
-        return null;
-    }
-
-    @Override
-    public String target() {
-        return null;
-    }
-
-    @Override
-    public Token token() {
-        return null;
+        socket.write(Buffer.buffer(Serializer.pack(object)));
     }
 
     @Override
     public JsonObject data() {
-        return null;
+        return data;
     }
 
     @Override
     public int timeout() {
-        return 0;
+        return settings.getTimeout();
     }
 }
