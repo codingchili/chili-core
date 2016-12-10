@@ -2,7 +2,14 @@
 
 Serves files from **website/** directory in the server root.
 
-sample configuration 
+##### Featureset
+- gzip support
+- file caching
+- hot reload of files
+- :x: support for templating with Jade
+- :x: support for 0-copy
+
+##### Configuration in conf/service/website.json
 
 ```
 {
