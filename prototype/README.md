@@ -6,9 +6,18 @@ The website service requires dependencies in **website/** run the following in t
 bower install
 ```
 
-Start the prototype using
-```
-java -jar core-full-1.0-SNAPSHOT.jar
-```
+If you do not have a local **ElasticSearch server** running on the default port log messages will be dropped unless consoleLogging is set in **conf/system/system.json**.
 
-This will start up the services configured in **conf/service/launcher.json** in the localhost/default block.
+Before starting the server, new tokens/secrets should be generated using,
+```
+java -jar <filename>.jar --generate
+```
+The authentication tokens are stored in **/conf/services/{service}.json**. See **conf/system/security.json** for setting up token/secret dependencies between services. 
+
+Start the launcher with, 
+```
+java -jar <filename>.jar <block or host>
+```
+This will start up services configured in the given or 'default' block in **conf/system/launcher.json**.
+
+To see all available commands run with --help.
