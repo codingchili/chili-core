@@ -11,4 +11,3 @@ Service to handle social interactions between users.
 - :x: friend lists
 - :x: online status
 
-Configuration in **conf/service/socialserver.json**
