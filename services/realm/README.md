@@ -9,6 +9,3 @@ Handles a set of instances for a game/room.
 instances
 - :x: handle clients
 - :x: use a plugin for game logic
-
-Configuration in **conf/service/realmserver.json**
-Configure instances in **conf/game/instances/{name.json}**
