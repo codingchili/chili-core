@@ -1,0 +1,27 @@
+[
+  {
+    "targeting": "area",
+    "range": 300,
+    "size": 75
+  },
+  {
+    "targeting": "cone",
+    "range": 225
+  },
+  {
+    "targeting": "missile",
+    "range": 425
+  },
+  {
+    "targeting": "caster"
+  },
+  {
+    "targeting": "ray",
+    "range": 300,
+    "size": 40
+  },
+  {
+    "targeting": "host",
+    "size": 100
+  }
+]

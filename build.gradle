@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'idea'
 
 version = "1.0-SNAPSHOT"
-libsDirName = '../output'
+libsDirName = '../prototype'
 
 tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
@@ -15,7 +15,7 @@ subprojects {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
-    libsDirName = '../../../output/service'
+    libsDirName = '../../../prototype/service'
 
     sourceSets {
         main {
@@ -56,7 +56,7 @@ subprojects.each { subproject -> evaluationDependsOn( subproject.path ) }
 
 jar.dependsOn subprojects.tasks['classes']
 jar {
-    baseName = 'core-packed'
+    baseName = 'core-full'
     manifest {
         attributes 'Main-Class': 'com.codingchili.core.Launcher'
     }

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Chili-core engine live demo!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+    <script src="script/lib/jquery-2.2.1.min.js"></script>
+    <script src="script/application.js"></script>
+    <script src="script/patcher.js"></script>
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <link rel="import" href="elements/frontpage/start-page.html">
+    <link rel="import" href="elements/frontpage/toolbar.html">
+    <link rel="import" href="elements/frontpage/footer.html">
+    <link rel="import" href="elements/login/game-login.html">
+    <link rel="import" href="elements/realmlist/realm-list.html">
+    <link rel="import" href="elements/characterlist/character-list.html">
+    <link rel="import" href="elements/game/game-view.html">
+    <link rel="import" href="elements/patcher/patch-download.html">
+    <link rel="import" href="elements/frontpage/error-dialog.html">
+    <link rel="import" href="style/theme.html">
+    <link rel="stylesheet" href="style/style.css">
+    <title></title>
+</head>
+<body class="layout vertical layout-start">
+<header-toolbar id="header" class="layout vertical fit">
+</header-toolbar>
+
+
+<div id="page">
+    <start-page class="layout horizontal center-justified">
+    </start-page>
+
+    <start-game class="layout horizontal center-justified">
+    </start-game>
+</div>
+
+<div id="game-login">
+    <game-login class="layout horizontal center-justified">
+    </game-login>
+</div>
+
+<div id="realm-list">
+    <realm-list class="layout horizontal center-justified">
+    </realm-list>
+</div>
+
+<div id="character-list">
+    <character-list class="layout horizontal center-justified">
+    </character-list>
+</div>
+
+<div id="patch-download">
+    <patch-download class="layout horizontal center-justified">
+    </patch-download>
+</div>
+
+<div id="game-view" style="width: 100%; height: 100%;">
+    <game-view>
+    </game-view>
+</div>
+
+<div id="error-dialog">
+    <error-dialog>
+    </error-dialog>
+</div>
+
+<footer-template id="footer">
+</footer-template>
+</body>
+</html>

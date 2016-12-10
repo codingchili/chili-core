@@ -1,0 +1,190 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/scale-up-animation.html">
+<link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
+
+<!--
+    @author Robin Duda
+    Polymer element for use as a login box.
+ -->
+
+<dom-module id="game-login">
+    <link rel="import" href="../../style/theme.css" type="css">
+    <link rel="import" href="../../style/style.css" type="css">
+    <template>
+        <style>
+            :host {
+                display: inline-block;
+            }
+
+            .title {
+                text-align: center;
+                padding-top: 16px;
+            }
+
+            paper-material {
+                width: 525px;
+            }
+
+            .register {
+                margin-top: 32px;
+            }
+
+        </style>
+
+        <div class="container center-box">
+            <paper-material elevation="3">
+                <div class="title">
+                    <h4>{{title}}</h4>
+                </div>
+
+                <paper-input value="{{username}}" id="username" label="Username" on-keydown="submit"
+                             autofocus></paper-input>
+                <paper-input value="{{password}}" id="password" label="Password" on-keydown="submit"
+                             type="password"></paper-input>
+
+                <div hidden$="{{hideregisterform}}">
+                    <paper-input value="{{password-repeat}}" label="Password (repeat)" type="password"
+                                 on-keydown="submit" id="password-repeat"></paper-input>
+                    <paper-input value="{{email}}" label="Email (optional)" on-keydown="submit"></paper-input>
+
+                    <paper-button class="register flex" on-tap="showLoginForm">Back</paper-button>
+                    <paper-button raised class="primary flex" on-tap="register">Register</paper-button>
+                </div>
+
+                <div hidden$="{{hideloginform}}">
+                    <paper-button class="register flex" on-tap="showRegisterForm">Register</paper-button>
+                    <paper-button raised class="primary flex" on-tap="authenticate">Authenticate</paper-button>
+                </div>
+            </paper-material>
+
+            <paper-toast class="toast-success" id="toast-missing"
+                         text="There is no account with that username."></paper-toast>
+            <paper-toast class="toast-error" id="toast-password"
+                         text="Password authentication failed."></paper-toast>
+            <paper-toast class="toast-error" id="toast-conflict"
+                         text="The selected username is already taken."></paper-toast>
+            <paper-toast class="toast-error" id="toast-validation-failed"
+                         text="Passwords must match and be at least 9 characters."></paper-toast>
+            <paper-toast class="toast-success" id="toast-login"
+                         text="Logging in.."></paper-toast>
+            <paper-toast class="toast-success" id="toast-register"
+                         text="Registering account.."></paper-toast>
+        </div>
+
+    </template>
+    <script>
+        Polymer({
+            is: 'game-login',
+            ready: function () {
+                this.showLoginForm();
+            },
+
+            authenticate: function (e) {
+                this.$['toast-login'].open();
+
+                $.ajax({
+                    type: "POST",
+                    url: api.authentication("authenticate"),
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({
+                        account: {
+                            username: this.username,
+                            password: this.password
+                        }
+                    }),
+                    success: (function (data) {
+                        this.resetForm();
+                        application.authenticated(data);
+                    }).bind(this),
+                    statusCode: {
+                        404: (function () {
+                            this.$['toast-missing'].open();
+                            this.showRegisterForm();
+                            this.$['password-repeat'].focus();
+                        }).bind(this),
+                        401: (function () {
+                            this.$['toast-password'].open();
+                            this.password = "";
+                            this.$['password'].focus();
+                        }).bind(this)
+                    },
+                    error: function (code) {
+                        if (code.status != 401 && code.status != 404)
+                            application.error("Failed to establish a connection to the authentication server.")
+                    }
+                });
+            },
+
+            register: function (e) {
+                this.$['toast-register'].open();
+
+                if (this.password != this["password-repeat"] || this.password.length < 8)
+                    this.$['toast-validation-failed'].open();
+                else
+                    $.ajax({
+                        type: "POST",
+                        url: api.authentication("register"),
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify({
+                            account: {
+                                username: this.username,
+                                password: this.password,
+                                email: this.email
+                            }
+                        }),
+                        success: (function (data) {
+                            this.resetForm();
+                            application.authenticated(data);
+                        }).bind(this),
+                        statusCode: {
+                            409: (function () {
+                                this.$['toast-conflict'].open();
+                                this.$['username'].focus();
+                            }).bind(this)
+                        },
+                        error: function (code) {
+                            if (code.status != 409)
+                                application.error("Failed to establish a connection to the authentication server.")
+                        }
+                    });
+            },
+
+            resetForm: function () {
+                this.password = "";
+                this["password-repeat"] = "";
+                this.email = "";
+                this.showLoginForm();
+            },
+
+            showLoginForm: function () {
+                this.title = "Authentication";
+                this.hideregisterform = true;
+                this.hideloginform = false;
+                this.$['username'].focus();
+            },
+
+            showRegisterForm: function () {
+                this.title = "Registration";
+                this.hideregisterform = false;
+                this.hideloginform = true;
+                this.$['username'].focus();
+            },
+
+            submit: function (e) {
+                if (e.keyCode == 13) {
+                    if (!this.hideregisterform)
+                        this.register();
+
+                    if (!this.hideloginform)
+                        this.authenticate();
+                }
+            }
+        });
+    </script>
+</dom-module>

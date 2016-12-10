@@ -1,0 +1,103 @@
+{
+  "attributes" : { },
+  "name" : "Hunter",
+  "description" : "Knowing of their environment and the creatures lurking in it, none shall escape their true aim.",
+  "spells" : [ {
+    "name" : "archery",
+    "description" : "Gains Wounding aim and Hawkeye.",
+    "passive" : true
+  }, {
+    "name" : "hunting",
+    "description" : "Consecutive hits heals and grants haste.",
+    "passive" : true
+  }, {
+    "name" : "quick draw",
+    "description" : "Fire arrows in a cone.",
+    "target" : "cone",
+    "cooldown" : 8.0,
+    "modifier" : [ {
+      "modifies" : "target",
+      "attribute" : "health",
+      "using" : {
+        "source" : "caster",
+        "attribute" : "attack",
+        "value" : -2.0
+      }
+    } ],
+    "passive" : false
+  }, {
+    "name" : "precise aim",
+    "description" : "Slows and curses the target.",
+    "target" : "missile",
+    "cooldown" : 12.0,
+    "modifier" : [ {
+      "modifies" : "target",
+      "attribute" : "health",
+      "using" : {
+        "source" : "caster",
+        "attribute" : "attack",
+        "value" : -2.0
+      }
+    } ],
+    "passive" : false
+  }, {
+    "name" : "trap",
+    "description" : "Trap creatures in area, stunning and slowing them.",
+    "target" : "trap",
+    "cooldown" : 8.0,
+    "passive" : false
+  }, {
+    "name" : "wilderness",
+    "description" : "Move to a stunned target deals triple damage and heals for double.",
+    "target" : "selected",
+    "cooldown" : 12.0,
+    "modifier" : [ {
+      "modifies" : "target",
+      "attribute" : "health",
+      "using" : {
+        "source" : "caster",
+        "attribute" : "attack",
+        "value" : 3.0
+      }
+    } ],
+    "passive" : false
+  }, {
+    "name" : "deadly aim",
+    "description" : "Deals double damage and bonus damage based on targets current health.",
+    "cooldown" : 6.0,
+    "modifier" : [ {
+      "modifies" : "target",
+      "attribute" : "health",
+      "using" : {
+        "source" : "caster",
+        "attribute" : "attack",
+        "value" : -2.0
+      }
+    }, {
+      "modifies" : "target",
+      "attribute" : "health",
+      "using" : {
+        "source" : "target",
+        "attribute" : "health",
+        "value" : 0.05
+      }
+    } ],
+    "passive" : false
+  }, {
+    "name" : "untrapped",
+    "description" : "Removes any slow and stun effects and heals for 10%.",
+    "cooldown" : 12.0,
+    "modifier" : [ {
+      "modifies" : "caster",
+      "attribute" : "health",
+      "using" : {
+        "source" : "caster",
+        "attribute" : "health",
+        "value" : 0.1
+      }
+    } ],
+    "passive" : false
+  } ],
+  "keywords" : [ "traps", "mobility", "anti-healing" ],
+  "weapons" : [ "bow" ]
+}

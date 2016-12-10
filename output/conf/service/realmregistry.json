@@ -1,9 +1,0 @@
-{
-  "identity" : {
-    "node" : "realmregistry.node",
-    "host" : "server.1"
-  },
-  "realms" : [ "Angel Oak", "Developer Realm", "Iron Oak", "Staging Realm", "Wisteria", "Red Maple" ],
-  "realmSecret" : "TMyn+Uo9/Jdck+GgCo+MvTJf+hpL568zwZk8ClTo1JrEXMQlriPPJVeR9k89YecQrANqm42bVamcYoNn0pP2+w==",
-  "realmTimeout" : 7000
-}

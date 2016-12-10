@@ -18,8 +18,8 @@ import com.codingchili.core.storage.PrivateMap;
 
 /**
  * @author Robin Duda
- *
- * Tests the stale handler for realms.
+ *         <p>
+ *         Tests the stale handler for realms.
  */
 @RunWith(VertxUnitRunner.class)
 public class StaleRealmHandlerTest {
@@ -80,19 +80,20 @@ public class StaleRealmHandlerTest {
     }
 
     @Test
-    public void testTimeoutUpdatesWithConfiguration(TestContext context) {
-        Async async = context.async();
-        updateRealm();
-        StaleRealmHandlerTest.context.timeout = 500;
+    public void testTimeoutUpdatesWithConfiguration(TestContext test) {
+        Async async = test.async();
 
-        StaleRealmHandlerTest.context.vertx().setTimer(200, event -> {
+        updateRealm();
+        context.timeout = 500;
+
+        context.timer(200, event -> {
             setRealmStale();
-            assertRealmExistsAfterMS(context, async, 200);
+            assertRealmExistsAfterMS(test, async, 200);
         });
     }
 
     private void assertRealmExistsAfterMS(TestContext test, Async async, int ms) {
-        context.vertx().setTimer(ms, handler -> {
+        context.timer(ms, handler -> {
             Future<RealmSettings> future = Future.future();
 
             future.setHandler(event -> {

@@ -1,0 +1,97 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+<!--
+    @author Robin Duda
+    Realm chat.
+ -->
+
+<dom-module id="chat-box">
+    <link rel="import" href="../../style/theme.css" type="css">
+    <link rel="import" href="../../style/style.css" type="css">
+    <template>
+        <style>
+            :host {
+                display: inline-block;
+                position: absolute;
+                bottom: 32px;
+                left: 32px;
+            }
+
+            .interface-box {
+                width: 416px;
+                height: 246px;
+            }
+
+            .input {
+                position: absolute;
+                bottom: 2px;
+                left: 0;
+                right: 66px;
+            }
+
+            .button {
+                position: absolute;
+                width: 42px;
+                bottom: 0;
+                right: 0;
+            }
+
+            .messages {
+                list-style-type: none;
+                font-size: smaller;
+                margin-left: 8px;
+                margin-top: 2px;
+                padding-left: 0px;
+            }
+        </style>
+
+
+        <paper-material elevation="3" class="interface-box">
+            <div class="list">
+                <ul class="messages">
+                    <template is="dom-repeat" items="{{messages}}" as="message">
+                        <li class="text">
+                            {{message}}
+                        </li>
+                    </template>
+                </ul>
+            </div>
+            <paper-input value="{{message}}" id="message" class="input" maxlength="40" placeholder="message" on-keydown="submit"
+                         autofocus></paper-input>
+            <paper-button class="button" on-tap="send">SEND</paper-button>
+        </paper-material>
+
+
+    </template>
+    <script>
+        Polymer({
+            is: 'chat-box',
+            history: 14,
+
+            ready: function () {
+                this.set("messages", []);
+                this.set("message", "");
+            },
+
+            send: function () {
+                if (this.message.length != 0) {
+                    this.push("messages", this.message);
+                    this.set("message", "");
+
+                    while (this.messages.length >= 14) {
+                        this.splice("messages", 0, 1);
+                    }
+                }
+            },
+
+            submit: function (event) {
+                if (event.keyCode == 13)
+                    this.send();
+            }
+
+
+        });
+    </script>
+</dom-module>
