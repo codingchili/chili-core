@@ -10,4 +10,4 @@ Service to handle social interactions between users.
 - :x: guilds
 - :x: friend lists
 - :x: online status
-
+- :x: achievements
