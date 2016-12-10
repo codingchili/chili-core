@@ -14,7 +14,6 @@ import com.codingchili.core.testing.MapTestCases;
  *         Tests for the storage providers in core. Reuse these tests when new
  *         storage subsystems are implemented using the StorageLoader.
  */
-@Ignore
 @RunWith(VertxUnitRunner.class)
 public class ElasticMapIT extends MapTestCases {
     private static final int ELASTIC_REFRESH = 1200;
