@@ -6,19 +6,15 @@ For documentation and tutorials visit [the website](https://codingchili.com/), f
 
 **Beware!**
 
-Until the first pre-release master will be unstable!
+Until the first pre-release master will be unstable and may not work even if the build is green!
 
-This project is currently in development!
-
-Things may not work even if the build is green!
-
-## Installation
-To install chili-core clone this repository with **git**,
+## Building
+To build chili-core clone this repository with **git**,
 ```
 git clone https://github.com/codingchili/chili-core.git
 ```
 
-Create a JAR in the project root (and run tests)
+Creates a JAR in **prototype/** with all services bundled, requires gradle to be installed
 ```
 gradle jar
 ```
@@ -41,18 +37,8 @@ Additionally, on top of these services an actual game and server will be impleme
 The complete feature list may change during development. 
 
 ##### Audience
-- TBD
-
-###### Realm
-* Multiplayer enabled
-* 2D-movement & spells
-* AI enabled for npcs.
-* Inventory, trading & looting system
-* Crafting system 
-* Player classes and spells 
- * Programming knowledge not required to create/edit 
- * Configuration-based using JSON
- * Java programming required to add mechanics
+- Programmers seeking to create microservices productively in a very specific use case.
+- Aspiring game, web-app or mobile-app developers with an interest in backend development.
 
 ###### Core
 * Distributed realms/servers
@@ -78,12 +64,6 @@ The configuration directory **'conf' must be in the same directory as the jar fi
 
 The configuration structure
 ```
-├── resources/
-|   ├── version.json
-|   ├── game/
-|   ├── gui/
-├── website/
-|   ├── bower.json
 ├── conf/
 │   ├──system/
 │   │   ├── launcher.json
@@ -91,40 +71,9 @@ The configuration structure
 │   │   ├── security.json
 │   │   ├── storage.json
 │   │   ├── system.json
-│   ├── realm/
-│   │   ├── {name}.json
-│   │   ├── {name}.json
-│   │   ├── disabled/
-│   ├── game/
-│   │   ├── class/
-│   │   │   ├── {name}.json
-│   │   │   ├── disabled/
-│   │   ├── crafting/
-│   │   │   ├── {name}.json
-│   │   ├── item/
-│   │   │   ├── {name}.json
-│   │   ├── npc/
-│   │   │   ├── character.json
-│   │   │   ├── dialog.json
-│   │   │   ├── quest.json
-│   │   │   ├── trading.json
-│   │   ├── parameters/
-│   │   │   ├── targeting.json
-│   │   │   ├── weapons.json
-│   │   ├── player/
-│   │   │   ├── affliction.json
-│   │   │   ├── characters.json
-│   │   │   ├── spells.json
-│   │   ├── instances/
-│   │   │   ├── {name}.json
 ```
 **Explanation**
-- 'resources/' is used by the patching service to store files.
-- 'website/' contains website files used in the prototype.
-- 'conf/' contains all configuration files.
 - 'conf/system/' contains framework configuration.
-- 'conf/realm/' contains realm configurations for the realm service.
-- 'conf/game/' contains game configuration, may be overriden in 'conf/realm/override'
 
 All configuration files are loaded by their respective service with support for reloading changes at runtime. Minimally the framework configuration in **conf/system/** must exist as it is required by the launcher. 
 
