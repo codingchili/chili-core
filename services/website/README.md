@@ -9,16 +9,4 @@ Serves files from **website/** directory in the server root.
 - :x: support for templating with Jade
 - :x: support for 0-copy
 
-##### Configuration in conf/service/website.json
-
-```
-{
-  "identity" : {
-    "node" : "website.node",
-    "host" : "server.1"
-  },
-  "startPage" : "/index.html",
-  "missingPage" : "/404.html",
-  "gzip" : false
-}
-```
+See sample configuration in **conf/service/website.json**
