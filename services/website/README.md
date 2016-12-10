@@ -8,5 +8,3 @@ Serves files from **website/** directory in the server root.
 - hot reload of files
 - :x: support for templating with Jade
 - :x: support for 0-copy
-
-See sample configuration in **conf/service/website.json**
