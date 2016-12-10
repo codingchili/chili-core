@@ -1,7 +1,7 @@
 # prototype
 The game prototype built using the core and services is based on **Polymer**, **websockets** and **HTML5** with WebGL. 
 
-#### Preparing the installation
+## Preparing the installation
 The website service requires dependencies in **website/** run the following in that directory,
 ```
 bower install
@@ -15,7 +15,7 @@ java -jar <filename>.jar --generate
 ```
 The authentication tokens are stored in **/conf/services/{service}.json**. See **conf/system/security.json** for setting up token/secret dependencies between services. 
 
-#### Starting up the server
+## Starting up the server
 Start the launcher with, 
 ```
 java -jar <filename>.jar <block or host>
@@ -24,8 +24,56 @@ This will start up services configured in the given or 'default' block in **conf
 
 To see all available commands run with --help.
 
+## Configuration
+The configuration directory **'conf' must be in the same directory as the jar file** or **on the classpath**.
 
-#### Planned features
+The configuration structure
+```
+├── resources/
+|   ├── version.json
+|   ├── game/
+|   ├── gui/
+├── website/
+|   ├── bower.json
+├── conf/
+│   ├── system/*
+│   ├── realm/
+│   │   ├── {name}.json
+│   │   ├── {name}.json
+│   │   ├── disabled/
+│   ├── game/
+│   │   ├── class/
+│   │   │   ├── {name}.json
+│   │   │   ├── disabled/
+│   │   ├── crafting/
+│   │   │   ├── {name}.json
+│   │   ├── item/
+│   │   │   ├── {name}.json
+│   │   ├── npc/
+│   │   │   ├── character.json
+│   │   │   ├── dialog.json
+│   │   │   ├── quest.json
+│   │   │   ├── trading.json
+│   │   ├── parameters/
+│   │   │   ├── targeting.json
+│   │   │   ├── weapons.json
+│   │   ├── player/
+│   │   │   ├── affliction.json
+│   │   │   ├── characters.json
+│   │   │   ├── spells.json
+│   │   ├── instances/
+│   │   │   ├── {name}.json
+```
+**Explanation**
+- 'resources/' is used by the patching service to store files.
+- 'website/' contains website files used in the prototype.
+- 'conf/' contains all configuration files.
+- 'conf/system/' contains framework configuration.
+- 'conf/realm/' contains realm configurations for the realm service.
+- 'conf/game/' contains game configuration, may be overriden in 'conf/realm/override'
+
+
+## Planned features
 * Multiplayer enabled
 * 2D-movement & spells
 * AI enabled for npcs.
