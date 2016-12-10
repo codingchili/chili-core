@@ -4,5 +4,3 @@ Keeps track of a list of realms that is online and their properties.
 - register
 - list
 - expire entries
-
-Configuration in **conf/service/realmregistry.json**
