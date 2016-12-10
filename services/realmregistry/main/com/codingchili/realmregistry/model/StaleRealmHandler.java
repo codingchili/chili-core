@@ -55,9 +55,7 @@ public class StaleRealmHandler {
 
         future.setHandler(done -> {
             if (done.succeeded()) {
-                if (done.result() != null) {
                     context.onRealmDisconnect(realm);
-                }
             } else {
                 context.onStaleRemoveError(done.cause());
             }
