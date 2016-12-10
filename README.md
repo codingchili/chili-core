@@ -1,48 +1,30 @@
 # chili-core [![Build Status](https://travis-ci.org/codingchili/chili-core.svg?branch=master)](https://travis-ci.org/codingchili/chili-core)
 
-The chili core is a lightweight distributed **architecture** for creating microservices with focus on **modularity**, **security** and **scalability**. The backend uses **Vert.x** with **Hazelcast** as its cluster manager. The game prototype built using the core is based on **Polymer**, **websockets** and **HTML5** with WebGL. 
+The chili core is a lightweight distributed **architecture** for creating microservices with focus on **modularity**, **security** and **scalability**. The backend uses **Vert.x** with **Hazelcast** as its cluster manager. 
 
 For documentation and tutorials visit [the website](https://codingchili.com/), for a live demo visit [demo](https://beta.codingchili.com).
 
 **Beware!**
 
-Until the first pre-release master will be unstable!
+Until the first pre-release master will be unstable and may not work even if the build is green!
 
-This project is currently in development!
-
-Things may not work even if the build is green!
-
-## Installation
-To install chili-core clone this repository with **git**,
+## Building
+To build chili-core clone this repository with **git**,
 ```
 git clone https://github.com/codingchili/chili-core.git
 ```
 
-The website service requires dependencies in **website/** run the following in that directory,
+Create a JAR in **prototype/** with all services bundled, requires gradle to be installed
 ```
-bower install
-```
-
-Create a JAR in the project root (and run tests)
-```
-mvn package
+gradle jar
 ```
 
-If you do not have a local **ElasticSearch server** running on the default port log messages will be dropped unless consoleLogging is set in **conf/system/system.json**.
+Start the server from **prototype/**
+```
+java -jar <filename.jar>
+```
 
-Before starting it up new tokens/secrets should be generated,
-```
-java -jar <filename>.jar --generate
-```
-The authentication tokens are stored in **/conf/services/{service}.json**. See **conf/system/security.json** for setting up token/secret dependencies between services. 
-
-Start the launcher with, 
-```
-java -jar <filename>.jar <block or host>
-```
-This will start up services configured in the given or 'default' block in **conf/system/launcher.json**.
-
-To see all available commands run with --help.
+For information on how to setup the installation look at the README.md in **prototype/**.
 
 ## Background
 The project consists of two parts. The core, which is a framework built on top of the vertx toolkit. The purpose of wrapping vertx in a framework is to increase productivity. This is done by providing common functionality that can be used to build microservices on. With all the logic packed into core, it is possible to create distributed microservices capable of handling authentication, request routing and storage in 66 lines of code. If you are interested in vertx, I recommend using it directly instead. This framework is intended to improve productivity in a very specific use case. In order to achieve this it is much more invasive than the vertx toolkit.
@@ -60,18 +42,8 @@ Additionally, on top of these services an actual game and server will be impleme
 The complete feature list may change during development. 
 
 ##### Audience
-- TBD
-
-###### Realm
-* Multiplayer enabled
-* 2D-movement & spells
-* AI enabled for npcs.
-* Inventory, trading & looting system
-* Crafting system 
-* Player classes and spells 
- * Programming knowledge not required to create/edit 
- * Configuration-based using JSON
- * Java programming required to add mechanics
+- Programmers seeking to create microservices productively in a very specific use case.
+- Aspiring game, web-app or mobile-app developers with an interest in backend development.
 
 ###### Core
 * Distributed realms/servers
@@ -97,12 +69,6 @@ The configuration directory **'conf' must be in the same directory as the jar fi
 
 The configuration structure
 ```
-├── resources/
-|   ├── version.json
-|   ├── game/
-|   ├── gui/
-├── website/
-|   ├── bower.json
 ├── conf/
 │   ├──system/
 │   │   ├── launcher.json
@@ -110,40 +76,9 @@ The configuration structure
 │   │   ├── security.json
 │   │   ├── storage.json
 │   │   ├── system.json
-│   ├── realm/
-│   │   ├── {name}.json
-│   │   ├── {name}.json
-│   │   ├── disabled/
-│   ├── game/
-│   │   ├── class/
-│   │   │   ├── {name}.json
-│   │   │   ├── disabled/
-│   │   ├── crafting/
-│   │   │   ├── {name}.json
-│   │   ├── item/
-│   │   │   ├── {name}.json
-│   │   ├── npc/
-│   │   │   ├── character.json
-│   │   │   ├── dialog.json
-│   │   │   ├── quest.json
-│   │   │   ├── trading.json
-│   │   ├── parameters/
-│   │   │   ├── targeting.json
-│   │   │   ├── weapons.json
-│   │   ├── player/
-│   │   │   ├── affliction.json
-│   │   │   ├── characters.json
-│   │   │   ├── spells.json
-│   │   ├── instances/
-│   │   │   ├── {name}.json
 ```
 **Explanation**
-- 'resources/' is used by the patching service to store files.
-- 'website/' contains website files used in the prototype.
-- 'conf/' contains all configuration files.
 - 'conf/system/' contains framework configuration.
-- 'conf/realm/' contains realm configurations for the realm service.
-- 'conf/game/' contains game configuration, may be overriden in 'conf/realm/override'
 
 All configuration files are loaded by their respective service with support for reloading changes at runtime. Minimally the framework configuration in **conf/system/** must exist as it is required by the launcher. 
 
