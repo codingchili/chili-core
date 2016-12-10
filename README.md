@@ -14,7 +14,7 @@ To build chili-core clone this repository with **git**,
 git clone https://github.com/codingchili/chili-core.git
 ```
 
-Creates a JAR in **prototype/** with all services bundled, requires gradle to be installed
+Create a JAR in **prototype/** with all services bundled, requires gradle to be installed
 ```
 gradle jar
 ```
