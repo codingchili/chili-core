@@ -19,6 +19,11 @@ Create a JAR in **prototype/** with all services bundled, requires gradle to be 
 gradle jar
 ```
 
+Start the server from **prototype/**
+```
+java -jar <filename.jar>
+```
+
 For information on how to setup the installation look at the README.md in **prototype/**.
 
 ## Background
