@@ -8,5 +8,3 @@ Routes requests from clients to the target service in the cluster.
 - :x: UDP
 - :x: Websocket
 - :x: TCP
-
-Configuration in **conf/service/routingserver.json**
