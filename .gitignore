@@ -4,4 +4,5 @@ lib/
 target/
 build/
 core/conf/
-output/website/bower_components/
+prototype/service
+prototype/website/bower_components/
