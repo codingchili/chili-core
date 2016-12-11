@@ -1,5 +1,6 @@
 package com.codingchili.router.controller.transport;
 
+import com.codingchili.router.configuration.*;
 import com.codingchili.router.controller.RouterHandler;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -21,8 +22,6 @@ import com.codingchili.core.protocol.ClusterNode;
 import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.security.RemoteIdentity;
 
-import com.codingchili.router.configuration.ListenerSettings;
-import com.codingchili.router.configuration.RouterSettings;
 import com.codingchili.router.model.Endpoint;
 import com.codingchili.router.model.WireType;
 import com.codingchili.common.Strings;
@@ -90,11 +89,16 @@ public abstract class TransportTestCases {
     }
 
     private ClusterNode fromWireType(WireType type) {
+        RouterHandler<RouterContext> handler = new RouterHandler<>(context);
         switch (type) {
             case REST:
-                return new RestListener(new RouterHandler<>(context));
+                return new RestListener(handler);
             case UDP:
-                return new UdpListener(new RouterHandler<>(context));
+                return new UdpListener(handler);
+            case TCP:
+                return new TcpListener(handler);
+            case WEBSOCKET:
+                return new WebsocketListener(handler);
             default:
                 throw new RuntimeException("Transport verticle undefined for given transport type");
         }
