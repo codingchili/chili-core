@@ -14,26 +14,40 @@ import com.codingchili.router.controller.transport.*;
  *         root game server, deploys realmName servers.
  */
 public class Service extends ClusterNode {
+    private RouterContext context;
+
+    public Service(RouterContext context) {
+        this.context = context;
+    }
+
+    @Override
+    public void init(Vertx vertx, Context context) {
+        super.init(vertx, context);
+
+        if (context == null) {
+            this.context = new RouterContext(vertx);
+        }
+    }
 
     @Override
     public void start(Future<Void> start) {
-        RouterContext context = new RouterContext(vertx);
-
         for (int i = 0; i < settings.getHandlers(); i++) {
 
             for (ListenerSettings listener : context.transports()) {
+                RouterHandler<RouterContext> handler = new RouterHandler<>(context);
+
                 switch (listener.getType()) {
                     case UDP:
-                        context.deploy(new UdpListener(new RouterHandler<>(context)));
+                        context.deploy(new UdpListener(handler));
                         break;
                     case TCP:
-                        context.deploy(new TcpListener(new RouterHandler<>(context)));
+                        context.deploy(new TcpListener(handler));
                         break;
                     case WEBSOCKET:
-                        context.deploy(new WebsocketListener(new RouterHandler<>(context)));
+                        context.deploy(new WebsocketListener(handler));
                         break;
                     case REST:
-                        context.deploy(new RestListener(new RouterHandler<>(context)));
+                        context.deploy(new RestListener(handler));
                         break;
                 }
             }

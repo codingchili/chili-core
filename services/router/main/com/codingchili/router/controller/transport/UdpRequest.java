@@ -39,19 +39,19 @@ class UdpRequest extends BaseRequest {
         return context.getListener(WireType.UDP).getTimeout();
     }
 
-    private void send(Buffer buffer) {
-        context.vertx().createDatagramSocket()
-                .send(buffer,
-                        packet.sender().port(),
-                        packet.sender().host(), sent -> {
-                        });
-    }
-
     private void send(Object object) {
         if (object instanceof Buffer) {
             send((Buffer) object);
         } else {
             send(Buffer.buffer(Serializer.pack(object)));
         }
+    }
+
+    private void send(Buffer buffer) {
+        context.vertx().createDatagramSocket()
+                .send(buffer,
+                        packet.sender().port(),
+                        packet.sender().host(), sent -> {
+                        });
     }
 }

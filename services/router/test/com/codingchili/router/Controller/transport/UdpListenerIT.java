@@ -2,11 +2,9 @@ package com.codingchili.router.controller.transport;
 
 import com.codingchili.router.model.WireType;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.net.NetSocket;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.runner.RunWith;
 
-import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_ROUTE;
 
 /**
  * @author Robin Duda
@@ -22,17 +20,18 @@ public class UdpListenerIT extends TransportTestCases {
 
     @Override
     void sendRequest(String route, ResponseListener listener) {
-        sendRequest(route, listener, new JsonObject().put(PROTOCOL_ROUTE, route));
+        vertx.createDatagramSocket().send(new JsonObject().encode(), PORT, HOST, handler -> {
+            if (handler.succeeded()) {
+                handler.result().handler(response -> handleBody(listener, response.data()));
+            }
+        });
     }
 
     @Override
     void sendRequest(String route, ResponseListener listener, JsonObject data) {
-        vertx.createNetClient().connect(PORT, HOST, connect -> {
-            if (connect.succeeded()) {
-                NetSocket socket = connect.result();
-
-                socket.handler(buffer -> handleBody(listener, buffer));
-                socket.write(data.encode());
+        vertx.createDatagramSocket().send(data.encode(), PORT, HOST, handler -> {
+            if (handler.succeeded()) {
+                handler.result().handler(response -> handleBody(listener, response.data()));
             }
         });
     }

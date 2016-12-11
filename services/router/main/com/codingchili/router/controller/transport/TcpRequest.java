@@ -26,7 +26,11 @@ class TcpRequest extends BaseRequest {
 
     @Override
     public void write(Object object) {
-        socket.write(Buffer.buffer(Serializer.pack(object)));
+        if (object instanceof Buffer) {
+            socket.write((Buffer) object);
+        } else {
+            socket.write(Buffer.buffer(Serializer.pack(object)));
+        }
     }
 
     @Override

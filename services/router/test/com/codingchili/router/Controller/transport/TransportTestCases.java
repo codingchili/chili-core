@@ -1,5 +1,6 @@
 package com.codingchili.router.controller.transport;
 
+import com.codingchili.router.Service;
 import com.codingchili.router.configuration.*;
 import com.codingchili.router.controller.RouterHandler;
 import io.vertx.core.Vertx;
@@ -82,26 +83,10 @@ public abstract class TransportTestCases {
             settings.setTransport(transport);
             context.setSettings(settings);
 
-            vertx.deployVerticle(fromWireType(wireType), deploy -> {
+            vertx.deployVerticle(new Service(context), deploy -> {
                 async.complete();
             });
         });
-    }
-
-    private ClusterNode fromWireType(WireType type) {
-        RouterHandler<RouterContext> handler = new RouterHandler<>(context);
-        switch (type) {
-            case REST:
-                return new RestListener(handler);
-            case UDP:
-                return new UdpListener(handler);
-            case TCP:
-                return new TcpListener(handler);
-            case WEBSOCKET:
-                return new WebsocketListener(handler);
-            default:
-                throw new RuntimeException("Transport verticle undefined for given transport type");
-        }
     }
 
     @After
@@ -145,6 +130,8 @@ public abstract class TransportTestCases {
     abstract void sendRequest(String route, ResponseListener listener, JsonObject data);
 
     void handleBody(ResponseListener listener, Buffer body) {
+        JsonObject json = body.toJsonObject();
+
         ResponseStatus status = ResponseStatus.valueOf(body.toJsonObject().getString(PROTOCOL_STATUS));
         listener.handle(body.toJsonObject(), status);
     }

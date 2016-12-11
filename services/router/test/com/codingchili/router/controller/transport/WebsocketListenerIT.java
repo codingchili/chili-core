@@ -1,6 +1,7 @@
 package com.codingchili.router.controller.transport;
 
 import com.codingchili.router.model.WireType;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -33,6 +34,8 @@ public class WebsocketListenerIT extends TransportTestCases {
             handler.handler(body -> {
                 handleBody(listener, body);
             });
+
+            handler.write(Buffer.buffer(data.encode()));
         });
     }
 }
