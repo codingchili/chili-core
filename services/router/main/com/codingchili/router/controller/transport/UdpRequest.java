@@ -39,14 +39,6 @@ class UdpRequest extends BaseRequest {
         return context.getListener(WireType.UDP).getTimeout();
     }
 
-    protected void send(ResponseStatus status, Throwable e) {
-        send(Protocol.response(status, e));
-    }
-
-    protected void send(ResponseStatus status) {
-        send(Protocol.response(status));
-    }
-
     private void send(Buffer buffer) {
         context.vertx().createDatagramSocket()
                 .send(buffer,

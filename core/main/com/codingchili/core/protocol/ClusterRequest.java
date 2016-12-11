@@ -13,7 +13,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  *
  * A request in the cluster.
  */
-public class ClusterRequest implements Request {
+public class ClusterRequest extends BaseRequest {
     private int timeout = 3000;
     private Buffer buffer;
     private final JsonObject json;
@@ -42,56 +42,6 @@ public class ClusterRequest implements Request {
     }
 
     @Override
-    public void error(Throwable exception) {
-        message.reply(message(ResponseStatus.ERROR).put(ID_MESSAGE, exception.getMessage()));
-    }
-
-    private JsonObject message(ResponseStatus message) {
-        return new JsonObject().put(PROTOCOL_STATUS, message);
-    }
-
-    private JsonObject message(ResponseStatus message, Throwable exception) {
-        return new JsonObject()
-                .put(PROTOCOL_STATUS, message)
-                .put(ID_MESSAGE, exception.getMessage());
-    }
-
-    @Override
-    public void unauthorized(Throwable exception) {
-        message.reply(message(ResponseStatus.UNAUTHORIZED, exception));
-    }
-
-    @Override
-    public void accept() {
-        message.reply(message(ResponseStatus.ACCEPTED));
-    }
-
-    @Override
-    public void missing(Throwable exception) {
-        message.reply(message(ResponseStatus.MISSING, exception));
-    }
-
-    @Override
-    public void conflict(Throwable exception) {
-        message.reply(message(ResponseStatus.CONFLICT, exception));
-    }
-
-    @Override
-    public void bad(Throwable exception) {
-        message.reply(message(ResponseStatus.BAD, exception));
-    }
-
-    @Override
-    public String route() {
-        return json.getString(ID_ROUTE);
-    }
-
-    @Override
-    public String target() {
-        return json.getString(ID_TARGET);
-    }
-
-    @Override
     public void write(Object object) {
         if (object != null) {
             if (object instanceof Buffer) {
@@ -117,12 +67,13 @@ public class ClusterRequest implements Request {
     }
 
     @Override
-    public Token token() {
-        if (json.containsKey(ID_TOKEN)) {
-            return Serializer.unpack(json.getJsonObject(ID_TOKEN), Token.class);
-        } else {
-            return new Token();
-        }
+    protected void send(ResponseStatus status, Throwable exception) {
+        write(Protocol.response(status, exception));
+    }
+
+    @Override
+    protected void send(ResponseStatus status) {
+        write(Protocol.response(status));
     }
 
     @Override

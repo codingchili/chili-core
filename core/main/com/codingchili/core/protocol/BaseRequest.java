@@ -64,7 +64,11 @@ public abstract class BaseRequest implements Request {
 
     @Override
     public Token token() {
-        return Serializer.unpack(data().getJsonObject(ID_TOKEN), Token.class);
+        if (data().containsKey(ID_TOKEN)) {
+            return Serializer.unpack(data().getJsonObject(ID_TOKEN), Token.class);
+        } else {
+            return new Token();
+        }
     }
 
     /**
@@ -72,11 +76,15 @@ public abstract class BaseRequest implements Request {
      * @param status the status of the message to send.
      * @param exception the exception that caused the abnormal status.
      */
-    protected abstract void send(ResponseStatus status, Throwable exception);
+    protected void send(ResponseStatus status, Throwable exception) {
+        write(Protocol.response(status, exception));
+    }
 
     /**
      * sends a response to a request.
      * @param status the status of the message to send.
      */
-    protected abstract void send(ResponseStatus status);
+    protected void send(ResponseStatus status) {
+        write(Protocol.response(status));
+    }
 }

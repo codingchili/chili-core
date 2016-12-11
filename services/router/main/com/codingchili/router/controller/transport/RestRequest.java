@@ -89,7 +89,6 @@ class RestRequest extends BaseRequest {
         }
     }
 
-
     @Override
     public JsonObject data() {
         return data;

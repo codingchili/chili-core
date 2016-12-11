@@ -1,71 +1,41 @@
 package com.codingchili.router.controller.transport;
 
+import com.codingchili.router.configuration.ListenerSettings;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.net.NetSocket;
 
-import com.codingchili.core.protocol.Request;
-import com.codingchili.core.security.Token;
+import com.codingchili.core.protocol.BaseRequest;
+import com.codingchili.core.protocol.Serializer;
 
 /**
  * @author Robin Duda
+ *
+ * TCP request implementation.
  */
-public class TcpRequest implements Request {
+class TcpRequest extends BaseRequest {
+    private JsonObject data;
+    private NetSocket socket;
+    private ListenerSettings settings;
+
+    TcpRequest(NetSocket socket, Buffer data, ListenerSettings settings) {
+        this.data = data.toJsonObject();
+        this.socket = socket;
+        this.settings = settings;
+    }
+
     @Override
     public void write(Object object) {
-
-    }
-
-    @Override
-    public void accept() {
-
-    }
-
-    @Override
-    public void error(Throwable exception) {
-
-    }
-
-    @Override
-    public void unauthorized(Throwable exception) {
-
-    }
-
-    @Override
-    public void missing(Throwable exception) {
-
-    }
-
-    @Override
-    public void conflict(Throwable exception) {
-
-    }
-
-    @Override
-    public void bad(Throwable exception) {
-
-    }
-
-    @Override
-    public String route() {
-        return null;
-    }
-
-    @Override
-    public String target() {
-        return null;
-    }
-
-    @Override
-    public Token token() {
-        return null;
+        socket.write(Buffer.buffer(Serializer.pack(object)));
     }
 
     @Override
     public JsonObject data() {
-        return null;
+        return data;
     }
 
     @Override
     public int timeout() {
-        return 0;
+        return settings.getTimeout();
     }
 }

@@ -5,8 +5,8 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.protocol.*;
-import com.codingchili.core.security.Token;
+import com.codingchili.core.protocol.BaseRequest;
+import com.codingchili.core.protocol.Serializer;
 
 /**
  * @author Robin Duda
@@ -23,16 +23,6 @@ class WebsocketRequest extends BaseRequest {
         this.socket = socket;
         this.data = buffer.toJsonObject();
         this.settings = settings;
-    }
-
-    @Override
-    protected void send(ResponseStatus status, Throwable exception) {
-        socket.write(Protocol.response(status, exception));
-    }
-
-    @Override
-    protected void send(ResponseStatus status) {
-        socket.write(Protocol.response(status));
     }
 
     @Override
