@@ -6,8 +6,12 @@ The website service requires dependencies in **website/** run the following in t
 ```
 bower install
 ```
+To generate the default configuration run,
+```
+java -jar <filename>.jar --reconfigure
+```
 
-If you do not have a local **ElasticSearch server** running on the default port log messages will be dropped unless consoleLogging is set in **conf/system/system.json**.
+Add the services to deploy to **conf/system/launcher.json** using their fully qualified class name. Make sure to configure the services in **conf/service/{name}.json**, see the configuration section in the service package for details.
 
 Before starting the server, new tokens/secrets should be generated using,
 ```
