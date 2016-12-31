@@ -2,8 +2,6 @@
 
 The chili core is a lightweight distributed **architecture** for creating microservices with focus on **modularity**, **security** and **scalability**. The backend uses **Vert.x** with **Hazelcast** as its cluster manager. 
 
-For documentation and tutorials visit [the website](https://codingchili.com/), for a live demo visit [demo](https://beta.codingchili.com).
-
 **Beware!**
 
 Until the first pre-release master will be unstable and may not work even if the build is green!
