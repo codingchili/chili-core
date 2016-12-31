@@ -19,15 +19,6 @@ public class UdpListenerIT extends TransportTestCases {
     }
 
     @Override
-    void sendRequest(String route, ResponseListener listener) {
-        vertx.createDatagramSocket().send(new JsonObject().encode(), PORT, HOST, handler -> {
-            if (handler.succeeded()) {
-                handler.result().handler(response -> handleBody(listener, response.data()));
-            }
-        });
-    }
-
-    @Override
     void sendRequest(String route, ResponseListener listener, JsonObject data) {
         vertx.createDatagramSocket().send(data.encode(), PORT, HOST, handler -> {
             if (handler.succeeded()) {

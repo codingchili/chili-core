@@ -25,12 +25,9 @@ public class WebsocketListenerIT extends TransportTestCases {
         super(WireType.WEBSOCKET);
     }
 
-    void sendRequest(String route, ResponseListener listener) {
-        sendRequest(route, listener, new JsonObject());
-    }
-
+    @Override
     void sendRequest(String route, ResponseListener listener, JsonObject data) {
-        vertx.createHttpClient().websocket(PORT, HOST, route, handler -> {
+        vertx.createHttpClient().websocket(PORT, HOST, DIR_SEPARATOR, handler -> {
             handler.handler(body -> {
                 handleBody(listener, body);
             });

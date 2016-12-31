@@ -6,8 +6,6 @@ import io.vertx.core.net.NetSocket;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.runner.RunWith;
 
-import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_ROUTE;
-
 /**
  * @author Robin Duda
  *
@@ -18,11 +16,6 @@ public class TcpListenerIT extends TransportTestCases {
 
     public TcpListenerIT() {
         super(WireType.TCP);
-    }
-
-    @Override
-    void sendRequest(String route, ResponseListener listener) {
-        sendRequest(route, listener, new JsonObject().put(PROTOCOL_ROUTE, route));
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.codingchili.router.controller.transport;
 
-import com.codingchili.router.controller.RouterHandler;
 import com.codingchili.router.model.WireType;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
@@ -34,7 +33,7 @@ public class RestListenerIT extends TransportTestCases {
 
         sendRequest(PATCHING_ROOT, (result, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
-            context.assertEquals(NODE_PATCHING, result.getString(ID_TARGET));
+            context.assertEquals(NODE_PATCHING, result.getString(PROTOCOL_TARGET));
             async.complete();
         });
     }
@@ -47,7 +46,7 @@ public class RestListenerIT extends TransportTestCases {
 
         sendRequest("/", (result, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
-            context.assertEquals(NODE_WEBSERVER, result.getString(ID_TARGET));
+            context.assertEquals(NODE_WEBSERVER, result.getString(PROTOCOL_TARGET));
             async.complete();
         });
     }
@@ -56,7 +55,8 @@ public class RestListenerIT extends TransportTestCases {
     public void testRouterSupportsGet(TestContext context) {
         Async async = context.async();
 
-        sendGetRequest("/?" + ID_ROUTE + "=" + ID_PING + "&" + ID_TARGET + "=" + NODE_ROUTING, (result, status) -> {
+        sendGetRequest("/?" + PROTOCOL_ROUTE + "=" + ID_PING + "&" + PROTOCOL_TARGET + "=" + NODE_ROUTING,
+                (result, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
             async.complete();
         });
@@ -69,12 +69,15 @@ public class RestListenerIT extends TransportTestCases {
         });
     }
 
-    void sendRequest(String route, ResponseListener listener) {
+    private void sendRequest(String route, ResponseListener listener) {
         sendRequest(route, listener, new JsonObject());
     }
 
-    void sendRequest(String route, ResponseListener listener, JsonObject data) {
-        vertx.createHttpClient().post(PORT, HOST, route, handler -> {
+    @Override
+    void sendRequest(String target, ResponseListener listener, JsonObject data) {
+        data.put(PROTOCOL_TARGET, target);
+
+        vertx.createHttpClient().post(PORT, HOST, DIR_SEPARATOR, handler -> {
 
             handler.bodyHandler(body -> handleBody(listener, body));
         }).end(data.encode());

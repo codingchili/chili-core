@@ -48,12 +48,12 @@ class RestRequest extends BaseRequest {
 
         parseApi();
 
-        if (!data.containsKey(ID_ROUTE)) {
-            data.put(ID_ROUTE, context.request().path());
+        if (!data.containsKey(PROTOCOL_ROUTE)) {
+            data.put(PROTOCOL_ROUTE, context.request().path());
         }
 
-        if (!data.containsKey(ID_TARGET)) {
-            data.put(ID_TARGET, NODE_WEBSERVER);
+        if (!data.containsKey(PROTOCOL_TARGET)) {
+            data.put(PROTOCOL_TARGET, NODE_WEBSERVER);
         }
     }
 
@@ -66,10 +66,10 @@ class RestRequest extends BaseRequest {
                     Endpoint end = api.get(route);
 
                     if (end.getTarget() != null)
-                        data.put(ID_TARGET, end.getTarget());
+                        data.put(PROTOCOL_TARGET, end.getTarget());
 
                     if (end.getRoute() != null)
-                        data.put(ID_ROUTE, end.getRoute());
+                        data.put(PROTOCOL_ROUTE, end.getRoute());
                 });
     }
 

@@ -20,7 +20,7 @@ import com.codingchili.core.storage.exception.*;
  *         <p>
  *         Common test cases for the map implementations.
  */
-@Ignore
+@Ignore("Extend this class to run the tests.")
 @RunWith(VertxUnitRunner.class)
 public class MapTestCases {
     protected static final String LEVEL = "level";

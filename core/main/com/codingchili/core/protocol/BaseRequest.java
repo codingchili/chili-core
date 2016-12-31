@@ -3,6 +3,7 @@ package com.codingchili.core.protocol;
 import com.codingchili.core.security.Token;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
+import static com.codingchili.core.protocol.ResponseStatus.*;
 
 /**
  * @author Robin Duda
@@ -14,37 +15,37 @@ public abstract class BaseRequest implements Request {
 
     @Override
     public void accept() {
-        send(ResponseStatus.ACCEPTED);
+        send(ACCEPTED);
     }
 
     @Override
     public void error(Throwable exception) {
-        send(ResponseStatus.ERROR, exception);
+        send(ERROR, exception);
     }
 
     @Override
     public void unauthorized(Throwable exception) {
-        send(ResponseStatus.UNAUTHORIZED);
+        send(UNAUTHORIZED);
     }
 
     @Override
     public void missing(Throwable exception) {
-        send(ResponseStatus.MISSING, exception);
+        send(MISSING, exception);
     }
-
+    
     @Override
     public void conflict(Throwable exception) {
-        send(ResponseStatus.CONFLICT, exception);
+        send(CONFLICT, exception);
     }
 
     @Override
     public void bad(Throwable exception) {
-        send(ResponseStatus.BAD, exception);
+        send(BAD, exception);
     }
 
     @Override
     public String route() {
-        String route = data().getString(ID_ROUTE);
+        String route = data().getString(PROTOCOL_ROUTE);
 
         if (route == null) {
             route = DIR_SEPARATOR;
@@ -54,7 +55,7 @@ public abstract class BaseRequest implements Request {
 
     @Override
     public String target() {
-        String target = data().getString(ID_TARGET);
+        String target = data().getString(PROTOCOL_TARGET);
 
         if (target == null) {
             target = UNDEFINED;

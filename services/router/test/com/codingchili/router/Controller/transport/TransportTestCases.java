@@ -2,7 +2,6 @@ package com.codingchili.router.controller.transport;
 
 import com.codingchili.router.Service;
 import com.codingchili.router.configuration.*;
-import com.codingchili.router.controller.RouterHandler;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
@@ -19,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-import com.codingchili.core.protocol.ClusterNode;
 import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.security.RemoteIdentity;
 
@@ -31,20 +29,23 @@ import static com.codingchili.common.Strings.*;
 
 /**
  * @author Robin Duda
- *
- * Contains test cases for transport implementations.
+ *         <p>
+ *         Contains test cases for transport implementations.
  */
-@Ignore
+@Ignore("Extend this class to run the tests.")
 @RunWith(VertxUnitRunner.class)
 public abstract class TransportTestCases {
     static final String PATCHING_ROOT = "/patching";
-    private static RouterSettings settings;
-    private static ListenerSettings listener;
     static final String HOST = "localhost";
     static final int PORT = 19797;
-    Vertx vertx;
-    private ContextMock context;
+    private static final int MAX_REQUEST_BYTES = 256;
+    private static final String ONE_CHAR = "x";
+    private static final String DATA = "data";
+    private static RouterSettings settings;
+    private static ListenerSettings listener;
+    private ContextMock test;
     private WireType wireType;
+    Vertx vertx;
 
     TransportTestCases(WireType wireType) {
         this.wireType = wireType;
@@ -61,14 +62,14 @@ public abstract class TransportTestCases {
             vertx = cluster.result();
 
             settings = new RouterSettings();
-            context = new ContextMock(vertx);
+            test = new ContextMock(vertx);
 
             ArrayList<ListenerSettings> transport = new ArrayList<>();
 
             settings.setIdentity(new RemoteIdentity("node", "at"));
 
             listener = new ListenerSettings();
-            listener.setMaxRequestBytes(10)
+            listener.setMaxRequestBytes(MAX_REQUEST_BYTES)
                     .setPort(PORT)
                     .setType(wireType)
                     .setTimeout(105000)
@@ -81,9 +82,9 @@ public abstract class TransportTestCases {
             settings.getHidden().add(Strings.NODE_LOGGING);
             transport.add(listener);
             settings.setTransport(transport);
-            context.setSettings(settings);
+            test.setSettings(settings);
 
-            vertx.deployVerticle(new Service(context), deploy -> {
+            vertx.deployVerticle(new Service(test), deploy -> {
                 async.complete();
             });
         });
@@ -95,30 +96,37 @@ public abstract class TransportTestCases {
     }
 
     @Test
-    public void testLargePacketRejected(TestContext context) {
-        Async async = context.async();
+    public void testLargePacketRejected(TestContext test) {
+        Async async = test.async();
 
         mockNode(PATCHING_ROOT);
 
         sendRequest(PATCHING_ROOT, (result, status) -> {
-            context.assertEquals(ResponseStatus.BAD, status);
+            test.assertEquals(ResponseStatus.BAD, status);
             async.complete();
-        }, new JsonObject().put("data", "request is larger than 10 bytes!!"));
+        }, new JsonObject()
+                .put(DATA, new String(new byte[MAX_REQUEST_BYTES]).replace("\0", ONE_CHAR)));
     }
 
-    void mockNode(String target) {
-        context.bus().consumer(target, message -> {
-            message.reply(new JsonObject().put(PROTOCOL_STATUS, ResponseStatus.ACCEPTED).put(ID_TARGET, target));
+    @Test
+    public void testAccepted(TestContext test) {
+        Async async = test.async();
+
+        sendRequest(NODE_ROUTING, (result, status) -> {
+            test.assertEquals(ResponseStatus.ACCEPTED, status);
+            async.complete();
+        }, new JsonObject()
+                .put(PROTOCOL_TARGET, NODE_ROUTING)
+                .put(PROTOCOL_ROUTE, ID_PING));
+    }
+
+    void mockNode(String node) {
+        test.bus().consumer(node, message -> {
+            message.reply(new JsonObject()
+                    .put(PROTOCOL_STATUS, ResponseStatus.ACCEPTED)
+                    .put(PROTOCOL_TARGET, node));
         });
     }
-
-    /**
-     * Implementing class should provide transport specific implementation.
-     *
-     * @param route    the request route
-     * @param listener invoked with the request response
-     */
-    abstract void sendRequest(String route, ResponseListener listener);
 
     /**
      * Implementing class must provide transport specific implementation.
@@ -130,8 +138,6 @@ public abstract class TransportTestCases {
     abstract void sendRequest(String route, ResponseListener listener, JsonObject data);
 
     void handleBody(ResponseListener listener, Buffer body) {
-        JsonObject json = body.toJsonObject();
-
         ResponseStatus status = ResponseStatus.valueOf(body.toJsonObject().getString(PROTOCOL_STATUS));
         listener.handle(body.toJsonObject(), status);
     }

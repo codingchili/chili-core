@@ -2,6 +2,8 @@ package com.codingchili.router.model;
 
 /**
  * @author Robin Duda
+ *
+ * Used to map API routes to target/route
  */
 public class Endpoint {
     private String target;

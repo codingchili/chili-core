@@ -111,7 +111,7 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
 
     private JsonObject eventFromLog(JsonObject data) {
         JsonObject json = data.copy();
-        json.remove(ID_ROUTE);
+        json.remove(PROTOCOL_ROUTE);
         json.remove(ID_TOKEN);
         json.remove(LOG_TIME);
         json.remove(LOG_EVENT);

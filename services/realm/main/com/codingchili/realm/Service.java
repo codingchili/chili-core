@@ -70,7 +70,7 @@ public class Service extends ClusterNode {
 
     private static JsonObject getPing() {
         return new JsonObject()
-                .put(Strings.ID_ROUTE, Strings.ID_PING);
+                .put(Strings.PROTOCOL_ROUTE, Strings.ID_PING);
     }
 
     private static DeliveryOptions getDeliveryOptions() {

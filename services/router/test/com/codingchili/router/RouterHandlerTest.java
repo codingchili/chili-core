@@ -170,7 +170,7 @@ public class RouterHandlerTest {
             payload = new JsonObject();
         }
 
-        payload.put(ID_TARGET, target);
+        payload.put(PROTOCOL_TARGET, target);
         handler.process(RequestMock.get(target, listener, payload));
     }
 

@@ -38,7 +38,7 @@ public abstract class RequestMock {
                 this.json = json;
             }
 
-            this.json.put(ID_ROUTE, route);
+            this.json.put(PROTOCOL_ROUTE, route);
             this.listener = listener;
         }
 

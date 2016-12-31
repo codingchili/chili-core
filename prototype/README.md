@@ -58,7 +58,7 @@ The configuration structure
 │   │   │   ├── targeting.json
 │   │   │   ├── weapons.json
 │   │   ├── player/
-│   │   │   ├── affliction.json
+│   │   │   ├── afflictions.json
 │   │   │   ├── characters.json
 │   │   │   ├── spells.json
 │   │   ├── instances/

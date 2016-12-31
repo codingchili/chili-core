@@ -40,6 +40,7 @@ public abstract class CoreStrings {
     public static final String PROTOCOL_CONNECTION = "connection";
     public static final String PROTOCOL_STATUS = "status";
     public static final String PROTOCOL_ROUTE = "route";
+    public static final String PROTOCOL_TARGET = "target";
     public static final String PROTOCOL_LOGGING = "logging";
 
     // launcher commands.
@@ -56,8 +57,6 @@ public abstract class CoreStrings {
     public static final String ID_FILE = "file";
     public static final String ID_DATA = "data";
     public static final String ID_MESSAGE = "message";
-    public static final String ID_ROUTE = "route";
-    public static final String ID_TARGET = "target";
     public static final String ID_VERSION = "version";
     public static final String ID_BYTES = "bytes";
     public static final String ID_PATH = "path";
@@ -81,6 +80,8 @@ public abstract class CoreStrings {
     public static final String ID_COLLECTION = "collection";
     public static final String ID_CLASS = "class";
     public static final String ID_CONTEXT = "context";
+    public static final String ID_USERNAME = "username";
+    public static final String ID_PASSWORD = "password";
 
     // Node names.
     public static final String NODE_LOCAL = "local";

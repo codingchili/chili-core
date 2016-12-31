@@ -11,29 +11,13 @@ import static com.codingchili.common.Strings.*;
 
 /**
  * @author Robin Duda
+ *
+ * Client authentication request.
  */
-
-
 class ClientRequest extends ClusterRequest {
 
     ClientRequest(Request request) {
         super(request);
-    }
-
-    public String realmName() {
-        return data().getString(Strings.ID_REALM);
-    }
-
-    public String account() {
-        return token().getDomain();
-    }
-
-    public String character() {
-        return data().getString(Strings.ID_CHARACTER);
-    }
-
-    public String className() {
-        return data().getString(Strings.ID_CLASS);
     }
 
     public String sender() {

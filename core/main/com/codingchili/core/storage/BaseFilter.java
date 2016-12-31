@@ -19,7 +19,6 @@ abstract class BaseFilter<Value> {
     boolean querySimilar(Value value, String attribute, Comparable compare) {
         int feedBackLength = Configurations.storage().getMinFeedbackChars();
 
-        // FIXME: 2016-12-03 awaiting support for complex queries
         if (compare.equals("*")) {
             return true;
         }
@@ -27,11 +26,7 @@ abstract class BaseFilter<Value> {
         if (validator.plainText(compare) && compare.toString().length() >= feedBackLength) {
             Object source = Serializer.json(value).getValue(attribute);
 
-            if (source != null) {
-                return source.toString().startsWith(compare.toString());
-            } else {
-                return false;
-            }
+            return source != null && source.toString().startsWith(compare.toString());
         } else {
             return false;
         }

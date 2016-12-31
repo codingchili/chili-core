@@ -40,7 +40,7 @@ public class ClientHandlerTest {
     private static ClientHandler handler;
 
     @Rule
-    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(50, TimeUnit.SECONDS);
 
     @Before
     public void setUp(TestContext test) throws IOException {
@@ -108,7 +108,9 @@ public class ClientHandlerTest {
     }
 
     private JsonObject account(String username, String password) {
-        return new JsonObject().put(ID_ACCOUNT, new JsonObject().put("username", username).put("password", password));
+        return new JsonObject().put(ID_ACCOUNT, new JsonObject()
+                .put(ID_USERNAME, username)
+                .put(ID_PASSWORD, password));
     }
 
     @Test
