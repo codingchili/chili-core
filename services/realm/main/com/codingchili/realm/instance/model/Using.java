@@ -10,7 +10,7 @@ import java.io.Serializable;
 public class Using implements Serializable {
     private Target source = Target.caster;
     private String attribute;
-    private Double value;
+    private Double amplifier;
     private Boolean cancel;
     private Condition condition;
 
@@ -46,11 +46,11 @@ public class Using implements Serializable {
         this.attribute = attribute;
     }
 
-    public Double getValue() {
-        return value;
+    public Double getAmplifier() {
+        return amplifier;
     }
 
-    public void setValue(Double value) {
-        this.value = value;
+    public void setAmplifier(Double amplifier) {
+        this.amplifier = amplifier;
     }
 }

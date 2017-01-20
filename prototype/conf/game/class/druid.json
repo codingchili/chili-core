@@ -1,96 +1,157 @@
 {
-  "attributes" : { },
-  "name" : "Druid",
-  "description" : "The Druid has a strong attunement with nature, with access to spells to aid their allies or curse their foes.",
-  "spells" : [ {
-    "name" : "natures blessing",
-    "description" : "Reduces the chance of being inflicted with negative effects by half..",
-    "passive" : true
-  }, {
-    "name" : "divine sight",
-    "description" : "Periodically dispels stealth of nearby creatures.",
-    "passive" : true
-  }, {
-    "name" : "empower",
-    "description" : "Heal by 2x spell and empower & haste in area.",
-    "target" : "area",
-    "cooldown" : 12.0,
-    "cost" : {
-      "value" : 20
+  "name": "Druid",
+  "description": "Restores the balance of all things nature with their staff, aids their allies with magic buffs.",
+  "weapon": ["staff"],
+  "keywords": [
+    "Healer",
+    "Buffs",
+    "Magic"
+  ],
+  "spells": [
+    {
+      "name": "natures blessing",
+      "description": "Reduces chance to be affected by negative effects.",
+      "passive": true,
+      "afflictions": [
+        {
+          "name": "natures blessing",
+          "permanent": true
+        }
+      ]
     },
-    "modifier" : [ {
-      "modifies" : "target",
-      "attribute" : "health",
-      "using" : {
-        "source" : "caster",
-        "attribute" : "spell",
-        "value" : 2.0
-      }
-    } ],
-    "passive" : false
-  }, {
-    "name" : "regeneration",
-    "description" : "Creatures in area of effect gains regeneration.",
-    "cooldown" : 12.0,
-    "cost" : {
-      "value" : 20
+    {
+      "name": "divine sight",
+      "description": "Periodic chance to reveal stealth.",
+      "passive": true,
+      "afflictions": [
+        {
+          "name": "divine sight",
+          "permanent": true
+        }
+      ]
     },
-    "passive" : false
-  }, {
-    "name" : "banish",
-    "description" : "Deals 2x spell damage and slows targets in a ray.",
-    "target" : "ray",
-    "cooldown" : 6.0,
-    "modifier" : [ {
-      "modifies" : "target",
-      "attribute" : "health",
-      "using" : {
-        "source" : "caster",
-        "attribute" : "spell",
-        "value" : -2.0
-      }
-    } ],
-    "passive" : false
-  }, {
-    "name" : "ensnare",
-    "description" : "Ensnares targets in area and deals 2x spell damage.",
-    "target" : "area",
-    "cooldown" : 8.0,
-    "modifier" : [ {
-      "modifies" : "target",
-      "attribute" : "health",
-      "using" : {
-        "source" : "caster",
-        "attribute" : "spell",
-        "value" : -2.0
-      }
-    } ],
-    "passive" : false
-  }, {
-    "name" : "restoration",
-    "description" : "Heals a target 3x spell.",
-    "target" : "selected",
-    "cooldown" : 30.0,
-    "cost" : {
-      "value" : 30
+    {
+      "name": "empower",
+      "description": "Empower an area with haste and increased attributes.",
+      "target": "area",
+      "modifier": [
+        {
+          "modifies": "target",
+          "attribute": "health",
+          "using": {
+            "attribute": "spell",
+            "amplifier": 2.0
+          }
+        }
+      ],
+      "afflictions": [
+        {
+          "name": "empower",
+          "duration": 30
+        },
+        {
+          "name": "haste",
+          "duration": 30
+        }
+      ],
+      "cost": {
+        "requires": "energy",
+        "value": 20
+      },
+      "cooldown": 12
     },
-    "modifier" : [ {
-      "modifies" : "target",
-      "attribute" : "health",
-      "using" : {
-        "source" : "caster",
-        "attribute" : "spell",
-        "value" : 3.0
-      }
-    } ],
-    "passive" : false
-  }, {
-    "name" : "curse",
-    "description" : "Curses creatures in an area.",
-    "target" : "area",
-    "cooldown" : 8.0,
-    "passive" : false
-  } ],
-  "keywords" : [ "healing", "buffs", "anti-mobility" ],
-  "weapons" : [ "staff" ]
+    {
+      "name": "regeneration",
+      "description": "Area gains regeneration.",
+      "afflictions": [
+        {
+          "name": "regeneration",
+          "duration": 30
+        }
+      ],
+      "cost": {
+        "requires": "energy",
+        "value": 20
+      },
+      "cooldown": 12
+    },
+    {
+      "name": "banish",
+      "description": "Deals spell damage and slows.",
+      "target": "ray",
+      "modifier": [
+        {
+          "modifies": "target",
+          "attribute": "health",
+          "using": {
+            "attribute":"spell",
+            "amplifier":2.0
+          }
+        }
+      ],
+      "afflictions": [
+        {
+          "name": "slow",
+          "duration": "4"
+        }
+      ],
+      "cooldown": 6
+    },
+    {
+      "name": "ensnare",
+      "description": "Ensnares targets in area.",
+      "target": "area",
+      "modifier": [
+        {
+          "modifies": "target",
+          "attribute": "health",
+          "using": {
+            "attribute": "spell",
+            "amplifier": 2.0
+          }
+        }
+      ],
+      "afflictions": [
+        {
+          "name": "stun",
+          "duration": 3.0
+        }
+      ],
+      "cooldown": 8
+    },
+    {
+      "name": "restoration",
+      "description": "Heals a target for their current health, requires less than 50% HP.",
+      "target": "selected",
+      "modifier": [
+        {
+          "modifies": "health",
+          "attribute": "health",
+          "value": 1.0,
+          "heal": true
+        }
+      ],
+      "condition": {
+        "attribute": "health",
+        "max": 0.5
+      },
+      "cost": {
+        "modifies": "energy",
+        "value": 30
+      },
+      "cooldown": 30
+    },
+    {
+      "name": "curse",
+      "description": "Curses everyone in an area.",
+      "target": "area",
+      "afflictions": [
+        {
+          "name": "curse",
+          "duration": 4
+        }
+      ],
+      "cooldown": 8
+    }
+  ]
 }

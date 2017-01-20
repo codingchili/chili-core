@@ -1,7 +1,7 @@
 package com.codingchili.realm.instance.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * @author Robin Duda
@@ -14,7 +14,8 @@ class Spell implements Serializable {
     private Double cooldown;
     private Double casttime;
     private Cost cost;
-    private ArrayList<Modifier> modifier;
+    private List<Modifier> modifier;
+    private List<Affliction> afflictions;
     private Boolean passive = false;
 
     public Cost getCost() {
@@ -65,11 +66,11 @@ class Spell implements Serializable {
         this.casttime = casttime;
     }
 
-    public ArrayList<Modifier> getModifier() {
+    public List<Modifier> getModifier() {
         return modifier;
     }
 
-    public void setModifier(ArrayList<Modifier> modifier) {
+    public void setModifier(List<Modifier> modifier) {
         this.modifier = modifier;
     }
 
@@ -79,5 +80,13 @@ class Spell implements Serializable {
 
     public void setPassive(Boolean passive) {
         this.passive = passive;
+    }
+
+    public List<Affliction> getAfflictions() {
+        return afflictions;
+    }
+
+    public void setAfflictions(List<Affliction> afflictions) {
+        this.afflictions = afflictions;
     }
 }

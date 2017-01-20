@@ -14,8 +14,18 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
+ *
+ * Mocked request object.
  */
 public abstract class RequestMock {
+
+    public static ClusterRequestMock get(ResponseListener listener) {
+        return get("", listener);
+    }
+
+    public static ClusterRequestMock get(String route, ResponseListener listener) {
+        return get(route, listener, new JsonObject());
+    }
 
     public static ClusterRequestMock get(String route, ResponseListener listener, JsonObject json) {
         return new ClusterRequestMock(new MessageMock(route, listener, json));
@@ -54,8 +64,7 @@ public abstract class RequestMock {
             if (message instanceof JsonObject) {
                 data = (JsonObject) message;
             } else if (message instanceof Buffer) {
-                data.put("buffer", message.toString());
-                data.put(PROTOCOL_STATUS, ResponseStatus.ACCEPTED);
+                data = ((Buffer) message).toJsonObject();
             }
 
             listener.handle(data, ResponseStatus.valueOf(data.getString(PROTOCOL_STATUS)));

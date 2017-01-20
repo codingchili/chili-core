@@ -1,7 +1,11 @@
 package com.codingchili.core.protocol;
 
+import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
@@ -10,19 +14,21 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
- *
- * Maps packet data to handlers and manages authentication status for handlers.
+ *         <p>
+ *         Maps packet data to handlers and manages authentication status for handlers.
  */
 public class Protocol<Handler extends RequestHandler> {
     private final AuthorizationHandler<Handler> handlers = new AuthorizationHandler<>();
+    private final Map<Class, ExceptionHandler> exceptions = new HashMap<>();
 
     /**
      * Returns the route handler for the given target route and its access level.
+     *
      * @param access the access level the request is valid for.
-     * @param route the handler route to find
+     * @param route  the handler route to find
      * @return the handler that is mapped to the route and access level.
      * @throws AuthorizationRequiredException when authorization level is not fulfilled for given route.
-     * @throws HandlerMissingException when the requested route handler is not registered.
+     * @throws HandlerMissingException        when the requested route handler is not registered.
      */
     public Handler get(Access access, String route) throws AuthorizationRequiredException, HandlerMissingException {
         if (handlers.contains(route)) {
@@ -34,10 +40,11 @@ public class Protocol<Handler extends RequestHandler> {
 
     /**
      * Returns the route handler for the given target route and its access level.
+     *
      * @param route the handler route to find.
      * @return the handler that is mapped to the route.
      * @throws AuthorizationRequiredException when authorization level is not fulfilled for the given route.
-     * @throws HandlerMissingException when the requested route handler is not registered.
+     * @throws HandlerMissingException        when the requested route handler is not registered.
      */
     public Handler get(String route) throws AuthorizationRequiredException, HandlerMissingException {
         return get(Access.AUTHORIZED, route);
@@ -45,7 +52,8 @@ public class Protocol<Handler extends RequestHandler> {
 
     /**
      * Registers a handler for the given route.
-     * @param route the route to register a handler for.
+     *
+     * @param route   the route to register a handler for.
      * @param handler the handler to be registered for the given route.
      * @return the updated protocol specification for fluent use.
      */
@@ -56,14 +64,61 @@ public class Protocol<Handler extends RequestHandler> {
 
     /**
      * Registers a handler for the given route with an access level.
-     * @param route the route to register a handler for.
+     *
+     * @param route   the route to register a handler for.
      * @param handler the handler to be registered for the given route with the access level.
-     * @param access specifies the authorization level required to access the route.
+     * @param access  specifies the authorization level required to access the route.
      * @return the updated protocol specification for fluent use.
      */
     public Protocol<Handler> use(String route, Handler handler, Access access) {
         handlers.use(route, handler, access);
         return this;
+    }
+
+    /**
+     * Adds a handler for an exception.
+     *
+     * @param handler   the handler to be invoked for the given exception.
+     * @param exception an exception to map to the given handler, Throwable
+     *                  maps to all unmapped exceptions.
+     * @return the updated protocol specification for fluent use.
+     */
+    public Protocol<Handler> exception(ExceptionHandler handler, Class exception) {
+        exceptions.put(exception, handler);
+        return this;
+    }
+
+    /**
+     * If called with a failed future the cause will be used as an exception.
+     *
+     * @param request the request to handle an error for
+     * @param future  an exception to be handled
+     */
+    public void error(Request request, Future future) {
+        if (future.failed()) {
+            error(request, future.cause());
+        }
+    }
+
+    /**
+     * Invokes the handler registered for the given exception.
+     * If no specific handler is registered for the exception the
+     * default Throwable.class handler is used, if unregistered then
+     * the Request#error method is invoked with the exception directly.
+     *
+     * @param request   the request to handle an error for.
+     * @param exception an exception to be handled.
+     */
+    public void error(Request request, Throwable exception) {
+        if (exceptions.containsKey(exception.getClass())) {
+            exceptions.get(exception.getClass()).handle(request, exception);
+        } else {
+            if (exceptions.containsKey(Throwable.class)) {
+                exceptions.get(Throwable.class).handle(request, exception);
+            } else {
+                request.error(exception);
+            }
+        }
     }
 
     /**
@@ -75,6 +130,7 @@ public class Protocol<Handler extends RequestHandler> {
 
     /**
      * Creates a response object given a response status.
+     *
      * @param status the status to create the response from.
      * @return a JSON encoded response packed in a buffer.
      */
@@ -86,8 +142,9 @@ public class Protocol<Handler extends RequestHandler> {
 
     /**
      * Creates a response object given a response status and a throwable.
+     *
      * @param status the status to include in the response.
-     * @param e an exception that was the cause of an abnormal response status.
+     * @param e      an exception that was the cause of an abnormal response status.
      * @return a JSON encoded response packed in a buffer.
      */
     public static Buffer response(ResponseStatus status, Throwable e) {

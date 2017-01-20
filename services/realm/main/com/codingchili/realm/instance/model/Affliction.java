@@ -16,13 +16,13 @@ public class Affliction implements Serializable {
     private Double rate;
     private Double chance;
     private Double duration;
-    private Boolean everlasting;
+    private Boolean permanent;
     private ArrayList<Modifier> modifier;
     private ArrayList<Trigger> trigger;
     private ArrayList<Affliction> affliction;
 
-    public Boolean getEverlasting() {
-        return everlasting;
+    public Boolean getPermanent() {
+        return permanent;
     }
 
     public ArrayList<Affliction> getAffliction() {
@@ -41,12 +41,12 @@ public class Affliction implements Serializable {
         this.duration = duration;
     }
 
-    public Boolean isEverlasting() {
-        return everlasting;
+    public Boolean isPermanent() {
+        return permanent;
     }
 
-    public void setEverlasting(Boolean everlasting) {
-        this.everlasting = everlasting;
+    public void setPermanent(Boolean permanent) {
+        this.permanent = permanent;
     }
 
     public String getName() {

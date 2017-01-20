@@ -9,6 +9,8 @@ import com.codingchili.core.security.Account;
 import com.codingchili.authentication.configuration.AuthenticationContext;
 import com.codingchili.authentication.model.*;
 
+import java.util.HashMap;
+
 import static com.codingchili.core.protocol.Access.PUBLIC;
 import static com.codingchili.common.Strings.*;
 
@@ -27,7 +29,10 @@ public class ClientHandler<T extends AuthenticationContext> extends AbstractHand
 
         protocol.use(CLIENT_REGISTER, this::register, PUBLIC)
                 .use(CLIENT_AUTHENTICATE, this::authenticate, PUBLIC)
-                .use(ID_PING, Request::accept, PUBLIC);
+                .use(ID_PING, Request::accept, PUBLIC)
+                .exception(Request::conflict, AccountExistsException.class)
+                .exception(Request::missing, AccountMissingException.class)
+                .exception(Request::unauthorized, AccountPasswordException.class);
     }
 
     private Access authenticate(Request request) {
@@ -44,16 +49,10 @@ public class ClientHandler<T extends AuthenticationContext> extends AbstractHand
         Future<Account> future = Future.future();
 
         future.setHandler(result -> {
-            try {
-                if (future.succeeded()) {
-                    sendAuthentication(result.result(), request, true);
-                } else {
-                    throw future.cause();
-                }
-            } catch (AccountExistsException e) {
-                request.conflict(e);
-            } catch (Throwable e) {
-                request.error(e);
+            if (future.succeeded()) {
+                sendAuthentication(result.result(), request, true);
+            } else {
+                protocol.error(request, future);
             }
         });
         accounts.register(future, request.getAccount());
@@ -63,19 +62,10 @@ public class ClientHandler<T extends AuthenticationContext> extends AbstractHand
         Future<Account> future = Future.future();
 
         future.setHandler(result -> {
-            try {
-                if (future.succeeded()) {
-                    sendAuthentication(result.result(), request, false);
-                } else
-                    throw future.cause();
-
-            } catch (AccountMissingException e) {
-                request.missing(e);
-            } catch (AccountPasswordException e) {
-                context.onAuthenticationFailure(request.getAccount().getUsername(), request.sender());
-                request.unauthorized(e);
-            } catch (Throwable e) {
-                request.error(e);
+            if (future.succeeded()) {
+                sendAuthentication(result.result(), request, false);
+            } else {
+                protocol.error(request, future);
             }
         });
         accounts.authenticate(future, request.getAccount());

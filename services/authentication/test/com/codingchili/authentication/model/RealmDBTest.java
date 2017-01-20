@@ -1,4 +1,4 @@
-package com.codingchili.authentication.Model;
+package com.codingchili.authentication.model;
 
 /**
  * @author Robin Duda

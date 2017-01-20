@@ -10,11 +10,12 @@ import com.codingchili.core.storage.exception.ValueMissingException;
 
 /**
  * @author Robin Duda
+ *
+ * Account storage logic.
  */
 public class AccountDB implements AsyncAccountStore {
     private final AsyncStorage<String, AccountMapping> accounts;
     private final HashHelper hasher;
-
 
     public AccountDB(AsyncStorage<String, AccountMapping> map, Vertx vertx) {
         this.accounts = map;
@@ -38,12 +39,10 @@ public class AccountDB implements AsyncAccountStore {
             if (map.succeeded()) {
                 authenticate(future, map.result(), account);
             } else {
-                try {
-                    throw map.cause();
-                } catch (ValueMissingException e) {
+                if (map.cause() instanceof ValueMissingException) {
                     future.fail(new AccountMissingException());
-                } catch (Throwable throwable) {
-                    future.fail(throwable);
+                } else {
+                    future.fail(map.cause());
                 }
             }
         });
@@ -63,11 +62,9 @@ public class AccountDB implements AsyncAccountStore {
                 if (map.succeeded()) {
                     future.complete(filter(account));
                 } else {
-                    try {
-                        throw map.cause();
-                    } catch (ValueAlreadyPresentException e) {
+                    if (map.cause() instanceof ValueAlreadyPresentException) {
                         future.fail(new AccountExistsException());
-                    } catch (Throwable throwable) {
+                    } else {
                         future.fail(map.cause());
                     }
                 }
