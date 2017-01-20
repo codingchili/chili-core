@@ -43,7 +43,7 @@ public class HashHelperTest {
         HashMap<String, Boolean> salts = new HashMap<>();
 
         for (int i = 0; i < 1000; i++) {
-            String salt = HashHelper.salt();
+            String salt = HashHelper.generateSalt();
 
             Assert.assertFalse(salts.containsKey(salt));
             salts.put(salt, true);

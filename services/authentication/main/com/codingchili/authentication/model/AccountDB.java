@@ -1,7 +1,6 @@
 package com.codingchili.authentication.model;
 
-import io.vertx.core.Future;
-import io.vertx.core.Vertx;
+import io.vertx.core.*;
 
 import com.codingchili.core.security.*;
 import com.codingchili.core.storage.AsyncStorage;
@@ -10,8 +9,8 @@ import com.codingchili.core.storage.exception.ValueMissingException;
 
 /**
  * @author Robin Duda
- *
- * Account storage logic.
+ *         <p>
+ *         Account storage logic.
  */
 public class AccountDB implements AsyncAccountStore {
     private final AsyncStorage<String, AccountMapping> accounts;
@@ -39,11 +38,7 @@ public class AccountDB implements AsyncAccountStore {
             if (map.succeeded()) {
                 authenticate(future, map.result(), account);
             } else {
-                if (map.cause() instanceof ValueMissingException) {
-                    future.fail(new AccountMissingException());
-                } else {
-                    future.fail(map.cause());
-                }
+                fail(future, map);
             }
         });
     }
@@ -51,36 +46,40 @@ public class AccountDB implements AsyncAccountStore {
     @Override
     public void register(Future<Account> future, Account account) {
         Future<String> hashing = Future.future();
-        String salt = HashHelper.salt();
-        AccountMapping mapping = new AccountMapping(account);
+        AccountMapping mapping = new AccountMapping(account)
+                .setSalt(hasher.generateSalt());
 
         hashing.setHandler(hash -> {
-            mapping.setSalt(salt);
             mapping.setHash(hash.result());
 
             accounts.putIfAbsent(account.getUsername(), mapping, map -> {
                 if (map.succeeded()) {
                     future.complete(filter(account));
                 } else {
-                    if (map.cause() instanceof ValueAlreadyPresentException) {
-                        future.fail(new AccountExistsException());
-                    } else {
-                        future.fail(map.cause());
-                    }
+                    fail(future, map);
                 }
             });
         });
+        hasher.hash(hashing, account.getPassword(), mapping.getSalt());
+    }
 
-        hasher.hash(hashing, account.getPassword(), salt);
+    private void fail(Future future, AsyncResult result) {
+        Throwable cause = result.cause();
+
+        if (cause instanceof ValueAlreadyPresentException) {
+            future.fail(new AccountExistsException());
+        } else if (cause instanceof ValueMissingException) {
+            future.fail(new AccountMissingException());
+        } else {
+            future.fail(cause);
+        }
     }
 
     private void authenticate(Future<Account> future, AccountMapping authenticated, Account unauthenticated) {
         Future<String> hashing = Future.future();
 
         hashing.setHandler(hash -> {
-            boolean verified = ByteComparator.compare(hash.result(), authenticated.getHash());
-
-            if (verified) {
+            if (ByteComparator.compare(hash.result(), authenticated.getHash())) {
                 future.complete(filter(authenticated));
             } else {
                 future.fail(new AccountPasswordException());

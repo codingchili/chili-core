@@ -6,6 +6,6 @@ package com.codingchili.core.protocol;
  * Protocol exception handler.
  */
 @FunctionalInterface
-interface ExceptionHandler {
+public interface ExceptionHandler {
     void handle(Request request, Throwable exception);
 }

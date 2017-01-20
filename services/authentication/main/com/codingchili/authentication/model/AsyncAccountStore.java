@@ -13,7 +13,7 @@ public interface AsyncAccountStore {
     /**
      * Finds an account in the store.
      *
-     * @param username username of the account to findByUsername.
+     * @param username username of the account to find by username.
      */
     void get(Future<Account> future, String username);
 

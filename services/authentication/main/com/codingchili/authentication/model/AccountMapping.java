@@ -26,8 +26,9 @@ public class AccountMapping implements Serializable {
         return salt;
     }
 
-    public void setSalt(String salt) {
+    public AccountMapping setSalt(String salt) {
         this.salt = salt;
+        return this;
     }
 
     public String getUsername() {

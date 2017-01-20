@@ -1,22 +1,19 @@
 package com.codingchili.authentication.controller;
 
+import com.codingchili.authentication.configuration.AuthenticationContext;
+import com.codingchili.authentication.model.*;
 import io.vertx.core.Future;
 
 import com.codingchili.core.context.CoreException;
 import com.codingchili.core.protocol.*;
 import com.codingchili.core.security.Account;
 
-import com.codingchili.authentication.configuration.AuthenticationContext;
-import com.codingchili.authentication.model.*;
-
-import java.util.HashMap;
-
-import static com.codingchili.core.protocol.Access.PUBLIC;
 import static com.codingchili.common.Strings.*;
+import static com.codingchili.core.protocol.Access.PUBLIC;
 
 /**
  * @author Robin Duda
- *         Routing used to authenticate users and create/delete characters.
+ *         Routing used to register/authenticate accounts.
  */
 public class ClientHandler<T extends AuthenticationContext> extends AbstractHandler<T> {
     private final Protocol<RequestHandler<ClientRequest>> protocol = new Protocol<>();
