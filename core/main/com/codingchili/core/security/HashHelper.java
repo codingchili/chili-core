@@ -72,7 +72,7 @@ public class HashHelper {
      *
      * @return A generated salt of 512 bits.
      */
-    public String generateSalt() {
+    public String salt() {
         byte[] salt = new byte[SALT_BYTES];
         new SecureRandom().nextBytes(salt);
         return Base64.getEncoder().encodeToString(salt);

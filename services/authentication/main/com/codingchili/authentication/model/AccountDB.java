@@ -47,7 +47,7 @@ public class AccountDB implements AsyncAccountStore {
     public void register(Future<Account> future, Account account) {
         Future<String> hashing = Future.future();
         AccountMapping mapping = new AccountMapping(account)
-                .setSalt(hasher.generateSalt());
+                .setSalt(hasher.salt());
 
         hashing.setHandler(hash -> {
             mapping.setHash(hash.result());
