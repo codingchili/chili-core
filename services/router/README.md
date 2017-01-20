@@ -5,6 +5,6 @@ Routes requests from clients to the target service in the cluster.
 - HTTP
 - Cluster routing
 - :x: Asynchronous callbacks
-- :x: UDP
-- :x: Websocket
-- :x: TCP
+- UDP
+- Websocket
+- TCP
