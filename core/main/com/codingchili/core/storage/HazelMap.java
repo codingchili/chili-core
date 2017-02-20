@@ -1,8 +1,7 @@
 package com.codingchili.core.storage;
 
 import com.hazelcast.core.*;
-import com.hazelcast.query.PagingPredicate;
-import com.hazelcast.query.Predicates;
+import com.hazelcast.query.*;
 import io.vertx.core.*;
 import io.vertx.core.shareddata.AsyncMap;
 
@@ -11,6 +10,7 @@ import java.util.*;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.security.Validator;
 import com.codingchili.core.storage.exception.*;
 
 import static com.codingchili.core.context.FutureHelper.*;
@@ -159,48 +159,84 @@ public class HazelMap<Key, Value> implements AsyncStorage<Key, Value> {
                 handler.handle(error(size.cause()));
             }
         });
-    }
 
-    @Override
-    public void queryExact(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler) {
-        executor.<Collection<Value>>executeBlocking(blocking -> {
-            blocking.complete(imap.values(Predicates.equal(attribute, comparable)));
-        }, false, result -> {
-            if (result.succeeded()) {
-                handler.handle(result(result.result()));
-            } else {
-                handler.handle(error(result.cause()));
-            }
+        query("numbers")
+                .between(5, 45)
+                .in(6, 7, 8)
+                .like("51")
+                .and("name")
+                .like("robin")
+        .execute(result -> {
+            result.result();
         });
     }
 
     @Override
-    public void querySimilar(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler) {
-        if (context.validate(comparable)) {
-            executor.<Collection<Value>>executeBlocking(blocking -> {
-                blocking.complete(imap.values(new PagingPredicate(Predicates.ilike(attribute, comparable + "%"), 24)));
-            }, false, result -> {
-                if (result.succeeded()) {
-                    handler.handle(result(result.result()));
-                } else {
-                    handler.handle(error(result.cause()));
+    public QueryBuilder query(String attribute) {
+        return new QueryBuilderBase<Value>() {
+            private PredicateBuilder builder = new PredicateBuilder();
+            private BooleanOperator operator = builder::and;
+
+            @Override
+            public QueryBuilder and(String attribute) {
+                operator = builder::and;
+                this.attribute = attribute;
+                return this;
+            }
+
+            @Override
+            public QueryBuilder or(String attribute) {
+                operator = builder::or;
+                this.attribute = attribute;
+                return this;
+            }
+
+            @Override
+            public QueryBuilder between(int minimum, int maximum) {
+                operator.apply(Predicates.between(attribute, minimum, maximum));
+                return this;
+            }
+
+            @Override
+            public QueryBuilder like(String text) {
+                operator.apply(Predicates.like(attribute, text));
+                return this;
+            }
+
+            @Override
+            public QueryBuilder startsWith(String text) {
+                if (new Validator().plainText(text)) {
+                    operator.apply(Predicates.regex(attribute, "^" + text));
                 }
-            });
-        } else {
-            handler.handle(result(new ArrayList<>()));
-        }
+                return this;
+            }
+
+            @Override
+            public QueryBuilder in(Comparable... list) {
+                operator.apply(Predicates.in(attribute, list));
+                return this;
+            }
+
+            @Override
+            public void execute(Handler<AsyncResult<Collection<Value>>> handler) {
+                executor.<Collection<Value>>executeBlocking(blocking -> {
+                    PagingPredicate paging = new PagingPredicate(getPageSize());
+                    paging.setPage(getPage());
+
+                    blocking.complete(imap.values(builder.and(paging)));
+                }, false, result -> {
+                    if (result.succeeded()) {
+                        handler.handle(result(result.result()));
+                    } else {
+                        handler.handle(error(result.cause()));
+                    }
+                });
+            }
+        };
     }
 
-    @Override
-    public void queryRange(String attribute, int from, int to, Handler<AsyncResult<Collection<Value>>> handler) {
-        executor.<Collection<Value>>executeBlocking(blocking -> {
-            blocking.complete(imap.values(Predicates.between(attribute, from, to)));
-        }, false, result -> {
-            if (result.succeeded()) {
-                handler.handle(result(result.result()));
-            } else {
-                handler.handle(error(result.cause()));
-            }
-        });
+    @FunctionalInterface
+    private interface BooleanOperator {
+        void apply(Predicate predicate);
     }
 }

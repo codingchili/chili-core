@@ -71,24 +71,9 @@ public interface AsyncStorage<Key, Value> {
     void size(Handler<AsyncResult<Integer>> handler);
 
     /**
-     * queries the storage for an exact match for a given single attribute.
-     * @param attribute the attribute as a string to query for
-     * @param comparable the value to match in the given attribute
+     * initialize the construction of a query.
+     * @param attribute the attribute to be queried.
+     * @return a builder object for constructing the query.
      */
-    void queryExact(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler);
-
-    /**
-     * queries the storage for a similar match given a single attribute
-     * @param attribute the attribute as a string to query for
-     * @param comparable the value to match with using starts-with
-     */
-    void querySimilar(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler);
-
-    /**
-     * queries the storage on an attribute within the given range
-     * @param attribute the attribute as a string to query for
-     * @param from inclusive minimum value
-     * @param to inclusive max value
-     */
-    void queryRange(String attribute, int from, int to, Handler<AsyncResult<Collection<Value>>> handler);
+    QueryBuilder query(String attribute);
 }

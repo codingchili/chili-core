@@ -36,8 +36,6 @@ public abstract class AbstractHandler<T extends ServiceContext> {
     public void process(Request request) {
         try {
             handle(request);
-        } catch (AuthorizationRequiredException e) {
-            request.unauthorized(e);
         } catch (HandlerMissingException e) {
             request.error(e);
             logger.onHandlerMissing(request.route());

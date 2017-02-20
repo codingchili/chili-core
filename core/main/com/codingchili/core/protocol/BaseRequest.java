@@ -1,9 +1,10 @@
 package com.codingchili.core.protocol;
 
+import com.codingchili.core.context.CoreException;
 import com.codingchili.core.security.Token;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
-import static com.codingchili.core.protocol.ResponseStatus.*;
+import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
 
 /**
  * @author Robin Duda
@@ -20,27 +21,11 @@ public abstract class BaseRequest implements Request {
 
     @Override
     public void error(Throwable exception) {
-        send(ERROR, exception);
-    }
-
-    @Override
-    public void unauthorized(Throwable exception) {
-        send(UNAUTHORIZED);
-    }
-
-    @Override
-    public void missing(Throwable exception) {
-        send(MISSING, exception);
-    }
-    
-    @Override
-    public void conflict(Throwable exception) {
-        send(CONFLICT, exception);
-    }
-
-    @Override
-    public void bad(Throwable exception) {
-        send(BAD, exception);
+        if (exception instanceof CoreException) {
+            send(((CoreException) exception).status(), exception);
+        } else {
+            send(ResponseStatus.ERROR, exception);
+        }
     }
 
     @Override

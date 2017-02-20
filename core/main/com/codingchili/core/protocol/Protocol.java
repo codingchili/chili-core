@@ -19,7 +19,6 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  */
 public class Protocol<Handler extends RequestHandler> {
     private final AuthorizationHandler<Handler> handlers = new AuthorizationHandler<>();
-    private final Map<Class, ExceptionHandler> exceptions = new HashMap<>();
 
     /**
      * Returns the route handler for the given target route and its access level.
@@ -73,52 +72,6 @@ public class Protocol<Handler extends RequestHandler> {
     public Protocol<Handler> use(String route, Handler handler, Access access) {
         handlers.use(route, handler, access);
         return this;
-    }
-
-    /**
-     * Adds a handler for an exception.
-     *
-     * @param handler   the handler to be invoked for the given exception.
-     * @param exception an exception to map to the given handler, Throwable
-     *                  maps to all unmapped exceptions.
-     * @return the updated protocol specification for fluent use.
-     */
-    public Protocol<Handler> exception(ExceptionHandler handler, Class exception) {
-        exceptions.put(exception, handler);
-        return this;
-    }
-
-    /**
-     * If called with a failed future the cause will be used as an exception.
-     *
-     * @param request the request to handle an error for
-     * @param future  an exception to be handled
-     */
-    public void error(Request request, Future future) {
-        if (future.failed()) {
-            error(request, future.cause());
-        }
-    }
-
-    /**
-     * Invokes the handler registered for the given exception.
-     * If no specific handler is registered for the exception the
-     * default Throwable.class handler is used, if unregistered then
-     * the Request#error method is invoked with the exception directly.
-     *
-     * @param request   the request to handle an error for.
-     * @param exception an exception to be handled.
-     */
-    public void error(Request request, Throwable exception) {
-        if (exceptions.containsKey(exception.getClass())) {
-            exceptions.get(exception.getClass()).handle(request, exception);
-        } else {
-            if (exceptions.containsKey(Throwable.class)) {
-                exceptions.get(Throwable.class).handle(request, exception);
-            } else {
-                request.error(exception);
-            }
-        }
     }
 
     /**

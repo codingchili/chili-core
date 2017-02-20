@@ -65,9 +65,7 @@ public class PatchHandler<T extends PatchContext> extends AbstractHandler<T> {
     private void download(PatchRequest request) {
         try {
             request.file(patcher.getFile(request.file(), request.version()));
-        } catch (PatchReloadedException e) {
-            request.conflict(e);
-        } catch (FileMissingException e) {
+        } catch (PatchReloadedException | FileMissingException e) {
             request.error(e);
         }
     }

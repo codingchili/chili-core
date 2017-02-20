@@ -26,10 +26,7 @@ public class ClientHandler<T extends AuthenticationContext> extends AbstractHand
 
         protocol.use(CLIENT_REGISTER, this::register, PUBLIC)
                 .use(CLIENT_AUTHENTICATE, this::authenticate, PUBLIC)
-                .use(ID_PING, Request::accept, PUBLIC)
-                .exception(Request::conflict, AccountExistsException.class)
-                .exception(Request::missing, AccountMissingException.class)
-                .exception(Request::unauthorized, AccountPasswordException.class);
+                .use(ID_PING, Request::accept, PUBLIC);
     }
 
     private Access authenticate(Request request) {
@@ -49,7 +46,7 @@ public class ClientHandler<T extends AuthenticationContext> extends AbstractHand
             if (future.succeeded()) {
                 sendAuthentication(result.result(), request, true);
             } else {
-                protocol.error(request, future);
+                request.error(result.cause());
             }
         });
         accounts.register(future, request.getAccount());
@@ -62,7 +59,7 @@ public class ClientHandler<T extends AuthenticationContext> extends AbstractHand
             if (future.succeeded()) {
                 sendAuthentication(result.result(), request, false);
             } else {
-                protocol.error(request, future);
+                request.error(result.cause());
             }
         });
         accounts.authenticate(future, request.getAccount());

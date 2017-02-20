@@ -16,32 +16,12 @@ public class EmptyRequest implements Request {
     }
 
     @Override
-    public void unauthorized(Throwable exception) {
-
-    }
-
-    @Override
     public void write(Object object) {
 
     }
 
     @Override
     public void accept() {
-
-    }
-
-    @Override
-    public void missing(Throwable exception) {
-
-    }
-
-    @Override
-    public void conflict(Throwable exception) {
-
-    }
-
-    @Override
-    public void bad(Throwable exception) {
 
     }
 

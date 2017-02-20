@@ -30,9 +30,6 @@ public class ProtocolTest {
     @Before
     public void setUp() {
         protocol = new Protocol<>();
-
-        // Add an exception handler.
-        protocol.exception(Request::conflict, TestConflictException.class);
     }
 
     @Test
@@ -115,51 +112,4 @@ public class ProtocolTest {
         test.assertEquals(PUBLIC, mapping.getRoutes().get(1).getAccess());
         test.assertEquals(TEST, mapping.getRoutes().get(1).getRoute());
     }
-
-    @Test
-    public void testHandleFailedFuture(TestContext test) {
-        protocol.error(RequestMock.get((response, status) -> {
-            test.assertEquals(CONFLICT, status);
-        }), Future.failedFuture(new TestConflictException()));
-    }
-
-    @Test
-    public void testHandleSucceededFuture() {
-        protocol.error(RequestMock.get(((response, status) -> {})), Future.future());
-    }
-
-    @Test
-    public void testHandleMappedException(TestContext test) {
-        expectResultForException(CONFLICT, new TestConflictException(), test);
-    }
-
-    @Test
-    public void testHandleUnmappedException(TestContext test) {
-        expectResultForException(ERROR, new TestUnmappedException(), test);
-    }
-
-    @Test
-    public void testHandleCatchAll(TestContext test) {
-        protocol.exception(Request::unauthorized, Throwable.class);
-        expectResultForException(UNAUTHORIZED, new TestCatchAllException(), test);
-    }
-
-    private void expectResultForException(ResponseStatus expected, Throwable exception, TestContext test) {
-        protocol.error(RequestMock.get((response, status) -> test.assertEquals(expected, status)), exception);
-    }
-
-    /**
-     * Test exception to test protocol exception handler.
-     */
-    class TestConflictException extends Throwable {}
-
-    /**
-     * Test for an unmapped exception, should use the default handler.
-     */
-    class TestUnmappedException extends Throwable {}
-
-    /**
-     * Test for the Throwable.class catchall handler.
-     */
-    class TestCatchAllException extends Throwable {}
 }

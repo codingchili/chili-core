@@ -24,10 +24,6 @@ class ClientRequest extends ClusterRequest {
         return data().getString(Strings.PROTOCOL_CONNECTION);
     }
 
-    public Token token() {
-        return Serializer.unpack(data().getJsonObject(ID_TOKEN), Token.class);
-    }
-
     public Account getAccount() {
         return Serializer.unpack(data().getJsonObject(ID_ACCOUNT), Account.class);
     }

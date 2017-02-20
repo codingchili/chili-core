@@ -167,7 +167,7 @@ public class JsonMap<Key, Value> extends BaseFilter<Value> implements AsyncStora
     public void queryRange(String attribute, int from, int to, Handler<AsyncResult<Collection<Value>>> handler) {
         handler.handle(result(db.fieldNames().stream()
                 .map(key -> context.toValue(db.getJsonObject(key)))
-                .filter(item -> queryRange(item, attribute, from, to))
+                .filter(item -> super.queryRange(item, attribute, from, to))
                 .collect(Collectors.toList())));
     }
 }

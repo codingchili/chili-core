@@ -41,7 +41,7 @@ public class WebsocketListener extends ClusterNode {
         WebsocketRequest request = new WebsocketRequest(socket, buffer, listener());
 
         if (buffer.length() > listener().getMaxRequestBytes()) {
-            request.bad(new RequestPayloadSizeException());
+            request.error(new RequestPayloadSizeException());
         } else {
             handler.process(request);
         }

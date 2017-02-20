@@ -39,7 +39,7 @@ public class UdpListener extends ClusterNode {
         UdpRequest request = new UdpRequest(handler.context(), connection);
 
         if (connection.data().length() > listener().getMaxRequestBytes()) {
-            request.bad(new RequestPayloadSizeException());
+            request.error(new RequestPayloadSizeException());
         } else {
             handler.process(request);
         }

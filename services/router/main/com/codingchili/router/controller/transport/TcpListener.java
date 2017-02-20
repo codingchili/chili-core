@@ -43,7 +43,7 @@ public class TcpListener extends ClusterNode {
         TcpRequest request = new TcpRequest(socket, data, listener());
 
         if (data.length() > listener().getMaxRequestBytes()) {
-            request.bad(new RequestPayloadSizeException());
+            request.error(new RequestPayloadSizeException());
         } else {
             handler.process(request);
         }

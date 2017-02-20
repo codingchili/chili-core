@@ -49,7 +49,7 @@ public class RestListener extends ClusterNode {
         RestRequest request = new RestRequest(context, context.request(), listener());
 
         if (context.getBody().length() > listener().getMaxRequestBytes()) {
-            request.bad(new RequestPayloadSizeException());
+            request.error(new RequestPayloadSizeException());
         } else {
             handler.process(request);
         }

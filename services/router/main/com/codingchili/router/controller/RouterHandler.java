@@ -31,13 +31,13 @@ public class RouterHandler<T extends RouterContext> extends AbstractHandler<T> {
     public void handle(Request request) throws CoreException {
         try {
             if (context.isRouteHidden(request.target())) {
-                request.unauthorized(new AuthorizationRequiredException());
+                request.error(new AuthorizationRequiredException());
             } else {
                 validator.validate(request.data());
                 protocol.get(AUTHORIZED, request.target()).handle(request);
             }
         } catch (RequestValidationException e) {
-            request.bad(e);
+            request.error(e);
         }
     }
 

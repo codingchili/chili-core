@@ -112,7 +112,7 @@ public class RealmHandler<T extends RealmContext> extends AbstractHandler<T> {
             if (creation.succeeded()) {
                 request.accept();
             } else {
-                request.conflict(new CharacterExistsException(request.character()));
+                request.error(new CharacterExistsException(request.character()));
             }
         });
 
