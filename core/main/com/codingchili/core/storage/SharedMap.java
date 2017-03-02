@@ -3,10 +3,8 @@ package com.codingchili.core.storage;
 import io.vertx.core.*;
 import io.vertx.core.shareddata.LocalMap;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import com.codingchili.core.context.*;
+import com.codingchili.core.context.FutureHelper;
+import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.storage.exception.*;
 
 import static com.codingchili.core.context.FutureHelper.*;
@@ -15,19 +13,23 @@ import static com.codingchili.core.context.FutureHelper.*;
  * @author Robin Duda
  *         <p>
  *         Storage implementation that uses vertx local-shared map.
+ *         <p>
+ *         This storage implementation implements a fallback for supporting queries.
+ *         When querying, all fields in the store are converted to json.
+ *         This is very inefficient, if query support is required use another implementation.
  */
-public class SharedMap<Key, Value> extends BaseFilter<Value> implements AsyncStorage<Key, Value> {
+public class SharedMap<Value extends Storable> implements AsyncStorage<Value> {
     private StorageContext<Value> context;
-    private LocalMap<Key, Value> map;
+    private LocalMap<String, Value> map;
 
-    public SharedMap(Future<AsyncStorage<Key, Value>> future, StorageContext<Value> context) {
+    public SharedMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
         this.context = context;
         this.map = context.vertx().sharedData().getLocalMap(context.DB() + "." + context.collection());
         future.complete(this);
     }
 
     @Override
-    public void get(Key key, Handler<AsyncResult<Value>> handler) {
+    public void get(String key, Handler<AsyncResult<Value>> handler) {
         Value value = map.get(key);
 
         if (value != null) {
@@ -38,36 +40,36 @@ public class SharedMap<Key, Value> extends BaseFilter<Value> implements AsyncSto
     }
 
     @Override
-    public void put(Key key, Value value, Handler<AsyncResult<Void>> handler) {
-        map.put(key, value);
+    public void put(Value value, Handler<AsyncResult<Void>> handler) {
+        map.put(value.id(), value);
         handler.handle(FutureHelper.result());
     }
 
     @Override
-    public void put(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        put(key, value, handler);
-        context.timer(ttl, event -> remove(key, (removed) -> {
+    public void put(Value value, long ttl, Handler<AsyncResult<Void>> handler) {
+        put(value, handler);
+        context.timer(ttl, event -> remove(value.id(), (removed) -> {
         }));
     }
 
     @Override
-    public void putIfAbsent(Key key, Value value, Handler<AsyncResult<Void>> handler) {
-        if (map.putIfAbsent(key, value) == null) {
+    public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
+        if (map.putIfAbsent(value.id(), value) == null) {
             handler.handle(FutureHelper.result());
         } else {
-            handler.handle(error(new ValueAlreadyPresentException(key)));
+            handler.handle(error(new ValueAlreadyPresentException(value.id())));
         }
     }
 
     @Override
-    public void putIfAbsent(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        putIfAbsent(key, value, handler);
-        context.timer(ttl, event -> remove(key, (removed) -> {
+    public void putIfAbsent(Value value, long ttl, Handler<AsyncResult<Void>> handler) {
+        putIfAbsent(value, handler);
+        context.timer(ttl, event -> remove(value.id(), (removed) -> {
         }));
     }
 
     @Override
-    public void remove(Key key, Handler<AsyncResult<Void>> handler) {
+    public void remove(String key, Handler<AsyncResult<Void>> handler) {
         Value value = map.remove(key);
 
         if (value == null) {
@@ -78,11 +80,11 @@ public class SharedMap<Key, Value> extends BaseFilter<Value> implements AsyncSto
     }
 
     @Override
-    public void replace(Key key, Value value, Handler<AsyncResult<Void>> handler) {
-        if (map.replace(key, value) != null) {
+    public void update(Value value, Handler<AsyncResult<Void>> handler) {
+        if (map.replace(value.id(), value) != null) {
             handler.handle(FutureHelper.result());
         } else {
-            handler.handle(error(new NothingToReplaceException(key)));
+            handler.handle(error(new NothingToReplaceException(value.id())));
         }
     }
 
@@ -98,23 +100,7 @@ public class SharedMap<Key, Value> extends BaseFilter<Value> implements AsyncSto
     }
 
     @Override
-    public void queryExact(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler) {
-        handler.handle(result(map.values().stream()
-                .filter(item -> queryExact(item, attribute, comparable))
-                .collect(Collectors.toList())));
-    }
-
-    @Override
-    public void querySimilar(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler) {
-        handler.handle(result(map.values().stream()
-                .filter(item -> querySimilar(item, attribute, comparable))
-                .collect(Collectors.toList())));
-    }
-
-    @Override
-    public void queryRange(String attribute, int from, int to, Handler<AsyncResult<Collection<Value>>> handler) {
-        handler.handle(result(map.values().stream()
-                .filter(item -> queryRange(item, attribute, from, to))
-                .collect(Collectors.toList())));
+    public QueryBuilder<Value> query(String field) {
+        return new JsonStreamQuery<>(() -> map.values().stream().map(context::toJson), context).query(field);
     }
 }

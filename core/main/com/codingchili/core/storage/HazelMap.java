@@ -3,8 +3,10 @@ package com.codingchili.core.storage;
 import com.hazelcast.core.*;
 import com.hazelcast.query.*;
 import io.vertx.core.*;
+import io.vertx.core.impl.ConcurrentHashSet;
 import io.vertx.core.shareddata.AsyncMap;
 
+import java.io.Serializable;
 import java.util.*;
 
 import com.codingchili.core.configuration.CoreStrings;
@@ -13,20 +15,20 @@ import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.security.Validator;
 import com.codingchili.core.storage.exception.*;
 
+import static com.codingchili.core.configuration.CoreStrings.STORAGE_ARRAY;
 import static com.codingchili.core.context.FutureHelper.*;
-import static com.codingchili.core.files.Configurations.system;
 
 /**
  * @author Robin Duda
  *         <p>
  *         Initializes a new hazel async map.
  */
-public class HazelMap<Key, Value> implements AsyncStorage<Key, Value> {
-    private static final String HAZELMAP_WORKERS = "HAZELMAP.workers";
-    private WorkerExecutor executor;
+public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
+    private static final String HAZEL_ARRAY = "[any]";
+    private Set<String> indexed = new ConcurrentHashSet<>();
     private StorageContext<Value> context;
-    private AsyncMap<Key, Value> map;
-    private IMap<Key, Value> imap;
+    private AsyncMap<String, Value> map;
+    private IMap<String, Value> imap;
 
     /**
      * Initializes a new hazel async map.
@@ -35,10 +37,9 @@ public class HazelMap<Key, Value> implements AsyncStorage<Key, Value> {
      * @param future  called when the map is created.
      */
     public HazelMap(Future<AsyncStorage> future, StorageContext<Value> context) {
-        this.executor = context.vertx().createSharedWorkerExecutor(HAZELMAP_WORKERS, system().getWorkerPoolSize());
         this.context = context;
 
-        context.vertx().sharedData().<Key, Value>getClusterWideMap(context.DB(), cluster -> {
+        context.vertx().sharedData().<String, Value>getClusterWideMap(context.DB(), cluster -> {
             if (cluster.succeeded()) {
                 this.map = cluster.result();
 
@@ -47,6 +48,7 @@ public class HazelMap<Key, Value> implements AsyncStorage<Key, Value> {
                 if (hazel.isPresent()) {
                     HazelcastInstance instance = hazel.get();
                     imap = instance.getMap(context.DB());
+                    addIndex(Storable.idField);
                     future.complete(this);
                 } else {
                     future.fail(CoreStrings.ERROR_CLUSTERING_REQUIRED);
@@ -58,7 +60,7 @@ public class HazelMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void get(Key key, Handler<AsyncResult<Value>> handler) {
+    public void get(String key, Handler<AsyncResult<Value>> handler) {
         map.get(key, get -> {
             if (get.succeeded()) {
 
@@ -74,23 +76,23 @@ public class HazelMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void put(Key key, Value value, Handler<AsyncResult<Void>> handler) {
-        map.put(key, value, handler);
+    public void put(Value value, Handler<AsyncResult<Void>> handler) {
+        map.put(value.id(), value, handler);
     }
 
     @Override
-    public void put(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        map.put(key, value, ttl, handler);
+    public void put(Value value, long ttl, Handler<AsyncResult<Void>> handler) {
+        map.put(value.id(), value, ttl, handler);
     }
 
     @Override
-    public void putIfAbsent(Key key, Value value, Handler<AsyncResult<Void>> handler) {
-        map.putIfAbsent(key, value, put -> {
+    public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
+        map.putIfAbsent(value.id(), value, put -> {
             if (put.succeeded()) {
                 if (put.result() == null) {
                     handler.handle(FutureHelper.result());
                 } else {
-                    handler.handle(error(new ValueAlreadyPresentException(key)));
+                    handler.handle(error(new ValueAlreadyPresentException(value.id())));
                 }
             } else {
                 handler.handle(error(put.cause()));
@@ -99,8 +101,8 @@ public class HazelMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void putIfAbsent(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        map.putIfAbsent(key, value, ttl, result -> {
+    public void putIfAbsent(Value value, long ttl, Handler<AsyncResult<Void>> handler) {
+        map.putIfAbsent(value.id(), value, ttl, result -> {
             if (result.succeeded()) {
                 handler.handle(result());
             } else {
@@ -110,7 +112,7 @@ public class HazelMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void remove(Key key, Handler<AsyncResult<Void>> handler) {
+    public void remove(String key, Handler<AsyncResult<Void>> handler) {
         map.remove(key, remove -> {
             if (remove.succeeded()) {
                 if (remove.result() == null) {
@@ -125,11 +127,11 @@ public class HazelMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void replace(Key key, Value value, Handler<AsyncResult<Void>> handler) {
-        map.replace(key, value, replace -> {
+    public void update(Value value, Handler<AsyncResult<Void>> handler) {
+        map.replace(value.id(), value, replace -> {
             if (replace.succeeded()) {
                 if (replace.result() == null) {
-                    handler.handle(error(new NothingToReplaceException(key)));
+                    handler.handle(error(new NothingToReplaceException(value.id())));
                 } else {
                     handler.handle(FutureHelper.result());
                 }
@@ -159,71 +161,100 @@ public class HazelMap<Key, Value> implements AsyncStorage<Key, Value> {
                 handler.handle(error(size.cause()));
             }
         });
+    }
 
-        query("numbers")
-                .between(5, 45)
-                .in(6, 7, 8)
-                .like("51")
-                .and("name")
-                .like("robin")
-        .execute(result -> {
-            result.result();
-        });
+    private void addIndex(String field) {
+        if (!indexed.contains(field)) {
+            indexed.add(field);
+            imap.addIndex(field.replace(STORAGE_ARRAY, HAZEL_ARRAY), true);
+        }
     }
 
     @Override
-    public QueryBuilder query(String attribute) {
-        return new QueryBuilderBase<Value>() {
-            private PredicateBuilder builder = new PredicateBuilder();
-            private BooleanOperator operator = builder::and;
+    public QueryBuilder<Value> query(String field) {
+        addIndex(field);
+
+        return new AbstractQueryBuilder<Value>(field, HAZEL_ARRAY) {
+            private List<Predicate> predicates = new ArrayList<>();
+            private Predicate predicate;
+            private BooleanOperator operator = BooleanOperator.AND;
 
             @Override
-            public QueryBuilder and(String attribute) {
-                operator = builder::and;
-                this.attribute = attribute;
+            public QueryBuilder<Value> and(String attribute) {
+                apply(BooleanOperator.AND, attribute);
                 return this;
             }
 
             @Override
-            public QueryBuilder or(String attribute) {
-                operator = builder::or;
-                this.attribute = attribute;
+            public QueryBuilder<Value> or(String attribute) {
+                apply(BooleanOperator.OR, attribute);
+                return this;
+            }
+
+            private void apply(BooleanOperator operator, String attribute) {
+                Predicate current = Predicates.and(predicates.toArray(new Predicate[predicates.size()]));
+
+                if (predicate == null) {
+                    predicate = current;
+                } else {
+                    switch (this.operator) {
+                        case AND:
+                            predicate = Predicates.and(predicate, current);
+                            break;
+                        case OR:
+                            predicate = Predicates.or(predicate, current);
+                            break;
+                    }
+                }
+                predicates.clear();
+                this.operator = operator;
+                setAttribute(attribute);
+            }
+
+            @Override
+            public QueryBuilder<Value> between(Long minimum, Long maximum) {
+                predicates.add(Predicates.between(attribute(), minimum, maximum));
                 return this;
             }
 
             @Override
-            public QueryBuilder between(int minimum, int maximum) {
-                operator.apply(Predicates.between(attribute, minimum, maximum));
+            public QueryBuilder<Value> like(String text) {
+                predicates.add(Predicates.ilike(attribute(), "%" + text + "%"));
                 return this;
             }
 
             @Override
-            public QueryBuilder like(String text) {
-                operator.apply(Predicates.like(attribute, text));
-                return this;
-            }
-
-            @Override
-            public QueryBuilder startsWith(String text) {
+            public QueryBuilder<Value> startsWith(String text) {
                 if (new Validator().plainText(text)) {
-                    operator.apply(Predicates.regex(attribute, "^" + text));
+                    predicates.add(Predicates.ilike(attribute(), text + "%"));
                 }
                 return this;
             }
 
             @Override
-            public QueryBuilder in(Comparable... list) {
-                operator.apply(Predicates.in(attribute, list));
+            public QueryBuilder<Value> in(Comparable... list) {
+                predicates.add(Predicates.in(attribute(), list));
                 return this;
             }
 
             @Override
-            public void execute(Handler<AsyncResult<Collection<Value>>> handler) {
-                executor.<Collection<Value>>executeBlocking(blocking -> {
-                    PagingPredicate paging = new PagingPredicate(getPageSize());
-                    paging.setPage(getPage());
+            public QueryBuilder<Value> equalTo(Comparable match) {
+                predicates.add(Predicates.equal(attribute(), match));
+                return this;
+            }
 
-                    blocking.complete(imap.values(builder.and(paging)));
+            @Override
+            public QueryBuilder<Value> matches(String regex) {
+                predicates.add(Predicates.regex(attribute(), regex));
+                return this;
+            }
+
+            @Override
+            public void execute(Handler<AsyncResult<List<Value>>> handler) {
+                apply(operator, attribute());
+
+                context.<List<Value>>blocking(task -> {
+                    task.complete(new ArrayList<>(imap.values(getPredicateWithPager())));
                 }, false, result -> {
                     if (result.succeeded()) {
                         handler.handle(result(result.result()));
@@ -232,11 +263,24 @@ public class HazelMap<Key, Value> implements AsyncStorage<Key, Value> {
                     }
                 });
             }
+
+            private Predicate getPredicateWithPager() {
+                PagingPredicate paging;
+
+                if (isOrdered) {
+                    String orderBy = getOrderByAttribute();
+                    paging = new PagingPredicate(predicate, (Serializable & Comparator<Map.Entry>) (first, second) -> {
+                        return ((Storable) first.getValue())
+                                .compareToAttribute((Storable) second.getValue(), orderBy);
+                    }, pageSize);
+                } else {
+                    paging = new PagingPredicate(predicate, pageSize);
+                }
+                paging.setPage(page);
+                return paging;
+            }
         };
     }
 
-    @FunctionalInterface
-    private interface BooleanOperator {
-        void apply(Predicate predicate);
-    }
+    private enum BooleanOperator {AND, OR}
 }

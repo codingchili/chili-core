@@ -8,25 +8,30 @@ import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.IndexNotFoundException;
 import org.elasticsearch.index.engine.DocumentMissingException;
 import org.elasticsearch.index.engine.VersionConflictEngineException;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
+import org.junit.Ignore;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.security.Validator;
 import com.codingchili.core.storage.exception.*;
 
 import static com.codingchili.core.context.FutureHelper.*;
@@ -34,13 +39,16 @@ import static com.codingchili.core.context.FutureHelper.*;
 /**
  * @author Robin Duda
  *         <p>
- *         Mocks an async map used by Hazelcast to enable testing of storage logic.
+ *         Map implementation that uses ElasticSearch.
+ *         Does not support case sensitivity for equals.
+ *         Does not support ordering nested fields without server configuration
  */
-public class ElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
+@Ignore("Requires running elasticsearch server.")
+public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     private StorageContext<Value> context;
     private TransportClient client;
 
-    public ElasticMap(Future<AsyncStorage<Key, Value>> future, StorageContext<Value> context) throws IOException {
+    public ElasticMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) throws IOException {
         this.context = context;
         try {
             this.client = new PreBuiltTransportClient(Settings.builder()
@@ -57,8 +65,8 @@ public class ElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void get(Key key, Handler<AsyncResult<Value>> handler) {
-        client.prepareGet(context.DB(), context.collection(), key.toString())
+    public void get(String key, Handler<AsyncResult<Value>> handler) {
+        client.prepareGet(context.DB(), context.collection(), key)
                 .execute(new ElasticHandler<>(response -> {
 
                     if (response.isExists() && !response.isSourceEmpty()) {
@@ -76,8 +84,8 @@ public class ElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void put(Key key, Value value, Handler<AsyncResult<Void>> handler) {
-        client.prepareIndex(context.DB(), context.collection(), key.toString())
+    public void put(Value value, Handler<AsyncResult<Void>> handler) {
+        client.prepareIndex(context.DB(), context.collection(), value.id())
                 .setSource(context.toJson(value).encode())
                 .execute(new ElasticHandler<>(response -> {
                     handler.handle(result());
@@ -85,10 +93,11 @@ public class ElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void put(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        put(key, value, result -> {
+    public void put(Value value, long ttl, Handler<AsyncResult<Void>> handler) {
+        put(value, result -> {
             if (result.succeeded()) {
-                context.timer(ttl, event -> remove(key, removed -> {}));
+                context.timer(ttl, event -> remove(value.id(), removed -> {
+                }));
                 handler.handle(result());
             } else {
                 handler.handle(error(result.cause()));
@@ -97,8 +106,8 @@ public class ElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void putIfAbsent(Key key, Value value, Handler<AsyncResult<Void>> handler) {
-        client.prepareIndex(context.DB(), context.collection(), key.toString())
+    public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
+        client.prepareIndex(context.DB(), context.collection(), value.id())
                 .setSource(context.toJson(value).encode())
                 .setOpType(IndexRequest.OpType.CREATE)
                 .execute(new ElasticHandler<>(response -> {
@@ -106,11 +115,11 @@ public class ElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
                     if (response.getResult().equals(DocWriteResponse.Result.CREATED)) {
                         handler.handle(result());
                     } else {
-                        handler.handle(error(new ValueAlreadyPresentException(key)));
+                        handler.handle(error(new ValueAlreadyPresentException(value.id())));
                     }
                 }, exception -> {
                     if (nested(exception) instanceof VersionConflictEngineException) {
-                        handler.handle(error(new ValueAlreadyPresentException(key)));
+                        handler.handle(error(new ValueAlreadyPresentException(value.id())));
                     } else {
                         handler.handle(error(exception));
                     }
@@ -118,10 +127,10 @@ public class ElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void putIfAbsent(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        putIfAbsent(key, value, result -> {
+    public void putIfAbsent(Value value, long ttl, Handler<AsyncResult<Void>> handler) {
+        putIfAbsent(value, result -> {
             if (result.succeeded()) {
-                context.timer(ttl, event -> remove(key, removed -> {
+                context.timer(ttl, event -> remove(value.id(), removed -> {
                 }));
                 handler.handle(result());
             } else {
@@ -135,8 +144,8 @@ public class ElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void remove(Key key, Handler<AsyncResult<Void>> handler) {
-        client.prepareDelete(context.DB(), context.collection(), key.toString())
+    public void remove(String key, Handler<AsyncResult<Void>> handler) {
+        client.prepareDelete(context.DB(), context.collection(), key)
                 .execute(new ElasticHandler<>(response -> {
 
                     if (response.getResult().equals(DocWriteResponse.Result.NOT_FOUND)) {
@@ -148,19 +157,19 @@ public class ElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void replace(Key key, Value value, Handler<AsyncResult<Void>> handler) {
-        client.prepareUpdate(context.DB(), context.collection(), key.toString())
+    public void update(Value value, Handler<AsyncResult<Void>> handler) {
+        client.prepareUpdate(context.DB(), context.collection(), value.id())
                 .setDoc(context.toPacked(value))
                 .execute(new ElasticHandler<>(response -> {
 
                     if (response.getResult().ordinal() != 0) {
                         handler.handle(result());
                     } else {
-                        handler.handle(error(new NothingToReplaceException(key)));
+                        handler.handle(error(new NothingToReplaceException(value.id())));
                     }
                 }, exception -> {
                     if (nested(exception) instanceof DocumentMissingException) {
-                        handler.handle(error(new NothingToReplaceException(key)));
+                        handler.handle(error(new NothingToReplaceException(value.id())));
                     } else {
                         handler.handle(error(exception));
                     }
@@ -185,8 +194,9 @@ public class ElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
 
     @Override
     public void size(Handler<AsyncResult<Integer>> handler) {
-        client.prepareSearch(context.DB())
+        client.prepareSearch(context.DB()).setTypes(context.collection())
                 .setFetchSource(false)
+                .setSize(0)
                 .setQuery(QueryBuilders.matchAllQuery())
                 .execute(new ElasticHandler<>(response -> {
                     if (response.status().equals(RestStatus.OK)) {
@@ -194,24 +204,113 @@ public class ElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
                     } else {
                         handler.handle(result(0));
                     }
-                }, exception -> handler.handle(result(0))));
+                }, exception -> handler.handle(error(exception))));
+    }
+
+    @Override
+    public QueryBuilder<Value> query(String field) {
+        return new AbstractQueryBuilder<Value>(field) {
+            List<BoolQueryBuilder> statements = new ArrayList<>();
+            BoolQueryBuilder builder = new BoolQueryBuilder();
+
+            @Override
+            public QueryBuilder<Value> and(String attribute) {
+                setAttribute(attribute);
+                return this;
+            }
+
+            @Override
+            public QueryBuilder<Value> or(String attribute) {
+                setAttribute(attribute);
+                statements.add(builder);
+                builder = new BoolQueryBuilder();
+                return this;
+            }
+
+            @Override
+            public QueryBuilder<Value> between(Long minimum, Long maximum) {
+                builder.must(QueryBuilders.rangeQuery(attribute()).gte(minimum).lte(maximum));
+                return this;
+            }
+
+            @Override
+            public QueryBuilder<Value> like(String text) {
+                text = new Validator().toPlainText(text).toLowerCase();
+                builder.must(QueryBuilders.wildcardQuery(attribute(), "*" + text + "*"));
+                return this;
+            }
+
+            @Override
+            public QueryBuilder<Value> startsWith(String text) {
+                builder.must(QueryBuilders.matchPhrasePrefixQuery(attribute(), text));
+                return this;
+            }
+
+            @Override
+            public QueryBuilder<Value> in(Comparable... list) {
+                BoolQueryBuilder bool = new BoolQueryBuilder().minimumShouldMatch(1);
+                for (Comparable item : list) {
+                    bool.should(QueryBuilders.matchPhraseQuery(attribute(), item));
+                }
+                builder.must(bool);
+                return this;
+            }
+
+            @Override
+            public QueryBuilder<Value> equalTo(Comparable match) {
+                builder.must(QueryBuilders.matchPhraseQuery(attribute(), match));
+                return this;
+            }
+
+            @Override
+            public QueryBuilder<Value> matches(String regex) {
+                if (regex.contains("^") || regex.contains("$")) {
+                    // remove unsupported characters in ElasticSearch query.
+                    regex = regex.replaceAll("[\\^$]", "");
+                }
+                builder.must(QueryBuilders.regexpQuery(attribute(), regex.toLowerCase()).flags(RegexpFlag.ALL));
+                return this;
+            }
+
+            @Override
+            public void execute(Handler<AsyncResult<List<Value>>> handler) {
+                if (!builder.equals(new BoolQueryBuilder())) {
+                    statements.add(builder);
+                }
+
+                BoolQueryBuilder query = new BoolQueryBuilder().minimumShouldMatch(1);
+                for (BoolQueryBuilder statement : statements) {
+                    query.should(statement);
+                }
+
+                getRequestWithOptions().setQuery(query).execute(new ElasticHandler<>(response -> {
+                    handler.handle(result(listFrom(response.getHits().getHits())));
+                }, exception -> handler.handle(error(exception))));
+            }
+
+            private SearchRequestBuilder getRequestWithOptions() {
+                SearchRequestBuilder request = client.prepareSearch(context.DB()).setTypes(context.collection());
+                if (isOrdered) {
+                    switch (sortOrder) {
+                        case ASCENDING:
+                            request.addSort(getOrderByAttribute(), SortOrder.ASC);
+                            break;
+                        case DESCENDING:
+                            request.addSort(getOrderByAttribute(), SortOrder.DESC);
+                    }
+                }
+                request.setSize(pageSize);
+                request.setFrom(pageSize * page);
+                return request;
+            }
+        };
     }
 
     private Value valueFrom(byte[] value) {
         return context.toValue(value);
     }
 
-    @Override
-    public void queryExact(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler) {
-        client.prepareSearch(context.DB())
-                .setTypes(context.collection())
-                .setQuery(QueryBuilders.matchQuery(attribute, comparable))
-                .execute(new ElasticHandler<>(response -> {
-                    handler.handle(result(listFrom(response.getHits().getHits())));
-                }, exception -> handler.handle(error(exception))));
-    }
-
-    private Collection<Value> listFrom(SearchHit[] hits) {
+    private List<Value> listFrom(SearchHit[] hits) {
         List<Value> list = new ArrayList<>();
 
         for (SearchHit hit : hits) {
@@ -219,30 +318,6 @@ public class ElasticMap<Key, Value> implements AsyncStorage<Key, Value> {
         }
 
         return list;
-    }
-
-    @Override
-    public void querySimilar(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler) {
-        if (context.validate(comparable)) {
-            client.prepareSearch(context.DB())
-                    .setTypes(context.collection())
-                    .setQuery(QueryBuilders.matchPhrasePrefixQuery(attribute, comparable))
-                    .execute(new ElasticHandler<>(response -> {
-                        handler.handle(result(listFrom(response.getHits().getHits())));
-                    }, exception -> handler.handle(error(exception))));
-        } else {
-            handler.handle(result(new ArrayList<>()));
-        }
-    }
-
-    @Override
-    public void queryRange(String attribute, int from, int to, Handler<AsyncResult<Collection<Value>>> handler) {
-        client.prepareSearch(context.DB())
-                .setTypes(context.collection())
-                .setQuery(QueryBuilders.rangeQuery(attribute).gte(from).lte(to))
-                .execute(new ElasticHandler<>(response -> {
-                    handler.handle(result(listFrom(response.getHits().getHits())));
-                }, exception -> handler.handle(error(exception))));
     }
 
     /**

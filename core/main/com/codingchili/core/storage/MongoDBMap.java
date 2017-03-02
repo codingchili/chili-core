@@ -1,6 +1,8 @@
 package com.codingchili.core.storage;
 
 import io.vertx.core.*;
+import io.vertx.core.impl.ConcurrentHashSet;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.*;
 
@@ -10,30 +12,38 @@ import java.util.stream.Collectors;
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.security.Validator;
 import com.codingchili.core.storage.exception.*;
 
-import static com.codingchili.core.context.FutureHelper.error;
-import static com.codingchili.core.context.FutureHelper.result;
+import static com.codingchili.core.context.FutureHelper.*;
 
 /**
  * @author Robin Duda
  *         <p>
  *         mongodb backed asyncmap.
  */
-public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
+public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
     private static final JsonObject ALL_FIELDS = new JsonObject();
     private static final String ID = "_id";
+    private static final String AND = "$and";
+    private static final String OR = "$or";
+    private static final String GTE = "$gte";
+    private static final String LTE = "$lte";
+    private static final String REGEX = "$regex";
+    private static final String IN = "$in";
+    private static final String OPTIONS = "$options";
+    private Set<String> indexed = new ConcurrentHashSet<>();
     private StorageContext<Value> context;
     private MongoClient client;
     private String collection;
 
-    public MongoDBMap(Future<AsyncStorage<Key, Value>> future, StorageContext<Value> context) {
+    public MongoDBMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
         client = MongoClient.createShared(context.vertx(), Serializer.json(context.storage()));
 
         this.collection = context.collection();
         this.context = context;
 
-        client.createIndexWithOptions(collection, new JsonObject().put(ID, 1), index(), index -> {
+        addIndex(ID, done -> {
             future.complete(this);
         });
     }
@@ -44,8 +54,8 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void get(Key key, Handler<AsyncResult<Value>> handler) {
-        client.findOne(collection, query(key), ALL_FIELDS, query -> {
+    public void get(String key, Handler<AsyncResult<Value>> handler) {
+        client.findOne(collection, id(key), ALL_FIELDS, query -> {
             if (query.succeeded()) {
                 if (query.result() != null) {
                     handler.handle(result(context.toValue(query.result())));
@@ -58,13 +68,9 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
         });
     }
 
-    private JsonObject query(Key key) {
-        return new JsonObject().put(ID, key.toString());
-    }
-
     @Override
-    public void put(Key key, Value value, Handler<AsyncResult<Void>> handler) {
-        client.replaceDocumentsWithOptions(collection, getKey(key), document(key, value),
+    public void put(Value value, Handler<AsyncResult<Void>> handler) {
+        client.replaceDocumentsWithOptions(collection, id(value.id()), document(value),
                 new UpdateOptions().setUpsert(true),
                 update -> {
                     if (update.succeeded()) {
@@ -75,15 +81,15 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
                 });
     }
 
-    private JsonObject document(Key key, Value value) {
-        return context.toJson(value).put(ID, key.toString());
+    private JsonObject document(Value value) {
+        return context.toJson(value).put(ID, value.id());
     }
 
     @Override
-    public void put(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        put(key, value, result -> {
+    public void put(Value value, long ttl, Handler<AsyncResult<Void>> handler) {
+        put(value, result -> {
             if (result.succeeded()) {
-                context.timer(ttl, expired -> remove(key, (removed) -> {
+                context.timer(ttl, expired -> remove(value.id(), (removed) -> {
                 }));
                 handler.handle(result(result.result()));
             } else {
@@ -93,21 +99,21 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void putIfAbsent(Key key, Value value, Handler<AsyncResult<Void>> handler) {
-        client.insert(collection, document(key, value), put -> {
+    public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
+        client.insert(collection, document(value), put -> {
             if (put.succeeded()) {
                 handler.handle(FutureHelper.result());
             } else {
-                handler.handle(error(new ValueAlreadyPresentException(key)));
+                handler.handle(error(new ValueAlreadyPresentException(value.id())));
             }
         });
     }
 
     @Override
-    public void putIfAbsent(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        put(key, value, result -> {
+    public void putIfAbsent(Value value, long ttl, Handler<AsyncResult<Void>> handler) {
+        put(value, result -> {
             if (result.succeeded()) {
-                context.timer(ttl, expired -> remove(key, (removed) -> {
+                context.timer(ttl, expired -> remove(value.id(), (removed) -> {
                 }));
                 handler.handle(result());
             } else {
@@ -117,8 +123,8 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
     }
 
     @Override
-    public void remove(Key key, Handler<AsyncResult<Void>> handler) {
-        client.removeDocument(collection, getKey(key), remove -> {
+    public void remove(String key, Handler<AsyncResult<Void>> handler) {
+        client.removeDocument(collection, id(key), remove -> {
             if (remove.succeeded()) {
                 if (remove.result().getRemovedCount() > 0) {
                     handler.handle(FutureHelper.result());
@@ -131,18 +137,22 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
         });
     }
 
-    private JsonObject getKey(Key key) {
-        return new JsonObject().put(ID, key.toString());
+    private JsonObject id(String key) {
+        return new JsonObject().put(ID, key);
+    }
+
+    private JsonObject id(Value value) {
+        return id(value.id());
     }
 
     @Override
-    public void replace(Key key, Value value, Handler<AsyncResult<Void>> handler) {
-        client.replaceDocuments(collection, getKey(key), document(key, value), replace -> {
+    public void update(Value value, Handler<AsyncResult<Void>> handler) {
+        client.replaceDocuments(collection, id(value), document(value), replace -> {
             if (replace.succeeded()) {
                 if (replace.result().getDocModified() > 0) {
                     handler.handle(FutureHelper.result());
                 } else {
-                    handler.handle(error(new NothingToReplaceException(key)));
+                    handler.handle(error(new NothingToReplaceException(value.id())));
                 }
             } else {
                 handler.handle(error(replace.cause()));
@@ -172,60 +182,131 @@ public class MongoDBMap<Key, Value> implements AsyncStorage<Key, Value> {
         });
     }
 
-    @Override
-    public void queryExact(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler) {
-        client.find(collection, query(attribute, comparable), query -> {
-            if (query.succeeded()) {
-                handler.handle(result(toList(query.result())));
-            } else {
-                handler.handle(error(query.cause()));
-            }
-        });
+    private void addIndex(String field) {
+        addIndex(field, (result) -> {});
     }
 
-    private Collection<Value> toList(List<JsonObject> results) {
-        return results.stream().map(json -> context.toValue(json)).collect(Collectors.toList());
-    }
-
-    private JsonObject query(String attribute, Comparable compare) {
-        return new JsonObject().put(attribute, compare);
-    }
-
-    @Override
-    public void querySimilar(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler) {
-        if (context.validate(comparable)) {
-            client.find(collection, queryLike(attribute, comparable), query -> {
-                if (query.succeeded()) {
-                    handler.handle(result(toList(query.result())));
-                } else {
-                    handler.handle(error(query.cause()));
-                }
-            });
-        } else {
-            handler.handle(result(new ArrayList<>()));
+    private void addIndex(String field, Handler<AsyncResult<Void>> handler) {
+        if (!indexed.contains(field)) {
+            indexed.add(field);
+            client.createIndex(context.collection(), new JsonObject().put(field, ""), handler::handle);
         }
     }
 
-    private JsonObject queryLike(String attribute, Comparable compare) {
-        return new JsonObject().put(attribute, new JsonObject().put("$regex", "^" + compare + ""));
-    }
-
     @Override
-    public void queryRange(String attribute, int from, int to, Handler<AsyncResult<Collection<Value>>> handler) {
-        client.find(collection, rangeQuery(attribute, from, to), query -> {
-            if (query.succeeded()) {
-                handler.handle(result(toList(query.result())));
-            } else {
-                handler.handle(error(query.cause()));
+    public QueryBuilder<Value> query(String field) {
+        addIndex(field);
+
+        return new AbstractQueryBuilder<Value>(field) {
+            Validator validator = new Validator();
+            JsonArray statements = new JsonArray();
+            JsonArray builder = new JsonArray();
+
+            @Override
+            public QueryBuilder<Value> and(String attribute) {
+                setAttribute(attribute);
+                return this;
             }
-        });
+
+            @Override
+            public QueryBuilder<Value> or(String attribute) {
+                setAttribute(attribute);
+                apply();
+                return this;
+            }
+
+            /** Applies the current state of the builder to the final query. */
+            private void apply() {
+                statements.add(new JsonObject().put(AND, builder));
+                builder = new JsonArray();
+            }
+
+            @Override
+            public QueryBuilder<Value> between(Long minimum, Long maximum) {
+                builder.add(new JsonObject()
+                        .put(attribute(), new JsonObject()
+                                .put(GTE, minimum)
+                                .put(LTE, maximum)));
+                return this;
+            }
+
+            @Override
+            public QueryBuilder<Value> like(String text) {
+                text = validator.toPlainText(text);
+                builder.add(new JsonObject()
+                        .put(attribute(), new JsonObject()
+                                .put(REGEX, "^.*" + text + ".*$")
+                                .put(OPTIONS, "i")));
+                return this;
+            }
+
+            @Override
+            public QueryBuilder<Value> startsWith(String text) {
+                text = validator.toPlainText(text);
+                builder.add(new JsonObject()
+                        .put(attribute(), new JsonObject()
+                                .put(REGEX, "^" + text + ".*")));
+                return this;
+            }
+
+            @Override
+            public QueryBuilder<Value> in(Comparable... comparables) {
+                List<Comparable> list = new ArrayList<>();
+                list.addAll(Arrays.asList(comparables));
+
+                builder.add(new JsonObject()
+                        .put(attribute(), new JsonObject()
+                                .put(IN, list)));
+                return this;
+            }
+
+            @Override
+            public QueryBuilder<Value> equalTo(Comparable match) {
+                builder.add(new JsonObject().put(attribute(), match));
+                return this;
+            }
+
+            @Override
+            public QueryBuilder<Value> matches(String regex) {
+                builder.add(new JsonObject()
+                        .put(attribute(), new JsonObject()
+                                .put(REGEX, regex)));
+                return this;
+            }
+
+            @Override
+            public void execute(Handler<AsyncResult<List<Value>>> handler) {
+                apply();
+                System.out.println("executing query.. \n" + statements.encodePrettily() +
+                        "options\n" + getSortOptions().encodePrettily());
+
+                client.findWithOptions(collection, new JsonObject().put(OR, statements), getOptions(), find -> {
+                    if (find.succeeded()) {
+                        handler.handle(result(toList(find.result())));
+                    } else {
+                        handler.handle(error(find.cause()));
+                    }
+                });
+            }
+
+            private FindOptions getOptions() {
+                return new FindOptions()
+                        .setLimit(pageSize)
+                        .setSkip(pageSize * page)
+                        .setSort(getSortOptions());
+            }
+
+            private JsonObject getSortOptions() {
+                if (isOrdered) {
+                    return new JsonObject().put(getOrderByAttribute(), getSortDirection());
+                } else {
+                    return new JsonObject();
+                }
+            }
+        };
     }
 
-    private JsonObject rangeQuery(String attribute, int from, int to) {
-        return new JsonObject().put(attribute,
-                new JsonObject()
-                        .put("$gte", from)
-                        .put("$lte", to)
-        );
+    private List<Value> toList(List<JsonObject> results) {
+        return results.stream().map(json -> context.toValue(json)).collect(Collectors.toList());
     }
 }

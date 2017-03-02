@@ -4,9 +4,9 @@ import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Stream;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.FutureHelper;
@@ -20,29 +20,41 @@ import static com.codingchili.core.context.FutureHelper.*;
  * @author Robin Duda
  *         <p>
  *         Map backed by a json-file.
+ *         <p>
+ *         Do not use for data that is changing frequently, as this is extremely inefficient.
+ *         The dirty-state of the map will be checked to determine when the map should be
+ *         persisted. This is done in intervals specified in plugin configuration.
  */
-public class JsonMap<Key, Value> extends BaseFilter<Value> implements AsyncStorage<Key, Value> {
+public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     private static final String JSONMAP_WORKERS = "asyncjsonmap.workers";
+    private static AtomicBoolean dirty = new AtomicBoolean(false);
     private final WorkerExecutor fileWriter;
     private JsonObject db;
     private StorageContext<Value> context;
 
-    public JsonMap(Future<AsyncStorage<Key, Value>> future, StorageContext<Value> context) {
+    public JsonMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
         this.context = context;
         this.fileWriter = context.vertx().createSharedWorkerExecutor(JSONMAP_WORKERS);
 
+        context.periodic(() -> context.storage().getPersistInterval(),
+                context.identifier(), event -> {
+                    if (dirty.get()) {
+                        save();
+                        dirty.set(false);
+                    }
+                });
+
         try {
-            db = JsonFileStore.readObject(context.DB());
+            db = JsonFileStore.readObject(context.dbPath());
         } catch (IOException e) {
             db = new JsonObject();
-            context.console().log(CoreStrings.getFileReadError(context.DB()));
+            context.console().log(CoreStrings.getFileReadError(context.dbPath()));
         }
-
         future.complete(this);
     }
 
     @Override
-    public void get(Key key, Handler<AsyncResult<Value>> handler) {
+    public void get(String key, Handler<AsyncResult<Value>> handler) {
         Optional<Value> value = get(key);
 
         if (value.isPresent()) {
@@ -53,58 +65,58 @@ public class JsonMap<Key, Value> extends BaseFilter<Value> implements AsyncStora
     }
 
     @Override
-    public void put(Key key, Value value, Handler<AsyncResult<Void>> handler) {
-        put(key, value);
+    public void put(Value value, Handler<AsyncResult<Void>> handler) {
+        put(value);
         handler.handle(FutureHelper.result());
     }
 
     @Override
-    public void put(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        put(key, value, handler);
+    public void put(Value value, long ttl, Handler<AsyncResult<Void>> handler) {
+        put(value, handler);
 
-        context.timer(ttl, event -> remove(key));
+        context.timer(ttl, event -> remove(value.id()));
     }
 
     @Override
-    public void putIfAbsent(Key key, Value value, Handler<AsyncResult<Void>> handler) {
-        Optional<Value> current = get(key);
+    public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
+        Optional<Value> current = get(value.id());
 
         if (current.isPresent()) {
-            handler.handle(error(new ValueAlreadyPresentException(key)));
+            handler.handle(error(new ValueAlreadyPresentException(value.id())));
         } else {
-            put(key, value);
+            put(value);
             handler.handle(FutureHelper.result());
         }
     }
 
     @Override
-    public void putIfAbsent(Key key, Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        putIfAbsent(key, value, handler);
-        context.timer(ttl, event -> remove(key));
+    public void putIfAbsent(Value value, long ttl, Handler<AsyncResult<Void>> handler) {
+        putIfAbsent(value, handler);
+        context.timer(ttl, event -> remove(value.id()));
     }
 
     @Override
-    public void remove(Key key, Handler<AsyncResult<Void>> handler) {
+    public void remove(String key, Handler<AsyncResult<Void>> handler) {
         Optional<Value> current = get(key);
 
         if (current.isPresent()) {
             remove(key);
             handler.handle(FutureHelper.result());
-            save();
+            dirty();
         } else {
             handler.handle(error(new NothingToRemoveException(key)));
         }
     }
 
     @Override
-    public void replace(Key key, Value value, Handler<AsyncResult<Void>> handler) {
-        Optional<Value> current = get(key);
+    public void update(Value value, Handler<AsyncResult<Void>> handler) {
+        Optional<Value> current = get(value.id());
 
         if (current.isPresent()) {
-            put(key, value);
+            put(value);
             handler.handle(FutureHelper.result());
         } else {
-            handler.handle(error(new NothingToReplaceException(key)));
+            handler.handle(error(new NothingToReplaceException(value.id())));
         }
     }
 
@@ -112,7 +124,16 @@ public class JsonMap<Key, Value> extends BaseFilter<Value> implements AsyncStora
     public void clear(Handler<AsyncResult<Void>> handler) {
         db.clear();
         handler.handle(FutureHelper.result());
-        save();
+        dirty();
+    }
+
+    @Override
+    public QueryBuilder<Value> query(String field) {
+        return new JsonStreamQuery<>(this::streamSource, context).query(field);
+    }
+
+    private Stream<JsonObject> streamSource() {
+        return db.stream().map(entry -> (JsonObject) entry.getValue());
     }
 
     @Override
@@ -120,8 +141,8 @@ public class JsonMap<Key, Value> extends BaseFilter<Value> implements AsyncStora
         handler.handle(result(db.size()));
     }
 
-    private Optional<Value> get(Key key) {
-        Value value = context.toValue(db.getJsonObject(key.toString()));
+    private Optional<Value> get(String key) {
+        Value value = context.toValue(db.getJsonObject(key));
 
         if (value == null) {
             return Optional.empty();
@@ -130,44 +151,26 @@ public class JsonMap<Key, Value> extends BaseFilter<Value> implements AsyncStora
         }
     }
 
-    private void put(Key key, Value value) {
-        db.put(key.toString(), context.toJson(value));
-        save();
+    private void put(Value value) {
+        db.put(value.id(), context.toJson(value));
+        dirty();
     }
 
-    private void remove(Key key) {
-        db.remove(key.toString());
-        save();
+    private void remove(String key) {
+        db.remove(key);
+        dirty();
     }
 
     private void save() {
-        fileWriter.executeBlocking(execute -> {
-            JsonFileStore.writeObject(db, context.DB());
-        }, true, result -> {
-        });
+        if (context.storage().isPersisted()) {
+            fileWriter.executeBlocking(execute -> {
+                JsonFileStore.writeObject(db, context.dbPath());
+            }, true, result -> {
+            });
+        }
     }
 
-    @Override
-    public void queryExact(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler) {
-        handler.handle(result(db.fieldNames().stream()
-                .map(key -> context.toValue(db.getJsonObject(key)))
-                .filter(item -> queryExact(item, attribute, comparable))
-                .collect(Collectors.toList())));
-    }
-
-    @Override
-    public void querySimilar(String attribute, Comparable comparable, Handler<AsyncResult<Collection<Value>>> handler) {
-        handler.handle(result(db.fieldNames().stream()
-                .map(key -> context.toValue(db.getJsonObject(key)))
-                .filter(item -> querySimilar(item, attribute, comparable))
-                .collect(Collectors.toList())));
-    }
-
-    @Override
-    public void queryRange(String attribute, int from, int to, Handler<AsyncResult<Collection<Value>>> handler) {
-        handler.handle(result(db.fieldNames().stream()
-                .map(key -> context.toValue(db.getJsonObject(key)))
-                .filter(item -> super.queryRange(item, attribute, from, to))
-                .collect(Collectors.toList())));
+    private void dirty() {
+        dirty.set(true);
     }
 }
