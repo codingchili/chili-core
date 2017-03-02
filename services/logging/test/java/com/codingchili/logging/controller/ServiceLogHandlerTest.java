@@ -30,9 +30,4 @@ public class ServiceLogHandlerTest extends SharedLogHandlerTest {
         });
         handler = new ServiceLogHandler<>(context);
     }
-
-    @After
-    public void tearDown(TestContext test) {
-        context.vertx().close(test.asyncAssertSuccess());
-    }
 }
