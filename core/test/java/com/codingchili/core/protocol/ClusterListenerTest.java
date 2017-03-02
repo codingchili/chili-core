@@ -8,8 +8,8 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.context.CoreException;
+import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.testing.ContextMock;
 import com.codingchili.core.testing.EmptyRequest;
 

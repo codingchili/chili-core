@@ -25,7 +25,7 @@ import com.codingchili.core.testing.ContextMock;
 public class CachedFileStoreTest {
     private static final String TEST_DIRECTORY = CoreStrings.testDirectory("CachedFileStore");
     private static final String TEST_FILE_ABSOLUTE = CoreStrings.testFile("CachedFileStore", "test.txt");
-    private static final String TEST_FILE = "/test.txt";
+    private static final String TEST_FILE = "test.txt";
     private static final String TEST_FILE_TRAVERSAL = "../TraversalTestFile.txt";
     private Vertx vertx;
 

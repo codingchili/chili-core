@@ -1,14 +1,14 @@
 package com.codingchili.core.security;
 
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
 import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
 import com.codingchili.core.configuration.system.ValidatorSettings;
-import com.codingchili.core.protocol.exception.RequestValidationException;
 import com.codingchili.core.files.Configurations;
+import com.codingchili.core.protocol.exception.RequestValidationException;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
@@ -97,8 +97,17 @@ public class ValidatorTest {
         }
     }
 
+    @Test
+    public void testToPlainText(TestContext test) {
+        String[] texts = {"!@#$%^&*()_?\\[]{}"};
+
+        for (String text : texts) {
+            test.assertTrue(plaintext(validator.toPlainText(text)));
+        }
+    }
+
     private String getMessage(String message) throws RequestValidationException {
-        return validate(new JsonObject().put(ID_MESSAGE, message)).getString(ID_MESSAGE);
+        return validate(new JsonObject().put(PROTOCOL_MESSAGE, message)).getString(PROTOCOL_MESSAGE);
     }
 
     private String getUser(String user) throws RequestValidationException {

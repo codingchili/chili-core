@@ -5,7 +5,8 @@ import io.vertx.core.VertxOptions;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static com.codingchili.core.configuration.CoreStrings.ERROR_CLUSTERING_REQUIRED;

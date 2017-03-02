@@ -35,7 +35,6 @@ public class LauncherIT {
         context.vertx().close(test.asyncAssertSuccess());
     }
 
-    @Ignore
     @Test
     public void testFailNotVerticle(TestContext test) {
         async = test.async();

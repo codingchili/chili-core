@@ -1,6 +1,5 @@
 package com.codingchili.core.protocol;
 
-import io.vertx.core.Future;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -11,10 +10,8 @@ import org.junit.runner.RunWith;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
 import com.codingchili.core.testing.EmptyRequest;
-import com.codingchili.core.testing.RequestMock;
 
 import static com.codingchili.core.protocol.Access.*;
-import static com.codingchili.core.protocol.ResponseStatus.*;
 
 /**
  * @author Robin Duda

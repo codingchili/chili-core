@@ -11,6 +11,8 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.codingchili.core.testing.ContextMock;
+
 /**
  * @author Robin Duda
  *
@@ -43,7 +45,7 @@ public class HashHelperTest {
         HashMap<String, Boolean> salts = new HashMap<>();
 
         for (int i = 0; i < 1000; i++) {
-            String salt = new HashHelper(vertx).salt();
+            String salt = new HashHelper(new ContextMock(vertx)).salt();
 
             Assert.assertFalse(salts.containsKey(salt));
             salts.put(salt, true);
@@ -113,7 +115,7 @@ public class HashHelperTest {
     @Test
     public void checkHashWithWorkerPool(TestContext test) {
         Async async = test.async();
-        HashHelper hasher = new HashHelper(vertx);
+        HashHelper hasher = new HashHelper(new ContextMock(vertx));
         Future<String> future = Future.future();
 
         future.setHandler(hash -> {

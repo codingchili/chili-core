@@ -1,7 +1,7 @@
 package com.codingchili.core.context;
 
-import io.vertx.ext.unit.junit.VertxUnitRunner;
 import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
