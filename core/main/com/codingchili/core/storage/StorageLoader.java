@@ -1,6 +1,6 @@
 package com.codingchili.core.storage;
 
-import io.vertx.core.Future;
+import io.vertx.core.*;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreContext;
@@ -14,18 +14,25 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  *         <p>
  *         Loads the given storage subsystem.
  */
-public class StorageLoader {
+public class StorageLoader<Value extends Storable> {
     private CoreContext context;
     private String DB = DEFAULT_DB;
     private Class clazz;
     private String collection;
     private String plugin;
 
-    private StorageLoader() {
+    public StorageLoader() {
     }
 
-    private <Key, Value> void load(Future<AsyncStorage<Key, Value>> future) {
+    public StorageLoader(CoreContext context) {
+        this.context = context;
+    }
+
+    private void load(Handler<AsyncResult<AsyncStorage<Value>>> handler) {
         try {
+            Future<AsyncStorage<Value>> future = Future.future();
+            future.setHandler(handler);
+
             StorageContext<Value> storage = new StorageContext<Value>(context)
                     .setDB(DB)
                     .setCollection(collection)
@@ -34,7 +41,7 @@ public class StorageLoader {
 
             Class.forName(plugin)
                     .getConstructor(Future.class, StorageContext.class)
-                    .<Key, Value>newInstance(future, storage);
+                    .<Value>newInstance(future, storage);
 
         } catch (ReflectiveOperationException e) {
             context.console().log(CoreStrings.getStorageLoaderError(plugin, DB, collection), Level.SEVERE);
@@ -43,41 +50,43 @@ public class StorageLoader {
         }
     }
 
-    public static StorageLoader prepare() {
-        return new StorageLoader();
-    }
-
-    public StorageLoader withContext(CoreContext context) {
+    public StorageLoader<Value> withContext(CoreContext context) {
         this.context = context;
         return this;
     }
 
-    public StorageLoader withDB(String DB) {
+    public StorageLoader<Value> withDB(String DB) {
         this.DB = DB;
         return this;
     }
 
-    public StorageLoader withClass(Class clazz) {
-        this.clazz = clazz;
-        return this;
-    }
-
-    public StorageLoader withPlugin(Class plugin) {
-        this.plugin = plugin.getCanonicalName();
-        return this;
-    }
-
-    public StorageLoader withCollection(String collection) {
+    public StorageLoader<Value> withDB(String DB, String collection) {
+        this.DB = DB;
         this.collection = collection;
         return this;
     }
 
-    public StorageLoader withPlugin(String plugin) {
+    public StorageLoader<Value> withClass(Class clazz) {
+        this.clazz = clazz;
+        return this;
+    }
+
+    public StorageLoader<Value> withPlugin(Class plugin) {
+        this.plugin = plugin.getCanonicalName();
+        return this;
+    }
+
+    public StorageLoader<Value> withCollection(String collection) {
+        this.collection = collection;
+        return this;
+    }
+
+    public StorageLoader<Value> withPlugin(String plugin) {
         this.plugin = plugin;
         return this;
     }
 
-    public <Key, Value> void build(Future<AsyncStorage<Key, Value>> future) {
+    public void build(Handler<AsyncResult<AsyncStorage<Value>>> future) {
         checkIsSet(context, ID_CONTEXT);
         checkIsSet(DB, ID_DB);
         checkIsSet(clazz, ID_CLASS);
@@ -91,5 +100,39 @@ public class StorageLoader {
         if (object == null) {
             throw new RuntimeException(CoreStrings.getStorageLoaderMissingArgument(type));
         }
+    }
+
+    public StorageLoader<Value> mongodb(CoreContext context) {
+        return makeWith(context, MongoDBMap.class);
+    }
+
+    public StorageLoader<Value> elasticsearch(CoreContext context) {
+        return makeWith(context, ElasticMap.class);
+    }
+
+    public StorageLoader<Value> hazelcast(CoreContext context) {
+        return makeWith(context, HazelMap.class);
+    }
+
+    public StorageLoader<Value> indexed(CoreContext context) {
+        return makeWith(context, IndexedMap.class);
+    }
+
+    public StorageLoader<Value> jsonmap(CoreContext context) {
+        return makeWith(context, JsonMap.class);
+    }
+
+    public StorageLoader<Value> privatemap(CoreContext context) {
+        return makeWith(context, PrivateMap.class);
+    }
+
+    public StorageLoader<Value> sharedmap(CoreContext context) {
+        return makeWith(context, SharedMap.class);
+    }
+
+    private StorageLoader<Value> makeWith(CoreContext context, Class plugin) {
+        this.plugin = plugin.getCanonicalName();
+        this.context = context;
+        return this;
     }
 }
