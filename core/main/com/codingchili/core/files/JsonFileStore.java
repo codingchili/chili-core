@@ -74,7 +74,9 @@ public abstract class JsonFileStore {
     }
 
     private static String readFile(String path) throws IOException {
-        return new String(Files.readAllBytes(FileSystems.getDefault().getPath(currentPath() + CoreStrings.DIR_SEPARATOR + path)));
+        return new String(Files.readAllBytes(
+                FileSystems.getDefault().getPath(
+                        currentPath() + CoreStrings.DIR_SEPARATOR + path)));
     }
 
     /**
@@ -84,7 +86,7 @@ public abstract class JsonFileStore {
      * @throws RuntimeException on failure to write.
      */
     public static void writeObject(JsonObject json, String target) {
-        Path path = Paths.get(target);
+        Path path = Paths.get(target).toAbsolutePath();
         try {
             boolean pathExists = path.getParent().toFile().exists() || path.getParent().toFile().mkdirs();
 

@@ -10,9 +10,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.codingchili.core.configuration.CachedFileStoreSettings;
 import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.configuration.exception.ConfigurationMismatchException;
 import com.codingchili.core.configuration.exception.FileMissingException;
+import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.protocol.Serializer;
 
 /**
@@ -33,7 +33,6 @@ public class CachedFileStore<T> implements FileStoreListener {
      * @param settings the settings to use for the CachedFileStore, if conflicting with
      *                 any existing configuration for the given path the configuration is
      *                 ignored.
-     * @return A loaded CachedFileStore.
      */
     @SuppressWarnings("unchecked")
     public CachedFileStore(CoreContext context, CachedFileStoreSettings settings) {
@@ -52,6 +51,11 @@ public class CachedFileStore<T> implements FileStoreListener {
         this.files = stores.get(settings.getDirectory()).files;
     }
 
+    /**
+     * Initializes the filestore by loading the files in specified directory.
+     *
+     * @return a loaded cachedfilestore.
+     */
     public CachedFileStore<T> initialize() {
         try {
             if (files.size() == 0) {

@@ -13,10 +13,10 @@ import java.util.stream.Collectors;
 
 import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.configuration.system.*;
-import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.configuration.exception.FileReadException;
 import com.codingchili.core.configuration.exception.InvalidConfigurableException;
+import com.codingchili.core.configuration.system.*;
+import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.Serializer;
@@ -141,10 +141,12 @@ public abstract class Configurations {
      * Reads a configurable from the given path into loaded configurables. If the
      * given path does not resolve to a configuration file the configuration file
      * is instead instantiated from the given class.
-     * @param path the path to the class to instantiate.
+     *
+     * @param path  the path to the class to instantiate.
      * @param clazz the configurable class on the path.
      */
     private static <T extends Configurable> T load(String path, Class<T> clazz) {
+        boolean defaultsLoaded = false;
         try {
             T config;
             if (JsonFileStore.exists(path)) {
@@ -152,18 +154,21 @@ public abstract class Configurations {
                 config = Serializer.unpack(json, clazz);
             } else {
                 try {
-                    logger.onConfigurationDefaultsLoaded(path, clazz);
                     config = clazz.<T>newInstance();
+                    defaultsLoaded = true;
                 } catch (ReflectiveOperationException e) {
                     logger.onInvalidConfigurable(clazz);
                     throw new InvalidConfigurableException(clazz);
                 }
             }
-
             config.setPath(path);
-
             configs.put(path, new ConfigEntry(config, clazz));
-            logger.onFileLoaded(path);
+
+            if (defaultsLoaded) {
+                logger.onConfigurationDefaultsLoaded(path, clazz);
+            } else {
+                logger.onFileLoaded(path);
+            }
             return config;
         } catch (IOException e) {
             logger.onFileLoadError(CoreStrings.getFileReadError(path));
@@ -274,7 +279,6 @@ public abstract class Configurations {
     }
 
     /**
-     *
      * @return security settings from the cache.
      */
     public static SecuritySettings security() {
