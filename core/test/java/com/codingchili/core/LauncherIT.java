@@ -19,6 +19,7 @@ import com.codingchili.core.testing.ContextMock;
  *         <p>
  *         Tests for the launcher.
  */
+@Ignore("System.exit not supported by ci platform")
 @RunWith(VertxUnitRunner.class)
 public class LauncherIT {
     public static Async async;
@@ -35,7 +36,6 @@ public class LauncherIT {
         context.vertx().close(test.asyncAssertSuccess());
     }
 
-    @Ignore("System.exit not supported by ci platform")
     @Test
     public void testFailNotVerticle(TestContext test) {
         async = test.async();
