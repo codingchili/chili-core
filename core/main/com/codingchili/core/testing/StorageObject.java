@@ -1,21 +1,31 @@
 package com.codingchili.core.testing;
 
-import io.vertx.core.shareddata.Shareable;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.io.Serializable;
+import com.codingchili.core.storage.Storable;
 
 /**
  * @author Robin Duda
+ *         <p>
+ *         Test class to simulate a stored object.
  */
-public class StorageObject implements Shareable, Serializable {
-    private String id;
+public class StorageObject implements Storable {
+    public static final String NESTED_PREFIX = "nested.";
+    private String name;
     private Integer level;
+    private NestedObject nested;
+    private List<String> keywords = new ArrayList<>();
 
-    public StorageObject() {}
+    public StorageObject() {
+        keywords.add("Z");
+    }
 
-    public StorageObject(String id, Integer level) {
-        this.id = id;
+    public StorageObject(String name, Integer level) {
+        this();
+        this.name = name;
         this.level = level;
+        this.nested = new NestedObject(NESTED_PREFIX + name);
     }
 
     public Integer getLevel() {
@@ -26,21 +36,64 @@ public class StorageObject implements Shareable, Serializable {
         this.level = level;
     }
 
-    public String getId() {
-        return id;
+    public String id() {
+        return name;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public String getName() {
+        return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public NestedObject getNested() {
+        return nested;
+    }
+
+    public void setNested(NestedObject nested) {
+        this.nested = nested;
+    }
+
+    public List<String> getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(List<String> keywords) {
+        this.keywords = keywords;
+    }
 
     public String toString() {
-        return "id=" + id + " " + "level=" + level;
+        return "name=" + name + " " + "level=" + level;
     }
 
     @Override
     public boolean equals(Object other) {
-        return (other instanceof StorageObject) && (this.toString().equals(other.toString()));
+        return other instanceof StorageObject && (name.equals(((StorageObject) other).name));
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        return name.compareTo(((StorageObject) o).id());
+    }
+
+    @Override
+    public int compareToAttribute(Storable other, String attribute) {
+        StorageObject item = (StorageObject) other;
+
+        switch (attribute) {
+            case "level":
+                return level.compareTo(item.getLevel());
+            case "nested.name":
+                return nested.getName().compareTo(item.getNested().getName());
+            default:
+                return 0;
+        }
     }
 }

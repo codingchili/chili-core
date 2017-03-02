@@ -5,17 +5,19 @@ import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
+import io.vertx.core.json.DecodeException;
 import io.vertx.core.json.JsonObject;
 
 import com.codingchili.core.protocol.ClusterRequest;
 import com.codingchili.core.protocol.ResponseStatus;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
+import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
 
 /**
  * @author Robin Duda
- *
- * Mocked request object.
+ *         <p>
+ *         Mocked request object.
  */
 public abstract class RequestMock {
 
@@ -64,10 +66,24 @@ public abstract class RequestMock {
             if (message instanceof JsonObject) {
                 data = (JsonObject) message;
             } else if (message instanceof Buffer) {
-                data = ((Buffer) message).toJsonObject();
-            }
+                // normally buffers passed directly, for testing purposes
+                // its wrapped in a json object.
+                try {
+                    data = ((Buffer) message).toJsonObject();
 
-            listener.handle(data, ResponseStatus.valueOf(data.getString(PROTOCOL_STATUS)));
+                    if (!data.containsKey(PROTOCOL_STATUS)) {
+                        data.put(PROTOCOL_STATUS, ACCEPTED);
+                    }
+                } catch (DecodeException e) {
+                    data.put(ID_BUFFER, message.toString());
+                    data.put(PROTOCOL_STATUS, ACCEPTED);
+                }
+            }
+            listener.handle(data, responseStatusFromJson(data));
+        }
+
+        private ResponseStatus responseStatusFromJson(JsonObject json) {
+            return ResponseStatus.valueOf(json.getString(PROTOCOL_STATUS));
         }
 
 
