@@ -4,7 +4,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.*;
 
-import com.codingchili.core.files.Configurations;
+import com.codingchili.core.logging.ConsoleLogger;
+import com.codingchili.core.logging.Level;
 
 /**
  * @author Robin Duda
@@ -25,10 +26,15 @@ public abstract class CoreStrings {
     public static final String DIR_SEPARATOR = "/";
     public static final String DIR_CONFIG = "conf/";
     public static final String DIR_SYSTEM = "conf/system/";
-    private static final String DIR_TEST = "../common/testing/resources/";
+    private static final String DIR_TEST = "test/resources/";
     public static final String DIR_SERVICES = "conf/service/";
     public static final String EMPTY = "";
+    public static final String DIR_UP = "../";
 
+
+    // storage constants.
+    public static final String STORAGE_ARRAY = "[]";
+    public static final String DB_DIR = "db";
 
     public static final String EXT_JSON = ".json";
     public static final String ANY = "*";
@@ -56,7 +62,7 @@ public abstract class CoreStrings {
     public static final String ID_NAME = "name";
     public static final String ID_FILE = "file";
     public static final String ID_DATA = "data";
-    public static final String ID_MESSAGE = "message";
+    public static final String PROTOCOL_MESSAGE = "message";
     public static final String ID_VERSION = "version";
     public static final String ID_BYTES = "bytes";
     public static final String ID_PATH = "path";
@@ -82,6 +88,7 @@ public abstract class CoreStrings {
     public static final String ID_CONTEXT = "context";
     public static final String ID_USERNAME = "username";
     public static final String ID_PASSWORD = "password";
+    public static final String ID_STATUS = "status";
 
     // Node names.
     public static final String NODE_LOCAL = "local";
@@ -135,7 +142,7 @@ public abstract class CoreStrings {
     public static final String ERROR_ALREADY_INITIALIZED = "Error already initialized.";
     public static final String ERROR_STORAGE_EXCEPTION = "Failed to perform a storage operation.";
     public static final String CONFIGURED_BLOCKS = "Configured deployment blocks";
-    public static final String DIR_UP = "../";
+    public static final String ERROR_PATCH_RELOADED = "The patch version changed during patch session.";
 
     /**
      * Replaces tags in a logging message.
@@ -159,8 +166,19 @@ public abstract class CoreStrings {
         return "Failed to read file " + file + ".";
     }
 
+    public static String getDBIdentifier(String DB, String collection) {
+        return DB + "-" + collection;
+    }
+
     public static String getFileMissingError(String filename) {
-        return "Could not findByUsername file " + filename;
+        return "Could not find file " + filename;
+    }
+
+    public static String getDBPath(String file) {
+        if (!file.endsWith(EXT_JSON)) {
+            file += EXT_JSON;
+        }
+        return DB_DIR + DIR_SEPARATOR + file;
     }
 
     /**
@@ -171,9 +189,15 @@ public abstract class CoreStrings {
      * @return a relative path string that is the same on all filesystems.
      */
     public static String format(Path path, String root) {
-        return (path.toString()
-                .replace("\\", CoreStrings.DIR_SEPARATOR)
-                .replaceFirst(root, ""));
+        String format = (path.toString()
+                .replaceAll("\\\\", DIR_SEPARATOR))
+                .replace(root.replaceAll("\\\\", DIR_SEPARATOR), "");
+
+        if (format.startsWith(DIR_SEPARATOR)) {
+            return format.replaceFirst(DIR_SEPARATOR, "");
+        } else {
+            return format;
+        }
     }
 
     public static String getRemoteBlockNotConfigured(String remote, String block) {
@@ -213,7 +237,7 @@ public abstract class CoreStrings {
     }
 
     public static String getService(String config) {
-        return CoreStrings.DIR_SERVICES + DIR_SEPARATOR + config + EXT_JSON;
+        return CoreStrings.DIR_SERVICES + config + EXT_JSON;
     }
 
     public static String format(Path path) {
@@ -229,12 +253,21 @@ public abstract class CoreStrings {
         return "'" + string + "'";
     }
 
+    public static String testDirectory() {
+        return testDirectory("");
+    }
+
     public static String testDirectory(String name) {
-        if (Paths.get(DIR_TEST + name).toFile().exists()) {
-            return DIR_TEST + name;
-        } else {
-            return DIR_UP + DIR_TEST + name;
+        if (!Paths.get(DIR_TEST + name).toFile().exists()) {
+            new ConsoleLogger().log("Test directory not found at path '" +
+                    Paths.get(DIR_TEST + name).toAbsolutePath() + "'", Level.WARNING);
         }
+        return DIR_TEST + name;
+
+    }
+
+    public static String testFile(String name) {
+        return testDirectory() + DIR_SEPARATOR + name;
     }
 
     public static String testFile(String directory, String name) {

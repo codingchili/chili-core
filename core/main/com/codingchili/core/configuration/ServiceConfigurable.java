@@ -13,6 +13,13 @@ import com.codingchili.core.security.RemoteIdentity;
 public abstract class ServiceConfigurable extends BaseConfigurable {
     private RemoteIdentity identity = new RemoteIdentity("unconfigured", "unconfigured");
 
+    public ServiceConfigurable() {
+    }
+
+    public ServiceConfigurable(String path) {
+        super(path);
+    }
+
     @JsonIgnore
     public String host() {
         return identity.getHost();
