@@ -10,6 +10,7 @@ import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.security.Token;
 import com.codingchili.core.security.TokenFactory;
 import com.codingchili.core.storage.PrivateMap;
+import com.codingchili.core.storage.StorageLoader;
 
 /**
  * @author Robin Duda
@@ -20,7 +21,13 @@ public class ContextMock extends RegistryContext {
         super(vertx);
 
         this.realmFactory = new TokenFactory(new RealmRegistrySettings().getRealmSecret());
-        this.realms = new RealmDB(new PrivateMap<>(new StorageContext<>(vertx)));
+
+        new StorageLoader<RealmSettings>().privatemap(new StorageContext<>(vertx))
+                .withClass(RealmSettings.class)
+                .withDB("", "")
+                .build(result -> {
+                    this.realms = new RealmDB(result.result());
+                });
 
         RealmSettings realm = new RealmSettings()
                 .setName("realmName")

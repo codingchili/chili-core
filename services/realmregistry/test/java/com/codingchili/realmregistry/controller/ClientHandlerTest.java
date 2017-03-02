@@ -1,5 +1,6 @@
 package com.codingchili.realmregistry.controller;
 
+import com.codingchili.common.Strings;
 import com.codingchili.realmregistry.ContextMock;
 import com.codingchili.realmregistry.model.RealmList;
 import io.vertx.core.Vertx;
@@ -16,11 +17,10 @@ import java.util.concurrent.TimeUnit;
 
 import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.protocol.Serializer;
-import com.codingchili.core.security.*;
+import com.codingchili.core.security.Token;
+import com.codingchili.core.security.TokenFactory;
 import com.codingchili.core.testing.RequestMock;
 import com.codingchili.core.testing.ResponseListener;
-
-import com.codingchili.common.Strings;
 
 import static com.codingchili.common.Strings.*;
 
@@ -37,7 +37,7 @@ public class ClientHandlerTest {
     private ContextMock context;
 
     @Rule
-    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
 
     @Before
     public void setUp() throws IOException {

@@ -2,15 +2,15 @@ package com.codingchili.realmregistry.configuration;
 
 import com.codingchili.realmregistry.model.AsyncRealmStore;
 import com.codingchili.realmregistry.model.RealmDB;
-import io.vertx.core.*;
-import io.vertx.core.json.JsonObject;
+import io.vertx.core.Future;
+import io.vertx.core.Vertx;
 
 import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.Level;
 import com.codingchili.core.security.Token;
 import com.codingchili.core.security.TokenFactory;
-import com.codingchili.core.storage.*;
+import com.codingchili.core.storage.StorageLoader;
 
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.realmregistry.configuration.RealmRegistrySettings.PATH_REALMREGISTRY;
@@ -35,19 +35,14 @@ public class RegistryContext extends ServiceContext {
 
     public static void create(Future<RegistryContext> future, Vertx vertx) {
         RegistryContext context = new RegistryContext(vertx);
-        Future<AsyncStorage<String, RealmSettings>> realmFuture = Future.future();
 
-        realmFuture.setHandler(complete -> {
-            AsyncRealmStore realms = new RealmDB(realmFuture.result());
-            future.complete(new RegistryContext(realms, vertx));
-        });
-
-        StorageLoader.prepare()
-                .withContext(context)
+        new StorageLoader<RealmSettings>().mongodb(context)
                 .withCollection(COLLECTION_REALMS)
-                .withClass(JsonObject.class)
-                .withPlugin(MongoDBMap.class)
-                .build(realmFuture);
+                .withClass(RealmSettings.class)
+                .build(prepare -> {
+                    AsyncRealmStore realms = new RealmDB(prepare.result());
+                    future.complete(new RegistryContext(realms, vertx));
+                });
     }
 
     public AsyncRealmStore getRealmStore() {

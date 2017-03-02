@@ -16,8 +16,8 @@ import java.util.concurrent.TimeUnit;
 import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Token;
-import com.codingchili.core.security.TokenFactory;
-import com.codingchili.core.testing.*;
+import com.codingchili.core.testing.RequestMock;
+import com.codingchili.core.testing.ResponseListener;
 
 import static com.codingchili.common.Strings.*;
 
@@ -31,7 +31,7 @@ import static com.codingchili.common.Strings.*;
 public class ServerHandlerTest {
     private static final String REALM_NAME = "test-realm";
     private RealmSettings realmconfig = new RealmSettings();
-    private RealmHandler<RegistryContext> handler;
+    private ServerHandler<RegistryContext> handler;
     private ContextMock mock;
 
     @Rule
@@ -40,7 +40,7 @@ public class ServerHandlerTest {
     @Before
     public void setUp() {
         mock = new ContextMock(Vertx.vertx());
-        handler = new RealmHandler<>(mock);
+        handler = new ServerHandler<>(mock);
 
         realmconfig.setAuthentication(new Token(mock.getRealmFactory(), REALM_NAME));
         realmconfig.setName(REALM_NAME);

@@ -2,9 +2,7 @@ package com.codingchili.realmregistry.controller;
 
 import com.codingchili.realmregistry.configuration.RealmSettings;
 
-import com.codingchili.core.protocol.ClusterRequest;
-import com.codingchili.core.protocol.Request;
-import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.protocol.*;
 import com.codingchili.core.security.Token;
 
 import static com.codingchili.common.Strings.*;

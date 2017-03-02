@@ -9,19 +9,19 @@ import io.vertx.core.Future;
 import java.time.Instant;
 
 import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.protocol.*;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
-import com.codingchili.core.protocol.*;
 
 /**
  * @author Robin Duda
  *         Routing used to authenticate realms and generate realmName lists.
  */
-public class RealmHandler<T extends RegistryContext> extends AbstractHandler<T> {
+public class ServerHandler<T extends RegistryContext> extends AbstractHandler<T> {
     private final Protocol<RequestHandler<RealmRequest>> protocol = new Protocol<>();
     private final AsyncRealmStore realms;
 
-    public RealmHandler(T context) {
+    public ServerHandler(T context) {
         super(context, Strings.NODE_AUTHENTICATION_REALMS);
 
         realms = context.getRealmStore();

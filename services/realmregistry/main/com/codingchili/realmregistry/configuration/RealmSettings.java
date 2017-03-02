@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import com.codingchili.core.configuration.AttributeConfigurable;
 import com.codingchili.core.security.RemoteIdentity;
 import com.codingchili.core.security.Token;
+import com.codingchili.core.storage.Storable;
 
 /**
  * @author Robin Duda
@@ -14,7 +15,7 @@ import com.codingchili.core.security.Token;
  *         Contains the settings for a realmName.
  */
 @JsonIgnoreProperties({"instances"})
-public class RealmSettings extends AttributeConfigurable {
+public class RealmSettings extends AttributeConfigurable implements Storable {
     private RemoteIdentity identity;
     private ArrayList<String> classes = new ArrayList<>();
     private ArrayList<String> afflictions = new ArrayList<>();
@@ -31,6 +32,11 @@ public class RealmSettings extends AttributeConfigurable {
     private Boolean secure;
     private long updated;
     private String name;
+
+    @Override
+    public String id() {
+        return name;
+    }
 
     public String getRemote() {
         return remote;

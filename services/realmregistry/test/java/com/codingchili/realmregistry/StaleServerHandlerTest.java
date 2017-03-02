@@ -6,14 +6,17 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.time.Instant;
+import java.util.concurrent.TimeUnit;
 
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.storage.PrivateMap;
+import com.codingchili.core.storage.StorageLoader;
 
 
 /**
@@ -22,16 +25,26 @@ import com.codingchili.core.storage.PrivateMap;
  *         Tests the stale handler for realms.
  */
 @RunWith(VertxUnitRunner.class)
-public class StaleRealmHandlerTest {
+public class StaleServerHandlerTest {
     private static final String REALM_NAME = "REALM_NAME";
     private static final int STALE_TIMEOUT = 150;
-    private static AsyncRealmStore realms;
-    private static WritableContextMock context;
+    private AsyncRealmStore realms;
+    private WritableContextMock context;
+
+    @Rule
+    public Timeout timeout = new Timeout(3, TimeUnit.SECONDS);
 
     @Before
     public void setUp() {
         context = new WritableContextMock(Vertx.vertx());
+
         realms = new RealmDB(new PrivateMap<>(new StorageContext<>(context)));
+
+        new StorageLoader<RealmSettings>().privatemap(new StorageContext<>(context))
+                .withClass(RealmSettings.class)
+                .withDB("", "")
+                .build(store -> realms = new RealmDB(store.result()));
+
         context.timeout = STALE_TIMEOUT;
 
         StaleRealmHandler.watch(context, realms);
@@ -60,7 +73,7 @@ public class StaleRealmHandlerTest {
         Async async = test.async();
         setRealmStale();
 
-        context.timer(context.realmTimeout() + 100, handler -> {
+        context.timer(1000, handler -> {
             Future<RealmSettings> future = Future.future();
 
             future.setHandler(event -> {

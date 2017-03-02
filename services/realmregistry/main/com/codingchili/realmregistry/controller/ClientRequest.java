@@ -5,7 +5,7 @@ import com.codingchili.common.Strings;
 import com.codingchili.core.protocol.*;
 import com.codingchili.core.security.Token;
 
-import static com.codingchili.common.Strings.*;
+import static com.codingchili.common.Strings.ID_TOKEN;
 
 /**
  * @author Robin Duda

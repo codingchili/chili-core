@@ -1,12 +1,10 @@
 package com.codingchili.realmregistry.model;
 
+import com.codingchili.realmregistry.configuration.RegistryContext;
 import io.vertx.core.Future;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
-
-import com.codingchili.realmregistry.configuration.RegistryContext;
 
 /**
  * @author Robin Duda

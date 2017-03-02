@@ -3,13 +3,14 @@ package com.codingchili.realmregistry.model;
 import com.codingchili.realmregistry.configuration.RealmSettings;
 import io.vertx.core.Future;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.codingchili.core.security.Token;
 import com.codingchili.core.security.TokenFactory;
 import com.codingchili.core.storage.AsyncStorage;
+
+import static com.codingchili.core.configuration.CoreStrings.ID_NAME;
 
 
 /**
@@ -19,19 +20,16 @@ import com.codingchili.core.storage.AsyncStorage;
  *         Allows the deployment of multiple handlers.
  */
 public class RealmDB implements AsyncRealmStore {
-    private final AsyncStorage<String, RealmSettings> realms;
+    private final AsyncStorage<RealmSettings> realms;
 
-    public RealmDB(AsyncStorage<String, RealmSettings> map) {
+    public RealmDB(AsyncStorage<RealmSettings> map) {
         this.realms = map;
     }
 
     @Override
     public void getMetadataList(Future<List<RealmMetaData>> future) {
-
-        // FIXME: 2016-12-03 awaiting support for complex queries
-        realms.querySimilar("name", "*", map -> {
+        realms.query(ID_NAME).like("").execute(map -> {
             if (map.succeeded()) {
-
                 List<RealmMetaData> list = map.result().stream()
                         .map(RealmMetaData::new)
                         .collect(Collectors.toList());
@@ -72,7 +70,7 @@ public class RealmDB implements AsyncRealmStore {
 
     @Override
     public void put(Future<Void> future, RealmSettings realm) {
-        realms.put(realm.getName(), realm, map -> {
+        realms.put(realm, map -> {
             if (map.succeeded()) {
                 future.complete();
             } else {

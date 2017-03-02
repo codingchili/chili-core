@@ -1,6 +1,7 @@
 package com.codingchili.realmregistry.model;
 
 import com.codingchili.common.Strings;
+
 import com.codingchili.core.context.CoreException;
 
 /**

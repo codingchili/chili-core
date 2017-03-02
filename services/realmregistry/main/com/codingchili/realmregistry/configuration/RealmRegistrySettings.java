@@ -1,10 +1,11 @@
 package com.codingchili.realmregistry.configuration;
 
+import com.codingchili.common.Strings;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import com.codingchili.core.configuration.ServiceConfigurable;
-import com.codingchili.common.Strings;
 
 
 public class RealmRegistrySettings extends ServiceConfigurable {

@@ -1,9 +1,8 @@
 package com.codingchili.realmregistry.model;
 
 import com.codingchili.realmregistry.configuration.RealmSettings;
-import io.vertx.core.*;
+import io.vertx.core.Future;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.codingchili.core.security.Token;
@@ -30,7 +29,7 @@ public interface AsyncRealmStore {
 
     /**
      * Get all information available about a realm.
-     * @param realmName name of the realm to findByUsername.
+     * @param realmName name of the realm to find.
      */
     void get(Future<RealmSettings> future, String realmName);
 
