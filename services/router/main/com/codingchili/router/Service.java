@@ -1,13 +1,12 @@
 package com.codingchili.router;
 
-import io.vertx.core.*;
-
-import com.codingchili.core.protocol.ClusterNode;
-
 import com.codingchili.router.configuration.ListenerSettings;
 import com.codingchili.router.configuration.RouterContext;
 import com.codingchili.router.controller.RouterHandler;
 import com.codingchili.router.controller.transport.*;
+import io.vertx.core.*;
+
+import com.codingchili.core.protocol.ClusterNode;
 
 /**
  * @author Robin Duda

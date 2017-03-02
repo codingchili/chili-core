@@ -1,5 +1,9 @@
 package com.codingchili.router;
 
+import com.codingchili.common.Strings;
+import com.codingchili.router.configuration.*;
+import com.codingchili.router.controller.RouterHandler;
+import com.codingchili.router.model.WireType;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
@@ -15,13 +19,12 @@ import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.testing.RequestMock;
 import com.codingchili.core.testing.ResponseListener;
 
-import com.codingchili.router.configuration.RouterContext;
-import com.codingchili.router.controller.RouterHandler;
-
 import static com.codingchili.common.Strings.*;
 
 /**
  * @author Robin Duda
+ *         <p>
+ *         Tests for the router handler.
  */
 @RunWith(VertxUnitRunner.class)
 public class RouterHandlerTest {
@@ -58,6 +61,31 @@ public class RouterHandlerTest {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
             async.complete();
         });
+    }
+
+    @Test
+    public void testTimeout(TestContext test) {
+        Async async = test.async();
+        vertx.eventBus().consumer(NODE_WEBSERVER, handler -> {
+            // trigger a timeout.
+        });
+
+        handle(NODE_WEBSERVER, ((response, status) -> {
+            test.assertEquals(ResponseStatus.ERROR, status);
+            test.assertTrue(response.getString(PROTOCOL_MESSAGE).contains(new ListenerSettings().getTimeout() + ""));
+            async.complete();
+        }));
+    }
+
+    @Test
+    public void testMissingNode(TestContext test) {
+        Async async = test.async();
+
+        handle(NODE_WEBSERVER, ((response, status) -> {
+            test.assertEquals(ResponseStatus.ERROR, status);
+            test.assertEquals(response.getString(PROTOCOL_MESSAGE), Strings.getNodeNotReachable(NODE_WEBSERVER));
+            async.complete();
+        }));
     }
 
     @Test

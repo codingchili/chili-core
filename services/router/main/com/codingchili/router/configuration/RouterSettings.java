@@ -1,16 +1,18 @@
 package com.codingchili.router.configuration;
 
+import com.codingchili.router.model.WireType;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 
 import com.codingchili.core.configuration.ServiceConfigurable;
 
-import com.codingchili.router.model.WireType;
-
 import static com.codingchili.core.configuration.CoreStrings.getService;
 
 /**
  * @author Robin Duda
+ *
+ * Settings for the router node.
  */
 public class RouterSettings extends ServiceConfigurable {
     public static final String PATH_ROUTING = getService("routingserver");

@@ -1,6 +1,7 @@
 package com.codingchili.router.controller;
 
-import io.vertx.core.eventbus.DeliveryOptions;
+import com.codingchili.router.configuration.RouterContext;
+import io.vertx.core.eventbus.*;
 
 import com.codingchili.core.context.CoreException;
 import com.codingchili.core.protocol.*;
@@ -8,13 +9,13 @@ import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.RequestValidationException;
 import com.codingchili.core.security.Validator;
 
-import com.codingchili.router.configuration.RouterContext;
-
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.core.protocol.Access.AUTHORIZED;
 
 /**
  * @author Robin Duda
+ *
+ * Forwards messages to other nodes from an input transport.
  */
 public class RouterHandler<T extends RouterContext> extends AbstractHandler<T> {
     private final Protocol<RequestHandler<Request>> protocol = new Protocol<>();
@@ -48,7 +49,25 @@ public class RouterHandler<T extends RouterContext> extends AbstractHandler<T> {
             if (send.succeeded()) {
                 request.write(send.result().body());
             } else {
-                request.error(new RequestTimedOutException(request.target(), request.timeout()));
+                Throwable exception = send.cause();
+
+                if (exception instanceof ReplyException) {
+                    ReplyFailure status = ((ReplyException) exception).failureType();
+
+                    switch (status) {
+                        case TIMEOUT:
+                            request.error(new RequestTimedOutException(request));
+                            break;
+                        case NO_HANDLERS:
+                            request.error(new NodeNotReachableException(request));
+                            break;
+                        case RECIPIENT_FAILURE:
+                            request.error(new NodeFailedToAcknowledge(request));
+                            break;
+                    }
+                } else {
+                    request.error(send.cause());
+                }
             }
         });
     }

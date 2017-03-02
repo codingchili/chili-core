@@ -1,9 +1,8 @@
 package com.codingchili.router.controller.transport;
 
-import io.vertx.core.Vertx;
-
 import com.codingchili.router.configuration.RouterContext;
 import com.codingchili.router.configuration.RouterSettings;
+import io.vertx.core.Vertx;
 
 /**
  * @author Robin Duda

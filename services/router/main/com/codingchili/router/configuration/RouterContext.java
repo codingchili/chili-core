@@ -1,13 +1,12 @@
 package com.codingchili.router.configuration;
 
+import com.codingchili.router.model.WireType;
 import io.vertx.core.Vertx;
 
 import java.util.ArrayList;
 
 import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.files.Configurations;
-
-import com.codingchili.router.model.WireType;
 
 import static com.codingchili.router.configuration.RouterSettings.PATH_ROUTING;
 

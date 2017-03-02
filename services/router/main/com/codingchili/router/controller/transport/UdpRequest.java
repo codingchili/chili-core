@@ -6,7 +6,8 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.datagram.DatagramPacket;
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.protocol.*;
+import com.codingchili.core.protocol.BaseRequest;
+import com.codingchili.core.protocol.Serializer;
 
 /**
  * @author Robin Duda

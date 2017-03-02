@@ -1,15 +1,16 @@
 package com.codingchili.router.configuration;
 
+import com.codingchili.router.model.Endpoint;
+import com.codingchili.router.model.WireType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.vertx.core.http.HttpServerOptions;
 
 import java.util.HashMap;
 
-import com.codingchili.router.model.Endpoint;
-import com.codingchili.router.model.WireType;
-
 /**
  * @author Robin Duda
+ *
+ * Settings for transport listeners.
  */
 public class ListenerSettings {
     private HttpServerOptions httpOptions = new HttpServerOptions();

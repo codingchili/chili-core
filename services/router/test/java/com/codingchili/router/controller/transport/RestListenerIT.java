@@ -11,7 +11,6 @@ import org.junit.runner.RunWith;
 import com.codingchili.core.protocol.ResponseStatus;
 
 import static com.codingchili.common.Strings.*;
-import static com.codingchili.common.Strings.NODE_WEBSERVER;
 
 /**
  * @author Robin Duda
@@ -44,7 +43,7 @@ public class RestListenerIT extends TransportTestCases {
 
         mockNode(NODE_WEBSERVER);
 
-        sendRequest("/", (result, status) -> {
+        sendRequest(DIR_ROOT, (result, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
             context.assertEquals(NODE_WEBSERVER, result.getString(PROTOCOL_TARGET));
             async.complete();
@@ -75,10 +74,7 @@ public class RestListenerIT extends TransportTestCases {
 
     @Override
     void sendRequest(String target, ResponseListener listener, JsonObject data) {
-        data.put(PROTOCOL_TARGET, target);
-
-        vertx.createHttpClient().post(PORT, HOST, DIR_SEPARATOR, handler -> {
-
+        vertx.createHttpClient().post(PORT, HOST, target, handler -> {
             handler.bodyHandler(body -> handleBody(listener, body));
         }).end(data.encode());
     }

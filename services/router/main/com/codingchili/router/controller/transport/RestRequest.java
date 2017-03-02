@@ -1,5 +1,7 @@
 package com.codingchili.router.controller.transport;
 
+import com.codingchili.router.configuration.ListenerSettings;
+import com.codingchili.router.model.Endpoint;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
@@ -10,9 +12,6 @@ import io.vertx.ext.web.RoutingContext;
 import java.util.HashMap;
 
 import com.codingchili.core.protocol.*;
-
-import com.codingchili.router.configuration.ListenerSettings;
-import com.codingchili.router.model.Endpoint;
 
 import static com.codingchili.common.Strings.*;
 

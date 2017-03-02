@@ -1,7 +1,11 @@
 package com.codingchili.router.controller.transport;
 
+import com.codingchili.common.Strings;
 import com.codingchili.router.Service;
-import com.codingchili.router.configuration.*;
+import com.codingchili.router.configuration.ListenerSettings;
+import com.codingchili.router.configuration.RouterSettings;
+import com.codingchili.router.model.Endpoint;
+import com.codingchili.router.model.WireType;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
@@ -20,10 +24,6 @@ import java.util.concurrent.TimeUnit;
 
 import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.security.RemoteIdentity;
-
-import com.codingchili.router.model.Endpoint;
-import com.codingchili.router.model.WireType;
-import com.codingchili.common.Strings;
 
 import static com.codingchili.common.Strings.*;
 
@@ -112,7 +112,7 @@ public abstract class TransportTestCases {
     public void testAccepted(TestContext test) {
         Async async = test.async();
 
-        sendRequest(NODE_ROUTING, (result, status) -> {
+        sendRequest(DIR_ROOT, (result, status) -> {
             test.assertEquals(ResponseStatus.ACCEPTED, status);
             async.complete();
         }, new JsonObject()
