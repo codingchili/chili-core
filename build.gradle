@@ -33,6 +33,13 @@ subprojects {
     repositories {
         maven { url 'http://repo.maven.apache.org/maven2' }
     }
+
+    test {
+        testLogging {
+            events "failed"
+            exceptionFormat "short"
+        }
+    }
 }
 
 repositories {
