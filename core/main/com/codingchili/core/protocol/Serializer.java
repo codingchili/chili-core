@@ -4,11 +4,14 @@ package com.codingchili.core.protocol;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.io.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+
+import static com.codingchili.core.configuration.CoreStrings.STORAGE_ARRAY;
 
 /**
  * @author Robin Duda
@@ -64,8 +67,13 @@ public class Serializer {
      * @param clazz the class to instantiate.
      * @return an object specified by the type parameter.
      */
+    @SuppressWarnings("unchecked")
     public static <T> T unpack(JsonObject json, Class clazz) {
-        return (json == null) ? null : unpack(json.encode(), clazz);
+        if (clazz.isInstance(json)) {
+            return (T) json;
+        } else {
+            return (json == null) ? null : unpack(json.encode(), clazz);
+        }
     }
 
     /**
@@ -75,7 +83,44 @@ public class Serializer {
      * @return JsonObject
      */
     public static JsonObject json(Object object) {
-        return new JsonObject(pack(object));
+        if (object instanceof JsonObject) {
+            return (JsonObject) object;
+        } else {
+            return new JsonObject(pack(object));
+        }
+    }
+
+    /**
+     * Extract the value at the given path from the given jsonobject.
+     * The path is formatted by delimiting fields with a dot.
+     *
+     * @param json the json object to extract a value from
+     * @param path the path of the value, for example "person.name.last", last
+     *             may be an array or regular field. when extracting values
+     *             from arrays only plain fields are allowed, no objects in arrays.
+     * @param <T>  free class cast.
+     * @return the extracted value type casted to the type parameter.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T[] getValueByPath(JsonObject json, String path) {
+        String[] fields = path.replace(STORAGE_ARRAY, "").split("\\.");
+        String targetField = fields[fields.length - 1];
+
+        for (int i = 0; i < fields.length - 1; i++) {
+            json = json.getJsonObject(fields[i]);
+        }
+
+        Object targetValue = json.getValue(targetField);
+        if (targetValue instanceof JsonArray) {
+            Comparable[] objects = new Comparable[((JsonArray) targetValue).size()];
+
+            for (int i = 0; i < objects.length; i++) {
+                objects[i] = (Comparable) ((JsonArray) targetValue).getValue(i);
+            }
+            return (T[]) objects;
+        } else {
+            return (T[]) new Comparable[]{(Comparable) targetValue};
+        }
     }
 
     /**

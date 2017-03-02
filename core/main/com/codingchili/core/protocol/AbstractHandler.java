@@ -5,7 +5,6 @@ import io.vertx.core.Future;
 import com.codingchili.core.context.CoreException;
 import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.logging.Logger;
-import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
 
 /**

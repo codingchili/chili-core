@@ -1,11 +1,7 @@
 package com.codingchili.core.protocol;
 
-import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
@@ -103,7 +99,7 @@ public class Protocol<Handler extends RequestHandler> {
     public static Buffer response(ResponseStatus status, Throwable e) {
         return Buffer.buffer(new JsonObject()
                 .put(PROTOCOL_STATUS, status)
-                .put(ID_MESSAGE, e.getMessage())
+                .put(PROTOCOL_MESSAGE, e.getMessage())
                 .encode());
     }
 }

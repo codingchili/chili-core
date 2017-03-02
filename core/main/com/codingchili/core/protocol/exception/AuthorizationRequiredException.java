@@ -1,6 +1,7 @@
 package com.codingchili.core.protocol.exception;
 
 import com.codingchili.core.context.CoreException;
+import com.codingchili.core.protocol.ResponseStatus;
 
 import static com.codingchili.core.configuration.CoreStrings.ERROR_NOT_AUTHORIZED;
 
@@ -13,7 +14,6 @@ import static com.codingchili.core.configuration.CoreStrings.ERROR_NOT_AUTHORIZE
 public class AuthorizationRequiredException extends CoreException {
 
     public AuthorizationRequiredException() {
-        super(ERROR_NOT_AUTHORIZED);
+        super(ERROR_NOT_AUTHORIZED, ResponseStatus.UNAUTHORIZED);
     }
-
 }

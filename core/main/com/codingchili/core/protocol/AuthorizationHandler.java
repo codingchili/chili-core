@@ -1,6 +1,6 @@
 package com.codingchili.core.protocol;
 
-import java.util.*;
+import java.util.HashMap;
 
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;

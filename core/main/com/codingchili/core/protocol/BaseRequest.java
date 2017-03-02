@@ -1,6 +1,7 @@
 package com.codingchili.core.protocol;
 
 import com.codingchili.core.context.CoreException;
+import com.codingchili.core.protocol.exception.UnmappedException;
 import com.codingchili.core.security.Token;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
@@ -12,7 +13,7 @@ import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
  * Base request class, extend this class for new transports.
  */
 public abstract class BaseRequest implements Request {
-    private static final String UNDEFINED = "webserver.node";
+    public static final String TARGET_UNDEFINED = "webserver.node";
 
     @Override
     public void accept() {
@@ -24,7 +25,7 @@ public abstract class BaseRequest implements Request {
         if (exception instanceof CoreException) {
             send(((CoreException) exception).status(), exception);
         } else {
-            send(ResponseStatus.ERROR, exception);
+            send(ResponseStatus.ERROR, new UnmappedException());
         }
     }
 
@@ -43,7 +44,7 @@ public abstract class BaseRequest implements Request {
         String target = data().getString(PROTOCOL_TARGET);
 
         if (target == null) {
-            target = UNDEFINED;
+            target = TARGET_UNDEFINED;
         }
         return target;
     }

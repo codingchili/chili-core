@@ -2,6 +2,7 @@ package com.codingchili.core.protocol.exception;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreException;
+import com.codingchili.core.protocol.ResponseStatus;
 
 /**
  * @author Robin Duda
@@ -10,6 +11,6 @@ import com.codingchili.core.context.CoreException;
  */
 public class RequestPayloadSizeException extends CoreException {
     public RequestPayloadSizeException() {
-        super(CoreStrings.ERROR_REQUEST_SIZE_TOO_LARGE);
+        super(CoreStrings.ERROR_REQUEST_SIZE_TOO_LARGE, ResponseStatus.BAD);
     }
 }

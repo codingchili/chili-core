@@ -4,9 +4,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.security.Token;
-
-import static com.codingchili.core.configuration.CoreStrings.*;
+import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_STATUS;
 
 /**
  * @author Robin Duda

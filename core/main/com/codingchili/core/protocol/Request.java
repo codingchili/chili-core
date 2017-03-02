@@ -2,7 +2,6 @@ package com.codingchili.core.protocol;
 
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.context.CoreException;
 import com.codingchili.core.security.Token;
 
 /**
