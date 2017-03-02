@@ -1,6 +1,8 @@
 package com.codingchili.core.security;
 
-public class Account {
+import com.codingchili.core.storage.Storable;
+
+public class Account implements Storable {
     private String username;
     private String password;
     private String email;

@@ -8,18 +8,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.codingchili.core.configuration.BaseConfigurable;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.AuthenticationDependency;
 import com.codingchili.core.configuration.system.SecuritySettings;
-import com.codingchili.core.configuration.BaseConfigurable;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.files.JsonFileStore;
 import com.codingchili.core.logging.Logger;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.files.Configurations.security;
-import static com.codingchili.core.protocol.Serializer.json;
-import static com.codingchili.core.protocol.Serializer.unpack;
+import static com.codingchili.core.protocol.Serializer.*;
 
 /**
  * @author Robin Duda
