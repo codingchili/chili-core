@@ -1,16 +1,17 @@
 package com.codingchili.logging.controller;
 
+import com.codingchili.logging.configuration.LogContext;
 import io.vertx.core.json.JsonObject;
 
 import com.codingchili.core.protocol.Request;
-
-import com.codingchili.logging.configuration.LogContext;
 
 import static com.codingchili.common.Strings.*;
 
 
 /**
  * @author Robin Duda
+ *
+ * Log handler for log messages incoming from services.
  */
 public class ServiceLogHandler<T extends LogContext> extends AbstractLogHandler<T> {
 
@@ -18,6 +19,7 @@ public class ServiceLogHandler<T extends LogContext> extends AbstractLogHandler<
         super(context, NODE_LOGGING);
     }
 
+    @Override
     protected void log(Request request) {
         JsonObject logdata = request.data();
         String node = logdata.getString(LOG_NODE);
@@ -27,7 +29,6 @@ public class ServiceLogHandler<T extends LogContext> extends AbstractLogHandler<
         if (!NODE_LOGGING.equals(node) && context().consoleEnabled()) {
             console.log(logdata);
         }
-
-        elastic.log(logdata);
+        store.log(logdata);
     }
 }

@@ -1,14 +1,14 @@
 package com.codingchili.logging;
 
 
-import io.vertx.core.*;
-
-import com.codingchili.core.protocol.ClusterNode;
-import com.codingchili.core.context.Deploy;
-
 import com.codingchili.logging.configuration.LogContext;
 import com.codingchili.logging.controller.ClientLogHandler;
 import com.codingchili.logging.controller.ServiceLogHandler;
+import io.vertx.core.*;
+
+import com.codingchili.core.context.Deploy;
+import com.codingchili.core.context.SystemContext;
+import com.codingchili.core.protocol.ClusterNode;
 
 /**
  * @author Robin Duda
@@ -24,13 +24,12 @@ public class Service extends ClusterNode {
 
     @Override
     public void start(Future<Void> start) {
-        LogContext context = new LogContext(vertx);
+        LogContext context = new LogContext(new SystemContext(vertx));
 
         for (int i = 0; i < settings.getHandlers(); i++) {
             Deploy.service(new ServiceLogHandler<>(context));
             Deploy.service(new ClientLogHandler<>(context));
         }
-
         start.complete();
     }
 }

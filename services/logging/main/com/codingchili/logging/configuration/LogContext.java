@@ -1,22 +1,36 @@
 package com.codingchili.logging.configuration;
 
-import io.vertx.core.Vertx;
-
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.security.Token;
 import com.codingchili.core.security.TokenFactory;
-
-import com.codingchili.core.context.ServiceContext;
+import com.codingchili.core.storage.*;
 
 import static com.codingchili.logging.configuration.LogServerSettings.PATH_LOGSERVER;
 
 /**
  * @author Robin Duda
+ *         <p>
+ *         Context used by logging handlers.
  */
 public class LogContext extends ServiceContext {
+    private AsyncStorage<JsonItem> storage;
 
-    public LogContext(Vertx vertx) {
-        super(vertx);
+    public LogContext(CoreContext context) {
+        super(context);
+
+        // Logging output.
+        new StorageLoader<JsonItem>(context)
+                .withPlugin(service().getPlugin())
+                .withClass(JsonItem.class)
+                .withDB(service().getDb())
+                .withCollection(service().getCollection())
+                .build(result -> storage = result.result());
+    }
+
+    public AsyncStorage<JsonItem> storage() {
+        return storage;
     }
 
     public LogServerSettings service() {
@@ -29,13 +43,5 @@ public class LogContext extends ServiceContext {
 
     public boolean verifyToken(Token token) {
         return new TokenFactory(service().getSecret()).verifyToken(token);
-    }
-
-    public boolean elasticEnabled() {
-        return service().getElastic().getEnabled();
-    }
-
-    public ElasticSettings elasticSettings() {
-        return service().getElastic();
     }
 }

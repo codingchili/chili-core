@@ -1,7 +1,9 @@
 package com.codingchili.logging.configuration;
 
-import com.codingchili.core.configuration.ServiceConfigurable;
 import com.codingchili.common.Strings;
+
+import com.codingchili.core.configuration.ServiceConfigurable;
+import com.codingchili.core.storage.JsonMap;
 
 /**
  * @author Robin Duda
@@ -9,9 +11,15 @@ import com.codingchili.common.Strings;
  */
 public class LogServerSettings extends ServiceConfigurable {
     public static final String PATH_LOGSERVER = Strings.getService("logserver");
-    private ElasticSettings elastic = new ElasticSettings();
     private byte[] secret = new byte[] {0x53,0x48};
     private Boolean console = true;
+    private String db = "logging";
+    private String collection = "events";
+    private String plugin = JsonMap.class.getCanonicalName();
+
+    public LogServerSettings() {
+        this.path = PATH_LOGSERVER;
+    }
 
     public Boolean getConsole() {
         return console;
@@ -29,11 +37,27 @@ public class LogServerSettings extends ServiceConfigurable {
         this.secret = secret;
     }
 
-    public ElasticSettings getElastic() {
-        return elastic;
+    public String getDb() {
+        return db;
     }
 
-    protected void setElastic(ElasticSettings elastic) {
-        this.elastic = elastic;
+    public void setDb(String db) {
+        this.db = db;
+    }
+
+    public String getCollection() {
+        return collection;
+    }
+
+    public void setCollection(String collection) {
+        this.collection = collection;
+    }
+
+    public String getPlugin() {
+        return plugin;
+    }
+
+    public void setPlugin(String plugin) {
+        this.plugin = plugin;
     }
 }
