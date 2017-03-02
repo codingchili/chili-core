@@ -17,6 +17,7 @@ import static com.codingchili.core.configuration.CoreStrings.ERROR_CLUSTERING_RE
  *
  * Tests the clusternode class to require clustering.
  */
+@Ignore("Disable tests until the travis build passes.")
 @RunWith(VertxUnitRunner.class)
 public class ClusterNodeIT {
     private Vertx vertx;
@@ -36,7 +37,6 @@ public class ClusterNodeIT {
         }
     }
 
-    @Ignore("Disable while memory constraint in travis are being figured out.")
     @Test
     public void testVertxClusteredOk(TestContext test) {
         Async async = test.async();
