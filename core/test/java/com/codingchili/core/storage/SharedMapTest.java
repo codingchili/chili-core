@@ -6,7 +6,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.storage.PrivateMap;
 import com.codingchili.core.testing.MapTestCases;
 
 /**
@@ -16,11 +15,11 @@ import com.codingchili.core.testing.MapTestCases;
  *         storage subsystems are implemented using the StorageLoader.
  */
 @RunWith(VertxUnitRunner.class)
-public class PrivateMapTest extends MapTestCases {
+public class SharedMapTest extends MapTestCases {
 
     @Before
     public void setUp(TestContext test) {
-        super.setUp(test, PrivateMap.class);
+        super.setUp(test, SharedMap.class);
     }
 
     @After

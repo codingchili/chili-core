@@ -14,16 +14,17 @@ import com.codingchili.core.testing.MapTestCases;
  *         Tests for the storage providers in core. Reuse these tests when new
  *         storage subsystems are implemented using the StorageLoader.
  */
+@Ignore("Resuires running elasticsearch server.")
 @RunWith(VertxUnitRunner.class)
 public class ElasticMapIT extends MapTestCases {
     private static final int ELASTIC_REFRESH = 1200;
 
     public ElasticMapIT() {
         /**
-         * sets a delay between initializing the database and starting the tests.
+         * sets a STARTUP_DELAY between initializing the database and starting the tests.
          * This is required as elasticsearch is near-real-time only.
          */
-        delay = ELASTIC_REFRESH;
+        STARTUP_DELAY = ELASTIC_REFRESH;
     }
 
     @Before
@@ -37,8 +38,7 @@ public class ElasticMapIT extends MapTestCases {
     }
 
     /**
-     * elasticsearch is near-realtime which means that clear
-     * does not return realtime results.
+     * elasticsearch is near-realtime which means that clear does not return realtime results.
      */
     @Override
     @Test
@@ -49,10 +49,19 @@ public class ElasticMapIT extends MapTestCases {
             test.assertTrue(clear.succeeded());
 
             context.timer(ELASTIC_REFRESH, event -> store.size(size -> {
-                test.assertEquals(0, size.result());
-                test.assertTrue(size.succeeded());
+                test.assertFalse(size.succeeded(), "should fail to count on missing index.");
                 async.complete();
             }));
         });
+    }
+
+    @Ignore("Searching with case sensitivity is not supported for ElasticSearch.")
+    @Override
+    public void testCaseSensitivityEqualsNotIgnored(TestContext test) {
+    }
+
+    @Ignore("Querying nested fields cannot be combined with sorting, without loading field-data into memory.")
+    @Override
+    public void testSortByNestedField(TestContext test) {
     }
 }

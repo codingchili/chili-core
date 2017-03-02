@@ -1,25 +1,32 @@
 package com.codingchili.core.storage;
 
-import io.vertx.core.*;
+import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
+
+import java.util.concurrent.TimeUnit;
 
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.SystemContext;
 
 /**
  * @author Robin Duda
- *
- * Tests the loading of the available storage plugins.
+ *         <p>
+ *         Tests the loading of the available storage plugins.
  */
 @RunWith(VertxUnitRunner.class)
 public class StorageLoaderIT {
     private static CoreContext context;
     private static final String TEST_MAP = "test";
     private static final String TEST_COLLECTION = "collection";
+
+    @Rule
+    public Timeout timeout = new Timeout(8, TimeUnit.SECONDS);
 
     @BeforeClass
     public static void setUp(TestContext test) {
@@ -31,6 +38,11 @@ public class StorageLoaderIT {
         });
     }
 
+    @AfterClass
+    public static void tearDown(TestContext test) {
+        context.vertx().close(test.asyncAssertSuccess());
+    }
+
     @Test
     public void testLoadLocalAsyncMap(TestContext test) {
         loadStoragePlugin(test.async(), PrivateMap.class);
@@ -39,7 +51,11 @@ public class StorageLoaderIT {
     @Test
     public void testLoadJsonMap(TestContext test) {
         loadStoragePlugin(test.async(), JsonMap.class);
+    }
 
+    @Test
+    public void testLoadIndexedMap(TestContext test) {
+        loadStoragePlugin(test.async(), IndexedMap.class);
     }
 
     @Test
@@ -66,16 +82,17 @@ public class StorageLoaderIT {
     }
 
     private void loadStoragePlugin(Async async, Class plugin) {
-        Future<AsyncStorage<String, String>> future = Future.future();
-
-        future.setHandler(completed -> async.complete());
-
-        StorageLoader.prepare()
-                .withContext(context)
+        new StorageLoader<StorableString>(context)
                 .withPlugin(plugin)
-                .withDB(TEST_MAP)
-                .withCollection(TEST_COLLECTION)
-                .withClass(PrivateMapTest.class)
-                .build(future);
+                .withDB(TEST_MAP, TEST_COLLECTION)
+                .withClass(StorableString.class)
+                .build(storage -> async.complete());
+    }
+
+    private class StorableString implements Storable {
+        @Override
+        public String id() {
+            return "";
+        }
     }
 }

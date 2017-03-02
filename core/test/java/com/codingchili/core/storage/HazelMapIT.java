@@ -35,17 +35,19 @@ public class HazelMapIT extends MapTestCases {
         vertx.close(test.asyncAssertSuccess());
     }
 
+    @After
+    @Override
+    public void tearDown(TestContext test) {
+        // prevent shutting down the vx instance.
+    }
+
     @Before
     public void setUp(TestContext test) {
         super.setUp(test.async(), HazelMap.class, vertx);
     }
 
-    @After
-    public void tearDown(TestContext test) {
-        Async async = test.async();
-
-        store.clear(result -> {
-            async.complete();
-        });
+    @Test
+    public void test(TestContext test) {
+        super.testQueryNestedArray(test);
     }
 }
