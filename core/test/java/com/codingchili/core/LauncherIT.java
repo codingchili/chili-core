@@ -35,6 +35,7 @@ public class LauncherIT {
         context.vertx().close(test.asyncAssertSuccess());
     }
 
+    @Ignore("System.exit not supported by ci platform")
     @Test
     public void testFailNotVerticle(TestContext test) {
         async = test.async();
