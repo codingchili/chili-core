@@ -1,11 +1,10 @@
 package com.codingchili.social;
 
+import com.codingchili.social.configuration.SocialContext;
+import com.codingchili.social.controller.SocialHandler;
 import io.vertx.core.Future;
 
 import com.codingchili.core.protocol.ClusterNode;
-
-import com.codingchili.social.configuration.SocialContext;
-import com.codingchili.social.controller.SocialHandler;
 
 public class Service extends ClusterNode {
 

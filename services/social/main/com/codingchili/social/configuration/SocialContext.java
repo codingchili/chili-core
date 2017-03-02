@@ -2,9 +2,8 @@ package com.codingchili.social.configuration;
 
 import io.vertx.core.Vertx;
 
-import com.codingchili.core.files.Configurations;
-
 import com.codingchili.core.context.ServiceContext;
+import com.codingchili.core.files.Configurations;
 
 import static com.codingchili.social.configuration.SocialSettings.PATH_SOCIAL;
 

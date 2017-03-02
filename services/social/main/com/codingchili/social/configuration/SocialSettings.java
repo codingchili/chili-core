@@ -1,7 +1,8 @@
 package com.codingchili.social.configuration;
 
-import com.codingchili.core.configuration.ServiceConfigurable;
 import com.codingchili.common.Strings;
+
+import com.codingchili.core.configuration.ServiceConfigurable;
 
 /**
  * @author Robin Duda
