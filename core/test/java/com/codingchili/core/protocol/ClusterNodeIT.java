@@ -6,6 +6,7 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -35,6 +36,7 @@ public class ClusterNodeIT {
         }
     }
 
+    @Ignore("Disable while memory constraint in travis are being figured out.")
     @Test
     public void testVertxClusteredOk(TestContext test) {
         Async async = test.async();
