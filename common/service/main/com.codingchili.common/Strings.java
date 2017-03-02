@@ -116,4 +116,12 @@ public abstract class Strings extends CoreStrings {
     public static String getTimeOutEcxeption(String target, int timeout) {
         return "Timed out after waiting for  " + timeout + "(ms) for address: " + target;
     }
+
+    public static String getNodeNotReachable(String target) {
+        return "The remote node '" + target + "' is currently not available.";
+    }
+
+    public static String getNodeFailedToAcknowledge(String target) {
+        return "The remote node '" + target + "' did not acknowledge the message.";
+    }
 }

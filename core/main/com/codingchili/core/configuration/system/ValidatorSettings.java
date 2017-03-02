@@ -5,8 +5,7 @@ import java.util.Map;
 
 import com.codingchili.core.configuration.*;
 
-import static com.codingchili.core.security.RegexAction.REJECT;
-import static com.codingchili.core.security.RegexAction.REPLACE;
+import static com.codingchili.core.security.RegexAction.*;
 
 /**
  * @author Robin Duda

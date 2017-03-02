@@ -7,38 +7,64 @@ package com.codingchili.core.configuration.system;
  */
 public class RemoteStorage {
     private String host = "localhost";
-    private String db_name = "DEFAULT_DB";
+    private String database = "CORE_DB";
     private Integer port = 27017;
 
-    public RemoteStorage(String host, int port, String db_name) {
+    // Indicates that a jsonmap should persist its contents to disk.
+    private boolean persisted = true;
+    private int persistInterval = 250;
+
+    public RemoteStorage(String host, int port, String database) {
         this.host = host;
         this.port = port;
-        this.db_name = db_name;
+        this.database = database;
     }
 
-    public RemoteStorage() {}
-
-    public String getDb_name() {
-        return db_name;
+    public RemoteStorage() {
     }
 
-    public void setDb_name(String db_name) {
-        this.db_name = db_name;
+    public boolean isPersisted() {
+        return persisted;
+    }
+
+    public RemoteStorage setPersisted(boolean persisted) {
+        this.persisted = persisted;
+        return this;
+    }
+
+    public String getDatabase() {
+        return database;
+    }
+
+    public RemoteStorage setDatabase(String database) {
+        this.database = database;
+        return this;
     }
 
     public String getHost() {
         return host;
     }
 
-    public void setHost(String host) {
+    public RemoteStorage setHost(String host) {
         this.host = host;
+        return this;
     }
 
     public Integer getPort() {
         return port;
     }
 
-    public void setPort(Integer port) {
+    public RemoteStorage setPort(Integer port) {
         this.port = port;
+        return this;
+    }
+
+    public int getPersistInterval() {
+        return persistInterval;
+    }
+
+    public RemoteStorage setPersistInterval(int persistInterval) {
+        this.persistInterval = persistInterval;
+        return this;
     }
 }

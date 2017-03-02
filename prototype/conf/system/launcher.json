@@ -2,14 +2,14 @@
   "version": "CORE-1.0.0-PR",
   "blocks": {
     "default": [
-      "com.codingchili.logging.Service",
-      "com.codingchili.authentication.Service",
-      "com.codingchili.patching.Service",
-      "com.codingchili.realm.Service",
-      "com.codingchili.router.Service",
-      "com.codingchili.social.Service",
-      "com.codingchili.website.Service",
-      "com.codingchili.realmregistry.Service"
+      "com.codingchili.services.logging.Service",
+      "com.codingchili.services.authentication.Service",
+      "com.codingchili.services.patching.Service",
+      "com.codingchili.services.realm.Service",
+      "com.codingchili.services.router.Service",
+      "com.codingchili.services.social.Service",
+      "com.codingchili.services.website.Service",
+      "com.codingchili.services.realmregistry.Service"
     ],
     "router": [
       "com.codingchili.router.Service"

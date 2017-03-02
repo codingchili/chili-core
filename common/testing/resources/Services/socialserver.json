@@ -1,7 +1,0 @@
-{
-  "identity" : {
-    "node" : "social.node",
-    "host" : "server.1"
-  },
-  "message" : "hello world!!!"
-}

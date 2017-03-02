@@ -125,10 +125,12 @@
       "target": "selected",
       "modifier": [
         {
-          "modifies": "health",
+          "modifies": "target",
           "attribute": "health",
-          "value": 1.0,
-          "heal": true
+          "using": {
+            "attribute": "spell",
+            "amplifier": 1.0
+          }
         }
       ],
       "condition": {
