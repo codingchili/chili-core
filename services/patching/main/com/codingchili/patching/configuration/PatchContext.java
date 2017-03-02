@@ -1,14 +1,13 @@
 package com.codingchili.patching.configuration;
 
+import com.codingchili.patching.model.PatchKeeper;
 import io.vertx.core.Vertx;
 
 import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.files.Configurations;
 
-import com.codingchili.patching.model.PatchKeeper;
-
-import static com.codingchili.patching.configuration.PatchServerSettings.PATH_PATCHSERVER;
 import static com.codingchili.common.Strings.*;
+import static com.codingchili.patching.configuration.PatchServerSettings.PATH_PATCHSERVER;
 
 /**
  * @author Robin Duda

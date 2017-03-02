@@ -1,8 +1,7 @@
 package com.codingchili.patching;
 
-import io.vertx.core.Vertx;
-
 import com.codingchili.patching.configuration.PatchContext;
+import io.vertx.core.Vertx;
 
 /**
  * @author Robin Duda

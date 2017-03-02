@@ -1,9 +1,9 @@
 package com.codingchili.patching.model;
 
+import com.codingchili.patching.configuration.PatchNotes;
+
 import java.util.ArrayList;
 import java.util.Collection;
-
-import com.codingchili.patching.configuration.PatchNotes;
 
 /**
  * @author Robin Duda

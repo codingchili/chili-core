@@ -1,12 +1,11 @@
 package com.codingchili.patching;
 
-import io.vertx.core.*;
-
-import com.codingchili.core.protocol.ClusterNode;
-import com.codingchili.core.context.Deploy;
-
 import com.codingchili.patching.configuration.PatchContext;
 import com.codingchili.patching.controller.PatchHandler;
+import io.vertx.core.*;
+
+import com.codingchili.core.context.Deploy;
+import com.codingchili.core.protocol.ClusterNode;
 
 /**
  * @author Robin Duda

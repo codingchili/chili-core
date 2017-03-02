@@ -1,19 +1,20 @@
 package com.codingchili.patching.controller;
 
-import com.codingchili.core.context.CoreException;
-import com.codingchili.core.configuration.exception.FileMissingException;
-import com.codingchili.core.protocol.*;
-
 import com.codingchili.patching.configuration.PatchContext;
 import com.codingchili.patching.model.PatchKeeper;
 import com.codingchili.patching.model.PatchReloadedException;
 
+import com.codingchili.core.configuration.exception.FileMissingException;
+import com.codingchili.core.context.CoreException;
+import com.codingchili.core.protocol.*;
+
 import static com.codingchili.common.Strings.*;
-import static com.codingchili.core.protocol.Access.AUTHORIZED;
-import static com.codingchili.core.protocol.Access.PUBLIC;
+import static com.codingchili.core.protocol.Access.*;
 
 /**
  * @author Robin Duda
+ *
+ * Handles patching requests.
  */
 public class PatchHandler<T extends PatchContext> extends AbstractHandler<T> {
     private final Protocol<RequestHandler<PatchRequest>> protocol = new Protocol<>();

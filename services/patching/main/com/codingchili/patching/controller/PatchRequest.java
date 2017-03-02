@@ -1,17 +1,19 @@
 package com.codingchili.patching.controller;
 
+import com.codingchili.patching.model.PatchFile;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.codingchili.core.protocol.ClusterRequest;
 import com.codingchili.core.protocol.Request;
 
-import com.codingchili.patching.model.PatchFile;
-
 import static com.codingchili.common.Strings.*;
 
 /**
  * @author Robin Duda
+ *
+ * A request to the patch service.
  */
 class PatchRequest extends ClusterRequest {
     private static final String MAX_VERSION = "999999999999999999999";
@@ -25,7 +27,11 @@ class PatchRequest extends ClusterRequest {
     }
 
     public String file() {
-        return data().getString(ID_FILE);
+        String file = data().getString(ID_FILE);
+        if (file.startsWith(DIR_SEPARATOR)) {
+            file = file.replace(DIR_SEPARATOR, "");
+        }
+        return file;
     }
 
     public String version() {

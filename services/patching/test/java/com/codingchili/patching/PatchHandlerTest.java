@@ -1,5 +1,7 @@
 package com.codingchili.patching;
 
+import com.codingchili.patching.configuration.PatchContext;
+import com.codingchili.patching.controller.PatchHandler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -17,10 +19,6 @@ import com.codingchili.core.security.RemoteIdentity;
 import com.codingchili.core.testing.RequestMock;
 import com.codingchili.core.testing.ResponseListener;
 
-import com.codingchili.patching.configuration.PatchContext;
-import com.codingchili.patching.controller.PatchHandler;
-import com.codingchili.common.Strings;
-
 import static com.codingchili.common.Strings.*;
 
 
@@ -32,7 +30,7 @@ import static com.codingchili.common.Strings.*;
 
 @RunWith(VertxUnitRunner.class)
 public class PatchHandlerTest {
-    private static final String TEST_FILE = "/file.html";
+    private static final String TEST_FILE = "file.html";
     private static final String MAX_VERSION = "99999999";
     private static final String MISSING_FILE = "missing-file";
     private static final String MIN_VERSION = "-1";
@@ -51,7 +49,7 @@ public class PatchHandlerTest {
         PatchContext provider = new ContextMock(vertx) {
             @Override
             public String directory() {
-                return testDirectory("Services/patcher");
+                return testDirectory();
             }
 
             @Override
@@ -72,7 +70,7 @@ public class PatchHandlerTest {
     public void testGetPatchInfo(TestContext context) {
         Async async = context.async();
 
-        handle(Strings.PATCH_IDENTIFIER, (response, status) -> {
+        handle(PATCH_IDENTIFIER, (response, status) -> {
 
             context.assertTrue(response.containsKey(ID_NAME));
             context.assertTrue(response.containsKey(ID_VERSION));
@@ -88,7 +86,7 @@ public class PatchHandlerTest {
     public void testGetPatchData(TestContext context) {
         Async async = context.async();
 
-        handle(Strings.PATCH_DATA, (response, status) -> {
+        handle(PATCH_DATA, (response, status) -> {
             context.assertTrue(response.containsKey(ID_FILES));
             context.assertTrue(response.containsKey(ID_NAME));
             context.assertTrue(response.containsKey(ID_VERSION));
@@ -100,7 +98,7 @@ public class PatchHandlerTest {
     public void testGetGameInfo(TestContext context) {
         Async async = context.async();
 
-        handle(Strings.PATCH_GAME_INFO, (response, status) -> {
+        handle(PATCH_GAME_INFO, (response, status) -> {
             context.assertTrue(response.containsKey(ID_CONTENT));
             context.assertTrue(response.containsKey(ID_TITLE));
             context.assertEquals(ResponseStatus.ACCEPTED, status);
@@ -113,7 +111,7 @@ public class PatchHandlerTest {
     public void testGetGameNews(TestContext context) {
         Async async = context.async();
 
-        handle(Strings.PATCH_NEWS, (response, status) -> {
+        handle(PATCH_NEWS, (response, status) -> {
             JsonArray list = response.getJsonArray(ID_LIST);
 
             context.assertTrue(list.size() == 1);
@@ -127,7 +125,7 @@ public class PatchHandlerTest {
     public void testDownloadPatchFiles(TestContext context) {
         Async async = context.async();
 
-        handle(Strings.PATCH_DOWNLOAD, (response, status) -> {
+        handle(PATCH_DOWNLOAD, (response, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
             context.assertNotNull(response.getBinary(ID_BYTES));
             context.assertNotNull(response.getLong(ID_MODIFIED));
@@ -142,7 +140,7 @@ public class PatchHandlerTest {
     public void testWebseedFile(TestContext context) {
         Async async = context.async();
 
-        handle(Strings.PATCH_WEBSEED, (response, status) -> {
+        handle(PATCH_WEBSEED, (response, status) -> {
             context.assertEquals("/**", response.getString(ID_BUFFER));
             context.assertEquals(ResponseStatus.ACCEPTED, status);
             async.complete();
@@ -159,7 +157,7 @@ public class PatchHandlerTest {
     public void testDownloadPatchFileOutdatedVersion(TestContext context) {
         Async async = context.async();
 
-        handle(Strings.PATCH_DOWNLOAD, (response, status) -> {
+        handle(PATCH_DOWNLOAD, (response, status) -> {
             context.assertEquals(ResponseStatus.CONFLICT, status);
 
             async.complete();
@@ -170,10 +168,10 @@ public class PatchHandlerTest {
     public void testDownloadMissingFile(TestContext context) {
         Async async = context.async();
 
-        handle(Strings.PATCH_DOWNLOAD, (response, status) -> {
+        handle(PATCH_DOWNLOAD, (response, status) -> {
 
-            context.assertEquals("Could not findByUsername file missing-file", response.getString(ID_MESSAGE));
-            context.assertEquals(ResponseStatus.ERROR, status);
+            context.assertEquals("Could not find file missing-file", response.getString(PROTOCOL_MESSAGE));
+            context.assertEquals(ResponseStatus.MISSING, status);
 
             async.complete();
         }, getDownloadFile(MISSING_FILE).put(ID_VERSION, MAX_VERSION));

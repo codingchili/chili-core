@@ -1,5 +1,8 @@
 package com.codingchili.patching.model;
 
+import com.codingchili.common.Strings;
+import com.codingchili.patching.configuration.PatchContext;
+import com.codingchili.patching.configuration.PatchNotes;
 import io.vertx.core.buffer.Buffer;
 
 import java.io.File;
@@ -13,13 +16,11 @@ import com.codingchili.core.configuration.exception.FileMissingException;
 import com.codingchili.core.files.CachedFileStore;
 import com.codingchili.core.protocol.Serializer;
 
-import com.codingchili.patching.configuration.PatchContext;
-import com.codingchili.patching.configuration.PatchNotes;
-import com.codingchili.common.Strings;
-
 
 /**
  * @author Robin Duda
+ *
+ * Handles patch files.
  */
 public class PatchKeeper<T extends PatchFile> extends CachedFileStore {
     private ConcurrentHashMap<String, PatchFile> files = new ConcurrentHashMap<>();
