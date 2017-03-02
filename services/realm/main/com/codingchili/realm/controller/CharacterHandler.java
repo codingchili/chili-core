@@ -1,12 +1,5 @@
 package com.codingchili.realm.controller;
 
-import io.vertx.core.Future;
-
-import java.util.*;
-
-import com.codingchili.core.context.CoreException;
-import com.codingchili.core.protocol.*;
-
 import com.codingchili.realm.configuration.RealmContext;
 import com.codingchili.realm.instance.configuration.InstanceContext;
 import com.codingchili.realm.instance.configuration.InstanceSettings;
@@ -14,6 +7,12 @@ import com.codingchili.realm.instance.controller.InstanceHandler;
 import com.codingchili.realm.instance.model.PlayerCharacter;
 import com.codingchili.realm.instance.model.PlayerClass;
 import com.codingchili.realm.model.*;
+import io.vertx.core.Future;
+
+import java.util.Collection;
+
+import com.codingchili.core.context.CoreException;
+import com.codingchili.core.protocol.*;
 
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
@@ -22,13 +21,13 @@ import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
  * @author Robin Duda
  *         Handles traveling between instances.
  */
-public class RealmHandler<T extends RealmContext> extends AbstractHandler<T> {
+public class CharacterHandler<T extends RealmContext> extends AbstractHandler<T> {
     private final Protocol<RequestHandler<RealmRequest>> protocol = new Protocol<>();
-    private boolean registered = false;
     private final AsyncCharacterStore characters;
+    private boolean registered = false;
 
 
-    public RealmHandler(T context) {
+    public CharacterHandler(T context) {
         super(context, context.address());
 
         characters = context.getCharacterStore();

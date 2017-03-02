@@ -1,7 +1,5 @@
 package com.codingchili.realm.controller;
 
-import io.vertx.core.json.JsonObject;
-
 import com.codingchili.core.protocol.*;
 import com.codingchili.core.security.Account;
 
@@ -32,12 +30,6 @@ class RealmRequest extends ClusterRequest {
 
     public Account getAccount() {
         return Serializer.unpack(data().getJsonObject(ID_ACCOUNT), Account.class);
-    }
-
-    public void error(Throwable exception) {
-        request.write(new JsonObject()
-                .put(PROTOCOL_STATUS, ResponseStatus.ERROR)
-                .put(ID_MESSAGE, exception.getMessage()));
     }
 
     public String instance() {

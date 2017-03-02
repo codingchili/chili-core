@@ -1,5 +1,7 @@
 package com.codingchili.realm.configuration;
 
+import com.codingchili.realm.instance.configuration.InstanceSettings;
+import com.codingchili.realm.instance.model.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.vertx.core.json.JsonArray;
@@ -16,11 +18,8 @@ import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.RemoteIdentity;
 import com.codingchili.core.security.Token;
 
-import com.codingchili.realm.instance.configuration.InstanceSettings;
-import com.codingchili.realm.instance.model.*;
-
-import static com.codingchili.core.files.Configurations.*;
 import static com.codingchili.common.Strings.*;
+import static com.codingchili.core.files.Configurations.*;
 
 /**
  * @author Robin Duda

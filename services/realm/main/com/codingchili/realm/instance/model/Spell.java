@@ -1,7 +1,7 @@
 package com.codingchili.realm.instance.model;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
 
 /**
  * @author Robin Duda

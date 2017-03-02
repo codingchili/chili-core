@@ -1,5 +1,6 @@
-package com.codingchili.realm;
+package com.codingchili.realm.model;
 
+import com.codingchili.realm.instance.model.*;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.junit.Timeout;
@@ -14,10 +15,7 @@ import com.codingchili.core.files.Configurations;
 import com.codingchili.core.files.JsonFileStore;
 import com.codingchili.core.protocol.Serializer;
 
-import com.codingchili.realm.instance.model.*;
-
-import static com.codingchili.core.configuration.CoreStrings.testDirectory;
-import static com.codingchili.core.configuration.CoreStrings.testFile;
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
@@ -31,7 +29,7 @@ public class ConfigurationsTest {
 
     @Test
     public void testReadList() throws IOException {
-        JsonFileStore.readList(testFile("Game", "affliction.json"));
+        JsonFileStore.readList(testFile("affliction.json"));
     }
 
     @Test
@@ -45,12 +43,12 @@ public class ConfigurationsTest {
 
     @Test
     public void readDirectoryObjects() throws IOException {
-        JsonFileStore.readDirectoryObjects(testDirectory("Game/class"));
+        JsonFileStore.readDirectoryObjects(testDirectory("class"));
     }
 
     @Test
     public void testReadAfflictions() throws IOException {
-        JsonArray afflictions = JsonFileStore.readList(testFile("Game/afflictions", "affliction.json"));
+        JsonArray afflictions = JsonFileStore.readList(testFile("affliction.json"));
 
         for (int i = 0; i < afflictions.size(); i++) {
             Serializer.unpack(afflictions.getJsonObject(i), Affliction.class);
@@ -61,7 +59,7 @@ public class ConfigurationsTest {
 
     @Test
     public void testReadPlayerClasses() throws IOException {
-        ArrayList<JsonObject> classes = JsonFileStore.readDirectoryObjects(testDirectory("Game/class"));
+        ArrayList<JsonObject> classes = JsonFileStore.readDirectoryObjects(testDirectory("class"));
 
         for (JsonObject player : classes) {
             Serializer.unpack(player, PlayerClass.class);
@@ -72,7 +70,7 @@ public class ConfigurationsTest {
 
     @Test
     public void testReadPlayerTemplate() throws IOException {
-        JsonObject template = JsonFileStore.readObject(testFile("Game", "character.json"));
+        JsonObject template = JsonFileStore.readObject(testFile("character.json"));
         PlayerCharacter player = Serializer.unpack(template, PlayerCharacter.class);
 
         Assert.assertNotNull(player);

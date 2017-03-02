@@ -1,10 +1,10 @@
 package com.codingchili.realm.instance.configuration;
 
+import com.codingchili.realm.instance.model.*;
+
 import java.util.ArrayList;
 
 import com.codingchili.core.configuration.BaseConfigurable;
-
-import com.codingchili.realm.instance.model.*;
 
 import static com.codingchili.common.Strings.*;
 

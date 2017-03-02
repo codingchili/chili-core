@@ -1,10 +1,9 @@
 package com.codingchili.realm.model;
 
-import io.vertx.core.*;
-
-import java.util.*;
-
 import com.codingchili.realm.instance.model.PlayerCharacter;
+import io.vertx.core.Future;
+
+import java.util.Collection;
 
 /**
  * @author Robin Duda
@@ -29,7 +28,7 @@ public interface AsyncCharacterStore {
      * Finds a single character.
      *
      * @param username the name of the account the character belongs to.
-     * @param character     the name of the character to findByUsername.
+     * @param character     the name of the character to find.
      */
     void findOne(Future<PlayerCharacter> future, String username, String character);
 

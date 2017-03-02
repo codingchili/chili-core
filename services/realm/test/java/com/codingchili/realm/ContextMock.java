@@ -1,19 +1,23 @@
 package com.codingchili.realm;
 
-import io.vertx.core.Vertx;
-
-import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.security.*;
-import com.codingchili.core.storage.PrivateMap;
-
 import com.codingchili.realm.configuration.RealmContext;
 import com.codingchili.realm.configuration.RealmSettings;
+import com.codingchili.realm.instance.model.PlayerCharacter;
 import com.codingchili.realm.instance.model.PlayerClass;
 import com.codingchili.realm.model.AsyncCharacterStore;
 import com.codingchili.realm.model.CharacterDB;
+import io.vertx.core.Vertx;
+
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.security.Token;
+import com.codingchili.core.security.TokenFactory;
+import com.codingchili.core.storage.PrivateMap;
+import com.codingchili.core.storage.StorageLoader;
 
 /**
  * @author Robin Duda
+ *         <p>
+ *         Context mock for realms.
  */
 public class ContextMock extends RealmContext {
     private RealmSettings realm = new RealmSettings();
@@ -28,7 +32,12 @@ public class ContextMock extends RealmContext {
 
         realm.getClasses().add(new PlayerClass().setName("class.name"));
 
-        characters = new CharacterDB(new PrivateMap<>(new StorageContext<>(this)));
+        new StorageLoader<PlayerCharacter>().privatemap(new StorageContext<PlayerCharacter>(vertx))
+                .withDB("", "")
+                .withClass(PlayerCharacter.class)
+                .build(storage -> {
+                    characters = new CharacterDB(storage.result());
+                });
     }
 
     @Override
@@ -36,7 +45,7 @@ public class ContextMock extends RealmContext {
         return characters;
     }
 
-    TokenFactory getClientFactory() {
+    public TokenFactory getClientFactory() {
         return new TokenFactory(realm.getTokenBytes());
     }
 

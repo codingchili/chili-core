@@ -5,8 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.codingchili.common.Strings.EXT_JSON;
-import static com.codingchili.common.Strings.PATH_REALM;
+import static com.codingchili.common.Strings.*;
 
 /**
  * @author Robin Duda

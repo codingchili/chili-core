@@ -1,5 +1,9 @@
 package com.codingchili.realm;
 
+import com.codingchili.common.Strings;
+import com.codingchili.realm.configuration.*;
+import com.codingchili.realm.controller.CharacterHandler;
+import com.codingchili.realm.model.RealmNotUniqueException;
 import io.vertx.core.Future;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
@@ -9,11 +13,6 @@ import java.io.IOException;
 import com.codingchili.core.context.Deploy;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.protocol.ClusterNode;
-
-import com.codingchili.realm.configuration.*;
-import com.codingchili.realm.controller.RealmHandler;
-import com.codingchili.realm.model.RealmNotUniqueException;
-import com.codingchili.common.Strings;
 
 import static com.codingchili.core.files.Configurations.system;
 import static com.codingchili.realm.configuration.RealmServerSettings.PATH_REALMSERVER;
@@ -53,7 +52,7 @@ public class Service extends ClusterNode {
                 Future<RealmContext> providerFuture = Future.future();
 
                 providerFuture.setHandler(provider -> {
-                    Deploy.service(new RealmHandler<>(provider.result()), deploy -> {
+                    Deploy.service(new CharacterHandler<>(provider.result()), deploy -> {
                         if (deploy.failed()) {
                             provider.result().onDeployRealmFailure(realm.getName());
                             throw new RuntimeException(deploy.cause());

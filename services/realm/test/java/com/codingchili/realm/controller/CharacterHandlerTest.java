@@ -1,8 +1,11 @@
-package com.codingchili.realm;
+package com.codingchili.realm.controller;
 
+import com.codingchili.common.Strings;
+import com.codingchili.realm.ContextMock;
+import com.codingchili.realm.instance.model.PlayerCharacter;
+import com.codingchili.realm.model.AsyncCharacterStore;
 import io.vertx.core.*;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
+import io.vertx.core.json.*;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
@@ -19,11 +22,6 @@ import com.codingchili.core.security.TokenFactory;
 import com.codingchili.core.testing.RequestMock;
 import com.codingchili.core.testing.ResponseListener;
 
-import com.codingchili.realm.controller.RealmHandler;
-import com.codingchili.realm.instance.model.PlayerCharacter;
-import com.codingchili.realm.model.AsyncCharacterStore;
-import com.codingchili.common.Strings;
-
 import static com.codingchili.common.Strings.*;
 
 /**
@@ -32,24 +30,24 @@ import static com.codingchili.common.Strings.*;
  */
 
 @RunWith(VertxUnitRunner.class)
-public class RealmHandlerTest {
+public class CharacterHandlerTest {
     private static final String USERNAME = "username";
     private static final String CHARACTER_NAME_DELETED = "character-deleted";
     private static final String CHARACTER_NAME = "character";
     private static final String CLASS_NAME = "class.name";
     private AsyncCharacterStore characters;
     private TokenFactory clientToken;
-    private RealmHandler handler;
+    private CharacterHandler handler;
     private ContextMock context;
 
     @Rule
-    public Timeout timeout = new Timeout(60, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(3, TimeUnit.SECONDS);
 
     @Before
     public void setUp(TestContext test) {
         Async async = test.async();
         context = new ContextMock(Vertx.vertx());
-        handler = new RealmHandler<>(context);
+        handler = new CharacterHandler<>(context);
         clientToken = context.getClientFactory();
         characters = context.getCharacterStore();
         createCharacters(async);

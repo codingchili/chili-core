@@ -1,25 +1,24 @@
 package com.codingchili.realm.configuration;
 
+import com.codingchili.realm.instance.configuration.InstanceSettings;
+import com.codingchili.realm.instance.model.PlayerCharacter;
+import com.codingchili.realm.instance.model.PlayerClass;
+import com.codingchili.realm.model.AsyncCharacterStore;
+import com.codingchili.realm.model.CharacterDB;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 
-import java.util.*;
+import java.util.ArrayList;
 
 import com.codingchili.core.context.*;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.Level;
 import com.codingchili.core.security.Token;
 import com.codingchili.core.security.TokenFactory;
-import com.codingchili.core.storage.*;
+import com.codingchili.core.storage.StorageLoader;
 
-import com.codingchili.realm.instance.configuration.InstanceSettings;
-import com.codingchili.realm.instance.model.PlayerCharacter;
-import com.codingchili.realm.instance.model.PlayerClass;
-import com.codingchili.realm.model.AsyncCharacterStore;
-import com.codingchili.realm.model.CharacterDB;
-
-import static com.codingchili.realm.configuration.RealmServerSettings.PATH_REALMSERVER;
 import static com.codingchili.common.Strings.*;
+import static com.codingchili.realm.configuration.RealmServerSettings.PATH_REALMSERVER;
 
 /**
  * @author Robin Duda
@@ -40,18 +39,12 @@ public class RealmContext extends ServiceContext {
     }
 
     public static void create(Future<RealmContext> future, RealmSettings realm, Vertx vertx) {
-        Future<AsyncStorage<String, PlayerCharacter>> create = Future.future();
-
-        create.setHandler(map -> {
-            future.complete(new RealmContext(new CharacterDB(map.result()), realm, vertx));
-        });
-
-        StorageLoader.prepare()
+        new StorageLoader<PlayerCharacter>().privatemap(new StorageContext<>(vertx))
                 .withClass(PlayerCharacter.class)
-                .withPlugin(PrivateMap.class)
                 .withCollection(COLLECTION_CHARACTERS)
-                .withContext(new StorageContext<>(vertx))
-                .build(create);
+                .build(prepare -> {
+                    future.complete(new RealmContext(new CharacterDB(prepare.result()), realm, vertx));
+                });
     }
 
     public ArrayList<EnabledRealm> getEnabled() {

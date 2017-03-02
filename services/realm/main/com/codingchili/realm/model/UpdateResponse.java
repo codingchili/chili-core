@@ -4,7 +4,8 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.protocol.*;
+import com.codingchili.core.protocol.ProtocolMessage;
+import com.codingchili.core.protocol.Serializer;
 
 import static com.codingchili.core.protocol.ResponseStatus.ERROR;
 

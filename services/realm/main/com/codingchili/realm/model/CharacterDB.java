@@ -1,12 +1,11 @@
 package com.codingchili.realm.model;
 
+import com.codingchili.realm.instance.model.PlayerCharacter;
 import io.vertx.core.Future;
 
 import java.util.Collection;
 
 import com.codingchili.core.storage.AsyncStorage;
-
-import com.codingchili.realm.instance.model.PlayerCharacter;
 
 import static com.codingchili.common.Strings.ID_ACCOUNT;
 
@@ -16,15 +15,15 @@ import static com.codingchili.common.Strings.ID_ACCOUNT;
  *         Storage for characters.
  */
 public class CharacterDB implements AsyncCharacterStore {
-    private final AsyncStorage<String, PlayerCharacter> characters;
+    private final AsyncStorage<PlayerCharacter> characters;
 
-    public CharacterDB(AsyncStorage<String, PlayerCharacter> map) {
+    public CharacterDB(AsyncStorage<PlayerCharacter> map) {
         this.characters = map;
     }
 
     @Override
     public void create(Future future, String username, PlayerCharacter character) {
-        characters.putIfAbsent(character.getName(), character, result -> {
+        characters.putIfAbsent(character, result -> {
             if (result.succeeded()) {
                 future.complete();
             } else {
@@ -35,7 +34,7 @@ public class CharacterDB implements AsyncCharacterStore {
 
     @Override
     public void findByUsername(Future<Collection<PlayerCharacter>> future, String username) {
-        characters.queryExact(ID_ACCOUNT, username, result -> {
+        characters.query(ID_ACCOUNT).startsWith(username).execute(result -> {
             if (result.succeeded()) {
                 future.complete(result.result());
             } else {

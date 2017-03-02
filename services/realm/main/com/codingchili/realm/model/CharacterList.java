@@ -1,9 +1,9 @@
 package com.codingchili.realm.model;
 
-import java.util.*;
-
 import com.codingchili.realm.configuration.RealmSettings;
 import com.codingchili.realm.instance.model.PlayerCharacter;
+
+import java.util.Collection;
 
 /**
  * @author Robin Duda

@@ -2,13 +2,18 @@ package com.codingchili.realm.model;
 
 import com.codingchili.common.Strings;
 
+import com.codingchili.core.context.CoreException;
+import com.codingchili.core.protocol.ResponseStatus;
+
 /**
  * @author Robin Duda
+ *
+ * Throw when an attempt to create a character that already exists occurs.
  */
-public class CharacterExistsException extends Exception {
+public class CharacterExistsException extends CoreException {
 
     public CharacterExistsException(String name) {
-        super(Strings.getCharacterExistsError(name));
+        super(Strings.getCharacterExistsError(name), ResponseStatus.CONFLICT);
     }
 
 }
