@@ -2,16 +2,19 @@ package com.codingchili.website.configuration;
 
 import io.vertx.core.Vertx;
 
-import com.codingchili.core.files.Configurations;
-import com.codingchili.core.protocol.Request;
+import java.nio.file.Paths;
 
 import com.codingchili.core.context.ServiceContext;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.protocol.Request;
 
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.website.configuration.WebserverSettings.PATH_WEBSERVER;
 
 /**
  * @author Robin Duda
+ *
+ * Context for the web server.
  */
 public class WebserverContext extends ServiceContext {
 
@@ -36,7 +39,7 @@ public class WebserverContext extends ServiceContext {
     }
 
     public String resources() {
-        return service().getResources();
+        return Paths.get(service().getResources()).toString();
     }
 
     public void onPageLoaded(Request request) {
