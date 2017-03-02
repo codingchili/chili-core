@@ -1,12 +1,11 @@
 package com.codingchili.authentication.model;
 
 import com.codingchili.authentication.configuration.AuthenticationContext;
+import com.codingchili.authentication.configuration.AuthenticationSettings;
 import io.vertx.core.Vertx;
 
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.storage.PrivateMap;
-
-import com.codingchili.authentication.configuration.AuthenticationSettings;
 
 
 /**
@@ -20,7 +19,7 @@ public class ContextMock extends AuthenticationContext {
         super(vertx);
         settings.setClientSecret("client-secret".getBytes());
 
-        accounts = new AccountDB(new PrivateMap<>(new StorageContext<>(this)), vertx);
+        accounts = new AccountDB(new PrivateMap<>(new StorageContext<>(this)), this);
     }
 
     @Override

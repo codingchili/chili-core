@@ -1,5 +1,8 @@
 package com.codingchili.authentication.controller;
 
+import com.codingchili.authentication.configuration.AuthenticationContext;
+import com.codingchili.authentication.model.AsyncAccountStore;
+import com.codingchili.authentication.model.ContextMock;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
@@ -15,12 +18,9 @@ import java.util.concurrent.TimeUnit;
 
 import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.protocol.Serializer;
-import com.codingchili.core.security.*;
+import com.codingchili.core.security.Account;
 import com.codingchili.core.testing.RequestMock;
 import com.codingchili.core.testing.ResponseListener;
-
-import com.codingchili.authentication.configuration.AuthenticationContext;
-import com.codingchili.authentication.model.*;
 
 import static com.codingchili.common.Strings.*;
 

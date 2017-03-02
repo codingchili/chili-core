@@ -1,12 +1,11 @@
 package com.codingchili.authentication;
 
+import com.codingchili.authentication.configuration.AuthenticationContext;
 import com.codingchili.authentication.controller.ClientHandler;
 import io.vertx.core.Future;
 
-import com.codingchili.core.protocol.ClusterNode;
 import com.codingchili.core.context.Deploy;
-
-import com.codingchili.authentication.configuration.AuthenticationContext;
+import com.codingchili.core.protocol.ClusterNode;
 
 /**
  * @author Robin Duda

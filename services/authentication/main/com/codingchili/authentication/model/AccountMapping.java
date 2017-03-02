@@ -1,14 +1,13 @@
 package com.codingchili.authentication.model;
 
-import java.io.Serializable;
-
 import com.codingchili.core.security.Account;
+import com.codingchili.core.storage.Storable;
 
 /**
  * @author Robin Duda
  *         Database mapping not shared outside storage.
  */
-public class AccountMapping implements Serializable {
+public class AccountMapping implements Storable {
     private String username;
     private String email;
     private String salt;
@@ -55,5 +54,10 @@ public class AccountMapping implements Serializable {
     public AccountMapping setEmail(String email) {
         this.email = email;
         return this;
+    }
+
+    @Override
+    public String id() {
+        return username;
     }
 }

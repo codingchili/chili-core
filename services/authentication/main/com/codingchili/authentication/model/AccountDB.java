@@ -1,7 +1,9 @@
 package com.codingchili.authentication.model;
 
-import io.vertx.core.*;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 
+import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.security.*;
 import com.codingchili.core.storage.AsyncStorage;
 import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
@@ -13,12 +15,12 @@ import com.codingchili.core.storage.exception.ValueMissingException;
  *         Account storage logic.
  */
 public class AccountDB implements AsyncAccountStore {
-    private final AsyncStorage<String, AccountMapping> accounts;
+    private final AsyncStorage<AccountMapping> accounts;
     private final HashHelper hasher;
 
-    public AccountDB(AsyncStorage<String, AccountMapping> map, Vertx vertx) {
+    public AccountDB(AsyncStorage<AccountMapping> map, CoreContext context) {
         this.accounts = map;
-        this.hasher = new HashHelper(vertx);
+        this.hasher = new HashHelper(context);
     }
 
     @Override
@@ -52,7 +54,7 @@ public class AccountDB implements AsyncAccountStore {
         hashing.setHandler(hash -> {
             mapping.setHash(hash.result());
 
-            accounts.putIfAbsent(account.getUsername(), mapping, map -> {
+            accounts.putIfAbsent(mapping, map -> {
                 if (map.succeeded()) {
                     future.complete(filter(account));
                 } else {

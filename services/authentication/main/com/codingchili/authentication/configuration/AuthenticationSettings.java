@@ -1,7 +1,8 @@
 package com.codingchili.authentication.configuration;
 
-import com.codingchili.core.configuration.ServiceConfigurable;
 import com.codingchili.common.Strings;
+
+import com.codingchili.core.configuration.ServiceConfigurable;
 
 
 public class AuthenticationSettings extends ServiceConfigurable {

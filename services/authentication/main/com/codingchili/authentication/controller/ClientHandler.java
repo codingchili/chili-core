@@ -1,7 +1,8 @@
 package com.codingchili.authentication.controller;
 
 import com.codingchili.authentication.configuration.AuthenticationContext;
-import com.codingchili.authentication.model.*;
+import com.codingchili.authentication.model.AsyncAccountStore;
+import com.codingchili.authentication.model.ClientAuthentication;
 import io.vertx.core.Future;
 
 import com.codingchili.core.context.CoreException;
@@ -9,6 +10,7 @@ import com.codingchili.core.protocol.*;
 import com.codingchili.core.security.Account;
 
 import static com.codingchili.common.Strings.*;
+import static com.codingchili.core.protocol.Access.AUTHORIZED;
 import static com.codingchili.core.protocol.Access.PUBLIC;
 
 /**
@@ -29,14 +31,10 @@ public class ClientHandler<T extends AuthenticationContext> extends AbstractHand
                 .use(ID_PING, Request::accept, PUBLIC);
     }
 
-    private Access authenticate(Request request) {
-        boolean authorized = context.verifyClientToken(request.token());
-        return (authorized) ? Access.AUTHORIZED : PUBLIC;
-    }
-
     @Override
     public void handle(Request request) throws CoreException {
-        protocol.get(authenticate(request), request.route()).handle(new ClientRequest(request));
+        Access access = (context.verifyClientToken(request.token())) ? AUTHORIZED : PUBLIC;
+        protocol.get(access, request.route()).handle(new ClientRequest(request));
     }
 
     private void register(ClientRequest request) {

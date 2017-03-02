@@ -1,16 +1,15 @@
 package com.codingchili.authentication.configuration;
 
-import io.vertx.core.*;
+import com.codingchili.authentication.model.*;
+import io.vertx.core.Future;
+import io.vertx.core.Vertx;
 
 import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.Level;
 import com.codingchili.core.security.Token;
 import com.codingchili.core.security.TokenFactory;
-import com.codingchili.core.storage.*;
-import com.codingchili.core.storage.MongoDBMap;
-
-import com.codingchili.authentication.model.*;
+import com.codingchili.core.storage.StorageLoader;
 
 import static com.codingchili.authentication.configuration.AuthenticationSettings.PATH_AUTHSERVER;
 import static com.codingchili.common.Strings.*;
@@ -33,19 +32,13 @@ public class AuthenticationContext extends ServiceContext {
 
     public static void create(Future<AuthenticationContext> future, Vertx vertx) {
         AuthenticationContext context = new AuthenticationContext(vertx);
-        Future<AsyncStorage<String, AccountMapping>> accountFuture = Future.future();
-
-        accountFuture.setHandler(initialization -> {
-            context.accounts = new AccountDB(accountFuture.result(), vertx);
-            future.complete(context);
-        });
-
-        StorageLoader.prepare()
-                .withContext(context)
+        new StorageLoader<AccountMapping>().mongodb(context)
                 .withCollection(COLLECTION_ACCOUNTS)
                 .withClass(AccountMapping.class)
-                .withPlugin(MongoDBMap.class)
-                .build(accountFuture);
+                .build(prepare -> {
+                    context.accounts = new AccountDB(prepare.result(), context);
+                    future.complete(context);
+                });
     }
 
     public AsyncAccountStore getAccountStore() {
