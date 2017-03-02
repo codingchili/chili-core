@@ -3,7 +3,7 @@ package com.codingchili.core.logging;
 import io.vertx.core.json.JsonObject;
 import org.fusesource.jansi.AnsiConsole;
 
-import java.time.*;
+import java.time.Instant;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.codingchili.core.context.CoreContext;

@@ -61,7 +61,7 @@ public abstract class DefaultLogger extends Handler implements Logger {
     @Override
     public void onAlreadyInitialized() {
         log(event(CoreStrings.LOG_ERROR, Level.WARNING)
-                .put(ID_MESSAGE, ERROR_ALREADY_INITIALIZED));
+                .put(PROTOCOL_MESSAGE, ERROR_ALREADY_INITIALIZED));
     }
 
     @Override
@@ -134,13 +134,13 @@ public abstract class DefaultLogger extends Handler implements Logger {
     @Override
     public void onConfigurationDefaultsLoaded(String path, Class<?> clazz) {
         log(event(CoreStrings.LOG_CONFIG_DEFAULTED, Level.WARNING)
-                .put(ID_MESSAGE, CoreStrings.getFileLoadDefaults(path, clazz)));
+                .put(PROTOCOL_MESSAGE, CoreStrings.getFileLoadDefaults(path, clazz)));
     }
 
     @Override
     public void onInvalidConfigurable(Class<?> clazz) {
         log(event(CoreStrings.LOG_CONFIGURATION_INVALID, Level.SEVERE)
-                .put(ID_MESSAGE, CoreStrings.getErrorInvalidConfigurable(clazz)));
+                .put(PROTOCOL_MESSAGE, CoreStrings.getErrorInvalidConfigurable(clazz)));
     }
 
     @Override
@@ -152,14 +152,14 @@ public abstract class DefaultLogger extends Handler implements Logger {
     @Override
     public Logger log(String line) {
         log(event(LOG_MESSAGE, level)
-                .put(ID_MESSAGE, line));
+                .put(PROTOCOL_MESSAGE, line));
         return this;
     }
 
     @Override
     public Logger log(String line, Level level) {
         log(event(LOG_MESSAGE, level)
-                .put(ID_MESSAGE, line));
+                .put(PROTOCOL_MESSAGE, line));
         return this;
     }
 
