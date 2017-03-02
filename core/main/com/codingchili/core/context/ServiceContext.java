@@ -4,7 +4,8 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 
 import com.codingchili.core.configuration.ServiceConfigurable;
-import com.codingchili.core.logging.*;
+import com.codingchili.core.logging.Logger;
+import com.codingchili.core.logging.RemoteLogger;
 import com.codingchili.core.security.RemoteIdentity;
 
 /**

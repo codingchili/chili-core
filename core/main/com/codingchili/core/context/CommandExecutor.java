@@ -6,7 +6,8 @@ import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.LauncherSettings;
 import com.codingchili.core.context.exception.NoSuchCommandException;
 import com.codingchili.core.files.Configurations;
-import com.codingchili.core.logging.*;
+import com.codingchili.core.logging.Level;
+import com.codingchili.core.logging.Logger;
 import com.codingchili.core.security.AuthenticationGenerator;
 
 import static com.codingchili.core.configuration.CoreStrings.*;

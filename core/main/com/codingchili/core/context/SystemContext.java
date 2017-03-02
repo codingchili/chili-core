@@ -5,6 +5,8 @@ import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.dropwizard.MetricsService;
 
+import java.util.UUID;
+
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.files.Configurations;
@@ -13,20 +15,20 @@ import com.codingchili.core.protocol.AbstractHandler;
 import com.codingchili.core.protocol.ClusterListener;
 import com.codingchili.core.security.RemoteIdentity;
 
+import static com.codingchili.core.configuration.CoreStrings.ID_SYSTEM;
+
 /**
  * @author Robin Duda
  *
- * Implementation of the CoreContext.
+ * Implementation of the CoreContext, each context gets its own worker pool.
  */
 public class SystemContext implements CoreContext {
     private final ConsoleLogger console;
+    private WorkerExecutor executor;
     protected Vertx vertx;
 
     SystemContext(CoreContext context) {
-        this.vertx = context.vertx();
-        this.console = new ConsoleLogger(this);
-
-        initialize();
+        this(context.vertx());
     }
 
     public SystemContext(Vertx vertx) {
@@ -37,6 +39,8 @@ public class SystemContext implements CoreContext {
     }
 
     private void initialize() {
+        executor = vertx.createSharedWorkerExecutor("systemcontext", system().getWorkerPoolSize());
+
         MetricsService metrics = MetricsService.create(vertx);
 
         periodic(this::getMetricTimer, CoreStrings.LOG_METRICS, handler -> {
@@ -127,6 +131,16 @@ public class SystemContext implements CoreContext {
     }
 
     @Override
+    public <T> void blocking(Handler<Future<T>> sync, Handler<AsyncResult<T>> result) {
+        blocking(sync, false, result);
+    }
+
+    @Override
+    public <T> void blocking(Handler<Future<T>> sync, boolean ordered, Handler<AsyncResult<T>> result) {
+        executor.executeBlocking(sync, ordered, result);
+    }
+
+    @Override
     public String handler() {
         return getClass().getSimpleName();
     }
@@ -147,7 +161,7 @@ public class SystemContext implements CoreContext {
 
     @Override
     public RemoteIdentity identity() {
-        return new RemoteIdentity(CoreStrings.ID_SYSTEM, CoreStrings.NODE_LOCAL);
+        return new RemoteIdentity(ID_SYSTEM, CoreStrings.NODE_LOCAL);
     }
 
 

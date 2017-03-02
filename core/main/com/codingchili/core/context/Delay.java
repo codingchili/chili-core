@@ -14,7 +14,7 @@ public abstract class Delay {
     private static CoreContext context;
 
     /**
-     * Initializes the delay system with a core context.
+     * Initializes the STARTUP_DELAY system with a core context.
      * @param context containing timer implementation to use when delaying.
      */
     public static void initialize(CoreContext context) {

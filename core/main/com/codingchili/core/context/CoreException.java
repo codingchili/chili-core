@@ -4,8 +4,9 @@ import com.codingchili.core.protocol.ResponseStatus;
 
 /**
  * @author Robin Duda
- *
- * Exceptions should extend this class to allow for catching all core-type exceptions.
+ *         <p>
+ *         Exceptions should extend this class to allow for catching all core-type exceptions.
+ *         Additionally, all classes extending CoreException must be safe to be forwarded to clients.
  */
 public class CoreException extends Exception {
     private ResponseStatus status = ResponseStatus.ERROR;

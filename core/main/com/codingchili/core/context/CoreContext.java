@@ -32,8 +32,8 @@ public interface CoreContext {
 
     /**
      * Set a periodic timer that uses a timersource to adjust interval during runtime.
-     * @param delay a timersource that may change delay during runtime.
-     * @param name the name of the periodic timer to log changes to delay configuration.
+     * @param delay a timersource that may change STARTUP_DELAY during runtime.
+     * @param name the name of the periodic timer to log changes to STARTUP_DELAY configuration.
      * @param handler the handler to be invoked when each interval ends.
      */
     void periodic(TimerSource delay, String name, Handler<Long> handler);
@@ -83,6 +83,26 @@ public interface CoreContext {
      * @param result the handler to be invoked on deployment completion.
      */
     void deploy(Verticle verticle, Handler<AsyncResult<String>> result);
+
+    /**
+     * Call to execute the given blocking handler on a worker thread that is
+     * scoped to the current context.
+     *
+     * @param blocking a method that is blocking, to be executed on worker thread.
+     * @param result   handler for the result of the blocking execution.
+     * @param <T>      type parameter.
+     */
+    <T> void blocking(Handler<Future<T>> blocking, Handler<AsyncResult<T>> result);
+
+    /**
+     * See {@link #blocking(Handler, Handler)}.
+     *
+     * @param <T> see {@link #blocking(Handler, Handler)}
+     * @param blocking see {@link #blocking(Handler, Handler)}
+     * @param ordered if true, indicates that the tasks must be completed in the same order as they are started.
+     * @param result see {@link #blocking(Handler, Handler)}
+     */
+    <T> void blocking(Handler<Future<T>> blocking, boolean ordered, Handler<AsyncResult<T>> result);
 
     /**
      * @return the identity of the service or system component owning the context.

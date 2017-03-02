@@ -3,6 +3,9 @@ package com.codingchili.core.context;
 import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 
+import java.util.UUID;
+
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.RemoteStorage;
 import com.codingchili.core.configuration.system.StorageSettings;
 import com.codingchili.core.files.Configurations;
@@ -18,8 +21,9 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  */
 public class StorageContext<Value> extends SystemContext {
     private Validator validator = new Validator();
-    private String DB;
-    private String collection;
+    private String identifier = "storage-" + UUID.randomUUID();
+    private String DB = "";
+    private String collection = "";
     private Class clazz;
     private String plugin;
 
@@ -42,7 +46,7 @@ public class StorageContext<Value> extends SystemContext {
      * @return get the storage settings for the current plugin.
      */
     public RemoteStorage storage() {
-        return settings().getStorage().get(plugin);
+        return settings().storage(plugin);
     }
 
     /**
@@ -98,6 +102,7 @@ public class StorageContext<Value> extends SystemContext {
 
     /**
      * get the name of the database used by the context.
+     *
      * @return the name of the database as a string
      */
     public String DB() {
@@ -106,6 +111,7 @@ public class StorageContext<Value> extends SystemContext {
 
     /**
      * get the name of the collection within the database used by the context.
+     *
      * @return the name of the collection as a string.
      */
     public String collection() {
@@ -126,6 +132,17 @@ public class StorageContext<Value> extends SystemContext {
         return settings().getStorage().get(plugin).getHost();
     }
 
+    public String dbPath() {
+        return CoreStrings.getDBPath(identifier());
+    }
+
+    /**
+     * Validates that the given string consists only of plaintext and is at least as
+     * long as the specified number of feedback-characters.
+     *
+     * @param comparable the text to check if plaintext
+     * @return true if the given comparable contains only plaintext
+     */
     public boolean validate(Comparable comparable) {
         return validator.plainText(comparable) && comparable.toString().length() >= minFeedbackChars();
     }
@@ -143,6 +160,7 @@ public class StorageContext<Value> extends SystemContext {
 
     /**
      * Called when a value has been expired by ttl.
+     *
      * @param key the id of the object that was expired.
      * @param ttl the time at which the object was set to expire.
      */
@@ -154,6 +172,7 @@ public class StorageContext<Value> extends SystemContext {
 
     /**
      * Called when a value failed to expire as it was not found.
+     *
      * @param key the id of the object that was expired.
      * @param ttl the time at which the object was set to expire.
      */
@@ -192,6 +211,7 @@ public class StorageContext<Value> extends SystemContext {
      */
     public StorageContext<Value> setCollection(String collection) {
         this.collection = collection;
+        updateIdentifier();
         return this;
     }
 
@@ -202,6 +222,7 @@ public class StorageContext<Value> extends SystemContext {
      */
     public StorageContext<Value> setDB(String DB) {
         this.DB = DB;
+        updateIdentifier();
         return this;
     }
 
@@ -213,6 +234,23 @@ public class StorageContext<Value> extends SystemContext {
      */
     public StorageContext<Value> setPlugin(String plugin) {
         this.plugin = plugin;
+        updateIdentifier();
         return this;
+    }
+
+    private void updateIdentifier() {
+        if (plugin != null) {
+            this.identifier = CoreStrings.getDBIdentifier(DB, collection);
+        }
+    }
+
+    /**
+     * Creates an identifier based on the plugin class name, the database name
+     * and the collection that this context is operating on.
+     *
+     * @return a somewhat unique string for this context.
+     */
+    public String identifier() {
+        return identifier;
     }
 }
