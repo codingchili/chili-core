@@ -23,7 +23,6 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  *         Tests for the storage providers in core. Reuse these tests when new
  *         storage subsystems are implemented using the StorageLoader.
  */
-@Ignore("Disable map test cases as travis seems to 137 during execution.")
 @RunWith(VertxUnitRunner.class)
 public class JsonMapTest extends MapTestCases {
     @Before
