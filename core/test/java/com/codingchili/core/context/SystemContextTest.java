@@ -8,6 +8,8 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.testing.ContextMock;
 
@@ -107,19 +109,19 @@ public class SystemContextTest {
     @Test
     public void testPeriodicIntervalChanged(TestContext test) {
         Async async = test.async();
-        int[] countdown = {3};
-        int[] interval = {25};
-
-        // executes once, timer changes, executes again, notices change.
-        context.periodic(() -> interval[0], "test", event -> {
-            interval[0] = 5000;
-            countdown[0]--;
-        });
+        AtomicInteger countdown = new AtomicInteger(3);
+        AtomicInteger interval = new AtomicInteger(50);
 
         // assert the periodic is only triggered twice.
-        context.timer(interval[0] * 3, event -> {
-            test.assertEquals(1, countdown[0]);
+        context.timer(400, event -> {
+            test.assertEquals(1, countdown.get());
             async.complete();
+        });
+
+        // executes once, timer changes, executes again, notices change.
+        context.periodic(interval::get, "test", event -> {
+            interval.set(1000);
+            countdown.decrementAndGet();
         });
     }
 
