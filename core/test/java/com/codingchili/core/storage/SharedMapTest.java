@@ -13,7 +13,6 @@ import com.codingchili.core.testing.MapTestCases;
  *         Tests for the storage providers in core. Reuse these tests when new
  *         storage subsystems are implemented using the StorageLoader.
  */
-@Ignore("Travis ignore")
 @RunWith(VertxUnitRunner.class)
 public class SharedMapTest extends MapTestCases {
 

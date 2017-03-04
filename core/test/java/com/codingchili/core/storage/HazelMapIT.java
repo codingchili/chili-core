@@ -16,7 +16,6 @@ import com.codingchili.core.testing.MapTestCases;
  *         Tests for the storage providers in core. Reuse these tests when new
  *         storage subsystems are implemented using the StorageLoader.
  */
-@Ignore("Ignore for travis")
 @RunWith(VertxUnitRunner.class)
 public class HazelMapIT extends MapTestCases {
     private static Vertx vertx;

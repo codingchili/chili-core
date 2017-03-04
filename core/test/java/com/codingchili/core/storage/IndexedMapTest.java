@@ -12,7 +12,6 @@ import com.codingchili.core.testing.MapTestCases;
  *         <p>
  *         Tests for the CQEngine indexed storage.
  */
-@Ignore("DIsable for travis.")
 @RunWith(VertxUnitRunner.class)
 public class IndexedMapTest extends MapTestCases {
 
