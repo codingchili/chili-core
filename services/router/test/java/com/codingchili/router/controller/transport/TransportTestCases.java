@@ -41,11 +41,11 @@ public abstract class TransportTestCases {
     private static final int MAX_REQUEST_BYTES = 256;
     private static final String ONE_CHAR = "x";
     private static final String DATA = "data";
-    private static RouterSettings settings;
-    private static ListenerSettings listener;
+    private RouterSettings settings;
+    private ListenerSettings listener;
     private ContextMock test;
     private WireType wireType;
-    Vertx vertx;
+    protected Vertx vertx;
 
     TransportTestCases(WireType wireType) {
         this.wireType = wireType;
@@ -55,7 +55,7 @@ public abstract class TransportTestCases {
     public Timeout timeout = new Timeout(15, TimeUnit.SECONDS);
 
     @Before
-    public void setUp(TestContext testContext) {
+    public  void setUp(TestContext testContext) {
         Async async = testContext.async();
 
         Vertx.clusteredVertx(new VertxOptions(), cluster -> {

@@ -19,7 +19,6 @@ import com.codingchili.core.context.SystemContext;
  *         <p>
  *         Tests the loading of the available storage plugins.
  */
-@Ignore("Test travis for issues with memory constraints")
 @RunWith(VertxUnitRunner.class)
 public class StorageLoaderIT {
     private static CoreContext context;
