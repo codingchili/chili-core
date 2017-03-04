@@ -1,31 +1,38 @@
 apply plugin: 'java'
 apply plugin: 'idea'
 
-version = "1.0-SNAPSHOT"
-libsDirName = '../prototype'
-
-tasks.withType(JavaCompile) {
-	options.encoding = 'UTF-8'
-}
+project.version = "1.0-SNAPSHOT"
+project.group = 'com.codingchili'
 
 subprojects {
     apply plugin: 'java'
     apply plugin: 'idea'
 
+    version = rootProject.version
+    group = rootProject.version
+
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
-    libsDirName = '../../../prototype/service'
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
 
     sourceSets {
         main {
             java {
-                srcDir 'main/'
+                srcDir 'main/java'
+            }
+            resources {
+                srcDir 'main/resources'
             }
         }
         test {
             java {
                 srcDir 'test/java'
+            }
+            resources {
+                srcDir 'test/resources'
             }
         }
     }
@@ -41,39 +48,24 @@ subprojects {
     }
 }
 
-repositories {
-    maven { url 'http://repo.maven.apache.org/maven2' }
-}
+task archiveZip(type: Zip, dependsOn: 'jar') {
+    baseName = 'prototype'
+    from fileTree('prototype')
 
-jar {
-    from {
-        (configurations.runtime).collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    }
-    manifest {
-        attributes 'Implementation-Title' : 'chili-core',
-                'Implementation-Version': version,
-                'Main-Class': 'com.codingchili.core.Launcher'
+    from (subprojects.collect {it.tasks.withType(Jar)}) {
+        into 'lib'
     }
 }
 
-subprojects.each { subproject -> evaluationDependsOn( subproject.path ) }
-
-jar.dependsOn subprojects.tasks['classes']
-jar {
-    baseName = 'core-full'
-    manifest {
-        attributes 'Main-Class': 'com.codingchili.core.Launcher'
+task copyTask(type: Copy, dependsOn: 'build') {
+    from (subprojects.collect {it.tasks.withType(Jar)}) {
+        into 'release'
     }
-    subprojects.each { subproject ->
-        from subproject.sourceSets.main.output.classesDir
-        from subproject.sourceSets.main.output.resourcesDir
+    from (subprojects.collect {it.tasks.withType(Javadoc)}) {
+        into 'release'
+    }
+    from (subprojects.collect {it.tasks.withType(AbstractArchiveTask)}) {
+        into 'release'
     }
 }
 
-allprojects {
-    dependencies {
-
-    }
-}
