@@ -14,7 +14,7 @@ before_script:
   - sudo service riak stop || true
   - sudo service rsync stop || true
   - sudo service x11-common stop || true
-script: gradle build --no-daemon --info --stacktrace
+script: gradle build --no-daemon --info --stacktrace --continue
 notifications:
   email: true
 before_cache:
@@ -22,5 +22,15 @@ before_cache:
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
+deploy:
+  provider: releases
+  api_key:
+    secure: qVUOnflNlGGtnoFLCSRY0X1i2WLj4qapvmYGEjjagwSgR08p2uSNuaizxynnNdh2c5CJeUGduJaA5CdnaHFE9m+BDgkmHdT5bHmaB84OpgmaPgYt2gaC6tpiKa8TicQx2YsW6shAZD1dnuvFNyiYqPmLcbg15F6oZFspkR/DnH9B6koFtLlAXdyy6jz8oabGSatMdlf973Fq7a8wCE86zhlErG+HpHz/g96d+LDOQhdEUig25KdNfMZSO9yLLJVlSHpIa00sa4/KDCj/jRdha8EdoyNb4e5a0Z/W20QrY16qsn5ju7pnWtt3gpTV5f8Wzm21lF8mZVINbQ1Opph3WM4Ws5J9IlPR2iV60CvQQDHw3MuvLR2FHs557nuRuirD4HzVHeUXmQF7JJeWpJ6aCzxVHfVzVl5RzYbotzAB9u6wSgGkOILq7jTuDT8WsVMG1wclTFLjDdxKSU3Uqqx19Xh2LBR1yl4KhBtnN3Gkvp4Urm67gEDVRmEaNSkmhA7KTXltpqmy/BmHXc0EUFm8QFt6y2YYnJ7xRuWytsxW0riu5lxP/UOifR0czVt/GTcgUGrDQUHvkHk3a2XALXtnQFty3oc9UPTuQ1bxXY8GNJnHujhi5GDuoyKKXJVstABSa33x4bawIChXbc0M6mQJBQcep0COAmACet2x4pT4DFA=
+  file_glob: true
+  file: release/*
+  skip_cleanup: true
+  overwrite: true
+  on:
+    tags: true
