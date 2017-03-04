@@ -15,7 +15,6 @@ import static com.codingchili.common.Strings.DIR_SEPARATOR;
  *         <p>
  *         Test cases for HTTP/REST transport.
  */
-@Ignore("Disable all integration tests that uses clustering temporary for travis")
 @RunWith(VertxUnitRunner.class)
 public class WebsocketListenerIT extends TransportTestCases {
 
