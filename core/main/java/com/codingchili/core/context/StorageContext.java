@@ -198,6 +198,7 @@ public class StorageContext<Value> extends SystemContext {
      * or a supertype of the object type in the storage.
      *
      * @param clazz the class template to inflate
+     * @return fluent
      */
     public StorageContext<Value> setClass(Class clazz) {
         this.clazz = clazz;
@@ -208,6 +209,7 @@ public class StorageContext<Value> extends SystemContext {
      * sets the collection context of the storage engine.
      *
      * @param collection name of the collection
+     * @return fluent
      */
     public StorageContext<Value> setCollection(String collection) {
         this.collection = collection;
@@ -219,6 +221,7 @@ public class StorageContext<Value> extends SystemContext {
      * sets the database name to be used
      *
      * @param DB name as string
+     * @return fluent
      */
     public StorageContext<Value> setDB(String DB) {
         this.DB = DB;
@@ -231,6 +234,7 @@ public class StorageContext<Value> extends SystemContext {
      * it may be retrieved.
      *
      * @param plugin fully qualified class name as String.
+     * @return fluent
      */
     public StorageContext<Value> setPlugin(String plugin) {
         this.plugin = plugin;

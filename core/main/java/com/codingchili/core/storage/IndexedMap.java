@@ -30,7 +30,7 @@ import static com.googlecode.cqengine.query.QueryFactory.*;
  * @author Robin Duda
  *         <p>
  *         A storage implementation that is local and indexed. Always use this when using queries.
- *         The indexing is fully based on CQEngine. {@see http://github.com/npgall/cqengine}
+ *         The indexing is fully based on CQEngine. see http://github.com/npgall/cqengine
  *         The db/collection is shared over multiple instances.
  */
 public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {

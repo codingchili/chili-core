@@ -95,12 +95,13 @@ public interface CoreContext {
     <T> void blocking(Handler<Future<T>> blocking, Handler<AsyncResult<T>> result);
 
     /**
-     * See {@link #blocking(Handler, Handler)}.
+     * Call to execute the given blocking handler on a worker thread that is
+     * scoped to the current context.
      *
-     * @param <T> see {@link #blocking(Handler, Handler)}
-     * @param blocking see {@link #blocking(Handler, Handler)}
+     * @param <T> type parameter for the result
+     * @param blocking a handler that executes blocking code
      * @param ordered if true, indicates that the tasks must be completed in the same order as they are started.
-     * @param result see {@link #blocking(Handler, Handler)}
+     * @param result handler for the result that is called asynchronously
      */
     <T> void blocking(Handler<Future<T>> blocking, boolean ordered, Handler<AsyncResult<T>> result);
 

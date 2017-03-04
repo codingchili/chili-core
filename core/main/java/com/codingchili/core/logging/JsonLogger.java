@@ -10,6 +10,7 @@ import io.vertx.core.json.JsonObject;
 public interface JsonLogger {
     /**
      * @param data the data to be logged.
+     * @return fluent
      */
     JsonLogger log(JsonObject data);
 }

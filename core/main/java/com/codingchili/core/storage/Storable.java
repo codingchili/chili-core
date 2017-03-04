@@ -51,7 +51,7 @@ public interface Storable extends Serializable, Cloneable, Comparable, Shareable
      *
      * @param other     the other object to compare to.
      * @param attribute name of the attribute that should be tested.
-     * @return @see Comparable#compareTo(Object)
+     * @return integer that matches implementation of @see Comparable#compareTo(Object)
      */
     @JsonIgnore
     default int compareToAttribute(Storable other, String attribute) {

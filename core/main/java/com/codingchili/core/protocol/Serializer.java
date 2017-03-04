@@ -49,6 +49,7 @@ public class Serializer {
      *
      * @param data  json-encoded string.
      * @param clazz the class to instantiate.
+     * @param <T> must be bound to the clazz parameter
      * @return an object specified by the type parameter.
      */
     @SuppressWarnings("unchecked")
@@ -65,6 +66,7 @@ public class Serializer {
      *
      * @param json  json object to be unpacked.
      * @param clazz the class to instantiate.
+     * @param <T> must be bound to the clazz parameter
      * @return an object specified by the type parameter.
      */
     @SuppressWarnings("unchecked")

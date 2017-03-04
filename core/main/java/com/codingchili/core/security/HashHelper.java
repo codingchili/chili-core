@@ -50,6 +50,7 @@ public class HashHelper {
     /**
      * Async hashing a password with a salt using PBKDF2 with SHA1.
      *
+     * @param future   callback for string result with hex encoded hash.
      * @param password plaintext password to be hashed.
      * @param salt     for the hashing.
      */
