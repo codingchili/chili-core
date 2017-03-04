@@ -22,3 +22,6 @@ deploy:
   overwrite: true
   on:
     tags: true
+env:
+  global:
+    - GRADLE_OPTS="-Xms128m"

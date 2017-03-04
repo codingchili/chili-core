@@ -69,3 +69,14 @@ task copyTask(type: Copy, dependsOn: 'build') {
     }
 }
 
+if (System.env.TRAVIS == 'true') {
+    allprojects {
+        tasks.withType(GroovyCompile) {
+            groovyOptions.fork = false
+        }
+        tasks.withType(Test) {
+            maxParallelForks = 2
+            minHeapSize = '128m'
+        }
+    }
+}
