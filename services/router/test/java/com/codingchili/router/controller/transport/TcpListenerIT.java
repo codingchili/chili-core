@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
  *
  * Test cases for UDP transport.
  */
-@Ignore("Disable for travis.")
 @RunWith(VertxUnitRunner.class)
 public class TcpListenerIT extends TransportTestCases {
 
