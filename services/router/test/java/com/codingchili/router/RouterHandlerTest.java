@@ -3,7 +3,7 @@ package com.codingchili.router;
 import com.codingchili.common.Strings;
 import com.codingchili.router.configuration.*;
 import com.codingchili.router.controller.RouterHandler;
-import com.codingchili.router.model.WireType;
+
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;

@@ -61,6 +61,11 @@ public class MapTestCases {
         setUp(test.async(), plugin, Vertx.vertx());
     }
 
+    @After
+    public void tearDown(TestContext test) {
+        context.vertx().close(test.asyncAssertSuccess());
+    }
+
     public void setUp(Async async, Class plugin, Vertx vertx) {
         context = new StorageContext<>(vertx);
 
@@ -116,11 +121,6 @@ public class MapTestCases {
         } else {
             return null;
         }
-    }
-
-    @After
-    public void tearDown(TestContext test) {
-        context.vertx().close(test.asyncAssertSuccess());
     }
 
     @Test

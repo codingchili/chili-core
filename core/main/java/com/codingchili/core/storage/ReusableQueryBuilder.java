@@ -14,7 +14,7 @@ import static com.codingchili.core.configuration.CoreStrings.STORAGE_ARRAY;
  *         <p>
  *         Create a storable and reusable statement.
  */
-public class ReusableQueryBuilder<Value> implements QueryBuilder<Value> {
+public class ReusableQueryBuilder<Value extends Storable> implements QueryBuilder<Value> {
     private List<JsonArray> query = new ArrayList<>();
     private JsonObject options = new JsonObject();
     private String attribute;
@@ -138,7 +138,7 @@ public class ReusableQueryBuilder<Value> implements QueryBuilder<Value> {
 
     @Override
     public void execute(Handler<AsyncResult<List<Value>>> handler) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Reusable queries must be compiled and passed to a Storage");
     }
 
     public JsonObject compile() {
@@ -146,11 +146,6 @@ public class ReusableQueryBuilder<Value> implements QueryBuilder<Value> {
                 .put("query", query)
                 .put("options", options);
     }
-
-    /*public List<Value> evaluate(JsonObject query, QueryBuilder<Value> builder) {
-        //parseQueury(query, builder);
-        parseSettings(query, builder);
-    }*/
 
     public void parseSettings(JsonObject query, QueryBuilder<Value> builder) {
         for (String option : query.getJsonObject("options").fieldNames()) {
