@@ -46,9 +46,4 @@ public class HazelMapIT extends MapTestCases {
     public void setUp(TestContext test) {
         super.setUp(test.async(), HazelMap.class, vertx);
     }
-
-    @Test
-    public void test(TestContext test) {
-        super.testQueryNestedArray(test);
-    }
 }
