@@ -63,6 +63,7 @@ public class RestListenerIT extends TransportTestCases {
     }
 
     private void sendGetRequest(String action, ResponseListener listener) {
+        System.out.println("Test sending request on port " + port);
         vertx.createHttpClient().getNow(port, HOST, action, handler -> {
             handler.bodyHandler(body -> handleBody(listener, body));
         });

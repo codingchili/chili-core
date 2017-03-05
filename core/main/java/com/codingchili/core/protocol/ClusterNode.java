@@ -5,6 +5,10 @@ import io.vertx.core.*;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.files.Configurations;
+import com.codingchili.core.logging.ConsoleLogger;
+import com.codingchili.core.logging.Level;
+
+import static com.codingchili.core.configuration.CoreStrings.ERROR_CLUSTERING_REQUIRED;
 
 /**
  * @author Robin Duda
@@ -22,7 +26,7 @@ public abstract class ClusterNode implements Verticle {
         this.vertx = vertx;
 
         if (!vertx.isClustered()) {
-            throw new RuntimeException(CoreStrings.ERROR_CLUSTERING_REQUIRED);
+            new ConsoleLogger().log(ERROR_CLUSTERING_REQUIRED, Level.WARNING);
         }
     }
 

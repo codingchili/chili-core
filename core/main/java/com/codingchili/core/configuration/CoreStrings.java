@@ -131,7 +131,7 @@ public abstract class CoreStrings {
     public static final String[] LOG_HIDDEN_TAGS = new String[]{"dev", "LOCAL", "3.6.3"};
 
     public static final String ERROR_TOKEN_FACTORY = "Token factory error to generate token.";
-    public static final String ERROR_CLUSTERING_REQUIRED = "Clustering required but not enabled.";
+    public static final String ERROR_CLUSTERING_REQUIRED = "Running in non-clustered mode.";
     public static final String ERROR_NOT_AUTHORIZED = "Insufficient authorization level to access resource.";
     public static final String ERROR_HANDLER_MISSING = "The requested handler was not found.";
     public static final String ERROR_LAUNCHER_STARTUP = "Failed to start the launcher with clustering.";

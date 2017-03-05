@@ -52,14 +52,13 @@ public abstract class TransportTestCases {
     }
 
     @Rule
-    public Timeout timeout = new Timeout(15, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(30, TimeUnit.SECONDS);
 
     @Before
     public void setUp(TestContext testContext) {
         Async async = testContext.async();
 
-        Vertx.clusteredVertx(new VertxOptions(), cluster -> {
-            vertx = cluster.result();
+            vertx = Vertx.vertx();
             test = new ContextMock(vertx);
 
             listener = new ListenerSettings()
@@ -69,6 +68,8 @@ public abstract class TransportTestCases {
                     .setTimeout(105000)
                     .setHttpOptions(new HttpServerOptions().setCompressionSupported(false))
                     .addMapping(PATCHING_ROOT, new Endpoint(NODE_PATCHING));
+
+        System.out.println("Set listener port to " + port);
 
             settings = new RouterSettings(new RemoteIdentity("node", "host"))
                     .setHidden(NODE_LOGGING)
@@ -81,7 +82,6 @@ public abstract class TransportTestCases {
             vertx.deployVerticle(new Service(test), deploy -> {
                 async.complete();
             });
-        });
     }
 
     @After

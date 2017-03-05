@@ -38,6 +38,7 @@ public class RestListener extends ClusterNode {
 
     @Override
     public void start(Future<Void> start) {
+        System.out.println("Started listening on port " + listener().getPort());
         vertx.createHttpServer(listener().getHttpOptions())
                 .requestHandler(router::accept).listen(listener().getPort());
 
