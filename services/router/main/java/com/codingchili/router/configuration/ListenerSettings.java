@@ -9,8 +9,8 @@ import java.util.HashMap;
 
 /**
  * @author Robin Duda
- *
- * Settings for transport listeners.
+ *         <p>
+ *         Settings for transport listeners.
  */
 public class ListenerSettings {
     private HttpServerOptions httpOptions = new HttpServerOptions();
@@ -70,7 +70,20 @@ public class ListenerSettings {
         return httpOptions;
     }
 
-    public void setHttpOptions(HttpServerOptions httpOptions) {
+    public ListenerSettings setHttpOptions(HttpServerOptions httpOptions) {
         this.httpOptions = httpOptions;
+        return this;
+    }
+
+    /**
+     * Adds a new mapping from the request target to another endpoint.
+     *
+     * @param route    the request target to match for this mapping to apply
+     * @param endpoint the endpoint to set the request to
+     * @return fluent
+     */
+    public ListenerSettings addMapping(String route, Endpoint endpoint) {
+        api.put(route, endpoint);
+        return this;
     }
 }

@@ -4,7 +4,6 @@ import com.codingchili.router.model.WireType;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 
 
@@ -22,7 +21,7 @@ public class UdpListenerIT extends TransportTestCases {
 
     @Override
     void sendRequest(String route, ResponseListener listener, JsonObject data) {
-        vertx.createDatagramSocket().send(data.encode(), PORT, HOST, handler -> {
+        vertx.createDatagramSocket().send(data.encode(), port, HOST, handler -> {
             if (handler.succeeded()) {
                 handler.result().handler(response -> handleBody(listener, response.data()));
             }

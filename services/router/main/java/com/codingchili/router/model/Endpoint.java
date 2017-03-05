@@ -2,12 +2,22 @@ package com.codingchili.router.model;
 
 /**
  * @author Robin Duda
- *
- * Used to map API routes to target/route
+ *         <p>
+ *         Used to map API routes to another target/route
  */
 public class Endpoint {
     private String target;
     private String route;
+
+    public Endpoint() {
+    }
+
+    /**
+     * @param target endpoint target node
+     */
+    public Endpoint(String target) {
+        this.target = target;
+    }
 
     public String getTarget() {
         return target;

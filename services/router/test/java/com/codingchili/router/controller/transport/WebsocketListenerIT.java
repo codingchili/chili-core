@@ -5,7 +5,6 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 
 import static com.codingchili.common.Strings.DIR_SEPARATOR;
@@ -24,11 +23,10 @@ public class WebsocketListenerIT extends TransportTestCases {
 
     @Override
     void sendRequest(String route, ResponseListener listener, JsonObject data) {
-        vertx.createHttpClient().websocket(PORT, HOST, DIR_SEPARATOR, handler -> {
+        vertx.createHttpClient().websocket(port, HOST, DIR_SEPARATOR, handler -> {
             handler.handler(body -> {
                 handleBody(listener, body);
             });
-
             handler.write(Buffer.buffer(data.encode()));
         });
     }

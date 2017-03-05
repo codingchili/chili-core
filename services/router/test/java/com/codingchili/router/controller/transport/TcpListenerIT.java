@@ -5,7 +5,6 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetSocket;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 
 /**
@@ -22,7 +21,7 @@ public class TcpListenerIT extends TransportTestCases {
 
     @Override
     void sendRequest(String route, ResponseListener listener, JsonObject data) {
-        vertx.createNetClient().connect(PORT, HOST, connect -> {
+        vertx.createNetClient().connect(port, HOST, connect -> {
             if (connect.succeeded()) {
                 NetSocket socket = connect.result();
 

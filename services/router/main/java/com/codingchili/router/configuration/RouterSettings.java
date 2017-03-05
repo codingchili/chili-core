@@ -2,10 +2,10 @@ package com.codingchili.router.configuration;
 
 import com.codingchili.router.model.WireType;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 
 import com.codingchili.core.configuration.ServiceConfigurable;
+import com.codingchili.core.security.RemoteIdentity;
 
 import static com.codingchili.core.configuration.CoreStrings.getService;
 
@@ -16,15 +16,31 @@ import static com.codingchili.core.configuration.CoreStrings.getService;
  */
 public class RouterSettings extends ServiceConfigurable {
     public static final String PATH_ROUTING = getService("routingserver");
-    private ArrayList<ListenerSettings> transport = defaultTransport();
+    private List<ListenerSettings> transport = new ArrayList<>();
     private HashSet<String> hidden = new HashSet<>();
 
-    public ArrayList<ListenerSettings> getTransport() {
+    public RouterSettings() {}
+
+    public RouterSettings(RemoteIdentity identity) {
+        super.setIdentity(identity);
+    }
+
+    public List<ListenerSettings> getTransport() {
         return transport;
     }
 
-    public void setTransport(ArrayList<ListenerSettings> transport) {
+    public void setTransport(List<ListenerSettings> transport) {
         this.transport = transport;
+    }
+
+    /**
+     * Adds a new transport configuration to the list of existing.
+     * @param listener the listener to add
+     * @return fluent
+     */
+    public RouterSettings addTransport(ListenerSettings listener) {
+        transport.add(listener);
+        return this;
     }
 
     public HashSet<String> getHidden() {
@@ -44,9 +60,14 @@ public class RouterSettings extends ServiceConfigurable {
         throw new RuntimeException("No listener configured for " + type.name());
     }
 
-    private ArrayList<ListenerSettings> defaultTransport() {
-        ArrayList<ListenerSettings> transports = new ArrayList<>();
-        transports.add(new ListenerSettings());
-        return transports;
+    /**
+     * Sets a route to hidden in the router. Any requests for this route will return
+     * with an error and the unauthorized code.
+     * @param route the route to 'hide' requests for
+     * @return fluent
+     */
+    public RouterSettings setHidden(String route) {
+        hidden.add(route);
+        return this;
     }
 }

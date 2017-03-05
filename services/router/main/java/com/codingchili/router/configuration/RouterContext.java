@@ -3,7 +3,7 @@ package com.codingchili.router.configuration;
 import com.codingchili.router.model.WireType;
 import io.vertx.core.Vertx;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.files.Configurations;
@@ -27,13 +27,11 @@ public class RouterContext extends ServiceContext {
         return service().getHidden().contains(target);
     }
 
-    public ArrayList<ListenerSettings> transports() {
+    public List<ListenerSettings> transports() {
         return service().getTransport();
     }
 
     public ListenerSettings getListener(WireType type) {
         return service().getListener(type);
     }
-
-
 }

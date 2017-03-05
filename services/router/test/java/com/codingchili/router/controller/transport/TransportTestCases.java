@@ -18,9 +18,8 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.security.RemoteIdentity;
@@ -37,7 +36,9 @@ import static com.codingchili.common.Strings.*;
 public abstract class TransportTestCases {
     static final String PATCHING_ROOT = "/patching";
     static final String HOST = "localhost";
-    static final int PORT = 19797;
+    protected int port = PORT.getAndIncrement();
+    protected Vertx vertx;
+    private static final AtomicInteger PORT = new AtomicInteger(19797);
     private static final int MAX_REQUEST_BYTES = 256;
     private static final String ONE_CHAR = "x";
     private static final String DATA = "data";
@@ -45,7 +46,6 @@ public abstract class TransportTestCases {
     private ListenerSettings listener;
     private ContextMock test;
     private WireType wireType;
-    protected Vertx vertx;
 
     TransportTestCases(WireType wireType) {
         this.wireType = wireType;
@@ -55,33 +55,27 @@ public abstract class TransportTestCases {
     public Timeout timeout = new Timeout(15, TimeUnit.SECONDS);
 
     @Before
-    public  void setUp(TestContext testContext) {
+    public void setUp(TestContext testContext) {
         Async async = testContext.async();
 
         Vertx.clusteredVertx(new VertxOptions(), cluster -> {
             vertx = cluster.result();
-
-            settings = new RouterSettings();
             test = new ContextMock(vertx);
 
-            ArrayList<ListenerSettings> transport = new ArrayList<>();
-
-            settings.setIdentity(new RemoteIdentity("node", "at"));
-
-            listener = new ListenerSettings();
-            listener.setMaxRequestBytes(MAX_REQUEST_BYTES)
-                    .setPort(PORT)
+            listener = new ListenerSettings()
+                    .setMaxRequestBytes(MAX_REQUEST_BYTES)
+                    .setPort(port)
                     .setType(wireType)
                     .setTimeout(105000)
-                    .setHttpOptions(new HttpServerOptions().setCompressionSupported(false));
+                    .setHttpOptions(new HttpServerOptions().setCompressionSupported(false))
+                    .addMapping(PATCHING_ROOT, new Endpoint(NODE_PATCHING));
 
-            HashMap<String, Endpoint> api = new HashMap<>();
-            api.put(PATCHING_ROOT, new Endpoint().setTarget(NODE_PATCHING));
-            listener.setApi(api);
+            settings = new RouterSettings(new RemoteIdentity("node", "host"))
+                    .setHidden(NODE_LOGGING)
+                    .addTransport(listener);
 
-            settings.getHidden().add(Strings.NODE_LOGGING);
-            transport.add(listener);
-            settings.setTransport(transport);
+            settings.setHidden(Strings.NODE_LOGGING);
+            settings.addTransport(listener);
             test.setSettings(settings);
 
             vertx.deployVerticle(new Service(test), deploy -> {
@@ -133,7 +127,7 @@ public abstract class TransportTestCases {
      *
      * @param route    the request route
      * @param listener invoked with the request response
-     * @param data     the response data.
+     * @param data     the request data.
      */
     abstract void sendRequest(String route, ResponseListener listener, JsonObject data);
 

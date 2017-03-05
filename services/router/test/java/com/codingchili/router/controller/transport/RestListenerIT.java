@@ -6,7 +6,6 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -64,8 +63,7 @@ public class RestListenerIT extends TransportTestCases {
     }
 
     private void sendGetRequest(String action, ResponseListener listener) {
-        vertx.createHttpClient().getNow(PORT, HOST, action, handler -> {
-
+        vertx.createHttpClient().getNow(port, HOST, action, handler -> {
             handler.bodyHandler(body -> handleBody(listener, body));
         });
     }
@@ -76,7 +74,7 @@ public class RestListenerIT extends TransportTestCases {
 
     @Override
     void sendRequest(String target, ResponseListener listener, JsonObject data) {
-        vertx.createHttpClient().post(PORT, HOST, target, handler -> {
+        vertx.createHttpClient().post(port, HOST, target, handler -> {
             handler.bodyHandler(body -> handleBody(listener, body));
         }).end(data.encode());
     }
