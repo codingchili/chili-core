@@ -19,7 +19,6 @@ import com.codingchili.core.testing.ContextMock;
  *         <p>
  *         Tests for the launcher.
  */
-@Ignore("System.exit not supported by ci platform")
 @RunWith(VertxUnitRunner.class)
 public class LauncherIT {
     public static Async async;

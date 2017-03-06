@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
  *
  * Test cases for UDP transport.
  */
-@Ignore("Test if TcpListenerIT succeeds if all other transport tests disabled")
 @RunWith(VertxUnitRunner.class)
 public class UdpListenerIT extends TransportTestCases {
 
