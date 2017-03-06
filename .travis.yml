@@ -24,4 +24,4 @@ deploy:
     tags: true
 env:
   global:
-    - GRADLE_OPTS="-Xms512m"
+    - GRADLE_OPTS="-Xms256m"
