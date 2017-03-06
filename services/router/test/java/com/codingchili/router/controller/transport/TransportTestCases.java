@@ -41,7 +41,7 @@ public abstract class TransportTestCases {
     private static final String DATA = "data";
     private ContextMock context;
     private WireType wireType;
-    int port = PORT.getAndIncrement();
+    int port = PORT.getAndDecrement();
     Vertx vertx;
 
     TransportTestCases(WireType wireType) {
@@ -49,7 +49,7 @@ public abstract class TransportTestCases {
     }
 
     @Rule
-    public Timeout timeout = new Timeout(15, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
 
     @Before
     public void setUp(TestContext test) {

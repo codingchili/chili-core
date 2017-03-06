@@ -75,8 +75,8 @@ if (System.env.TRAVIS == 'true') {
             groovyOptions.fork = true
         }
         tasks.withType(Test) {
-            maxParallelForks = 2
-            minHeapSize = '128m'
+            maxParallelForks = 1
+            minHeapSize = '256m'
         }
     }
 }
