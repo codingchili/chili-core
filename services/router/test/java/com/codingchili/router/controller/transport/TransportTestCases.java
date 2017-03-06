@@ -39,7 +39,7 @@ public abstract class TransportTestCases {
     private static final int MAX_REQUEST_BYTES = 256;
     private static final String ONE_CHAR = "x";
     private static final String DATA = "data";
-    private ContextMock test;
+    private ContextMock context;
     private WireType wireType;
     int port = PORT.getAndIncrement();
     Vertx vertx;
@@ -52,11 +52,11 @@ public abstract class TransportTestCases {
     public Timeout timeout = new Timeout(15, TimeUnit.SECONDS);
 
     @Before
-    public void setUp(TestContext testContext) {
-        Async async = testContext.async();
+    public void setUp(TestContext test) {
+        Async async = test.async();
 
             vertx = Vertx.vertx();
-            test = new ContextMock(vertx);
+            context = new ContextMock(vertx);
 
         ListenerSettings listener = new ListenerSettings()
                 .setMaxRequestBytes(MAX_REQUEST_BYTES)
@@ -72,9 +72,10 @@ public abstract class TransportTestCases {
 
             settings.setHidden(Strings.NODE_LOGGING);
             settings.addTransport(listener);
-            test.setSettings(settings);
+            context.setSettings(settings);
 
-            vertx.deployVerticle(new Service(test), deploy -> {
+            vertx.deployVerticle(new Service(context), deploy -> {
+                test.assertTrue(deploy.succeeded(), deploy.cause().getMessage());
                 async.complete();
             });
     }
@@ -110,7 +111,7 @@ public abstract class TransportTestCases {
     }
 
     void mockNode(String node) {
-        test.bus().consumer(node, message -> {
+        context.bus().consumer(node, message -> {
             message.reply(new JsonObject()
                     .put(PROTOCOL_STATUS, ResponseStatus.ACCEPTED)
                     .put(PROTOCOL_TARGET, node));
