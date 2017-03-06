@@ -34,7 +34,7 @@ import static com.codingchili.common.Strings.*;
 @RunWith(VertxUnitRunner.class)
 public abstract class TransportTestCases {
     static final String PATCHING_ROOT = "/patching";
-    static final String HOST = "localhost";
+    static final String HOST = "::1";
     protected int port = PORT.getAndIncrement();
     protected Vertx vertx;
     private static final AtomicInteger PORT = new AtomicInteger(19797);
