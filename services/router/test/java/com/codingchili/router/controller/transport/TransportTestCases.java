@@ -1,4 +1,4 @@
-package com.codingchili.router.controller.transport;
+3package com.codingchili.router.controller.transport;
 
 import com.codingchili.common.Strings;
 import com.codingchili.router.Service;
@@ -37,7 +37,7 @@ public abstract class TransportTestCases {
     static final String HOST = getLoopbackAddress();
     protected int port = PORT.getAndIncrement();
     protected Vertx vertx;
-    private static final AtomicInteger PORT = new AtomicInteger(19885);
+    private static final AtomicInteger PORT = new AtomicInteger(39885);
     private static final int MAX_REQUEST_BYTES = 256;
     private static final String ONE_CHAR = "x";
     private static final String DATA = "data";
