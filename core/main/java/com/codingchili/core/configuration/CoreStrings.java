@@ -34,15 +34,15 @@ public abstract class CoreStrings {
     // network constants
     private static final String IP6_HOST = "::";
     private static final String IP4_HOST = "0.0.0.0";
-    private static final IPVersion ipVersion = IPVersion.IP4;
-    private enum IPVersion {IP4, IP6};
+    private static final IPVersion ipVersion = IPVersion.IP6;
+    private enum IPVersion {IP4, IP6}
 
     public static String getBindAddress() {
         return (ipVersion.equals(IPVersion.IP4) ? IP4_HOST : IP6_HOST);
     }
 
     public static String getLoopbackAddress() {
-        return (ipVersion.equals(IPVersion.IP4) ? "127.0.0.1" : "::");
+        return (ipVersion.equals(IPVersion.IP4) ? "127.0.0.1" : "::1");
     }
 
     // storage constants.
