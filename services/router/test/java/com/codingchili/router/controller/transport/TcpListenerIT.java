@@ -1,5 +1,7 @@
 package com.codingchili.router.controller.transport;
 
+import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_ROUTE;
+
 import com.codingchili.router.model.WireType;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetSocket;
@@ -25,6 +27,10 @@ public class TcpListenerIT extends TransportTestCases {
             if (connect.succeeded()) {
                 NetSocket socket = connect.result();
                 socket.handler(buffer -> handleBody(listener, buffer));
+
+                if (!data.containsKey(PROTOCOL_ROUTE)) {
+                    data.put(PROTOCOL_ROUTE, route);
+                }
                 socket.write(data.encode());
             } else {
                 throw new RuntimeException(connect.cause());

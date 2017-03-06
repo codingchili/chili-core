@@ -2,7 +2,7 @@ language: java
 sudo: false
 jdk:
   - oraclejdk8
-script: gradle build --stacktrace --info
+script: gradle build --stacktrace
 notifications:
   email: true
 before_cache:
@@ -24,4 +24,4 @@ deploy:
     tags: true
 env:
   global:
-    - GRADLE_OPTS="-Xms128m"
+    - GRADLE_OPTS="-Xms256m"
