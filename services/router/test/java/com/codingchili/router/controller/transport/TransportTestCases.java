@@ -35,14 +35,13 @@ import static com.codingchili.common.Strings.*;
 public abstract class TransportTestCases {
     static final String PATCHING_ROOT = "/patching";
     static final String HOST = getLoopbackAddress();
-    private static final AtomicInteger PORT = new AtomicInteger(9421);
+    private static final AtomicInteger PORT = new AtomicInteger(9896);
     private static final int MAX_REQUEST_BYTES = 256;
     private static final String ONE_CHAR = "x";
     private static final String DATA = "data";
     private ContextMock context;
     private WireType wireType;
     int port = PORT.getAndIncrement();
-    String nodeId = "node-" + port;
     Vertx vertx;
 
     TransportTestCases(WireType wireType) {
@@ -76,7 +75,7 @@ public abstract class TransportTestCases {
             context.setSettings(settings);
 
             vertx.deployVerticle(new Service(context), deploy -> {
-                test.assertTrue(deploy.succeeded(), deploy.cause().getMessage());
+                test.assertTrue(deploy.succeeded());
                 async.complete();
             });
     }
@@ -89,10 +88,11 @@ public abstract class TransportTestCases {
     @Test
     public void testLargePacketRejected(TestContext test) {
         Async async = test.async();
+        String testName = "largePacket." + port;
 
-        mockNode(nodeId);
+        mockNode(testName);
 
-        sendRequest(nodeId, (result, status) -> {
+        sendRequest(testName, (result, status) -> {
             test.assertEquals(ResponseStatus.BAD, status);
             async.complete();
         }, new JsonObject()
