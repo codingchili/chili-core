@@ -73,10 +73,8 @@ class RestRequest extends BaseRequest {
     }
 
     private void parseHeaders() {
-        context.request().headers().entries().stream()
-                .forEach(entry -> {
-                    data.put(entry.getKey(), entry.getValue());
-                });
+        context.request().headers().entries().forEach(entry ->
+                data.put(entry.getKey(), entry.getValue()));
     }
 
     @Override

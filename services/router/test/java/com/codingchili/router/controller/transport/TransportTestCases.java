@@ -89,9 +89,7 @@ public abstract class TransportTestCases {
     public void testLargePacketRejected(TestContext test) {
         Async async = test.async();
 
-        mockNode(NODE_LOCAL);
-
-        sendRequest(NODE_LOCAL, (result, status) -> {
+        sendRequest(NODE_ROUTING, (result, status) -> {
             test.assertEquals(ResponseStatus.BAD, status);
             async.complete();
         }, new JsonObject()
@@ -102,7 +100,7 @@ public abstract class TransportTestCases {
     public void testAccepted(TestContext test) {
         Async async = test.async();
 
-        sendRequest(DIR_ROOT, (result, status) -> {
+        sendRequest(NODE_ROUTING, (result, status) -> {
             test.assertEquals(ResponseStatus.ACCEPTED, status);
             async.complete();
         }, new JsonObject()
