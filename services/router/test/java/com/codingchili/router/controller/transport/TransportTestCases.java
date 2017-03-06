@@ -88,11 +88,10 @@ public abstract class TransportTestCases {
     @Test
     public void testLargePacketRejected(TestContext test) {
         Async async = test.async();
-        String testName = "largePacket." + port;
 
-        mockNode(testName);
+        mockNode(NODE_LOCAL);
 
-        sendRequest(testName, (result, status) -> {
+        sendRequest(NODE_LOCAL, (result, status) -> {
             test.assertEquals(ResponseStatus.BAD, status);
             async.complete();
         }, new JsonObject()
