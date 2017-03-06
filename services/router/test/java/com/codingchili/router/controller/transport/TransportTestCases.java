@@ -35,23 +35,21 @@ import static com.codingchili.common.Strings.*;
 public abstract class TransportTestCases {
     static final String PATCHING_ROOT = "/patching";
     static final String HOST = getLoopbackAddress();
-    protected int port = PORT.getAndIncrement();
-    protected Vertx vertx;
     private static final AtomicInteger PORT = new AtomicInteger(39885);
     private static final int MAX_REQUEST_BYTES = 256;
     private static final String ONE_CHAR = "x";
     private static final String DATA = "data";
-    private RouterSettings settings;
-    private ListenerSettings listener;
     private ContextMock test;
     private WireType wireType;
+    int port = PORT.getAndIncrement();
+    Vertx vertx;
 
     TransportTestCases(WireType wireType) {
         this.wireType = wireType;
     }
 
     @Rule
-    public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(15, TimeUnit.SECONDS);
 
     @Before
     public void setUp(TestContext testContext) {
@@ -60,17 +58,17 @@ public abstract class TransportTestCases {
             vertx = Vertx.vertx();
             test = new ContextMock(vertx);
 
-            listener = new ListenerSettings()
-                    .setMaxRequestBytes(MAX_REQUEST_BYTES)
-                    .setPort(port)
-                    .setType(wireType)
-                    .setTimeout(105000)
-                    .setHttpOptions(new HttpServerOptions().setCompressionSupported(false))
-                    .addMapping(PATCHING_ROOT, new Endpoint(NODE_PATCHING));
+        ListenerSettings listener = new ListenerSettings()
+                .setMaxRequestBytes(MAX_REQUEST_BYTES)
+                .setPort(port)
+                .setType(wireType)
+                .setTimeout(105000)
+                .setHttpOptions(new HttpServerOptions().setCompressionSupported(false))
+                .addMapping(PATCHING_ROOT, new Endpoint(NODE_PATCHING));
 
-            settings = new RouterSettings(new RemoteIdentity("node", "host"))
-                    .setHidden(NODE_LOGGING)
-                    .addTransport(listener);
+        RouterSettings settings = new RouterSettings(new RemoteIdentity("node", "host"))
+                .setHidden(NODE_LOGGING)
+                .addTransport(listener);
 
             settings.setHidden(Strings.NODE_LOGGING);
             settings.addTransport(listener);

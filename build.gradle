@@ -64,10 +64,9 @@ task archiveZip(type: Zip, dependsOn: 'jar') {
 
 task copyTask(type: Copy, dependsOn: 'build') {
     from (subprojects.collect {it.tasks.withType(Jar)})
-    from (subprojects.collect {it.tasks.withType(Javadoc)})
+    /*from (subprojects.collect {it.tasks.withType(Javadoc)})*/
     from (subprojects.collect {it.tasks.withType(AbstractArchiveTask)})
-
-    destinationDir = new File('resources')
+    destinationDir = new File('release')
 }
 
 if (System.env.TRAVIS == 'true') {

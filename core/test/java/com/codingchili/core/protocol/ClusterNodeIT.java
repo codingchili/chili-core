@@ -17,7 +17,6 @@ import static com.codingchili.core.configuration.CoreStrings.ERROR_CLUSTERING_RE
  *
  * Tests the clusternode class to require clustering.
  */
-@Ignore("Disable tests until the travis build passes.")
 @RunWith(VertxUnitRunner.class)
 public class ClusterNodeIT {
     private Vertx vertx;
