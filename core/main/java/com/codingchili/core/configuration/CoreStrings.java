@@ -34,7 +34,7 @@ public abstract class CoreStrings {
     // network constants
     private static final String IP6_HOST = "::";
     private static final String IP4_HOST = "0.0.0.0";
-    private static final IPVersion ipVersion = IPVersion.IP6;
+    private static final IPVersion ipVersion = IPVersion.IP4;
     private enum IPVersion {IP4, IP6}
 
     public static String getBindAddress() {

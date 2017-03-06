@@ -37,7 +37,7 @@ public abstract class TransportTestCases {
     static final String HOST = getLoopbackAddress();
     protected int port = PORT.getAndIncrement();
     protected Vertx vertx;
-    private static final AtomicInteger PORT = new AtomicInteger(19797);
+    private static final AtomicInteger PORT = new AtomicInteger(19885);
     private static final int MAX_REQUEST_BYTES = 256;
     private static final String ONE_CHAR = "x";
     private static final String DATA = "data";
