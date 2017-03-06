@@ -50,7 +50,7 @@ public abstract class TransportTestCases {
     }
 
     @Rule
-    public Timeout timeout = new Timeout(30, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(8, TimeUnit.SECONDS);
 
     @Before
     public void setUp(TestContext test) {
