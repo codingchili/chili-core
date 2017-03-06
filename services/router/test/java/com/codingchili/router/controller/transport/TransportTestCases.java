@@ -41,7 +41,7 @@ public abstract class TransportTestCases {
     private static final String DATA = "data";
     private ContextMock context;
     private WireType wireType;
-    int port = PORT.getAndIncrement();
+    int port;
     Vertx vertx;
 
     TransportTestCases(WireType wireType) {
@@ -56,6 +56,7 @@ public abstract class TransportTestCases {
         Async async = test.async();
 
         vertx = Vertx.vertx();
+        port = PORT.getAndIncrement();
         context = new ContextMock(vertx);
 
         ListenerSettings listener = new ListenerSettings()

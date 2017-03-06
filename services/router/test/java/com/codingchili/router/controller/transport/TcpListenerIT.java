@@ -24,7 +24,6 @@ public class TcpListenerIT extends TransportTestCases {
         vertx.createNetClient().connect(port, HOST, connect -> {
             if (connect.succeeded()) {
                 NetSocket socket = connect.result();
-
                 socket.handler(buffer -> handleBody(listener, buffer));
                 socket.write(data.encode());
             } else {
