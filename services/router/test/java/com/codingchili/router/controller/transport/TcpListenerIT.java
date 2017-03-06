@@ -27,6 +27,8 @@ public class TcpListenerIT extends TransportTestCases {
 
                 socket.handler(buffer -> handleBody(listener, buffer));
                 socket.write(data.encode());
+            } else {
+                throw new RuntimeException(connect.cause());
             }
         });
     }
