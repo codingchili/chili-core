@@ -42,6 +42,7 @@ public abstract class TransportTestCases {
     private ContextMock context;
     private WireType wireType;
     int port = PORT.getAndIncrement();
+    String nodeId = "node-" + port;
     Vertx vertx;
 
     TransportTestCases(WireType wireType) {
@@ -55,8 +56,8 @@ public abstract class TransportTestCases {
     public void setUp(TestContext test) {
         Async async = test.async();
 
-            vertx = Vertx.vertx();
-            context = new ContextMock(vertx);
+        vertx = Vertx.vertx();
+        context = new ContextMock(vertx);
 
         ListenerSettings listener = new ListenerSettings()
                 .setMaxRequestBytes(MAX_REQUEST_BYTES)
@@ -89,9 +90,9 @@ public abstract class TransportTestCases {
     public void testLargePacketRejected(TestContext test) {
         Async async = test.async();
 
-        mockNode(PATCHING_ROOT);
+        mockNode(nodeId);
 
-        sendRequest(PATCHING_ROOT, (result, status) -> {
+        sendRequest(nodeId, (result, status) -> {
             test.assertEquals(ResponseStatus.BAD, status);
             async.complete();
         }, new JsonObject()
