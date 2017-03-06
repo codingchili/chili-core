@@ -74,12 +74,16 @@ public class RestListenerIT extends TransportTestCases {
     }
 
     @Override
-    void sendRequest(String target, ResponseListener listener, JsonObject data) {
-        if (!target.startsWith(DIR_ROOT)) {
-            target = DIR_ROOT + target;
+    void sendRequest(String route, ResponseListener listener, JsonObject data) {
+        if (!route.startsWith(DIR_ROOT)) {
+            route = DIR_ROOT + route;
         }
 
-        vertx.createHttpClient().post(port, HOST, target, handler -> {
+        if (!data.containsKey(PROTOCOL_ROUTE)) {
+            data.put(PROTOCOL_ROUTE, route);
+        }
+
+        vertx.createHttpClient().post(port, HOST, route, handler -> {
             handler.bodyHandler(body -> handleBody(listener, body));
         }).end(data.encode());
     }

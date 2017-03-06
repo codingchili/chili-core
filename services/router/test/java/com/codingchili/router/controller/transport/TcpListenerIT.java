@@ -31,6 +31,7 @@ public class TcpListenerIT extends TransportTestCases {
                 if (!data.containsKey(PROTOCOL_ROUTE)) {
                     data.put(PROTOCOL_ROUTE, route);
                 }
+
                 socket.write(data.encode());
             } else {
                 throw new RuntimeException(connect.cause());

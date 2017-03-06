@@ -1,5 +1,7 @@
 package com.codingchili.router.controller.transport;
 
+import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_ROUTE;
+
 import com.codingchili.router.model.WireType;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -22,6 +24,11 @@ public class UdpListenerIT extends TransportTestCases {
 
     @Override
     void sendRequest(String route, ResponseListener listener, JsonObject data) {
+
+        if (!data.containsKey(PROTOCOL_ROUTE)) {
+            data.put(PROTOCOL_ROUTE, route);
+        }
+
         vertx.createDatagramSocket().send(data.encode(), port, HOST, handler -> {
             if (handler.succeeded()) {
                 handler.result().handler(response -> handleBody(listener, response.data()));
