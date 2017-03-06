@@ -1,14 +1,16 @@
 package com.codingchili.router.controller.transport;
 
+import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
+
+import com.codingchili.core.protocol.ClusterNode;
+import com.codingchili.core.protocol.exception.RequestPayloadSizeException;
 import com.codingchili.router.configuration.ListenerSettings;
 import com.codingchili.router.configuration.RouterContext;
 import com.codingchili.router.controller.RouterHandler;
 import com.codingchili.router.model.WireType;
+
 import io.vertx.core.Future;
 import io.vertx.core.datagram.DatagramPacket;
-
-import com.codingchili.core.protocol.ClusterNode;
-import com.codingchili.core.protocol.exception.RequestPayloadSizeException;
 
 /**
  * @author Robin Duda
@@ -16,7 +18,6 @@ import com.codingchili.core.protocol.exception.RequestPayloadSizeException;
  * UDP transport listener.
  */
 public class UdpListener extends ClusterNode {
-    private static final String INTERFACE_IPv4 = "0.0.0.0";
     private final RouterHandler<RouterContext> handler;
 
     public UdpListener(RouterHandler<RouterContext> handler) {
@@ -25,13 +26,14 @@ public class UdpListener extends ClusterNode {
 
     @Override
     public void start(Future<Void> start) {
-        vertx.createDatagramSocket().listen(listener().getPort(), INTERFACE_IPv4, listen -> {
+        vertx.createDatagramSocket().listen(listener().getPort(), getBindAddress(), listen -> {
             if (listen.succeeded()) {
                 listen.result().handler(this::handle);
+                handler.start(start);
+            } else {
+                start.fail(listen.cause());
             }
         });
-
-        handler.start(start);
     }
 
     private void handle(DatagramPacket connection) {

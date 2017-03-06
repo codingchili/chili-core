@@ -34,7 +34,7 @@ import static com.codingchili.common.Strings.*;
 @RunWith(VertxUnitRunner.class)
 public abstract class TransportTestCases {
     static final String PATCHING_ROOT = "/patching";
-    static final String HOST = "::1";
+    static final String HOST = getLoopbackAddress();
     protected int port = PORT.getAndIncrement();
     protected Vertx vertx;
     private static final AtomicInteger PORT = new AtomicInteger(19797);
@@ -67,8 +67,6 @@ public abstract class TransportTestCases {
                     .setTimeout(105000)
                     .setHttpOptions(new HttpServerOptions().setCompressionSupported(false))
                     .addMapping(PATCHING_ROOT, new Endpoint(NODE_PATCHING));
-
-        System.out.println("Set listener port to " + port);
 
             settings = new RouterSettings(new RemoteIdentity("node", "host"))
                     .setHidden(NODE_LOGGING)
