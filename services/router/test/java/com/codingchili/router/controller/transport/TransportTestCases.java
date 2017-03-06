@@ -7,7 +7,6 @@ import com.codingchili.router.configuration.RouterSettings;
 import com.codingchili.router.model.Endpoint;
 import com.codingchili.router.model.WireType;
 import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonObject;
@@ -52,7 +51,7 @@ public abstract class TransportTestCases {
     }
 
     @Rule
-    public Timeout timeout = new Timeout(30, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
 
     @Before
     public void setUp(TestContext testContext) {

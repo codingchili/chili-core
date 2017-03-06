@@ -46,6 +46,11 @@ subprojects {
             exceptionFormat "full"
         }
     }
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier 'sources'
+        from sourceSets.main.allSource
+    }
 }
 
 task archiveZip(type: Zip, dependsOn: 'jar') {
@@ -58,15 +63,11 @@ task archiveZip(type: Zip, dependsOn: 'jar') {
 }
 
 task copyTask(type: Copy, dependsOn: 'build') {
-    from (subprojects.collect {it.tasks.withType(Jar)}) {
-        into 'release'
-    }
-    from (subprojects.collect {it.tasks.withType(Javadoc)}) {
-        into 'release'
-    }
-    from (subprojects.collect {it.tasks.withType(AbstractArchiveTask)}) {
-        into 'release'
-    }
+    from (subprojects.collect {it.tasks.withType(Jar)})
+    from (subprojects.collect {it.tasks.withType(Javadoc)})
+    from (subprojects.collect {it.tasks.withType(AbstractArchiveTask)})
+
+    destinationDir = new File('resources')
 }
 
 if (System.env.TRAVIS == 'true') {
