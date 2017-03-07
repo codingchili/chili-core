@@ -8,6 +8,10 @@ import com.codingchili.core.security.*;
 import com.codingchili.core.storage.AsyncStorage;
 import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
 import com.codingchili.core.storage.exception.ValueMissingException;
+import io.vertx.core.Handler;
+
+import static io.vertx.core.Future.failedFuture;
+import static io.vertx.core.Future.succeededFuture;
 
 /**
  * @author Robin Duda
@@ -24,18 +28,18 @@ public class AccountDB implements AsyncAccountStore {
     }
 
     @Override
-    public void get(Future<Account> future, String username) {
+    public void get(Handler<AsyncResult<Account>> future, String username) {
         accounts.get(username, user -> {
             if (user.succeeded()) {
-                future.complete(filter(user.result()));
+                future.handle(succeededFuture(filter(user.result())));
             } else {
-                future.fail(user.cause());
+                future.handle(failedFuture(user.cause()));
             }
         });
     }
 
     @Override
-    public void authenticate(Future<Account> future, Account account) {
+    public void authenticate(Handler<AsyncResult<Account>> future, Account account) {
         accounts.get(account.getUsername(), map -> {
             if (map.succeeded()) {
                 authenticate(future, map.result(), account);
@@ -46,7 +50,7 @@ public class AccountDB implements AsyncAccountStore {
     }
 
     @Override
-    public void register(Future<Account> future, Account account) {
+    public void register(Handler<AsyncResult<Account>> future, Account account) {
         Future<String> hashing = Future.future();
         AccountMapping mapping = new AccountMapping(account)
                 .setSalt(hasher.salt());
@@ -56,7 +60,7 @@ public class AccountDB implements AsyncAccountStore {
 
             accounts.putIfAbsent(mapping, map -> {
                 if (map.succeeded()) {
-                    future.complete(filter(account));
+                    future.handle(Future.succeededFuture(filter(account)));
                 } else {
                     fail(future, map);
                 }
@@ -65,26 +69,26 @@ public class AccountDB implements AsyncAccountStore {
         hasher.hash(hashing, account.getPassword(), mapping.getSalt());
     }
 
-    private void fail(Future future, AsyncResult result) {
+    private void fail(Handler<AsyncResult<Account>> future, AsyncResult result) {
         Throwable cause = result.cause();
 
         if (cause instanceof ValueAlreadyPresentException) {
-            future.fail(new AccountExistsException());
+            future.handle(failedFuture(new AccountExistsException()));
         } else if (cause instanceof ValueMissingException) {
-            future.fail(new AccountMissingException());
+            future.handle(failedFuture(new AccountMissingException()));
         } else {
-            future.fail(cause);
+            future.handle(failedFuture(cause));
         }
     }
 
-    private void authenticate(Future<Account> future, AccountMapping authenticated, Account unauthenticated) {
+    private void authenticate(Handler<AsyncResult<Account>> future, AccountMapping authenticated, Account unauthenticated) {
         Future<String> hashing = Future.future();
 
         hashing.setHandler(hash -> {
             if (ByteComparator.compare(hash.result(), authenticated.getHash())) {
-                future.complete(filter(authenticated));
+                future.handle(succeededFuture(filter(authenticated)));
             } else {
-                future.fail(new AccountPasswordException());
+                future.handle(failedFuture(new AccountPasswordException()));
             }
         });
         hasher.hash(hashing, unauthenticated.getPassword(), authenticated.getSalt());
