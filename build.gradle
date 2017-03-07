@@ -29,8 +29,7 @@ subprojects {
         }
         test {
             java {
-                srcDir 'test/java'
-            }
+                srcDir 'test/java'            }
             resources {
                 srcDir 'test/resources'
             }
@@ -75,7 +74,7 @@ if (System.env.TRAVIS == 'true') {
             groovyOptions.fork = true
         }
         tasks.withType(Test) {
-            maxParallelForks = 2
+            maxParallelForks = 1
             minHeapSize = '256m'
         }
     }
