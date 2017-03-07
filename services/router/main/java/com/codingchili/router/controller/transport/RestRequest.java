@@ -48,7 +48,7 @@ class RestRequest extends BaseRequest {
         parseApi();
 
         if (!data.containsKey(PROTOCOL_ROUTE)) {
-            data.put(PROTOCOL_ROUTE, context.request().path());
+            data.put(PROTOCOL_ROUTE, context.request().path().replaceFirst("/", ""));
         }
 
         if (!data.containsKey(PROTOCOL_TARGET)) {

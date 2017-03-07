@@ -50,7 +50,6 @@ public class RestListener extends ClusterNode
                 .requestHandler(router::accept)
                 .listen(listener().getPort(), getBindAddress(), listen -> {
                     if (listen.succeeded()) {
-                        System.out.println("listen ok port " + listener().getPort() + " " + getBindAddress());
                         handler.start(start);
                     } else {
                         start.fail(listen.cause());

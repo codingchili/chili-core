@@ -6,7 +6,6 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -16,11 +15,12 @@ import static com.codingchili.common.Strings.*;
 
 /**
  * @author Robin Duda
- *
- * Test cases for HTTP/REST transport.
+ *         <p>
+ *         Test cases for HTTP/REST transport.
  */
 @RunWith(VertxUnitRunner.class)
 public class RestListenerIT extends TransportTestCases {
+    private static final String SAMPLE_URL = "/files/metadata/download.json";
 
     public RestListenerIT() {
         super(WireType.REST);
@@ -32,11 +32,11 @@ public class RestListenerIT extends TransportTestCases {
 
         mockNode(NODE_PATCHING);
 
-        sendRequest(PATCHING_ROOT, (result, status) -> {
+        sendRequest((result, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
             context.assertEquals(NODE_PATCHING, result.getString(PROTOCOL_TARGET));
             async.complete();
-        });
+        }, new JsonObject().put(PROTOCOL_ROUTE, PATCHING_ROOT));
     }
 
     @Test
@@ -45,11 +45,11 @@ public class RestListenerIT extends TransportTestCases {
 
         mockNode(NODE_WEBSERVER);
 
-        sendRequest(DIR_ROOT, (result, status) -> {
+        sendRequest((result, status) -> {
             context.assertEquals(ResponseStatus.ACCEPTED, status);
             context.assertEquals(NODE_WEBSERVER, result.getString(PROTOCOL_TARGET));
             async.complete();
-        });
+        }, new JsonObject().put(PROTOCOL_ROUTE, SAMPLE_URL));
     }
 
     @Test
@@ -58,9 +58,9 @@ public class RestListenerIT extends TransportTestCases {
 
         sendGetRequest("/?" + PROTOCOL_ROUTE + "=" + ID_PING + "&" + PROTOCOL_TARGET + "=" + NODE_ROUTING,
                 (result, status) -> {
-            context.assertEquals(ResponseStatus.ACCEPTED, status);
-            async.complete();
-        });
+                    context.assertEquals(ResponseStatus.ACCEPTED, status);
+                    async.complete();
+                });
     }
 
     private void sendGetRequest(String action, ResponseListener listener) {
@@ -69,21 +69,20 @@ public class RestListenerIT extends TransportTestCases {
         });
     }
 
-    private void sendRequest(String route, ResponseListener listener) {
-        sendRequest(route, listener, new JsonObject());
-    }
-
     @Override
-    void sendRequest(String route, ResponseListener listener, JsonObject data) {
-        if (!route.startsWith(DIR_ROOT)) {
-            route = DIR_ROOT + route;
+    void sendRequest(ResponseListener listener, JsonObject data) {
+        String target = data.getString(PROTOCOL_ROUTE);
+
+        if (target == null) {
+            target = "";
+        } else {
+            if (!target.startsWith(DIR_ROOT)) {
+                target = DIR_ROOT + target;
+            }
+            data.remove(PROTOCOL_ROUTE);
         }
 
-        if (!data.containsKey(PROTOCOL_ROUTE)) {
-            data.put(PROTOCOL_ROUTE, route);
-        }
-
-        vertx.createHttpClient().post(port, HOST, route, handler -> {
+        vertx.createHttpClient().post(port, HOST, target, handler -> {
             handler.bodyHandler(body -> handleBody(listener, body));
         }).end(data.encode());
     }

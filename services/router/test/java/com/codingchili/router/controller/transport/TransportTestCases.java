@@ -24,6 +24,7 @@ import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.security.RemoteIdentity;
 
 import static com.codingchili.common.Strings.*;
+import static com.codingchili.core.configuration.CoreStrings.ANY;
 
 /**
  * @author Robin Duda
@@ -71,14 +72,14 @@ public abstract class TransportTestCases {
                 .setHidden(NODE_LOGGING)
                 .addTransport(listener);
 
-            settings.setHidden(Strings.NODE_LOGGING);
-            settings.addTransport(listener);
-            context.setSettings(settings);
+        settings.setHidden(Strings.NODE_LOGGING);
+        settings.addTransport(listener);
+        context.setSettings(settings);
 
-            vertx.deployVerticle(new Service(context), deploy -> {
-                test.assertTrue(deploy.succeeded());
-                async.complete();
-            });
+        vertx.deployVerticle(new Service(context), deploy -> {
+            test.assertTrue(deploy.succeeded());
+            async.complete();
+        });
     }
 
     @After
@@ -90,18 +91,19 @@ public abstract class TransportTestCases {
     public void testLargePacketRejected(TestContext test) {
         Async async = test.async();
 
-        sendRequest(NODE_ROUTING, (result, status) -> {
+        sendRequest((result, status) -> {
             test.assertEquals(ResponseStatus.BAD, status);
             async.complete();
         }, new JsonObject()
-                .put(DATA, new String(new byte[MAX_REQUEST_BYTES]).replace("\0", ONE_CHAR)));
+                .put(DATA, new String(new byte[MAX_REQUEST_BYTES]).replace("\0", ONE_CHAR))
+                .put(PROTOCOL_TARGET, NODE_ROUTING));
     }
 
     @Test
     public void testAccepted(TestContext test) {
         Async async = test.async();
 
-        sendRequest(NODE_ROUTING, (result, status) -> {
+        sendRequest((result, status) -> {
             test.assertEquals(ResponseStatus.ACCEPTED, status);
             async.complete();
         }, new JsonObject()
@@ -120,11 +122,10 @@ public abstract class TransportTestCases {
     /**
      * Implementing class must provide transport specific implementation.
      *
-     * @param route    the request route
      * @param listener invoked with the request response
-     * @param data     the request data.
+     * @param data     the request data with route and target.
      */
-    abstract void sendRequest(String route, ResponseListener listener, JsonObject data);
+    abstract void sendRequest(ResponseListener listener, JsonObject data);
 
     void handleBody(ResponseListener listener, Buffer body) {
         ResponseStatus status = ResponseStatus.valueOf(body.toJsonObject().getString(PROTOCOL_STATUS));
