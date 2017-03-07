@@ -10,10 +10,8 @@ before_cache:
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 before_script:
   - sleep 10
-before_install:
-  - curl -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.2.2.deb && sudo dpkg -i --force-confnew elasticsearch-5.2.2.deb && sudo service elasticsearch restart
 services:
-  - elasticsearch
+#  - elasticsearch - requires version 5.2.2
   - mongodb
 cache:
   directories:
