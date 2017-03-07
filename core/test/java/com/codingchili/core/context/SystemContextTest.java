@@ -4,6 +4,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.Repeat;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -93,15 +94,15 @@ public class SystemContextTest {
     @Test
     public void testPeriodic(TestContext test) {
         Async async = test.async();
-        int[] countdown = {3};
-        int interval = 25;
+        AtomicInteger countdown = new AtomicInteger(3);
+        int interval = 50;
 
         context.periodic(() -> interval, "test", event -> {
-            countdown[0]--;
+            countdown.getAndDecrement();
         });
 
-        context.timer(90, event -> {
-            test.assertTrue(0 == countdown[0]);
+        context.timer(185, event -> {
+            test.assertTrue(0 == countdown.get());
             async.complete();
         });
     }
