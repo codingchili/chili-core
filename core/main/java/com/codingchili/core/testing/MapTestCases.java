@@ -446,7 +446,7 @@ public class MapTestCases {
                     item.getLevel() > lastLevel && order.equals(SortOrder.DESCENDING)) {
                 new ConsoleLogger()
                         .level(Level.WARNING)
-                        .log("Sort verification failed!")
+                        .log("Sort verification error!")
                         .log("Last level was " + lastLevel + " using sortmode " + order.name())
                         .log(Serializer.json(item).encodePrettily());
                 return false;

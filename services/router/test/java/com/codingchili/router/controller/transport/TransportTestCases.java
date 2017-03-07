@@ -63,7 +63,7 @@ public abstract class TransportTestCases {
                 .setMaxRequestBytes(MAX_REQUEST_BYTES)
                 .setPort(port)
                 .setType(wireType)
-                .setTimeout(60000)
+                .setTimeout(7000)
                 .setHttpOptions(new HttpServerOptions().setCompressionSupported(false))
                 .addMapping(PATCHING_ROOT, new Endpoint(NODE_PATCHING));
 
