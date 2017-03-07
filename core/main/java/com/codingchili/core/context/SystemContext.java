@@ -5,8 +5,6 @@ import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.dropwizard.MetricsService;
 
-import java.util.UUID;
-
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.files.Configurations;
@@ -16,6 +14,7 @@ import com.codingchili.core.protocol.ClusterListener;
 import com.codingchili.core.security.RemoteIdentity;
 
 import static com.codingchili.core.configuration.CoreStrings.ID_SYSTEM;
+
 
 /**
  * @author Robin Duda

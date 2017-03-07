@@ -14,7 +14,7 @@ import com.codingchili.core.configuration.CoreStrings;
  */
 public class SystemSettings extends BaseConfigurable {
     private int metricRate = 15000;
-    private int handlers = 1;
+    private int handlers = Runtime.getRuntime().availableProcessors();
     private boolean metrics = false;
     private int deployTimeout = 3000;
     private int shutdownLogTimeout = 3000;
