@@ -24,7 +24,6 @@ import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.security.RemoteIdentity;
 
 import static com.codingchili.common.Strings.*;
-import static com.codingchili.core.configuration.CoreStrings.ANY;
 
 /**
  * @author Robin Duda
