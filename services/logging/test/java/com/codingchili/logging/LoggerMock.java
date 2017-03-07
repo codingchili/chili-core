@@ -23,7 +23,7 @@ public class LoggerMock extends DefaultLogger {
 
     @Override
     public void onServerStopped(Future<Void> future) {
-        //future.complete();
+        future.complete();
     }
 
     @Override
@@ -63,7 +63,7 @@ public class LoggerMock extends DefaultLogger {
 
     @Override
     public Logger level(Level startup) {
-        return null;
+        return this;
     }
 
 
