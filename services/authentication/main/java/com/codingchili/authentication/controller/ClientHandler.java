@@ -38,29 +38,23 @@ public class ClientHandler<T extends AuthenticationContext> extends AbstractHand
     }
 
     private void register(ClientRequest request) {
-        Future<Account> future = Future.future();
-
-        future.setHandler(result -> {
-            if (future.succeeded()) {
-                sendAuthentication(result.result(), request, true);
+        accounts.register(register -> {
+            if (register.succeeded()) {
+                sendAuthentication(register.result(), request, true);
             } else {
-                request.error(result.cause());
+                request.error(register.cause());
             }
-        });
-        accounts.register(future, request.getAccount());
+        }, request.getAccount());
     }
 
     private void authenticate(ClientRequest request) {
-        Future<Account> future = Future.future();
-
-        future.setHandler(result -> {
-            if (future.succeeded()) {
-                sendAuthentication(result.result(), request, false);
+        accounts.authenticate(authentication -> {
+            if (authentication.succeeded()) {
+                sendAuthentication(authentication.result(), request, false);
             } else {
-                request.error(result.cause());
+                request.error(authentication.cause());
             }
-        });
-        accounts.authenticate(future, request.getAccount());
+        }, request.getAccount());
     }
 
     private void sendAuthentication(Account account, ClientRequest request, boolean registered) {
