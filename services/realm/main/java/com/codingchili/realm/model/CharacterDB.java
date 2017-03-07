@@ -1,13 +1,16 @@
 package com.codingchili.realm.model;
 
-import com.codingchili.realm.instance.model.PlayerCharacter;
-import io.vertx.core.Future;
-
-import java.util.Collection;
-
 import com.codingchili.core.storage.AsyncStorage;
+import com.codingchili.realm.instance.model.PlayerCharacter;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+
+import java.util.List;
 
 import static com.codingchili.common.Strings.ID_ACCOUNT;
+import static com.codingchili.core.configuration.CoreStrings.ID_NAME;
+import static io.vertx.core.Future.failedFuture;
 
 /**
  * @author Robin Duda
@@ -22,64 +25,38 @@ public class CharacterDB implements AsyncCharacterStore {
     }
 
     @Override
-    public void create(Future future, String username, PlayerCharacter character) {
-        characters.putIfAbsent(character, result -> {
-            if (result.succeeded()) {
-                future.complete();
+    public void create(Handler<AsyncResult<Void>> future, String username, PlayerCharacter character) {
+        characters.putIfAbsent(character, future);
+    }
+
+    @Override
+    public void findByUsername(Handler<AsyncResult<List<PlayerCharacter>>> future, String username) {
+        characters.query(ID_ACCOUNT).equalTo(username).execute(future);
+    }
+
+    @Override
+    public void findOne(Handler<AsyncResult<PlayerCharacter>> future, String username, String character) {
+        characters.query(ID_ACCOUNT).equalTo(username)
+                .and(ID_NAME).equalTo(character).execute(get -> {
+
+            if (get.succeeded() && get.result().size() != 0) {
+                future.handle(Future.succeededFuture(get.result().get(0)));
             } else {
-                future.fail(result.cause());
+                future.handle(Future.failedFuture(new CharacterMissingException(character)));
             }
         });
     }
 
     @Override
-    public void findByUsername(Future<Collection<PlayerCharacter>> future, String username) {
-        characters.query(ID_ACCOUNT).startsWith(username).execute(result -> {
-            if (result.succeeded()) {
-                future.complete(result.result());
-            } else {
-                future.fail(result.cause());
-            }
-        });
-    }
-
-    @Override
-    public void findOne(Future<PlayerCharacter> future, String username, String character) {
-        characters.get(character, result -> {
-            if (result.succeeded()) {
-                PlayerCharacter found = result.result();
-
-                if (found.getAccount().equals(username)) {
-                    future.complete(found);
-                } else {
-                    future.fail(new CharacterMissingException(character));
-                }
-            } else {
-                future.fail(new CharacterMissingException(character));
-            }
-        });
-    }
-
-    @Override
-    public void remove(Future future, String username, String character) {
-        characters.get(character, result -> {
-            if (result.succeeded()) {
-                PlayerCharacter found = result.result();
-
-                if (username.equals(found.getAccount())) {
-                    characters.remove(character, removed -> {
-                        if (removed.succeeded()) {
-                            future.complete();
-                        } else {
-                            future.fail(new CharacterMissingException(character));
-                        }
-                    });
-                } else {
-                    future.fail(new CharacterMissingException(character));
-                }
-            } else {
-                future.fail(result.cause());
-            }
-        });
+    public void remove(Handler<AsyncResult<Void>> future, String username, String character) {
+        characters.query(ID_ACCOUNT).equalTo(username)
+                .and(ID_NAME).equalTo(character)
+                .execute(query -> {
+                    if (query.succeeded() && query.result().size() > 0) {
+                        characters.remove(character, future);
+                    } else {
+                        future.handle(failedFuture(new CharacterMissingException(character)));
+                    }
+                });
     }
 }

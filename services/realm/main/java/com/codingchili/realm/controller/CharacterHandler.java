@@ -26,7 +26,6 @@ public class CharacterHandler<T extends RealmContext> extends AbstractHandler<T>
     private final AsyncCharacterStore characters;
     private boolean registered = false;
 
-
     public CharacterHandler(T context) {
         super(context, context.address());
 
@@ -72,23 +71,17 @@ public class CharacterHandler<T extends RealmContext> extends AbstractHandler<T>
     }
 
     private void characterRemove(RealmRequest request) {
-        Future<PlayerCharacter> future = Future.future();
-
-        future.setHandler(remove -> {
+        characters.remove(remove -> {
             if (remove.succeeded()) {
                 request.accept();
             } else {
                 request.error(remove.cause());
             }
-        });
-
-        characters.remove(future, request.account(), request.character());
+        }, request.account(), request.character());
     }
 
     private void characterList(RealmRequest request) {
-        Future<Collection<PlayerCharacter>> characterFuture = Future.future();
-
-        characterFuture.setHandler(characters -> {
+        characters.findByUsername(characters -> {
             if (characters.succeeded()) {
                 Collection<PlayerCharacter> result = characters.result();
 
@@ -100,23 +93,18 @@ public class CharacterHandler<T extends RealmContext> extends AbstractHandler<T>
             } else {
                 request.error(characters.cause());
             }
-        });
-        characters.findByUsername(characterFuture, request.account());
+        }, request.account());
     }
 
     private void characterCreate(RealmRequest request) {
-        Future<PlayerCharacter> create = Future.future();
-
-        create.setHandler(creation -> {
-            if (creation.succeeded()) {
-                request.accept();
-            } else {
-                request.error(new CharacterExistsException(request.character()));
-            }
-        });
-
         try {
-            characters.create(create, request.account(), readTemplate(request.character(), request.className()));
+            characters.create(creation -> {
+                if (creation.succeeded()) {
+                    request.accept();
+                } else {
+                    request.error(new CharacterExistsException(request.character()));
+                }
+            }, request.account(), readTemplate(request.character(), request.className()));
         } catch (PlayerClassDisabledException e) {
             request.error(e);
         }
