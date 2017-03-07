@@ -86,7 +86,6 @@ public abstract class RequestMock {
             return ResponseStatus.valueOf(json.getString(PROTOCOL_STATUS));
         }
 
-
         @Override
         public String address() {
             return null;
@@ -100,6 +99,12 @@ public abstract class RequestMock {
         @Override
         public String replyAddress() {
             return null;
+        }
+
+        @Override
+        public boolean isSend()
+        {
+            return false; // publish to all listeners for tests.
         }
 
         @Override
