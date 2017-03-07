@@ -1,31 +1,38 @@
 apply plugin: 'java'
 apply plugin: 'idea'
 
-version = "1.0-SNAPSHOT"
-libsDirName = '../prototype'
-
-tasks.withType(JavaCompile) {
-	options.encoding = 'UTF-8'
-}
+project.version = "1.0-SNAPSHOT"
+project.group = 'com.codingchili'
 
 subprojects {
     apply plugin: 'java'
     apply plugin: 'idea'
 
+    version = rootProject.version
+    group = rootProject.version
+
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
-    libsDirName = '../../../prototype/service'
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
 
     sourceSets {
         main {
             java {
-                srcDir 'main/'
+                srcDir 'main/java'
+            }
+            resources {
+                srcDir 'main/resources'
             }
         }
         test {
             java {
-                srcDir 'test/'
+                srcDir 'test/java'
+            }
+            resources {
+                srcDir 'test/resources'
             }
         }
     }
@@ -33,51 +40,43 @@ subprojects {
     repositories {
         maven { url 'http://repo.maven.apache.org/maven2' }
     }
-}
 
-repositories {
-    maven { url 'http://repo.maven.apache.org/maven2' }
-}
-
-jar {
-    from {
-        (configurations.runtime).collect {
-            it.isDirectory() ? it : zipTree(it)
+    test {
+        testLogging {
+            exceptionFormat "full"
         }
     }
-    manifest {
-        attributes 'Implementation-Title' : 'chili-core',
-                'Implementation-Version': version,
-                'Main-Class': 'com.codingchili.core.Launcher'
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier 'sources'
+        from sourceSets.main.allSource
     }
 }
 
-subprojects.each { subproject -> evaluationDependsOn( subproject.path ) }
+task archiveZip(type: Zip, dependsOn: 'jar') {
+    baseName = 'prototype'
+    from fileTree('prototype')
 
-jar.dependsOn subprojects.tasks['classes']
-jar {
-    baseName = 'core-full'
-    manifest {
-        attributes 'Main-Class': 'com.codingchili.core.Launcher'
-    }
-    subprojects.each { subproject ->
-        from subproject.sourceSets.main.output.classesDir
-        from subproject.sourceSets.main.output.resourcesDir
+    from (subprojects.collect {it.tasks.withType(Jar)}) {
+        into 'lib'
     }
 }
 
-allprojects {
-    dependencies {
-        compile group: 'junit', name: 'junit', version: '4.12'
-        compile group: 'io.vertx', name: 'vertx-core', version: '3.3.3'
-        compile group: 'io.vertx', name: 'vertx-unit', version: '3.3.3'
-        compile group: 'io.vertx', name: 'vertx-web', version: '3.3.3'
-        compile group: 'io.vertx', name: 'vertx-hazelcast', version: '3.3.3'
-        compile group: 'io.vertx', name: 'vertx-mongo-client', version: '3.3.3'
-        compile group: 'io.vertx', name: 'vertx-dropwizard-metrics', version: '3.3.3'
-        compile group: 'org.fusesource.jansi', name: 'jansi', version: '1.14'
+task copyTask(type: Copy, dependsOn: 'build') {
+    from (subprojects.collect {it.tasks.withType(Jar)})
+    /*from (subprojects.collect {it.tasks.withType(Javadoc)})*/
+    from (subprojects.collect {it.tasks.withType(AbstractArchiveTask)})
+    destinationDir = new File('release')
+}
 
-        // the following dependencies are about 25MB in size..
-        compile group: 'org.elasticsearch.client', name: 'transport', version: '5.0.2'
+if (System.env.TRAVIS == 'true') {
+    allprojects {
+        tasks.withType(GroovyCompile) {
+            groovyOptions.fork = true
+        }
+        tasks.withType(Test) {
+            maxParallelForks = 2
+            minHeapSize = '256m'
+        }
     }
 }
