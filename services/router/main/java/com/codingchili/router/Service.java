@@ -30,14 +30,17 @@ public class Service extends ClusterNode {
 
     @Override
     public void start(Future<Void> start) {
-        for (int i = 0; i < settings.getHandlers(); i++) {
+        for (ListenerSettings listener : context.transports()) {
+            RouterHandler<RouterContext> handler = new RouterHandler<>(context);
 
-            for (ListenerSettings listener : context.transports()) {
-                RouterHandler<RouterContext> handler = new RouterHandler<>(context);
+            for (int i = 0; i < settings.getHandlers(); i++) {
+                boolean singleHandlerOnly = false;
+                Future<String> future = Future.future();
 
                 switch (listener.getType()) {
                     case UDP:
-                        context.deploy(new UdpListener(handler));
+                        context.deploy(new UdpListener(handler), future);
+                        singleHandlerOnly = true;
                         break;
                     case TCP:
                         context.deploy(new TcpListener(handler));
@@ -48,6 +51,9 @@ public class Service extends ClusterNode {
                     case REST:
                         context.deploy(new RestListener(handler));
                         break;
+                }
+                if (singleHandlerOnly) {
+                    break;
                 }
             }
         }
