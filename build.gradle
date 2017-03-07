@@ -29,7 +29,8 @@ subprojects {
         }
         test {
             java {
-                srcDir 'test/java'            }
+                srcDir 'test/java'
+            }
             resources {
                 srcDir 'test/resources'
             }
