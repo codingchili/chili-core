@@ -13,7 +13,7 @@ Create an installation in **prototype/** with all services bundled, and build ja
 gradlew build
 ```
 
-Start the prototype-server from **prototype/**
+Unzip **build/distributions/prototype.zip** and start with
 ```
 unix: ./start
 windows: start.cmd
