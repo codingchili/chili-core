@@ -12,14 +12,15 @@ To build chili-core clone this repository with **git**,
 git clone https://github.com/codingchili/chili-core.git
 ```
 
-Create a JAR in **prototype/** with all services bundled, requires gradle to be installed
+Create an installation in **prototype/** with all services bundled, and build jars.
 ```
-gradle jar
+gradlew build
 ```
 
-Start the server from **prototype/**
+Start the prototype-server from **prototype/**
 ```
-java -jar <filename.jar>
+unix: ./start
+windows: start.cmd
 ```
 
 For information on how to setup the installation look at the README.md in **prototype/**.
