@@ -36,7 +36,7 @@ public class RegistryContext extends ServiceContext {
     public static void create(Future<RegistryContext> future, Vertx vertx) {
         RegistryContext context = new RegistryContext(vertx);
 
-        new StorageLoader<RealmSettings>().mongodb(context)
+        new StorageLoader<RealmSettings>().indexed(context)
                 .withCollection(COLLECTION_REALMS)
                 .withClass(RealmSettings.class)
                 .build(prepare -> {

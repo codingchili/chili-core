@@ -32,7 +32,7 @@ public class AuthenticationContext extends ServiceContext {
 
     public static void create(Future<AuthenticationContext> future, Vertx vertx) {
         AuthenticationContext context = new AuthenticationContext(vertx);
-        new StorageLoader<AccountMapping>().mongodb(context)
+        new StorageLoader<AccountMapping>().indexed(context)
                 .withCollection(COLLECTION_ACCOUNTS)
                 .withClass(AccountMapping.class)
                 .build(prepare -> {

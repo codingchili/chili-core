@@ -15,6 +15,8 @@ import com.codingchili.core.protocol.ClusterNode;
 public class Service extends ClusterNode {
     private RouterContext context;
 
+    public Service() {}
+
     public Service(RouterContext context) {
         this.context = context;
     }
@@ -23,7 +25,7 @@ public class Service extends ClusterNode {
     public void init(Vertx vertx, Context context) {
         super.init(vertx, context);
 
-        if (context == null) {
+        if (this.context == null) {
             this.context = new RouterContext(vertx);
         }
     }
