@@ -2,10 +2,6 @@
 
 The chili core is a lightweight distributed **architecture** for creating microservices with focus on **modularity**, **security** and **scalability**. The backend uses **Vert.x** with **Hazelcast** as its cluster manager. 
 
-**Beware!**
-
-Until the first pre-release master will be unstable and may not work even if the build is green!
-
 ## Building
 To build chili-core clone this repository with **git**,
 ```
@@ -81,22 +77,19 @@ The configuration structure
 
 All configuration files are loaded by their respective service with support for reloading changes at runtime. Minimally the framework configuration in **conf/system/** must exist as it is required by the launcher. 
 
-## Mods
-Brief introduction on how the core may be modified to fit your needs.
+## Makes use of
+[hazelcast/hazelcast](https://github.com/hazelcast/hazelcast) - clustermanager and imap
 
-* Server: Alter game mechanics, Protocol, Performance, Security. [Java programming]
-* Realm design: Configuration files, Quests, Npcs, Worlds, Items [JSON]
-* Resource mods: Modify graphics resources, spells, characters, sounds [Graphics/Sounds]
+[eclipse/vert.x](https://github.com/eclipse/vert.x) - reactive: eventbus, clustering and networking
 
-Realm and resource mods may be applied to systems which runs the authentication server with 3rd party server support. Or to a new system with the bundled game.
+[npgall/cqengine](https://github.com/npgall/cqengine) - in-vm indexed collections with query support
 
-Example mod cases
-* Mod an existing game you like which uses the chili-core and publish it as a 3rd party server on their server.
-* Mod the chili core bundled game and start your own authentication server, or publish on the official server.
-* Play the offical bundled game on the official server, request a PR or add an issue to this repository.
+[elastic/elasticsearch](https://github.com/elastic/elasticsearch) - distributed data indexing
+
+[mongodb/mongo](https://github.com/mongodb/mongo) - document database
 
 ## Contributing
-Not accepting issues or PR's at this stage.
+Issues and PR's welcome.
 
 ## License
 The MIT License (MIT)
