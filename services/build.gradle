@@ -4,3 +4,25 @@ subprojects {
         compile project(':common')
     }
 }
+
+subprojects.each { subproject -> evaluationDependsOn(subproject.path) }
+
+task sourcesJar(type: Jar, dependsOn: subprojects.build) {
+    classifier 'sources'
+    subprojects.each { subproject ->
+        from subproject.sourceSets.main.allSource
+    }
+}
+
+task allJar(type: Jar, dependsOn: sourcesJar) {
+    baseName = 'services'
+    subprojects.each { subproject ->
+        from subproject.configurations.archives.allArtifacts.files.collect {
+            zipTree(it)
+        }
+    }
+}
+
+jar {
+    actions = []
+}.dependsOn allJar

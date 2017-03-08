@@ -4,9 +4,8 @@ lib/
 target/
 build/
 core/conf/
-prototype/service
+prototype/website/bower_components/
 core/test/resources/Configurations/testfile.json
-prototype/core-full-1.0-SNAPSHOT.jar
-prototype/core-1.0-SNAPSHOT.jar
 core/db/
 services/logging/db/
+db

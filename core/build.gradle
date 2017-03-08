@@ -1,3 +1,8 @@
+task sourcesJar(type: Jar) {
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
+
 jar {
     from {
         (configurations.runtime).collect {
@@ -9,7 +14,7 @@ jar {
                 'Implementation-Version': version,
                 'Main-Class': 'com.codingchili.core.Launcher'
     }
-}
+}.dependsOn sourcesJar
 
 dependencies {
     compile group: 'junit', name: 'junit', version: '4.12'
