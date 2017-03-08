@@ -59,6 +59,14 @@ task archiveZip(type: Zip) {
 
 build.dependsOn archiveZip
 
+task prototype(type: JavaExec) {
+    workingDir = 'prototype'
+    subprojects.each {
+        classpath += it.sourceSets.main.runtimeClasspath
+    }
+    main = 'com.codingchili.core.Launcher'
+}
+
 if (System.env.TRAVIS == 'true') {
     allprojects {
         tasks.withType(GroovyCompile) {
