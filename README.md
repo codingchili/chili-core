@@ -8,15 +8,14 @@ To build chili-core clone this repository with **git**,
 git clone https://github.com/codingchili/chili-core.git
 ```
 
-Create an installation in **prototype/** with all services bundled, and build jars.
+Builds all jars, runs tests and packages a prototype zip.
 ```
 gradlew build
 ```
 
-Unzip **build/distributions/prototype.zip** and start with
+Start the prototype, does not require running build first.
 ```
-unix: ./start
-windows: start.cmd
+gradlew prototype
 ```
 
 For information on how to setup the installation look at the README.md in **prototype/**.
