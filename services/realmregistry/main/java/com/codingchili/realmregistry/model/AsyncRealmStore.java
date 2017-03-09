@@ -2,11 +2,12 @@ package com.codingchili.realmregistry.model;
 
 import com.codingchili.realmregistry.configuration.RealmSettings;
 
-import io.vertx.core.Future;
+import io.vertx.core.AsyncResult;
 
 import java.util.List;
 
 import com.codingchili.core.security.Token;
+import io.vertx.core.Handler;
 
 
 /**
@@ -22,7 +23,7 @@ public interface AsyncRealmStore
      *
      * @param future callback
      */
-    void getMetadataList(Future<List<RealmMetaData>> future);
+    void getMetadataList(Handler<AsyncResult<List<RealmMetaData>>> future);
 
     /**
      * Sign an user authentication token with a realms secret.
@@ -31,7 +32,7 @@ public interface AsyncRealmStore
      * @param realmName name of the realm that should sign the token.
      * @param domain    the domain (username) in which the token is valid.
      */
-    void signToken(Future<Token> future, String realmName, String domain);
+    void signToken(Handler<AsyncResult<Token>> future, String realmName, String domain);
 
     /**
      * Get all information available about a realm.
@@ -39,7 +40,7 @@ public interface AsyncRealmStore
      * @param future    callback
      * @param realmName name of the realm to find.
      */
-    void get(Future<RealmSettings> future, String realmName);
+    void get(Handler<AsyncResult<RealmSettings>> future, String realmName);
 
     /**
      * Place a realm into the cluster-wide get.
@@ -47,7 +48,7 @@ public interface AsyncRealmStore
      * @param future callback
      * @param realm  realm information to be inserted.
      */
-    void put(Future<Void> future, RealmSettings realm);
+    void put(Handler<AsyncResult<Void>> future, RealmSettings realm);
 
     /**
      * Removes a realm from the cluster-wide get.
@@ -55,5 +56,5 @@ public interface AsyncRealmStore
      * @param future    callback
      * @param realmName name of the realm.
      */
-    void remove(Future<Void> future, String realmName);
+    void remove(Handler<AsyncResult<Void>> future, String realmName);
 }

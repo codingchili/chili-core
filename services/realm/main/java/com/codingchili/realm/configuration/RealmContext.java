@@ -31,19 +31,17 @@ public class RealmContext extends ServiceContext {
         super(vertx);
     }
 
-    private RealmContext(AsyncCharacterStore characters, RealmSettings realm, Vertx vertx) {
-        super(vertx);
-
-        this.settings = realm.getPath();
-        this.characters = characters;
-    }
-
     public static void create(Future<RealmContext> future, RealmSettings realm, Vertx vertx) {
-        new StorageLoader<PlayerCharacter>().privatemap(new StorageContext<>(vertx))
+        RealmContext context = new RealmContext(vertx);
+
+        new StorageLoader<PlayerCharacter>(new StorageContext<>(vertx))
+                .withPlugin(context.service().getStorage())
                 .withClass(PlayerCharacter.class)
                 .withCollection(COLLECTION_CHARACTERS)
                 .build(prepare -> {
-                    future.complete(new RealmContext(new CharacterDB(prepare.result()), realm, vertx));
+                    context.characters = new CharacterDB(prepare.result());
+                    context.settings = realm.getPath();
+                    future.complete(context);
                 });
     }
 

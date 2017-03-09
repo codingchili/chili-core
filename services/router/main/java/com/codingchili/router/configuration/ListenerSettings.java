@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.vertx.core.http.HttpServerOptions;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Robin Duda
@@ -14,7 +15,7 @@ import java.util.HashMap;
  */
 public class ListenerSettings {
     private HttpServerOptions httpOptions = new HttpServerOptions();
-    private HashMap<String, Endpoint> api = new HashMap<>();
+    private Map<String, Endpoint> api = new HashMap<>();
     private WireType type = WireType.REST;
     private int port = 8080;
     private int timeout = 3000;
@@ -56,11 +57,11 @@ public class ListenerSettings {
         return this;
     }
 
-    public HashMap<String, Endpoint> getApi() {
+    public Map<String, Endpoint> getApi() {
         return api;
     }
 
-    public ListenerSettings setApi(HashMap<String, Endpoint> api) {
+    public ListenerSettings setApi(Map<String, Endpoint> api) {
         this.api = api;
         return this;
     }

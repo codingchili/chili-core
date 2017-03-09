@@ -24,15 +24,10 @@ public class AuthenticationContext extends ServiceContext {
         super(vertx);
     }
 
-    private AuthenticationContext(AsyncAccountStore accounts, Vertx vertx) {
-        super(vertx);
-
-        this.accounts = accounts;
-    }
-
     public static void create(Future<AuthenticationContext> future, Vertx vertx) {
         AuthenticationContext context = new AuthenticationContext(vertx);
-        new StorageLoader<AccountMapping>().indexed(context)
+        new StorageLoader<AccountMapping>(context)
+                .withPlugin(context.service().getStorage())
                 .withCollection(COLLECTION_ACCOUNTS)
                 .withClass(AccountMapping.class)
                 .build(prepare -> {

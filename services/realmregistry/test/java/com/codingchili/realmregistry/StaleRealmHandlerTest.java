@@ -25,7 +25,7 @@ import com.codingchili.core.storage.StorageLoader;
  *         Tests the stale handler for realms.
  */
 @RunWith(VertxUnitRunner.class)
-public class StaleServerHandlerTest {
+public class StaleRealmHandlerTest {
     private static final String REALM_NAME = "REALM_NAME";
     private static final int STALE_TIMEOUT = 150;
     private AsyncRealmStore realms;

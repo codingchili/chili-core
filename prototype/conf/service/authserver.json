@@ -3,5 +3,6 @@
     "node" : "authentication.node",
     "host" : "server.1"
   },
+  "storage": "com.codingchili.core.storage.IndexedMap",
   "clientSecret" : "Qan7fz/yGYxQ4Z0HRNQ0Z7ldzNs5ZiwuY+q5voTiy3hpmI78oaYXuLpdF2gfTHHF394cxTQ2jsdQXuRQRgz/IA=="
 }

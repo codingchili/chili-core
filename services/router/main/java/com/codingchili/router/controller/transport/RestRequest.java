@@ -9,7 +9,7 @@ import io.vertx.core.json.DecodeException;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import com.codingchili.core.protocol.*;
 
@@ -57,7 +57,7 @@ class RestRequest extends BaseRequest {
     }
 
     private void parseApi() {
-        HashMap<String, Endpoint> api = settings.getApi();
+        Map<String, Endpoint> api = settings.getApi();
 
         api.keySet().stream()
                 .filter(route -> context.request().path().startsWith(route))

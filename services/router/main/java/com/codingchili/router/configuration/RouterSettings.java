@@ -17,7 +17,7 @@ import static com.codingchili.core.configuration.CoreStrings.getService;
 public class RouterSettings extends ServiceConfigurable {
     public static final String PATH_ROUTING = getService("routingserver");
     private List<ListenerSettings> transport = new ArrayList<>();
-    private HashSet<String> hidden = new HashSet<>();
+    private Set<String> hidden = new HashSet<>();
 
     public RouterSettings() {}
 
@@ -43,11 +43,11 @@ public class RouterSettings extends ServiceConfigurable {
         return this;
     }
 
-    public HashSet<String> getHidden() {
+    public Set<String> getHidden() {
         return hidden;
     }
 
-    public void setHidden(HashSet<String> hidden) {
+    public void addHidden(Set<String> hidden) {
         this.hidden = hidden;
     }
 
@@ -66,7 +66,7 @@ public class RouterSettings extends ServiceConfigurable {
      * @param route the route to 'hide' requests for
      * @return fluent
      */
-    public RouterSettings setHidden(String route) {
+    public RouterSettings addHidden(String route) {
         hidden.add(route);
         return this;
     }

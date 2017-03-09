@@ -28,10 +28,10 @@ import static com.codingchili.common.Strings.*;
  */
 
 @RunWith(VertxUnitRunner.class)
-public class ServerHandlerTest {
+public class RealmHandlerTest {
     private static final String REALM_NAME = "test-realm";
     private RealmSettings realmconfig = new RealmSettings();
-    private ServerHandler<RegistryContext> handler;
+    private RealmHandler<RegistryContext> handler;
     private ContextMock mock;
 
     @Rule
@@ -40,7 +40,7 @@ public class ServerHandlerTest {
     @Before
     public void setUp() {
         mock = new ContextMock(Vertx.vertx());
-        handler = new ServerHandler<>(mock);
+        handler = new RealmHandler<>(mock);
 
         realmconfig.setAuthentication(new Token(mock.getRealmFactory(), REALM_NAME));
         realmconfig.setName(REALM_NAME);

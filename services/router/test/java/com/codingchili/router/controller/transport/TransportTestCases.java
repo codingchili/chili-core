@@ -68,10 +68,10 @@ public abstract class TransportTestCases {
                 .addMapping(PATCHING_ROOT, new Endpoint(NODE_PATCHING));
 
         RouterSettings settings = new RouterSettings(new RemoteIdentity("node", "host"))
-                .setHidden(NODE_LOGGING)
+                .addHidden(NODE_LOGGING)
                 .addTransport(listener);
 
-        settings.setHidden(Strings.NODE_LOGGING);
+        settings.addHidden(Strings.NODE_LOGGING);
         settings.addTransport(listener);
         context.setSettings(settings);
 

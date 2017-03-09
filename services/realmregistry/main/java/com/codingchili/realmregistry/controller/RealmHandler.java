@@ -1,10 +1,10 @@
 package com.codingchili.realmregistry.controller;
 
 import com.codingchili.common.Strings;
+import com.codingchili.core.logging.Level;
 import com.codingchili.realmregistry.configuration.RealmSettings;
 import com.codingchili.realmregistry.configuration.RegistryContext;
 import com.codingchili.realmregistry.model.*;
-import io.vertx.core.Future;
 
 import java.time.Instant;
 
@@ -17,11 +17,11 @@ import com.codingchili.core.protocol.exception.HandlerMissingException;
  * @author Robin Duda
  *         Routing used to authenticate realms and generate realmName lists.
  */
-public class ServerHandler<T extends RegistryContext> extends AbstractHandler<T> {
+public class RealmHandler<T extends RegistryContext> extends AbstractHandler<T> {
     private final Protocol<RequestHandler<RealmRequest>> protocol = new Protocol<>();
     private final AsyncRealmStore realms;
 
-    public ServerHandler(T context) {
+    public RealmHandler(T context) {
         super(context, Strings.NODE_AUTHENTICATION_REALMS);
 
         realms = context.getRealmStore();
@@ -44,35 +44,27 @@ public class ServerHandler<T extends RegistryContext> extends AbstractHandler<T>
     }
 
     private void update(RealmRequest request) {
-        Future<Void> realmFuture = Future.future();
         RealmSettings realm = request.getRealm();
-
         realm.setTrusted(context.isTrustedRealm(realm.getName()));
         realm.setUpdated(Instant.now().toEpochMilli());
 
-        realmFuture.setHandler(insert -> {
+        realms.put(insert -> {
             if (insert.succeeded()) {
                 request.accept();
                 context.onRealmUpdated(realm.getName(), realm.getPlayers());
             } else {
                 request.error(new RealmUpdateException());
             }
-        });
-
-        realms.put(realmFuture, realm);
+        }, realm);
     }
 
     private void disconnected(RealmRequest request) {
-        Future<Void> realmFuture = Future.future();
-
-        realmFuture.setHandler(remove -> {
+        realms.remove(remove -> {
             if (remove.succeeded()) {
                 request.accept();
             } else {
                 request.error(new RealmDisconnectException());
             }
-        });
-
-        realms.remove(realmFuture, request.realmName());
+        }, request.realmName());
     }
 }

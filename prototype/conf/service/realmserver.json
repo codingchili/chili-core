@@ -7,5 +7,6 @@
     "realm" : "Angel Oak",
     "instances" : [ ]
   } ],
+  "storage": "com.codingchili.core.storage.IndexedMap",
   "realmUpdates" : 5000
 }

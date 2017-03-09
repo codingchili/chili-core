@@ -2,7 +2,7 @@ package com.codingchili.realmregistry;
 
 import com.codingchili.realmregistry.configuration.RegistryContext;
 import com.codingchili.realmregistry.controller.ClientHandler;
-import com.codingchili.realmregistry.controller.ServerHandler;
+import com.codingchili.realmregistry.controller.RealmHandler;
 import io.vertx.core.Future;
 
 import com.codingchili.core.context.Deploy;
@@ -24,7 +24,7 @@ public class Service extends ClusterNode {
                 RegistryContext context = future.result();
 
                 for (int i = 0; i < settings.getHandlers(); i++) {
-                    Deploy.service(new ServerHandler<>(context));
+                    Deploy.service(new RealmHandler<>(context));
                     Deploy.service(new ClientHandler<>(context));
                 }
 
