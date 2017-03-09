@@ -42,30 +42,22 @@ public class ClientHandler<T extends RegistryContext> extends AbstractHandler<T>
     }
 
     private void realmToken(ClientRequest request) {
-        Future<Token> future = Future.future();
-
-        future.setHandler(result -> {
+        realms.signToken(result -> {
             if (result.succeeded()) {
                 request.write(result.result());
             } else {
                 request.error(new RealmMissingException());
             }
-        });
-
-        realms.signToken(future, request.realmName(), request.account());
+        }, request.realmName(), request.account());
     }
 
     private void realmlist(Request request) {
-        Future<List<RealmMetaData>> future = Future.future();
-
-        future.setHandler(result -> {
+        realms.getMetadataList(result -> {
             if (result.succeeded()) {
                 request.write(new RealmList(result.result()));
             } else {
                 request.error(result.cause());
             }
         });
-
-        realms.getMetadataList(future);
     }
 }
