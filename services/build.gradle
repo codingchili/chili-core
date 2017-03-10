@@ -7,14 +7,14 @@ subprojects {
 
 subprojects.each { subproject -> evaluationDependsOn(subproject.path) }
 
-task sourcesJar(type: Jar, dependsOn: subprojects.build) {
+task sourcesJar(type: Jar) {
     classifier 'sources'
     subprojects.each { subproject ->
         from subproject.sourceSets.main.allSource
     }
 }
 
-task allJar(type: Jar, dependsOn: sourcesJar) {
+task allJar(type: Jar, dependsOn: subprojects.jar) {
     baseName = 'services'
     subprojects.each { subproject ->
         from subproject.configurations.archives.allArtifacts.files.collect {

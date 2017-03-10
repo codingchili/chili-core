@@ -7,18 +7,23 @@ To build chili-core clone this repository with **git**,
 ```
 git clone https://github.com/codingchili/chili-core.git
 ```
-
-Builds all jars, runs tests and packages a prototype zip.
-```
-gradlew build
-```
-
-Start the prototype, does not require running build first.
+Start the prototype, uses the classpath of all subprojects and **prototype/** as the working directory.
 ```
 gradlew prototype
 ```
 
-For information on how to setup the installation look at the README.md in **prototype/**.
+Builds project jars and run tests
+```
+gradlew build
+```
+
+Build a standalone prototype zip
+```
+gradlew archiveZip
+```
+To run the prototype from within an IDE, add the 'prototype' gradle task as a run configuration. It is then possible to start and debug from within the IDE.
+
+For information on how to setup the prototype installation look at the README.md in **prototype/**.
 
 ## Background
 The project consists of two parts. The core, which is a framework built on top of the vertx toolkit. The purpose of wrapping vertx in a framework is to increase productivity. This is done by providing common functionality that can be used to build microservices on. With all the logic packed into core, it is possible to create distributed microservices capable of handling authentication, request routing and storage in 66 lines of code. If you are interested in vertx, I recommend using it directly instead. This framework is intended to improve productivity in a very specific use case. In order to achieve this it is much more invasive than the vertx toolkit.

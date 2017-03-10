@@ -48,18 +48,20 @@ subprojects {
     }
 }
 
-task archiveZip(type: Zip) {
+task archiveZip(type: Zip, dependsOn: subprojects.jar) {
     baseName = 'prototype'
     from fileTree('prototype')
 
-    from (subprojects.collect {it.tasks.withType(Jar)}) {
+    from (project('core').jar) {
+        into 'lib'
+    }
+
+    from (project('services').subprojects.jar) {
         into 'lib'
     }
 }
 
-build.dependsOn archiveZip
-
-task prototype(type: JavaExec, dependsOn: build) {
+task prototype(type: JavaExec, dependsOn: subprojects.classes) {
     workingDir = 'prototype'
     subprojects.each {
         classpath += it.sourceSets.main.runtimeClasspath

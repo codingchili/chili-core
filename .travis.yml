@@ -2,7 +2,10 @@ language: java
 sudo: false
 jdk:
   - oraclejdk8
-script: gradle build --stacktrace
+script:
+  - gradle build
+  - gradle sourcesJar
+  - gradle archiveZip
 notifications:
   email: true
 before_cache:
