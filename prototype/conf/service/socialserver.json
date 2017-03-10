@@ -3,5 +3,11 @@
     "node" : "social.node",
     "host" : "server.1"
   },
-  "message" : "hello world!!!"
+  "message" : "hello world!!!",
+  "global" : "1ffFQuhs0Y0bv0fRdSclbfUdAUC0gEjHNEB/lT7wZ3Fk8Qifrt0uNlPBx1I/1N5EbG0tZwXNTjwpEXaRYKe+EA==",
+  "logging" : {
+    "key" : "2rLwn+vCT3GDtynO5xAuV2+joyLbNp7ILuOU0tH6tTUdo+KaOgGM0+BS5KCwjuLc5D8SbT1ky1Ak+Tz5/330hQ==",
+    "expiry" : 1489733003,
+    "domain" : "social.node@server.1"
+  }
 }

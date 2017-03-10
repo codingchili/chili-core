@@ -7,7 +7,6 @@ import java.time.Instant;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
-import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.Delay;
 
@@ -51,16 +50,16 @@ public abstract class DefaultLogger extends Handler implements Logger {
                 .put(LOG_TIME, Instant.now().toEpochMilli());
 
         if (context != null) {
-            event.put(CoreStrings.LOG_HOST, context.identity().getHost())
-                    .put(CoreStrings.LOG_NODE, context.identity().getNode())
-                    .put(CoreStrings.LOG_AGENT, context.handler());
+            event.put(LOG_HOST, context.identity().getHost())
+                    .put(LOG_NODE, context.identity().getNode())
+                    .put(LOG_AGENT, context.handler());
         }
         return event;
     }
 
     @Override
     public void onAlreadyInitialized() {
-        log(event(CoreStrings.LOG_ERROR, Level.WARNING)
+        log(event(LOG_ERROR, Level.WARNING)
                 .put(PROTOCOL_MESSAGE, ERROR_ALREADY_INITIALIZED));
     }
 
@@ -85,7 +84,7 @@ public abstract class DefaultLogger extends Handler implements Logger {
     @Override
     public void onHandlerMissing(String route) {
         log(event(LOG_HANDLER_MISSING, Level.WARNING)
-                .put(LOG_MESSAGE, CoreStrings.quote(route)));
+                .put(LOG_MESSAGE, quote(route)));
     }
 
     @Override
@@ -133,20 +132,26 @@ public abstract class DefaultLogger extends Handler implements Logger {
 
     @Override
     public void onConfigurationDefaultsLoaded(String path, Class<?> clazz) {
-        log(event(CoreStrings.LOG_CONFIG_DEFAULTED, Level.WARNING)
-                .put(PROTOCOL_MESSAGE, CoreStrings.getFileLoadDefaults(path, clazz)));
+        log(event(LOG_CONFIG_DEFAULTED, Level.WARNING)
+                .put(LOG_MESSAGE, getFileLoadDefaults(path, clazz)));
     }
 
     @Override
     public void onInvalidConfigurable(Class<?> clazz) {
-        log(event(CoreStrings.LOG_CONFIGURATION_INVALID, Level.SEVERE)
-                .put(PROTOCOL_MESSAGE, CoreStrings.getErrorInvalidConfigurable(clazz)));
+        log(event(LOG_CONFIGURATION_INVALID, Level.SEVERE)
+                .put(LOG_MESSAGE, getErrorInvalidConfigurable(clazz)));
     }
 
     @Override
     public void onCacheCleared(String component) {
         log(event(LOG_CACHE_CLEARED, Level.WARNING)
                 .put(LOG_AGENT, component));
+    }
+
+    @Override
+    public void onSecurityDependencyMissing(String target, String identifier) {
+        log(event(LOG_SECURITY, Level.SEVERE)
+                .put(LOG_MESSAGE, getSecurityDependencyMissing(target, identifier)));
     }
 
     @Override

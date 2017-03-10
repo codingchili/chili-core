@@ -12,8 +12,8 @@
     "host" : "server.1"
   },
   "authentication" : {
-    "key" : "qpd4PejwoGpGXuJT0Iv1wRLqgTkuPfo2qS8grYRzQhlaDntklaaPVVPTLM0iitdTPFzH08R++AVxC2Y+4ZJSSg==",
-    "expiry" : 1481652213,
+    "key" : "fmEnmhU0vTFg79dpKs0/xq4jFgUM53Up5XOHe42OAlnXWhnqzKOY7kOqdQrQ7Epd2cwVGXDA2h7kNZ476Y6QeA==",
+    "expiry" : 1489733003,
     "domain" : "Angel Oak.realm.node@server.1"
   },
   "resources" : "patching.node",
@@ -21,5 +21,12 @@
   "size" : 5000,
   "players" : 0,
   "name" : "Angel Oak",
-  "remote" : "Angel Oak.realm.node"
+  "remote" : "Angel Oak.realm.node",
+  "secret" : "8s2uhWGeVM03v9OqyoQFhgfC+GlhpLc2US+bhSd8sF1CiYRrzW080oIhE4Pw3Vr78uf96VXCNxjLHANVxOQe7Q==",
+  "global" : "1ffFQuhs0Y0bv0fRdSclbfUdAUC0gEjHNEB/lT7wZ3Fk8Qifrt0uNlPBx1I/1N5EbG0tZwXNTjwpEXaRYKe+EA==",
+  "logging" : {
+    "key" : "iuHbp5F5rrU1pZOgRkCw2kzoj1OsNO7yR8/XjIedg2pU/46wq6wjbJqdrLwZXmv9D7DhcIwvi7U60f6gg0+gbQ==",
+    "expiry" : 1489733002,
+    "domain" : "Angel Oak.realm.node@server.1"
+  }
 }

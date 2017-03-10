@@ -3,6 +3,12 @@
     "node" : "authentication.node",
     "host" : "server.1"
   },
-  "storage": "com.codingchili.core.storage.IndexedMap",
-  "clientSecret" : "Qan7fz/yGYxQ4Z0HRNQ0Z7ldzNs5ZiwuY+q5voTiy3hpmI78oaYXuLpdF2gfTHHF394cxTQ2jsdQXuRQRgz/IA=="
+  "storage" : "com.codingchili.core.storage.IndexedMap",
+  "clientSecret" : "fGeK1/tryvrkgo2Zo/Fda8jX98bRB390/vkaet/5cwG7xxuxfJVLDEVSS1CpQwKgsiqzENxBkYQfC60x69kUOQ==",
+  "global" : "1ffFQuhs0Y0bv0fRdSclbfUdAUC0gEjHNEB/lT7wZ3Fk8Qifrt0uNlPBx1I/1N5EbG0tZwXNTjwpEXaRYKe+EA==",
+  "logging" : {
+    "key" : "WaHi2+SfCeIQkMKpZF4PgIT/NB3KobTxZ11KS7S6tRY9GuP/UK4BsB5k1x2puuiNS951wxOypxT0txn7hmHMGQ==",
+    "expiry" : 1489733003,
+    "domain" : "authentication.node@server.1"
+  }
 }

@@ -5,5 +5,11 @@
   },
   "startPage" : "/index.html",
   "missingPage" : "/404.html",
-  "gzip" : false
+  "gzip" : false,
+  "global" : "1ffFQuhs0Y0bv0fRdSclbfUdAUC0gEjHNEB/lT7wZ3Fk8Qifrt0uNlPBx1I/1N5EbG0tZwXNTjwpEXaRYKe+EA==",
+  "logging" : {
+    "key" : "u61fLKvZ0bMAMPKFyE/2M1chuVOBxk1LmHsMGcLRLCbWSHrFbXnriPCpg3WTPTwyd8uIaN29L2m7PH+A7HI3SQ==",
+    "expiry" : 1489733003,
+    "domain" : "website.node@server.1"
+  }
 }

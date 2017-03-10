@@ -7,6 +7,12 @@
     "realm" : "Angel Oak",
     "instances" : [ ]
   } ],
-  "storage": "com.codingchili.core.storage.IndexedMap",
-  "realmUpdates" : 5000
+  "storage" : "com.codingchili.core.storage.IndexedMap",
+  "realmUpdates" : 5000,
+  "global" : "1ffFQuhs0Y0bv0fRdSclbfUdAUC0gEjHNEB/lT7wZ3Fk8Qifrt0uNlPBx1I/1N5EbG0tZwXNTjwpEXaRYKe+EA==",
+  "logging" : {
+    "key" : "XzvtQP33aTYhdr8emQT1M4hSv3AEgRvmI9QOG4ZSxh8+sBSE7Vzsh9Q6l8On2xQ436VYxBYoj1ph8JDNg090hg==",
+    "expiry" : 1489733003,
+    "domain" : "realmserver.node@server.1"
+  }
 }

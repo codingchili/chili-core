@@ -20,6 +20,12 @@
     },
     "enabled" : false
   },
-  "secret" : "WkzjM5LFU7IoS04LHzBtfbS2/3TzJJxmfdCx+KV8Vgxt/meSr94+ltn7EoVPW5yxbwtiVYXPAuZBnAWieU6xsw==",
-  "console" : false
+  "secret" : "5GU7BIycWbqjudgMbH+oE0tn+TFYjNgmkpAQfgb8H7m2AbqCu9VC1zGu9mCsiqglj5FLfvaCvV8WZil2mEjk+g==",
+  "console" : false,
+  "global" : "1ffFQuhs0Y0bv0fRdSclbfUdAUC0gEjHNEB/lT7wZ3Fk8Qifrt0uNlPBx1I/1N5EbG0tZwXNTjwpEXaRYKe+EA==",
+  "logging" : {
+    "key" : "e74x34JnPQOVJuNWqeBn8ZzWAUwqkXymoEgdiKES84rnXKgFDUWX+mQ0NyxMRnQKY2ihhybZ57f1hATN3DL/sw==",
+    "expiry" : 1489733003,
+    "domain" : "logging.node@server.1"
+  }
 }

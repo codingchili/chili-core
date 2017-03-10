@@ -118,6 +118,7 @@ public abstract class CoreStrings {
     public static final String LOG_TIME = "time";
     public static final String LOG_NODE = "node";
     public static final String LOG_HOST = "host";
+    public static final String LOG_SECURITY = "security";
     public static final String LOG_SERVER_START = "server.start";
     public static final String LOG_SERVER_STOP = "server.stop";
     public static final String LOG_MESSAGE = "message";
@@ -329,6 +330,11 @@ public abstract class CoreStrings {
 
     public static String getMissingEntity(String key) {
         return "Error: could not get '" + key + "' in storage.";
+    }
+
+    public static String getSecurityDependencyMissing(String target, String identifier) {
+        return "Error: missing security identifier '" + identifier +
+                "' in service configuration for '" + target + "'.";
     }
 
     public static String timestamp(long ms) {

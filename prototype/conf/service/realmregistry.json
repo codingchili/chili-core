@@ -4,6 +4,13 @@
     "host" : "server.1"
   },
   "realms" : [ "Angel Oak", "Developer Realm", "Iron Oak", "Staging Realm", "Wisteria", "Red Maple" ],
-  "realmSecret" : "TMyn+Uo9/Jdck+GgCo+MvTJf+hpL568zwZk8ClTo1JrEXMQlriPPJVeR9k89YecQrANqm42bVamcYoNn0pP2+w==",
-  "realmTimeout" : 7000
+  "realmSecret" : "pNDt89Db/xLPvqmKgGXLYRqzN+qGMKZwx18tCKEDsEWwS6Y9g4EqzXj0HS+xpnWP/jj4+pR5W0mf+7ty0sq7ww==",
+  "realmTimeout" : 7000,
+  "global" : "1ffFQuhs0Y0bv0fRdSclbfUdAUC0gEjHNEB/lT7wZ3Fk8Qifrt0uNlPBx1I/1N5EbG0tZwXNTjwpEXaRYKe+EA==",
+  "clientSecret" : "fGeK1/tryvrkgo2Zo/Fda8jX98bRB390/vkaet/5cwG7xxuxfJVLDEVSS1CpQwKgsiqzENxBkYQfC60x69kUOQ==",
+  "logging" : {
+    "key" : "FZk/YWvkgOibT8C1NjOyEJ/JdI1BeY796Yo7zt7qcWOKLAl9O+wp2uUFKqX5OQP2q8afVh5Uqs8XodJxpVO0rA==",
+    "expiry" : 1489733003,
+    "domain" : "realmregistry.node@server.1"
+  }
 }

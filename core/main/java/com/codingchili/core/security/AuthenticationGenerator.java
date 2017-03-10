@@ -1,5 +1,6 @@
 package com.codingchili.core.security;
 
+import com.codingchili.core.security.exception.SecurityMissingDependencyException;
 import io.vertx.core.json.JsonObject;
 
 import java.io.IOException;
@@ -101,15 +102,21 @@ public class AuthenticationGenerator {
     private TokenFactory getFactory(TokenIdentifier identifier) {
         try {
             JsonObject issuer = JsonFileStore.readObject(getService(identifier.getService()));
-            byte[] secret = Base64.getDecoder().decode(issuer.getString(identifier.getSecret()));
-            return new TokenFactory(secret);
+            if (issuer.containsKey(identifier.getSecret())) {
+                byte[] secret = Base64.getDecoder().decode(issuer.getString(identifier.getSecret()));
+                return new TokenFactory(secret);
+            } else {
+                logger.onSecurityDependencyMissing(identifier.getService(), identifier.getSecret());
+                throw new RuntimeException(
+                        new SecurityMissingDependencyException(identifier.getService(), identifier.getSecret()));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     private String getService(String name) {
-        return directory + DIR_SEPARATOR + name + EXT_JSON;
+        return CoreStrings.getService(name);
     }
 
     private RemoteIdentity getIdentity(JsonObject config) {

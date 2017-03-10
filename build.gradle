@@ -63,10 +63,15 @@ task archiveZip(type: Zip, dependsOn: subprojects.jar) {
 
 task prototype(type: JavaExec, dependsOn: subprojects.classes) {
     workingDir = 'prototype'
+    main = 'com.codingchili.core.Launcher'
+
+    if (project.hasProperty('exec')) {
+        args += exec
+    }
+
     subprojects.each {
         classpath += it.sourceSets.main.runtimeClasspath
     }
-    main = 'com.codingchili.core.Launcher'
 }
 
 if (System.env.TRAVIS == 'true') {

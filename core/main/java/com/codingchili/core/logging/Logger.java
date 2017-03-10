@@ -121,4 +121,11 @@ public interface Logger extends JsonLogger, StringLogger {
      * @param interval the new interval of the timer
      */
     void onTimerSourceChanged(String name, int initial, int interval);
+
+    /**
+     * Emit when a property in the security configuration is misconfigured.
+     * @param target the name of the target that is missing the requested property identifier.
+     * @param identifier the secret that was requested
+     */
+    void onSecurityDependencyMissing(String target, String identifier);
 }
