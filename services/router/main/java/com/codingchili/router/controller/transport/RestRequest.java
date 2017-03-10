@@ -98,12 +98,12 @@ class RestRequest extends BaseRequest {
 
     protected void send(ResponseStatus status, Throwable e) {
         request.response().setStatusCode(HttpResponseStatus.OK.code())
-                .end(Protocol.response(status, e));
+                .end(Protocol.response(status, e).encode());
     }
 
     protected void send(ResponseStatus status) {
         request.response().setStatusCode(HttpResponseStatus.OK.code())
-                .end(Protocol.response(status));
+                .end(Protocol.response(status).encode());
     }
 
     private void send(Buffer buffer) {

@@ -83,10 +83,9 @@ public class Protocol<Handler extends RequestHandler> {
      * @param status the status to create the response from.
      * @return a JSON encoded response packed in a buffer.
      */
-    public static Buffer response(ResponseStatus status) {
-        return Buffer.buffer(new JsonObject()
-                .put(PROTOCOL_STATUS, status)
-                .encode());
+    public static JsonObject response(ResponseStatus status) {
+        return new JsonObject()
+                .put(PROTOCOL_STATUS, status);
     }
 
     /**
@@ -96,11 +95,10 @@ public class Protocol<Handler extends RequestHandler> {
      * @param e      an exception that was the cause of an abnormal response status.
      * @return a JSON encoded response packed in a buffer.
      */
-    public static Buffer response(ResponseStatus status, Throwable e) {
-        return Buffer.buffer(new JsonObject()
+    public static JsonObject response(ResponseStatus status, Throwable e) {
+        return new JsonObject()
                 .put(PROTOCOL_STATUS, status)
-                .put(PROTOCOL_MESSAGE, e.getMessage())
-                .encode());
+                .put(PROTOCOL_MESSAGE, e.getMessage());
     }
 }
 
