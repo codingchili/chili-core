@@ -31,6 +31,10 @@ public class AuthenticationGenerator {
     private final SecuritySettings security;
     private String directory;
 
+    public AuthenticationGenerator(Logger logger) {
+        this(null, logger);
+    }
+
     public AuthenticationGenerator(String directory, Logger logger) {
         this.logger = logger;
         this.security = Configurations.security();
@@ -116,7 +120,11 @@ public class AuthenticationGenerator {
     }
 
     private String getService(String name) {
-        return CoreStrings.getService(name);
+        if (directory == null) {
+            return CoreStrings.getService(name);
+        } else {
+            return directory + DIR_ROOT + name + EXT_JSON;
+        }
     }
 
     private RemoteIdentity getIdentity(JsonObject config) {

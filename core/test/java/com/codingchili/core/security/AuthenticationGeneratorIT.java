@@ -20,6 +20,7 @@ import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.testing.ContextMock;
 
+import static com.codingchili.core.configuration.CoreStrings.DIR_ROOT;
 import static com.codingchili.core.configuration.CoreStrings.testFile;
 
 /**
@@ -40,6 +41,7 @@ public class AuthenticationGeneratorIT {
     private static final String SERVICE_2_TOKEN = "service2token";
     private static final String SERVICE1_JSON = "service1.json";
     private static final String SERVICE2_JSON = "service2.json";
+    private static final String SECURITY_JSON = "security.json";
     private AuthenticationGenerator generator;
     private SystemContext context;
 
@@ -50,7 +52,8 @@ public class AuthenticationGeneratorIT {
 
         Configurations.put(createSecuritySettings());
 
-        generator = new AuthenticationGenerator(CoreStrings.testDirectory(AUTHENTICATION_GENERATOR),
+        generator = new AuthenticationGenerator(
+                CoreStrings.testDirectory(AUTHENTICATION_GENERATOR) + DIR_ROOT,
                 new ConsoleLogger());
     }
 
@@ -86,8 +89,8 @@ public class AuthenticationGeneratorIT {
 
     @After
     public void tearDown() {
-        JsonFileStore.writeObject(new JsonObject(), testFile("AuthenticationGenerator", "service1.json"));
-        JsonFileStore.writeObject(new JsonObject(), testFile("AuthenticationGenerator", "service2.json"));
+        JsonFileStore.writeObject(new JsonObject(), testFile(AUTHENTICATION_GENERATOR, "service1.json"));
+        JsonFileStore.writeObject(new JsonObject(), testFile(AUTHENTICATION_GENERATOR, "service2.json"));
     }
 
     @Test
@@ -99,14 +102,6 @@ public class AuthenticationGeneratorIT {
         test.assertNotEquals(getService1().getString(LOCAL), getService2().getString(LOCAL));
         test.assertNotNull(getService1().getString(SERVICE_1_SECRET));
         test.assertNull(getService2().getString(SERVICE_1_SECRET));
-    }
-
-    private JsonObject getService1() throws IOException {
-        return JsonFileStore.readObject(testFile(AUTHENTICATION_GENERATOR, SERVICE1_JSON));
-    }
-
-    private JsonObject getService2() throws IOException {
-        return JsonFileStore.readObject(testFile(AUTHENTICATION_GENERATOR, SERVICE2_JSON));
     }
 
     @Test
@@ -134,7 +129,20 @@ public class AuthenticationGeneratorIT {
     }
 
     @Test
+    public void testGenerateWithBrokenReferenceFails(TestContext test) {
+
+    }
+
+    @Test
     public void testGenerateAll() {
         generator.all();
+    }
+
+    private JsonObject getService1() throws IOException {
+        return JsonFileStore.readObject(testFile(AUTHENTICATION_GENERATOR, SERVICE1_JSON));
+    }
+
+    private JsonObject getService2() throws IOException {
+        return JsonFileStore.readObject(testFile(AUTHENTICATION_GENERATOR, SERVICE2_JSON));
     }
 }

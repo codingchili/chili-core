@@ -36,7 +36,7 @@ public class CommandExecutor {
     }
 
     private void execute() {
-        AuthenticationGenerator refresher = new AuthenticationGenerator(DIR_CONFIG, logger);
+        AuthenticationGenerator refresher = new AuthenticationGenerator(logger);
 
         switch (context.args()[0]) {
             case GENERATE_PRESHARED:
