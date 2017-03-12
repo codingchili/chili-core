@@ -332,7 +332,8 @@
             update: function () {
                 $.ajax({
                     type: "GET",
-                    url: api.authentication("realmlist"),
+                    url: api.authentication("realmlist"), // todo refactor netowrking to avoid this huge block
+                                                          // todo replace all with <service.json> <servicename>.<handler> which extends from base networking that implements REST and WEBSAWK
                     dataType: "json",
                     contentType: "application/json; charset=utf-8",
                     success: (function (data) {
@@ -340,7 +341,7 @@
                     }).bind(this),
                     error: (function () {
                         clearInterval(this.timer);
-                        application.error("Failed to retrieve realm list from authentication server.")
+                        application.error("Failed to retrieve realm list from realm registry.")
                     }).bind(this)
                 });
             },

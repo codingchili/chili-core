@@ -8,40 +8,18 @@ var api = {
     port: null,
 
     patchserver: function (method) {
-        return 'http://localhost:8008/api/' + method;
+        return '/?target=patching.node&route=' + method;
     },
-
     authentication: function (method) {
-        return this.remote + ':' + this.port + '/api/' + method;
+        return '/?target=client.authentication.node&route=' + method;
     },
     realm: function (realm) {
         return (realm.secure === true ? 'https://' : 'http://') + realm.remote + ':' + realm.proxy;
     },
     realmWebSocket: function (realm) {
         return (realm.secure === true ? 'wss://' : 'ws://') + realm.remote + ':' + realm.proxy;
-    },
-    load: function () {
-        $.ajax({
-            type: 'GET',
-            url: api.patchserver('authserver'),
-            dataType: 'json',
-            contentType: 'text/plain',
-            statusCode: {
-                200: (function (authserver) {
-                    this.remote = authserver.remote;
-                    this.port = authserver.port;
-                }).bind(this)
-            },
-            error: function () {
-                application.error({
-                    text: 'Connection failure. [Authentication]',
-                    callback: application.showLogin
-                });
-            }
-        });
     }
 };
-
 
 var application = {
     views: ['realm-list', 'page', 'game-view', 'game-login', 'character-list', 'patch-download', 'error-dialog'],
@@ -167,6 +145,5 @@ var application = {
 };
 
 $(document).ready(function () {
-    api.load();
     application.view('page');
 });

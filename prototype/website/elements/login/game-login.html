@@ -95,7 +95,9 @@
                         account: {
                             username: this.username,
                             password: this.password
-                        }
+                        },
+                        route: 'authenticate',
+                        target: 'client.authentication.node'
                     }),
                     success: (function (data) {
                         this.resetForm();
@@ -136,7 +138,9 @@
                                 username: this.username,
                                 password: this.password,
                                 email: this.email
-                            }
+                            },
+                            target: 'client.authentication.node',
+                            route: 'register'
                         }),
                         success: (function (data) {
                             this.resetForm();
