@@ -6,6 +6,7 @@ script:
   - gradle build
   - gradle sourcesJar
   - gradle archiveZip
+  - gradle archiveJavadoc
 notifications:
   email: true
 before_cache:

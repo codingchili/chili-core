@@ -20,7 +20,6 @@ public class LogContext extends ServiceContext {
     public LogContext(CoreContext context) {
         super(context);
 
-        // Logging output.
         new StorageLoader<JsonItem>(context)
                 .withPlugin(service().getPlugin())
                 .withClass(JsonItem.class)

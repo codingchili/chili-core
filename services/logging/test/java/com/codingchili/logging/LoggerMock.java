@@ -7,7 +7,7 @@ import com.codingchili.core.logging.*;
 
 
 /**
- * authentication.Mock implementation of a logger to disable logging.
+ * implementation of a mock logger to disable logging.
  */
 public class LoggerMock extends DefaultLogger {
 

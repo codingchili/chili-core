@@ -74,7 +74,6 @@ public class SharedLogHandlerTest {
 
         context.periodic(() -> 20, "", event -> {
             context.storage().size(size -> {
-                System.out.println(size.result());
                 if (size.result() == MESSAGE_COUNT) {
                     context.cancel(event);
                     async.complete();
