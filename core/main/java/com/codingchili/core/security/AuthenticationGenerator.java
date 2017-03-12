@@ -111,8 +111,7 @@ public class AuthenticationGenerator {
                 return new TokenFactory(secret);
             } else {
                 logger.onSecurityDependencyMissing(identifier.getService(), identifier.getSecret());
-                throw new RuntimeException(
-                        new SecurityMissingDependencyException(identifier.getService(), identifier.getSecret()));
+                throw new SecurityMissingDependencyException(identifier.getService(), identifier.getSecret());
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

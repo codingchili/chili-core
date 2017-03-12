@@ -18,10 +18,10 @@ import com.codingchili.core.files.Configurations;
 import com.codingchili.core.files.JsonFileStore;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.security.exception.SecurityMissingDependencyException;
 import com.codingchili.core.testing.ContextMock;
 
-import static com.codingchili.core.configuration.CoreStrings.DIR_ROOT;
-import static com.codingchili.core.configuration.CoreStrings.testFile;
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
@@ -41,7 +41,6 @@ public class AuthenticationGeneratorIT {
     private static final String SERVICE_2_TOKEN = "service2token";
     private static final String SERVICE1_JSON = "service1.json";
     private static final String SERVICE2_JSON = "service2.json";
-    private static final String SECURITY_JSON = "security.json";
     private AuthenticationGenerator generator;
     private SystemContext context;
 
@@ -66,7 +65,7 @@ public class AuthenticationGeneratorIT {
         SecuritySettings security = new SecuritySettings();
         HashMap<String, AuthenticationDependency> dependencies = new HashMap<>();
 
-        security.setPath(CoreStrings.PATH_SECURITY);
+        security.setPath(PATH_SECURITY);
         security.setSecretBytes(64);
 
         dependencies.put(SERVICE_REGEX, new AuthenticationDependency()
@@ -89,8 +88,8 @@ public class AuthenticationGeneratorIT {
 
     @After
     public void tearDown() {
-        JsonFileStore.writeObject(new JsonObject(), testFile(AUTHENTICATION_GENERATOR, "service1.json"));
-        JsonFileStore.writeObject(new JsonObject(), testFile(AUTHENTICATION_GENERATOR, "service2.json"));
+        JsonFileStore.writeObject(new JsonObject(), testFile(AUTHENTICATION_GENERATOR, SERVICE1_JSON));
+        JsonFileStore.writeObject(new JsonObject(), testFile(AUTHENTICATION_GENERATOR, SERVICE2_JSON));
     }
 
     @Test
@@ -130,7 +129,15 @@ public class AuthenticationGeneratorIT {
 
     @Test
     public void testGenerateWithBrokenReferenceFails(TestContext test) {
-
+        String tokenName = "token";
+        String missingName = "mising-target-secret";
+        SecuritySettings settings = Configurations.get(PATH_SECURITY, SecuritySettings.class);
+        settings.getDependencies().get(SERVICE_1).addToken(tokenName, SERVICE_2, missingName);
+        try {
+            generator.all();
+            test.fail("Generation did not fail when missing a secret dependency.");
+        } catch (SecurityMissingDependencyException ignored) {
+        }
     }
 
     @Test

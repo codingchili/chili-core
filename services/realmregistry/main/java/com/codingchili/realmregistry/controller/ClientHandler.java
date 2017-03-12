@@ -2,13 +2,9 @@ package com.codingchili.realmregistry.controller;
 
 import com.codingchili.realmregistry.configuration.RegistryContext;
 import com.codingchili.realmregistry.model.*;
-import io.vertx.core.Future;
-
-import java.util.List;
 
 import com.codingchili.core.context.CoreException;
 import com.codingchili.core.protocol.*;
-import com.codingchili.core.security.Token;
 
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.core.protocol.Access.PUBLIC;

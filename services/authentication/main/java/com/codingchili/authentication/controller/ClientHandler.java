@@ -3,7 +3,6 @@ package com.codingchili.authentication.controller;
 import com.codingchili.authentication.configuration.AuthenticationContext;
 import com.codingchili.authentication.model.AsyncAccountStore;
 import com.codingchili.authentication.model.ClientAuthentication;
-import io.vertx.core.Future;
 
 import com.codingchili.core.context.CoreException;
 import com.codingchili.core.protocol.*;
