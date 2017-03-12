@@ -3,8 +3,8 @@
     "node" : "website.node",
     "host" : "server.1"
   },
-  "startPage" : "/index.html",
-  "missingPage" : "/404.html",
+  "startPage" : "index.html",
+  "missingPage" : "404.html",
   "gzip" : false,
   "global" : "1ffFQuhs0Y0bv0fRdSclbfUdAUC0gEjHNEB/lT7wZ3Fk8Qifrt0uNlPBx1I/1N5EbG0tZwXNTjwpEXaRYKe+EA==",
   "logging" : {
