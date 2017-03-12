@@ -13,6 +13,8 @@ import com.codingchili.core.protocol.*;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
 
+import static com.codingchili.common.Strings.NODE_AUTHENTICATION_REALMS;
+
 /**
  * @author Robin Duda
  *         Routing used to authenticate realms and generate realmName lists.
@@ -22,7 +24,7 @@ public class RealmHandler<T extends RegistryContext> extends AbstractHandler<T> 
     private final AsyncRealmStore realms;
 
     public RealmHandler(T context) {
-        super(context, Strings.NODE_AUTHENTICATION_REALMS);
+        super(context, NODE_AUTHENTICATION_REALMS);
 
         realms = context.getRealmStore();
 

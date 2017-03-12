@@ -18,7 +18,7 @@ public class ClientHandler<T extends RegistryContext> extends AbstractHandler<T>
     private final AsyncRealmStore realms;
 
     public ClientHandler(T context) {
-        super(context, NODE_AUTHENTICATION_CLIENTS);
+        super(context, NODE_REALM_CLIENTS);
 
         realms = context.getRealmStore();
 

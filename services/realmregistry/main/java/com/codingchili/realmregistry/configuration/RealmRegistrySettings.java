@@ -9,7 +9,7 @@ import com.codingchili.core.configuration.ServiceConfigurable;
 
 
 public class RealmRegistrySettings extends ServiceConfigurable {
-    public static final String PATH_REALMREGISTRY = Strings.getService("com/codingchili/realmregistry");
+    public static final String PATH_REALMREGISTRY = Strings.getService("realmregistry");
     private List<String> realms = new ArrayList<>();
     private byte[] realmSecret = new byte[] {0x54};
     private byte[] clientSecret = new byte[] {0x48};

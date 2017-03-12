@@ -14,8 +14,8 @@ import static com.codingchili.common.Strings.*;
 
 /**
  * @author Robin Duda
- *
- * Handles incoming requests for files. (website files)
+ *         <p>
+ *         Handles incoming requests for files. (website files)
  */
 public class WebHandler<T extends WebserverContext> extends AbstractHandler<T> {
     private final Protocol<RequestHandler<Request>> protocol = new Protocol<>();
@@ -36,22 +36,16 @@ public class WebHandler<T extends WebserverContext> extends AbstractHandler<T> {
 
     private void serve(Request request) {
         try {
-            String file;
+            String file = request.route();
 
-            if (request.route().equals(DIR_ROOT)) {
+            if (file.equals(EMPTY)) {
                 file = context.getStartPage();
                 context.onPageLoaded(request);
-            } else {
-                file = request.route().replaceFirst("^/", "");
             }
 
             request.write(files.getFile(file));
         } catch (FileMissingException e) {
-            try {
-                request.write(files.getFile(context.getMissingPage()));
-            } catch (FileMissingException e1) {
-                request.error(e1);
-            }
+            request.error(e);
         }
     }
 

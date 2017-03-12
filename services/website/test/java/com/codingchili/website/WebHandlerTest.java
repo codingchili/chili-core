@@ -29,7 +29,7 @@ import static com.codingchili.common.Strings.ID_BUFFER;
  */
 @RunWith(VertxUnitRunner.class)
 public class WebHandlerTest {
-    private static final String ONE_MISSING_FILE = "/one-missing-file";
+    private static final String ONE_MISSING_FILE = "one-missing-file";
     private WebHandler handler;
     private WebserverContext context;
 
@@ -56,7 +56,7 @@ public class WebHandlerTest {
     public void getAFile(TestContext test) {
         Async async = test.async();
 
-        handle("/bower.json", (response, status) -> {
+        handle("bower.json", (response, status) -> {
             test.assertEquals(ResponseStatus.ACCEPTED, status);
             test.assertEquals(response.getString(Strings.ID_LICENSE), "MIT");
             async.complete();
@@ -67,7 +67,7 @@ public class WebHandlerTest {
     public void getIndexFile(TestContext test) {
         Async async = test.async();
 
-        handle("/", (response, status) -> {
+        handle("", (response, status) -> {
             String buffer = response.getString(ID_BUFFER);
 
             test.assertEquals(ResponseStatus.ACCEPTED, status);
@@ -84,8 +84,8 @@ public class WebHandlerTest {
 
         handle(ONE_MISSING_FILE, (response, status) -> {
             String buffer = response.getString(ID_BUFFER);
-            test.assertEquals("404", buffer);
-            test.assertEquals(ResponseStatus.ACCEPTED, status);
+            test.assertNull(buffer);
+            test.assertEquals(ResponseStatus.MISSING, status);
             async.complete();
         });
     }

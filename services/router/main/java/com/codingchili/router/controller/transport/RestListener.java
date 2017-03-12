@@ -1,6 +1,13 @@
 package com.codingchili.router.controller.transport;
 
-import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
+import com.codingchili.router.configuration.ListenerSettings;
+import com.codingchili.router.configuration.RouterContext;
+import com.codingchili.router.controller.RouterHandler;
+import com.codingchili.router.model.WireType;
+import io.vertx.core.*;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.BodyHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,17 +15,8 @@ import java.util.Map;
 import com.codingchili.core.configuration.RestHelper;
 import com.codingchili.core.protocol.ClusterNode;
 import com.codingchili.core.protocol.exception.RequestPayloadSizeException;
-import com.codingchili.router.configuration.ListenerSettings;
-import com.codingchili.router.configuration.RouterContext;
-import com.codingchili.router.controller.RouterHandler;
-import com.codingchili.router.model.WireType;
 
-import io.vertx.core.Context;
-import io.vertx.core.Future;
-import io.vertx.core.Vertx;
-import io.vertx.ext.web.Router;
-import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.BodyHandler;
+import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
 
 /**
  * @author Robin Duda
@@ -41,12 +39,12 @@ public class RestListener extends ClusterNode {
         synchronized (routers) {
             if (routers.containsKey(listener().getPort())) {
                 router = routers.get(listener().getPort());
-                router.route().handler(BodyHandler.create());
-                RestHelper.EnableCors(router);
-                router.route("/*").handler(this::packet);
             }
             else {
                 router = Router.router(vertx);
+                router.route().handler(BodyHandler.create());
+                RestHelper.EnableCors(router);
+                router.route().handler(this::packet);
                 routers.put(listener().getPort(), router);
             }
         }
