@@ -3,9 +3,9 @@ package com.codingchili.core.security;
 import com.codingchili.core.storage.Storable;
 
 public class Account implements Storable {
-    private String username;
-    private String password;
-    private String email;
+    private String username = "";
+    private String password = "";
+    private String email = "";
 
     public Account() {
     }

@@ -1,6 +1,5 @@
 package com.codingchili.core.protocol;
 
-import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
