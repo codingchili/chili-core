@@ -5,8 +5,9 @@ jdk:
 script:
   - gradle build
   - gradle sourcesJar
-  - gradle archiveZip
+  - gradle archivePrototype
   - gradle archiveJavadoc
+  - gradle archiveTestReport
 notifications:
   email: true
 before_cache:

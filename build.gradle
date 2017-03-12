@@ -45,10 +45,11 @@ subprojects {
         testLogging {
             exceptionFormat "full"
         }
+        reports.html.enabled = false
     }
 }
 
-task archiveZip(type: Zip, dependsOn: subprojects.jar) {
+task archivePrototype(type: Zip, dependsOn: subprojects.jar) {
     baseName = 'prototype'
     from fileTree('prototype')
 
@@ -83,6 +84,16 @@ task alljavadoc(type: Javadoc) {
 task archiveJavadoc(type: Zip, dependsOn: alljavadoc) {
     baseName = 'javadocs'
     from fileTree(file("${buildDir}/docs/javadoc"))
+}
+
+task testReport(type: TestReport, dependsOn: 'build') {
+    destinationDir = file("$buildDir/reports/allTests")
+    reportOn subprojects*.test
+}
+
+task archiveTestReport(type: Zip, dependsOn: testReport) {
+    baseName = 'testreport'
+    from fileTree(file("$buildDir/reports/allTests"))
 }
 
 if (System.env.TRAVIS == 'true') {
