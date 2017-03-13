@@ -19,7 +19,7 @@ gradlew build
 
 Build a standalone prototype zip
 ```
-gradlew archiveZip
+gradlew archivePrototype
 ```
 To run the prototype from within an IDE, add the 'prototype' gradle task as a run configuration. It is then possible to start and debug from within the IDE.
 
