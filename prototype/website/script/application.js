@@ -3,24 +3,6 @@
  *
  * Used to pass application-level events between components.
  */
-var api = {
-    remote: '',
-    port: null,
-
-    patchserver: function (method) {
-        return '/?target=patching.node&route=' + method;
-    },
-    authentication: function (method) {
-        return '/?target=client.authentication.node&route=' + method;
-    },
-    realm: function (realm) {
-        return (realm.secure === true ? 'https://' : 'http://') + realm.remote + ':' + realm.proxy;
-    },
-    realmWebSocket: function (realm) {
-        return (realm.secure === true ? 'wss://' : 'ws://') + realm.remote + ':' + realm.proxy;
-    }
-};
-
 var application = {
     views: ['realm-list', 'page', 'game-view', 'game-login', 'character-list', 'patch-download', 'error-dialog'],
     authentication: null,

@@ -5,8 +5,13 @@
     <title>Chili-core engine live demo!</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
     <script src="script/lib/jquery-3.1.1.min.js"></script>
+    <script src="script/network.js"></script>
     <script src="script/application.js"></script>
     <script src="script/patcher.js"></script>
+    <script src="script/service/authentication.js"></script>
+    <script src="script/service/patchserver.js"></script>
+    <script src="script/service/realmregistry.js"></script>
+    <script src="script/service/realmserver.js"></script>
     <script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
     <link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout-classes.html">
     <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
@@ -29,44 +34,34 @@
 
 
 <div id="page">
-    <start-page class="layout horizontal center-justified">
-    </start-page>
-
-    <start-game class="layout horizontal center-justified">
-    </start-game>
+    <start-page class="layout horizontal center-justified"/>
+    <start-game class="layout horizontal center-justified"/>
 </div>
 
 <div id="game-login">
-    <game-login class="layout horizontal center-justified">
-    </game-login>
+    <game-login class="layout horizontal center-justified"/>
 </div>
 
 <div id="realm-list">
-    <realm-list class="layout horizontal center-justified">
-    </realm-list>
+    <realm-list class="layout horizontal center-justified"/>
 </div>
 
 <div id="character-list">
-    <character-list class="layout horizontal center-justified">
-    </character-list>
+    <character-list class="layout horizontal center-justified"/>
 </div>
 
 <div id="patch-download">
-    <patch-download class="layout horizontal center-justified">
-    </patch-download>
+    <patch-download class="layout horizontal center-justified"/>
 </div>
 
 <div id="game-view" style="width: 100%; height: 100%;">
-    <game-view>
-    </game-view>
+    <game-view/>
 </div>
 
 <div id="error-dialog">
-    <error-dialog>
-    </error-dialog>
+    <error-dialog/>
 </div>
 
-<footer-template id="footer">
-</footer-template>
+<footer-template id="footer"/>
 </body>
 </html>

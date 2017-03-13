@@ -38,7 +38,7 @@
         <div class="container center-box">
             <paper-material elevation="3">
                 <div class="title">
-                    <h4>{{title}}</h4>
+                    <h4>{{toastText}}</h4>
                 </div>
 
                 <paper-input value="{{username}}" id="username" label="Username" on-keydown="submit"
@@ -61,18 +61,8 @@
                 </div>
             </paper-material>
 
-            <paper-toast class="toast-success" id="toast-missing"
-                         text="There is no account with that username."></paper-toast>
-            <paper-toast class="toast-error" id="toast-password"
-                         text="Password authentication failed."></paper-toast>
-            <paper-toast class="toast-error" id="toast-conflict"
-                         text="The selected username is already taken."></paper-toast>
-            <paper-toast class="toast-error" id="toast-validation-failed"
-                         text="Passwords must match and be at least 9 characters."></paper-toast>
-            <paper-toast class="toast-success" id="toast-login"
-                         text="Logging in.."></paper-toast>
-            <paper-toast class="toast-success" id="toast-register"
-                         text="Registering account.."></paper-toast>
+            <paper-toast class="toast-login" id="toast-login"
+                         text="{{toastText}}"></paper-toast>
         </div>
 
     </template>
@@ -84,9 +74,24 @@
             },
 
             authenticate: function (e) {
+                var self = this;
                 this.$['toast-login'].open();
 
-                $.ajax({
+                this.set('toastText', "log log load");
+                authentication.login({
+                    success: function (data) {
+                        console.log(data);
+                        if (data.status != ResponseStatus.ACCEPTED) {
+                            self.set('toastText', data.message);
+                            self.$['toast-login'].open();
+                        }
+                    },
+                    failed: function () {
+                        application.error("Failed to establish a connection to the authentication server.")
+                    }
+                }, this.username, this.password);
+
+               /* $.ajax({
                     type: "POST",
                     url: api.authentication("authenticate"),
                     dataType: "json",
@@ -119,7 +124,7 @@
                         if (code.status != 401 && code.status != 404)
                             application.error("Failed to establish a connection to the authentication server.")
                     }
-                });
+                });*/
             },
 
             register: function (e) {

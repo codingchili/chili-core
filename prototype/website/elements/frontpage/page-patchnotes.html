@@ -112,22 +112,17 @@
             patch: {},
 
             ready: function () {
+                var self = this;
 
-                $.ajax({
-                    type: "GET",
-                    url: api.patchserver('patch'),
-                    contentType: "application/json",
-                    dataType: 'json',
-                    success: (function (data) {
-                        this.set('patch', data);
+                patchserver.patch({
+                    success: function (data) {
+                        self.set('patch', data);
                         application.loadedVersion({name: data.name, version: data.version});
-                    }).bind(this),
-
-                    error: function () {
+                    },
+                    failed: function () {
                         application.error("Failed to load application version.");
                     }
                 });
-
             }
         });
     </script>
