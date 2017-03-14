@@ -64,7 +64,7 @@ public class ClientHandlerTest {
             async.complete();
         });
 
-        accounts.register(future, new Account(USERNAME, PASSWORD));
+        accounts.register(future, new Account(USERNAME, new String(PASSWORD)));
     }
 
     @Test

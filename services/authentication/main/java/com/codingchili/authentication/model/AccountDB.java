@@ -63,7 +63,7 @@ public class AccountDB implements AsyncAccountStore {
                     fail(future, map);
                 }
             });
-        }, account.getPassword());
+        }, account.getCharPassword());
     }
 
     private void fail(Handler<AsyncResult<Account>> future, AsyncResult result) {
@@ -85,7 +85,7 @@ public class AccountDB implements AsyncAccountStore {
             } else {
                 future.handle(failedFuture(new AccountPasswordException()));
             }
-        }, authenticated.getHash(), unauthenticated.getPassword());
+        }, authenticated.getHash(), unauthenticated.getCharPassword());
     }
 
     private Account filter(AccountMapping account) {
