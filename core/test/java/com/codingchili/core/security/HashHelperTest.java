@@ -11,6 +11,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.testing.ContextMock;
 
 /**
@@ -22,17 +23,18 @@ import com.codingchili.core.testing.ContextMock;
 public class HashHelperTest {
     private static final int HASH_TIME_LIMIT = 10000;
     private static final int HASH_TIME_MIN = 100;
-    private static final String password = "pass";
-    private static final String wrong = "wrong";
-    private static final String salt = "salt";
-    private static final String salt2 = "salt2";
-    private static Vertx vertx;
-    private static WorkerExecutor executor;
+    private static final String wrongPlaintext = "wrong";
+    private static final char[] wrong = wrongPlaintext.toCharArray();
+    private static final char[] password = "pass".toCharArray();
+    private Vertx vertx;
+    private WorkerExecutor executor;
+    private HashHelper hasher;
 
     @Before
     public void setUp() {
         vertx = Vertx.vertx();
         executor = vertx.createSharedWorkerExecutor("worker_pool_name", 8);
+        hasher = new HashHelper(new SystemContext(vertx));
     }
 
     @After
@@ -41,71 +43,60 @@ public class HashHelperTest {
     }
 
     @Test
-    public void generateUniqueSaltTest() {
-        HashMap<String, Boolean> salts = new HashMap<>();
+    public void testHashesAreUnique(TestContext test) {
+        String hash = hasher.hash(password);
+        String hash2 = hasher.hash(password);
 
-        for (int i = 0; i < 1000; i++) {
-            String salt = new HashHelper(new ContextMock(vertx)).salt();
-
-            Assert.assertFalse(salts.containsKey(salt));
-            salts.put(salt, true);
-        }
+        test.assertNotNull(hash);
+        test.assertTrue(hash.length() != 0);
+        test.assertNotEquals(hash, password);
+        test.assertNotEquals(hash, hash2);
     }
 
     @Test
-    public void checkHashesAreUnique() {
-        String hash = HashHelper.hash(password, salt);
-        String hash2 = HashHelper.hash(wrong, salt);
-        String hash3 = HashHelper.hash(password, salt2);
+    public void testFailVerifyWrongPassword(TestContext test) {
+        Async async = test.async();
+        String hash = hasher.hash(password);
+        String hash2 = hasher.hash(wrong);
 
-        Assert.assertNotNull(hash);
-        Assert.assertTrue(hash.length() != 0);
-        Assert.assertNotEquals(hash, password);
-        Assert.assertNotEquals(hash, salt);
+        test.assertNotEquals(hash, hash2);
+        test.assertNotNull(hash);
+        test.assertNotNull(hash2);
+        test.assertTrue(hash.length() != 0);
+        test.assertTrue(hash2.length() != 0);
 
-        Assert.assertNotEquals(hash, hash2);
-        Assert.assertNotEquals(hash, hash3);
-        Assert.assertNotEquals(hash2, hash3);
+        hasher.verify(result -> {
+            Assert.assertTrue(result.failed());
+            async.complete();
+        }, new String(password), "other".toCharArray());
     }
 
     @Test
-    public void verifyPasswordWithSalt() {
-        String hash = HashHelper.hash(password, salt);
+    public void testVerifySuccess(TestContext test) {
+        Async async = test.async();
+        String hash = hasher.hash(password);
 
-        Assert.assertEquals(hash, HashHelper.hash(password, salt));
+        hasher.verify(result -> {
+            test.assertTrue(result.succeeded());
+            async.complete();
+        }, hash, password);
     }
 
     @Test
-    public void failVerifyPasswordWrongSalt() {
-        String hash = HashHelper.hash(password, salt);
-        String hash2 = HashHelper.hash(password, salt2);
-
-        Assert.assertNotEquals(hash, hash2);
-    }
-
-    @Test
-    public void failVerifyWrongPassword() {
-        String hash1 = HashHelper.hash(password, salt);
-        String hash2 = HashHelper.hash(wrong, salt);
-
-        Assert.assertNotEquals(hash1, hash2);
-    }
-
-    @Test
-    public void checkHashingNotTooFast(TestContext context) {
-        Async async = context.async();
+    public void testCheckHashingNotTooFast(TestContext test) {
+        Async async = test.async();
         long start = getTimeMS();
         AtomicInteger countdown = new AtomicInteger(100);
 
         for (int i = 0; i < 100; i++) {
             executor.executeBlocking((blocking) -> {
-                HashHelper.hash(password, salt);
+                hasher.hash(password);
                 blocking.complete();
             }, false, (result) -> {
                 if (countdown.decrementAndGet() == 0) {
                     long time = getTimeMS() - start;
-                    Assert.assertTrue(time < HASH_TIME_LIMIT);
-                    Assert.assertTrue(time > HASH_TIME_MIN);
+                    test.assertTrue(time < HASH_TIME_LIMIT);
+                    test.assertTrue(time > HASH_TIME_MIN);
                     async.complete();
                 }
             });
@@ -113,18 +104,14 @@ public class HashHelperTest {
     }
 
     @Test
-    public void checkHashWithWorkerPool(TestContext test) {
+    public void testCheckHashingWithWorkerPool(TestContext test) {
         Async async = test.async();
-        HashHelper hasher = new HashHelper(new ContextMock(vertx));
-        Future<String> future = Future.future();
 
-        future.setHandler(hash -> {
+        hasher.hash(hash -> {
             test.assertTrue(hash.succeeded());
             test.assertNotNull(hash.result());
             async.complete();
-        });
-
-        hasher.hash(future, password, salt);
+        }, password);
     }
 
     private long getTimeMS() {

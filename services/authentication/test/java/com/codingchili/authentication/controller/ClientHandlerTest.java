@@ -31,11 +31,11 @@ import static com.codingchili.common.Strings.*;
 
 @RunWith(VertxUnitRunner.class)
 public class ClientHandlerTest {
-    private static final String PASSWORD = "password";
+    private static final char[] PASSWORD = "password".toCharArray();
     private static final String USERNAME = "username";
     private static final String USERNAME_NEW = "new-username";
     private static final String USERNAME_MISSING = "missing-username";
-    private static final String PASSWORD_WRONG = "wrong-password";
+    private static final char[] PASSWORD_WRONG = "wrong-password".toCharArray();
     private static AuthenticationContext context;
     private static ClientHandler handler;
 
@@ -107,7 +107,7 @@ public class ClientHandlerTest {
         }, account(USERNAME_NEW, PASSWORD));
     }
 
-    private JsonObject account(String username, String password) {
+    private JsonObject account(String username, char[] password) {
         return new JsonObject().put(ID_ACCOUNT, new JsonObject()
                 .put(ID_USERNAME, username)
                 .put(ID_PASSWORD, password));

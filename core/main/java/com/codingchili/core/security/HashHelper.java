@@ -1,29 +1,30 @@
 package com.codingchili.core.security;
 
-import io.vertx.core.Future;
-
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
-import java.util.Base64;
+import de.mkammerer.argon2.Argon2;
+import de.mkammerer.argon2.Argon2Factory;
+import io.vertx.core.*;
 
 import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.security.exception.HashMismatchException;
 
 /**
  * @author Robin Duda
  *
  * Handles the hashing of passwords and the generation
- * of the salts used in the hashing.
- * reference: https://crackstation.net/hashing-security.htm#javasourcecode
+ * of the salts used in the hashing; internally in Argon2.
+ *
+ * Uses mutable data types for storing plaintext passwords
+ * to allow wiping. Reduces effectiveness of core dumps slightly,
+ * as awaiting gc takes much longer time.
  */
 
 public class HashHelper {
-    private final static int ITERATIONS = 2048;
-    private final static int KEY_BITS = 512;
-    private final static int SALT_BYTES = 32;
-    private final static String ALGORITHM = "PBKDF2WithHmacSHA1";
+    private static final int ITERATIONS = 2;
+    private static final int MEMORY = 65536;
+    private static final int PARALLELISM = 1;
+    private static final int HASH_LENGTH = 32;
+    private static final int SALT_LENGTH = 16;
+    private final static Argon2 argon2 = Argon2Factory.create(SALT_LENGTH, HASH_LENGTH);
     private CoreContext context;
 
     public HashHelper(CoreContext context) {
@@ -31,49 +32,55 @@ public class HashHelper {
     }
 
     /**
-     * Blocking password hashing with a salt using PBKDF2 with SHA1.
+     * Blocking password hashing with internal salt using ARGON2.
      *
-     * @param password plaintext password to be hashed.
-     * @param salt     for the hashing.
+     * @param plaintext plaintext password to be hashed.
      */
-    static String hash(String password, String salt) {
+    public String hash(char[] plaintext) {
         try {
-            PBEKeySpec key = new PBEKeySpec(password.toCharArray(), salt.getBytes(), ITERATIONS, KEY_BITS);
-            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(ALGORITHM);
-            byte[] hash = keyFactory.generateSecret(key).getEncoded();
-            return Base64.getEncoder().encodeToString(hash);
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            throw new RuntimeException(e);
+            return argon2.hash(ITERATIONS, MEMORY, PARALLELISM, plaintext);
+        } finally {
+            argon2.wipeArray(plaintext);
         }
     }
 
     /**
-     * Async hashing a password with a salt using PBKDF2 with SHA1.
-     *
-     * @param future   callback for string result with hex encoded hash.
-     * @param password plaintext password to be hashed.
-     * @param salt     for the hashing.
+     * Verifies a plaintext password against a hashed password.
+     * @param future callback
+     * @param expected the expected outcome of the hash operation.
+     * @param plaintext the plaintext password to be hashed and compared to expected.
      */
-    public void hash(Future<String> future, String password, String salt) {
-        context.<String>blocking(blocking -> {
-            blocking.complete(hash(password, salt));
-        }, result -> {
-            if (result.succeeded()) {
-                future.complete(result.result());
+    public void verify(Handler<AsyncResult<Void>> future, String expected, char[] plaintext) {
+        context.<Boolean>blocking(blocked -> {
+            try {
+                blocked.complete(argon2.verify(expected, plaintext));
+            } finally {
+                argon2.wipeArray(plaintext);
+            }
+        }, hashed -> {
+            if (hashed.result()) {
+                future.handle(Future.succeededFuture());
             } else {
-                throw new RuntimeException(result.cause());
+                future.handle(Future.failedFuture(new HashMismatchException()));
             }
         });
     }
 
     /**
-     * Generates a salt using Secure randoms.
+     * Async hashing a password with an internal salt using ARGON2.
      *
-     * @return A generated salt of 512 bits.
+     * @param future   callback for string result with hex encoded hash.
+     * @param plaintext plaintext password to be hashed.
      */
-    public String salt() {
-        byte[] salt = new byte[SALT_BYTES];
-        new SecureRandom().nextBytes(salt);
-        return Base64.getEncoder().encodeToString(salt);
+    public void hash(Handler<AsyncResult<String>> future, char[] plaintext) {
+        context.<String>blocking(blocking -> {
+            blocking.complete(hash(plaintext));
+        }, result -> {
+            if (result.succeeded()) {
+                future.handle(Future.succeededFuture(result.result()));
+            } else {
+                future.handle(Future.failedFuture(new HashMismatchException()));
+            }
+        });
     }
 }

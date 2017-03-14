@@ -51,11 +51,9 @@ public class AccountDB implements AsyncAccountStore {
 
     @Override
     public void register(Handler<AsyncResult<Account>> future, Account account) {
-        Future<String> hashing = Future.future();
-        AccountMapping mapping = new AccountMapping(account)
-                .setSalt(hasher.salt());
+        AccountMapping mapping = new AccountMapping(account);
 
-        hashing.setHandler(hash -> {
+        hasher.hash(hash -> {
             mapping.setHash(hash.result());
 
             accounts.putIfAbsent(mapping, map -> {
@@ -65,8 +63,7 @@ public class AccountDB implements AsyncAccountStore {
                     fail(future, map);
                 }
             });
-        });
-        hasher.hash(hashing, account.getPassword(), mapping.getSalt());
+        }, account.getPassword());
     }
 
     private void fail(Handler<AsyncResult<Account>> future, AsyncResult result) {
@@ -82,16 +79,13 @@ public class AccountDB implements AsyncAccountStore {
     }
 
     private void authenticate(Handler<AsyncResult<Account>> future, AccountMapping authenticated, Account unauthenticated) {
-        Future<String> hashing = Future.future();
-
-        hashing.setHandler(hash -> {
-            if (ByteComparator.compare(hash.result(), authenticated.getHash())) {
+        hasher.verify(verify -> {
+            if (verify.succeeded()) {
                 future.handle(succeededFuture(filter(authenticated)));
             } else {
                 future.handle(failedFuture(new AccountPasswordException()));
             }
-        });
-        hasher.hash(hashing, unauthenticated.getPassword(), authenticated.getSalt());
+        }, authenticated.getHash(), unauthenticated.getPassword());
     }
 
     private Account filter(AccountMapping account) {

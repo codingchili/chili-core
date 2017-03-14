@@ -10,7 +10,6 @@ import com.codingchili.core.storage.Storable;
 public class AccountMapping implements Storable {
     private String username;
     private String email;
-    private String salt;
     private String hash;
 
     public AccountMapping() {
@@ -19,15 +18,6 @@ public class AccountMapping implements Storable {
     public AccountMapping(Account account) {
         this.username = account.getUsername();
         this.email = account.getEmail();
-    }
-
-    public String getSalt() {
-        return salt;
-    }
-
-    public AccountMapping setSalt(String salt) {
-        this.salt = salt;
-        return this;
     }
 
     public String getUsername() {

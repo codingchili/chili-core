@@ -35,6 +35,7 @@ public abstract class CoreStrings {
     private static final String IP6_HOST = "::";
     private static final String IP4_HOST = "0.0.0.0";
     private static final IPVersion ipVersion = IPVersion.IP4;
+
     private enum IPVersion {IP4, IP6}
 
     public static String getBindAddress() {
@@ -339,5 +340,9 @@ public abstract class CoreStrings {
 
     public static String timestamp(long ms) {
         return LocalDateTime.ofInstant(Instant.ofEpochMilli(ms), ZoneOffset.UTC).toString().split("T")[1];
+    }
+
+    public static String getHashMismatchException() {
+        return "Error: hash comparison has failed.";
     }
 }
