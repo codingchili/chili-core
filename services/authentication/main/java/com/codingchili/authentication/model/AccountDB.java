@@ -91,11 +91,11 @@ public class AccountDB implements AsyncAccountStore {
     private Account filter(AccountMapping account) {
         return new Account()
                 .setEmail(account.getEmail())
-                .setUsername(account.getUsername())
-                .setPassword(null);
+                .setUsername(account.getUsername());
     }
 
     private Account filter(Account account) {
-        return account.setPassword(null);
+        hasher.wipe(account.getCharPassword());
+        return account;
     }
 }

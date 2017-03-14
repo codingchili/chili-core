@@ -6,9 +6,9 @@ import com.codingchili.core.storage.Storable;
 
 /**
  * @author Robin Duda
- *
- * Transfer object used for authentication from clients.
- * Password is to be consumed once read.
+ *         <p>
+ *         Transfer object used for authentication from clients.
+ *         Password is to be consumed once read.
  */
 public class Account implements Storable {
     private String username = "";
@@ -37,6 +37,12 @@ public class Account implements Storable {
         return this;
     }
 
+    /**
+     * prefer using getCharPassword over this, as this method creates a new
+     * copy in memory of the password. It is required for serialization purposes.
+     *
+     * @return a copy of the raw char array as a string.
+     */
     public String getPassword() {
         return new String(password);
     }

@@ -110,7 +110,7 @@ public class ClientHandlerTest {
     private JsonObject account(String username, char[] password) {
         return new JsonObject().put(ID_ACCOUNT, new JsonObject()
                 .put(ID_USERNAME, username)
-                .put(ID_PASSWORD, password));
+                .put(ID_PASSWORD, new String(password)));
     }
 
     @Test

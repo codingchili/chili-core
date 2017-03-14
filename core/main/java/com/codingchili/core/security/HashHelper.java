@@ -83,4 +83,12 @@ public class HashHelper {
             }
         });
     }
+
+    /**
+     * Wipes an array that contains sensitive data.
+     * @param sensitive the data to be wiped.
+     */
+    public void wipe(char[] sensitive) {
+        argon2.wipeArray(sensitive);
+    }
 }
