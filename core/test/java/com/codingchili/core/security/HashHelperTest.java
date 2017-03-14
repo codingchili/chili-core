@@ -118,15 +118,10 @@ public class HashHelperTest {
     public void testWipePassword(TestContext test) {
         Account account = new Account().setPassword(new String(password));
         hasher.wipe(account.getCharPassword());
-        System.out.println("pw='" + account.getPassword() + "'");
-        System.out.println(account.getPassword().length());
-        test.assertTrue(account.getPassword().length() == 0);
-        test.assertTrue(account.getCharPassword().length == 0);
-    }
 
-    @Test
-    public void testStringLength() {
-        System.out.println(new String(new char[] {'\n','\0', '\r'}).length());
+        for (int i = 0; i < account.getCharPassword().length; i++) {
+            test.assertEquals('\0', account.getCharPassword()[i]);
+        }
     }
 
     private long getTimeMS() {
