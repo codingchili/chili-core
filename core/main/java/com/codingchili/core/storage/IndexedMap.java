@@ -25,6 +25,8 @@ import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.storage.exception.*;
 
 import static com.googlecode.cqengine.query.QueryFactory.*;
+import static io.vertx.core.Future.failedFuture;
+import static io.vertx.core.Future.succeededFuture;
 
 /**
  * @author Robin Duda
@@ -34,17 +36,24 @@ import static com.googlecode.cqengine.query.QueryFactory.*;
  *         The db/collection is shared over multiple instances.
  */
 public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
+    private static final Map<String, IndexedMap> maps = new ConcurrentHashMap<>();
     private Map<String, Attribute<Value, String>> fields = new ConcurrentHashMap<>();
     private IndexedCollection<Value> db = new ConcurrentIndexedCollection<>();
     private Attribute<Value, String> FIELD_ID;
     private StorageContext<Value> context;
 
+    @SuppressWarnings("unchecked")
     public IndexedMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
-        this.context = context;
-        FIELD_ID = attribute(Storable.idField, Storable::id);
-        fields.put(Storable.idField, FIELD_ID);
-        db.addIndex(UniqueIndex.onAttribute(FIELD_ID));
-        future.complete(this);
+        if (maps.containsKey(context().identifier())) {
+            future.complete((IndexedMap<Value>) maps.get(context.identifier()));
+        } else {
+            this.context = context;
+            FIELD_ID = attribute(Storable.idField, Storable::id);
+            fields.put(Storable.idField, FIELD_ID);
+            db.addIndex(UniqueIndex.onAttribute(FIELD_ID));
+            maps.put(context.identifier(), this);
+            future.complete(this);
+        }
     }
 
     @Override
@@ -52,16 +61,16 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
         Iterator<Value> result = db.retrieve(equal(FIELD_ID, key)).iterator();
 
         if (result.hasNext()) {
-            handler.handle(Future.succeededFuture(result.next()));
+            handler.handle(succeededFuture(result.next()));
         } else {
-            handler.handle(Future.failedFuture(new ValueMissingException(key)));
+            handler.handle(failedFuture(new ValueMissingException(key)));
         }
     }
 
     @Override
     public void put(Value value, Handler<AsyncResult<Void>> handler) {
         db.update(Collections.singleton(value), Collections.singleton(value));
-        handler.handle(Future.succeededFuture());
+        handler.handle(succeededFuture());
     }
 
     @Override
@@ -69,7 +78,7 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
         if (!db.contains(value)) {
             put(value, handler);
         } else {
-            handler.handle(Future.failedFuture(new ValueAlreadyPresentException(value.id())));
+            handler.handle(failedFuture(new ValueAlreadyPresentException(value.id())));
         }
     }
 
@@ -78,9 +87,9 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
         get(key, got -> {
             if (got.succeeded()) {
                 db.update(Collections.singleton(got.result()), Collections.emptyList());
-                handler.handle(Future.succeededFuture());
+                handler.handle(succeededFuture());
             } else {
-                handler.handle(Future.failedFuture(new NothingToRemoveException(key)));
+                handler.handle(failedFuture(new NothingToRemoveException(key)));
             }
         });
     }
@@ -91,7 +100,7 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
             if (removed.succeeded()) {
                 put(value, handler);
             } else {
-                handler.handle(Future.failedFuture(new NothingToReplaceException(value.id())));
+                handler.handle(failedFuture(new NothingToReplaceException(value.id())));
             }
         });
     }
@@ -99,18 +108,18 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
     @Override
     @SuppressWarnings("unchecked")
     public void values(Handler<AsyncResult<List<Value>>> handler) {
-        handler.handle(Future.succeededFuture(db.stream().collect(Collectors.toList())));
+        handler.handle(succeededFuture(db.stream().collect(Collectors.toList())));
     }
 
     @Override
     public void clear(Handler<AsyncResult<Void>> handler) {
         db.clear();
-        handler.handle(Future.succeededFuture());
+        handler.handle(succeededFuture());
     }
 
     @Override
     public void size(Handler<AsyncResult<Integer>> handler) {
-        handler.handle(Future.succeededFuture(db.size()));
+        handler.handle(succeededFuture(db.size()));
     }
 
     /**
@@ -248,7 +257,7 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
                             .limit(pageSize)
                             .collect(Collectors.toList());
 
-                    handler.handle(Future.succeededFuture(list));
+                    handler.handle(succeededFuture(list));
                 }, false, handler);
             }
 

@@ -21,6 +21,8 @@ import static com.codingchili.core.context.FutureHelper.*;
  *         This storage implementation implements a fallback for supporting queries.
  *         When querying, all fields in the store are converted to json.
  *         This is very inefficient, if query support is required use another implementation.
+ *         <p>
+ *         This map is private, it is not shared within the JVM.
  */
 public class PrivateMap<Value extends Storable> implements AsyncStorage<Value> {
     private ConcurrentHashMap<String, Value> map = new ConcurrentHashMap<>();

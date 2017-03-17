@@ -5,6 +5,7 @@ import io.vertx.core.json.JsonObject;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,33 +26,40 @@ import static com.codingchili.core.context.FutureHelper.*;
  *         Do not use for data that is changing frequently, as this is extremely inefficient.
  *         The dirty-state of the map will be checked to determine when the map should be
  *         persisted. This is done in intervals specified in plugin configuration.
+ *         <p>
+ *         this map flushes its contents to disk every now and then.
  */
 public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
+    private static Map<String, JsonMap> maps = new ConcurrentHashMap<>();
     private static final String JSONMAP_WORKERS = "asyncjsonmap.workers";
     private static AtomicBoolean dirty = new AtomicBoolean(false);
-    private final WorkerExecutor fileWriter;
+    private WorkerExecutor fileWriter;
     private JsonObject db;
     private StorageContext<Value> context;
 
+    @SuppressWarnings("unchecked")
     public JsonMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
-        this.context = context;
-        this.fileWriter = context.vertx().createSharedWorkerExecutor(JSONMAP_WORKERS);
+        if (maps.containsKey(context.identifier())) {
+            future.complete((JsonMap<Value>) maps.get(context.identifier()));
+        } else {
+            this.context = context;
+            this.fileWriter = context.vertx().createSharedWorkerExecutor(JSONMAP_WORKERS);
 
-        context.periodic(() -> context.storage().getPersistInterval(),
-                context.identifier(), event -> {
-                    if (dirty.get()) {
-                        save();
-                        dirty.set(false);
-                    }
-                });
-
-        try {
-            db = JsonFileStore.readObject(context.dbPath());
-        } catch (IOException e) {
-            db = new JsonObject();
-            context.console().log(CoreStrings.getFileReadError(context.dbPath()));
+            context.periodic(() -> context.storage().getPersistInterval(),
+                    context.identifier(), event -> {
+                        if (dirty.get()) {
+                            save();
+                            dirty.set(false);
+                        }
+                    });
+            try {
+                db = JsonFileStore.readObject(context.dbPath());
+            } catch (IOException e) {
+                db = new JsonObject();
+                context.console().log(CoreStrings.getFileReadError(context.dbPath()));
+            }
+            future.complete(this);
         }
-        future.complete(this);
     }
 
     @Override
