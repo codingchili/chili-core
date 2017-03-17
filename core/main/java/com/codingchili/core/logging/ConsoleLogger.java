@@ -135,7 +135,9 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
 
         for (String key : data.fieldNames()) {
             Object object = data.getValue(key);
-            text += key + "=" + object.toString() + " ";
+            if (object != null) {
+                text += key + "=" + object.toString() + " ";
+            }
         }
         return text;
     }

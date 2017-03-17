@@ -44,6 +44,7 @@ public class WebserverContext extends ServiceContext {
 
     public void onPageLoaded(Request request) {
         log(event(LOG_PAGE_LOAD)
-                .put(LOG_AGENT, request.data().getString(LOG_USER_AGENT)));
+                .put(LOG_AGENT, request.data().getString(LOG_USER_AGENT))
+                .put(LOG_MESSAGE, request.route()));
     }
 }
