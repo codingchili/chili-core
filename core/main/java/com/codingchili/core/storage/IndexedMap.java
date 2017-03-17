@@ -1,7 +1,11 @@
 package com.codingchili.core.storage;
 
-import com.googlecode.cqengine.ConcurrentIndexedCollection;
-import com.googlecode.cqengine.IndexedCollection;
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.storage.exception.NothingToRemoveException;
+import com.codingchili.core.storage.exception.NothingToReplaceException;
+import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
+import com.codingchili.core.storage.exception.ValueMissingException;
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.attribute.MultiValueAttribute;
 import com.googlecode.cqengine.index.navigable.NavigableIndex;
@@ -13,16 +17,13 @@ import com.googlecode.cqengine.query.QueryFactory;
 import com.googlecode.cqengine.query.option.AttributeOrder;
 import com.googlecode.cqengine.query.option.QueryOptions;
 import com.googlecode.cqengine.resultset.ResultSet;
-import io.vertx.core.*;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
-import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.protocol.Serializer;
-import com.codingchili.core.storage.exception.*;
 
 import static com.googlecode.cqengine.query.QueryFactory.*;
 import static io.vertx.core.Future.failedFuture;
@@ -36,24 +37,28 @@ import static io.vertx.core.Future.succeededFuture;
  *         The db/collection is shared over multiple instances.
  */
 public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
-    private static final Map<String, IndexedMap> maps = new ConcurrentHashMap<>();
-    private Map<String, Attribute<Value, String>> fields = new ConcurrentHashMap<>();
-    private IndexedCollection<Value> db = new ConcurrentIndexedCollection<>();
-    private Attribute<Value, String> FIELD_ID;
-    private StorageContext<Value> context;
+    private static final Map<String, SharedIndexCollection> maps = new HashMap<>();
+    private final Map<String, Attribute<Value, String>> fields = new HashMap<>();
+    private final Attribute<Value, String> FIELD_ID;
+    private final StorageContext<Value> context;
+    private SharedIndexCollection<Value> db = new SharedIndexCollection<>();
 
     @SuppressWarnings("unchecked")
     public IndexedMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
-        if (maps.containsKey(context.identifier())) {
-            future.complete((IndexedMap<Value>) maps.get(context.identifier()));
-        } else {
-            this.context = context;
-            FIELD_ID = attribute(Storable.idField, Storable::id);
-            fields.put(Storable.idField, FIELD_ID);
-            db.addIndex(UniqueIndex.onAttribute(FIELD_ID));
-            maps.put(context.identifier(), this);
-            future.complete(this);
+        this.context = context;
+        FIELD_ID = attribute(Storable.idField, Storable::id);
+        fields.put(Storable.idField, FIELD_ID);
+
+        // share collections that share the same identifier.
+        synchronized (maps) {
+            if (maps.containsKey(context.identifier())) {
+                db = maps.get(context.identifier());
+            } else {
+                db.addIndex(UniqueIndex.onAttribute(FIELD_ID));
+                maps.put(context.identifier(), db);
+            }
         }
+        future.complete(this);
     }
 
     @Override
@@ -154,9 +159,15 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
                 });
             }
             fields.put(fieldName, attribute);
-            db.addIndex(NavigableIndex.onAttribute(attribute));
-            db.addIndex(SuffixTreeIndex.onAttribute(attribute));
-            db.addIndex(RadixTreeIndex.onAttribute(attribute));
+
+            synchronized (maps) {
+                if (!db.isIndexed(fieldName)) {
+                    db.setIndexed(fieldName);
+                    db.addIndex(NavigableIndex.onAttribute(attribute));
+                    db.addIndex(SuffixTreeIndex.onAttribute(attribute));
+                    db.addIndex(RadixTreeIndex.onAttribute(attribute));
+                }
+            }
         }
         return attribute;
     }

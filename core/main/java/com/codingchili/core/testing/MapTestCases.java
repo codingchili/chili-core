@@ -748,7 +748,7 @@ public class MapTestCases {
                     store.size(size -> {
                         newStorage.size(newSize -> {
                             test.assertEquals(size.result(), newSize.result());
-                            test.assertEquals(newSize.result(), TEST_ITEM_COUNT);
+                            test.assertEquals(newSize.result(), TEST_ITEM_COUNT.intValue());
                             async.complete();
                         });
                     });

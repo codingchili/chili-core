@@ -30,36 +30,38 @@ import static com.codingchili.core.context.FutureHelper.*;
  *         this map flushes its contents to disk every now and then.
  */
 public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
-    private static Map<String, JsonMap> maps = new ConcurrentHashMap<>();
+    private static Map<String, JsonObject> maps = new ConcurrentHashMap<>();
     private static final String JSONMAP_WORKERS = "asyncjsonmap.workers";
     private static AtomicBoolean dirty = new AtomicBoolean(false);
     private WorkerExecutor fileWriter;
-    private JsonObject db;
+    private JsonObject db = new JsonObject();
     private StorageContext<Value> context;
 
     @SuppressWarnings("unchecked")
     public JsonMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
         if (maps.containsKey(context.identifier())) {
-            future.complete((JsonMap<Value>) maps.get(context.identifier()));
+            this.db = maps.get(context.identifier());
         } else {
-            this.context = context;
-            this.fileWriter = context.vertx().createSharedWorkerExecutor(JSONMAP_WORKERS);
-
-            context.periodic(() -> context.storage().getPersistInterval(),
-                    context.identifier(), event -> {
-                        if (dirty.get()) {
-                            save();
-                            dirty.set(false);
-                        }
-                    });
             try {
-                db = JsonFileStore.readObject(context.dbPath());
+                this.db = JsonFileStore.readObject(context.dbPath());
             } catch (IOException e) {
-                db = new JsonObject();
                 context.console().log(CoreStrings.getFileReadError(context.dbPath()));
             }
-            future.complete(this);
         }
+        this.context = context;
+        this.fileWriter = context.vertx().createSharedWorkerExecutor(JSONMAP_WORKERS);
+        this.enableSave();
+        future.complete(this);
+    }
+
+    private void enableSave() {
+        context.periodic(() -> context.storage().getPersistInterval(),
+                context.identifier(), event -> {
+                    if (dirty.get()) {
+                        save();
+                        dirty.set(false);
+                    }
+                });
     }
 
     @Override
