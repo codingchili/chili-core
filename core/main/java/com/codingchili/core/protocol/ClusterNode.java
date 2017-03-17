@@ -2,7 +2,6 @@ package com.codingchili.core.protocol;
 
 import io.vertx.core.*;
 
-import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.ConsoleLogger;

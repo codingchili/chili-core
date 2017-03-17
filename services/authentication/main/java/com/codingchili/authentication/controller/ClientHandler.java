@@ -9,8 +9,7 @@ import com.codingchili.core.protocol.*;
 import com.codingchili.core.security.Account;
 
 import static com.codingchili.common.Strings.*;
-import static com.codingchili.core.protocol.Access.AUTHORIZED;
-import static com.codingchili.core.protocol.Access.PUBLIC;
+import static com.codingchili.core.protocol.Access.*;
 
 /**
  * @author Robin Duda

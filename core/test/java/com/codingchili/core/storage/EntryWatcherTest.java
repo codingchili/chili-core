@@ -1,12 +1,6 @@
 package com.codingchili.core.storage;
 
-import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.testing.ContextMock;
-import com.codingchili.core.testing.StorageObject;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
+import io.vertx.core.*;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
@@ -15,6 +9,9 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeUnit;
+
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.testing.StorageObject;
 
 
 /**
@@ -60,8 +57,8 @@ public class EntryWatcherTest {
         });
     }
 
-    private ReusableQueryBuilder<StorageObject> getQuery() {
-        return new ReusableQueryBuilder<StorageObject>(ATTRIBUTE).between(1L, 100L);
+    private QueryBuilder<StorageObject> getQuery() {
+        return storage.query(ATTRIBUTE).between(1L, 100L);
     }
 
     private void createStorage(Handler<AsyncResult<AsyncStorage<StorageObject>>> future) {

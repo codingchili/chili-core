@@ -1,7 +1,6 @@
 package com.codingchili.realmregistry.controller;
 
 import com.codingchili.common.Strings;
-import com.codingchili.core.storage.EntryWatcher;
 import com.codingchili.realmregistry.configuration.RealmSettings;
 import com.codingchili.realmregistry.configuration.RegistryContext;
 import com.codingchili.realmregistry.model.*;

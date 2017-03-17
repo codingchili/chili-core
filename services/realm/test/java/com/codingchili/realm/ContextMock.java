@@ -11,7 +11,6 @@ import io.vertx.core.Vertx;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.security.Token;
 import com.codingchili.core.security.TokenFactory;
-import com.codingchili.core.storage.PrivateMap;
 import com.codingchili.core.storage.StorageLoader;
 
 /**

@@ -1,6 +1,7 @@
 package com.codingchili.core.security;
 
-import io.vertx.core.*;
+import io.vertx.core.Vertx;
+import io.vertx.core.WorkerExecutor;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -8,11 +9,9 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.codingchili.core.context.SystemContext;
-import com.codingchili.core.testing.ContextMock;
 
 /**
  * @author Robin Duda

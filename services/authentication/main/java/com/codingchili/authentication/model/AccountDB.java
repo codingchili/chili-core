@@ -1,17 +1,15 @@
 package com.codingchili.authentication.model;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
+import io.vertx.core.*;
 
 import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.security.*;
+import com.codingchili.core.security.Account;
+import com.codingchili.core.security.HashHelper;
 import com.codingchili.core.storage.AsyncStorage;
 import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
 import com.codingchili.core.storage.exception.ValueMissingException;
-import io.vertx.core.Handler;
 
-import static io.vertx.core.Future.failedFuture;
-import static io.vertx.core.Future.succeededFuture;
+import static io.vertx.core.Future.*;
 
 /**
  * @author Robin Duda

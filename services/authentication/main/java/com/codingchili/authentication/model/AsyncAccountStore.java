@@ -1,9 +1,9 @@
 package com.codingchili.authentication.model;
 
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 
 import com.codingchili.core.security.Account;
-import io.vertx.core.Handler;
 
 /**
  * @author Robin Duda

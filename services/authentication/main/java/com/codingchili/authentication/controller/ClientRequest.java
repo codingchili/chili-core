@@ -2,9 +2,6 @@ package com.codingchili.authentication.controller;
 
 
 import com.codingchili.common.Strings;
-import io.vertx.core.json.JsonObject;
-
-import java.util.Optional;
 
 import com.codingchili.core.protocol.*;
 import com.codingchili.core.security.Account;

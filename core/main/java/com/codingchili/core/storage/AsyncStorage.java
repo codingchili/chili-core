@@ -1,10 +1,9 @@
 package com.codingchili.core.storage;
 
-import com.codingchili.core.context.StorageContext;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
-import java.util.function.Consumer;
+import com.codingchili.core.context.StorageContext;
 
 /**
  * @author Robin Duda

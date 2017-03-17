@@ -1,11 +1,11 @@
 package com.codingchili.realm.configuration;
 
-import com.codingchili.core.storage.IndexedMap;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.ArrayList;
 
 import com.codingchili.core.configuration.ServiceConfigurable;
+import com.codingchili.core.storage.IndexedMap;
 
 /**
  * @author Robin Duda

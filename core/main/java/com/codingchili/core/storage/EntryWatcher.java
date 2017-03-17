@@ -1,10 +1,10 @@
 package com.codingchili.core.storage;
 
-import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.context.TimerSource;
-
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.context.TimerSource;
 
 /**
  * @author Robin Duda

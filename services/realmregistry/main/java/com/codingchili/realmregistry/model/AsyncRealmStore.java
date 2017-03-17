@@ -1,13 +1,12 @@
 package com.codingchili.realmregistry.model;
 
 import com.codingchili.realmregistry.configuration.RealmSettings;
-
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 
 import java.util.List;
 
 import com.codingchili.core.security.Token;
-import io.vertx.core.Handler;
 
 
 /**

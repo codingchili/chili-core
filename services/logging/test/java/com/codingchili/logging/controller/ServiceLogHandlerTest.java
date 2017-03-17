@@ -2,9 +2,7 @@ package com.codingchili.logging.controller;
 
 import com.codingchili.logging.configuration.LogContext;
 import io.vertx.core.Vertx;
-import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 

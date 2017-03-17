@@ -1,7 +1,6 @@
 package com.codingchili.realm.model;
 
 import com.codingchili.realm.instance.model.PlayerCharacter;
-
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 

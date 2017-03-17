@@ -4,7 +4,8 @@ package com.codingchili.core.protocol;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
-import io.vertx.core.json.*;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 import java.io.*;
 import java.util.zip.GZIPInputStream;

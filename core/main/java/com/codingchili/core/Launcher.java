@@ -2,13 +2,13 @@ package com.codingchili.core;
 
 import io.vertx.core.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.*;
-import com.codingchili.core.context.CoreException;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
