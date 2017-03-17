@@ -130,7 +130,9 @@ class JsonStreamQuery<Value extends Storable> {
                     Stream<JsonObject> stream = source.stream();
 
                     for (StatementPredicate statement : clause) {
-                        stream = stream.filter(entry -> anyMatch(entry, statement));
+                        stream = stream.filter(entry -> {
+                            return anyMatch(entry, statement);
+                        });
                     }
                     hits.addAll(stream.collect(Collectors.toList()));
                 }

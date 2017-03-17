@@ -55,7 +55,7 @@ abstract class AbstractQueryBuilder<Value extends Storable> implements QueryBuil
 
     @Override
     public EntryWatcher<Value> poll(Consumer<Value> consumer, TimerSource timer) {
-        return new EntryWatcher<>(storage, this, timer);
+        return new EntryWatcher<>(storage, this, timer).start(consumer);
     }
 
     @Override

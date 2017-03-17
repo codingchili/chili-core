@@ -24,16 +24,14 @@ public class EntryWatcherTest {
     private static final String TEST_NAME = "TEST_NAME";
     private static final String DB = "db";
     private static final String COLLECTION = "collection";
-    private static final String ATTRIBUTE = "level";
+    private static final String LEVEL = "level";
     private static final int WAIT_MS = 500;
-    private final int INTERVAL = 150;
     private AsyncStorage<StorageObject> storage;
     private StorageObject object = new StorageObject(TEST_NAME, 5);
     private StorageContext context;
-    private EntryWatcher<StorageObject> watcher;
 
     @Rule
-    public Timeout timeout = new Timeout(3, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(60, TimeUnit.SECONDS);
 
     @Before
     public void setUp(TestContext test) {
@@ -44,21 +42,26 @@ public class EntryWatcherTest {
             if (result.succeeded()) {
                 this.storage = result.result();
 
-                this.watcher = new EntryWatcher<>(storage, getQuery(), () -> INTERVAL);
-                watcher.start(entry -> storage.remove(entry.id(), removed -> {
-                    System.err.println("removed " + entry.id());
-                }));
+                getQuery().poll(entry -> storage.remove(entry.id(), removed -> {
+                }), this::getInterval);
 
-                storage.put(object, put -> {});
-                async.complete();
+                storage.put(object, put -> {
+                    test.assertTrue(put.succeeded());
+                    async.complete();
+                });
             } else {
                 test.fail(result.cause());
             }
         });
     }
 
+    private int getInterval() {
+        return 150;
+    }
+
     private QueryBuilder<StorageObject> getQuery() {
-        return storage.query(ATTRIBUTE).between(1L, 100L);
+        return storage.query(LEVEL).between(Long.MIN_VALUE, 0L)
+                .or(LEVEL).between(100L, Long.MAX_VALUE);
     }
 
     private void createStorage(Handler<AsyncResult<AsyncStorage<StorageObject>>> future) {
@@ -94,7 +97,7 @@ public class EntryWatcherTest {
     @Test
     public void testItemRemovedOnHandler(TestContext test) {
         Async async = test.async();
-        /*setRemove();
+        setRemove();
 
         context.timer(WAIT_MS, handler -> {
             storage.get(TEST_NAME, event -> {
@@ -102,36 +105,20 @@ public class EntryWatcherTest {
                 test.assertNull(event.result());
                 async.complete();
             });
-        });*/
+        });
     }
 
     @Test
     public void testRealmNotRemovedWhenNotStale(TestContext test) {
+        Async async = test.async();
         setPersist();
-        //assertRealmExistsAfterMS(test, test.async(), context.timeout * 2);
-    }
 
-    @Ignore("Disabled: waiting for issue to move StaleHandler to core")
-    @Test
-    public void testTimeoutUpdatesWithConfiguration(TestContext test) {
-       /* Async async = test.async();
-
-        setPersist();
-        context.timeout = 500;
-
-        context.timer(200, event -> {
-            setRealmStale();
-            assertRealmExistsAfterMS(test, async, 200);
-        });*/
-    }
-
-    private void assertRealmExistsAfterMS(TestContext test, Async async, int ms) {
-       /* context.timer(ms, handler -> {
-            storage.get(event -> {
-                test.assertTrue(event.succeeded());
-                test.assertNotNull(event.result());
+        context.timer(WAIT_MS, handler -> {
+            storage.get(TEST_NAME, get -> {
+                test.assertTrue(get.succeeded());
+                test.assertNotNull(get.result());
                 async.complete();
-            }, TEST_NAME);
-        });*/
+            });
+        });
     }
 }

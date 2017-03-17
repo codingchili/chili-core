@@ -73,7 +73,7 @@ public class EntryWatcher<Value extends Storable> {
      *
      * @param consumer the consumer that receives the results of the query.
      */
-    public void start(Consumer<Value> consumer) {
+    public EntryWatcher<Value> start(Consumer<Value> consumer) {
         this.consumer = consumer;
         active.set(true);
 
@@ -82,6 +82,7 @@ public class EntryWatcher<Value extends Storable> {
                 execute();
             }
         });
+        return this;
     }
 
     private void execute() {
