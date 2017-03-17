@@ -31,7 +31,7 @@ public class RealmDB implements AsyncRealmStore {
         this.realms = map;
 
         this.watcher = getStaleQuery().poll(stale -> {
-            realms.remove(stale.id(), (removed) -> {});
+            stale.forEach(item -> realms.remove(item.id(), (removed) -> {}));
         }, this::getTimeout);
     }
 

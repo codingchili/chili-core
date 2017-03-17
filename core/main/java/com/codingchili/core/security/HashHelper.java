@@ -9,13 +9,13 @@ import com.codingchili.core.security.exception.HashMismatchException;
 
 /**
  * @author Robin Duda
- *
- * Handles the hashing of passwords and the generation
- * of the salts used in the hashing; internally in Argon2.
- *
- * Uses mutable data types for storing plaintext passwords
- * to allow wiping. Reduces effectiveness of core dumps slightly,
- * as awaiting gc takes much longer time.
+ *         <p>
+ *         Handles the hashing of passwords and the generation
+ *         of the salts used in the hashing; internally in Argon2.
+ *         <p>
+ *         Uses mutable data types for storing plaintext passwords
+ *         to allow wiping. Reduces effectiveness of core dumps slightly,
+ *         as awaiting gc takes much longer time.
  */
 
 public class HashHelper {
@@ -35,6 +35,7 @@ public class HashHelper {
      * Blocking password hashing with internal salt using ARGON2.
      *
      * @param plaintext plaintext password to be hashed.
+     * @return the hash in argon format.
      */
     public String hash(char[] plaintext) {
         try {
@@ -46,8 +47,9 @@ public class HashHelper {
 
     /**
      * Verifies a plaintext password against a hashed password.
-     * @param future callback
-     * @param expected the expected outcome of the hash operation.
+     *
+     * @param future    callback
+     * @param expected  the expected outcome of the hash operation.
      * @param plaintext the plaintext password to be hashed and compared to expected.
      */
     public void verify(Handler<AsyncResult<Void>> future, String expected, char[] plaintext) {
@@ -69,7 +71,7 @@ public class HashHelper {
     /**
      * Async hashing a password with an internal salt using ARGON2.
      *
-     * @param future   callback for string result with hex encoded hash.
+     * @param future    callback for string result with hex encoded hash.
      * @param plaintext plaintext password to be hashed.
      */
     public void hash(Handler<AsyncResult<String>> future, char[] plaintext) {
@@ -86,6 +88,7 @@ public class HashHelper {
 
     /**
      * Wipes an array that contains sensitive data.
+     *
      * @param sensitive the data to be wiped.
      */
     public void wipe(char[] sensitive) {

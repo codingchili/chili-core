@@ -191,10 +191,11 @@ public interface QueryBuilder<Value extends Storable> {
     /**
      * Executes the query periodically.
      *
-     * @param timer the source of the interval.
-     * @return an entrywatcher.
+     * @param consumer a consumer that receives the results
+     * @param timer    the source of the interval.
+     * @return fluent.
      */
-    EntryWatcher<Value> poll(Consumer<Value> consumer, TimerSource timer);
+    EntryWatcher<Value> poll(Consumer<List<Value>> consumer, TimerSource timer);
 
     /**
      * Generates unique ids for the triggers that are used. Should be overridden

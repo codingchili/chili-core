@@ -14,8 +14,7 @@ import com.codingchili.core.security.Token;
  *         <p>
  *         Asynchronous cluster-wide realm store.
  */
-public interface AsyncRealmStore
-{
+public interface AsyncRealmStore {
     /**
      * Assemble a list of metadata for all available realms.
      *
@@ -57,15 +56,17 @@ public interface AsyncRealmStore
     void remove(Handler<AsyncResult<Void>> future, String realmName);
 
     /**
+     * Get the timeout in milliseconds before a Realm is removed unless it has
+     * received an update.
      *
-     * @return
+     * @return integer value representing milliseconds
      */
     int getTimeout();
 
     /**
-     *
-     * @param timeout
-     * @return
+     * @param timeout timeout in milliseconds before a realm is removed unless
+     *                it has received an update.
+     * @return fluent
      */
     RealmDB setTimeout(int timeout);
 }

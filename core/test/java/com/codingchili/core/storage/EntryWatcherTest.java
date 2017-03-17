@@ -42,7 +42,8 @@ public class EntryWatcherTest {
             if (result.succeeded()) {
                 this.storage = result.result();
 
-                getQuery().poll(entry -> storage.remove(entry.id(), removed -> {
+                getQuery().poll(entry -> entry.forEach(item -> {
+                    storage.remove(item.id(), removed -> {});
                 }), this::getInterval);
 
                 storage.put(object, put -> {
