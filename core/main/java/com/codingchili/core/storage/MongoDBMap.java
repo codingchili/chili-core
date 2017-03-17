@@ -86,38 +86,12 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public void put(Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        put(value, result -> {
-            if (result.succeeded()) {
-                context.timer(ttl, expired -> remove(value.id(), (removed) -> {
-                }));
-                handler.handle(result(result.result()));
-            } else {
-                handler.handle(error(result.cause()));
-            }
-        });
-    }
-
-    @Override
     public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
         client.insert(collection, document(value), put -> {
             if (put.succeeded()) {
                 handler.handle(FutureHelper.result());
             } else {
                 handler.handle(error(new ValueAlreadyPresentException(value.id())));
-            }
-        });
-    }
-
-    @Override
-    public void putIfAbsent(Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        put(value, result -> {
-            if (result.succeeded()) {
-                context.timer(ttl, expired -> remove(value.id(), (removed) -> {
-                }));
-                handler.handle(result());
-            } else {
-                handler.handle(error(result.cause()));
             }
         });
     }

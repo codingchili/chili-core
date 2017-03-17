@@ -65,26 +65,12 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public void put(Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        put(value, handler);
-        context.timer(ttl, event -> remove(value.id(), removed -> {
-        }));
-    }
-
-    @Override
     public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
         if (!db.contains(value)) {
             put(value, handler);
         } else {
             handler.handle(Future.failedFuture(new ValueAlreadyPresentException(value.id())));
         }
-    }
-
-    @Override
-    public void putIfAbsent(Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        putIfAbsent(value, handler);
-        context.timer(ttl, event -> remove(value.id(), removed -> {
-        }));
     }
 
     @Override

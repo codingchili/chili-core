@@ -81,11 +81,6 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public void put(Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        map.put(value.id(), value, ttl, handler);
-    }
-
-    @Override
     public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
         map.putIfAbsent(value.id(), value, put -> {
             if (put.succeeded()) {
@@ -96,17 +91,6 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
                 }
             } else {
                 handler.handle(error(put.cause()));
-            }
-        });
-    }
-
-    @Override
-    public void putIfAbsent(Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        map.putIfAbsent(value.id(), value, ttl, result -> {
-            if (result.succeeded()) {
-                handler.handle(result());
-            } else {
-                handler.handle(error(result.cause()));
             }
         });
     }

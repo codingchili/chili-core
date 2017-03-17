@@ -31,16 +31,6 @@ public interface AsyncStorage<Value extends Storable> {
      */
     void put(Value value, Handler<AsyncResult<Void>> handler);
 
-    /**
-     * set the entry identified by the given key to the given value
-     *
-     * @param value   the value to be set for the given key
-     * @param ttl     the time to live for the entry. Recommended to use
-     *                only for objects that will never change. As the timers
-     *                are not cleared on remove or update.
-     * @param handler callback
-     */
-    void put(Value value, long ttl, Handler<AsyncResult<Void>> handler);
 
     /**
      * set the entry if it does not already exists
@@ -49,17 +39,6 @@ public interface AsyncStorage<Value extends Storable> {
      * @param handler callback
      */
     void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler);
-
-    /**
-     * set the entry if it does not already exists
-     *
-     * @param value   the value to be set if the entry does not exist.
-     * @param ttl     the time to live for the entry. Recommended to use
-     *                only for objects that will never change. As the timers
-     *                are not cleared on remove or update.
-     * @param handler callback
-     */
-    void putIfAbsent(Value value, long ttl, Handler<AsyncResult<Void>> handler);
 
     /**
      * @param key     identifies the entry to be removed.

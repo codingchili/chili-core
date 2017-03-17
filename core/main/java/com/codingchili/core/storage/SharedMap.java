@@ -46,26 +46,12 @@ public class SharedMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public void put(Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        put(value, handler);
-        context.timer(ttl, event -> remove(value.id(), (removed) -> {
-        }));
-    }
-
-    @Override
     public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
         if (map.putIfAbsent(value.id(), value) == null) {
             handler.handle(FutureHelper.result());
         } else {
             handler.handle(error(new ValueAlreadyPresentException(value.id())));
         }
-    }
-
-    @Override
-    public void putIfAbsent(Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        putIfAbsent(value, handler);
-        context.timer(ttl, event -> remove(value.id(), (removed) -> {
-        }));
     }
 
     @Override

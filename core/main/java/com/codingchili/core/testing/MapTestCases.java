@@ -162,23 +162,6 @@ public class MapTestCases {
     }
 
     @Test
-    public void testPutWithTTL(TestContext test) {
-        Async async = test.async();
-
-        store.put(OBJECT_ONE, 100, put -> {
-            test.assertTrue(put.succeeded());
-            waitForExpiry(test, async, ONE);
-        });
-    }
-
-    private void waitForExpiry(TestContext test, Async async, String id) {
-        context.timer(800, event -> store.get(id, get -> {
-            test.assertTrue(get.failed());
-            async.complete();
-        }));
-    }
-
-    @Test
     public void testPutIfAbsent(TestContext test) {
         Async async = test.async();
         StorageObject missing = new StorageObject(NAME_MISSING, 0);
@@ -190,17 +173,6 @@ public class MapTestCases {
                 test.assertTrue(get.succeeded());
                 async.complete();
             });
-        });
-    }
-
-    @Test
-    public void testPutIfAbsentTTL(TestContext test) {
-        Async async = test.async();
-        StorageObject missing = new StorageObject(NAME_MISSING, 0);
-
-        store.putIfAbsent(missing, 50, put -> {
-            test.assertTrue(put.succeeded());
-            waitForExpiry(test, async, NAME_MISSING);
         });
     }
 

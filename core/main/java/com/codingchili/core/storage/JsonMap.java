@@ -71,13 +71,6 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public void put(Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        put(value, handler);
-
-        context.timer(ttl, event -> remove(value.id()));
-    }
-
-    @Override
     public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
         Optional<Value> current = get(value.id());
 
@@ -87,12 +80,6 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
             put(value);
             handler.handle(FutureHelper.result());
         }
-    }
-
-    @Override
-    public void putIfAbsent(Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        putIfAbsent(value, handler);
-        context.timer(ttl, event -> remove(value.id()));
     }
 
     @Override

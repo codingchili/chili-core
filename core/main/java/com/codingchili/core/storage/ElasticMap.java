@@ -93,19 +93,6 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public void put(Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        put(value, result -> {
-            if (result.succeeded()) {
-                context.timer(ttl, event -> remove(value.id(), removed -> {
-                }));
-                handler.handle(result());
-            } else {
-                handler.handle(error(result.cause()));
-            }
-        });
-    }
-
-    @Override
     public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
         client.prepareIndex(context.DB(), context.collection(), value.id())
                 .setSource(context.toJson(value).encode())
@@ -124,19 +111,6 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                         handler.handle(error(exception));
                     }
                 }));
-    }
-
-    @Override
-    public void putIfAbsent(Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        putIfAbsent(value, result -> {
-            if (result.succeeded()) {
-                context.timer(ttl, event -> remove(value.id(), removed -> {
-                }));
-                handler.handle(result());
-            } else {
-                handler.handle(error(result.cause()));
-            }
-        });
     }
 
     private Throwable nested(Throwable exception) {

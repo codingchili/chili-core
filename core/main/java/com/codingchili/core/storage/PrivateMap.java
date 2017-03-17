@@ -51,14 +51,6 @@ public class PrivateMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public void put(Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        put(value, handler);
-
-        context.timer(ttl, event -> remove(value.id(), (removed) -> {
-        }));
-    }
-
-    @Override
     public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
         if (map.containsKey(value.id())) {
             handler.handle(error(new ValueAlreadyPresentException(value.id())));
@@ -66,14 +58,6 @@ public class PrivateMap<Value extends Storable> implements AsyncStorage<Value> {
             map.put(value.id(), value);
             handler.handle(FutureHelper.result());
         }
-    }
-
-    @Override
-    public void putIfAbsent(Value value, long ttl, Handler<AsyncResult<Void>> handler) {
-        putIfAbsent(value, handler);
-
-        context.timer(ttl, event -> remove(value.id(), (removed) -> {
-        }));
     }
 
     @Override
