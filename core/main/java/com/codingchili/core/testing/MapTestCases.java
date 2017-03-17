@@ -684,4 +684,50 @@ public class MapTestCases {
                     async.complete();
                 });
     }
+
+    @Test
+    public void testGetValues(TestContext test) {
+        Async async = test.async();
+        store.values(result -> {
+            test.assertTrue(result.succeeded());
+            test.assertEquals(result.result().size(), TEST_ITEM_COUNT.intValue());
+            async.complete();
+        });
+    }
+
+    @Test
+    public void testFireQueryMultipleTimes(TestContext test) {
+        Async async = test.async();
+        int expectedHits = SNOWFLAKE_COUNT.intValue() / 2;
+
+        QueryBuilder<StorageObject> builder = store
+                .query(NAME).startsWith(SNOWFLAKE_NAME_PREFIX)
+                .page(1)
+                .pageSize(expectedHits); // important to verify that the pager is reset.
+
+        builder.execute(query -> {
+            test.assertTrue(query.succeeded());
+            test.assertEquals(expectedHits, query.result().size());
+            StorageObject first = query.result().get(0);
+
+            builder.execute(inner -> {
+                test.assertTrue(inner.succeeded());
+                test.assertEquals(expectedHits, inner.result().size());
+                test.assertEquals(first, inner.result().get(0));
+                async.complete();
+            });
+        });
+    }
+
+    @Test
+    public void testPollStorage(TestContext test) {
+        Async async = test.async();
+        AtomicInteger countdown = new AtomicInteger(2);
+
+        store.query(NAME).startsWith(SNOWFLAKE_NAME_PREFIX).pageSize(1).poll(matches -> {
+            if (countdown.decrementAndGet() == 0) {
+                async.complete();
+            }
+        }, () -> 50);
+    }
 }
