@@ -99,7 +99,7 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
     @Override
     @SuppressWarnings("unchecked")
     public void values(Handler<AsyncResult<List<Value>>> handler) {
-        handler.handle(Future.succeededFuture(Arrays.asList((Value[]) db.toArray())));
+        handler.handle(Future.succeededFuture(db.stream().collect(Collectors.toList())));
     }
 
     @Override
