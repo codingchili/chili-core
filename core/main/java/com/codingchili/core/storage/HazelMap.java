@@ -181,12 +181,14 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
 
             @Override
             public QueryBuilder<Value> and(String attribute) {
+                addIndex(attribute);
                 apply(BooleanOperator.AND, attribute);
                 return this;
             }
 
             @Override
             public QueryBuilder<Value> or(String attribute) {
+                addIndex(attribute);
                 apply(BooleanOperator.OR, attribute);
                 return this;
             }
