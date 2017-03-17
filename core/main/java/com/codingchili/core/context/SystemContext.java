@@ -77,8 +77,10 @@ public class SystemContext implements CoreContext {
         vertx.setPeriodic(timeout.getMS(), event -> {
             if (timeout.getMS() != initial) {
                 vertx.cancelTimer(event);
-                periodic(timeout, name, handler);
 
+                if (timeout.getMS() > 0) {
+                    periodic(timeout, name, handler);
+                }
                 console().onTimerSourceChanged(name, initial, timeout.getMS());
             }
             handler.handle(event);

@@ -1,9 +1,12 @@
 package com.codingchili.core.storage;
 
+import com.codingchili.core.context.TimerSource;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
  * @author Robin Duda
@@ -45,7 +48,7 @@ import java.util.List;
  *         attribute vegetable.vitamins is [A,B,C], match if vegetable contains vitamin C or K
  *         - attribute "vegetable.vitamins[]" in [C,K]
  */
-public interface QueryBuilder<Value> {
+public interface QueryBuilder<Value extends Storable> {
     /**
      * Adds a new AND clause to the query.
      *
@@ -183,4 +186,22 @@ public interface QueryBuilder<Value> {
      * @param handler the handler to be invoked when the result is completed.
      */
     void execute(Handler<AsyncResult<List<Value>>> handler);
+
+    /**
+     * Executes the query periodically.
+     *
+     * @param timer the source of the interval.
+     * @return an entrywatcher.
+     */
+    EntryWatcher<Value> poll(Consumer<Value> consumer, TimerSource timer);
+
+    /**
+     * Generates unique ids for the triggers that are used. Should be overridden
+     * so that logging messages are a bit meaningful.
+     *
+     * @return a name that identifies this query.
+     */
+    default String name() {
+        return UUID.randomUUID().toString();
+    }
 }

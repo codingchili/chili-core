@@ -95,9 +95,7 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
         if (enabled.get()) {
             JsonObject event = eventFromLog(data);
             setColor(event);
-
-            String text = "[" + data.getString(LOG_EVENT) + " " + timestamp(Instant.now().toEpochMilli()) + "] -> ";
-            write(text + parseJsonLog(event));
+            write(parseJsonLog(event, getEvent(data)));
         }
         return this;
     }
@@ -118,22 +116,26 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
         return json;
     }
 
-    private String parseJsonLog(JsonObject data) {
-        String text = "";
+    private String time() {
+        return timestamp(Instant.now().toEpochMilli());
+    }
+
+    private String getLevel(JsonObject data) {
+        return (String) data.remove(LOG_LEVEL);
+    }
+
+    private String getEvent(JsonObject data) {
+        return (String) data.remove(LOG_EVENT);
+    }
+
+    private String parseJsonLog(JsonObject data, String event) {
+        String text = time() + " " +
+                getLevel(data) + " " +
+                event + " ";
+
         for (String key : data.fieldNames()) {
             Object object = data.getValue(key);
-
-            if (object instanceof String) {
-                text += compactPath(data.getString(key));
-
-                if (key.equals(LOG_LEVEL)) {
-                    text += "\t";
-                } else {
-                    text += " ~ ";
-                }
-            } else if (object instanceof Integer) {
-                text += key + "=" + data.getInteger(key) + " ~ ";
-            }
+            text += key + "=" + object.toString() + " ";
         }
         return text;
     }

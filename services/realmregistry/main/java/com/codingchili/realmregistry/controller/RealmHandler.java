@@ -1,7 +1,7 @@
 package com.codingchili.realmregistry.controller;
 
 import com.codingchili.common.Strings;
-import com.codingchili.core.logging.Level;
+import com.codingchili.core.storage.EntryWatcher;
 import com.codingchili.realmregistry.configuration.RealmSettings;
 import com.codingchili.realmregistry.configuration.RegistryContext;
 import com.codingchili.realmregistry.model.*;
@@ -21,7 +21,7 @@ import static com.codingchili.common.Strings.NODE_AUTHENTICATION_REALMS;
  */
 public class RealmHandler<T extends RegistryContext> extends AbstractHandler<T> {
     private final Protocol<RequestHandler<RealmRequest>> protocol = new Protocol<>();
-    private final AsyncRealmStore realms;
+    private AsyncRealmStore realms;
 
     public RealmHandler(T context) {
         super(context, NODE_AUTHENTICATION_REALMS);
@@ -31,8 +31,6 @@ public class RealmHandler<T extends RegistryContext> extends AbstractHandler<T> 
         protocol.use(Strings.REALM_UPDATE, this::update)
                 .use(Strings.CLIENT_CLOSE, this::disconnected)
                 .use(CoreStrings.ID_PING, Request::accept, Access.PUBLIC);
-
-        StaleRealmHandler.watch(context, realms);
     }
 
     private Access authenticate(Request request) {

@@ -174,7 +174,7 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
     public QueryBuilder<Value> query(String field) {
         addIndex(field);
 
-        return new AbstractQueryBuilder<Value>(field, HAZEL_ARRAY) {
+        return new AbstractQueryBuilder<Value>(this, field, HAZEL_ARRAY) {
             private List<Predicate> predicates = new ArrayList<>();
             private Predicate predicate;
             private BooleanOperator operator = BooleanOperator.AND;
@@ -280,6 +280,11 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
                 return paging;
             }
         };
+    }
+
+    @Override
+    public StorageContext<Value> context() {
+        return context;
     }
 
     private enum BooleanOperator {AND, OR}

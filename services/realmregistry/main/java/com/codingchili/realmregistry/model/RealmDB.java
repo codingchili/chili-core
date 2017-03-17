@@ -1,8 +1,12 @@
 package com.codingchili.realmregistry.model;
 
+import com.codingchili.core.storage.EntryWatcher;
+import com.codingchili.core.storage.QueryBuilder;
+import com.codingchili.core.storage.ReusableQueryBuilder;
 import com.codingchili.realmregistry.configuration.RealmSettings;
 import io.vertx.core.AsyncResult;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,6 +15,7 @@ import com.codingchili.core.security.TokenFactory;
 import com.codingchili.core.storage.AsyncStorage;
 import io.vertx.core.Handler;
 
+import static com.codingchili.core.configuration.CoreStrings.ID_MODIFIED;
 import static com.codingchili.core.configuration.CoreStrings.ID_NAME;
 import static io.vertx.core.Future.failedFuture;
 import static io.vertx.core.Future.succeededFuture;
@@ -24,9 +29,34 @@ import static io.vertx.core.Future.succeededFuture;
  */
 public class RealmDB implements AsyncRealmStore {
     private final AsyncStorage<RealmSettings> realms;
+    private EntryWatcher<RealmSettings> watcher;
+    private int timeout = 15000;
 
     public RealmDB(AsyncStorage<RealmSettings> map) {
         this.realms = map;
+
+        this.watcher = getStaleQuery().poll(stale -> {
+            realms.remove(stale.id(), (removed) -> {});
+        }, this::getTimeout);
+    }
+
+    private QueryBuilder<RealmSettings> getStaleQuery() {
+        return realms.query(ID_MODIFIED).between(0L, getLastValidTime());
+    }
+
+    private long getLastValidTime() {
+        return Instant.now().toEpochMilli() - timeout;
+    }
+
+    @Override
+    public int getTimeout() {
+        return timeout;
+    }
+
+    @Override
+    public RealmDB setTimeout(int timeout) {
+        this.timeout = timeout;
+        return this;
     }
 
     @Override

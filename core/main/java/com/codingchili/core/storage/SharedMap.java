@@ -101,6 +101,11 @@ public class SharedMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public QueryBuilder<Value> query(String field) {
-        return new JsonStreamQuery<>(() -> map.values().stream().map(context::toJson), context).query(field);
+        return new JsonStreamQuery<>(this, () -> map.values().stream().map(context::toJson)).query(field);
+    }
+
+    @Override
+    public StorageContext<Value> context() {
+        return context;
     }
 }

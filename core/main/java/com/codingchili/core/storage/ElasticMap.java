@@ -209,7 +209,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public QueryBuilder<Value> query(String field) {
-        return new AbstractQueryBuilder<Value>(field) {
+        return new AbstractQueryBuilder<Value>(this, field) {
             List<BoolQueryBuilder> statements = new ArrayList<>();
             BoolQueryBuilder builder = new BoolQueryBuilder();
 
@@ -304,6 +304,11 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                 return request;
             }
         };
+    }
+
+    @Override
+    public StorageContext<Value> context() {
+        return context;
     }
 
     private Value valueFrom(byte[] value) {

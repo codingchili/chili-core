@@ -49,10 +49,12 @@ public abstract class CoreStrings {
     // storage constants.
     public static final String STORAGE_ARRAY = "[]";
     public static final String DB_DIR = "db";
+    public static final String WATCHER_COMPLETED = "executed";
+    public static final String WATCHER_PAUSED = "paused";
+    public static final String WATCHER_RESUMED = "resumed";
 
     public static final String EXT_JSON = ".json";
     public static final String ANY = "*";
-
     public static final String NODE_LOGGING = "syslog.node";
 
     // protocol constants.
@@ -103,6 +105,10 @@ public abstract class CoreStrings {
     public static final String ID_USERNAME = "username";
     public static final String ID_PASSWORD = "password";
     public static final String ID_STATUS = "status";
+    public static final String ID_COUNT = "count";
+    public static final String ID_MESSAGE = "message";
+    public static final String ID_QUERY = "query";
+    public static final String ID_OPTIONS = "options";
 
     // Node names.
     public static final String NODE_LOCAL = "local";
@@ -143,8 +149,10 @@ public abstract class CoreStrings {
     public static final String LOG_STORAGE_CLEARED = "storage.cleared";
     public static final String LOG_STORAGE_COLLECTION = "collection";
     public static final String LOG_STORAGE_DB = "dabatase";
+    public static final String LOG_STORAGE_WATCHER = "storage.watcher";
     public static final String[] LOG_HIDDEN_TAGS = new String[]{"dev", "LOCAL", "3.6.3"};
 
+    public static final String ERROR_REUSABLEQUERY_UNBOUND = "Reusable query not bound to a storage.";
     public static final String ERROR_TOKEN_FACTORY = "Token factory error to generate token.";
     public static final String ERROR_CLUSTERING_REQUIRED = "Running in non-clustered mode.";
     public static final String ERROR_NOT_AUTHORIZED = "Insufficient authorization level to access resource.";
@@ -344,5 +352,21 @@ public abstract class CoreStrings {
 
     public static String getHashMismatchException() {
         return "Error: hash comparison has failed.";
+    }
+
+    public static String getWatcherFailed(String cause) {
+        return "failed: " + cause;
+    }
+
+    public static String getInvalidQueryFormat(String query) {
+        return "Unable to parse query: " + query;
+    }
+
+    public static String getUnknownOperator(String operator) {
+        return "Error: operator " + operator + " not supported.";
+    }
+
+    public static String getUnknownOption(String option) {
+        return "Error: option " + option + " not supported.";
     }
 }

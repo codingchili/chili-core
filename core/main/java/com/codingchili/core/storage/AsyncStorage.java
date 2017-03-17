@@ -1,7 +1,10 @@
 package com.codingchili.core.storage;
 
+import com.codingchili.core.context.StorageContext;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+
+import java.util.function.Consumer;
 
 /**
  * @author Robin Duda
@@ -12,8 +15,7 @@ import io.vertx.core.Handler;
  *         attributes that are queried. It is highly recommended to create an index
  *         for the ID field, which is used by all {@link Storable} classes.
  */
-public interface AsyncStorage<Value extends Storable>
-{
+public interface AsyncStorage<Value extends Storable> {
     /**
      * get an entry with the given key
      *
@@ -97,9 +99,9 @@ public interface AsyncStorage<Value extends Storable>
     QueryBuilder<Value> query(String attribute);
 
     /**
-     * Constructs a query from a json object
-     * @param query to build from
-     * @return a querybuilder object
+     * Get the context for the storage.
+     *
+     * @return a storage context.
      */
-    //QueryBuilder<Value> query(JsonObject query);
+    StorageContext<Value> context();
 }

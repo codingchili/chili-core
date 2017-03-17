@@ -1,9 +1,12 @@
 package com.codingchili.core.storage;
 
+import com.codingchili.core.context.TimerSource;
 import io.vertx.core.json.JsonObject;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.files.Configurations;
+
+import java.util.function.Consumer;
 
 import static com.codingchili.core.configuration.CoreStrings.STORAGE_ARRAY;
 import static com.codingchili.core.protocol.Serializer.getValueByPath;
@@ -17,24 +20,24 @@ import static com.codingchili.core.protocol.Serializer.getValueByPath;
  *         If an arrayNotation is supplied in the constructor, it will instead be replaced
  *         with the specified notation.
  */
-abstract class AbstractQueryBuilder<Value> implements QueryBuilder<Value> {
-    boolean isOrdered = false;
-    SortOrder sortOrder = SortOrder.ASCENDING;
-    int pageSize = Configurations.storage().getMaxResults();
-    int page = 0;
-
+abstract class AbstractQueryBuilder<Value extends Storable> implements QueryBuilder<Value> {
+    private AsyncStorage<Value> storage;
     private boolean isAttributeArray = false;
     private String orderByAttribute;
     private String arrayNotation = "";
     private String attribute;
+    boolean isOrdered = false;
+    SortOrder sortOrder = SortOrder.ASCENDING;
+    int pageSize = Configurations.storage().getMaxResults();
+    int page = 0;
 
     /**
      * Creates a new query builder with specified attribute. Array notations will be removed.
      *
      * @param attribute the attribute to query for
      */
-    AbstractQueryBuilder(String attribute) {
-        this(attribute, STORAGE_ARRAY);
+    AbstractQueryBuilder(AsyncStorage<Value> storage, String attribute) {
+        this(storage, attribute, STORAGE_ARRAY);
     }
 
     /**
@@ -44,9 +47,15 @@ abstract class AbstractQueryBuilder<Value> implements QueryBuilder<Value> {
      * @param attribute     the attribute to query for
      * @param arrayNotation the new array notation
      */
-    AbstractQueryBuilder(String attribute, String arrayNotation) {
+    AbstractQueryBuilder(AsyncStorage<Value> storage, String attribute, String arrayNotation) {
         this.arrayNotation = arrayNotation;
+        this.storage = storage;
         setAttribute(attribute);
+    }
+
+    @Override
+    public EntryWatcher<Value> poll(Consumer<Value> consumer, TimerSource timer) {
+        return new EntryWatcher<>(storage, this, timer);
     }
 
     @Override

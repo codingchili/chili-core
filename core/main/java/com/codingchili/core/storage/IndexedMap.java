@@ -143,8 +143,8 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
                 attribute = new MultiValueAttribute<Value, String>((Class<Value>) Generic.class, String.class, fieldName) {
                     @Override
                     public Iterable<String> getValues(Value indexing, QueryOptions queryOptions) {
-                        return Arrays.asList(Serializer.getValueByPath(context.toJson(indexing), fieldName))
-                                .stream().map(item -> item + "")::iterator;
+                        return Arrays.stream(Serializer.getValueByPath(context.toJson(indexing), fieldName))
+                                .map(item -> item + "")::iterator;
                     }
                 };
             } else {
@@ -162,7 +162,7 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public QueryBuilder<Value> query(String attribute) {
-        return new AbstractQueryBuilder<Value>(attribute) {
+        return new AbstractQueryBuilder<Value>(this, attribute) {
             Attribute<Value, String> field = fields.get(attribute);
             List<Query<Value>> statements = new ArrayList<>();
             Query<Value> builder;
@@ -227,7 +227,7 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
             @Override
             public QueryBuilder<Value> in(Comparable... list) {
                 statements.add(QueryFactory.in(field,
-                        Arrays.asList(list).stream()
+                        Arrays.stream(list)
                                 .map(Object::toString)
                                 .collect(Collectors.toList())));
                 return this;
@@ -277,5 +277,10 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
             }
 
         }.prepareField(attribute);
+    }
+
+    @Override
+    public StorageContext<Value> context() {
+        return context;
     }
 }

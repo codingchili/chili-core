@@ -161,25 +161,38 @@ public class StorageContext<Value> extends SystemContext {
     /**
      * Called when a value has been expired by ttl.
      *
-     * @param key the id of the object that was expired.
-     * @param ttl the time at which the object was set to expire.
+     * @param name  the id of the object that was expired.
+     * @param cause the reason why invocation failed.
      */
-    public void onValueExpired(String key, Long ttl) {
-        log(event(LOG_VALUE_EXPIRED)
-                .put(ID_KEY, key)
-                .put(ID_TIME, timestamp(ttl)));
+    public void onWatcherFailed(String name, String cause) {
+        log(event(LOG_STORAGE_WATCHER)
+                .put(ID_NAME, name)
+                .put(ID_MESSAGE, CoreStrings.getWatcherFailed(cause)));
     }
 
     /**
      * Called when a value failed to expire as it was not found.
      *
-     * @param key the id of the object that was expired.
-     * @param ttl the time at which the object was set to expire.
+     * @param name     the id of the object that was expired.
+     * @param affected the number of items affected by the query.
      */
-    public void onValueExpiredMissing(String key, Long ttl) {
-        log(event(LOG_VALUE_EXPIRED_MISSING)
-                .put(ID_KEY, key)
-                .put(ID_TIME, timestamp(ttl)));
+    public void onWatcherCompleted(String name, int affected) {
+        log(event(LOG_STORAGE_WATCHER)
+                .put(ID_NAME, name)
+                .put(ID_COUNT, affected)
+                .put(ID_MESSAGE, CoreStrings.WATCHER_COMPLETED));
+    }
+
+    public void onWatcherPaused(String name) {
+        log(event(LOG_STORAGE_WATCHER)
+            .put(ID_NAME, name)
+            .put(ID_MESSAGE, CoreStrings.WATCHER_PAUSED));
+    }
+
+    public void onWatcherResumed(String name) {
+        log(event(LOG_STORAGE_WATCHER)
+                .put(ID_NAME, name)
+                .put(ID_MESSAGE, CoreStrings.WATCHER_RESUMED));
     }
 
     /**

@@ -197,7 +197,7 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
     public QueryBuilder<Value> query(String field) {
         addIndex(field);
 
-        return new AbstractQueryBuilder<Value>(field) {
+        return new AbstractQueryBuilder<Value>(this, field) {
             Validator validator = new Validator();
             JsonArray statements = new JsonArray();
             JsonArray builder = new JsonArray();
@@ -304,6 +304,11 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
                 }
             }
         };
+    }
+
+    @Override
+    public StorageContext<Value> context() {
+        return context;
     }
 
     private List<Value> toList(List<JsonObject> results) {

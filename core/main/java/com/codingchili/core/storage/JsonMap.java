@@ -129,7 +129,12 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public QueryBuilder<Value> query(String field) {
-        return new JsonStreamQuery<>(this::streamSource, context).query(field);
+        return new JsonStreamQuery<Value>(this, this::streamSource).query(field);
+    }
+
+    @Override
+    public StorageContext<Value> context() {
+        return context;
     }
 
     private Stream<JsonObject> streamSource() {

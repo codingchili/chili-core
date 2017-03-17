@@ -32,8 +32,9 @@ public class StorageObject implements Storable {
         return level;
     }
 
-    public void setLevel(Integer level) {
+    public StorageObject setLevel(Integer level) {
         this.level = level;
+        return this;
     }
 
     public String id() {
@@ -44,8 +45,9 @@ public class StorageObject implements Storable {
         return name;
     }
 
-    public void setName(String name) {
+    public StorageObject setName(String name) {
         this.name = name;
+        return this;
     }
 
     public NestedObject getNested() {

@@ -19,17 +19,19 @@ import com.codingchili.core.protocol.Serializer;
  *         Use an indexed collection if performance is needed.
  *         This implementation is mostly for testing.
  */
-class JsonStreamQuery<Value> {
-    private StreamSource<JsonObject> db;
+class JsonStreamQuery<Value extends Storable> {
+    private StreamSource<JsonObject> source;
+    private AsyncStorage<Value> storage;
     private StorageContext<Value> context;
 
-    JsonStreamQuery(StreamSource<JsonObject> db, StorageContext<Value> context) {
-        this.db = db;
-        this.context = context;
+    JsonStreamQuery(AsyncStorage<Value> storage, StreamSource<JsonObject> stream) {
+        this.storage = storage;
+        this.source = stream;
+        this.context = storage.context();
     }
 
     public QueryBuilder<Value> query(String attribute) {
-        return new AbstractQueryBuilder<Value>(attribute) {
+        return new AbstractQueryBuilder<Value>(storage, attribute) {
             List<List<StatementPredicate>> statements = new ArrayList<>();
             int bucketIndex = 0;
 
@@ -125,7 +127,7 @@ class JsonStreamQuery<Value> {
                 Set<JsonObject> hits = new HashSet<>();
 
                 for (List<StatementPredicate> clause : statements) {
-                    Stream<JsonObject> stream = db.stream();
+                    Stream<JsonObject> stream = source.stream();
 
                     for (StatementPredicate statement : clause) {
                         stream = stream.filter(entry -> anyMatch(entry, statement));

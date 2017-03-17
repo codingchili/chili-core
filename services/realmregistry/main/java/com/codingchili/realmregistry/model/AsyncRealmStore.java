@@ -17,7 +17,6 @@ import io.vertx.core.Handler;
  */
 public interface AsyncRealmStore
 {
-
     /**
      * Assemble a list of metadata for all available realms.
      *
@@ -57,4 +56,17 @@ public interface AsyncRealmStore
      * @param realmName name of the realm.
      */
     void remove(Handler<AsyncResult<Void>> future, String realmName);
+
+    /**
+     *
+     * @return
+     */
+    int getTimeout();
+
+    /**
+     *
+     * @param timeout
+     * @return
+     */
+    RealmDB setTimeout(int timeout);
 }
