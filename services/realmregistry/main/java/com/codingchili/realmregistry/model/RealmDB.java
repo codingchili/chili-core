@@ -19,7 +19,7 @@ import static io.vertx.core.Future.*;
 /**
  * @author Robin Duda
  *         <p>
- *         Shares realmName data between the clienthandler and the realmhandler.
+ *         Shares realm data between the clienthandler and the realmhandler.
  *         Allows the deployment of multiple handlers.
  */
 public class RealmDB implements AsyncRealmStore {
