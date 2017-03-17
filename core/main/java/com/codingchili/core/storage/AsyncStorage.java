@@ -3,6 +3,8 @@ package com.codingchili.core.storage;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
+import java.util.List;
+
 import com.codingchili.core.context.StorageContext;
 
 /**
@@ -53,6 +55,14 @@ public interface AsyncStorage<Value extends Storable> {
      * @param handler callback
      */
     void update(Value value, Handler<AsyncResult<Void>> handler);
+
+    /**
+     * Get all values contained within the storage.
+     * Not recommended to use on large maps.
+     *
+     * @param handler callback
+     */
+    void values(Handler<AsyncResult<List<Value>>> handler);
 
     /**
      * removes all existing entries from the storage.

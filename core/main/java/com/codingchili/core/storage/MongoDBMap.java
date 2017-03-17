@@ -135,6 +135,17 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
+    public void values(Handler<AsyncResult<List<Value>>> handler) {
+        client.find(collection, new JsonObject(), found -> {
+            if (found.succeeded()) {
+                handler.handle(result(toList(found.result())));
+            } else {
+                handler.handle(Future.failedFuture(found.cause()));
+            }
+        });
+    }
+
+    @Override
     public void clear(Handler<AsyncResult<Void>> handler) {
         client.dropCollection(collection, drop -> {
             if (drop.succeeded()) {
@@ -157,7 +168,8 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     private void addIndex(String field) {
-        addIndex(field, (result) -> {});
+        addIndex(field, (result) -> {
+        });
     }
 
     private void addIndex(String field, Handler<AsyncResult<Void>> handler) {
@@ -253,8 +265,6 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
             @Override
             public void execute(Handler<AsyncResult<List<Value>>> handler) {
                 apply();
-                System.out.println("executing query.. \n" + statements.encodePrettily() +
-                        "options\n" + getSortOptions().encodePrettily());
 
                 client.findWithOptions(collection, new JsonObject().put(OR, statements), getOptions(), find -> {
                     if (find.succeeded()) {

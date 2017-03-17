@@ -4,8 +4,9 @@ import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 
 import java.io.IOException;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.codingchili.core.configuration.CoreStrings;
@@ -108,6 +109,14 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
+    public void values(Handler<AsyncResult<List<Value>>> handler) {
+        handler.handle(Future.succeededFuture(db.stream()
+                .map(entry -> (JsonObject) entry.getValue())
+                .map(json -> context.toValue(json))
+                .collect(Collectors.toList())));
+    }
+
+    @Override
     public void clear(Handler<AsyncResult<Void>> handler) {
         db.clear();
         handler.handle(FutureHelper.result());
@@ -116,7 +125,7 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public QueryBuilder<Value> query(String field) {
-        return new JsonStreamQuery<Value>(this, this::streamSource).query(field);
+        return new JsonStreamQuery<>(this, this::streamSource).query(field);
     }
 
     @Override

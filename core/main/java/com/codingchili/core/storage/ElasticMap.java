@@ -151,6 +151,22 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
+    public void values(Handler<AsyncResult<List<Value>>> handler) {
+        client.prepareSearch(context.DB()).setTypes(context.collection())
+                .setFetchSource(true)
+                .setSize(Integer.MAX_VALUE)
+                .setQuery(QueryBuilders.matchAllQuery())
+                .execute(new ElasticHandler<>(response -> {
+                    if (response.status().equals(RestStatus.OK)) {
+                        handler.handle(result(listFrom(response.getHits().getHits())));
+                    } else {
+                        // no items in map -> empty list back.
+                        handler.handle(result(new ArrayList<>()));
+                    }
+                }, exception -> handler.handle(error(exception))));
+    }
+
+    @Override
     public void clear(Handler<AsyncResult<Void>> handler) {
         DeleteIndexResponse response = client.admin()
                 .indices()

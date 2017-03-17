@@ -126,6 +126,16 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
+    public void values(Handler<AsyncResult<List<Value>>> handler) {
+        context.<ArrayList<Value>>blocking(blocked -> {
+            blocked.complete(new ArrayList<>(imap.values()));
+        }, completed -> {
+            handler.handle(result(completed.result()));
+        });
+
+    }
+
+    @Override
     public void clear(Handler<AsyncResult<Void>> handler) {
         map.clear(clear -> {
             if (clear.succeeded()) {

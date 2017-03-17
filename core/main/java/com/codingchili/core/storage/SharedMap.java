@@ -3,6 +3,9 @@ package com.codingchili.core.storage;
 import io.vertx.core.*;
 import io.vertx.core.shareddata.LocalMap;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.storage.exception.*;
@@ -72,6 +75,11 @@ public class SharedMap<Value extends Storable> implements AsyncStorage<Value> {
         } else {
             handler.handle(error(new NothingToReplaceException(value.id())));
         }
+    }
+
+    @Override
+    public void values(Handler<AsyncResult<List<Value>>> handler) {
+        handler.handle(Future.succeededFuture(new ArrayList<>(map.values())));
     }
 
     @Override
