@@ -44,7 +44,7 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @SuppressWarnings("unchecked")
     public IndexedMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
-        if (maps.containsKey(context().identifier())) {
+        if (maps.containsKey(context.identifier())) {
             future.complete((IndexedMap<Value>) maps.get(context.identifier()));
         } else {
             this.context = context;

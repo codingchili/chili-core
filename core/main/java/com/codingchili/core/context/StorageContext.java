@@ -185,8 +185,8 @@ public class StorageContext<Value> extends SystemContext {
 
     public void onWatcherPaused(String name) {
         log(event(LOG_STORAGE_WATCHER)
-            .put(ID_NAME, name)
-            .put(ID_MESSAGE, CoreStrings.WATCHER_PAUSED));
+                .put(ID_NAME, name)
+                .put(ID_MESSAGE, CoreStrings.WATCHER_PAUSED));
     }
 
     public void onWatcherResumed(String name) {
@@ -251,14 +251,11 @@ public class StorageContext<Value> extends SystemContext {
      */
     public StorageContext<Value> setPlugin(String plugin) {
         this.plugin = plugin;
-        updateIdentifier();
         return this;
     }
 
     private void updateIdentifier() {
-        if (plugin != null) {
-            this.identifier = CoreStrings.getDBIdentifier(DB, collection);
-        }
+        this.identifier = CoreStrings.getDBIdentifier(DB, collection);
     }
 
     /**

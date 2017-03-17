@@ -27,11 +27,6 @@ import com.codingchili.core.storage.exception.*;
 @Ignore("Extend this class to run the tests.")
 @RunWith(VertxUnitRunner.class)
 public class MapTestCases {
-    protected static final String DB = "spinach";
-    protected static final String COLLECTION = "leaves";
-    protected StorageContext<StorageObject> context;
-    protected AsyncStorage<StorageObject> store;
-    protected static Integer STARTUP_DELAY = 1;
     private static final Long TEST_ITEM_COUNT = 200L;
     private static final Long SNOWFLAKE_INTERVAL = 10L;
     private static final Long SNOWFLAKE_COUNT = TEST_ITEM_COUNT / SNOWFLAKE_INTERVAL;
@@ -48,6 +43,12 @@ public class MapTestCases {
     private static final StorageObject OBJECT_TWO = new StorageObject(TWO, 2);
     private static final String SNOW_KEYWORD = "SNOW";
     private static final int LEVEL_BUCKET_SIZE = 10;
+    private Class plugin;
+    protected static final String DB = "spinach";
+    protected static final String COLLECTION = "leaves";
+    protected StorageContext<StorageObject> context;
+    protected AsyncStorage<StorageObject> store;
+    protected static Integer STARTUP_DELAY = 1;
 
     @Rule
     public Timeout timeout = Timeout.seconds(10);
@@ -67,7 +68,8 @@ public class MapTestCases {
     }
 
     public void setUp(Async async, Class plugin, Vertx vertx) {
-        context = new StorageContext<>(vertx);
+        this.context = new StorageContext<>(vertx);
+        this.plugin = plugin;
 
         new StorageLoader<StorageObject>(context)
                 .withDB(DB, COLLECTION)
@@ -729,5 +731,27 @@ public class MapTestCases {
                 async.complete();
             }
         }, () -> 50);
+    }
+
+    @Test
+    public void testStorageIsShared(TestContext test) {
+        Async async = test.async();
+        StorageContext context2 = new StorageContext<>(context.vertx());
+
+        // creates a new storage using another context with the same DB/colletion
+        new StorageLoader<StorageObject>(context2)
+                .withDB(DB, COLLECTION)
+                .withClass(StorageObject.class)
+                .withPlugin(plugin)
+                .build(result -> {
+                    AsyncStorage<StorageObject> newStorage = result.result();
+                    store.size(size -> {
+                        newStorage.size(newSize -> {
+                            test.assertEquals(size.result(), newSize.result());
+                            test.assertEquals(newSize.result(), TEST_ITEM_COUNT);
+                            async.complete();
+                        });
+                    });
+                });
     }
 }
