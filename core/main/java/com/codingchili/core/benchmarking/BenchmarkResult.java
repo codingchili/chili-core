@@ -1,48 +1,57 @@
 package com.codingchili.core.benchmarking;
 
-import java.time.Instant;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Contains the results of a single benchmark run.
+ *
+ * Results for benchmarks.
  */
-public class BenchmarkResult {
-    private Benchmark benchmark;
-    private Instant start;
-    private int elapsedMS;
-    private String group;
+public interface BenchmarkResult extends Benchmark {
 
-    public BenchmarkResult(Benchmark benchmark, String group) {
-        this.benchmark = benchmark;
-        this.group = group;
-        this.start = Instant.now();
-    }
+    /**
+     * Finish benchmarking: calculates the results.
+     */
+    void finish();
 
-    public void finish() {
-        this.elapsedMS = (Instant.now().getNano() - start.getNano()) / (1000 * 1000);
-    }
+    /**
+     * @return the time taken to complete the benchmark in ms.
+     */
+    long elapsedMS();
 
-    public int iterations() {
-        return benchmark.iterations();
-    }
+    /**
+     * @return the number of operations per second.
+     */
+    int rate();
 
-    public long elapsedMS() {
-        return elapsedMS;
-    }
+    /**
+     * @return the name of the test group.
+     */
+    String group();
 
-    public String name() {
-        return group;
-    }
+    /**
+     * @return the name of the implementation that executed the benchmark.
+     */
+    String implementation();
 
-    public int rate() {
-        int rate = iterations() / (elapsedMS + 1);
-        return (rate == 0) ? iterations() : rate;
-    }
+    /**
+     * @return the number of operations per second.
+     */
+    int ratePerSecond();
 
-    @Override
-    public String toString() {
-        return benchmark.testName() + " executed " + this.group + " and finished in " +
-                elapsedMS + "ms. [" + rate() + " op/s]";
-    }
+    /**
+     * @return the average time per operation iteration.
+     */
+    TimeUnit timePerIteration();
+
+    /**
+     * @return the max time to execute an operation.
+     */
+    TimeUnit max();
+
+    /**
+     * @return the total time required to execute all iterations of
+     * the given operation.
+     */
+    TimeUnit total();
 }

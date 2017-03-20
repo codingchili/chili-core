@@ -19,7 +19,12 @@ public interface BenchmarkImplementation {
      *
      * @return a string that identifies the implementation tested.
      */
-    String implementationName();
+    String name();
+
+    /**
+     * @return the name of the group the implementation is a member of.
+     */
+    String group();
 
     /**
      * Prepares an implementation for testing.
@@ -50,5 +55,8 @@ public interface BenchmarkImplementation {
      */
     BenchmarkImplementation add(Benchmark benchmark);
 
+    /**
+     * @return a listof benchmarks that should be executed for the given implementation.
+     */
     List<Benchmark> benchmarks();
 }

@@ -16,7 +16,7 @@ public interface BenchmarkGroup
      *
      * @return a string that identifies a group of benchmarks.
      */
-    String groupName();
+    String name();
 
     /**
      * Get the implementations enlisted for benchmarking in this group.

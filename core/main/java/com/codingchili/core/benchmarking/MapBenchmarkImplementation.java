@@ -24,10 +24,12 @@ public class MapBenchmarkImplementation implements BenchmarkImplementation {
     private AsyncStorage<Storable> storage;
     private Vertx vertx;
     private Class plugin;
-    private String name;
+    private String group;
+    private String implementation;
 
-    public MapBenchmarkImplementation(Class plugin, String name) {
-        this.name = name;
+    public MapBenchmarkImplementation(Class plugin, String group, String implementation) {
+        this.group = group;
+        this.implementation = implementation;
         this.plugin = plugin;
 
         add(this::putAll, "put all")
@@ -40,13 +42,15 @@ public class MapBenchmarkImplementation implements BenchmarkImplementation {
     }
 
     private MapBenchmarkImplementation add(BenchmarkOperation operation, String name) {
-        this.add(new MapBenchmark(operation, name));
+        this.add(new MapBenchmark(operation, group, implementation, name));
         return this;
     }
 
     @Override
     public void initialize(Handler<AsyncResult<Void>> handler) {
         this.vertx = Vertx.vertx();
+        System.out.println("initialize " + implementation);
+
         new StorageLoader<>(new StorageContext<>(vertx))
                 .withPlugin(plugin)
                 .withClass(StorageObject.class)
@@ -58,17 +62,24 @@ public class MapBenchmarkImplementation implements BenchmarkImplementation {
 
     @Override
     public void reset(Handler<AsyncResult<Void>> future) {
+        System.out.println("reset " + implementation);
         storage.clear(future);
     }
 
     @Override
     public void shutdown(Handler<AsyncResult<Void>> future) {
+        System.out.println("shutdown " + implementation);
         vertx.close(future);
     }
 
     @Override
-    public String implementationName() {
-        return name;
+    public String name() {
+        return implementation;
+    }
+
+    @Override
+    public String group() {
+        return group;
     }
 
     @Override

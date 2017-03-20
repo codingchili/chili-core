@@ -1,14 +1,11 @@
 package com.codingchili.core.benchmarking;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * @author Robin Duda
  *         <p>
  *         Implemented by executable benchmarks.
  */
-public interface Benchmark
-{
+public interface Benchmark {
     /**
      * The operation to benchmark.
      *
@@ -22,7 +19,17 @@ public interface Benchmark
      *
      * @return a string that identifies the name the Benchmark operation.
      */
-    String testName();
+    String name();
+
+    /**
+     * @return the name of the group the benchmark belongs to.
+     */
+    String group();
+
+    /**
+     * @return the name of the implementation the benchmark was executed for.
+     */
+    String implementation();
 
     /**
      * Number of iterations that the benchmark operation is to be executed.
@@ -32,23 +39,11 @@ public interface Benchmark
     int iterations();
 
     /**
-     * @return the number of operations per second.
+     * Indicates how many operations may be queued at any one given time.
+     * Higher parallellism is recommended for tests that executes with a known
+     * latency, for example a test that accesses a remote database or reads from disc.
+     *
+     * @return the number of operations that may be queued at the given time.
      */
-    int ratePerSecond();
-
-    /**
-     * @return the average time per operation iteration.
-     */
-    TimeUnit average();
-
-    /**
-     * @return the max time to execute an operation.
-     */
-    TimeUnit max();
-
-    /**
-     * @return the total time required to execute all iterations of
-     * the given operation.
-     */
-    TimeUnit total();
+    int parallelism();
 }

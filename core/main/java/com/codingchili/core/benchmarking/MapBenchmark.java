@@ -1,7 +1,5 @@
 package com.codingchili.core.benchmarking;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * @author Robin Duda
  *
@@ -10,10 +8,14 @@ import java.util.concurrent.TimeUnit;
 public class MapBenchmark implements Benchmark {
     private static final int ITERATIONS = 99500;
     private BenchmarkOperation operation;
+    private String group;
+    private String implementation;
     private String name;
 
-    public MapBenchmark(BenchmarkOperation operation, String name) {
+    public MapBenchmark(BenchmarkOperation operation, String group, String implementation, String name) {
         this.operation = operation;
+        this.group = group;
+        this.implementation = implementation;
         this.name = name;
     }
 
@@ -23,8 +25,18 @@ public class MapBenchmark implements Benchmark {
     }
 
     @Override
-    public String testName() {
+    public String name() {
         return name;
+    }
+
+    @Override
+    public String group() {
+        return group;
+    }
+
+    @Override
+    public String implementation() {
+        return implementation;
     }
 
     @Override
@@ -33,22 +45,7 @@ public class MapBenchmark implements Benchmark {
     }
 
     @Override
-    public int ratePerSecond() {
-        return 0;
-    }
-
-    @Override
-    public TimeUnit average() {
-        return null;
-    }
-
-    @Override
-    public TimeUnit max() {
-        return null;
-    }
-
-    @Override
-    public TimeUnit total() {
-        return null;
+    public int parallelism() {
+        return 5;
     }
 }
