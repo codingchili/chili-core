@@ -14,7 +14,6 @@ interface BenchmarkOperation
      * Returns a future so that benchmark operations may be composed in order.
      *
      * @param future a future to be completed when the operation is done.
-     * @return a new future to be completed by the next test method.
      */
-    Future<Void> perform(Future<Void> future);
+    void perform(Future<Void> future);
 }

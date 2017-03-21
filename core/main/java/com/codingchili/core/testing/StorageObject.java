@@ -12,6 +12,7 @@ import com.codingchili.core.storage.Storable;
  */
 public class StorageObject implements Storable {
     public static final String NESTED_PREFIX = "nested.";
+    public static String levelField = "level";
     private String name;
     private Integer level;
     private NestedObject nested;

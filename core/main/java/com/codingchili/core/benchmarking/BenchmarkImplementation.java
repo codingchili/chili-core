@@ -34,6 +34,11 @@ public interface BenchmarkImplementation {
     void initialize(Handler<AsyncResult<Void>> future);
 
     /**
+     * Synchronous call before a benchmark is executed.
+     */
+    void next(Future<Void> future);
+
+    /**
      * Called after the warmup phase has completed.
      *
      * @param future callback

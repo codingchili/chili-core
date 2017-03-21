@@ -20,6 +20,9 @@ public class BenchResult extends MapBenchmark implements BenchmarkResult {
     @Override
     public void finish() {
         this.elapsedMS = (Instant.now().getNano() - start.getNano()) / (1000 * 1000);
+        if (this.elapsedMS < 0) {
+            this.elapsedMS = 0;
+        }
     }
 
     @Override
@@ -29,8 +32,11 @@ public class BenchResult extends MapBenchmark implements BenchmarkResult {
 
     @Override
     public int rate() {
-        int rate = iterations() / (elapsedMS + 1);
-        return (rate == 0) ? iterations() : rate;
+        float time = (1.0f / ((elapsedMS == 0) ? 1 : elapsedMS));
+        if (time == 0.0f) {
+            time = 1;
+        }
+        return (int) (iterations() / time);
     }
 
     @Override

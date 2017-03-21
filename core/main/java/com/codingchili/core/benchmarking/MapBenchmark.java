@@ -6,7 +6,8 @@ package com.codingchili.core.benchmarking;
  * Implementation of a map benchmark.
  */
 public class MapBenchmark implements Benchmark {
-    private static final int ITERATIONS = 99500;
+    private static final int ITERATIONS = 5000;
+    private static final int PARALLELISM = 5;
     private BenchmarkOperation operation;
     private String group;
     private String implementation;
@@ -46,6 +47,6 @@ public class MapBenchmark implements Benchmark {
 
     @Override
     public int parallelism() {
-        return 5;
+        return PARALLELISM;
     }
 }

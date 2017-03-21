@@ -19,7 +19,8 @@ public class MapBenchmarkGroup implements BenchmarkGroup {
         Future<List<BenchResult>> future = Future.future();
         new BenchmarkExecutor(future, new MapBenchmarkGroup());
         future.setHandler(benchmarks -> {
-            //benchmarks.result().forEach(System.out::println);
+            System.out.println("done");
+            benchmarks.result().forEach(System.out::println);
         });
     }
 

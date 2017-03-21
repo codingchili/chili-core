@@ -7,7 +7,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
-import io.vertx.core.streams.impl.PumpImpl;
 
 /**
  * @author Robin Duda
@@ -41,8 +40,10 @@ public class BenchmarkExecutor {
                 // initialize the implementation, call warmup to perform all benchmarks once without
                 // recording the results. Call reset to prepare for another run, and then execute
                 // the benchmark suite again and record the results.
-                implementation.initialize(initialized -> warmup(implementation, done ->
-                        implementation.reset(reset -> benchmark(run, implementation))
+                implementation.initialize(
+                        initialized ->
+                        warmup(implementation, done ->
+                        benchmark(run, implementation)
                 ));
                 return run;
             });
@@ -65,7 +66,10 @@ public class BenchmarkExecutor {
 
         future.setHandler(done -> {
             this.warmup = false;
-            handler.handle(Future.succeededFuture());
+            // reset the implementation to make it ready for the hot test run.
+            implementation.reset(reset -> {
+                handler.handle(Future.succeededFuture());
+            });
         });
         benchmark(future, implementation);
     }
@@ -81,13 +85,15 @@ public class BenchmarkExecutor {
 
         Future<Void> allTests = Future.succeededFuture();
         for (Benchmark benchmark : benchmarks) {
-            allTests = allTests.compose(v ->
-                    doBench(benchmark));
+            allTests = allTests.compose(v -> {
+                /*Future<Void> next = Future.future();
+                implementation.next(next);
+                return next.compose(n -> doBench(benchmark));*/
+                return doBench(benchmark);
+            });
         }
         allTests.compose(result -> {
-            implementation.reset(done -> {
-                future.complete();
-            });
+            future.complete();
             return future;
         });
     }
@@ -110,7 +116,7 @@ public class BenchmarkExecutor {
                 completed.incrementAndGet();
 
                 // one of the operations scheduled in the parallelism windows completed
-                // if less than iterations number of operations are scheduled, schedule a new.
+                // if less than iterations number of operations have been scheduled, schedule a new.
                 if (scheduled.get() < benchmark.iterations()) {
                     scheduled.incrementAndGet();
 
@@ -122,6 +128,7 @@ public class BenchmarkExecutor {
                 // all iterations have completed.
                 if (completed.get() == benchmark.iterations()) {
                     finishMeasure();
+                    System.out.println(" - " + benchmark.name());;
                     future.complete();
                 }
             }
