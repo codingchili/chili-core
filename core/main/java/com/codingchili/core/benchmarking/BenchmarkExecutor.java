@@ -15,7 +15,7 @@ import io.vertx.core.Handler;
  *         <p>
  */
 public class BenchmarkExecutor {
-    private final List<BenchResult> results = new ArrayList<>();
+    private final List<BenchmarkResult> results = new ArrayList<>();
     private BenchResult measuring;
     private Boolean warmup;
 
@@ -27,25 +27,22 @@ public class BenchmarkExecutor {
      * @param future completed with the results of the benchmark when all benchmarks have passed.
      * @param group  a group of implementations that contains a set of benchmarks to be performed
      */
-    public BenchmarkExecutor(Future<List<BenchResult>> future, BenchmarkGroup group) {
+    public BenchmarkExecutor(Future<List<BenchmarkResult>> future, BenchmarkGroup group) {
         Future<Void> allImplementations = Future.succeededFuture();
 
         for (BenchmarkImplementation implementation : group.implementations()) {
-            allImplementations.compose(v -> {
-                // when the benchmark suite is completed for an implementation, call its shutdown method.
-                Future<Void> run = Future.<Void>future()
-                        .setHandler(executed -> implementation.shutdown(done -> {
-                        }));
-
-                // initialize the implementation, call warmup to perform all benchmarks once without
-                // recording the results. Call reset to prepare for another run, and then execute
-                // the benchmark suite again and record the results.
+            allImplementations = allImplementations.compose(v -> {
+                Future<Void> execution = Future.future();
                 implementation.initialize(
-                        initialized ->
-                        warmup(implementation, done ->
-                        benchmark(run, implementation)
+                        // on initialization: perform a warmup run that executes all benchmarks once
+                        // and then call #reset on the implementation, to prepare for a recorded test run.
+                        initialized -> warmup(implementation,
+                        // on warmup completed: start the benchmark.
+                        warmed -> benchmark(implementation,
+                        // on benchark completed: call #shutdown on the benchmark implementation.
+                        benched -> implementation.shutdown(execution))
                 ));
-                return run;
+                return execution;
             });
         }
         allImplementations.compose(done -> {
@@ -56,6 +53,7 @@ public class BenchmarkExecutor {
 
     /**
      * Runs through the benchmark once without recording results as warmup.
+     * Calls #reset on the benchmark implementation to prepare for a benchmark run.
      *
      * @param implementation the implementation to warmup.
      * @param handler        the handler to call when completed.
@@ -66,35 +64,31 @@ public class BenchmarkExecutor {
 
         future.setHandler(done -> {
             this.warmup = false;
-            // reset the implementation to make it ready for the hot test run.
-            implementation.reset(reset -> {
-                handler.handle(Future.succeededFuture());
-            });
+            implementation.reset(reset -> handler.handle(Future.succeededFuture()));
         });
-        benchmark(future, implementation);
+        benchmark(implementation, future);
     }
 
     /**
      * Schedule all benchmarks for the given implementation.
      *
-     * @param future         to complete when all benchmarks has completed.
      * @param implementation the implementation to run benchmarks for.
+     * @param future         to complete when all benchmarks has completed.
      */
-    private void benchmark(Future<Void> future, BenchmarkImplementation implementation) {
+    private void benchmark(BenchmarkImplementation implementation, Handler<AsyncResult<Void>> future) {
         List<Benchmark> benchmarks = implementation.benchmarks();
 
         Future<Void> allTests = Future.succeededFuture();
         for (Benchmark benchmark : benchmarks) {
             allTests = allTests.compose(v -> {
-                /*Future<Void> next = Future.future();
+                Future<Void> next = Future.future();
                 implementation.next(next);
-                return next.compose(n -> doBench(benchmark));*/
-                return doBench(benchmark);
+                return next.compose(n -> doBench(benchmark));
             });
         }
         allTests.compose(result -> {
-            future.complete();
-            return future;
+            future.handle(Future.succeededFuture());
+            return Future.succeededFuture();
         });
     }
 
@@ -128,7 +122,6 @@ public class BenchmarkExecutor {
                 // all iterations have completed.
                 if (completed.get() == benchmark.iterations()) {
                     finishMeasure();
-                    System.out.println(" - " + benchmark.name());;
                     future.complete();
                 }
             }

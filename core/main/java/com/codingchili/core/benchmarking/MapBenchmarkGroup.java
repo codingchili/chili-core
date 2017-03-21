@@ -6,6 +6,7 @@ import java.util.List;
 import com.codingchili.core.storage.*;
 
 import io.vertx.core.Future;
+import io.vertx.core.Vertx;
 
 /**
  * @author Robin Duda
@@ -16,12 +17,9 @@ public class MapBenchmarkGroup implements BenchmarkGroup {
     private List<BenchmarkImplementation> implementations = new ArrayList<>();
 
     public static void main(String[] args) {
-        Future<List<BenchResult>> future = Future.future();
+        Future<List<BenchmarkResult>> future = Future.future();
         new BenchmarkExecutor(future, new MapBenchmarkGroup());
-        future.setHandler(benchmarks -> {
-            System.out.println("done");
-            benchmarks.result().forEach(System.out::println);
-        });
+        future.setHandler(benchmarks -> new BenchmarkHTMLReport(Vertx.vertx()).display());
     }
 
     public MapBenchmarkGroup() {

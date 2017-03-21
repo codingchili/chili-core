@@ -54,7 +54,6 @@ public class MapBenchmarkImplementation implements BenchmarkImplementation {
 
     @Override
     public void initialize(Handler<AsyncResult<Void>> handler) {
-        System.out.println("initialize " + implementation);
         this.vertx = Vertx.vertx();
         new StorageLoader<>(new StorageContext<>(vertx))
                 .withPlugin(plugin)
@@ -67,23 +66,17 @@ public class MapBenchmarkImplementation implements BenchmarkImplementation {
 
     @Override
     public void next(Future<Void> future) {
-        System.out.println("");
-
         counter = new AtomicInteger(0);
         future.complete();
     }
 
     @Override
     public void reset(Handler<AsyncResult<Void>> future) {
-        System.out.println("reset " + implementation);
-
         storage.clear(future);
     }
 
     @Override
-    public void shutdown(Handler<AsyncResult<Void>> future) {
-        System.out.println("shutdown " + implementation);
-
+    public void shutdown(Future<Void> future) {
         vertx.close(future);
     }
 

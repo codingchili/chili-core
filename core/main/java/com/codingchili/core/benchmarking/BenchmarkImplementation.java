@@ -34,7 +34,7 @@ public interface BenchmarkImplementation {
     void initialize(Handler<AsyncResult<Void>> future);
 
     /**
-     * Synchronous call before a benchmark is executed.
+     * Called before each benchmark is executed.
      */
     void next(Future<Void> future);
 
@@ -50,7 +50,7 @@ public interface BenchmarkImplementation {
      *
      * @param future callback
      */
-    void shutdown(Handler<AsyncResult<Void>> future);
+    void shutdown(Future<Void> future);
 
     /**
      * Adds a benchmark to the implementation group.
