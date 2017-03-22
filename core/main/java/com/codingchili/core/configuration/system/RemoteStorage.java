@@ -6,12 +6,10 @@ package com.codingchili.core.configuration.system;
  *         configuration settings for a remote storage.
  */
 public class RemoteStorage {
+    private boolean persisted = false;
     private String host = "localhost";
     private String database = "CORE_DB";
     private Integer port = 27017;
-
-    // Indicates that a jsonmap should persist its contents to disk.
-    private boolean persisted = true;
     private int persistInterval = 250;
 
     public RemoteStorage(String host, int port, String database) {

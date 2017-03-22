@@ -1,7 +1,5 @@
 package com.codingchili.core.benchmarking;
 
-import java.util.List;
-
 /**
  * @author Robin Duda
  *         <p>
@@ -10,12 +8,12 @@ import java.util.List;
 public interface BenchmarkReport {
 
     /**
-     * Creates a report from a list of results.
+     * Sets the template to use. May be a path to a file or a template.
      *
-     * @param results the results to create a report from.
+     * @param string path or template to use
      * @return fluent
      */
-    BenchmarkReport create(List<BenchmarkResult> results);
+    BenchmarkReport template(String string);
 
     /**
      * displays the results of the report by opening the browser,

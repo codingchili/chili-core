@@ -1,65 +1,70 @@
 package com.codingchili.core.benchmarking;
 
-import io.vertx.core.Vertx;
-import io.vertx.core.file.FileSystem;
-
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.codingchili.core.configuration.system.LauncherSettings;
+import com.codingchili.core.protocol.Serializer;
+
+import de.neuland.jade4j.Jade4J;
+import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 
 /**
  * @author Robin Duda
  */
 public class BenchmarkHTMLReport implements BenchmarkReport {
-    private static final String version = "$version";
-    private static final String param_group = "$group";
-    private static final String implementation = "$implementation";
-    private static final String time = "$time";
-    private static final String maxtime = "$maxtime";
-    private static final String operations = "$operations";
-    private static final String performance = "$performance";
-    private static final String iterations = "$iterations";
-    private static final String parallelism = "$parallelism";
-    private String report;
-    private String group;
-    private String benchmark;
+    private static final String VERSION = "version";
+    private static final String OUTPUT = "report.jade";
+    private String template = "./report.jade";
+    private Buffer output;
 
-    public static void main(String[] args) {
-        new BenchmarkHTMLReport(Vertx.vertx());
+    public BenchmarkHTMLReport(List<BenchmarkResult> results) {
+        try {
+            Map<String, Object> model = Serializer.json(group(results)).getMap();
+            model.put(VERSION, new LauncherSettings().getVersion());
+            output = Buffer.buffer(Jade4J.render(template, model, true));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public BenchmarkHTMLReport(Vertx vertx) {
-        FileSystem fs = vertx.fileSystem();
-        report = fs.readFileBlocking("benchmarking/report.html").toString();
-        group = fs.readFileBlocking("benchmarking/group.html").toString();
-        benchmark = fs.readFileBlocking("benchmarking/benchmark.html").toString();
+    /**
+     * groups a list of benchmarking results by: group, test and implementation
+     *
+     * @param results a list of results to group together
+     * @return results grouped within a map.
+     */
+    private Map<String, Map<String, List<BenchmarkResult>>> group(List<BenchmarkResult> results) {
+        Map<String, Map<String, List<BenchmarkResult>>> all = new HashMap<>();
+        for (BenchmarkResult bench : results) {
+            all.computeIfAbsent(bench.group(), k -> new HashMap<>())
+                    .computeIfAbsent(bench.name(), k -> new ArrayList<>())
+                    .add(bench);
+        }
+        return all;
     }
 
     @Override
-    public BenchmarkReport create(List<BenchmarkResult> results) {
-
+    public BenchmarkReport template(String string) {
+        this.template = string;
         return this;
-    }
-
-    private void parse(List<BenchmarkResult> results) {
-        String report = this.report;
-        String group = this.group;
-        String benchmark = this.benchmark;
-
-        for (BenchmarkResult result : results) {
-            // todo replace constants - serialize and get values by fieldname?
-        }
-
-        // todo store output
     }
 
     @Override
     public BenchmarkReport display() {
-        // todo save to temp dir and open with browser
+        saveTo(OUTPUT);
         return this;
     }
 
     @Override
     public BenchmarkReport saveTo(String path) {
-        // todo write report to file.
+        Vertx vertx = Vertx.vertx();
+        vertx.fileSystem().writeFileBlocking(path, output);
+        vertx.close();
         return this;
     }
 }

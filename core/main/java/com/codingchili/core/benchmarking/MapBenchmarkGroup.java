@@ -3,10 +3,12 @@ package com.codingchili.core.benchmarking;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.codingchili.core.storage.*;
+import com.codingchili.core.storage.IndexedMap;
+import com.codingchili.core.storage.JsonMap;
+import com.codingchili.core.storage.PrivateMap;
+import com.codingchili.core.storage.SharedMap;
 
 import io.vertx.core.Future;
-import io.vertx.core.Vertx;
 
 /**
  * @author Robin Duda
@@ -19,7 +21,7 @@ public class MapBenchmarkGroup implements BenchmarkGroup {
     public static void main(String[] args) {
         Future<List<BenchmarkResult>> future = Future.future();
         new BenchmarkExecutor(future, new MapBenchmarkGroup());
-        future.setHandler(benchmarks -> new BenchmarkHTMLReport(Vertx.vertx()).display());
+        future.setHandler(benchmarks -> new BenchmarkHTMLReport(benchmarks.result()).saveTo("report-zz.html"));
     }
 
     public MapBenchmarkGroup() {
