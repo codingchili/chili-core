@@ -1,52 +1,69 @@
 package com.codingchili.core.benchmarking;
 
-import java.util.ArrayList;
+import io.vertx.core.*;
+
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
 
 /**
  * @author Robin Duda
  *         <p>
- *         Micro-benchmarks for storage implementations.
+ *         Micro-benchmarks runner.
+ *         <p>
+ *         Creates and runs a group of benchmarks. Benchmarks are run for one implementation at a time
+ *         and are executed in the same order as they are added to the group. The order for each
+ *         benchmark test is also preserved. No more than one benchmark is executed concurrently.
  *         <p>
  */
 public class BenchmarkExecutor {
-    private final List<BenchmarkResult> results = new ArrayList<>();
-    private BenchResult measuring;
-    private Boolean warmup;
+    private Benchmark measuring;
 
     /**
-     * Creates and runs a group of benchmarks. Benchmarks are run for one implementation at a time
-     * and are executed in the same order as they are added to the group. The order for each
-     * benchmark test is also preserved. No more than one benchmark is executed concurrently.
-     *
+     * @param future completed with the results of the benchmark when all benchmarks have passed.
+     * @param groups a list of groups of implementations that contains a set of benchmarks to be performed
+     */
+    public BenchmarkExecutor(Future<List<BenchmarkGroup>> future, List<BenchmarkGroup> groups) {
+        Future<BenchmarkGroup> allGroups = Future.succeededFuture();
+
+        for (BenchmarkGroup group : groups) {
+            allGroups.compose(v -> {
+                Future<BenchmarkGroup> benchmark = Future.future();
+                executeImplementations(benchmark, group);
+                return benchmark;
+            });
+        }
+        allGroups.compose(done -> {
+            future.complete(groups);
+            return Future.succeededFuture();
+        });
+    }
+
+    /**
      * @param future completed with the results of the benchmark when all benchmarks have passed.
      * @param group  a group of implementations that contains a set of benchmarks to be performed
      */
-    public BenchmarkExecutor(Future<List<BenchmarkResult>> future, BenchmarkGroup group) {
+    public BenchmarkExecutor(Future<BenchmarkGroup> future, BenchmarkGroup group) {
+        executeImplementations(future, group);
+    }
+
+    private void executeImplementations(Future<BenchmarkGroup> future, BenchmarkGroup group) {
         Future<Void> allImplementations = Future.succeededFuture();
 
         for (BenchmarkImplementation implementation : group.implementations()) {
             allImplementations = allImplementations.compose(v -> {
                 Future<Void> execution = Future.future();
+
+                // on initialization: perform a warmup run that executes all benchmarks once
+                // and then call #reset on the implementation, to prepare for a recorded test run.
                 implementation.initialize(
-                        // on initialization: perform a warmup run that executes all benchmarks once
-                        // and then call #reset on the implementation, to prepare for a recorded test run.
-                        initialized -> warmup(implementation,
-                        // on warmup completed: start the benchmark.
-                        warmed -> benchmark(implementation,
-                        // on benchark completed: call #shutdown on the benchmark implementation.
-                        benched -> implementation.shutdown(execution))
-                ));
+                        initialized -> warmup(group, implementation,
+                                warmed -> benchmark(group, implementation,
+                                        benched -> implementation.shutdown(execution))));
                 return execution;
             });
         }
         allImplementations.compose(done -> {
-            future.complete(results);
+            future.complete(group);
             return future;
         });
     }
@@ -58,15 +75,13 @@ public class BenchmarkExecutor {
      * @param implementation the implementation to warmup.
      * @param handler        the handler to call when completed.
      */
-    private void warmup(BenchmarkImplementation implementation, Handler<AsyncResult<Void>> handler) {
+    private void warmup(BenchmarkGroup group, BenchmarkImplementation implementation, Handler<AsyncResult<Void>> handler) {
         Future<Void> future = Future.future();
-        this.warmup = true;
 
         future.setHandler(done -> {
-            this.warmup = false;
             implementation.reset(reset -> handler.handle(Future.succeededFuture()));
         });
-        benchmark(implementation, future);
+        benchmark(group, implementation, future);
     }
 
     /**
@@ -75,7 +90,7 @@ public class BenchmarkExecutor {
      * @param implementation the implementation to run benchmarks for.
      * @param future         to complete when all benchmarks has completed.
      */
-    private void benchmark(BenchmarkImplementation implementation, Handler<AsyncResult<Void>> future) {
+    private void benchmark(BenchmarkGroup group, BenchmarkImplementation implementation, Handler<AsyncResult<Void>> future) {
         List<Benchmark> benchmarks = implementation.benchmarks();
 
         Future<Void> allTests = Future.succeededFuture();
@@ -83,7 +98,7 @@ public class BenchmarkExecutor {
             allTests = allTests.compose(v -> {
                 Future<Void> next = Future.future();
                 implementation.next(next);
-                return next.compose(n -> doBench(benchmark));
+                return next.compose(n -> doBench(group, benchmark));
             });
         }
         allTests.compose(result -> {
@@ -99,9 +114,9 @@ public class BenchmarkExecutor {
      * @param benchmark the benchmark to execute
      * @return a future that is completed when the benchmark is completed.
      */
-    private Future<Void> doBench(Benchmark benchmark) {
+    private Future<Void> doBench(BenchmarkGroup group, Benchmark benchmark) {
         Future<Void> future = Future.future();
-        AtomicInteger scheduled = new AtomicInteger(benchmark.parallelism());
+        AtomicInteger scheduled = new AtomicInteger(group.getParallelism());
         AtomicInteger completed = new AtomicInteger(0);
 
         Handler<AsyncResult<Void>> scheduler = new Handler<AsyncResult<Void>>() {
@@ -111,7 +126,7 @@ public class BenchmarkExecutor {
 
                 // one of the operations scheduled in the parallelism windows completed
                 // if less than iterations number of operations have been scheduled, schedule a new.
-                if (scheduled.get() < benchmark.iterations()) {
+                if (scheduled.get() < group.getIterations()) {
                     scheduled.incrementAndGet();
 
                     Future<Void> run = Future.future();
@@ -120,7 +135,7 @@ public class BenchmarkExecutor {
                 }
 
                 // all iterations have completed.
-                if (completed.get() == benchmark.iterations()) {
+                if (completed.get() == group.getIterations()) {
                     finishMeasure();
                     future.complete();
                 }
@@ -130,7 +145,7 @@ public class BenchmarkExecutor {
         startMeasure(benchmark);
 
         // schedule operations according to parallelism settings.
-        for (int i = 0; i < benchmark.parallelism(); i++) {
+        for (int i = 0; i < group.getParallelism(); i++) {
             Future<Void> run = Future.future();
             run.setHandler(scheduler);
             benchmark.operation().perform(run);
@@ -142,7 +157,7 @@ public class BenchmarkExecutor {
      * Starts measuring of a test.
      */
     private void startMeasure(Benchmark benchmark) {
-        this.measuring = new BenchResult(benchmark);
+        this.measuring = benchmark.start();
     }
 
     /**
@@ -150,9 +165,5 @@ public class BenchmarkExecutor {
      */
     private void finishMeasure() {
         measuring.finish();
-
-        if (!warmup) {
-            results.add(measuring);
-        }
     }
 }

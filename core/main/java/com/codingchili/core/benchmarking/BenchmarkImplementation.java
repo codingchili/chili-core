@@ -14,19 +14,6 @@ import io.vertx.core.Handler;
 public interface BenchmarkImplementation {
 
     /**
-     * Name of the implementation that is used within a benchmark.
-     * A good choice is {@link Class#getSimpleName()}.
-     *
-     * @return a string that identifies the implementation tested.
-     */
-    String name();
-
-    /**
-     * @return the name of the group the implementation is a member of.
-     */
-    String group();
-
-    /**
      * Prepares an implementation for testing.
      *
      * @param future called when the setup is complete.
@@ -64,4 +51,12 @@ public interface BenchmarkImplementation {
      * @return a listof benchmarks that should be executed for the given implementation.
      */
     List<Benchmark> benchmarks();
+
+    /**
+     * Name of the implementation that is used within a benchmark.
+     * A good choice is {@link Class#getSimpleName()}.
+     *
+     * @return a string that identifies the implementation tested.
+     */
+    String getName();
 }

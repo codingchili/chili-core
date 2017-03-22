@@ -16,7 +16,23 @@ public interface BenchmarkGroup
      *
      * @return a string that identifies a group of benchmarks.
      */
-    String name();
+    String getName();
+
+    /**
+     * Number of iterations that the benchmark operation is to be executed.
+     *
+     * @return a integer indicating the number of operation iterations.
+     */
+    int getIterations();
+
+    /**
+     * Indicates how many operations may be queued at any one given time.
+     * Higher parallellism is recommended for tests that executes with a known
+     * latency, for example a test that accesses a remote database or reads from disc.
+     *
+     * @return the number of operations that may be queued at the given time.
+     */
+    int getParallelism();
 
     /**
      * Get the implementations enlisted for benchmarking in this group.

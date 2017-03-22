@@ -12,6 +12,7 @@ import com.codingchili.core.storage.Storable;
 import com.codingchili.core.storage.StorageLoader;
 import com.codingchili.core.testing.StorageObject;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -28,14 +29,14 @@ public class MapBenchmarkImplementation implements BenchmarkImplementation {
     private AtomicInteger counter = new AtomicInteger(0);
     private List<Benchmark> benchmarks = new ArrayList<>();
     private AsyncStorage<Storable> storage;
+    private BenchmarkGroup group;
     private Vertx vertx;
     private Class plugin;
-    private String group;
     private String implementation;
 
-    public MapBenchmarkImplementation(Class plugin, String group, String implementation) {
-        this.group = group;
+    public MapBenchmarkImplementation(BenchmarkGroup group, Class plugin, String implementation) {
         this.implementation = implementation;
+        this.group = group;
         this.plugin = plugin;
 
         add(this::putOne, "put all")
@@ -48,7 +49,7 @@ public class MapBenchmarkImplementation implements BenchmarkImplementation {
     }
 
     private MapBenchmarkImplementation add(BenchmarkOperation operation, String name) {
-        this.add(new MapBenchmark(operation, group, implementation, name));
+        this.add(new MapBenchmark(group, this, operation, name));
         return this;
     }
 
@@ -81,13 +82,8 @@ public class MapBenchmarkImplementation implements BenchmarkImplementation {
     }
 
     @Override
-    public String name() {
+    public String getName() {
         return implementation;
-    }
-
-    @Override
-    public String group() {
-        return group;
     }
 
     @Override

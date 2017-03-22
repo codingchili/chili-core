@@ -1,13 +1,16 @@
 package com.codingchili.core.benchmarking;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * @author Robin Duda
  *
  * Results for benchmarks.
  */
-public interface BenchmarkResult extends Benchmark {
+public interface BenchmarkResult {
+
+    /**
+     * Start measuring of the execution time.
+     */
+    Benchmark start();
 
     /**
      * Finish benchmarking: calculates the results.
@@ -17,41 +20,10 @@ public interface BenchmarkResult extends Benchmark {
     /**
      * @return the time taken to complete the benchmark in ms.
      */
-    long elapsedMS();
+    long getElapsedMS();
 
     /**
      * @return the number of operations per second.
      */
-    int rate();
-
-    /**
-     * @return the name of the test group.
-     */
-    String group();
-
-    /**
-     * @return the name of the implementation that executed the benchmark.
-     */
-    String implementation();
-
-    /**
-     * @return the number of operations per second.
-     */
-    int ratePerSecond();
-
-    /**
-     * @return the average time per operation iteration.
-     */
-    TimeUnit timePerIteration();
-
-    /**
-     * @return the max time to execute an operation.
-     */
-    TimeUnit max();
-
-    /**
-     * @return the total time required to execute all iterations of
-     * the given operation.
-     */
-    TimeUnit total();
+    int getRate();
 }
