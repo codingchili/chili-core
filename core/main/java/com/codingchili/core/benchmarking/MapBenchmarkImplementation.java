@@ -23,20 +23,16 @@ import io.vertx.core.Vertx;
  *         <p>
  *         Implementation of a map for use with benchmarking.
  */
-public class MapBenchmarkImplementation implements BenchmarkImplementation {
+public class MapBenchmarkImplementation extends AbstractBenchmarkImplementation {
     private static final String COLLECTION = "collection";
     private static final String DB = "db";
     private AtomicInteger counter = new AtomicInteger(0);
-    private List<Benchmark> benchmarks = new ArrayList<>();
     private AsyncStorage<Storable> storage;
-    private BenchmarkGroup group;
     private Vertx vertx;
     private Class plugin;
-    private String implementation;
 
     public MapBenchmarkImplementation(BenchmarkGroup group, Class plugin, String implementation) {
-        this.implementation = implementation;
-        this.group = group;
+        super(group, implementation);
         this.plugin = plugin;
 
         add(this::putOne, "put all")
@@ -46,11 +42,6 @@ public class MapBenchmarkImplementation implements BenchmarkImplementation {
                 .add(this::equalToPrimaryKey, "equal to primary key")
                 .add(this::regexpQuery, "regular expression")
                 .add(this::startsWithQuery, "starts with");
-    }
-
-    private MapBenchmarkImplementation add(BenchmarkOperation operation, String name) {
-        this.add(new MapBenchmark(group, this, operation, name));
-        return this;
     }
 
     @Override
@@ -79,22 +70,6 @@ public class MapBenchmarkImplementation implements BenchmarkImplementation {
     @Override
     public void shutdown(Future<Void> future) {
         vertx.close(future);
-    }
-
-    @Override
-    public String getName() {
-        return implementation;
-    }
-
-    @Override
-    public BenchmarkImplementation add(Benchmark benchmark) {
-        benchmarks.add(benchmark);
-        return this;
-    }
-
-    @Override
-    public List<Benchmark> benchmarks() {
-        return this.benchmarks;
     }
 
     /**

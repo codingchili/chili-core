@@ -35,6 +35,7 @@ public class JsonMapTest extends MapTestCases {
         super.tearDown(test);
     }
 
+    @Ignore("Map currently defaults to not saving, will reconsider.")
     @Test
     public void testMapSaved(TestContext test) {
         Async async = test.async();

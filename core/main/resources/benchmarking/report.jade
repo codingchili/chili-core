@@ -1,6 +1,6 @@
 doctype html
 html
-    title chili-core benchmarks $version
+    title chili-core benchmarks #{version}
     head
         link(rel='stylesheet', href='https://bootswatch.com/superhero/bootstrap.min.css')
         script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js')
@@ -15,33 +15,37 @@ html
     body
         .jumbotron
             h1 Benchmarks
-            p Benchmarks generated using $VERSION
-        .panel.panel-default.col-xs-8.col-xs-offset-2
-            .panel-heading $group
-            .panel-body
-                p $benchmarkname
-                table.table.table-striped.table-hover
-                    thead
-                        tr
-                            th Implementation
-                            th Time (ms)
-                            th Max (ms)
-                            th Operations/s
-                            th Performance index
-                    tbody
-                        tr
-                            td $IMPLEMENTATION
-                            td $TIME
-                            td $MAXTIME
-                            td $OPERATIONS
-                            td $PERFORMANCE
-                p Parameters
-                table.table.table-striped.table-hover
-                    thead
-                        tr
-                            th Parallelism
-                            th Iterations
-                    tbody
-                        tr
-                            td $PARALLELISM
-                            td $ITERATIONS
+            p Benchmarks generated using #{version}
+
+        each group in benchmarks
+            .panel.panel-default.col-xs-8.col-xs-offset-2
+                .panel-heading #{group.name}
+                .panel-body
+                    each implementation in group.implementations
+                        .panel.panel-default.col-xs-8.col-xs-offset-2
+                            .panel-heading #{implementation.name}
+                            .panel-body
+                                table.table.table-striped.table-hover
+                                    thead
+                                        tr
+                                            th Implementation
+                                            th Time (ms)
+                                            th Operations/s
+                                    tbody
+                                        each benchmark in implementation.benchmarks
+                                            tr
+                                                td #{benchmark.implementation}
+                                                td #{benchmark.elapsedMS}
+                                                td #{benchmark.rate}
+
+                    div.col-xs-8.col-xs-offset-2
+                        p Parameters
+                        table.table.table-striped.table-hover
+                            thead
+                                tr
+                                    th Parallelism
+                                    th Iterations
+                            tbody
+                                tr
+                                    td #{group.parallelism}
+                                    td #{group.iterations}

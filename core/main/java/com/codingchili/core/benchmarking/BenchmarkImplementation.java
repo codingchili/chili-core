@@ -40,6 +40,15 @@ public interface BenchmarkImplementation {
     void shutdown(Future<Void> future);
 
     /**
+     * Adds a new benchmark created from an operation and name.
+     *
+     * @param operation the operation to execute as a benchmark.
+     * @param name      the name of the operation/benchmark.
+     * @return fluent
+     */
+    BenchmarkImplementation add(BenchmarkOperation operation, String name);
+
+    /**
      * Adds a benchmark to the implementation group.
      *
      * @param benchmark the benchmark to add.
@@ -50,7 +59,14 @@ public interface BenchmarkImplementation {
     /**
      * @return a listof benchmarks that should be executed for the given implementation.
      */
-    List<Benchmark> benchmarks();
+    List<Benchmark> getBenchmarks();
+
+    /**
+     * Sets the benchmarks to a list of benchmarks, may be used when creating reports.
+     * @param benchmarks the benchmarks to set
+     * @return fluent
+     */
+    BenchmarkImplementation setBenchmarks(List<Benchmark> benchmarks);
 
     /**
      * Name of the implementation that is used within a benchmark.
@@ -59,4 +75,10 @@ public interface BenchmarkImplementation {
      * @return a string that identifies the implementation tested.
      */
     String getName();
+
+    /**
+     * May be used in the reporting phase to restructure results.
+     * @return fluent.
+     */
+    BenchmarkImplementation setName(String name);
 }

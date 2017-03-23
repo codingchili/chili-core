@@ -39,7 +39,14 @@ public interface BenchmarkGroup
      *
      * @return a list of implementations to benchmark.
      */
-    List<BenchmarkImplementation> implementations();
+    List<BenchmarkImplementation> getImplementations();
+
+    /**
+     * Sets the implementations in the group to the given list. May be used when creating reports.
+     * @param implementations the implementations to set.
+     * @return fluent
+     */
+    BenchmarkGroup setImplementations(List<BenchmarkImplementation> implementations);
 
     /**
      * Adds a new benchmark to the benchmark group.

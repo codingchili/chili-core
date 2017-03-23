@@ -25,5 +25,5 @@ public interface BenchmarkResult {
     /**
      * @return the number of operations per second.
      */
-    int getRate();
+    String getRate();
 }

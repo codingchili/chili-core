@@ -49,7 +49,7 @@ public class BenchmarkExecutor {
     private void executeImplementations(Future<BenchmarkGroup> future, BenchmarkGroup group) {
         Future<Void> allImplementations = Future.succeededFuture();
 
-        for (BenchmarkImplementation implementation : group.implementations()) {
+        for (BenchmarkImplementation implementation : group.getImplementations()) {
             allImplementations = allImplementations.compose(v -> {
                 Future<Void> execution = Future.future();
 
@@ -91,7 +91,7 @@ public class BenchmarkExecutor {
      * @param future         to complete when all benchmarks has completed.
      */
     private void benchmark(BenchmarkGroup group, BenchmarkImplementation implementation, Handler<AsyncResult<Void>> future) {
-        List<Benchmark> benchmarks = implementation.benchmarks();
+        List<Benchmark> benchmarks = implementation.getBenchmarks();
 
         Future<Void> allTests = Future.succeededFuture();
         for (Benchmark benchmark : benchmarks) {
@@ -116,26 +116,23 @@ public class BenchmarkExecutor {
      */
     private Future<Void> doBench(BenchmarkGroup group, Benchmark benchmark) {
         Future<Void> future = Future.future();
-        AtomicInteger scheduled = new AtomicInteger(group.getParallelism());
         AtomicInteger completed = new AtomicInteger(0);
 
         Handler<AsyncResult<Void>> scheduler = new Handler<AsyncResult<Void>>() {
             @Override
             public void handle(AsyncResult<Void> event) {
-                completed.incrementAndGet();
+                int done = completed.incrementAndGet();
 
                 // one of the operations scheduled in the parallelism windows completed
                 // if less than iterations number of operations have been scheduled, schedule a new.
-                if (scheduled.get() < group.getIterations()) {
-                    scheduled.incrementAndGet();
-
+                if (done < group.getIterations()) {
                     Future<Void> run = Future.future();
                     run.setHandler(this);
                     benchmark.operation().perform(run);
                 }
 
                 // all iterations have completed.
-                if (completed.get() == group.getIterations()) {
+                if (done == group.getIterations()) {
                     finishMeasure();
                     future.complete();
                 }
