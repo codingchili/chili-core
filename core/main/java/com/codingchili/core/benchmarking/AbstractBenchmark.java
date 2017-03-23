@@ -64,4 +64,9 @@ public class AbstractBenchmark implements Benchmark {
     public String getImplementation() {
         return implementation.getName();
     }
+
+    @Override
+    public int getIterations() {
+        return group.getIterations();
+    }
 }

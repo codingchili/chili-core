@@ -35,11 +35,11 @@ public abstract class Configurations
     private static final AtomicBoolean monitoring = new AtomicBoolean(true);
     private static Logger logger = new ConsoleLogger();
 
-    /**
-     * When uninitialized default in-memory configuration is used, this configuration is
-     * flushed on initialization. This allows testing against the default configuration and
-     * without file access or modification to configuration paths when testing.
-     * Also allows configuration files to not be present at startup and reset.
+    /*
+      When uninitialized default in-memory configuration is used, this configuration is
+      flushed on initialization. This allows testing against the default configuration and
+      without file access or modification to configuration paths when testing.
+      Also allows configuration files to not be present at startup and reset.
      */
     static
     {

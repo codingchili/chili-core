@@ -27,5 +27,10 @@ public interface Benchmark extends BenchmarkResult {
      * @return name of the implementation.
      */
     String getImplementation();
+
+    /**
+     * @return Return the number of iterations the benchmark is executed.
+     */
+    int getIterations();
 }
 

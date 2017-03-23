@@ -4,6 +4,7 @@ import io.vertx.core.Future;
 
 import java.util.function.Consumer;
 
+import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.storage.*;
 
 /**
@@ -14,7 +15,7 @@ import com.codingchili.core.storage.*;
 public class BenchmarkSuite {
 
     public static void main(String[] args) {
-        maps().setHandler(done -> {
+        maps(new BenchmarkConsoleListerner()).setHandler(done -> {
             new BenchmarkHTMLReport(done.result()).saveTo("report-zz.html");
         });
     }
@@ -24,8 +25,8 @@ public class BenchmarkSuite {
      *
      * @return a future that is completed with the results of the benchmark.
      */
-    public static Future<BenchmarkGroup> maps() {
-        BenchmarkGroup group = new AbstractBenchmarkGroup("Map benchmarks", 100, 5);
+    public static Future<BenchmarkGroup> maps(BenchmarkListener listener) {
+        BenchmarkGroup group = new AbstractBenchmarkGroup("Map benchmarks", 1000, 5);
         Future<BenchmarkGroup> future = Future.future();
 
         Consumer<Class> add = (clazz) -> group.add(
@@ -36,7 +37,7 @@ public class BenchmarkSuite {
         add.accept(SharedMap.class);
         add.accept(IndexedMap.class);
 
-        new BenchmarkExecutor(future, group);
+        new BenchmarkExecutor(future, group).setListener(listener);
         return future;
     }
 }

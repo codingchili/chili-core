@@ -11,6 +11,7 @@ import java.util.List;
 public class AbstractBenchmarkGroup implements BenchmarkGroup {
     private List<BenchmarkImplementation> implementations = new ArrayList<>();
     private int iterations = 2000;
+    private int progress;
     private int parallelism = 5;
     private String name;
 
@@ -18,6 +19,7 @@ public class AbstractBenchmarkGroup implements BenchmarkGroup {
         this.name = name;
         this.iterations = iterations;
         this.parallelism = parallelism;
+        this.progress = iterations / 20;
     }
 
     @Override
@@ -50,5 +52,10 @@ public class AbstractBenchmarkGroup implements BenchmarkGroup {
     public BenchmarkGroup add(BenchmarkImplementation benchmark) {
         implementations.add(benchmark);
         return this;
+    }
+
+    @Override
+    public int getProgressInterval() {
+        return progress;
     }
 }

@@ -12,7 +12,11 @@ public class AbstractBenchmarkListener implements BenchmarkListener {
     }
 
     @Override
-    public void onImplementationWarmup(BenchmarkImplementation implementation) {
+    public void onImplementationWarmupComplete(BenchmarkImplementation implementation) {
+    }
+
+    @Override
+    public void onImplementationTestBegin(BenchmarkImplementation implementation) {
     }
 
     @Override

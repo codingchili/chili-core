@@ -8,8 +8,7 @@ import java.util.List;
  *         Contains a set of benchmarks and groups them by type, for example
  *         "network" or "storage".
  */
-public interface BenchmarkGroup
-{
+public interface BenchmarkGroup {
     /**
      * The name of the benchmark group, for example "networking" or "storage".
      * Benchmarks are grouped under this in the reports.
@@ -43,6 +42,7 @@ public interface BenchmarkGroup
 
     /**
      * Sets the implementations in the group to the given list. May be used when creating reports.
+     *
      * @param implementations the implementations to set.
      * @return fluent
      */
@@ -55,4 +55,12 @@ public interface BenchmarkGroup
      * @return fluent
      */
     BenchmarkGroup add(BenchmarkImplementation benchmark);
+
+    /**
+     * Return the number of iterations to complete before calling a listeners
+     * progress listener.
+     *
+     * @return the number of iterations.
+     */
+    int getProgressInterval();
 }
