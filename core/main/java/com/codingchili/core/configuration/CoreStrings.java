@@ -117,6 +117,7 @@ public abstract class CoreStrings {
     public static final String DEFAULT_DB = "chili";
 
     // logging constants
+    public static final String LOG_APPLICATION = "application";
     public static final String LOG_AT = "@";
     public static final String LOG_EVENT = "event";
     public static final String LOG_VERSION = "version";

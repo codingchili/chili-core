@@ -11,6 +11,7 @@ import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.Delay;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
+import static com.codingchili.core.files.Configurations.launcher;
 
 /**
  * @author Robin Duda
@@ -52,6 +53,7 @@ public abstract class DefaultLogger extends Handler implements Logger {
         if (context != null) {
             event.put(LOG_HOST, context.identity().getHost())
                     .put(LOG_NODE, context.identity().getNode())
+                    .put(LOG_APPLICATION, launcher().getApplication())
                     .put(LOG_AGENT, context.handler());
         }
         return event;

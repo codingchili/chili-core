@@ -14,6 +14,7 @@ import static com.codingchili.core.configuration.CoreStrings.PATH_LAUNCHER;
  * Contains the settings for the launcher.
  */
 public class LauncherSettings extends BaseConfigurable {
+    private String application = "";
     private String version = "CORE-1.0.0-PR";
     private HashMap<String, List<String>> blocks = defaultBlockConfiguration();
     private HashMap<String, String> hosts = defaultHostConfiguration();
@@ -44,6 +45,14 @@ public class LauncherSettings extends BaseConfigurable {
 
     public void setHosts(HashMap<String, String> hosts) {
         this.hosts = hosts;
+    }
+
+    public String getApplication() {
+        return application;
+    }
+
+    public void setApplication(String application) {
+        this.application = application;
     }
 
     @JsonIgnore
