@@ -66,15 +66,9 @@ public class BenchmarkExecutor {
             });
         }
         allGroups.compose(done -> {
-            saveResultsToFile(groups);
             future.complete(groups);
             return Future.succeededFuture();
         });
-    }
-
-    private void saveResultsToFile(List<BenchmarkGroup> groups) {
-        JsonFileStore.writeObject(Serializer.json(groups),
-                getFileFriendlyDate() + EXT_JSON);
     }
 
     private void executeImplementations(Future<BenchmarkGroup> future, BenchmarkGroup group) {
