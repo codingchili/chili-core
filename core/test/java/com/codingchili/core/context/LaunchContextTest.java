@@ -85,7 +85,6 @@ public class LaunchContextTest {
     @Test
     public void testGetRemoteBlockByIP(TestContext test) throws CoreException {
         if (Environment.addresses().size() > 0) {
-            System.err.println(Environment.addresses().get(0));
             test.assertTrue(context.block(Environment.addresses().get(0)).contains(SERVICE_2));
         }
     }
