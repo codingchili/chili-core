@@ -121,7 +121,7 @@ public class MapTestCases {
             }
             return (result.cause() != null) ? result.cause().getMessage() : null;
         } else {
-            return null;
+            return "";
         }
     }
 

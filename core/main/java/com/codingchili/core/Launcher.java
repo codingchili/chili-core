@@ -46,8 +46,7 @@ public class Launcher extends ClusterNode {
                 exit();
             } else {
                 nodes = context.block(context.args());
-                nodes = nodes.stream().map(node -> node).collect(Collectors.toList());
-
+                nodes = new ArrayList<>(nodes);
                 cluster();
             }
         } catch (CoreException e) {
@@ -124,19 +123,17 @@ public class Launcher extends ClusterNode {
     }
 
     private void addShutdownHook(Vertx vertx) {
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            public void run() {
-                AtomicBoolean cleanup = new AtomicBoolean(true);
-                vertx.deploymentIDs().forEach(vertx::undeploy);
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            AtomicBoolean cleanup = new AtomicBoolean(true);
+            vertx.deploymentIDs().forEach(vertx::undeploy);
 
-                while (cleanup.get()) {
-                    context.timer(context.system().getShutdownHookTimeout(), handler -> cleanup.set(false));
-                }
-
-                logger.log(ERRROR_LAUNCHER_SHUTDOWN, Level.SEVERE);
-                logger.reset();
+            while (cleanup.get()) {
+                context.timer(context.system().getShutdownHookTimeout(), handler -> cleanup.set(false));
             }
-        });
+
+            logger.log(ERRROR_LAUNCHER_SHUTDOWN, Level.SEVERE);
+            logger.reset();
+        }));
     }
 
     @Override

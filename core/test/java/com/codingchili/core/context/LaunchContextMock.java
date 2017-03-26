@@ -2,6 +2,7 @@ package com.codingchili.core.context;
 
 import java.util.*;
 
+import com.codingchili.core.configuration.Environment;
 import com.codingchili.core.configuration.system.LauncherSettings;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.testing.LoggerMock;
@@ -9,8 +10,8 @@ import com.codingchili.core.testing.MockLogListener;
 
 /**
  * @author Robin Duda
- *
- * Mock of a launcher context.
+ *         <p>
+ *         Mock of a launcher context.
  */
 class LaunchContextMock extends LaunchContext {
     static final String HOST_1 = "host1";
@@ -43,6 +44,14 @@ class LaunchContextMock extends LaunchContext {
         hosts.put(HOST_1, BLOCK_1);
         hosts.put(HOST_2, BLOCK_1);
         hosts.put(HOST_3, BLOCK_NULL);
+
+        if (Environment.hostname().isPresent()) {
+            hosts.put(Environment.hostname().get(), BLOCK_2);
+        }
+
+        if (Environment.addresses().size() > 0) {
+            hosts.put(Environment.addresses().get(0), BLOCK_2);
+        }
 
         List<String> services1 = new ArrayList<>();
         List<String> services2 = new ArrayList<>();

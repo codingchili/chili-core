@@ -5,6 +5,7 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
+import com.codingchili.core.configuration.Environment;
 import com.codingchili.core.configuration.exception.*;
 
 import static com.codingchili.core.configuration.CoreStrings.getNoServicesConfiguredForBlock;
@@ -12,8 +13,8 @@ import static com.codingchili.core.context.LaunchContextMock.*;
 
 /**
  * @author Robin Duda
- *
- * Tests for the launcher context.
+ *         <p>
+ *         Tests for the launcher context.
  */
 @RunWith(VertxUnitRunner.class)
 public class LaunchContextTest {
@@ -71,6 +72,20 @@ public class LaunchContextTest {
             context.block(new String[]{});
         } catch (NoServicesConfiguredForBlock e) {
             test.assertTrue(e.getMessage().contains(BLOCK_DEFAULT));
+        }
+    }
+
+    @Test
+    public void testGetRemoteBlockByHostname(TestContext test) throws CoreException {
+        if (Environment.hostname().isPresent()) {
+            test.assertTrue(context.block(Environment.hostname().get()).contains(SERVICE_2));
+        }
+    }
+
+    @Test
+    public void testGetRemoteBlockByIP(TestContext test) throws CoreException {
+        if (Environment.addresses().size() > 0) {
+            test.assertTrue(context.block(Environment.addresses().get(0)).contains(SERVICE_2));
         }
     }
 }
