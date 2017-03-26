@@ -22,7 +22,7 @@ public class BenchmarkSuite {
         Vertx.clusteredVertx(new VertxOptions(), cluster -> {
             CoreContext context = new SystemContext(cluster.result());
             maps(context, new BenchmarkConsoleListener()).setHandler(done -> {
-                new BenchmarkHTMLReport(context, done.result()).saveTo("report-nn.html");
+                new BenchmarkHTMLReport(context, done.result()).saveToFile();
                 context.vertx().close();
             });
         });
@@ -34,7 +34,7 @@ public class BenchmarkSuite {
      * @return a future that is completed with the results of the benchmark.
      */
     public static Future<List<BenchmarkGroup>> maps(CoreContext context, BenchmarkListener listener) {
-        BenchmarkGroup group = new AbstractBenchmarkGroup("Map benchmarks", 25000);
+        BenchmarkGroup group = new AbstractBenchmarkGroup("Map benchmarks", 2500);
         Future<List<BenchmarkGroup>> future = Future.future();
 
         Consumer<Class> add = (clazz) -> group.add(

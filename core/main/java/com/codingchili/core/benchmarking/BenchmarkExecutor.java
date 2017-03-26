@@ -1,16 +1,20 @@
 package com.codingchili.core.benchmarking;
 
+import static com.codingchili.core.configuration.CoreStrings.EXT_JSON;
+import static com.codingchili.core.configuration.CoreStrings.getFileFriendlyDate;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.files.JsonFileStore;
+import com.codingchili.core.protocol.Serializer;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
-import io.vertx.core.WorkerExecutor;
 
 /**
  * @author Robin Duda
@@ -62,9 +66,15 @@ public class BenchmarkExecutor {
             });
         }
         allGroups.compose(done -> {
+            saveResultsToFile(groups);
             future.complete(groups);
             return Future.succeededFuture();
         });
+    }
+
+    private void saveResultsToFile(List<BenchmarkGroup> groups) {
+        JsonFileStore.writeObject(Serializer.json(groups),
+                getFileFriendlyDate() + EXT_JSON);
     }
 
     private void executeImplementations(Future<BenchmarkGroup> future, BenchmarkGroup group) {

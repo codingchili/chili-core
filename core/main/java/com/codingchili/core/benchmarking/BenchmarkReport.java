@@ -29,4 +29,9 @@ public interface BenchmarkReport {
      * @return fluent
      */
     BenchmarkReport saveTo(String path);
+
+    /**
+     * saves the report to file using a generated filename.
+     */
+    void saveToFile();
 }

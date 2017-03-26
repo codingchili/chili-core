@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
@@ -56,6 +57,7 @@ public abstract class CoreStrings {
     public static final String WATCHER_RESUMED = "resumed";
 
     public static final String EXT_JSON = ".json";
+    public static final String EXT_HTML = ".html";
     public static final String ANY = "*";
     public static final String NODE_LOGGING = "syslog.node";
 
@@ -372,5 +374,10 @@ public abstract class CoreStrings {
 
     public static String getSemaphoreTimeout(int timeoutMS) {
         return "Error: semaphore timed out after waiting for " + timeoutMS + " ms.";
+    }
+
+    public static String getFileFriendlyDate() {
+        return LocalDateTime.now().format(
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm.ss"));
     }
 }

@@ -1,8 +1,14 @@
 package com.codingchili.core.benchmarking;
 
+import static com.codingchili.core.configuration.CoreStrings.EXT_HTML;
+import static com.codingchili.core.configuration.CoreStrings.getFileFriendlyDate;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -161,5 +167,10 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
     public BenchmarkReport saveTo(String path) {
         context.vertx().fileSystem().writeFileBlocking(path, output);
         return this;
+    }
+
+    @Override
+    public void saveToFile() {
+        saveTo(getFileFriendlyDate() + EXT_HTML);
     }
 }
