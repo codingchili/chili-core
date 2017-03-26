@@ -22,7 +22,7 @@ public class SystemSettings extends BaseConfigurable {
     private int configurationPoll = 1500;
     private int cachedFilePoll = 2000;
     private boolean consoleLogging = true;
-    private int workerPoolSize = 16;
+    private int workerPoolSize = 32;
 
     public SystemSettings() {
         path = CoreStrings.PATH_SYSTEM;

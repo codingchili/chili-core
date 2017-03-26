@@ -1,6 +1,8 @@
 package com.codingchili.core.benchmarking;
 
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Robin Duda
@@ -8,6 +10,7 @@ import java.time.Instant;
  * Base implementation of a benchmark.
  */
 public class AbstractBenchmark implements Benchmark {
+    private Map<String, Object> properties = new HashMap<>();
     private BenchmarkImplementation implementation;
     private BenchmarkOperation operation;
     private BenchmarkGroup group;
@@ -43,11 +46,19 @@ public class AbstractBenchmark implements Benchmark {
     }
 
     @Override
-    public String getRate() {
+    public String getRateFormatted() {
         if (elapsedMS == 0) {
             return "> " + 1000 * group.getIterations();
         }
-        return (int) (group.getIterations() / (elapsedMS / 1000f)) + "";
+        return getRate() + "";
+    }
+
+    @Override
+    public int getRate() {
+        if (elapsedMS == 0) {
+            return 1000 * group.getIterations();
+        }
+        return (int) (group.getIterations() / (elapsedMS / 1000f));
     }
 
     @Override
@@ -68,5 +79,16 @@ public class AbstractBenchmark implements Benchmark {
     @Override
     public int getIterations() {
         return group.getIterations();
+    }
+
+    @Override
+    public Benchmark setProperty(String key, Object value) {
+        properties.put(key, value);
+        return this;
+    }
+
+    @Override
+    public Map<String, Object> getProperties() {
+        return properties;
     }
 }

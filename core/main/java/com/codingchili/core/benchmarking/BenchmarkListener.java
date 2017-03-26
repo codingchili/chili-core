@@ -8,11 +8,25 @@ package com.codingchili.core.benchmarking;
 public interface BenchmarkListener {
 
     /**
+     * Triggers when a group is starting benchmarking.
+     *
+     * @param group the group that is starting up.
+     */
+    void onGroupStarted(BenchmarkGroup group);
+
+    /**
      * Triggers when a group of implementations has completed.
      *
      * @param group the group that was completed.
      */
     void onGroupCompleted(BenchmarkGroup group);
+
+    /**
+     * Triggers when an implementation is starting to warmup.
+     *
+     * @param implementation the implementation to warm up.
+     */
+    void onImplementationWarmup(BenchmarkImplementation implementation);
 
     /**
      * Triggers when an implementation has completed the warmup phase.

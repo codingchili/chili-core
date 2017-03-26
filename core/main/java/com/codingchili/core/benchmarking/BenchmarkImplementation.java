@@ -1,6 +1,9 @@
 package com.codingchili.core.benchmarking;
 
 import java.util.List;
+import java.util.Map;
+
+import com.codingchili.core.context.CoreContext;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -18,7 +21,7 @@ public interface BenchmarkImplementation {
      *
      * @param future called when the setup is complete.
      */
-    void initialize(Handler<AsyncResult<Void>> future);
+    void initialize(CoreContext context, Handler<AsyncResult<Void>> future);
 
     /**
      * Called before each benchmark is executed.
@@ -63,6 +66,7 @@ public interface BenchmarkImplementation {
 
     /**
      * Sets the benchmarks to a list of benchmarks, may be used when creating reports.
+     *
      * @param benchmarks the benchmarks to set
      * @return fluent
      */
@@ -78,7 +82,24 @@ public interface BenchmarkImplementation {
 
     /**
      * May be used in the reporting phase to restructure results.
+     *
      * @return fluent.
      */
     BenchmarkImplementation setName(String name);
+
+    /**
+     * Set a property of the benchmark implementation.
+     *
+     * @param key   the key to identify the value.
+     * @param value the value to be inserted.
+     * @return fluent
+     */
+    BenchmarkImplementation setProperty(String key, Object value);
+
+    /**
+     * get all properties added to the implementation.
+     *
+     * @return a map of all the properties that has been set.
+     */
+    Map<String, Object> getProperties();
 }

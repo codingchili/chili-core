@@ -8,7 +8,15 @@ package com.codingchili.core.benchmarking;
 public class AbstractBenchmarkListener implements BenchmarkListener {
 
     @Override
+    public void onGroupStarted(BenchmarkGroup group) {
+    }
+
+    @Override
     public void onGroupCompleted(BenchmarkGroup group) {
+    }
+
+    @Override
+    public void onImplementationWarmup(BenchmarkImplementation implementation) {
     }
 
     @Override

@@ -25,15 +25,6 @@ public interface BenchmarkGroup {
     int getIterations();
 
     /**
-     * Indicates how many operations may be queued at any one given time.
-     * Higher parallellism is recommended for tests that executes with a known
-     * latency, for example a test that accesses a remote database or reads from disc.
-     *
-     * @return the number of operations that may be queued at the given time.
-     */
-    int getParallelism();
-
-    /**
      * Get the implementations enlisted for benchmarking in this group.
      *
      * @return a list of implementations to benchmark.

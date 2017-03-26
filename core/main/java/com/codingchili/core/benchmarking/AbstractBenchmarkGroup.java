@@ -12,14 +12,16 @@ public class AbstractBenchmarkGroup implements BenchmarkGroup {
     private List<BenchmarkImplementation> implementations = new ArrayList<>();
     private int iterations = 2000;
     private int progress;
-    private int parallelism = 5;
     private String name;
 
-    public AbstractBenchmarkGroup(String name, int iterations, int parallelism) {
+    public AbstractBenchmarkGroup(String name, int iterations) {
         this.name = name;
         this.iterations = iterations;
-        this.parallelism = parallelism;
-        this.progress = iterations / 20;
+        this.progress = (iterations / 20);
+
+        if (progress == 0) {
+            progress = 1;
+        }
     }
 
     @Override
@@ -30,11 +32,6 @@ public class AbstractBenchmarkGroup implements BenchmarkGroup {
     @Override
     public int getIterations() {
         return iterations;
-    }
-
-    @Override
-    public int getParallelism() {
-        return parallelism;
     }
 
     @Override

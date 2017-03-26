@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.storage.AsyncStorage;
 import com.codingchili.core.storage.Storable;
@@ -28,7 +29,6 @@ public class MapBenchmarkImplementation extends AbstractBenchmarkImplementation 
     private static final String DB = "db";
     private AtomicInteger counter = new AtomicInteger(0);
     private AsyncStorage<Storable> storage;
-    private Vertx vertx;
     private Class plugin;
 
     public MapBenchmarkImplementation(BenchmarkGroup group, Class plugin, String implementation) {
@@ -45,9 +45,8 @@ public class MapBenchmarkImplementation extends AbstractBenchmarkImplementation 
     }
 
     @Override
-    public void initialize(Handler<AsyncResult<Void>> handler) {
-        this.vertx = Vertx.vertx();
-        new StorageLoader<>(new StorageContext<>(vertx))
+    public void initialize(CoreContext context, Handler<AsyncResult<Void>> handler) {
+        new StorageLoader<>(new StorageContext<>(context))
                 .withPlugin(plugin)
                 .withClass(StorageObject.class)
                 .withDB(DB, COLLECTION).build(store -> {
@@ -69,7 +68,7 @@ public class MapBenchmarkImplementation extends AbstractBenchmarkImplementation 
 
     @Override
     public void shutdown(Future<Void> future) {
-        vertx.close(future);
+        storage.clear(future);
     }
 
     /**
