@@ -12,7 +12,7 @@ public class QueryParser implements StringQueryParser {
 
     @Override
     public QueryBuilder parse(QueryBuilder<?> builder, String expression) {
-        return null; //implement parser, must create a NEW query.
+        throw new UnsupportedOperationException(); //implement parser, must create a NEW query.
     }
 
     /**

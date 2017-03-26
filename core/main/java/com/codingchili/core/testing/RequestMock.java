@@ -88,17 +88,17 @@ public abstract class RequestMock {
 
         @Override
         public String address() {
-            return null;
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public MultiMap headers() {
-            return null;
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public String replyAddress() {
-            return null;
+            throw new UnsupportedOperationException();
         }
 
         @Override

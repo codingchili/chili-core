@@ -8,6 +8,8 @@ import com.codingchili.core.security.Token;
 
 /**
  * @author Robin Duda
+ *
+ * An empty request for testing.
  */
 public class EmptyRequest implements Request {
     @Override
@@ -27,22 +29,24 @@ public class EmptyRequest implements Request {
 
     @Override
     public String route() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String target() {
-        return null;
+        throw new UnsupportedOperationException();
+
     }
 
     @Override
     public Token token() {
-        return null;
+        throw new UnsupportedOperationException();
+
     }
 
     @Override
     public JsonObject data() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
