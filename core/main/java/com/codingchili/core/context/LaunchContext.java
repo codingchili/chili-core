@@ -2,8 +2,9 @@ package com.codingchili.core.context;
 
 import io.vertx.core.*;
 
-import java.util.List;
+import java.util.*;
 
+import com.codingchili.core.configuration.Environment;
 import com.codingchili.core.configuration.exception.*;
 import com.codingchili.core.configuration.system.LauncherSettings;
 import com.codingchili.core.files.Configurations;
@@ -18,6 +19,7 @@ import static com.codingchili.core.configuration.CoreStrings.ID_DEFAULT;
  */
 public class LaunchContext extends SystemContext {
     private static final String BLOCK_DEFAULT = "default";
+    private static final String LAUNCHER = "launcher";
     private Vertx vertx;
     private String[] args;
 
@@ -44,7 +46,7 @@ public class LaunchContext extends SystemContext {
 
     @Override
     public RemoteIdentity identity() {
-        return new RemoteIdentity("launcher", super.identity().getHost());
+        return new RemoteIdentity(LAUNCHER, super.identity().getHost());
     }
 
     public LauncherSettings settings() {
@@ -112,6 +114,27 @@ public class LaunchContext extends SystemContext {
     }
 
     public List<String> block(String[] args) throws CoreException {
-        return block((args.length == 0) ? BLOCK_DEFAULT : args[0]);
+        return block((args.length == 0) ? findBlockByEnvironment() : args[0]);
+    }
+
+    /**
+     * Attempts to identify a remote block to use by looking at the hostname and the
+     * ip addresses available on the network interfaces.
+     *
+     * @return a chosen remote or local block.
+     */
+    private String findBlockByEnvironment() {
+        Optional<String> hostname = Environment.hostname();
+
+        if (hostname.isPresent() && isRemoteBlock(hostname.get())) {
+            return hostname.get();
+        } else {
+            for (String address : Environment.addresses()) {
+                if (isRemoteBlock(address)) {
+                    return address;
+                }
+            }
+        }
+        return BLOCK_DEFAULT;
     }
 }
