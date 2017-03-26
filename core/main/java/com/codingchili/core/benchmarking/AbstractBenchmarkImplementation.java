@@ -3,7 +3,11 @@ package com.codingchili.core.benchmarking;
 import io.vertx.core.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.codingchili.core.context.CoreContext;
 
 /**
  * @author Robin Duda
@@ -11,6 +15,7 @@ import java.util.List;
  * "Abstract" benchmark-implementation.
  */
 public class AbstractBenchmarkImplementation implements BenchmarkImplementation {
+    private Map<String, Object> properties = new HashMap<>();
     private List<Benchmark> benchmarks = new ArrayList<>();
     protected BenchmarkGroup group;
     private String implementation;
@@ -33,7 +38,7 @@ public class AbstractBenchmarkImplementation implements BenchmarkImplementation 
     }
 
     @Override
-    public void initialize(Handler<AsyncResult<Void>> future) {
+    public void initialize(CoreContext context, Handler<AsyncResult<Void>> future) {
         future.handle(Future.succeededFuture());
     }
 
@@ -72,5 +77,16 @@ public class AbstractBenchmarkImplementation implements BenchmarkImplementation 
     public BenchmarkImplementation setName(String name) {
         this.implementation = name;
         return this;
+    }
+
+    @Override
+    public BenchmarkImplementation setProperty(String key, Object value) {
+        properties.put(key, value);
+        return this;
+    }
+
+    @Override
+    public Map<String, Object> getProperties() {
+        return properties;
     }
 }

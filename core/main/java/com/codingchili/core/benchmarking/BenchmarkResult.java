@@ -23,7 +23,12 @@ public interface BenchmarkResult {
     long getElapsedMS();
 
     /**
+     * @return the number of operations per second as a formatted string.
+     */
+    String getRateFormatted();
+
+    /**
      * @return the number of operations per second.
      */
-    String getRate();
+    int getRate();
 }

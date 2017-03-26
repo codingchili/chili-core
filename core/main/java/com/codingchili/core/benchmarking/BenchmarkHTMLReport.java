@@ -1,16 +1,22 @@
 package com.codingchili.core.benchmarking;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 import com.codingchili.core.configuration.system.LauncherSettings;
-import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.context.CoreContext;
 
 import de.neuland.jade4j.Jade4J;
 import de.neuland.jade4j.JadeConfiguration;
 import de.neuland.jade4j.template.JadeTemplate;
 import de.neuland.jade4j.template.TemplateLoader;
-import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
@@ -23,6 +29,7 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
     private static final String VERSION = "version";
     private static final String BENCHMARKS = "benchmarks";
     private static final String OUTPUT = "report.jade";
+    private CoreContext context;
     private String template = "core/main/resources/benchmarking/report.jade";
     private Buffer output;
 
@@ -31,8 +38,8 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
      *
      * @param result a benchmark group to create a report for.
      */
-    public BenchmarkHTMLReport(BenchmarkGroup result) {
-        this(toList(result));
+    public BenchmarkHTMLReport(CoreContext context, BenchmarkGroup result) {
+        this(context, toList(result));
     }
 
     /**
@@ -40,10 +47,12 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
      *
      * @param results a list of benchmarking groups to create a report for.
      */
-    public BenchmarkHTMLReport(List<BenchmarkGroup> results) {
+    public BenchmarkHTMLReport(CoreContext context, List<BenchmarkGroup> results) {
+        this.context = context;
+
         try {
             JsonObject model = new JsonObject()
-                    .put(BENCHMARKS, reorder(results))
+                    .put(BENCHMARKS, baseline(reorder(results)))
                     .put(VERSION, new LauncherSettings().getVersion());
 
             output = Buffer.buffer(Jade4J.render(getTemplate(), model.getMap(), true));
@@ -53,7 +62,37 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
     }
 
     /**
+     * Establishes a baseline index per implemenation bucket so that relative comparison
+     * may be performed.
+     *
+     * @param groups the results to calculate the baseline for
+     * @return the same list with baselines added to every benchmark result.
+     */
+    private List<BenchmarkGroup> baseline(List<BenchmarkGroup> groups) {
+        Function<BenchmarkImplementation, Integer> max = implementation -> {
+            AtomicInteger maxRate = new AtomicInteger(0);
+            implementation.getBenchmarks().forEach(benchmark -> {
+                if (benchmark.getRate() > maxRate.get()) {
+                    maxRate.set(benchmark.getRate());
+                }
+            });
+            return maxRate.get();
+        };
+
+        groups.forEach(group -> group.getImplementations().forEach(implementation -> {
+            int localMax = max.apply(implementation);
+
+            implementation.getBenchmarks().forEach(benchmark -> {
+                benchmark.setProperty("localIndex",
+                        ((benchmark.getRate() * 1.0f / localMax) * 100));
+            });
+        }));
+        return groups;
+    }
+
+    /**
      * Groups benchmarks together by their name.
+     *
      * @param results the results to be grouped.
      * @return a list of reordered groups.
      */
@@ -93,9 +132,7 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
 
             @Override
             public Reader getReader(String name) throws IOException {
-                Vertx vertx = Vertx.vertx();
-                Buffer buffer = vertx.fileSystem().readFileBlocking(template);
-                vertx.close();
+                Buffer buffer = context.vertx().fileSystem().readFileBlocking(template);
                 return new StringReader(buffer.toString());
             }
         });
@@ -122,9 +159,7 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
 
     @Override
     public BenchmarkReport saveTo(String path) {
-        Vertx vertx = Vertx.vertx();
-        vertx.fileSystem().writeFileBlocking(path, output);
-        vertx.close();
+        context.vertx().fileSystem().writeFileBlocking(path, output);
         return this;
     }
 }

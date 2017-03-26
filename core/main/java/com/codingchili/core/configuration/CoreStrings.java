@@ -2,7 +2,9 @@ package com.codingchili.core.configuration;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.*;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
@@ -362,11 +364,7 @@ public abstract class CoreStrings {
         return "Unable to parse query: " + query;
     }
 
-    public static String getUnknownOperator(String operator) {
-        return "Error: operator " + operator + " not supported.";
-    }
-
-    public static String getUnknownOption(String option) {
-        return "Error: option " + option + " not supported.";
+    public static String getSemaphoreTimeout(int timeoutMS) {
+        return "Error: semaphore timed out after waiting for " + timeoutMS + " ms.";
     }
 }
