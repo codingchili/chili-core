@@ -17,14 +17,18 @@ public class ParserSettings {
     public List<RegexComponent> regex = new ArrayList<>();
     public int[] length = new int[2];
 
-    public ParserSettings() {}
+    public ParserSettings() {
+        length[0] = Integer.MIN_VALUE;
+        length[1] = Integer.MAX_VALUE;
+    }
 
     public List<RegexComponent> getRegex() {
         return regex;
     }
 
-    public void setRegex(List<RegexComponent> regex) {
+    public ParserSettings setRegex(List<RegexComponent> regex) {
         this.regex = regex;
+        return this;
     }
 
     public ArrayList<String> getKeys() {
@@ -44,20 +48,20 @@ public class ParserSettings {
     }
 
     @JsonIgnore
-    ParserSettings addKey(String key) {
+    public ParserSettings addKey(String key) {
         keys.add(key);
         return this;
     }
 
     @JsonIgnore
-    ParserSettings length(int min, int max) {
+    public ParserSettings length(int min, int max) {
         length[0] = min;
         length[1] = max;
         return this;
     }
 
     @JsonIgnore
-    ParserSettings addRegex(RegexComponent component) {
+    public ParserSettings addRegex(RegexComponent component) {
         regex.add(component);
         return this;
     }

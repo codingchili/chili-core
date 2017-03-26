@@ -27,6 +27,16 @@ public class ValidatorSettings extends BaseConfigurable {
         this.validators = validators;
     }
 
+    /**
+     * Adds a validator.
+     *
+     * @param name     the name of the parser settings to add
+     * @param settings the settings for the validation to apply.
+     */
+    public void add(String name, ParserSettings settings) {
+        validators.put(name, settings);
+    }
+
     private Map<String, ParserSettings> getDefaultValidators() {
         Map<String, ParserSettings> validators = new HashMap<>();
 

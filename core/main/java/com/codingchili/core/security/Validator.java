@@ -40,12 +40,37 @@ public class Validator {
         for (String field : json.fieldNames()) {
             for (ParserSettings validator : settings().getValidators().values()) {
 
-                if (validator.keys.contains(field)) {
-                    json.put(field, validate(validator, json.getValue(field)));
+                if (json.getValue(field) instanceof JsonObject) {
+                    validate(json.getJsonObject(field), field);
+                } else {
+                    if (validator.keys.contains(field)) {
+                        json.put(field, validate(validator, json.getValue(field)));
+                    }
                 }
             }
         }
         return json;
+    }
+
+    /**
+     * Validates nested JSON objects within a JSON object.
+     *
+     * @param json      the json object to validate.
+     * @param fieldName the name of the field to validate.
+     * @throws RequestValidationException when the evaluation is configured to reject a value
+     */
+    private void validate(JsonObject json, String fieldName) throws RequestValidationException {
+        for (String field : json.fieldNames()) {
+            if (json.getValue(field) instanceof JsonObject) {
+                validate(json, fieldName + "." + field);
+            } else {
+                for (ParserSettings validator : settings().getValidators().values()) {
+                    if (validator.keys.contains(fieldName + "." + field)) {
+                        json.put(field, validate(validator, json.getValue(field)));
+                    }
+                }
+            }
+        }
     }
 
     private Object validate(ParserSettings validator, Object value) throws RequestValidationException {

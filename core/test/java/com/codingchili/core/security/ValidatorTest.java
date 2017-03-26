@@ -6,6 +6,7 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
+import com.codingchili.core.configuration.system.ParserSettings;
 import com.codingchili.core.configuration.system.ValidatorSettings;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.protocol.exception.RequestValidationException;
@@ -19,12 +20,18 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  */
 @RunWith(VertxUnitRunner.class)
 public class ValidatorTest {
+    private static final String NESTED = "nested";
+    private static final String KEY = "key";
     private static Validator validator = new Validator();
     private static ValidatorSettings settings;
 
     @Before
     public void setUp() {
         settings = Configurations.validator();
+        settings.add(NESTED,
+                new ParserSettings()
+                        .length(0, 8)
+                        .addKey(NESTED + "." + KEY));
     }
 
     @Test
@@ -40,10 +47,10 @@ public class ValidatorTest {
     }
 
     @Test
-    public void testUsernameFilterRejected() {
+    public void testUsernameFilterRejected(TestContext test) {
         try {
             getUser("invalid string with space.. #@!");
-            throw new RuntimeException("Validation error to detect malicious input.");
+            test.fail("Validation error to detect malicious input.");
         } catch (RequestValidationException ignored) {
         }
     }
@@ -76,23 +83,22 @@ public class ValidatorTest {
     }
 
     @Test
-    public void testMinimumLengthIsEnforced() {
+    public void testMinimumLengthIsEnforced(TestContext test) {
         String tooShort = "i";
-
         try {
             getUser(tooShort);
-            throw new RuntimeException("Too short string does not fail to validate.");
+            test.fail("Too short string does not fail to validate.");
         } catch (RequestValidationException ignored) {
         }
     }
 
     @Test
-    public void testMaximumLengthIsEnforced() {
+    public void testMaximumLengthIsEnforced(TestContext test) {
         String tooLong = new String(new char[100]).replace("\0", "X");
 
         try {
             getMessage(tooLong);
-            throw new RuntimeException("Too long string does not fail to validate.");
+            test.fail("Too long string does not fail to validate.");
         } catch (RequestValidationException ignored) {
         }
     }
@@ -104,6 +110,24 @@ public class ValidatorTest {
         for (String text : texts) {
             test.assertTrue(plaintext(validator.toPlainText(text)));
         }
+    }
+
+    @Test
+    public void testNestedAttributeOk(TestContext test) throws RequestValidationException {
+        validator.validate(getNestedObject("ok"));
+    }
+
+    @Test
+    public void testNestedAttributeFail(TestContext test) throws RequestValidationException {
+        try {
+            validator.validate(getNestedObject("too-long-should-fail"));
+            test.fail("validation did not fail for nested object.");
+        } catch (RequestValidationException ignored) {
+        }
+    }
+
+    private JsonObject getNestedObject(String value) {
+        return new JsonObject().put(NESTED, new JsonObject().put(KEY, value));
     }
 
     private String getMessage(String message) throws RequestValidationException {
