@@ -8,13 +8,13 @@ import java.util.List;
  *
  * "Abstract" implementation of a map group.
  */
-public class AbstractBenchmarkGroup implements BenchmarkGroup {
+public class BaseBenchmarkGroup implements BenchmarkGroup {
     private List<BenchmarkImplementation> implementations = new ArrayList<>();
     private int iterations = 2000;
     private int progress;
     private String name;
 
-    public AbstractBenchmarkGroup(String name, int iterations) {
+    public BaseBenchmarkGroup(String name, int iterations) {
         this.name = name;
         this.iterations = iterations;
         this.progress = (iterations / 20);

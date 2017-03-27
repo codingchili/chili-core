@@ -34,7 +34,7 @@ public class BenchmarkSuite {
      * @return a future that is completed with the results of the benchmark.
      */
     public static Future<List<BenchmarkGroup>> maps(CoreContext context, BenchmarkListener listener) {
-        BenchmarkGroup group = new AbstractBenchmarkGroup("Map benchmarks", 2000);
+        BenchmarkGroup group = new BaseBenchmarkGroup("Map benchmarks", 2000);
         Future<List<BenchmarkGroup>> future = Future.future();
 
         Consumer<Class> add = (clazz) -> group.add(

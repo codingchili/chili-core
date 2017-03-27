@@ -2,8 +2,7 @@ package com.codingchili.core;
 
 import io.vertx.core.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -13,6 +12,7 @@ import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
 import com.codingchili.core.protocol.ClusterNode;
+import com.codingchili.core.security.AuthenticationGenerator;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
@@ -40,7 +40,7 @@ public class Launcher extends ClusterNode {
 
         logger.log(CoreStrings.getStartupText(context.settings().getVersion()), Level.STARTUP);
 
-        CommandExecutor executor = new CommandExecutor(context);
+        CommandExecutor executor = new LauncherCommandExecutor().execute(context.args()[0]);
         try {
             if (executor.isHandled()) {
                 exit();

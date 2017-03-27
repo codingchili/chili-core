@@ -9,7 +9,7 @@ import java.util.*;
  *
  * Base implementation of a benchmark.
  */
-public class AbstractBenchmark implements Benchmark {
+public class BaseBenchmark implements Benchmark {
     private static final int EPOCH_BASE = 3600000;
     private Map<String, Object> properties = new HashMap<>();
     private BenchmarkImplementation implementation;
@@ -19,8 +19,8 @@ public class AbstractBenchmark implements Benchmark {
     private Instant start;
     private int elapsedMS;
 
-    public AbstractBenchmark(BenchmarkGroup group, BenchmarkImplementation implementation,
-                             BenchmarkOperation operation, String name) {
+    public BaseBenchmark(BenchmarkGroup group, BenchmarkImplementation implementation,
+                         BenchmarkOperation operation, String name) {
         this.group = group;
         this.implementation = implementation;
         this.operation = operation;

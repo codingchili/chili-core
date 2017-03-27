@@ -6,6 +6,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
@@ -273,8 +275,8 @@ public abstract class CoreStrings {
     }
 
     public static String getStartupText(String version) {
-        return String.format("\n\t\t\t\tsystem: Starting launcher [" + version + "] ..\n" +
-                        "\t\t\t\t\t     Robin Duda © 2017\n\n" +
+        return String.format("\n\t\t\t\t\t\t\t\t\tsystem: Starting launcher [" + version + "] ..\n" +
+                        "\t\t\t\t\t\t\t\t\t\t     Robin Duda © 2017\n\n\t\t\t" +
                         "     %s %s on system %s %s\n",
                 System.getProperty("java.vm.name"),
                 System.getProperty("java.version"),
@@ -345,6 +347,46 @@ public abstract class CoreStrings {
 
     public static String getValueAlreadyPresent(String key) {
         return "Error: could not put value, key '" + key + "' already present.";
+    }
+
+    public static String getCommandAlreadyExistsException(String name) {
+        return "Error: the command " + name + " is already registered";
+    }
+
+    public static String getReconfigureDescription() {
+        return "resets system configuration files.";
+    }
+
+    public static String getGeneratePresharedDescription() {
+        return "generates pre-shared keys for authentication.";
+    }
+
+    public static String getGenerateSecretsDescription() {
+        return "generates authentication secrets.";
+    }
+
+    public static String getGenerateTokensDescription() {
+        return "generates tokens from existing secrets.";
+    }
+
+    public static String getGenerateAllDescription() {
+        return "generates secrets, tokens and preshared keys..";
+    }
+
+    public static String getCommandExecutorHelpDescription() {
+        return "prints this help text.";
+    }
+
+    public static String getRemotesAvailable() {
+        return "remotes available";
+    }
+
+    public static List<String> getCommandExecutorText() {
+        List<String> list = new ArrayList<>();
+        list.add("=================================================== HELP ====================================================");
+        list.add("\t\t<block-name>\t\t\tdeploys the services configured in the given block.");
+        list.add("\t\t<remote-name>\t\t\tdeploys configured blocks on a remote host.");
+        return list;
     }
 
     public static String getMissingEntity(String key) {

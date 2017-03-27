@@ -5,7 +5,7 @@ package com.codingchili.core.benchmarking;
  *
  * "Abstract" benchmark listener.
  */
-public class AbstractBenchmarkListener implements BenchmarkListener {
+public class BaseBenchmarkListener implements BenchmarkListener {
 
     @Override
     public void onGroupStarted(BenchmarkGroup group) {

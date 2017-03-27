@@ -12,6 +12,8 @@ import com.codingchili.core.configuration.BaseConfigurable;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.AuthenticationDependency;
 import com.codingchili.core.configuration.system.SecuritySettings;
+import com.codingchili.core.context.BaseCommand;
+import com.codingchili.core.context.CommandExecutor;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.files.JsonFileStore;
 import com.codingchili.core.logging.Logger;

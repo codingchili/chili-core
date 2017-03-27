@@ -2,8 +2,6 @@ package com.codingchili.core.benchmarking;
 
 import static com.codingchili.core.configuration.CoreStrings.ID_NAME;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.codingchili.core.context.CoreContext;
@@ -13,18 +11,16 @@ import com.codingchili.core.storage.Storable;
 import com.codingchili.core.storage.StorageLoader;
 import com.codingchili.core.testing.StorageObject;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
 
 /**
  * @author Robin Duda
  *         <p>
  *         Implementation of a map for use with benchmarking.
  */
-public class MapBenchmarkImplementation extends AbstractBenchmarkImplementation {
+public class MapBenchmarkImplementation extends BaseBenchmarkImplementation {
     private static final String COLLECTION = "collection";
     private static final String DB = "db";
     private AtomicInteger counter = new AtomicInteger(0);

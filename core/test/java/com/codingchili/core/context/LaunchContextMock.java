@@ -26,13 +26,13 @@ class LaunchContextMock extends LaunchContext {
     static final String SERVICE_2 = "service_2";
     private LoggerMock logger;
 
-    LaunchContextMock(String[] args, MockLogListener listener) {
-        super(args);
-        this.logger = new LoggerMock(listener);
-    }
-
     LaunchContextMock(String[] args) {
         super(args);
+    }
+
+    public LaunchContextMock(MockLogListener listener) {
+        super(new String[] {});
+        this.logger = new LoggerMock(listener);
     }
 
     @Override

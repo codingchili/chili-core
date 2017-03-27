@@ -6,9 +6,6 @@ import static com.codingchili.core.configuration.CoreStrings.getFileFriendlyDate
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -120,7 +117,7 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
 
             List<BenchmarkImplementation> list = new ArrayList<>();
             buckets.forEach((key, value) -> {
-                list.add(new AbstractBenchmarkImplementation(group, key).setBenchmarks(value));
+                list.add(new BaseBenchmarkImplementation(group, key).setBenchmarks(value));
             });
 
             group.setImplementations(list);

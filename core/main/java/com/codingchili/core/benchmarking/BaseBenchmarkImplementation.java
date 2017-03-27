@@ -14,20 +14,20 @@ import com.codingchili.core.context.CoreContext;
  *
  * "Abstract" benchmark-implementation.
  */
-public class AbstractBenchmarkImplementation implements BenchmarkImplementation {
+public class BaseBenchmarkImplementation implements BenchmarkImplementation {
     private Map<String, Object> properties = new HashMap<>();
     private List<Benchmark> benchmarks = new ArrayList<>();
     protected BenchmarkGroup group;
     private String implementation;
 
-    public AbstractBenchmarkImplementation(BenchmarkGroup group, String name) {
+    public BaseBenchmarkImplementation(BenchmarkGroup group, String name) {
         this.implementation = name;
         this.group = group;
     }
 
     @Override
     public BenchmarkImplementation add(BenchmarkOperation operation, String name) {
-        benchmarks.add(new AbstractBenchmark(group, this, operation, name));
+        benchmarks.add(new BaseBenchmark(group, this, operation, name));
         return this;
     }
 

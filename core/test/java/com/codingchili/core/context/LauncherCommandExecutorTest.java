@@ -16,7 +16,7 @@ import static com.codingchili.core.configuration.CoreStrings.HELP;
  *         Tests the command parsing functionality.
  */
 @RunWith(VertxUnitRunner.class)
-public class CommandExecutorTest {
+public class LauncherCommandExecutorTest {
     private static final String MISSING_COMMAND = "dev/null";
 
     @Test
@@ -64,7 +64,7 @@ public class CommandExecutorTest {
     }
 
     private CommandExecutor execute(String arg, MockLogListener listener) {
-        return new CommandExecutor(new LaunchContextMock(new String[]{arg}, listener));
+        return new LauncherCommandExecutor(new LaunchContextMock(listener).console()).execute(arg);
     }
 
     private String getOutput(String arg) {
