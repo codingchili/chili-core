@@ -25,8 +25,13 @@ public class CommandExecutorTest {
 
 
     @Before
-    public void setUp(TestContext test) {
+    public void setUp() {
         executor.add(() -> {}, HELP, "");
+    }
+
+    @Test
+    public void testHiddenCommandHidden() {
+
     }
 
     @Test

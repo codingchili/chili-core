@@ -59,9 +59,12 @@ public class LauncherCommandExecutor extends CommandExecutor {
 
         for (Command command : commands.values()) {
             int space = align - command.getName().length();
-            logger.log("\t\t" + command.getName() +
-                    String.join("", Collections.nCopies(space, " ")) +
-                    command.getDescription(), Level.STARTUP);
+
+            if (command.isVisible()) {
+                logger.log("\t\t" + command.getName() +
+                        String.join("", Collections.nCopies(space, " ")) +
+                        command.getDescription(), Level.STARTUP);
+            }
         }
 
         List<BlockRow> blocks = new ArrayList<>();
