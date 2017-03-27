@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.files.Configurations;
+import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.security.AuthenticationGenerator;
@@ -18,17 +19,17 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 public class LauncherCommandExecutor extends CommandExecutor {
 
     /**
+     * constructs an instance with the default logger
+     */
+    public LauncherCommandExecutor() {
+        this(new ConsoleLogger());
+    }
+
+    /**
      * @param logger constructs an instance with specified logger
      */
     public LauncherCommandExecutor(Logger logger) {
         super(logger);
-    }
-
-    /**
-     * constructs an instance with the default logger
-     */
-    public LauncherCommandExecutor() {
-        super();
         registerCommands();
     }
 

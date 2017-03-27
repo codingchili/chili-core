@@ -4,6 +4,8 @@ import com.codingchili.core.logging.*;
 
 /**
  * @author Robin Duda
+ *
+ * Logger mock to capture console output for testing purposes.
  */
 public class LoggerMock extends ConsoleLogger {
     private MockLogListener listener;
