@@ -1,20 +1,27 @@
 package com.codingchili.core;
 
-import io.vertx.core.*;
+import static com.codingchili.core.configuration.CoreStrings.ERROR_LAUNCHER_STARTUP;
+import static com.codingchili.core.configuration.CoreStrings.ERRROR_LAUNCHER_SHUTDOWN;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.context.*;
+import com.codingchili.core.context.CommandExecutor;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.CoreException;
+import com.codingchili.core.context.Delay;
+import com.codingchili.core.context.LaunchContext;
+import com.codingchili.core.context.LauncherCommandExecutor;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
 import com.codingchili.core.protocol.ClusterNode;
-import com.codingchili.core.security.AuthenticationGenerator;
 
-import static com.codingchili.core.configuration.CoreStrings.*;
+import io.vertx.core.Future;
+import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
 
 /**
  * @author Robin Duda
@@ -36,24 +43,29 @@ public class Launcher extends ClusterNode {
     }
 
     Launcher(LaunchContext context) {
+        Future<Void> future = Future.future();
         this.context = context;
 
         logger.log(CoreStrings.getStartupText(context.settings().getVersion()), Level.STARTUP);
 
-        CommandExecutor executor = new LauncherCommandExecutor().execute(context.args()[0]);
-        try {
-            if (executor.isHandled()) {
+        CommandExecutor executor = new LauncherCommandExecutor()
+                .execute(future, context.args()[0]);
+
+        future.setHandler(done -> {
+            try {
+                if (executor.isHandled()) {
+                    exit();
+                } else {
+                    nodes = context.block(context.args());
+                    nodes = new ArrayList<>(nodes);
+                    cluster();
+                }
+            } catch (CoreException e) {
+                logger.log("\t\t" + e.getMessage(), Level.SEVERE);
+                logger.log("\t\t" + executor.getError(), Level.SEVERE);
                 exit();
-            } else {
-                nodes = context.block(context.args());
-                nodes = new ArrayList<>(nodes);
-                cluster();
             }
-        } catch (CoreException e) {
-            logger.log("\t\t" + e.getMessage(), Level.SEVERE);
-            logger.log("\t\t" + executor.getError(), Level.SEVERE);
-            exit();
-        }
+        });
     }
 
     void exit() {

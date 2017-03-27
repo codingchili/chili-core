@@ -33,5 +33,5 @@ public interface BenchmarkReport {
     /**
      * saves the report to file using a generated filename.
      */
-    void saveToFile();
+    String saveToFile();
 }

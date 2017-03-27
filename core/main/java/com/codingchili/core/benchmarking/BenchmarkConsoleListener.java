@@ -2,6 +2,8 @@ package com.codingchili.core.benchmarking;
 
 import static com.codingchili.core.configuration.CoreStrings.ID_MESSAGE;
 
+import java.text.DecimalFormat;
+
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
 
@@ -56,7 +58,8 @@ public class BenchmarkConsoleListener implements BenchmarkListener {
     }
 
     private String progressAsPercent(Benchmark benchmark, int iterations) {
-        return (iterations * 1.0 / benchmark.getIterations()) * 100 + "";
+        return new DecimalFormat("#.00")
+                .format((iterations * 1.0 / benchmark.getIterations()) * 100);
     }
 
     private void log(String message) {

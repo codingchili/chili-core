@@ -2,6 +2,7 @@ package com.codingchili.core.context;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import com.codingchili.core.configuration.system.LauncherSettings;
 import com.codingchili.core.context.exception.CommandAlreadyExistsException;
@@ -9,6 +10,8 @@ import com.codingchili.core.context.exception.NoSuchCommandException;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
+
+import io.vertx.core.Future;
 
 /**
  * @author Robin Duda
@@ -25,7 +28,8 @@ public class CommandExecutor {
     /**
      * uses a ConsoleLogger as default.
      */
-    public CommandExecutor() {}
+    public CommandExecutor() {
+    }
 
     /**
      * @param logger to write output to.
@@ -37,18 +41,29 @@ public class CommandExecutor {
     /**
      * Executes the given command. Sets handled to false if the command does not exist.
      *
+     * @param future  callback.
      * @param command the command to execute.
      * @return fluent
      */
-    public CommandExecutor execute(String command) {
+    public CommandExecutor execute(Future<Void> future, String command) {
         this.command = command;
 
         if (commands.containsKey(command)) {
-            commands.get(command).execute();
+            commands.get(command).execute(future);
         } else {
             handled = false;
         }
         return this;
+    }
+
+    /**
+     * Executes the given command synchronously.
+     *
+     * @param command the command to execute
+     * @return fluent
+     */
+    public CommandExecutor execute(String command) {
+        return execute(Future.future(), command);
     }
 
     /**
@@ -65,9 +80,20 @@ public class CommandExecutor {
     }
 
     /**
-     * Adds a new command using the default implementation.
+     * Adds a new asynchronous command using the default implementation.
      *
      * @param executor    the method to execute when the command is executed.
+     * @param name        the name of the command to add
+     * @param description the description of the command
+     */
+    public void add(Consumer<Future<Void>> executor, String name, String description) {
+        add(new BaseCommand(executor, name, description));
+    }
+
+    /**
+     * Adds a new synchronous command using the default implementation.
+     *
+     * @param executor    the method to execute when the command is executed
      * @param name        the name of the command to add
      * @param description the description of the command
      */

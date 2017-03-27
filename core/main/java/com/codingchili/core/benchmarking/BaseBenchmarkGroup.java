@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class BaseBenchmarkGroup implements BenchmarkGroup {
     private List<BenchmarkImplementation> implementations = new ArrayList<>();
-    private int iterations = 2000;
+    private int iterations = 1000;
     private int progress;
     private String name;
 

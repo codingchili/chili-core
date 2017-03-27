@@ -1,15 +1,19 @@
 package com.codingchili.core.context;
 
-import java.util.*;
+import static com.codingchili.core.configuration.CoreStrings.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import com.codingchili.core.benchmarking.BenchmarkSuite;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.security.AuthenticationGenerator;
-
-import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
@@ -35,12 +39,14 @@ public class LauncherCommandExecutor extends CommandExecutor {
 
     private void registerCommands() {
         AuthenticationGenerator generator = new AuthenticationGenerator(logger);
+        BenchmarkSuite suite = new BenchmarkSuite();
 
         add(Configurations::reset, RECONFIGURE, getReconfigureDescription());
         add(generator::preshare, GENERATE_PRESHARED, getGeneratePresharedDescription());
         add(generator::secrets, GENERATE_SECRETS, getGenerateSecretsDescription());
         add(generator::tokens, GENERATE_TOKENS, getGenerateTokensDescription());
         add(generator::all, GENERATE, getGenerateAllDescription());
+        add(suite::execute, BENCHMARK, getBenchmarkDescription());
         add(this::help, HELP, getCommandExecutorHelpDescription());
     }
 
@@ -89,12 +95,15 @@ public class LauncherCommandExecutor extends CommandExecutor {
                     Collections.nCopies(align - block.length(), " "));
 
             for (int i = 0; i < remotes.size(); i++) {
-                if (i == 0) string += "[";
+                if (i == 0)
+                    string += "[";
 
                 string += remotes.get(i);
 
-                if (i < remotes.size() - 1) string += ", ";
-                if (i == remotes.size() - 1) string += "]";
+                if (i < remotes.size() - 1)
+                    string += ", ";
+                if (i == remotes.size() - 1)
+                    string += "]";
             }
 
             return string;

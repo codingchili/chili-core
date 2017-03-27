@@ -1,5 +1,6 @@
 package com.codingchili.core.context;
 
+import io.vertx.core.Future;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -75,7 +76,8 @@ public class LauncherCommandExecutorTest {
     }
 
     private CommandExecutor execute(String arg, MockLogListener listener) {
-        return new LauncherCommandExecutor(new LaunchContextMock(listener).console()).execute(arg);
+        return new LauncherCommandExecutor(
+                new LaunchContextMock(listener).console()).execute(Future.future(), arg);
     }
 
     private String getOutput(String arg) {

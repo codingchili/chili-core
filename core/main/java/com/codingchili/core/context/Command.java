@@ -1,5 +1,8 @@
 package com.codingchili.core.context;
 
+
+import io.vertx.core.Future;
+
 /**
  * @author Robin Duda
  *         <p>
@@ -17,7 +20,7 @@ public interface Command {
     /**
      * Executes a command.
      */
-    void execute();
+    void execute(Future<Void> future);
 
     /**
      * @return the command description.

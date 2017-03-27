@@ -18,12 +18,15 @@ import com.codingchili.core.storage.*;
  */
 public class BenchmarkSuite {
 
-    public static void main(String[] args) {
+    /**
+     * Creates a clustered vertx instance on which all registered benchmarks will run.
+     */
+    public void execute(Future<Void> future) {
         Vertx.clusteredVertx(new VertxOptions(), cluster -> {
             CoreContext context = new SystemContext(cluster.result());
             maps(context, new BenchmarkConsoleListener()).setHandler(done -> {
-                new BenchmarkHTMLReport(context, done.result()).saveToFile();
-                context.vertx().close();
+                new BenchmarkHTMLReport(context, done.result()).display();
+                context.vertx().close(closed -> future.complete());
             });
         });
     }
@@ -45,6 +48,8 @@ public class BenchmarkSuite {
         add.accept(SharedMap.class);
         add.accept(IndexedMap.class);
         add.accept(HazelMap.class);
+        /*add.accept(ElasticMap.class);
+        add.accept(MongoDBMap.class);*/
 
         new BenchmarkExecutor(context)
                 .setListener(listener)

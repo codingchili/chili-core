@@ -3,9 +3,11 @@ package com.codingchili.core.benchmarking;
 import static com.codingchili.core.configuration.CoreStrings.EXT_HTML;
 import static com.codingchili.core.configuration.CoreStrings.getFileFriendlyDate;
 
+import java.awt.*;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,9 +33,10 @@ import io.vertx.core.json.JsonObject;
 public class BenchmarkHTMLReport implements BenchmarkReport {
     private static final String VERSION = "version";
     private static final String BENCHMARKS = "benchmarks";
-    private static final String OUTPUT = "report.jade";
+    public static final String LOCAL_INDEX = "localIndex";
     private CoreContext context;
     private String template = "core/main/resources/benchmarking/report.jade";
+    private String file;
     private Buffer output;
 
     /**
@@ -86,7 +89,7 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
             int localMax = max.apply(implementation);
 
             implementation.getBenchmarks().forEach(benchmark -> {
-                benchmark.setProperty("localIndex",
+                benchmark.setProperty(LOCAL_INDEX,
                         ((benchmark.getRate() * 1.0f / localMax) * 100));
             });
         }));
@@ -156,18 +159,24 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
 
     @Override
     public BenchmarkReport display() {
-        saveTo(OUTPUT);
+        try {
+            Desktop.getDesktop().browse(Paths.get(saveToFile()).toUri());
+        } catch (IOException ignored) {
+        }
         return this;
     }
 
     @Override
     public BenchmarkReport saveTo(String path) {
+        this.file = path;
         context.vertx().fileSystem().writeFileBlocking(path, output);
         return this;
     }
 
     @Override
-    public void saveToFile() {
-        saveTo(getFileFriendlyDate() + EXT_HTML);
+    public String saveToFile() {
+        String fileName = getFileFriendlyDate() + EXT_HTML;
+        saveTo(fileName);
+        return fileName;
     }
 }

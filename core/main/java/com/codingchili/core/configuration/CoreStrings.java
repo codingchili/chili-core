@@ -78,6 +78,7 @@ public abstract class CoreStrings {
     public static final String GENERATE = "--generate";
     public static final String RECONFIGURE = "--reconfigure";
     public static final String HELP = "--help";
+    public static final String BENCHMARK = "--benchmark";
 
     // keys used in json objects.
     public static final String ID_TOKEN = "token";
@@ -379,6 +380,10 @@ public abstract class CoreStrings {
 
     public static String getRemotesAvailable() {
         return "remotes available";
+    }
+
+    public static String getBenchmarkDescription() {
+        return "Executes all registered benchmarks";
     }
 
     public static List<String> getCommandExecutorText() {
