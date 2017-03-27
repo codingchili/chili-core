@@ -23,6 +23,11 @@ public interface BenchmarkResult {
     long getElapsedMS();
 
     /**
+     * @return time formatted as HH:mm:ss.SSS using the elapsed ms as source.
+     */
+    String getTimeFormatted();
+
+    /**
      * @return the number of operations per second as a formatted string.
      */
     String getRateFormatted();

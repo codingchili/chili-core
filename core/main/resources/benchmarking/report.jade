@@ -38,13 +38,13 @@ html
                                     thead
                                         tr
                                             th Implementation
-                                            th Time (ms)
+                                            th Time
                                             th Operations/s
                                     tbody
                                         each benchmark in implementation.benchmarks
                                             tr
                                                 td #{benchmark.implementation}
-                                                td #{benchmark.elapsedMS}
+                                                td #{benchmark.timeFormatted}
                                                 td #{benchmark.rateFormatted}
 
                     div.col-xs-8.col-xs-offset-2

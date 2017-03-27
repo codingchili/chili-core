@@ -1,8 +1,8 @@
 package com.codingchili.core.benchmarking;
 
+import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Robin Duda
@@ -10,6 +10,7 @@ import java.util.Map;
  * Base implementation of a benchmark.
  */
 public class AbstractBenchmark implements Benchmark {
+    private static final int EPOCH_BASE = 3600000;
     private Map<String, Object> properties = new HashMap<>();
     private BenchmarkImplementation implementation;
     private BenchmarkOperation operation;
@@ -43,6 +44,11 @@ public class AbstractBenchmark implements Benchmark {
     @Override
     public long getElapsedMS() {
         return elapsedMS;
+    }
+
+    @Override
+    public String getTimeFormatted() {
+        return new SimpleDateFormat("HH:mm:ss.SSS").format(new Date(getElapsedMS() - EPOCH_BASE));
     }
 
     @Override
