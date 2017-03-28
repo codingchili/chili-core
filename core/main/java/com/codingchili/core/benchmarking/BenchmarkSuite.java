@@ -1,17 +1,22 @@
 package com.codingchili.core.benchmarking;
 
+import static com.codingchili.core.configuration.CoreStrings.PARAM_ITERATIONS;
+
+import java.util.List;
+import java.util.function.Consumer;
+
+import com.codingchili.core.context.CommandExecutor;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.SystemContext;
+import com.codingchili.core.storage.HazelMap;
+import com.codingchili.core.storage.IndexedMap;
+import com.codingchili.core.storage.JsonMap;
+import com.codingchili.core.storage.PrivateMap;
+import com.codingchili.core.storage.SharedMap;
+
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-
-import com.codingchili.core.context.*;
-import com.codingchili.core.storage.*;
-
-import static com.codingchili.core.configuration.CoreStrings.PARAM_ITERATIONS;
 
 /**
  * @author Robin Duda
@@ -24,6 +29,9 @@ public class BenchmarkSuite {
 
     /**
      * Creates a clustered vertx instance on which all registered benchmarks will run.
+     *
+     * @param future   callback on completion
+     * @param executor executor to invoke this as a command.
      */
     public Void execute(Future<Void> future, CommandExecutor executor) {
         executor.getProperty(PARAM_ITERATIONS).ifPresent(iterations ->
@@ -33,7 +41,9 @@ public class BenchmarkSuite {
             CoreContext context = new SystemContext(cluster.result());
 
             maps(context, new BenchmarkConsoleListener()).setHandler(done -> {
-                new BenchmarkHTMLReport(context, done.result()).display();
+                if (done.succeeded()) {
+                    new BenchmarkHTMLReport(context, done.result()).display();
+                }
                 context.vertx().close(closed -> future.complete());
             });
         });
@@ -65,5 +75,16 @@ public class BenchmarkSuite {
                 .start(future, group);
 
         return future;
+    }
+
+    /**
+     * Set the number of iterations to perform.
+     *
+     * @param iterations iterations to perform
+     * @return fluent
+     */
+    public BenchmarkSuite setIterations(int iterations) {
+        this.iterations = iterations;
+        return this;
     }
 }

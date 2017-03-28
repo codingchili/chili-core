@@ -1,6 +1,10 @@
 package com.codingchili.core.context;
 
-import java.util.*;
+import static com.codingchili.core.configuration.CoreStrings.COMMAND_PREFIX;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -12,8 +16,6 @@ import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
 
 import io.vertx.core.Future;
-
-import static com.codingchili.core.configuration.CoreStrings.COMMAND_PREFIX;
 
 /**
  * @author Robin Duda
@@ -44,7 +46,7 @@ public class CommandExecutor {
     /**
      * Executes the given command. Sets handled to false if the command does not exist.
      *
-     * @param future  callback.
+     * @param future      callback.
      * @param commandLine the commands/properties to execute.
      * @return fluent
      */
@@ -112,6 +114,18 @@ public class CommandExecutor {
     }
 
     /**
+     * Adds a new property to the CommandExecutor that is passed to executed commands.
+     *
+     * @param key   the key to identify the property by
+     * @param value a value to bind to the property key
+     * @return fluent
+     */
+    public CommandExecutor addProperty(String key, String value) {
+        properties.put(key, value);
+        return this;
+    }
+
+    /**
      * Check if a property has been set from the commandline.
      *
      * @param name the name of the property
@@ -161,7 +175,8 @@ public class CommandExecutor {
      * @param description the description of the command
      * @return fluent
      */
-    public CommandExecutor add(BiFunction<Future<Void>, CommandExecutor, Void> executor, String name, String description) {
+    public CommandExecutor add(BiFunction<Future<Void>, CommandExecutor, Void> executor, String name, String
+            description) {
         return add(new BaseCommand(executor, name, description));
     }
 
