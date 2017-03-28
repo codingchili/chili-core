@@ -30,9 +30,10 @@ public class LauncherCommandExecutorTest {
     private static final String HOST_1 = "host1";
     private static final String HOST_2 = "host2";
     private static final String HOST_3 = "host3";
+    private static final String HIDDEN = "hidden";
 
     @BeforeClass
-    public static void setUp(TestContext test) {
+    public static void setUp() {
         LauncherSettings launcher = Configurations.launcher();
         launcher.blocks().put(BLOCK_1, new ArrayList<>());
         launcher.blocks().put(BLOCK_2, new ArrayList<>());
@@ -51,9 +52,24 @@ public class LauncherCommandExecutorTest {
     }
 
     @Test
+    public void testHiddenCommandNotVisible(TestContext test) {
+        new LauncherCommandExecutor(new LaunchContextMock(logged -> {
+            test.assertFalse(logged.contains(HIDDEN));
+        }).console()).add(getHiddenCommand()).execute(HELP);
+    }
+
+    private Command getHiddenCommand() {
+        return new BaseCommand(() -> {}, HIDDEN, HIDDEN).setVisible(false);
+    }
+
+    @Test
     public void testGetHelpMessage(TestContext test) {
-        test.assertTrue(execute(MISSING_COMMAND).getError().contains(HELP));
-        test.assertTrue(execute(MISSING_COMMAND).getError().contains(MISSING_COMMAND));
+        try {
+            execute(MISSING_COMMAND);
+        } catch (CoreRuntimeException e) {
+            test.assertTrue(e.getMessage().contains(HELP));
+            test.assertTrue(e.getMessage().contains(MISSING_COMMAND));
+        }
     }
 
     @Test

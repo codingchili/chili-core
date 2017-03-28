@@ -48,21 +48,18 @@ public class Launcher extends ClusterNode {
 
         logger.log(CoreStrings.getStartupText(context.settings().getVersion()), Level.STARTUP);
 
-        CommandExecutor executor = new LauncherCommandExecutor()
-                .execute(future, context.args()[0]);
-
+        new LauncherCommandExecutor().execute(future, context.args());
         future.setHandler(done -> {
             try {
-                if (executor.isHandled()) {
-                    exit();
+                if (done.failed()) {
+                    throw done.cause();
                 } else {
                     nodes = context.block(context.args());
                     nodes = new ArrayList<>(nodes);
                     cluster();
                 }
-            } catch (CoreException e) {
-                logger.log("\t\t" + e.getMessage(), Level.SEVERE);
-                logger.log("\t\t" + executor.getError(), Level.SEVERE);
+            } catch (Throwable e) {
+                logger.log(e.getMessage(), Level.SEVERE);
                 exit();
             }
         });

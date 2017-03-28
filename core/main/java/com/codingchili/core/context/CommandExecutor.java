@@ -1,7 +1,6 @@
 package com.codingchili.core.context;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 import com.codingchili.core.configuration.system.LauncherSettings;
@@ -13,16 +12,19 @@ import com.codingchili.core.logging.Logger;
 
 import io.vertx.core.Future;
 
+import static com.codingchili.core.configuration.CoreStrings.COMMAND_PREFIX;
+
 /**
  * @author Robin Duda
  *         <p>
  *         Parses and executes commands from the command line.
  */
 public class CommandExecutor {
+    private static final String UNDEFINED = "undefined";
     protected LauncherSettings settings = Configurations.launcher();
     protected Map<String, Command> commands = new HashMap<>();
+    protected Map<String, String> properties = new HashMap<>();
     protected Logger logger = new ConsoleLogger();
-    private boolean handled = true;
     private String command;
 
     /**
@@ -42,16 +44,17 @@ public class CommandExecutor {
      * Executes the given command. Sets handled to false if the command does not exist.
      *
      * @param future  callback.
-     * @param command the command to execute.
+     * @param commandLine the commands/properties to execute.
      * @return fluent
      */
-    public CommandExecutor execute(Future<Void> future, String command) {
-        this.command = command;
+    public CommandExecutor execute(Future<Void> future, String... commandLine) {
+        parseCommandLine(commandLine);
+        Optional<String> command = getCommand();
 
-        if (commands.containsKey(command)) {
-            commands.get(command).execute(future);
+        if (command.isPresent() && commands.containsKey(command.get())) {
+            commands.get(command.get()).execute(future);
         } else {
-            handled = false;
+            future.fail(new NoSuchCommandException(getCommand().orElse(UNDEFINED)));
         }
         return this;
     }
@@ -62,21 +65,91 @@ public class CommandExecutor {
      * @param command the command to execute
      * @return fluent
      */
-    public CommandExecutor execute(String command) {
-        return execute(Future.future(), command);
+    public CommandExecutor execute(String... command) {
+        Future<Void> future = Future.future();
+        execute(future, command);
+
+        if (future.failed()) {
+            throw new CoreRuntimeException(future.cause().getMessage());
+        } else {
+            return this;
+        }
+    }
+
+    private void parseCommandLine(String[] line) {
+        String parameter = null;
+
+        if (line.length > 0) {
+            command = line[0];
+        }
+
+        for (int i = 1; i < line.length; i++) {
+            String item = line[i];
+
+            if (item.startsWith(COMMAND_PREFIX)) {
+                parameter = item;
+                properties.put(parameter, null);
+            } else {
+                if (parameter != null) {
+                    properties.put(parameter, item);
+                }
+            }
+        }
+    }
+
+    /**
+     * Get the first command passed to the executor.
+     *
+     * @return the initial command as a string.
+     */
+    public Optional<String> getCommand() {
+        if (command == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(command);
+        }
+    }
+
+    /**
+     * Check if a property has been set from the commandline.
+     *
+     * @param name the name of the property
+     * @return true if the property exists
+     */
+    public boolean hasProperty(String name) {
+        return properties.containsKey(name);
+    }
+
+    /**
+     * Get a commandline property passed to the Executor.
+     *
+     * @param name the name of the property to get
+     * @return the property as a string value
+     */
+    public Optional<String> getProperty(String name) {
+        if (properties.containsKey(name)) {
+            String value = properties.get(name);
+
+            if (value != null) {
+                return Optional.of(properties.get(name));
+            }
+        }
+        return Optional.empty();
     }
 
     /**
      * Registers a new command to all CommandExecutors.
      *
      * @param command the command to add
+     * @return fluent
      */
-    public void add(Command command) {
+    public CommandExecutor add(Command command) {
         if (commands.containsKey(command.getName())) {
             throw new CommandAlreadyExistsException(command);
         } else {
             commands.put(command.getName(), command);
         }
+        return this;
     }
 
     /**
@@ -85,9 +158,10 @@ public class CommandExecutor {
      * @param executor    the method to execute when the command is executed.
      * @param name        the name of the command to add
      * @param description the description of the command
+     * @return fluent
      */
-    public void add(Consumer<Future<Void>> executor, String name, String description) {
-        add(new BaseCommand(executor, name, description));
+    public CommandExecutor add(Consumer<Future<Void>> executor, String name, String description) {
+        return add(new BaseCommand(executor, name, description));
     }
 
     /**
@@ -96,22 +170,9 @@ public class CommandExecutor {
      * @param executor    the method to execute when the command is executed
      * @param name        the name of the command to add
      * @param description the description of the command
+     * @return fluent
      */
-    public void add(Runnable executor, String name, String description) {
-        add(new BaseCommand(executor, name, description));
-    }
-
-    /**
-     * @return true if the command exists and was handled successfully.
-     */
-    public boolean isHandled() {
-        return handled;
-    }
-
-    /**
-     * @return return an exception message.
-     */
-    public String getError() {
-        return new NoSuchCommandException(command).getMessage();
+    public CommandExecutor add(Runnable executor, String name, String description) {
+        return add(new BaseCommand(executor, name, description));
     }
 }

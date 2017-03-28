@@ -1,11 +1,10 @@
 package com.codingchili.core.context;
 
+import io.vertx.core.Future;
+
 import static com.codingchili.core.configuration.CoreStrings.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.codingchili.core.benchmarking.BenchmarkSuite;
 import com.codingchili.core.configuration.CoreStrings;
@@ -48,6 +47,20 @@ public class LauncherCommandExecutor extends CommandExecutor {
         add(generator::all, GENERATE, getGenerateAllDescription());
         add(suite::execute, BENCHMARK, getBenchmarkDescription());
         add(this::help, HELP, getCommandExecutorHelpDescription());
+
+        add(new BaseCommand(() -> {
+            // return without failing when no command is given.
+            // the launcher will execute the command as a block or remote.
+        }, ID_DEFAULT, "").setVisible(false));
+    }
+
+    @Override
+    public Optional<String> getCommand() {
+        if (super.getCommand().isPresent()) {
+            return super.getCommand();
+        } else {
+            return Optional.of(ID_DEFAULT);
+        }
     }
 
     private void help() {

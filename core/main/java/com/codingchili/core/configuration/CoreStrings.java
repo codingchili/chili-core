@@ -72,13 +72,18 @@ public abstract class CoreStrings {
     public static final String PROTOCOL_LOGGING = "logging";
 
     // launcher commands.
-    public static final String GENERATE_SECRETS = "--generate-secrets";
-    public static final String GENERATE_TOKENS = "--generate-tokens";
-    public static final String GENERATE_PRESHARED = "--generate-preshared";
-    public static final String GENERATE = "--generate";
-    public static final String RECONFIGURE = "--reconfigure";
-    public static final String HELP = "--help";
-    public static final String BENCHMARK = "--benchmark";
+    public static final String COMMAND_PREFIX = "--";
+    public static final String GENERATE_SECRETS = getCommand("generate-secrets");
+    public static final String GENERATE_TOKENS = getCommand("generate-tokens");
+    public static final String GENERATE_PRESHARED = getCommand("generate-preshared");
+    public static final String GENERATE = getCommand("generate");
+    public static final String RECONFIGURE = getCommand("reconfigure");
+    public static final String HELP = getCommand("help");
+    public static final String BENCHMARK = getCommand("benchmark");
+
+    public static String getCommand(String command) {
+        return COMMAND_PREFIX + command;
+    }
 
     // keys used in json objects.
     public static final String ID_TOKEN = "token";
@@ -276,7 +281,7 @@ public abstract class CoreStrings {
     }
 
     public static String getStartupText(String version) {
-        return String.format("\n\t\t\t\t\t\t\t\t\tsystem: Starting launcher [" + version + "] ..\n" +
+        return String.format("\n\t\t\t\t\t\t\t\tsystem: Starting launcher [" + version + "] ..\n" +
                         "\t\t\t\t\t\t\t\t\t\t     Robin Duda © 2017\n\n\t\t\t" +
                         "     %s %s on system %s %s\n",
                 System.getProperty("java.vm.name"),
