@@ -39,7 +39,19 @@ public class LauncherIT {
     public void testFailNotVerticle(TestContext test) {
         async = test.async();
 
-        new Launcher(getLaunchContextFor("com.codingchili.core.LauncherTest$1")) {
+        new Launcher(getLaunchContextFor(NotClusterNode.class.getName())) {
+            @Override
+            void exit() {
+                async.complete();
+            }
+        };
+    }
+
+    @Test
+    public void testFailNotFound(TestContext test) {
+        async = test.async();
+
+        new Launcher(getLaunchContextFor("com.codingchili.core.Missing$1")) {
             @Override
             void exit() {
                 async.complete();
@@ -54,7 +66,7 @@ public class LauncherIT {
     }
 
     public LaunchContext getLaunchContextFor(String node) {
-        return new LaunchContext(new String[]{node}) {
+        return new LaunchContext(new String[]{}) {
             @Override
             protected List<String> block(String block) {
                 List<String> list = new ArrayList<>();
