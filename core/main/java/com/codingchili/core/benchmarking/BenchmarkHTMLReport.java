@@ -22,6 +22,8 @@ import de.neuland.jade4j.Jade4J;
 import de.neuland.jade4j.JadeConfiguration;
 import de.neuland.jade4j.template.JadeTemplate;
 import de.neuland.jade4j.template.TemplateLoader;
+import io.vertx.core.Future;
+import io.vertx.core.VertxException;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
@@ -44,8 +46,8 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
      *
      * @param result a benchmark group to create a report for.
      */
-    public BenchmarkHTMLReport(CoreContext context, BenchmarkGroup result) {
-        this(context, toList(result));
+    public BenchmarkHTMLReport(Future<Void> future, CoreContext context, BenchmarkGroup result) {
+        this(future, context, toList(result));
     }
 
     /**
@@ -53,7 +55,7 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
      *
      * @param results a list of benchmarking groups to create a report for.
      */
-    public BenchmarkHTMLReport(CoreContext context, List<BenchmarkGroup> results) {
+    public BenchmarkHTMLReport(Future<Void> future, CoreContext context, List<BenchmarkGroup> results) {
         this.context = context;
 
         try {
@@ -62,8 +64,9 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
                     .put(VERSION, new LauncherSettings().getVersion());
 
             output = Buffer.buffer(Jade4J.render(getTemplate(), model.getMap(), true));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            future.complete();
+        } catch (VertxException e) {
+            future.fail(e);
         }
     }
 
@@ -128,21 +131,25 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
         return results;
     }
 
-    private JadeTemplate getTemplate() throws IOException {
+    private JadeTemplate getTemplate() throws VertxException {
         JadeConfiguration config = new JadeConfiguration();
         config.setTemplateLoader(new TemplateLoader() {
             @Override
-            public long getLastModified(String name) throws IOException {
+            public long getLastModified(String name) {
                 return System.currentTimeMillis();
             }
 
             @Override
-            public Reader getReader(String name) throws IOException {
+            public Reader getReader(String name) throws VertxException {
                 Buffer buffer = context.vertx().fileSystem().readFileBlocking(template);
                 return new StringReader(buffer.toString());
             }
         });
-        return config.getTemplate(template);
+        try {
+            return config.getTemplate(template);
+        } catch (IOException e) {
+            throw new VertxException(e);
+        }
     }
 
     private static List<BenchmarkGroup> toList(BenchmarkGroup result) {

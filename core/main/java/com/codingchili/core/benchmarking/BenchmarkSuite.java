@@ -42,9 +42,11 @@ public class BenchmarkSuite {
 
             maps(context, new BenchmarkConsoleListener()).setHandler(done -> {
                 if (done.succeeded()) {
-                    new BenchmarkHTMLReport(context, done.result()).display();
+                    new BenchmarkHTMLReport(future, context, done.result()).display();
+                } else {
+                    future.fail(done.cause());
                 }
-                context.vertx().close(closed -> future.complete());
+                context.vertx().close();
             });
         });
         return null;

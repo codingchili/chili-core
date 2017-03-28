@@ -82,10 +82,9 @@ public class BenchmarkExecutor {
                 return execution;
             });
         }
-        allImplementations.compose(done -> {
+        allImplementations.setHandler(done -> {
             listener.onGroupCompleted(group);
             future.complete(group);
-            return Future.succeededFuture();
         });
     }
 
