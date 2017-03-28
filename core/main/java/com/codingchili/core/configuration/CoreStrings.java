@@ -80,6 +80,7 @@ public abstract class CoreStrings {
     public static final String RECONFIGURE = getCommand("reconfigure");
     public static final String HELP = getCommand("help");
     public static final String BENCHMARK = getCommand("benchmark");
+    public static final String PARAM_ITERATIONS = getCommand("iterations");
 
     public static String getCommand(String command) {
         return COMMAND_PREFIX + command;
@@ -388,7 +389,7 @@ public abstract class CoreStrings {
     }
 
     public static String getBenchmarkDescription() {
-        return "Executes all registered benchmarks";
+        return "Executes all registered benchmarks. [--iterations]";
     }
 
     public static List<String> getCommandExecutorText() {

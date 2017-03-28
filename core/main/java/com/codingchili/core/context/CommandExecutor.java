@@ -1,6 +1,7 @@
 package com.codingchili.core.context;
 
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import com.codingchili.core.configuration.system.LauncherSettings;
@@ -52,7 +53,7 @@ public class CommandExecutor {
         Optional<String> command = getCommand();
 
         if (command.isPresent() && commands.containsKey(command.get())) {
-            commands.get(command.get()).execute(future);
+            commands.get(command.get()).execute(future, this);
         } else {
             future.fail(new NoSuchCommandException(getCommand().orElse(UNDEFINED)));
         }
@@ -160,7 +161,7 @@ public class CommandExecutor {
      * @param description the description of the command
      * @return fluent
      */
-    public CommandExecutor add(Consumer<Future<Void>> executor, String name, String description) {
+    public CommandExecutor add(BiFunction<Future<Void>, CommandExecutor, Void> executor, String name, String description) {
         return add(new BaseCommand(executor, name, description));
     }
 
@@ -172,7 +173,7 @@ public class CommandExecutor {
      * @param description the description of the command
      * @return fluent
      */
-    public CommandExecutor add(Runnable executor, String name, String description) {
+    public CommandExecutor add(Consumer<CommandExecutor> executor, String name, String description) {
         return add(new BaseCommand(executor, name, description));
     }
 }

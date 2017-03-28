@@ -59,7 +59,7 @@ public class LauncherCommandExecutorTest {
     }
 
     private Command getHiddenCommand() {
-        return new BaseCommand(() -> {}, HIDDEN, HIDDEN).setVisible(false);
+        return new BaseCommand((executor) -> {}, HIDDEN, HIDDEN).setVisible(false);
     }
 
     @Test

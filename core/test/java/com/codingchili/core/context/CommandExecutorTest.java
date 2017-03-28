@@ -22,6 +22,8 @@ import java.util.Optional;
  */
 @RunWith(VertxUnitRunner.class)
 public class CommandExecutorTest {
+    private static final String TEST_COMMANDLINE_WITH_PARAM = "--test --property VALUE";
+    private static final String TEST_COMMAND = "--test";
     private static final String HELP_ASYNC = "--help-async";
     private static final String COMMAND = "command";
     private static final String PROPERTY = "--property";
@@ -33,8 +35,11 @@ public class CommandExecutorTest {
 
     @Before
     public void setUp() {
-        executor.add(() -> executed = true, HELP, "");
-        executor.add(Future::complete, HELP_ASYNC, "");
+        executor.add((executor) -> executed = true, HELP, "");
+        executor.add(((future, executor1) -> {
+            future.complete();
+            return null;
+        }), HELP_ASYNC, "");
     }
 
     @Test
@@ -116,9 +121,21 @@ public class CommandExecutorTest {
     }
 
     @Test
+    public void testParametersPassedToCommand(TestContext test) {
+        Async async = test.async();
+
+        executor.add((executor) -> {
+            test.assertTrue(executor.hasProperty(PROPERTY));
+            test.assertTrue(executor.getProperty(PROPERTY).isPresent());
+            test.assertEquals(VALUE, executor.getProperty(PROPERTY).get());
+            async.complete();
+        }, TEST_COMMAND, "").execute(TEST_COMMANDLINE_WITH_PARAM.split(" "));
+    }
+
+    @Test
     public void testThrowsErrorIfAlreadyExists(TestContext test) {
         try {
-            executor.add(() -> {
+            executor.add((executor) -> {
             }, HELP, "");
             test.fail("Test did not fail when adding an existing command.");
         } catch (CommandAlreadyExistsException ignored) {
@@ -137,7 +154,7 @@ public class CommandExecutorTest {
     @Test
     public void testCommandExecuted(TestContext test) {
         Async async = test.async();
-        executor.add(async::complete, COMMAND, "");
+        executor.add((executor) -> async.complete(), COMMAND, "");
         executor.execute(COMMAND);
     }
 }
