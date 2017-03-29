@@ -18,18 +18,18 @@ jar {
 
 dependencies {
     compile group: 'junit', name: 'junit', version: '4.12'
-    compile group: 'io.vertx', name: 'vertx-core', version: '3.4.0'
-    compile group: 'io.vertx', name: 'vertx-unit', version: '3.4.0'
-    compile group: 'io.vertx', name: 'vertx-web', version: '3.4.0'
-    compile group: 'io.vertx', name: 'vertx-hazelcast', version: '3.4.0'
-    compile group: 'io.vertx', name: 'vertx-mongo-client', version: '3.4.0'
-    compile group: 'io.vertx', name: 'vertx-dropwizard-metrics', version: '3.4.0'
+    compile group: 'io.vertx', name: 'vertx-core', version: '3.4.1'
+    compile group: 'io.vertx', name: 'vertx-unit', version: '3.4.1'
+    compile group: 'io.vertx', name: 'vertx-web', version: '3.4.1'
+    compile group: 'io.vertx', name: 'vertx-hazelcast', version: '3.4.1'
+    compile group: 'io.vertx', name: 'vertx-mongo-client', version: '3.4.1'
+    compile group: 'io.vertx', name: 'vertx-dropwizard-metrics', version: '3.4.1'
     compile group: 'de.neuland-bfi', name:'jade4j', version: '1.2.5'
     compile group: 'de.mkammerer', name: 'argon2-jvm', version: '2.2'
     compile group: 'org.fusesource.jansi', name: 'jansi', version: '1.14'
 
     // the following dependencies are about 25MB in size..
-    compile group: 'org.elasticsearch.client', name: 'transport', version: '5.2.2'
+    compile group: 'org.elasticsearch.client', name: 'transport', version: '5.3.0'
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.6.2'
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.6.2'
 
