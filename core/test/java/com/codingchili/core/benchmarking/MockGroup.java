@@ -6,8 +6,10 @@ package com.codingchili.core.benchmarking;
  * Mock implementation for a benchmark group.
  */
 public class MockGroup extends BaseBenchmarkGroup {
-    private MockImplementation firstImplementation = new MockImplementation(this, "group#1");
-    private MockImplementation secondImplementation = new MockImplementation(this, "group#2");
+    private MockImplementation firstImplementation =
+            new MockImplementation(this, "implementation#1");
+    private MockImplementation secondImplementation =
+            new MockImplementation(this, "implementation#2");
 
     public MockGroup(String name, int iterations) {
         super(name, iterations);

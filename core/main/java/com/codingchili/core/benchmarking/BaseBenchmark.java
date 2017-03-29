@@ -11,6 +11,8 @@ import java.util.*;
  */
 public class BaseBenchmark implements Benchmark {
     private static final int EPOCH_BASE = 3600000;
+    public static final String MAX_MEASURED = "+";
+    public static final String DATE_FORMAT = "HH:mm:ss.SSS";
     private Map<String, Object> properties = new HashMap<>();
     private BenchmarkImplementation implementation;
     private BenchmarkOperation operation;
@@ -48,15 +50,16 @@ public class BaseBenchmark implements Benchmark {
 
     @Override
     public String getTimeFormatted() {
-        return new SimpleDateFormat("HH:mm:ss.SSS").format(new Date(getElapsedMS() - EPOCH_BASE));
+        return new SimpleDateFormat(DATE_FORMAT).format(new Date(getElapsedMS() - EPOCH_BASE));
     }
 
     @Override
     public String getRateFormatted() {
         if (elapsedMS == 0) {
-            return "> " + 1000 * group.getIterations();
+            return String.format("%,d", 1000 * group.getIterations()) + MAX_MEASURED;
+        } else {
+            return String.format("%,d", getRate());
         }
-        return getRate() + "";
     }
 
     @Override

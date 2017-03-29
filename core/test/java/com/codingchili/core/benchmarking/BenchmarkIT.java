@@ -1,13 +1,16 @@
 package com.codingchili.core.benchmarking;
 
+import static com.codingchili.core.configuration.CoreStrings.PARAM_ITERATIONS;
+
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import com.codingchili.core.context.CommandExecutor;
 import com.codingchili.core.context.SystemContext;
 
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.ext.unit.Async;
@@ -59,6 +62,21 @@ public class BenchmarkIT {
                     listener.assertAllEventsTriggered();
                     async.complete();
                 });
+    }
+
+    @Test
+    public void testExecuteSuiteAsCommand(TestContext test) {
+        CommandExecutor executor = new CommandExecutor();
+        Async async = test.async();
+        Future<Void> future = Future.<Void>future().setHandler(done -> {
+            if (done.succeeded()) {
+                async.complete();
+            } else {
+                test.fail(done.cause().getMessage());
+            }
+        });
+        executor.addProperty(PARAM_ITERATIONS, "5");
+        new BenchmarkSuite().execute(future, executor);
     }
 
 }

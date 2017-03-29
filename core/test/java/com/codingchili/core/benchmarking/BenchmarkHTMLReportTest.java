@@ -8,6 +8,8 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 /**
  * @author Robin Duda
+ *
+ * Tests for the HTML reporter
  */
 @RunWith(VertxUnitRunner.class)
 public class BenchmarkHTMLReportTest {

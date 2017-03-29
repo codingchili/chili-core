@@ -60,6 +60,7 @@ public abstract class CoreStrings {
 
     public static final String EXT_JSON = ".json";
     public static final String EXT_HTML = ".html";
+    public static final String EXT_TXT = ".txt";
     public static final String ANY = "*";
     public static final String NODE_LOGGING = "syslog.node";
 
