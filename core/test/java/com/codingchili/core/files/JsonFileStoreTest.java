@@ -60,7 +60,7 @@ public class JsonFileStoreTest {
     @Test
     public void testReadMissing(TestContext test) {
         try {
-            JsonFileStore.readObject("/dev/null");
+            JsonFileStore.readObject("missing.json");
             test.fail("store did not throw NoSuchResource when target file is missing.");
         } catch (NoSuchResourceException ignored) {
         }
