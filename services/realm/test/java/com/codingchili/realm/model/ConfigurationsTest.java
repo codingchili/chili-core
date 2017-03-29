@@ -4,15 +4,19 @@ import com.codingchili.realm.instance.model.*;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.junit.Timeout;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
+import io.vertx.rxjava.ext.unit.TestContext;
 import org.junit.*;
+import org.junit.runner.RunWith;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.files.JsonFileStore;
+import com.codingchili.core.files.exception.NoSuchResourceException;
 import com.codingchili.core.protocol.Serializer;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
@@ -21,7 +25,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  * @author Robin Duda
  *         tests the loading of json files used for configuration storage.
  */
-
+@RunWith(VertxUnitRunner.class)
 public class ConfigurationsTest {
 
     @Rule
@@ -33,11 +37,11 @@ public class ConfigurationsTest {
     }
 
     @Test
-    public void readMissingFile() {
+    public void readMissingFile(TestContext test) {
         try {
             JsonFileStore.readObject("missing/file.json");
-            throw new RuntimeException("No exception on missing file.");
-        } catch (IOException ignored) {
+            test.fail("No exception on missing file.");
+        } catch (NoSuchResourceException ignored) {
         }
     }
 
@@ -59,7 +63,7 @@ public class ConfigurationsTest {
 
     @Test
     public void testReadPlayerClasses() throws IOException {
-        ArrayList<JsonObject> classes = JsonFileStore.readDirectoryObjects(testDirectory("class"));
+        List<JsonObject> classes = JsonFileStore.readDirectoryObjects(testDirectory("class"));
 
         for (JsonObject player : classes) {
             Serializer.unpack(player, PlayerClass.class);

@@ -78,7 +78,7 @@ public class RealmSettings extends AttributeConfigurable {
     private void readInstances(List<String> enabled) {
         available(PATH_INSTANCE).stream()
                 .map(path -> override(path, name))
-                .map(path -> (InstanceSettings) get(path, InstanceSettings.class))
+                .map(path -> get(path, InstanceSettings.class))
                 .filter(instance -> enabled.contains(instance.getName()) || enabled.isEmpty())
                 .forEach(instances::add);
     }
@@ -86,20 +86,14 @@ public class RealmSettings extends AttributeConfigurable {
     private void readPlayerClasses() {
         available(PATH_GAME_CLASSES).stream()
                 .map(path -> override(path, name))
-                .map(path -> (PlayerClass) get(path, PlayerClass.class))
+                .map(path -> get(path, PlayerClass.class))
                 .forEach(classes::add);
     }
 
     private void readAfflictions() {
         available(PATH_GAME_AFFLICTIONS).stream()
                 .map(path -> override(path, name))
-                .map(path -> {
-                    try {
-                        return JsonFileStore.readList(path);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+                .map(JsonFileStore::readList)
                 .flatMap(JsonArray::stream)
                 .map(json -> (JsonObject) json)
                 .forEach(affliction -> afflictions.add(Serializer.unpack(affliction, Affliction.class)));
