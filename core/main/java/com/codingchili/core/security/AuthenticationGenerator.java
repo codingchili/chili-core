@@ -104,6 +104,7 @@ public class AuthenticationGenerator {
 
     private TokenFactory getFactory(TokenIdentifier identifier) {
         JsonObject issuer = JsonFileStore.readObject(getService(identifier.getService()));
+
         if (issuer.containsKey(identifier.getSecret())) {
             byte[] secret = Base64.getDecoder().decode(issuer.getString(identifier.getSecret()));
             return new TokenFactory(secret);
@@ -122,9 +123,11 @@ public class AuthenticationGenerator {
     }
 
     private RemoteIdentity getIdentity(JsonObject config) {
-        RemoteIdentity identity = unpack(config.getJsonObject(CoreStrings.ID_IDENTITY), RemoteIdentity.class);
+        RemoteIdentity identity;
 
-        if (identity == null || identity.getHost() == null || identity.getNode() == null) {
+        if (config.containsKey(ID_IDENTITY)) {
+            identity = unpack(config.getJsonObject(ID_IDENTITY), RemoteIdentity.class);
+        } else {
             identity = new RemoteIdentity();
             config.put(ID_IDENTITY, json(identity));
             logger.log(getIdentityNotConfigured(getClass().getSimpleName()));
