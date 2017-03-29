@@ -12,7 +12,7 @@ import java.nio.file.Path;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.codingchili.core.configuration.CachedFileStoreSettings;
-import com.codingchili.core.configuration.exception.FileMissingException;
+import com.codingchili.core.files.exception.FileMissingException;
 import com.codingchili.core.files.CachedFileStore;
 import com.codingchili.core.protocol.Serializer;
 

@@ -12,7 +12,7 @@ import java.nio.file.*;
 
 import com.codingchili.core.configuration.CachedFileStoreSettings;
 import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.configuration.exception.FileMissingException;
+import com.codingchili.core.files.exception.FileMissingException;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.testing.ContextMock;
 

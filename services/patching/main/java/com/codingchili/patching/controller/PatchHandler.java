@@ -4,7 +4,7 @@ import com.codingchili.patching.configuration.PatchContext;
 import com.codingchili.patching.model.PatchKeeper;
 import com.codingchili.patching.model.PatchReloadedException;
 
-import com.codingchili.core.configuration.exception.FileMissingException;
+import com.codingchili.core.files.exception.FileMissingException;
 import com.codingchili.core.context.CoreException;
 import com.codingchili.core.protocol.*;
 

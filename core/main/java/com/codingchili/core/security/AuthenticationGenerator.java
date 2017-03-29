@@ -2,7 +2,6 @@ package com.codingchili.core.security;
 
 import io.vertx.core.json.JsonObject;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,10 +11,8 @@ import com.codingchili.core.configuration.BaseConfigurable;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.AuthenticationDependency;
 import com.codingchili.core.configuration.system.SecuritySettings;
-import com.codingchili.core.context.BaseCommand;
-import com.codingchili.core.context.CommandExecutor;
-import com.codingchili.core.files.Configurations;
-import com.codingchili.core.files.JsonFileStore;
+import com.codingchili.core.files.*;
+import com.codingchili.core.files.exception.NoSuchResourceException;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.security.exception.SecurityMissingDependencyException;
 
@@ -106,17 +103,13 @@ public class AuthenticationGenerator {
     }
 
     private TokenFactory getFactory(TokenIdentifier identifier) {
-        try {
-            JsonObject issuer = JsonFileStore.readObject(getService(identifier.getService()));
-            if (issuer.containsKey(identifier.getSecret())) {
-                byte[] secret = Base64.getDecoder().decode(issuer.getString(identifier.getSecret()));
-                return new TokenFactory(secret);
-            } else {
-                logger.onSecurityDependencyMissing(identifier.getService(), identifier.getSecret());
-                throw new SecurityMissingDependencyException(identifier.getService(), identifier.getSecret());
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        JsonObject issuer = JsonFileStore.readObject(getService(identifier.getService()));
+        if (issuer.containsKey(identifier.getSecret())) {
+            byte[] secret = Base64.getDecoder().decode(issuer.getString(identifier.getSecret()));
+            return new TokenFactory(secret);
+        } else {
+            logger.onSecurityDependencyMissing(identifier.getService(), identifier.getSecret());
+            throw new SecurityMissingDependencyException(identifier.getService(), identifier.getSecret());
         }
     }
 
@@ -136,7 +129,6 @@ public class AuthenticationGenerator {
             config.put(ID_IDENTITY, json(identity));
             logger.log(getIdentityNotConfigured(getClass().getSimpleName()));
         }
-
         return identity;
     }
 
@@ -161,7 +153,7 @@ public class AuthenticationGenerator {
                 JsonObject config = JsonFileStore.readObject(path);
                 processor.parse(settings, config, path);
                 JsonFileStore.writeObject(config, path);
-            } catch (IOException e) {
+            } catch (NoSuchResourceException e) {
                 logger.onFileLoadError(path);
             }
         });

@@ -10,8 +10,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import com.codingchili.core.files.exception.NoSuchResourceException;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
@@ -40,19 +42,28 @@ public class JsonFileStoreTest {
 
     @Test
     public void testReadDirectoryObjects(TestContext test) throws IOException {
-        ArrayList<JsonObject> json = JsonFileStore.readDirectoryObjects(testDirectory("JsonFileStore/Objects"));
+        List<JsonObject> json = JsonFileStore.readDirectoryObjects(testDirectory("JsonFileStore/Objects"));
         test.assertEquals(3, json.size());
     }
 
     @Test
     public void testReadDirectoryList(TestContext test) throws IOException {
-        ArrayList<JsonArray> json = JsonFileStore.readDirectoryList(testDirectory("JsonFileStore/Lists"));
+        List<JsonArray> json = JsonFileStore.readDirectoryList(testDirectory("JsonFileStore/Lists"));
         test.assertEquals(3, json.size());
     }
 
     @Test
     public void testWriteObject() {
         JsonFileStore.writeObject(new JsonObject(), testFile("JsonFileStore", "tmp.json"));
+    }
+
+    @Test
+    public void testReadMissing(TestContext test) {
+        try {
+            JsonFileStore.readObject("/dev/null");
+            test.fail("store did not throw NoSuchResource when target file is missing.");
+        } catch (NoSuchResourceException ignored) {
+        }
     }
 
     @Test

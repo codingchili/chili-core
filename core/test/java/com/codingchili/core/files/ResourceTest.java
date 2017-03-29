@@ -1,0 +1,13 @@
+package com.codingchili.core.files;
+
+import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.runner.RunWith;
+
+/**
+ * @author Robin Duda
+ *
+ * Tests loading of resources from the classpath and filesystem.
+ */
+@RunWith(VertxUnitRunner.class)
+public class ResourceTest {
+}

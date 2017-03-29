@@ -8,6 +8,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.io.*;
+import java.util.Optional;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -74,7 +75,11 @@ public class Serializer {
         if (clazz.isInstance(json)) {
             return (T) json;
         } else {
-            return (json == null) ? null : unpack(json.encode(), clazz);
+            if (json == null) {
+                throw new SerializerPayloadException();
+            } else {
+                return unpack(json.encode(), clazz);
+            }
         }
     }
 

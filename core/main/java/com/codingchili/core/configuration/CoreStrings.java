@@ -1,7 +1,6 @@
 package com.codingchili.core.configuration;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -341,6 +340,11 @@ public abstract class CoreStrings {
         return "configuration '" + path + "' not found, using defaults from '" + clazz.getSimpleName() + "'.";
     }
 
+    public static String getNoSuchResource(String name) {
+        return "The resource identified by '" + name + "' was not found on the local filesystem " +
+                "nor on the classpath.";
+    }
+
     public static String getStorageLoaderMissingArgument(String type) {
         return "storage loader is missing argument for attribute '" + type + "'.";
     }
@@ -433,5 +437,18 @@ public abstract class CoreStrings {
     public static String getFileFriendlyDate() {
         return LocalDateTime.now().format(
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm.ss"));
+    }
+
+    public static String getAbsolutePath(String relative) {
+        return FileSystems.getDefault().getPath(
+                currentPath() + CoreStrings.DIR_SEPARATOR + relative).toString();
+    }
+
+    public static String currentPath() {
+        return Paths.get("").toAbsolutePath().normalize().toString();
+    }
+
+    public static String getDeserializePayloadException() {
+        return "Failed to deserialize invalid payload.";
     }
 }

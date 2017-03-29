@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 import com.codingchili.core.files.JsonFileStore;
+import com.codingchili.core.files.exception.NoSuchResourceException;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.testing.MapTestCases;
 import com.codingchili.core.testing.StorageObject;
@@ -51,7 +52,7 @@ public class JsonMapTest extends MapTestCases {
 
                 test.assertEquals(storable, second);
                 async.complete();
-            } catch (IOException e) {
+            } catch (NoSuchResourceException e) {
                 test.fail(e);
             }
         }));

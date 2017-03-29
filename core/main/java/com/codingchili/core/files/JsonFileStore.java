@@ -1,87 +1,100 @@
 package com.codingchili.core.files;
 
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.function.Function;
 
 import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.files.exception.NoSuchResourceException;
+
+import static com.codingchili.core.configuration.CoreStrings.DIR_SEPARATOR;
 
 /**
  * @author Robin Duda
- *
- * Handles the loading/writing of json objects and lists to/from disk.
+ *         <p>
+ *         Handles the loading/writing of json objects and lists to/from disk.
  */
 public abstract class JsonFileStore {
 
     /**
      * Reads a JsonObject from a specified application-relative path.
+     *
      * @param path the path from where to load the json object.
      * @return the loaded json object.
-     * @throws IOException when the file cannot be found or read.
      */
-    public static JsonObject readObject(String path) throws IOException {
-        return new JsonObject(readFile(path));
+    public static JsonObject readObject(String path) {
+        Optional<Buffer> buffer = new Resource(path).read();
+        if (buffer.isPresent()) {
+            return new JsonObject(buffer.get().toString());
+        } else {
+            throw new NoSuchResourceException(path);
+        }
     }
 
     /**
      * Reads a JsonArray from the specified application-relative path.
+     *
      * @param path the path from where to load the json array.
      * @return the loaded json array.
-     * @throws IOException when the file cannot be found or read.
      */
-    public static JsonArray readList(String path) throws IOException {
-        return new JsonArray(readFile(path));
+    public static JsonArray readList(String path) {
+        Optional<Buffer> buffer = new Resource(path).read();
+        if (buffer.isPresent()) {
+            return new JsonArray(buffer.get().toString());
+        } else {
+            throw new NoSuchResourceException(path);
+        }
     }
 
     /**
      * Reads a directory of json-files formatted as JsonObjects.
+     *
      * @param path the application-relative directory to read from.
      * @return a list of jsonobjects where each object corresponds to a file.
-     * @throws IOException when the file cannot be found or read.
+     * returns nothing when more than zero files fails to load.
      */
-    public static ArrayList<JsonObject> readDirectoryObjects(String path) throws IOException {
-        File[] files = new File(path).listFiles(file -> !file.isDirectory());
-        ArrayList<JsonObject> objects = new ArrayList<>();
-
-        if (files != null) {
-            for (File file : files) {
-                objects.add(new JsonObject(readFile(path + CoreStrings.DIR_SEPARATOR + file.getName())));
-            }
-        }
-        return objects;
+    public static List<JsonObject> readDirectoryObjects(String path) {
+        return readMultiple(path, buffer -> new JsonObject(buffer.toString()));
     }
 
     /**
      * Reads a directory of json-files formatted as lists.
+     *
      * @param path the application-relative directory to read from.
      * @return a list of jsonarrays where each array corresponds to a file.
-     * @throws IOException when the file cannot be found or read.
      */
-    public static ArrayList<JsonArray> readDirectoryList(String path) throws IOException {
-        File[] files = new File(path).listFiles();
-        ArrayList<JsonArray> objects = new ArrayList<>();
+    public static List<JsonArray> readDirectoryList(String path) {
+        return readMultiple(path, buffer -> new JsonArray(buffer.toString()));
+    }
+
+    private static <T> List<T> readMultiple(String path, Function<Buffer, T> transform) {
+        File[] files = new File(path).listFiles(file -> !file.isDirectory());
+        List<T> objects = new ArrayList<>();
 
         if (files != null) {
             for (File file : files) {
-                objects.add(new JsonArray(readFile(path + CoreStrings.DIR_SEPARATOR + file.getName())));
+                Optional<Buffer> item = new Resource(path + DIR_SEPARATOR + file.getName()).read();
+
+                if (item.isPresent()) {
+                    objects.add(transform.apply(item.get()));
+                } else {
+                    throw new NoSuchResourceException(path);
+                }
             }
         }
         return objects;
     }
 
-    private static String readFile(String path) throws IOException {
-        return new String(Files.readAllBytes(
-                FileSystems.getDefault().getPath(
-                        currentPath() + CoreStrings.DIR_SEPARATOR + path)));
-    }
-
     /**
      * Writes a json-object to the given path.
-     * @param json the json-object to write.
+     *
+     * @param json   the json-object to write.
      * @param target the path to where the json-object is written to.
      * @throws RuntimeException on failure to write.
      */
@@ -100,12 +113,9 @@ public abstract class JsonFileStore {
         }
     }
 
-    private static String currentPath() {
-        return Paths.get("").toAbsolutePath().normalize().toString();
-    }
-
     /**
      * Deletes the file at the given path.
+     *
      * @param path to the file to be deleted.
      * @return true if the file was deleted successfully.
      */

@@ -4,7 +4,7 @@ import com.codingchili.common.Strings;
 import com.codingchili.website.configuration.WebserverContext;
 
 import com.codingchili.core.configuration.CachedFileStoreSettings;
-import com.codingchili.core.configuration.exception.FileMissingException;
+import com.codingchili.core.files.exception.FileMissingException;
 import com.codingchili.core.files.CachedFileStore;
 import com.codingchili.core.protocol.*;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;

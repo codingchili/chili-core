@@ -3,7 +3,6 @@ package com.codingchili.core.storage;
 import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -14,6 +13,7 @@ import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.files.JsonFileStore;
+import com.codingchili.core.files.exception.NoSuchResourceException;
 import com.codingchili.core.storage.exception.*;
 
 import static com.codingchili.core.context.FutureHelper.*;
@@ -44,7 +44,7 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
         } else {
             try {
                 this.db = JsonFileStore.readObject(context.dbPath());
-            } catch (IOException e) {
+            } catch (NoSuchResourceException e) {
                 context.console().log(CoreStrings.getFileReadError(context.dbPath()));
             }
         }
@@ -153,12 +153,12 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     private Optional<Value> get(String key) {
-        Value value = context.toValue(db.getJsonObject(key));
+        JsonObject json = db.getJsonObject(key);
 
-        if (value == null) {
+        if (json == null) {
             return Optional.empty();
         } else {
-            return Optional.of(value);
+            return Optional.of(context.toValue(json));
         }
     }
 

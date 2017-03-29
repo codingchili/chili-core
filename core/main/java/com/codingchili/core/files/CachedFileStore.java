@@ -11,8 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.codingchili.core.configuration.CachedFileStoreSettings;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.exception.ConfigurationMismatchException;
-import com.codingchili.core.configuration.exception.FileMissingException;
 import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.files.exception.FileMissingException;
 import com.codingchili.core.protocol.Serializer;
 
 /**
