@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.codingchili.core.context.CoreContext;
@@ -18,8 +19,8 @@ import com.codingchili.core.context.SystemContext;
  */
 @RunWith(VertxUnitRunner.class)
 public class BenchmarkTests {
+    private List<BenchmarkGroup> groups = new ArrayList<>();
     private BenchmarkExecutor executor;
-    private List<BenchmarkGroup> groups;
     private CoreContext context;
 
     @Before
