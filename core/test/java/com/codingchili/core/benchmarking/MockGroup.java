@@ -1,5 +1,7 @@
 package com.codingchili.core.benchmarking;
 
+import java.util.List;
+
 import com.codingchili.core.context.CoreContext;
 
 /**
@@ -8,6 +10,9 @@ import com.codingchili.core.context.CoreContext;
  *         Mock implementation for a benchmark group.
  */
 public class MockGroup extends BaseBenchmarkGroup {
+    private boolean executed = false;
+    private MockImplementation firstImplementation;
+    private MockImplementation secondImplementation;
 
     /**
      * Creates a new mock group with two mock implementations.
@@ -18,10 +23,27 @@ public class MockGroup extends BaseBenchmarkGroup {
      */
     public MockGroup(CoreContext context, String name, int iterations) {
         super(name, iterations);
-        MockImplementation firstImplementation = new MockImplementation(context, this, "implementation#1");
-        MockImplementation secondImplementation = new MockImplementation(context, this, "implementation#2");
+        firstImplementation = new MockImplementation(context, this, "implementation#1");
+        secondImplementation = new MockImplementation(context, this, "implementation#2");
         add(firstImplementation);
         add(secondImplementation);
+    }
 
+    @Override
+    public List<BenchmarkImplementation> getImplementations() {
+        executed = true;
+        return super.getImplementations();
+    }
+
+    public MockImplementation getFirstImplementation() {
+        return firstImplementation;
+    }
+
+    public MockImplementation getSecondImplementation() {
+        return secondImplementation;
+    }
+
+    public boolean isExecuted() {
+        return executed;
     }
 }

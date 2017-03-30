@@ -1,24 +1,32 @@
 package com.codingchili.core.benchmarking;
 
-import io.vertx.core.*;
-import org.junit.*;
-import org.junit.runner.RunWith;
-
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.SystemContext;
 
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
+
 /**
  * @author Robin Duda
- *
- * Tests base implementations of benchmark groups, implementations and benchmarks.
+ *         <p>
+ *         Tests base implementations of benchmark groups, implementations and benchmarks.
  */
 @RunWith(VertxUnitRunner.class)
 public class BenchmarkTests {
+    private static final int ITERATIONS = 3;
     private List<BenchmarkGroup> groups = new ArrayList<>();
     private BenchmarkExecutor executor;
     private CoreContext context;
@@ -26,8 +34,8 @@ public class BenchmarkTests {
     @Before
     public void setUp() {
         context = new SystemContext(Vertx.vertx());
-        groups.add(new MockGroup(context, "mock-group-1", 1));
-        groups.add(new MockGroup(context, "mock-group-2", 2));
+        groups.add(new MockGroup(context, "mock-group-1", ITERATIONS));
+        groups.add(new MockGroup(context, "mock-group-2", ITERATIONS));
         executor = new BenchmarkExecutor(context);
     }
 
@@ -50,37 +58,46 @@ public class BenchmarkTests {
     }
 
     @Test
-    public void testAllBenchmarksExecuted() {
-        execute(done -> {
+    public void testAllBenchmarksExecuted(TestContext test) {
+        execute(done -> groups.stream().map(group -> (MockGroup) group)
+                .forEach(group -> test.assertTrue(group.isExecuted())));
+    }
 
+    @Test
+    public void testAllImplementationsExecuted(TestContext test) {
+        execute(done -> groups().forEach(group -> {
+            test.assertTrue(group.getFirstImplementation().isBothBenchmarksExecuted());
+            test.assertTrue(group.getSecondImplementation().isBothBenchmarksExecuted());
+        }));
+    }
+
+    @Test
+    public void testAllGroupsExecuted(TestContext test) {
+        execute(done -> groups().forEach(group -> test.assertTrue(group.isExecuted())));
+    }
+
+    private Stream<MockGroup> groups() {
+        return groups.stream().map(group -> (MockGroup) group);
+    }
+
+    @Test
+    public void testVerifyBenchmarksFinished(TestContext test) {
+        execute(done -> {
+            groups().forEach(group -> group.getImplementations().forEach(implementation -> {
+                implementation.getBenchmarks().forEach(benchmark -> {
+                    test.assertTrue(benchmark.isFinished());
+                });
+            }));
         });
     }
 
     @Test
-    public void testAllImplementationsExecuted() {
-        execute(done -> {
-
-        });
-    }
-
-    @Test
-    public void testAllGroupsExecuted() {
-        execute(done -> {
-
-        });
-    }
-
-    @Test
-    public void testVerifyBenchmarkResults() {
-        execute(done -> {
-
-        });
-    }
-
-    @Test
-    public void testVerifyNumberOfIterations() {
-        execute(done -> {
-
-        });
+    public void testVerifyNumberOfIterations(TestContext test) {
+        execute(done -> groups().forEach(group -> group.getImplementations().stream()
+                .map(implementation -> (MockImplementation) implementation)
+                .forEach(implementation -> {
+                    test.assertEquals(ITERATIONS, implementation.getFirstBenchmarkExecutions());
+                    test.assertEquals(ITERATIONS, implementation.getSecondBenchmarkExecutions());
+                })));
     }
 }

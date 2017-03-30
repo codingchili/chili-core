@@ -36,4 +36,9 @@ public interface BenchmarkResult {
      * @return the number of operations per second.
      */
     int getRate();
+
+    /**
+     * @return returns true if {@link #finish()} has been called.
+     */
+    boolean isFinished();
 }

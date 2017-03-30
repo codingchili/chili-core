@@ -11,15 +11,15 @@ import java.util.*;
  */
 public class BaseBenchmark implements Benchmark {
     private static final int EPOCH_BASE = 3600000;
-    public static final String MAX_MEASURED = "+";
-    public static final String DATE_FORMAT = "HH:mm:ss.SSS";
+    private static final String MAX_MEASURED = "+";
+    private static final String DATE_FORMAT = "HH:mm:ss.SSS";
     private Map<String, Object> properties = new HashMap<>();
     private BenchmarkImplementation implementation;
     private BenchmarkOperation operation;
     private BenchmarkGroup group;
     private String name;
     private Instant start;
-    private int elapsedMS;
+    private int elapsedMS = -1;
 
     public BaseBenchmark(BenchmarkGroup group, BenchmarkImplementation implementation,
                          BenchmarkOperation operation, String name) {
@@ -41,6 +41,11 @@ public class BaseBenchmark implements Benchmark {
         if (this.elapsedMS < 0) {
             this.elapsedMS = 0;
         }
+    }
+
+    @Override
+    public boolean isFinished() {
+        return (elapsedMS >= 0);
     }
 
     @Override

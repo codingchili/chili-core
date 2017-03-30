@@ -14,6 +14,7 @@ public class MockImplementation extends BaseBenchmarkImplementation {
     private AtomicInteger secondBenchmarkExecutions = new AtomicInteger(0);
     private boolean firstBenchmarkExecuted = false;
     private boolean secondBenchmarkExecuted = false;
+    private boolean executedInOrder = true;
 
     /**
      * Creates a new mocked implementation.
@@ -35,13 +36,14 @@ public class MockImplementation extends BaseBenchmarkImplementation {
             secondBenchmarkExecutions.incrementAndGet();
             context.timer(5, event -> future.complete());
         }, "benchmark#2");
+
     }
 
-    private Benchmark getFirstBenchmark() {
+    public Benchmark getFirstBenchmark() {
         return super.getBenchmarks().get(0);
     }
 
-    private Benchmark getSecondBenchmark() {
+    public Benchmark getSecondBenchmark() {
         return super.getBenchmarks().get(1);
     }
 
@@ -50,5 +52,19 @@ public class MockImplementation extends BaseBenchmarkImplementation {
      */
     public boolean isBothBenchmarksExecuted() {
         return firstBenchmarkExecuted && secondBenchmarkExecuted;
+    }
+
+    /**
+     * @return the number of iterations executed for benchmark.
+     */
+    public int getFirstBenchmarkExecutions() {
+        return firstBenchmarkExecutions.get();
+    }
+
+    /**
+     * @return the number of iterations executed for benchmark.
+     */
+    public int getSecondBenchmarkExecutions() {
+        return secondBenchmarkExecutions.get();
     }
 }
