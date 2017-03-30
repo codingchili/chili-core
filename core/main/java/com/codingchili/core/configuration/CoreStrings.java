@@ -81,6 +81,8 @@ public abstract class CoreStrings {
     public static final String HELP = getCommand("help");
     public static final String BENCHMARK = getCommand("benchmark");
     public static final String PARAM_ITERATIONS = getCommand("iterations");
+    public static final String PARAM_HTML = getCommand("html");
+    public static final String PARAM_TEMPLATE = getCommand("template");
 
     public static String getCommand(String command) {
         return COMMAND_PREFIX + command;
@@ -200,7 +202,11 @@ public abstract class CoreStrings {
     }
 
     public static String getFileReadError(String file) {
-        return "Failed to read file " + file + ".";
+        return "Failed to read file '" + file + "'.";
+    }
+
+    public static String getFileWriteError(String file) {
+        return "Failed to write file '" + file + "'.";
     }
 
     public static String getDBIdentifier(String DB, String collection) {

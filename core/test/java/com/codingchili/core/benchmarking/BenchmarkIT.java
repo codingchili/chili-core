@@ -1,12 +1,11 @@
 package com.codingchili.core.benchmarking;
 
-import static com.codingchili.core.configuration.CoreStrings.PARAM_ITERATIONS;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CommandExecutor;
 import com.codingchili.core.context.SystemContext;
 
@@ -17,6 +16,9 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 
+import static com.codingchili.core.configuration.CoreStrings.PARAM_ITERATIONS;
+import static com.codingchili.core.configuration.CoreStrings.PARAM_TEMPLATE;
+
 /**
  * @author Robin Duda
  *         <p>
@@ -24,6 +26,7 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
  */
 @RunWith(VertxUnitRunner.class)
 public class BenchmarkIT {
+    private static final String STRING_ITERATIONS = "5";
     private static final int ITERATIONS = 25;
     private static Vertx vertx;
 
@@ -65,17 +68,17 @@ public class BenchmarkIT {
     }
 
     @Test
+    /*
+     * Executes the benchmark suite as if it were executed from the commandline.
+     */
     public void testExecuteSuiteAsCommand(TestContext test) {
         CommandExecutor executor = new CommandExecutor();
         Async async = test.async();
         Future<Void> future = Future.<Void>future().setHandler(done -> {
-            if (done.succeeded()) {
-                async.complete();
-            } else {
-                test.fail(done.cause().getMessage());
-            }
+            test.assertTrue(done.succeeded());
+            async.complete();
         });
-        executor.addProperty(PARAM_ITERATIONS, "5");
+        executor.addProperty(PARAM_ITERATIONS, STRING_ITERATIONS);
         new BenchmarkSuite().execute(future, executor);
     }
 

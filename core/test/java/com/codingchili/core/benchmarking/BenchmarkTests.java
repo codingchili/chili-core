@@ -1,9 +1,15 @@
 package com.codingchili.core.benchmarking;
 
-import org.junit.Test;
+import io.vertx.core.*;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+
+import java.util.List;
+
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.SystemContext;
 
 /**
  * @author Robin Duda
@@ -12,30 +18,68 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
  */
 @RunWith(VertxUnitRunner.class)
 public class BenchmarkTests {
+    private BenchmarkExecutor executor;
+    private List<BenchmarkGroup> groups;
+    private CoreContext context;
 
-    // todo make mock implementation of benchmark asynchronous.
+    @Before
+    public void setUp() {
+        context = new SystemContext(Vertx.vertx());
+        groups.add(new MockGroup(context, "mock-group-1", 1));
+        groups.add(new MockGroup(context, "mock-group-2", 2));
+        executor = new BenchmarkExecutor(context);
+    }
+
+    @After
+    public void tearDown() {
+        context.vertx().close();
+    }
+
     @Test
     public void testBenchmarksExecutedInOrder() {
+        execute(done -> {
 
+        });
+    }
+
+    private void execute(Handler<AsyncResult<List<BenchmarkGroup>>> result) {
+        Future<List<BenchmarkGroup>> future = Future.future();
+        future.setHandler(result);
+        executor.start(future, groups);
     }
 
     @Test
     public void testAllBenchmarksExecuted() {
+        execute(done -> {
 
+        });
     }
 
     @Test
     public void testAllImplementationsExecuted() {
+        execute(done -> {
 
+        });
     }
 
     @Test
     public void testAllGroupsExecuted() {
+        execute(done -> {
 
+        });
     }
 
     @Test
     public void testVerifyBenchmarkResults() {
+        execute(done -> {
 
+        });
+    }
+
+    @Test
+    public void testVerifyNumberOfIterations() {
+        execute(done -> {
+
+        });
     }
 }

@@ -16,6 +16,7 @@ import com.codingchili.core.files.JsonFileStore;
 import com.codingchili.core.files.exception.NoSuchResourceException;
 import com.codingchili.core.storage.exception.*;
 
+import static com.codingchili.core.configuration.CoreStrings.getFileReadError;
 import static com.codingchili.core.context.FutureHelper.*;
 
 /**
@@ -45,7 +46,7 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
             try {
                 this.db = JsonFileStore.readObject(context.dbPath());
             } catch (NoSuchResourceException e) {
-                context.console().log(CoreStrings.getFileReadError(context.dbPath()));
+                context.console().log(getFileReadError(context.dbPath()));
             }
         }
         this.context = context;

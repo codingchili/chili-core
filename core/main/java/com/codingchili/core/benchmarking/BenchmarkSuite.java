@@ -1,8 +1,7 @@
 package com.codingchili.core.benchmarking;
 
-import static com.codingchili.core.configuration.CoreStrings.PARAM_ITERATIONS;
-
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.codingchili.core.context.CommandExecutor;
@@ -17,6 +16,8 @@ import com.codingchili.core.storage.SharedMap;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
@@ -42,7 +43,7 @@ public class BenchmarkSuite {
 
             maps(context, new BenchmarkConsoleListener()).setHandler(done -> {
                 if (done.succeeded()) {
-                    new BenchmarkHTMLReport(future, context, done.result()).display();
+                    createReport(future, done.result(), executor);
                 } else {
                     future.fail(done.cause());
                 }
@@ -50,6 +51,22 @@ public class BenchmarkSuite {
             });
         });
         return null;
+    }
+
+    private void createReport(Future<Void> future, List<BenchmarkGroup> result, CommandExecutor executor) {
+        Optional<String> template = executor.getProperty(PARAM_TEMPLATE);
+        BenchmarkReport report;
+
+        if (executor.hasProperty(PARAM_HTML)) {
+            report = new BenchmarkHTMLReport(result);
+        } else {
+            report = new BenchmarkConsoleReport(result);
+        }
+        if (template.isPresent()) {
+            report.template(template.get());
+        }
+        report.display();
+        future.complete();
     }
 
     /**

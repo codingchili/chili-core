@@ -17,14 +17,11 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
  *         Test cases for console reporting.
  */
 @RunWith(VertxUnitRunner.class)
-public class BenchmarkConsoleReportTest {
-    private List<BenchmarkGroup> groups = new ArrayList<>();
-    private BenchmarkReport report;
+public class BenchmarkConsoleReportTest extends BenchmarkReportTestCases {
 
     @Before
-    public void beforeEach() {
-        groups.add(new MockGroup("group#1", 750));
-        groups.add(new MockGroup("group#2", 500));
+    public void setUp() {
+        super.setUp();
         report = new BenchmarkConsoleReport(groups);
     }
 

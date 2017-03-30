@@ -2,6 +2,8 @@ package com.codingchili.core.benchmarking;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.codingchili.core.context.CoreContext;
+
 /**
  * @author Robin Duda
  *         <p>
@@ -16,21 +18,22 @@ public class MockImplementation extends BaseBenchmarkImplementation {
     /**
      * Creates a new mocked implementation.
      *
-     * @param group the group the implementation is a member of
-     * @param name  of the mock implementation
+     * @param context context to enable asynchronous benchmarks.
+     * @param group   the group the implementation is a member of
+     * @param name    of the mock implementation
      */
-    public MockImplementation(BenchmarkGroup group, String name) {
+    public MockImplementation(CoreContext context, BenchmarkGroup group, String name) {
         super(group, name);
         add(future -> {
             firstBenchmarkExecuted = true;
             firstBenchmarkExecutions.incrementAndGet();
-            future.complete();
+            context.timer(10, event -> future.complete());
         }, "benchmark#1");
 
         add(future -> {
             secondBenchmarkExecuted = true;
             secondBenchmarkExecutions.incrementAndGet();
-            future.complete();
+            context.timer(5, event -> future.complete());
         }, "benchmark#2");
     }
 

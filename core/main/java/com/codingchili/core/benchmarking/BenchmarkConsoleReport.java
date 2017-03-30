@@ -23,7 +23,7 @@ public class BenchmarkConsoleReport implements BenchmarkReport {
     private static final char TOKEN = '%';
     private List<BenchmarkGroup> groups = new ArrayList<>();
     private ConsoleLogger logger = new ConsoleLogger();
-    private String template = "[%s] %s::%s\t at %s op/s completed in\t%s";
+    private String template = "[%s] %s::%s at %s op/s completed in %s";
 
     public BenchmarkConsoleReport(List<BenchmarkGroup> groups) {
         this.groups = groups;

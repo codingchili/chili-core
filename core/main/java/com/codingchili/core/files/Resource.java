@@ -7,6 +7,10 @@ import java.nio.file.*;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.codingchili.core.files.exception.FileWriteException;
+
+import static com.codingchili.core.configuration.CoreStrings.getAbsolutePath;
+
 /**
  * @author Robin Duda
  *         <p>
@@ -40,13 +44,22 @@ public class Resource {
         return file;
     }
 
+    public void write(Buffer buffer) {
+        Path path = Paths.get(this.path);
+        try {
+            Files.write(path, buffer.getBytes());
+        } catch (IOException e) {
+            throw new FileWriteException(this.path);
+        }
+    }
+
     /**
      * Reads a resource from the filesystem.
      *
      * @return a buffer if the file is loaded successfully.
      */
     public Optional<Buffer> readFromFS() {
-        Path path = Paths.get(this.path);
+        Path path = Paths.get(getAbsolutePath(this.path));
         try {
             if (path.toFile().exists()) {
                 return Optional.of(Buffer.buffer(

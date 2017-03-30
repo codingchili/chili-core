@@ -8,15 +8,14 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import com.codingchili.core.configuration.system.LauncherSettings;
-import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.files.Resource;
+import com.codingchili.core.files.exception.NoSuchResourceException;
 
 import de.neuland.jade4j.Jade4J;
 import de.neuland.jade4j.JadeConfiguration;
@@ -35,19 +34,17 @@ import io.vertx.core.json.JsonObject;
 public class BenchmarkHTMLReport implements BenchmarkReport {
     private static final String VERSION = "version";
     private static final String BENCHMARKS = "benchmarks";
-    public static final String LOCAL_INDEX = "localIndex";
-    private CoreContext context;
-    private String template = "core/main/resources/benchmarking/report.jade";
-    private String file;
-    private Buffer output;
+    private static final String LOCAL_INDEX = "localIndex";
+    private List<BenchmarkGroup> results;
+    private String template = "/benchmarking/report.jade";
 
     /**
      * Parses the benchmark results of a single benchmark group.
      *
      * @param result a benchmark group to create a report for.
      */
-    public BenchmarkHTMLReport(Future<Void> future, CoreContext context, BenchmarkGroup result) {
-        this(future, context, toList(result));
+    public BenchmarkHTMLReport(BenchmarkGroup result) {
+        this(toList(result));
     }
 
     /**
@@ -55,19 +52,15 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
      *
      * @param results a list of benchmarking groups to create a report for.
      */
-    public BenchmarkHTMLReport(Future<Void> future, CoreContext context, List<BenchmarkGroup> results) {
-        this.context = context;
+    public BenchmarkHTMLReport(List<BenchmarkGroup> results) {
+        this.results = results;
+    }
 
-        try {
-            JsonObject model = new JsonObject()
-                    .put(BENCHMARKS, baseline(reorder(results)))
-                    .put(VERSION, new LauncherSettings().getVersion());
-
-            output = Buffer.buffer(Jade4J.render(getTemplate(), model.getMap(), true));
-            future.complete();
-        } catch (VertxException e) {
-            future.fail(e);
-        }
+    private Buffer render() {
+        JsonObject model = new JsonObject()
+                .put(BENCHMARKS, baseline(reorder(results)))
+                .put(VERSION, new LauncherSettings().getVersion());
+        return Buffer.buffer(Jade4J.render(getTemplate(), model.getMap(), true));
     }
 
     /**
@@ -141,8 +134,13 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
 
             @Override
             public Reader getReader(String name) throws VertxException {
-                Buffer buffer = context.vertx().fileSystem().readFileBlocking(template);
-                return new StringReader(buffer.toString());
+                Optional<Buffer> buffer = new Resource(template).read();
+
+                if (buffer.isPresent()) {
+                    return new StringReader(buffer.get().toString());
+                } else {
+                    throw new NoSuchResourceException(name);
+                }
             }
         });
         try {
@@ -158,6 +156,12 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
         return list;
     }
 
+    /**
+     * Sets the jade template to use.
+     *
+     * @param template a path to jade on the classpath or filesystem.
+     * @return fluent.
+     */
     @Override
     public BenchmarkReport template(String template) {
         this.template = template;
@@ -175,8 +179,7 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
 
     @Override
     public BenchmarkReport saveTo(String path) {
-        this.file = path;
-        context.vertx().fileSystem().writeFileBlocking(path, output);
+        new Resource(path).write(render());
         return this;
     }
 
