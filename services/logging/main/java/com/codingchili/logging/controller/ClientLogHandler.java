@@ -37,7 +37,10 @@ public class ClientLogHandler<T extends LogContext> extends AbstractLogHandler<T
     }
 
     private boolean verifyToken(JsonObject logdata) {
-        JsonObject token = (JsonObject) logdata.remove(ID_TOKEN);
-        return context.verifyToken(Serializer.unpack(token, Token.class));
+        if (logdata.containsKey(ID_TOKEN)) {
+            return context.verifyToken(Serializer.unpack(logdata.getJsonObject(ID_TOKEN), Token.class));
+        } else {
+            return false;
+        }
     }
 }
