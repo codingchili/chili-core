@@ -5,7 +5,7 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import io.vertx.rxjava.ext.unit.TestContext;
+import io.vertx.ext.unit.TestContext;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
