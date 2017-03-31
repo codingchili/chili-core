@@ -52,11 +52,11 @@ public class Launcher extends ClusterNode {
         future.setHandler(done -> {
             try {
                 if (done.failed()) {
-                    throw done.cause();
-                } else {
                     nodes = context.block(context.args());
                     nodes = new ArrayList<>(nodes);
                     cluster();
+                } else {
+                    exit();
                 }
             } catch (Throwable e) {
                 logger.log(e.getMessage(), Level.SEVERE);
