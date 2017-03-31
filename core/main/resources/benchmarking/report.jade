@@ -12,47 +12,64 @@ html
             .panel-heading {
             text-align: center;
             }
+            .panel {
+                margin-bottom: 3px;
+            }
+            .panel-primary > .panel-heading {
+                background-color: #BF4869;
+            }
+            .panel-heading:hover {
+                background-color: #502549;
+            }
+            .progress-bar {
+                background-color: #BF4869;
+            }
             .progress {
                 margin-top: 6px;
                 margin-bottom: 0px;
+            }
+            table {
+                margin-top: 16px;
             }
     body
         .jumbotron
             h1 Benchmarks
             p Benchmarks generated using #{version}
 
-        each group in benchmarks
-            .panel.panel-default.col-xs-8.col-xs-offset-2
-                .panel-heading #{group.name}
-                .panel-body
-                    each implementation in group.implementations
-                        .panel.panel-default.col-xs-8.col-xs-offset-2
-                            .panel-heading #{implementation.name}
-                            .panel-body
-                                each benchmark in implementation.benchmarks
-                                    .progress
-                                        .progress-bar(role='progressbar', style="width:#{benchmark.properties.localIndex}%;")
-                                            | #{benchmark.implementation}
+        each group, groupId in benchmarks
+            .col-xs-8.col-xs-offset-2
+                .panel.panel-primary
+                    .panel-heading(data-toggle="collapse", href="#" + groupId) #{group.name}
+                    .panel-body.collapse(id=groupId)
+                        each implementation, implementationId in group.implementations
+                            - var id = groupId + "-" + implementationId
+                            .panel.panel-default.col-xs-8.col-xs-offset-2
+                                .panel-heading(data-toggle="collapse", href="#" + id) #{implementation.name}
+                                .panel-body.collapse(id=id)
+                                    each benchmark in implementation.benchmarks
+                                        .progress
+                                            .progress-bar(role='progressbar', style="width:#{benchmark.properties.localIndex}%;")
+                                                | #{benchmark.implementation}
 
-                                table.table.table-striped.table-hover
-                                    thead
-                                        tr
-                                            th Implementation
-                                            th Time
-                                            th Operations/s
-                                    tbody
-                                        each benchmark in implementation.benchmarks
+                                    table.table.table-striped.table-hover
+                                        thead
                                             tr
-                                                td #{benchmark.implementation}
-                                                td #{benchmark.timeFormatted}
-                                                td #{benchmark.rateFormatted}
+                                                th Implementation
+                                                th Time
+                                                th Operations/s
+                                        tbody
+                                            each benchmark in implementation.benchmarks
+                                                tr
+                                                    td #{benchmark.implementation}
+                                                    td #{benchmark.timeFormatted}
+                                                    td #{benchmark.rateFormatted}
 
-                    div.col-xs-8.col-xs-offset-2
-                        p Parameters
-                        table.table.table-striped.table-hover
-                            thead
-                                tr
-                                    th Iterations
-                            tbody
-                                tr
-                                    td #{group.iterations}
+                        div.col-xs-8.col-xs-offset-2
+                            p Parameters
+                            table.table.table-striped.table-hover
+                                thead
+                                    tr
+                                        th Iterations
+                                tbody
+                                    tr
+                                        td #{group.iterations}
