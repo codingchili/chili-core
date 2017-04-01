@@ -1,6 +1,5 @@
 package com.codingchili.router.controller.transport;
 
-import com.codingchili.common.Strings;
 import com.codingchili.router.Service;
 import com.codingchili.router.configuration.ListenerSettings;
 import com.codingchili.router.configuration.RouterSettings;
@@ -18,7 +17,6 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.security.RemoteIdentity;
@@ -35,33 +33,35 @@ import static com.codingchili.common.Strings.*;
 public abstract class TransportTestCases {
     static final String PATCHING_ROOT = "/patching";
     static final String HOST = getLoopbackAddress();
-    private static final AtomicInteger PORT = new AtomicInteger(9896);
     private static final int MAX_REQUEST_BYTES = 256;
     private static final String ONE_CHAR = "x";
     private static final String DATA = "data";
     private ContextMock context;
     private WireType wireType;
-    int port;
-    Vertx vertx;
+    protected int port;
+    protected static Vertx vertx;
 
     TransportTestCases(WireType wireType) {
         this.wireType = wireType;
     }
 
     @Rule
-    public Timeout timeout = new Timeout(8, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(30, TimeUnit.SECONDS);
+
+    @BeforeClass
+    public static void setUpClass() {
+        vertx = Vertx.vertx();
+    }
 
     @Before
     public void setUp(TestContext test) {
         Async async = test.async();
 
-        vertx = Vertx.vertx();
-        port = PORT.getAndIncrement();
         context = new ContextMock(vertx);
 
         ListenerSettings listener = new ListenerSettings()
                 .setMaxRequestBytes(MAX_REQUEST_BYTES)
-                .setPort(port)
+                .setPort(0)
                 .setType(wireType)
                 .setTimeout(7000)
                 .setHttpOptions(new HttpServerOptions().setCompressionSupported(false))
@@ -71,19 +71,18 @@ public abstract class TransportTestCases {
                 .addHidden(NODE_LOGGING)
                 .addTransport(listener);
 
-        settings.addHidden(Strings.NODE_LOGGING);
-        settings.addTransport(listener);
         context.setSettings(settings);
 
         vertx.deployVerticle(new Service(context), deploy -> {
+            this.port = listener.getListenPorts().iterator().next();
             test.assertTrue(deploy.succeeded());
             async.complete();
         });
     }
 
-    @After
-    public void tearDown(TestContext context) {
-        vertx.close(context.asyncAssertSuccess());
+    @AfterClass
+    public static void tearDown(TestContext test) {
+        vertx.close(test.asyncAssertSuccess());
     }
 
     @Test

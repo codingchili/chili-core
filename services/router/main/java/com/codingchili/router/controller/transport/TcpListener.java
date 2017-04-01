@@ -31,6 +31,7 @@ public class TcpListener extends ClusterNode {
             handler.handler(data -> packet(handler, data));
         }).listen(listener().getPort(), getBindAddress(), listen -> {
             if (listen.succeeded()) {
+                listener().addListenPort(listen.result().actualPort());
                 handler.start(start);
             } else {
                 start.fail(listen.cause());

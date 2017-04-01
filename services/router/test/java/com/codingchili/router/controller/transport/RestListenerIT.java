@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import com.codingchili.core.protocol.ResponseStatus;
 
 import static com.codingchili.common.Strings.*;
+import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
 
 /**
  * @author Robin Duda
@@ -32,7 +33,7 @@ public class RestListenerIT extends TransportTestCases {
         mockNode(NODE_PATCHING);
 
         sendRequest((result, status) -> {
-            context.assertEquals(ResponseStatus.ACCEPTED, status);
+            context.assertEquals(ACCEPTED, status);
             context.assertEquals(NODE_PATCHING, result.getString(PROTOCOL_TARGET));
             async.complete();
         }, new JsonObject().put(PROTOCOL_ROUTE, PATCHING_ROOT));
@@ -45,7 +46,7 @@ public class RestListenerIT extends TransportTestCases {
         mockNode(NODE_WEBSERVER);
 
         sendRequest((result, status) -> {
-            context.assertEquals(ResponseStatus.ACCEPTED, status);
+            context.assertEquals(ACCEPTED, status);
             context.assertEquals(NODE_WEBSERVER, result.getString(PROTOCOL_TARGET));
             async.complete();
         }, new JsonObject().put(PROTOCOL_ROUTE, SAMPLE_URL));
@@ -55,9 +56,9 @@ public class RestListenerIT extends TransportTestCases {
     public void testRouterSupportsGet(TestContext context) {
         Async async = context.async();
 
-        sendGetRequest("/?" + PROTOCOL_ROUTE + "=" + ID_PING + "&" + PROTOCOL_TARGET + "=" + NODE_ROUTING,
+        sendGetRequest(String.format("/?%s=%s&%s=%s", PROTOCOL_ROUTE, ID_PING, PROTOCOL_TARGET, NODE_ROUTING),
                 (result, status) -> {
-                    context.assertEquals(ResponseStatus.ACCEPTED, status);
+                    context.assertEquals(ACCEPTED, status);
                     async.complete();
                 });
     }

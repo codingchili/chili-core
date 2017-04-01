@@ -5,8 +5,7 @@ import com.codingchili.router.model.WireType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.vertx.core.http.HttpServerOptions;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Robin Duda
@@ -17,6 +16,7 @@ public class ListenerSettings {
     private HttpServerOptions httpOptions = new HttpServerOptions();
     private Map<String, Endpoint> api = new HashMap<>();
     private WireType type = WireType.REST;
+    private Set<Integer> actualPorts = new HashSet<>();
     private int port = 8080;
     private int timeout = 3000;
     private int maxRequestBytes = 64;
@@ -86,5 +86,23 @@ public class ListenerSettings {
     public ListenerSettings addMapping(String route, Endpoint endpoint) {
         api.put(route, endpoint);
         return this;
+    }
+
+    /**
+     * @param port adds a port that the server is listening to. useful if the
+     *             port is set to 0.
+     */
+    public void addListenPort(int port) {
+        actualPorts.add(port);
+    }
+
+    /**
+     * @return a list of ports the listener is listening to. this list contains
+     * all ports that are being listened to for the configuration, which may
+     * differ from the requested listening port.
+     */
+    @JsonIgnore
+    public Set<Integer> getListenPorts() {
+        return actualPorts;
     }
 }

@@ -28,6 +28,7 @@ public class UdpListener extends ClusterNode {
     public void start(Future<Void> start) {
         vertx.createDatagramSocket().listen(listener().getPort(), getBindAddress(), listen -> {
             if (listen.succeeded()) {
+                listener().addListenPort(listen.result().localAddress().port());
                 listen.result().handler(this::handle);
                 handler.start(start);
             } else {

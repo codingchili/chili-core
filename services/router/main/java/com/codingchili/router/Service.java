@@ -6,7 +6,12 @@ import com.codingchili.router.controller.RouterHandler;
 import com.codingchili.router.controller.transport.*;
 import io.vertx.core.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.codingchili.core.protocol.ClusterNode;
+
+import static io.vertx.core.CompositeFuture.all;
 
 /**
  * @author Robin Duda
@@ -15,7 +20,8 @@ import com.codingchili.core.protocol.ClusterNode;
 public class Service extends ClusterNode {
     private RouterContext context;
 
-    public Service() {}
+    public Service() {
+    }
 
     public Service(RouterContext context) {
         this.context = context;
@@ -32,12 +38,15 @@ public class Service extends ClusterNode {
 
     @Override
     public void start(Future<Void> start) {
+        List<Future> deployments = new ArrayList<>();
+
         for (ListenerSettings listener : context.transports()) {
             RouterHandler<RouterContext> handler = new RouterHandler<>(context);
 
             for (int i = 0; i < settings.getHandlers(); i++) {
-                boolean singleHandlerOnly = false;
                 Future<String> future = Future.future();
+                deployments.add(future);
+                boolean singleHandlerOnly = false;
 
                 switch (listener.getType()) {
                     case UDP:
@@ -45,13 +54,13 @@ public class Service extends ClusterNode {
                         singleHandlerOnly = true;
                         break;
                     case TCP:
-                        context.deploy(new TcpListener(handler));
+                        context.deploy(new TcpListener(handler), future);
                         break;
                     case WEBSOCKET:
-                        context.deploy(new WebsocketListener(handler));
+                        context.deploy(new WebsocketListener(handler), future);
                         break;
                     case REST:
-                        context.deploy(new RestListener(handler));
+                        context.deploy(new RestListener(handler), future);
                         break;
                 }
                 if (singleHandlerOnly) {
@@ -59,6 +68,6 @@ public class Service extends ClusterNode {
                 }
             }
         }
-        start.complete();
+        all(deployments).setHandler(done -> start.complete());
     }
 }

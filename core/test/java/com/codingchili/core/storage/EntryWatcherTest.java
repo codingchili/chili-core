@@ -22,16 +22,19 @@ import com.codingchili.core.testing.StorageObject;
 @RunWith(VertxUnitRunner.class)
 public class EntryWatcherTest {
     private static final String TEST_NAME = "TEST_NAME";
-    private static final String DB = "db";
-    private static final String COLLECTION = "collection";
+    private static final String DB = "entrywatcher";
+    private static final String COLLECTION = "test";
     private static final String LEVEL = "level";
     private static final int WAIT_MS = 500;
+    private static final int REMOVE_INTERVAL = 50;
+    private static final int LEVEL_PERSIST = 50;
+    private static final int LEVEL_REMOVE = 0;
     private AsyncStorage<StorageObject> storage;
     private StorageObject object = new StorageObject(TEST_NAME, 5);
     private StorageContext context;
 
     @Rule
-    public Timeout timeout = new Timeout(60, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
 
     @Before
     public void setUp(TestContext test) {
@@ -44,7 +47,7 @@ public class EntryWatcherTest {
 
                 getQuery().poll(entry -> entry.forEach(item -> {
                     storage.remove(item.id(), removed -> {});
-                }), this::getInterval);
+                }), () -> REMOVE_INTERVAL);
 
                 storage.put(object, put -> {
                     test.assertTrue(put.succeeded());
@@ -56,12 +59,8 @@ public class EntryWatcherTest {
         });
     }
 
-    private int getInterval() {
-        return 150;
-    }
-
     private QueryBuilder<StorageObject> getQuery() {
-        return storage.query(LEVEL).between(Long.MIN_VALUE, 0L)
+        return storage.query(LEVEL).between(Long.MIN_VALUE,  0L)
                 .or(LEVEL).between(100L, Long.MAX_VALUE);
     }
 
@@ -84,13 +83,13 @@ public class EntryWatcherTest {
     }
 
     private void setPersist() {
-        object.setLevel(50);
+        object.setLevel(LEVEL_PERSIST);
         storage.update(object, result -> {
         });
     }
 
     private void setRemove() {
-        object.setLevel(0);
+        object.setLevel(LEVEL_REMOVE);
         storage.update(object, result -> {
         });
     }
@@ -100,13 +99,11 @@ public class EntryWatcherTest {
         Async async = test.async();
         setRemove();
 
-        context.timer(WAIT_MS, handler -> {
-            storage.get(TEST_NAME, event -> {
-                test.assertFalse(event.succeeded());
-                test.assertNull(event.result());
-                async.complete();
-            });
-        });
+        context.timer(WAIT_MS, handler -> storage.get(TEST_NAME, event -> {
+            test.assertFalse(event.succeeded());
+            test.assertNull(event.result());
+            async.complete();
+        }));
     }
 
     @Test
@@ -114,12 +111,10 @@ public class EntryWatcherTest {
         Async async = test.async();
         setPersist();
 
-        context.timer(WAIT_MS, handler -> {
-            storage.get(TEST_NAME, get -> {
-                test.assertTrue(get.succeeded());
-                test.assertNotNull(get.result());
-                async.complete();
-            });
-        });
+        context.timer(WAIT_MS, handler -> storage.get(TEST_NAME, get -> {
+            test.assertTrue(get.succeeded());
+            test.assertNotNull(get.result());
+            async.complete();
+        }));
     }
 }

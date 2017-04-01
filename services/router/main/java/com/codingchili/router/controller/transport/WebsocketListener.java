@@ -31,6 +31,7 @@ public class WebsocketListener extends ClusterNode {
             socket.handler(data -> handle(socket, data));
         }).listen(listener().getPort(), getBindAddress(), listen -> {
             if (listen.succeeded()) {
+                listener().addListenPort(listen.result().actualPort());
                 handler.start(start);
             }
             else {
