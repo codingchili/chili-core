@@ -1,16 +1,14 @@
 package com.codingchili.core.benchmarking;
 
-import static com.codingchili.core.configuration.CoreStrings.EXT_TXT;
-import static com.codingchili.core.configuration.CoreStrings.getFileFriendlyDate;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.List;
 
 import com.codingchili.core.logging.ConsoleLogger;
+
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
@@ -18,7 +16,6 @@ import com.codingchili.core.logging.ConsoleLogger;
  *         Crates benchmark reports in the terminal.
  */
 public class BenchmarkConsoleReport implements BenchmarkReport {
-    private static final String[] HEADER = {"\n[GROUP]", " [IMPLEMENTATION]", " [BENCHMARK]", " [OP/s]", " [TIME]"};
     private static final int PARAM_COUNT = 5;
     private static final char TOKEN = '%';
     private List<BenchmarkGroup> groups = new ArrayList<>();
@@ -34,8 +31,7 @@ public class BenchmarkConsoleReport implements BenchmarkReport {
         if (paramCount(string) == PARAM_COUNT) {
             this.template = string;
         } else {
-            throw new IllegalArgumentException("template must accept " + PARAM_COUNT +
-                    " tokens ('" + TOKEN + "s').");
+            throw new IllegalArgumentException(getIllegalTemplateTokenCount(TOKEN + "", PARAM_COUNT));
         }
         return this;
     }
@@ -46,7 +42,7 @@ public class BenchmarkConsoleReport implements BenchmarkReport {
 
     @Override
     public BenchmarkReport display() {
-        logger.log(String.format(template, HEADER));
+        logger.log(String.format(template, BENCHMARK_CONSOLE_REPORT_COLUMNS));
         lines().forEach(logger::log);
         return this;
     }

@@ -439,9 +439,17 @@ public abstract class CoreStrings {
                 " " + progress + "%";
     }
 
+    public static final String[] BENCHMARK_CONSOLE_REPORT_COLUMNS =
+            {"\n[GROUP]", " [IMPLEMENTATION]", " [BENCHMARK]", " [OP/s]", " [TIME]"};
+
+
     public static String getBenchmarkCompleted(Benchmark benchmark) {
         return "Completed benchmark " + benchmark.getImplementation() +
                 "::" + benchmark.getName() + " in " + benchmark.getElapsedMS() + " ms.";
+    }
+
+    public static String getIllegalTemplateTokenCount(String token, int count) {
+        return "template must accept " + count + " tokens ('" + token + "s').";
     }
 
     public static String formatAsPercent(Double value) {
