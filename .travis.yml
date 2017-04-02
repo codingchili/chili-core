@@ -4,10 +4,10 @@ jdk:
   - oraclejdk8
 script:
   - gradle build
-  - gradle sourcesJar
-  - gradle archivePrototype
-  - gradle archiveJavadoc
-  - gradle archiveTestReport
+  - gradle sourcesJar -x test
+  - gradle archivePrototype -x test
+  - gradle archiveJavadoc -x test
+  - gradle archiveTestReport -x test
 notifications:
   email: true
 before_cache:
