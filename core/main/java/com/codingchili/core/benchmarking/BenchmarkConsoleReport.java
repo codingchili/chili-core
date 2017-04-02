@@ -18,12 +18,12 @@ import com.codingchili.core.logging.ConsoleLogger;
  *         Crates benchmark reports in the terminal.
  */
 public class BenchmarkConsoleReport implements BenchmarkReport {
-    private static final String header = "\n\t\t\t\t\t\t======== BENCHMARK REPORT ========";
+    private static final String[] HEADER = {"\n[GROUP]", " [IMPLEMENTATION]", " [BENCHMARK]", " [OP/s]", " [TIME]"};
     private static final int PARAM_COUNT = 5;
     private static final char TOKEN = '%';
     private List<BenchmarkGroup> groups = new ArrayList<>();
     private ConsoleLogger logger = new ConsoleLogger();
-    private String template = "[%s] %s::%s at %s op/s completed in %s";
+    private String template = "%-16s%-18s%-23s%-12s%-14s";
 
     public BenchmarkConsoleReport(List<BenchmarkGroup> groups) {
         this.groups = groups;
@@ -46,7 +46,7 @@ public class BenchmarkConsoleReport implements BenchmarkReport {
 
     @Override
     public BenchmarkReport display() {
-        logger.log(header);
+        logger.log(String.format(template, HEADER));
         lines().forEach(logger::log);
         return this;
     }
@@ -71,10 +71,10 @@ public class BenchmarkConsoleReport implements BenchmarkReport {
     private List<String> lines() {
         List<String> list = new ArrayList<>();
         groups.forEach(group -> group.getImplementations().forEach(implementation -> {
-            implementation.getBenchmarks().forEach(benchmark -> list.add(new Formatter().format(template,
+            implementation.getBenchmarks().forEach(benchmark -> list.add(String.format(template,
                     group.getName(), implementation.getName(),
                     benchmark.getName(), benchmark.getRateFormatted(),
-                    benchmark.getTimeFormatted()).toString()));
+                    benchmark.getTimeFormatted())));
         }));
         return list;
     }

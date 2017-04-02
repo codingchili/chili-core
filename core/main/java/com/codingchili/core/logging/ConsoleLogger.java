@@ -129,14 +129,12 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
     }
 
     private String parseJsonLog(JsonObject data, String event) {
-        String text = time() + " " +
-                getLevel(data) + " " +
-                event + " ";
+        String text = String.format("%s %s [%s] ", time(), getLevel(data), event.toUpperCase());
 
         for (String key : data.fieldNames()) {
             Object object = data.getValue(key);
             if (object != null) {
-                text += key + "=" + object.toString() + " ";
+                text += String.format("%s=%s ", key, object.toString());
             }
         }
         return text;

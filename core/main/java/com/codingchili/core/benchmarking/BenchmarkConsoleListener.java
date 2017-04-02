@@ -1,11 +1,9 @@
 package com.codingchili.core.benchmarking;
 
-import static com.codingchili.core.configuration.CoreStrings.ID_MESSAGE;
-
-import java.text.DecimalFormat;
-
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
+
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
@@ -17,53 +15,50 @@ public class BenchmarkConsoleListener implements BenchmarkListener {
 
     @Override
     public void onGroupStarted(BenchmarkGroup group) {
-        log("Starting group " + group.getName());
+        log(getBenchmarkGroupStarted(group));
     }
 
     @Override
     public void onGroupCompleted(BenchmarkGroup group) {
-        log("Completed group " + group.getName());
+        log(getBenchmarkGroupCompleted(group));
     }
 
     @Override
     public void onImplementationWarmup(BenchmarkImplementation implementation) {
-        log("Warmup started for " + implementation.getName());
+        log(getBenchmarkImplementationWarmup(implementation));
     }
 
     @Override
     public void onImplementationWarmupComplete(BenchmarkImplementation implementation) {
-        log("Warmup completed for " + implementation.getName());
+        log(getBenchmarkImplementationWarmupComplete(implementation));
     }
 
     @Override
     public void onImplementationTestBegin(BenchmarkImplementation implementation) {
-        log("Starting tests for " + implementation.getName());
+        log(getBenchmarkImplementationTestBegin(implementation));
     }
 
     @Override
     public void onImplementationCompleted(BenchmarkImplementation implementation) {
-        log("Tests completed for " + implementation.getName());
+        log(getBenchmarkImplementationComplete(implementation));
     }
 
     @Override
     public void onProgressUpdate(Benchmark benchmark, int iterations) {
-        log("Tests for " + benchmark.getImplementation() + "::" + benchmark.getName() +
-                " " + progressAsPercent(benchmark, iterations) + "%");
+        log(getBenchmarkProgressUpdate(benchmark, progressAsPercent(benchmark, iterations)));
     }
 
     @Override
     public void onBenchmarkCompleted(Benchmark benchmark) {
-        log("Completed benchmark " + benchmark.getImplementation() +
-                "::" + benchmark.getName() + " in " + benchmark.getElapsedMS() + " ms.");
+        log(getBenchmarkCompleted(benchmark));
     }
 
     private String progressAsPercent(Benchmark benchmark, int iterations) {
-        return new DecimalFormat("#.00")
-                .format((iterations * 1.0 / benchmark.getIterations()) * 100);
+        return formatAsPercent((iterations * 1.0 / benchmark.getIterations()) * 100);
     }
 
     private void log(String message) {
-        logger.log(logger.event("[BENCHMARKING]", Level.INFO)
+        logger.log(logger.event(LOG_BENCHMARK, Level.INFO)
                 .put(ID_MESSAGE, message));
     }
 }

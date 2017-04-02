@@ -1,6 +1,7 @@
 package com.codingchili.core.configuration;
 
 import java.nio.file.*;
+import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -8,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.codingchili.core.benchmarking.*;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
 
@@ -160,6 +162,7 @@ public abstract class CoreStrings {
     public static final String LOG_TIMER_CHANGE = "timer.changed";
     public static final String LOG_PREVIOUS = "previous";
     public static final String LOG_NEW = "new";
+    public static final String LOG_BENCHMARK = "benchmark";
     public static final String LOG_VALUE_EXPIRED = "storage.expired";
     public static final String LOG_VALUE_EXPIRED_MISSING = "storage.failure";
     public static final String LOG_STORAGE_CLEARED = "storage.cleared";
@@ -401,6 +404,44 @@ public abstract class CoreStrings {
 
     public static String getBenchmarkDescription() {
         return "Executes all registered benchmarks. [--iterations]";
+    }
+
+    public static String getBenchmarkGroupStarted(BenchmarkGroup group) {
+        return "Starting group " + group.getName();
+    }
+
+    public static String getBenchmarkGroupCompleted(BenchmarkGroup group) {
+        return "Completed group " + group.getName();
+    }
+
+    public static String getBenchmarkImplementationWarmup(BenchmarkImplementation implementation) {
+        return "Warmup started for " + implementation.getName();
+    }
+
+    public static String getBenchmarkImplementationWarmupComplete(BenchmarkImplementation implementation) {
+        return "Warmup completed for " + implementation.getName();
+    }
+
+    public static String getBenchmarkImplementationTestBegin(BenchmarkImplementation implementation) {
+        return "Starting tests for " + implementation.getName();
+    }
+
+    public static String getBenchmarkImplementationComplete(BenchmarkImplementation implementation) {
+        return "Tests completed for " + implementation.getName();
+    }
+
+    public static String getBenchmarkProgressUpdate(Benchmark benchmark, String progress) {
+        return "Tests for " + benchmark.getImplementation() + "::" + benchmark.getName() +
+                " " + progress + "%";
+    }
+
+    public static String getBenchmarkCompleted(Benchmark benchmark) {
+        return "Completed benchmark " + benchmark.getImplementation() +
+                "::" + benchmark.getName() + " in " + benchmark.getElapsedMS() + " ms.";
+    }
+
+    public static String formatAsPercent(Double value) {
+        return new DecimalFormat("#.00").format(value);
     }
 
     public static List<String> getCommandExecutorText() {
