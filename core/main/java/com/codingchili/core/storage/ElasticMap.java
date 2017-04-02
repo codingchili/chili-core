@@ -12,6 +12,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.IndexNotFoundException;
 import org.elasticsearch.index.engine.DocumentMissingException;
 import org.elasticsearch.index.engine.VersionConflictEngineException;
@@ -86,7 +87,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     @Override
     public void put(Value value, Handler<AsyncResult<Void>> handler) {
         client.prepareIndex(context.DB(), context.collection(), value.id())
-                .setSource(context.toJson(value).encode())
+                .setSource(context.toJson(value).encode(), XContentType.JSON)
                 .execute(new ElasticHandler<>(response -> {
                     handler.handle(result());
                 }, exception -> handler.handle(error(exception))));
@@ -95,7 +96,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     @Override
     public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
         client.prepareIndex(context.DB(), context.collection(), value.id())
-                .setSource(context.toJson(value).encode())
+                .setSource(context.toJson(value).encode(), XContentType.JSON)
                 .setOpType(IndexRequest.OpType.CREATE)
                 .execute(new ElasticHandler<>(response -> {
 
@@ -133,7 +134,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     @Override
     public void update(Value value, Handler<AsyncResult<Void>> handler) {
         client.prepareUpdate(context.DB(), context.collection(), value.id())
-                .setDoc(context.toPacked(value))
+                .setDoc(context.toPacked(value), XContentType.JSON)
                 .execute(new ElasticHandler<>(response -> {
 
                     if (response.getResult().ordinal() != 0) {
