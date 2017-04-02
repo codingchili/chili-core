@@ -1,8 +1,5 @@
 package com.codingchili.core;
 
-import static com.codingchili.core.configuration.CoreStrings.ERROR_LAUNCHER_STARTUP;
-import static com.codingchili.core.configuration.CoreStrings.ERRROR_LAUNCHER_SHUTDOWN;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -22,6 +19,8 @@ import com.codingchili.core.protocol.ClusterNode;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
@@ -60,6 +59,7 @@ public class Launcher extends ClusterNode {
                 }
             } catch (Throwable e) {
                 logger.log(e.getMessage(), Level.SEVERE);
+                logger.log(getCommandError(context.command()), Level.INFO);
                 exit();
             }
         });

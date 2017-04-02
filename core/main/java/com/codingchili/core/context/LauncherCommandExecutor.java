@@ -1,18 +1,14 @@
 package com.codingchili.core.context;
 
-import io.vertx.core.Future;
-
-import static com.codingchili.core.configuration.CoreStrings.*;
-
 import java.util.*;
 
 import com.codingchili.core.benchmarking.BenchmarkSuite;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.files.Configurations;
-import com.codingchili.core.logging.ConsoleLogger;
-import com.codingchili.core.logging.Level;
-import com.codingchili.core.logging.Logger;
+import com.codingchili.core.logging.*;
 import com.codingchili.core.security.AuthenticationGenerator;
+
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
@@ -47,11 +43,11 @@ public class LauncherCommandExecutor extends CommandExecutor {
         add(generator::all, GENERATE, getGenerateAllDescription());
         add(suite::execute, BENCHMARK, getBenchmarkDescription());
         add(this::help, HELP, getCommandExecutorHelpDescription());
-
+/*
         add(new BaseCommand((executor) -> {
             // return without failing when no command is given.
             // the launcher will execute the command as a block or remote.
-        }, ID_DEFAULT, "").setVisible(false));
+        }, ID_DEFAULT, "").setVisible(false));*/
     }
 
     /* helper method to support methods that does not implement Consumer<CommandExecutor> */
@@ -98,9 +94,7 @@ public class LauncherCommandExecutor extends CommandExecutor {
                             .forEach(row.remotes::add);
                     blocks.add(row);
                 });
-        blocks.forEach(block -> {
-            logger.log(block.toString(), Level.PURPLE);
-        });
+        blocks.forEach(block -> logger.log(block.toString(), Level.PURPLE));
     }
 
     private class BlockRow {

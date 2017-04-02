@@ -137,4 +137,15 @@ public class LaunchContext extends SystemContext {
         }
         return BLOCK_DEFAULT;
     }
+
+    /**
+     * @return the command that was passed to the launcher if existing.
+     */
+    public String command() {
+        if (args.length > 0) {
+            return args[0];
+        } else {
+            return BLOCK_DEFAULT;
+        }
+    }
 }

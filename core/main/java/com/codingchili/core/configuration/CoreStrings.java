@@ -6,8 +6,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import com.codingchili.core.benchmarking.*;
 import com.codingchili.core.logging.ConsoleLogger;
@@ -270,8 +269,8 @@ public abstract class CoreStrings {
         return "[Generating] secret '" + name + "' for " + key + " ..";
     }
 
-    public static String getNoSuchCommand(String command) {
-        return "Failed to execute '" + command + "' no such command, list available with --help";
+    public static String getCommandError(String command) {
+        return "Failed to execute command '" + command + "', list available with --help";
     }
 
     public static String getGeneratingToken(String owner, String secret, String service) {
@@ -291,7 +290,7 @@ public abstract class CoreStrings {
     }
 
     public static String getStartupText(String version) {
-        return String.format("%52s\n%42s\n%38s %s %s %s\n",
+        return String.format("\n%56s\n%42s\n%38s %s %s %s\n",
                 "system: Starting launcher [" + version + "] ..",
                 "Robin Duda © 2017",
                 System.getProperty("java.vm.name"),
@@ -407,7 +406,7 @@ public abstract class CoreStrings {
     }
 
     public static String getBenchmarkDescription() {
-        return "Executes all registered benchmarks. [--iterations]";
+        return "Executes benchmarks. [--iterations ?, --html]";
     }
 
     public static String getBenchmarkGroupStarted(BenchmarkGroup group) {
@@ -458,7 +457,7 @@ public abstract class CoreStrings {
 
     public static List<String> getCommandExecutorText() {
         List<String> list = new ArrayList<>();
-        list.add("=================================================== HELP ====================================================");
+        list.add("================================ HELP ================================");
         list.add("\t\t<block-name>\t\t\tdeploys the services configured in the given block.");
         list.add("\t\t<remote-name>\t\t\tdeploys configured blocks on a remote host.");
         return list;

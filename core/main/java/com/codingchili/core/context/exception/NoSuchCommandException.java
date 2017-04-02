@@ -14,6 +14,6 @@ public class NoSuchCommandException extends CoreException {
      * @param command the requested command that was missing.
      */
     public NoSuchCommandException(String command) {
-        super(CoreStrings.getNoSuchCommand(command));
+        super(CoreStrings.getCommandError(command));
     }
 }

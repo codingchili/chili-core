@@ -42,7 +42,7 @@ public class BenchmarkConsoleReport implements BenchmarkReport {
 
     @Override
     public BenchmarkReport display() {
-        logger.log(String.format(template, BENCHMARK_CONSOLE_REPORT_COLUMNS));
+        logger.log(String.format(template, (Object[]) BENCHMARK_CONSOLE_REPORT_COLUMNS));
         lines().forEach(logger::log);
         return this;
     }
