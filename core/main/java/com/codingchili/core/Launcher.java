@@ -18,9 +18,9 @@ import com.codingchili.core.protocol.ClusterNode;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
+import static com.codingchili.core.files.Configurations.system;
 
 /**
  * @author Robin Duda
@@ -71,7 +71,7 @@ public class Launcher extends ClusterNode {
     }
 
     private void cluster() {
-        Vertx.clusteredVertx(new VertxOptions(), (clustered) -> {
+        Vertx.clusteredVertx(system().getOptions(), (clustered) -> {
             if (clustered.succeeded()) {
                 context = new LaunchContext(clustered.result());
 
