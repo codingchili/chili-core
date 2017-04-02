@@ -291,13 +291,17 @@ public abstract class CoreStrings {
     }
 
     public static String getStartupText(String version) {
-        return String.format("\n\t\t\t\t\t\t\t\tsystem: Starting launcher [" + version + "] ..\n" +
-                        "\t\t\t\t\t\t\t\t\t\t     Robin Duda © 2017\n\n\t\t\t" +
-                        "     %s %s on system %s %s\n",
+        return String.format("%52s\n%42s\n%38s %s %s %s\n",
+                "system: Starting launcher [" + version + "] ..",
+                "Robin Duda © 2017",
                 System.getProperty("java.vm.name"),
                 System.getProperty("java.version"),
                 System.getProperty("os.name"),
                 System.getProperty("os.version"));
+    }
+
+    public static void main(String[] args) {
+        System.out.println(getStartupText("1.0c"));
     }
 
     public static String quote(String string) {
