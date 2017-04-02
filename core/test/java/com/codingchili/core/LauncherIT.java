@@ -37,32 +37,40 @@ public class LauncherIT {
 
     @Test
     public void testFailNotVerticle(TestContext test) {
-        async = test.async();
-
-        new Launcher(getLaunchContextFor(NotClusterNode.class.getName())) {
-            @Override
-            void exit() {
-                async.complete();
-            }
-        };
+        launch(NotClusterNode.class.getName(), test.async());
     }
 
     @Test
     public void testFailNotFound(TestContext test) {
-        async = test.async();
+        launch("com.codingchili.core.Missing$1", test.async());
+    }
 
-        new Launcher(getLaunchContextFor("com.codingchili.core.Missing$1")) {
+    @Test
+    public void testMetricsEnabled(TestContext test) {
+        launch(IsClusterNode.class, test.async());
+    }
+
+    @Test
+    public void testMetricsDisabled(TestContext test) {
+        launch(IsClusterNode.class, test.async());
+    }
+
+    @Test
+    public void testDeployAService(TestContext test) {
+        launch(IsClusterNode.class, test.async());
+    }
+
+    public void launch(Class klass, Async async) {
+        launch(klass.getName(), async);
+    }
+
+    public void launch(String klass, Async async) {
+        new Launcher(getLaunchContextFor(klass)) {
             @Override
             void exit() {
                 async.complete();
             }
         };
-    }
-
-    @Test
-    public void testDeployAService(TestContext test) {
-        async = test.async();
-        new Launcher(getLaunchContextFor("com.codingchili.core.IsClusterNode"));
     }
 
     public LaunchContext getLaunchContextFor(String node) {

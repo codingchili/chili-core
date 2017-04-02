@@ -129,7 +129,8 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
     }
 
     private String parseJsonLog(JsonObject data, String event) {
-        String text = String.format("%s %s [%s] ", time(), getLevel(data), event.toUpperCase());
+        String text = String.format("%s %s [%s] ", time(), getLevel(data),
+                (event != null) ? event.toUpperCase() : "");
 
         for (String key : data.fieldNames()) {
             Object object = data.getValue(key);
