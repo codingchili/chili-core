@@ -258,7 +258,7 @@ public abstract class CoreStrings {
     }
 
     public static String getNodeNotVerticle(String node) {
-        return "Error: Service '" + node + "' must extend 'ClusterNode'.";
+        return "Error: Service '" + node + "' must extend 'ClusterNode' or implement 'Verticle'.";
     }
 
     public static String getNodeNotFound(String node) {

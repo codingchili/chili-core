@@ -16,8 +16,7 @@ import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
 import com.codingchili.core.protocol.ClusterNode;
 
-import io.vertx.core.Future;
-import io.vertx.core.Vertx;
+import io.vertx.core.*;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.files.Configurations.system;
@@ -116,7 +115,7 @@ public class Launcher extends ClusterNode {
     private boolean isVerticle(String node) {
         try {
             Class<?> clazz = Class.forName(node);
-            boolean isClusteredVerticle = clazz.getSuperclass().equals(ClusterNode.class);
+            boolean isClusteredVerticle = Verticle.class.isAssignableFrom(clazz);
 
             if (!isClusteredVerticle) {
                 logger.log(CoreStrings.getNodeNotVerticle(node), Level.SEVERE);

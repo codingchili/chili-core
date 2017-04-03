@@ -129,39 +129,41 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
     }
 
     private String parseJsonLog(JsonObject data, String event) {
-        String text = String.format("%s %s [%s] ", time(), getLevel(data),
-                (event != null) ? event.toUpperCase() : "");
+        String level = getLevel(data);
+        StringBuilder text = new StringBuilder(String.format("%s %s [%s] ", time(),
+                (level == null) ? "" : getLevel(data),
+                (event == null) ? "" : event.toUpperCase()));
 
         for (String key : data.fieldNames()) {
             Object object = data.getValue(key);
             if (object != null) {
-                text += String.format("%s=%s ", key, object.toString());
+                text.append(String.format("%s=%s ", key, object.toString()));
             }
         }
-        return text;
+        return text.toString();
     }
 
     private String compactPath(String path) {
-        String text = "";
+        StringBuilder text = new StringBuilder();
 
         if (path != null) {
             String[] folders = path.split(DIR_SEPARATOR);
 
             for (int i = 0; i < folders.length; i++) {
                 if (i == 0) {
-                    text += folders[i];
+                    text.append(folders[i]);
 
                     if (folders.length > 1) {
-                        text += DIR_SEPARATOR;
+                        text.append(DIR_SEPARATOR);
                     }
                 } else if (i == folders.length - 1) {
-                    text += folders[i];
+                    text.append(folders[i]);
                 } else {
-                    text += DIR_UP;
+                    text.append(DIR_UP);
                 }
             }
         }
-        return text;
+        return text.toString();
     }
 
     private void setColor(JsonObject json) {
