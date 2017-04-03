@@ -1,17 +1,19 @@
 package com.codingchili.router.configuration;
 
-import com.codingchili.router.model.WireType;
-import io.vertx.core.Vertx;
+import static com.codingchili.router.configuration.RouterSettings.PATH_ROUTING;
 
 import java.util.List;
 
 import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.files.Configurations;
+import com.codingchili.router.model.WireType;
 
-import static com.codingchili.router.configuration.RouterSettings.PATH_ROUTING;
+import io.vertx.core.Vertx;
 
 /**
  * @author Robin Duda
+ *         <p>
+ *         A context for the router service.
  */
 public class RouterContext extends ServiceContext {
 
@@ -31,6 +33,10 @@ public class RouterContext extends ServiceContext {
         return service().getTransport();
     }
 
+    /**
+     * @param type the type of listener to get configuration for
+     * @return listener configuration if existing.
+     */
     public ListenerSettings getListener(WireType type) {
         return service().getListener(type);
     }

@@ -40,8 +40,8 @@ public class RouterHandlerTest {
 
         handler = new RouterHandler<>(new RouterContext(vertx) {
             @Override
-            public boolean isRouteHidden(String route) {
-                return route.equals(NODE_LOGGING);
+            public boolean isRouteHidden(String node) {
+                return node.equals(NODE_LOGGING);
             }
         });
     }
