@@ -14,7 +14,7 @@ import static com.codingchili.core.configuration.CoreStrings.getService;
  *
  * Settings for the router node.
  */
-public class NRouterSettings extends ServiceConfigurable {
+public class RouterSettings extends ServiceConfigurable {
     public static final String PATH_ROUTING = getService("routingserver");
     private List<ListenerSettings> transport = new ArrayList<>();
     private Set<String> hidden = new HashSet<>();
