@@ -41,8 +41,9 @@ public abstract class CoreStrings {
     private static final String IP4_HOST = "0.0.0.0";
     private static final IPVersion ipVersion = IPVersion.IP4;
 
-    private enum IPVersion {IP4, IP6}
 
+
+    private enum IPVersion {IP4, IP6;}
     public static String getBindAddress() {
         return (ipVersion.equals(IPVersion.IP4) ? IP4_HOST : IP6_HOST);
     }
@@ -53,27 +54,28 @@ public abstract class CoreStrings {
 
     // storage constants.
     public static final String STORAGE_ARRAY = "[]";
+
     public static final String DB_DIR = "db";
     public static final String WATCHER_COMPLETED = "executed";
     public static final String WATCHER_PAUSED = "paused";
     public static final String WATCHER_RESUMED = "resumed";
-
     public static final String EXT_JSON = ".json";
+
     public static final String EXT_HTML = ".html";
     public static final String EXT_TXT = ".txt";
     public static final String ANY = "*";
     public static final String NODE_LOGGING = "syslog.node";
-
     // protocol constants.
     public static final String PROTOCOL_REAL_IP = "X-Real-IP";
+
     public static final String PROTOCOL_CONNECTION = "connection";
     public static final String PROTOCOL_STATUS = "status";
     public static final String PROTOCOL_ROUTE = "route";
     public static final String PROTOCOL_TARGET = "target";
     public static final String PROTOCOL_LOGGING = "logging";
-
     // launcher commands.
     public static final String COMMAND_PREFIX = "--";
+
     public static final String GENERATE_SECRETS = getCommand("generate-secrets");
     public static final String GENERATE_TOKENS = getCommand("generate-tokens");
     public static final String GENERATE_PRESHARED = getCommand("generate-preshared");
@@ -84,13 +86,13 @@ public abstract class CoreStrings {
     public static final String PARAM_ITERATIONS = getCommand("iterations");
     public static final String PARAM_HTML = getCommand("html");
     public static final String PARAM_TEMPLATE = getCommand("template");
-
     public static String getCommand(String command) {
         return COMMAND_PREFIX + command;
     }
 
     // keys used in json objects.
     public static final String ID_TOKEN = "token";
+
     public static final String ID_NAME = "name";
     public static final String ID_FILE = "file";
     public static final String ID_DATA = "data";
@@ -125,7 +127,6 @@ public abstract class CoreStrings {
     public static final String ID_MESSAGE = "message";
     public static final String ID_QUERY = "query";
     public static final String ID_OPTIONS = "options";
-
     // Node names.
     public static final String NODE_LOCAL = "local";
 
@@ -134,6 +135,7 @@ public abstract class CoreStrings {
 
     // logging constants
     public static final String LOG_APPLICATION = "application";
+
     public static final String LOG_AT = "@";
     public static final String LOG_EVENT = "event";
     public static final String LOG_VERSION = "version";
@@ -169,8 +171,8 @@ public abstract class CoreStrings {
     public static final String LOG_STORAGE_DB = "dabatase";
     public static final String LOG_STORAGE_WATCHER = "storage.watcher";
     public static final String[] LOG_HIDDEN_TAGS = new String[]{"dev", "LOCAL", "3.6.3"};
-
     public static final String ERROR_REUSABLEQUERY_UNBOUND = "Reusable query not bound to a storage.";
+
     public static final String ERROR_TOKEN_FACTORY = "Token factory error to generate token.";
     public static final String ERROR_CLUSTERING_REQUIRED = "Running in non-clustered mode.";
     public static final String ERROR_NOT_AUTHORIZED = "Insufficient authorization level to access resource.";
@@ -184,7 +186,6 @@ public abstract class CoreStrings {
     public static final String ERROR_STORAGE_EXCEPTION = "Failed to perform a storage operation.";
     public static final String CONFIGURED_BLOCKS = "Configured deployment blocks";
     public static final String ERROR_PATCH_RELOADED = "The patch version changed during patch session.";
-
     /**
      * Replaces tags in a logging message.
      *
@@ -441,11 +442,11 @@ public abstract class CoreStrings {
     public static final String[] BENCHMARK_CONSOLE_REPORT_COLUMNS =
             {"\n[GROUP]", " [IMPLEMENTATION]", " [BENCHMARK]", " [OP/s]", " [TIME]"};
 
-
     public static String getBenchmarkCompleted(Benchmark benchmark) {
         return "Completed benchmark " + benchmark.getImplementation() +
                 "::" + benchmark.getName() + " in " + benchmark.getElapsedMS() + " ms.";
     }
+
 
     public static String getIllegalTemplateTokenCount(String token, int count) {
         return "template must accept " + count + " tokens ('" + token + "s').";
@@ -486,6 +487,10 @@ public abstract class CoreStrings {
 
     public static String getInvalidQueryFormat(String query) {
         return "Unable to parse query: " + query;
+    }
+
+    public static String getNoSuchValidator(String name) {
+        return "Error: no validator exists with the name '" + name + "'.";
     }
 
     public static String getSemaphoreTimeout(int timeoutMS) {

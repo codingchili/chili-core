@@ -1,10 +1,13 @@
 package com.codingchili.core.configuration.system;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import com.codingchili.core.configuration.*;
 
+import static com.codingchili.core.configuration.CoreStrings.getNoSuchValidator;
 import static com.codingchili.core.security.RegexAction.*;
 
 /**
@@ -19,10 +22,25 @@ public class ValidatorSettings extends BaseConfigurable {
         path = CoreStrings.PATH_VALIDATOR;
     }
 
+    /**
+     * @return all validators that are configured.
+     */
     public Map<String, ParserSettings> getValidators() {
         return validators;
     }
 
+    @JsonIgnore
+    public ParserSettings getValidator(String name) {
+        if (validators.containsKey(name)) {
+            return validators.get(name);
+        } else {
+            throw new IllegalArgumentException(getNoSuchValidator(name));
+        }
+    }
+
+    /**
+     * @param validators sets the validator name:validator mappings.
+     */
     public void setValidators(Map<String, ParserSettings> validators) {
         this.validators = validators;
     }
