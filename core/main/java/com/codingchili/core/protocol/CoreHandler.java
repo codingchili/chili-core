@@ -1,16 +1,30 @@
 package com.codingchili.core.protocol;
 
-import io.vertx.core.*;
-
+import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.CoreException;
 import com.codingchili.core.context.ServiceContext;
+import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
 
+import io.vertx.core.Context;
+import io.vertx.core.Future;
+import io.vertx.core.Verticle;
+import io.vertx.core.Vertx;
+
 /**
  * @author Robin Duda
+ *         <p>
+ *         A simplified handler that may be deployed directly.
  */
 public interface CoreHandler extends Verticle {
+
+    /**
+     * init method called synchronously before the service is started.
+     *
+     * @param core core context that the service was deployed from.
+     */
+    void init(CoreContext core);
 
     /**
      * Handles an incoming request without exception handling.
@@ -30,21 +44,32 @@ public interface CoreHandler extends Verticle {
     }
 
     /**
-     *
-     * @return
+     * @return a logger attached to the service context.
      */
     default Logger logger() {
         return context().logger();
     }
 
     /**
-     *
-     * @return
+     * @return the context of the service.
      */
     ServiceContext context();
 
+    /**
+     * @return returns the vertx instance in the services context.
+     */
     default Vertx getVertx() {
         return context().vertx();
+    }
+
+    /**
+     * Wrapped init method to provide an improved init.
+     *
+     * @param vertx   the vertx context that deployed this verticle.
+     * @param context the vertx context.
+     */
+    default void init(Vertx vertx, Context context) {
+        init(new SystemContext(vertx));
     }
 
     /**
@@ -66,7 +91,9 @@ public interface CoreHandler extends Verticle {
     }
 
     /**
-     * @param request
+     * Processes a request using the default request exception handling.
+     *
+     * @param request the request to process.
      */
     default void process(Request request) {
         try {

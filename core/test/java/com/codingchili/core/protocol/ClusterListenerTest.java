@@ -8,6 +8,7 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
+import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.CoreException;
 import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.testing.ContextMock;
@@ -64,6 +65,10 @@ public class ClusterListenerTest {
 
         TestHandler(T context, String address) {
             super(context, address);
+        }
+
+        @Override
+        public void init(CoreContext core) {
         }
 
         @Override

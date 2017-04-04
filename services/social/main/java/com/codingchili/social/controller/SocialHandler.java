@@ -19,9 +19,8 @@ public class SocialHandler implements CoreHandler {
     private ServiceContext context;
 
     @Override
-    public void init(Vertx vertx, Context context) {
-        this.context = new SimpleServiceContext(vertx, SOCIAL_NODE);
-
+    public void init(CoreContext context) {
+        this.context = new SimpleServiceContext(context, SOCIAL_NODE);
         protocol.use(Strings.ID_PING, Request::accept, Access.PUBLIC);
     }
 

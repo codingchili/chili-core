@@ -55,6 +55,11 @@ public class DeployTest {
         }
 
         @Override
+        public void init(CoreContext core) {
+            //
+        }
+
+        @Override
         public void handle(Request request) throws CoreException {
             //
         }
