@@ -1,11 +1,12 @@
 package com.codingchili.core.context;
 
 import io.vertx.core.*;
+import io.vertx.core.Handler;
 import io.vertx.core.eventbus.EventBus;
 
 import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.logging.Logger;
-import com.codingchili.core.protocol.AbstractHandler;
+import com.codingchili.core.protocol.*;
 import com.codingchili.core.security.RemoteIdentity;
 
 /**
@@ -56,7 +57,7 @@ public interface CoreContext {
      * Deploy a new handler in the cluster from given handler.
      * @param handler the handler to be used to handle incoming requests.
      */
-    void deploy(AbstractHandler handler);
+    void deploy(CoreHandler handler);
 
     /**
      * @param verticle deploys the given verticle.
@@ -75,7 +76,7 @@ public interface CoreContext {
      * @param handler the handler to be used to handle incoming requests.
      * @param result the handler to be invoked on deployment completion.
      */
-    void deploy(AbstractHandler handler, Handler<AsyncResult<String>> result);
+    void deploy(CoreHandler handler, Handler<AsyncResult<String>> result);
 
     /**
      * Deploys the given verticle with a completion handler.

@@ -21,7 +21,7 @@ public class RouterContext extends ServiceContext {
         super(vertx);
     }
 
-    protected RouterSettings service() {
+    public RouterSettings service() {
         return Configurations.get(PATH_ROUTING, RouterSettings.class);
     }
 

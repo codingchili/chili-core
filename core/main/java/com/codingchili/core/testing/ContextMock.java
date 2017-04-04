@@ -20,7 +20,7 @@ public class ContextMock extends ServiceContext implements CoreContext {
     }
 
     @Override
-    protected ServiceConfigurable service() {
+    public ServiceConfigurable service() {
         return new ServiceConfigurable() {};
     }
 

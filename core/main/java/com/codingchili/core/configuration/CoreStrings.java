@@ -41,9 +41,8 @@ public abstract class CoreStrings {
     private static final String IP4_HOST = "0.0.0.0";
     private static final IPVersion ipVersion = IPVersion.IP4;
 
-
-
     private enum IPVersion {IP4, IP6;}
+
     public static String getBindAddress() {
         return (ipVersion.equals(IPVersion.IP4) ? IP4_HOST : IP6_HOST);
     }
@@ -65,6 +64,7 @@ public abstract class CoreStrings {
     public static final String EXT_TXT = ".txt";
     public static final String ANY = "*";
     public static final String NODE_LOGGING = "syslog.node";
+
     // protocol constants.
     public static final String PROTOCOL_REAL_IP = "X-Real-IP";
 
@@ -73,6 +73,7 @@ public abstract class CoreStrings {
     public static final String PROTOCOL_ROUTE = "route";
     public static final String PROTOCOL_TARGET = "target";
     public static final String PROTOCOL_LOGGING = "logging";
+
     // launcher commands.
     public static final String COMMAND_PREFIX = "--";
 
@@ -86,6 +87,7 @@ public abstract class CoreStrings {
     public static final String PARAM_ITERATIONS = getCommand("iterations");
     public static final String PARAM_HTML = getCommand("html");
     public static final String PARAM_TEMPLATE = getCommand("template");
+
     public static String getCommand(String command) {
         return COMMAND_PREFIX + command;
     }
@@ -127,8 +129,10 @@ public abstract class CoreStrings {
     public static final String ID_MESSAGE = "message";
     public static final String ID_QUERY = "query";
     public static final String ID_OPTIONS = "options";
+
     // Node names.
     public static final String NODE_LOCAL = "local";
+    public static final String NODE_EXT = ".node";
 
     // Storage constants
     public static final String DEFAULT_DB = "chili";
@@ -186,6 +190,7 @@ public abstract class CoreStrings {
     public static final String ERROR_STORAGE_EXCEPTION = "Failed to perform a storage operation.";
     public static final String CONFIGURED_BLOCKS = "Configured deployment blocks";
     public static final String ERROR_PATCH_RELOADED = "The patch version changed during patch session.";
+
     /**
      * Replaces tags in a logging message.
      *
@@ -198,6 +203,10 @@ public abstract class CoreStrings {
             text = text.replaceAll(" ?(\\[" + tag + "\\]) ?", "");
         }
         return text;
+    }
+
+    public static String remove(String source, String toRemove) {
+        return source.replace(toRemove, "");
     }
 
     public static String getDeployFailError(String service) {

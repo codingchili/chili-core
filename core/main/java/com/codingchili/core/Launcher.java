@@ -115,14 +115,13 @@ public class Launcher extends ClusterNode {
     private boolean isVerticle(String node) {
         try {
             Class<?> clazz = Class.forName(node);
-            boolean isClusteredVerticle = Verticle.class.isAssignableFrom(clazz);
+            boolean isDeployable = Verticle.class.isAssignableFrom(clazz);
 
-            if (!isClusteredVerticle) {
+            if (!isDeployable) {
                 logger.log(CoreStrings.getNodeNotVerticle(node), Level.SEVERE);
                 exit();
             }
-
-            return isClusteredVerticle;
+            return isDeployable;
         } catch (ClassNotFoundException e) {
             logger.log(CoreStrings.getNodeNotFound(node), Level.SEVERE);
             exit();

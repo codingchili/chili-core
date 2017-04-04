@@ -20,7 +20,7 @@ public class PatchContext extends ServiceContext {
         this.keeper = new PatchKeeper(this);
     }
 
-    protected PatchServerSettings service() {
+    public PatchServerSettings service() {
         return Configurations.get(PATH_PATCHSERVER, PatchServerSettings.class);
     }
 

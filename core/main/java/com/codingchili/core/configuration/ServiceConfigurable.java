@@ -7,11 +7,12 @@ import com.codingchili.core.security.RemoteIdentity;
 
 /**
  * @author Robin Duda
- *
- * Service configurables are loaded by service contexts for use in services.
+ *         <p>
+ *         Service configurables are loaded by service contexts for use in services.
  */
-public abstract class ServiceConfigurable extends BaseConfigurable {
-    private RemoteIdentity identity = new RemoteIdentity("unconfigured", "unconfigured");
+public class ServiceConfigurable extends BaseConfigurable {
+    private RemoteIdentity identity = new RemoteIdentity("unconfigured",
+            Environment.hostname().orElse("undefined"));
 
     public ServiceConfigurable() {
     }
@@ -34,7 +35,8 @@ public abstract class ServiceConfigurable extends BaseConfigurable {
         return identity;
     }
 
-    public void setIdentity(RemoteIdentity identity) {
+    public ServiceConfigurable setIdentity(RemoteIdentity identity) {
         this.identity = identity;
+        return this;
     }
 }

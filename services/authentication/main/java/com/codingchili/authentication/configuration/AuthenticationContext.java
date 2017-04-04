@@ -48,7 +48,7 @@ public class AuthenticationContext extends ServiceContext {
         return new Token(new TokenFactory(service().getClientSecret()), domain);
     }
 
-    protected AuthenticationSettings service() {
+    public AuthenticationSettings service() {
         return Configurations.get(PATH_AUTHSERVER, AuthenticationSettings.class);
     }
 

@@ -22,7 +22,7 @@ public class WebserverContext extends ServiceContext {
         super(vertx);
     }
 
-    protected WebserverSettings service() {
+    public WebserverSettings service() {
         return Configurations.get(PATH_WEBSERVER, WebserverSettings.class);
     }
 

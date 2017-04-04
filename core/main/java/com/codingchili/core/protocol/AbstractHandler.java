@@ -1,18 +1,18 @@
 package com.codingchili.core.protocol;
 
-import io.vertx.core.Future;
+import io.vertx.core.Context;
+import io.vertx.core.Vertx;
 
 import com.codingchili.core.context.CoreException;
 import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.logging.Logger;
-import com.codingchili.core.protocol.exception.HandlerMissingException;
 
 /**
  * @author Robin Duda
- *
- * Base handler for processing incoming messages.
+ *         <p>
+ *         Base handler for processing incoming messages.
  */
-public abstract class AbstractHandler<T extends ServiceContext> {
+public abstract class AbstractHandler<T extends ServiceContext> implements CoreHandler {
     private final Logger logger;
     protected final T context;
     private final String address;
@@ -27,61 +27,30 @@ public abstract class AbstractHandler<T extends ServiceContext> {
         this.logger = context.logger();
     }
 
-    /**
-     * Processes an incoming request with exception handling.
-     *
-     * @param request the request to be processed.
-     */
-    public void process(Request request) {
-        try {
-            handle(request);
-        } catch (HandlerMissingException e) {
-            request.error(e);
-            logger.onHandlerMissing(request.route());
-        } catch (CoreException e) {
-            request.error(e);
-        }
+    @Override
+    public Logger logger() {
+        return logger;
     }
 
-    /**
-     * Handles an incoming request without exception handling.
-     *
-     * @param request the request to be handled.
-     * @throws CoreException on unhandled error.
-     */
+    @Override
     public abstract void handle(Request request) throws CoreException;
 
-    /**
-     * Called when the handler is stopped.
-     *
-     * @param future complete when cleanup is completed.
-     */
-    public void stop(Future<Void> future) {
-        logger.onServerStopped(future);
+    @Override
+    public String address() {
+        return address;
     }
 
-    /**
-     * Called when the handler is started.
-     *
-     * @param future complete when start initialization is done.
-     */
-    public void start(Future<Void> future) {
-        logger.onServerStarted(future);
-    }
-
-    /**
-     * @return the context attached to the handler.
-     */
+    @Override
     public T context() {
         return context;
     }
 
-    /**
-     * Get the address of which the handler is providing handlers for.
-     *
-     * @return the address as a string representation.
-     */
-    String getAddress() {
-        return address;
+    @Override
+    public Vertx getVertx() {
+        return context.vertx();
+    }
+
+    @Override
+    public void init(Vertx vertx, Context context) {
     }
 }

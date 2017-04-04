@@ -57,7 +57,7 @@ public class RegistryContext extends ServiceContext {
         return new TokenFactory(service().getClientSecret()).verifyToken(token);
     }
 
-    protected RealmRegistrySettings service() {
+    public RealmRegistrySettings service() {
         return Configurations.get(PATH_REALMREGISTRY, RealmRegistrySettings.class);
     }
 

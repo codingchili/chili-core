@@ -9,8 +9,7 @@ import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.*;
-import com.codingchili.core.protocol.AbstractHandler;
-import com.codingchili.core.protocol.ClusterListener;
+import com.codingchili.core.protocol.*;
 import com.codingchili.core.security.RemoteIdentity;
 
 import static com.codingchili.core.configuration.CoreStrings.ID_SYSTEM;
@@ -99,7 +98,7 @@ public class SystemContext implements CoreContext {
     }
 
     @Override
-    public void deploy(AbstractHandler handler) {
+    public void deploy(CoreHandler handler) {
         deploy(ClusterListener.with(handler), result -> {
             if (result.failed()) {
                 throw new RuntimeException(result.cause());
@@ -122,7 +121,7 @@ public class SystemContext implements CoreContext {
     }
 
     @Override
-    public void deploy(AbstractHandler handler, Handler<AsyncResult<String>> result) {
+    public void deploy(CoreHandler handler, Handler<AsyncResult<String>> result) {
         vertx.deployVerticle(ClusterListener.with(handler), result);
     }
 

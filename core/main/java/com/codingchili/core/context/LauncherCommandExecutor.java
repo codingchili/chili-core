@@ -43,11 +43,6 @@ public class LauncherCommandExecutor extends CommandExecutor {
         add(generator::all, GENERATE, getGenerateAllDescription());
         add(suite::execute, BENCHMARK, getBenchmarkDescription());
         add(this::help, HELP, getCommandExecutorHelpDescription());
-/*
-        add(new BaseCommand((executor) -> {
-            // return without failing when no command is given.
-            // the launcher will execute the command as a block or remote.
-        }, ID_DEFAULT, "").setVisible(false));*/
     }
 
     /* helper method to support methods that does not implement Consumer<CommandExecutor> */
