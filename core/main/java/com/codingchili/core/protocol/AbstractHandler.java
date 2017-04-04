@@ -3,6 +3,7 @@ package com.codingchili.core.protocol;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 
+import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.CoreException;
 import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.logging.Logger;
@@ -48,6 +49,10 @@ public abstract class AbstractHandler<T extends ServiceContext> implements CoreH
     @Override
     public Vertx getVertx() {
         return context.vertx();
+    }
+
+    @Override
+    public void init(CoreContext context) {
     }
 
     @Override
