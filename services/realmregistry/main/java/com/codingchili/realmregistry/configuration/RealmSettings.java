@@ -38,30 +38,51 @@ public class RealmSettings extends AttributeConfigurable implements Storable {
         return name;
     }
 
+    /**
+     * @return get the remote name of the server.
+     */
     public String getRemote() {
         return remote;
     }
 
+    /**
+     * @param remote set the remote name of the server.
+     */
     public void setRemote(String remote) {
         this.remote = remote;
     }
 
+    /**
+     * @return get the remote identity of the server.
+     */
     public RemoteIdentity getIdentity() {
         return identity;
     }
 
+    /**
+     * @param identity set the servers remote identity.
+     */
     public void setIdentity(RemoteIdentity identity) {
         this.identity = identity;
     }
 
+    /**
+     * @return a list of available classes.
+     */
     public ArrayList<String> getClasses() {
         return classes;
     }
 
+    /**
+     * @param classes sets a list of available classes.
+     */
     public void setClasses(ArrayList<String> classes) {
         this.classes = classes;
     }
 
+    /**
+     * @return return a list of configured afflictions.
+     */
     public ArrayList<String> getAfflictions() {
         return afflictions;
     }

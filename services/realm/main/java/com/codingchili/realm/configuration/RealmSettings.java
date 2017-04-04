@@ -1,14 +1,10 @@
 package com.codingchili.realm.configuration;
 
-import com.codingchili.realm.instance.configuration.InstanceSettings;
-import com.codingchili.realm.instance.model.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
+import static com.codingchili.common.Strings.*;
+import static com.codingchili.core.files.Configurations.available;
+import static com.codingchili.core.files.Configurations.get;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,9 +13,15 @@ import com.codingchili.core.files.JsonFileStore;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.RemoteIdentity;
 import com.codingchili.core.security.Token;
+import com.codingchili.realm.instance.configuration.InstanceSettings;
+import com.codingchili.realm.instance.model.Affliction;
+import com.codingchili.realm.instance.model.PlayerCharacter;
+import com.codingchili.realm.instance.model.PlayerClass;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import static com.codingchili.common.Strings.*;
-import static com.codingchili.core.files.Configurations.*;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 /**
  * @author Robin Duda
@@ -28,10 +30,10 @@ import static com.codingchili.core.files.Configurations.*;
  */
 @JsonIgnoreProperties({"instances"})
 public class RealmSettings extends AttributeConfigurable {
-    private final ArrayList<InstanceSettings> instances = new ArrayList<>();
+    private final List<InstanceSettings> instances = new ArrayList<>();
     private RemoteIdentity identity;
-    private ArrayList<PlayerClass> classes = new ArrayList<>();
-    private ArrayList<Affliction> afflictions = new ArrayList<>();
+    private List<PlayerClass> classes = new ArrayList<>();
+    private List<Affliction> afflictions = new ArrayList<>();
     private PlayerCharacter template = new PlayerCharacter();
     private Token authentication;
     private String description;
@@ -68,6 +70,9 @@ public class RealmSettings extends AttributeConfigurable {
         return copy;
     }
 
+    /**
+     * @param instances loads configuration for the given instance.
+     */
     public void load(List<String> instances) {
         readInstances(instances);
         readPlayerClasses();
@@ -122,144 +127,272 @@ public class RealmSettings extends AttributeConfigurable {
         }
     }
 
+    /**
+     * @return the remote name of the realm.
+     */
     public String getRemote() {
         return name + NODE_REALM;
     }
 
+    /**
+     * @return returns true if the connection must be secure.
+     */
     public Boolean getSecure() {
         return secure;
     }
 
+    /**
+     * @param secure if true then all connections must be secure
+     * @return fluent
+     */
     private RealmSettings setSecure(Boolean secure) {
         this.secure = secure;
         return this;
     }
 
+    /**
+     * @return the template to use for creating new characters.
+     */
     public PlayerCharacter getTemplate() {
         return template;
     }
 
+    /**
+     * @param template the template to use when creating new characters.
+     * @return fluent
+     */
     public RealmSettings setTemplate(PlayerCharacter template) {
         this.template = template;
         return this;
     }
 
-    public ArrayList<Affliction> getAfflictions() {
+    /**
+     * @return a list of all afflictions configured.
+     */
+    public List<Affliction> getAfflictions() {
         return afflictions;
     }
 
-    private RealmSettings setAfflictions(ArrayList<Affliction> afflictions) {
+    /**
+     * @param afflictions sets a list of available afflictions.
+     * @return fluent
+     */
+    private RealmSettings setAfflictions(List<Affliction> afflictions) {
         this.afflictions = afflictions;
         return this;
     }
 
-    public ArrayList<PlayerClass> getClasses() {
+    /**
+     * @param affliction an affliction to add
+     * @return fluent
+     */
+    private RealmSettings addAffliction(Affliction affliction) {
+        this.afflictions.add(affliction);
+        return this;
+    }
+
+    /**
+     * @return return all available player classes.
+     */
+    public List<PlayerClass> getClasses() {
         return classes;
     }
 
-    public RealmSettings setClasses(ArrayList<PlayerClass> classes) {
+    /**
+     * @param classes sets a list of available player classes.
+     * @return fluent
+     */
+    public RealmSettings setClasses(List<PlayerClass> classes) {
         this.classes = classes;
         return this;
     }
 
+    /**
+     * @param klass the playerclass to add to available.
+     * @return fluent
+     */
+    public RealmSettings addClass(PlayerClass klass) {
+        this.classes.add(klass);
+        return this;
+    }
+
+    /**
+     * @return the resource server where game resources are downloaded from..
+     */
     public String getResources() {
         return resources;
     }
 
+    /**
+     * @param resources the resource server where resources are downloaded from.
+     * @return fluent
+     */
     public RealmSettings setResources(String resources) {
         this.resources = resources;
         return this;
     }
 
+    /**
+     * @return get the number of players connected.
+     */
     public int getPlayers() {
         return players;
     }
 
+    /**
+     * @param players set the current number of players connected.
+     * @return fluent
+     */
     private RealmSettings setPlayers(int players) {
         this.players = players;
         return this;
     }
 
+    /**
+     * @param authentication the authentication to use against the realm-registry.
+     * @return fluent.
+     */
     public RealmSettings setAuthentication(Token authentication) {
         this.authentication = authentication;
         return this;
     }
 
+    /**
+     * @return authentication token used to authenticate against the realm-registry.
+     */
     public Token getAuthentication() {
         return authentication;
     }
 
+    /**
+     * @return get the name of this realm.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @param name set the name of this realm
+     * @return fluent
+     */
     public RealmSettings setName(String name) {
         this.name = name;
         return this;
     }
 
+    /**
+     * @return get the realm description.
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * @param description set the realm description.
+     * @return fluent
+     */
     private RealmSettings setDescription(String description) {
         this.description = description;
         return this;
     }
 
+    /**
+     * @return get the version of the realm.
+     */
     public double getVersion() {
         return version;
     }
 
+    /**
+     * @param version the version to set for the realm.
+     * @return fluent
+     */
     private RealmSettings setVersion(double version) {
         this.version = version;
         return this;
     }
 
+    /**
+     * @return the maximum number of players that may connect.
+     */
     public int getSize() {
         return size;
     }
 
+    /**
+     * @param size the maximum number players that may connect
+     * @return fluent
+     */
     private RealmSettings setSize(int size) {
         this.size = size;
         return this;
     }
 
+    /**
+     * @return the type of the realm.
+     */
     public String getType() {
         return type;
     }
 
+    /**
+     * @param type the type of realm,  may be any string.
+     * @return fluent
+     */
     public RealmSettings setType(String type) {
         this.type = type;
         return this;
     }
 
+    /**
+     * @return get the lifetime of the realm as a description.
+     */
     public String getLifetime() {
         return lifetime;
     }
 
+    /**
+     * @param lifetime set the lifetime as a string.
+     * @return fluent
+     */
     private RealmSettings setLifetime(String lifetime) {
         this.lifetime = lifetime;
         return this;
     }
 
+    /**
+     * @return true if this realm is not a third-party server.
+     */
     public Boolean getTrusted() {
         return trusted;
     }
 
+    /**
+     * @param trusted indicates if this realm is a thirdparty server or not.
+     * @return fluent
+     */
     public RealmSettings setTrusted(Boolean trusted) {
         this.trusted = trusted;
         return this;
     }
 
-    public ArrayList<InstanceSettings> getInstances() {
+    /**
+     * @return a list of instances configured for the realm.
+     */
+    public List<InstanceSettings> getInstances() {
         return instances;
     }
 
+    /**
+     * @return the identity of the realm.
+     */
     public RemoteIdentity getIdentity() {
         return identity;
     }
 
+    /**
+     * @param identity sets the identity of the realm.
+     */
     public void setIdentity(RemoteIdentity identity) {
         this.identity = identity;
     }
@@ -281,6 +414,10 @@ public class RealmSettings extends AttributeConfigurable {
         return json;
     }
 
+    /**
+     * @param updated set the last time in MS when the realm was updated in the registry.
+     * @return fluent
+     */
     public RealmSettings setUpdated(long updated) {
         this.updated = updated;
         return this;

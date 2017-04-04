@@ -28,6 +28,9 @@ public class SystemSettings extends BaseConfigurable {
         path = CoreStrings.PATH_SYSTEM;
     }
 
+    /**
+     * @return the interval in MS which metrics are gathered.
+     */
     public int getMetricRate() {
         return metricRate;
     }
