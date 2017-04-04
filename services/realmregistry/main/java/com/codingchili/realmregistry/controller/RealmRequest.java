@@ -1,6 +1,6 @@
 package com.codingchili.realmregistry.controller;
 
-import com.codingchili.realmregistry.configuration.RealmSettings;
+import com.codingchili.realmregistry.configuration.RegisteredRealm;
 
 import com.codingchili.core.protocol.*;
 import com.codingchili.core.security.Token;
@@ -11,7 +11,7 @@ import static com.codingchili.common.Strings.*;
  * @author Robin Duda
  */
 class RealmRequest extends ClusterRequest {
-    private RealmSettings realm = new RealmSettings();
+    private RegisteredRealm realm = new RegisteredRealm();
 
     RealmRequest(Request request) {
         super(request);
@@ -21,9 +21,9 @@ class RealmRequest extends ClusterRequest {
 
     private void parseRealm() {
         if (data().containsKey(ID_REALM)) {
-            realm = Serializer.unpack(data().getJsonObject(ID_REALM), RealmSettings.class);
+            realm = Serializer.unpack(data().getJsonObject(ID_REALM), RegisteredRealm.class);
         } else {
-            realm = new RealmSettings();
+            realm = new RegisteredRealm();
 
             if (data().containsKey(ID_TOKEN)) {
                 realm.setAuthentication(Serializer.unpack(data().getJsonObject(ID_TOKEN), Token.class));
@@ -35,7 +35,7 @@ class RealmRequest extends ClusterRequest {
         return realm.getAuthentication();
     }
 
-    public RealmSettings getRealm() {
+    public RegisteredRealm getRealm() {
         return realm;
     }
 

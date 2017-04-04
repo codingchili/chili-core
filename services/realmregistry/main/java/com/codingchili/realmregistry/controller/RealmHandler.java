@@ -1,7 +1,7 @@
 package com.codingchili.realmregistry.controller;
 
 import com.codingchili.common.Strings;
-import com.codingchili.realmregistry.configuration.RealmSettings;
+import com.codingchili.realmregistry.configuration.RegisteredRealm;
 import com.codingchili.realmregistry.configuration.RegistryContext;
 import com.codingchili.realmregistry.model.*;
 
@@ -43,7 +43,7 @@ public class RealmHandler<T extends RegistryContext> extends AbstractHandler<T> 
     }
 
     private void update(RealmRequest request) {
-        RealmSettings realm = request.getRealm();
+        RegisteredRealm realm = request.getRealm();
         realm.setTrusted(context.isTrustedRealm(realm.getName()));
         realm.setUpdated(Instant.now().toEpochMilli());
 

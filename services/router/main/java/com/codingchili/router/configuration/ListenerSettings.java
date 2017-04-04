@@ -21,56 +21,108 @@ public class ListenerSettings {
     private int timeout = 3000;
     private int maxRequestBytes = 64;
 
+    /**
+     * @return timeout in MS after the router times out the request.
+     */
     public int getTimeout() {
         return timeout;
     }
 
+    /**
+     * @param timeout the timeout in MS which the router times out the request.
+     * @return
+     */
     public ListenerSettings setTimeout(int timeout) {
         this.timeout = timeout;
         return this;
     }
 
+    /**
+     * @return the maximum number of bytes in a request.
+     */
     public int getMaxRequestBytes() {
         return maxRequestBytes;
     }
 
+    /**
+     * @param maxRequestBytes sets the maximum number of bytes in a single request.
+     * @return fluent
+     */
     public ListenerSettings setMaxRequestBytes(int maxRequestBytes) {
         this.maxRequestBytes = maxRequestBytes;
         return this;
     }
 
+    /**
+     * @return the type of the listener, for example tcp or udp.
+     */
     public WireType getType() {
         return type;
     }
 
+    /**
+     * @param type the type to set for the listener.
+     * @return
+     */
     public ListenerSettings setType(WireType type) {
         this.type = type;
         return this;
     }
 
+    /**
+     * @return the port the listener is to be activated on.
+     */
     public int getPort() {
         return port;
     }
 
+    /**
+     * @param port the port the listener is to be activated on.
+     * @return fluent
+     */
     public ListenerSettings setPort(int port) {
         this.port = port;
         return this;
     }
 
+    /**
+     * @return api mappings for this listener
+     */
     public Map<String, Endpoint> getApi() {
         return api;
     }
 
+    /**
+     * @param api the api mappings to set for the listener
+     * @return fluent
+     */
     public ListenerSettings setApi(Map<String, Endpoint> api) {
         this.api = api;
         return this;
     }
 
+    /**
+     * @param route the name of the route/node/target to map
+     * @param api the endpoint the request is mapped to.
+     * @return fluent
+     */
+    public ListenerSettings addApi(String route, Endpoint api) {
+        this.api.put(route, api);
+        return this;
+    }
+
+    /**
+     * @return HttpOptions created from the listeners settings.
+     */
     @JsonIgnore
     public HttpServerOptions getHttpOptions() {
         return httpOptions;
     }
 
+    /**
+     * @param httpOptions sets the HttpOptions for the listener if applicable
+     * @return fluent
+     */
     public ListenerSettings setHttpOptions(HttpServerOptions httpOptions) {
         this.httpOptions = httpOptions;
         return this;

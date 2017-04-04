@@ -1,6 +1,6 @@
 package com.codingchili.realmregistry.model;
 
-import com.codingchili.realmregistry.configuration.RealmSettings;
+import com.codingchili.realmregistry.configuration.RegisteredRealm;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
@@ -23,11 +23,11 @@ import static io.vertx.core.Future.*;
  *         Allows the deployment of multiple handlers.
  */
 public class RealmDB implements AsyncRealmStore {
-    private final AsyncStorage<RealmSettings> realms;
-    private EntryWatcher<RealmSettings> watcher;
+    private final AsyncStorage<RegisteredRealm> realms;
+    private EntryWatcher<RegisteredRealm> watcher;
     private int timeout = 15000;
 
-    public RealmDB(AsyncStorage<RealmSettings> map) {
+    public RealmDB(AsyncStorage<RegisteredRealm> map) {
         this.realms = map;
 
         this.watcher = getStaleQuery().poll(stale -> {
@@ -35,7 +35,7 @@ public class RealmDB implements AsyncRealmStore {
         }, this::getTimeout);
     }
 
-    private QueryBuilder<RealmSettings> getStaleQuery() {
+    private QueryBuilder<RegisteredRealm> getStaleQuery() {
         return realms.query(ID_MODIFIED).between(0L, getLastValidTime());
     }
 
@@ -73,7 +73,7 @@ public class RealmDB implements AsyncRealmStore {
     public void signToken(Handler<AsyncResult<Token>> future, String realm, String domain) {
         realms.get(realm, map -> {
             if (map.succeeded()) {
-                RealmSettings settings = map.result();
+                RegisteredRealm settings = map.result();
                 future.handle(succeededFuture(new Token(new TokenFactory(getSecretBytes(settings)), domain)));
             } else {
                 future.handle(failedFuture(map.cause()));
@@ -81,12 +81,12 @@ public class RealmDB implements AsyncRealmStore {
         });
     }
 
-    private byte[] getSecretBytes(RealmSettings settings) {
+    private byte[] getSecretBytes(RegisteredRealm settings) {
         return settings.getAuthentication().getKey().getBytes();
     }
 
     @Override
-    public void get(Handler<AsyncResult<RealmSettings>> future, String realmName) {
+    public void get(Handler<AsyncResult<RegisteredRealm>> future, String realmName) {
         realms.get(realmName, map -> {
             if (map.succeeded()) {
                 future.handle(succeededFuture(map.result()));
@@ -97,7 +97,7 @@ public class RealmDB implements AsyncRealmStore {
     }
 
     @Override
-    public void put(Handler<AsyncResult<Void>> future, RealmSettings realm) {
+    public void put(Handler<AsyncResult<Void>> future, RegisteredRealm realm) {
         realms.put(realm, future);
     }
 

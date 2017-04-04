@@ -36,9 +36,9 @@ public class RegistryContext extends ServiceContext {
     public static void create(Future<RegistryContext> future, Vertx vertx) {
         RegistryContext context = new RegistryContext(vertx);
 
-        new StorageLoader<RealmSettings>().indexed(context)
+        new StorageLoader<RegisteredRealm>().indexed(context)
                 .withCollection(COLLECTION_REALMS)
-                .withClass(RealmSettings.class)
+                .withClass(RegisteredRealm.class)
                 .build(prepare -> {
                     AsyncRealmStore realms = new RealmDB(prepare.result());
                     future.complete(new RegistryContext(realms, vertx));

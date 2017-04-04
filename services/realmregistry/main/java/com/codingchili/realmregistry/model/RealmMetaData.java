@@ -1,23 +1,24 @@
 package com.codingchili.realmregistry.model;
 
-import com.codingchili.realmregistry.configuration.RealmSettings;
+import com.codingchili.realmregistry.configuration.RegisteredRealm;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.codingchili.core.configuration.Attributes;
 
 /**
  * @author Robin Duda
- *         Contains realmName metadata used in the realmName-list.
+ *         Contains realm metadata used in the realm-list.
  */
 public class RealmMetaData extends Attributes {
-    private ArrayList<String> classes;
+    private List<String> classes;
     private long updated;
     private String name;
     private String description;
     private String remote;
     private String resources;
-    private double version;
+    private String version;
     private int size;
     private String type;
     private String lifetime;
@@ -27,7 +28,7 @@ public class RealmMetaData extends Attributes {
 
     public RealmMetaData() {}
 
-    public RealmMetaData(RealmSettings settings) {
+    public RealmMetaData(RegisteredRealm settings) {
 
         this.setName(settings.getName())
                 .setDescription(settings.getDescription())
@@ -63,11 +64,11 @@ public class RealmMetaData extends Attributes {
         this.secure = secure;
     }
 
-    public ArrayList<String> getClasses() {
+    public List<String> getClasses() {
         return classes;
     }
 
-    public RealmMetaData setClasses(ArrayList<String> classes) {
+    public RealmMetaData setClasses(List<String> classes) {
         this.classes = classes;
         return this;
     }
@@ -108,11 +109,11 @@ public class RealmMetaData extends Attributes {
         return this;
     }
 
-    public double getVersion() {
+    public String getVersion() {
         return version;
     }
 
-    private RealmMetaData setVersion(double version) {
+    private RealmMetaData setVersion(String version) {
         this.version = version;
         return this;
     }

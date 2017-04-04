@@ -2,18 +2,26 @@ package com.codingchili.core.configuration;
 
 /**
  * @author Robin Duda
- *
- * Contains settings used in the CachedFileStore.
+ *         <p>
+ *         Contains settings used in the CachedFileStore.
  */
 public class CachedFileStoreSettings {
     private String directory;
     private boolean gzip;
 
+    /**
+     * @param directory the directory to cache.
+     * @return fluent
+     */
     public CachedFileStoreSettings setDirectory(String directory) {
         this.directory = directory;
         return this;
     }
 
+    /**
+     * @param gzip true if gzip is to be used to compress the loaded data.
+     * @return fluent
+     */
     public CachedFileStoreSettings setGzip(boolean gzip) {
         this.gzip = gzip;
         return this;
@@ -31,10 +39,16 @@ public class CachedFileStoreSettings {
         return equals;
     }
 
+    /**
+     * @return the directory that is being cached.
+     */
     public String getDirectory() {
         return directory;
     }
 
+    /**
+     * @return true if gzip is used to compress data.
+     */
     public boolean isGzip() {
         return gzip;
     }

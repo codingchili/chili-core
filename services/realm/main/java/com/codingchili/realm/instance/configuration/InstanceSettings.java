@@ -3,6 +3,7 @@ package com.codingchili.realm.instance.configuration;
 import com.codingchili.realm.instance.model.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.codingchili.core.configuration.BaseConfigurable;
 
@@ -10,71 +11,154 @@ import static com.codingchili.common.Strings.*;
 
 /**
  * @author Robin Duda
- *         Contains settings for an instance of a get.
+ *         Contains settings for an instance in a realm.
  */
 public class InstanceSettings extends BaseConfigurable {
-    private ArrayList<Portal> portals;
-    private ArrayList<Node> nodes;
-    private ArrayList<Npc> npc;
-    private String name;
-    private int limit;
-    private int width;
-    private int height;
+    private List<Portal> portals = new ArrayList<>();
+    private List<Node> nodes = new ArrayList<>();
+    private List<Npc> npc = new ArrayList<>();
+    private String name = "default";
+    private int limit = 0;
+    private int width = 1;
+    private int height = 1;
 
+    /**
+     * @return the name of the realm.
+     */
     public String getName() {
         return name;
     }
 
-    protected void setName(String name) {
+    /**
+     * @param name sets the name of the realm.
+     * @return fluent
+     */
+    protected InstanceSettings setName(String name) {
         this.name = name;
+        return this;
     }
 
+    /**
+     * @return the maximum number of players that may enter the instance.
+     */
     public int getLimit() {
         return limit;
     }
 
-    protected void setLimit(int limit) {
+    /**
+     * @param limit the maximum number of player that may enter the instance.
+     * @return fluent
+     */
+    protected InstanceSettings setLimit(int limit) {
         this.limit = limit;
+        return this;
     }
 
+    /**
+     * @return the width of the map.
+     */
     public int getWidth() {
         return width;
     }
 
-    protected void setWidth(int width) {
+    /**
+     * @param width set the width of the map.
+     * @return fluent
+     */
+    protected InstanceSettings setWidth(int width) {
         this.width = width;
+        return this;
     }
 
+    /**
+     * @return the height of the map.
+     */
     public int getHeight() {
         return height;
     }
 
-    protected void setHeight(int height) {
+    /**
+     * @param height sets the height of the map.
+     * @return fluent
+     */
+    protected InstanceSettings setHeight(int height) {
         this.height = height;
+        return this;
     }
 
-    public ArrayList<Portal> getPortals() {
+    /**
+     * @return a list of portals, exit points to other instances that exist.
+     */
+    public List<Portal> getPortals() {
         return portals;
     }
 
-    protected void setPortals(ArrayList<Portal> portals) {
+    /**
+     * @param portals sets a list of portals that are exit points into other instances
+     * @return fluent
+     */
+    protected InstanceSettings setPortals(List<Portal> portals) {
         this.portals = portals;
+        return this;
     }
 
-    public ArrayList<Node> getNodes() {
+    /**
+     * @param portal to add to the existing set of portals.
+     * @return fluent
+     */
+    public InstanceSettings addPortal(Portal portal) {
+        this.portals.add(portal);
+        return this;
+    }
+
+    /**
+     * @return a list of nodes that exists on the map.
+     */
+    public List<Node> getNodes() {
         return nodes;
     }
 
-    protected void setNodes(ArrayList<Node> nodes) {
+    /**
+     * @param nodes a list of nodes to set.
+     * @return fluent
+     */
+    protected InstanceSettings setNodes(List<Node> nodes) {
         this.nodes = nodes;
+        return this;
     }
 
-    public ArrayList<Npc> getNpc() {
+    /**
+     * @param node a node on the map.
+     * @return fluent
+     */
+    public InstanceSettings addNode(Node node) {
+        this.nodes.add(node);
+        return this;
+    }
+
+    /**
+     * @return a list of npcs on the map.
+     */
+    public List<Npc> getNpc() {
         return npc;
     }
 
-    protected void setNpc(ArrayList<Npc> npc) {
+    /**
+     * @param npc adds a npc to the list of existing.
+     * @return fluent
+     */
+    public InstanceSettings addNpc(Npc npc) {
+        this.npc.add(npc);
+        return this;
+    }
+
+    /**
+     * @param npc a list of npcs to set for the map.
+     * @return fluent
+     */
+    protected InstanceSettings setNpc(List<Npc> npc) {
         this.npc = npc;
+        return this;
     }
 
     @Override

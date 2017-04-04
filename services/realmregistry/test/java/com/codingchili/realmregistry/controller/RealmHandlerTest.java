@@ -1,7 +1,7 @@
 package com.codingchili.realmregistry.controller;
 
 import com.codingchili.realmregistry.ContextMock;
-import com.codingchili.realmregistry.configuration.RealmSettings;
+import com.codingchili.realmregistry.configuration.RegisteredRealm;
 import com.codingchili.realmregistry.configuration.RegistryContext;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
@@ -30,7 +30,7 @@ import static com.codingchili.common.Strings.*;
 @RunWith(VertxUnitRunner.class)
 public class RealmHandlerTest {
     private static final String REALM_NAME = "test-realm";
-    private RealmSettings realmconfig = new RealmSettings();
+    private RegisteredRealm realmconfig = new RegisteredRealm();
     private RealmHandler<RegistryContext> handler;
     private ContextMock mock;
 
@@ -67,7 +67,7 @@ public class RealmHandlerTest {
             test.assertEquals(ResponseStatus.UNAUTHORIZED, status);
         });
 
-        realmconfig = new RealmSettings();
+        realmconfig = new RegisteredRealm();
     }
 
     @Test

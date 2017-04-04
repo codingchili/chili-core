@@ -8,7 +8,7 @@ import com.codingchili.realm.model.CharacterDB;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.codingchili.core.context.*;
 import com.codingchili.core.files.Configurations;
@@ -22,6 +22,8 @@ import static com.codingchili.realm.configuration.RealmServerSettings.PATH_REALM
 
 /**
  * @author Robin Duda
+ *         <p>
+ *         Context for realms.
  */
 public class RealmContext extends ServiceContext {
     private AsyncCharacterStore characters;
@@ -45,7 +47,7 @@ public class RealmContext extends ServiceContext {
                 });
     }
 
-    public ArrayList<EnabledRealm> getEnabled() {
+    public List<EnabledRealm> getEnabled() {
         return service().getEnabled();
     }
 
@@ -65,11 +67,11 @@ public class RealmContext extends ServiceContext {
         return realm().getRemote();
     }
 
-    public ArrayList<InstanceSettings> instances() {
+    public List<InstanceSettings> instances() {
         return realm().getInstances();
     }
 
-    public ArrayList<PlayerClass> getClasses() {
+    public List<PlayerClass> getClasses() {
         return realm().getClasses();
     }
 

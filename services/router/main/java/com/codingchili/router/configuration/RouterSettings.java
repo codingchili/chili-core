@@ -9,6 +9,7 @@ import java.util.Set;
 
 import com.codingchili.core.configuration.ServiceConfigurable;
 import com.codingchili.core.security.RemoteIdentity;
+
 import com.codingchili.router.model.WireType;
 
 /**
@@ -28,16 +29,23 @@ public class RouterSettings extends ServiceConfigurable {
         super.setIdentity(identity);
     }
 
+    /**
+     * @return a list of configured transports.
+     */
     public List<ListenerSettings> getTransport() {
         return transport;
     }
 
+    /**
+     * @param transport sets a list of configured transports.
+     */
     public void setTransport(List<ListenerSettings> transport) {
         this.transport = transport;
     }
 
     /**
      * Adds a new transport configuration to the list of existing.
+     *
      * @param listener the listener to add
      * @return fluent
      */
@@ -46,12 +54,12 @@ public class RouterSettings extends ServiceConfigurable {
         return this;
     }
 
+    /**
+     * @return returns a set of hidden nodes, the router must not route
+     * messages to these nodes.
+     */
     public Set<String> getHidden() {
         return hidden;
-    }
-
-    public void addHidden(Set<String> hidden) {
-        this.hidden = hidden;
     }
 
     /**
@@ -72,6 +80,7 @@ public class RouterSettings extends ServiceConfigurable {
     /**
      * Sets a route to hidden in the router. Any requests for this route will return
      * with an error and the unauthorized code.
+     *
      * @param route the route to 'hide' requests for
      * @return fluent
      */

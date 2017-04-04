@@ -1,6 +1,6 @@
 package com.codingchili.realmregistry.model;
 
-import com.codingchili.realmregistry.configuration.RealmSettings;
+import com.codingchili.realmregistry.configuration.RegisteredRealm;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
@@ -37,7 +37,7 @@ public interface AsyncRealmStore {
      * @param future    callback
      * @param realmName name of the realm to find.
      */
-    void get(Handler<AsyncResult<RealmSettings>> future, String realmName);
+    void get(Handler<AsyncResult<RegisteredRealm>> future, String realmName);
 
     /**
      * Place a realm into the cluster-wide get.
@@ -45,7 +45,7 @@ public interface AsyncRealmStore {
      * @param future callback
      * @param realm  realm information to be inserted.
      */
-    void put(Handler<AsyncResult<Void>> future, RealmSettings realm);
+    void put(Handler<AsyncResult<Void>> future, RegisteredRealm realm);
 
     /**
      * Removes a realm from the cluster-wide get.

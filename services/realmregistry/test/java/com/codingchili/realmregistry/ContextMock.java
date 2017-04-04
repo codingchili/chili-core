@@ -21,14 +21,14 @@ public class ContextMock extends RegistryContext {
 
         this.realmFactory = new TokenFactory(new RealmRegistrySettings().getRealmSecret());
 
-        new StorageLoader<RealmSettings>().privatemap(new StorageContext<>(vertx))
-                .withClass(RealmSettings.class)
+        new StorageLoader<RegisteredRealm>().privatemap(new StorageContext<>(vertx))
+                .withClass(RegisteredRealm.class)
                 .withDB("", "")
                 .build(result -> {
                     this.realms = new RealmDB(result.result());
                 });
 
-        RealmSettings realm = new RealmSettings()
+        RegisteredRealm realm = new RegisteredRealm()
                 .setName("realmName")
                 .setAuthentication(new Token(new TokenFactory("s".getBytes()), "realmName"));
 

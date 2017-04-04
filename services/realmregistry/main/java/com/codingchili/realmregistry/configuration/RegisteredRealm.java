@@ -3,6 +3,7 @@ package com.codingchili.realmregistry.configuration;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.codingchili.core.configuration.AttributeConfigurable;
 import com.codingchili.core.security.RemoteIdentity;
@@ -12,18 +13,18 @@ import com.codingchili.core.storage.Storable;
 /**
  * @author Robin Duda
  *         <p>
- *         Contains the settings for a realmName.
+ *         Contains information about a realm, received from a realmserver..
  */
 @JsonIgnoreProperties({"instances"})
-public class RealmSettings extends AttributeConfigurable implements Storable {
+public class RegisteredRealm extends AttributeConfigurable implements Storable {
     private RemoteIdentity identity;
-    private ArrayList<String> classes = new ArrayList<>();
-    private ArrayList<String> afflictions = new ArrayList<>();
+    private List<String> classes = new ArrayList<>();
+    private List<String> afflictions = new ArrayList<>();
     private Token authentication;
     private String description;
     private String resources;
     private String remote;
-    private double version;
+    private String version;
     private int size;
     private String type;
     private String lifetime;
@@ -69,123 +70,201 @@ public class RealmSettings extends AttributeConfigurable implements Storable {
     /**
      * @return a list of available classes.
      */
-    public ArrayList<String> getClasses() {
+    public List<String> getClasses() {
         return classes;
     }
 
     /**
      * @param classes sets a list of available classes.
      */
-    public void setClasses(ArrayList<String> classes) {
+    public void setClasses(List<String> classes) {
         this.classes = classes;
     }
 
     /**
      * @return return a list of configured afflictions.
      */
-    public ArrayList<String> getAfflictions() {
+    public List<String> getAfflictions() {
         return afflictions;
     }
 
-    public void setAfflictions(ArrayList<String> afflictions) {
+    /**
+     * @param afflictions set a list of afflictions.
+     */
+    public void setAfflictions(List<String> afflictions) {
         this.afflictions = afflictions;
     }
 
+    /**
+     * @return returns the authentication token for the realm.
+     */
     public Token getAuthentication() {
         return authentication;
     }
 
-    public RealmSettings setAuthentication(Token authentication) {
+    /**
+     * @param authentication the authentication token to set for the realm.
+     * @return fluent
+     */
+    public RegisteredRealm setAuthentication(Token authentication) {
         this.authentication = authentication;
         return this;
     }
 
+    /**
+     * @return the realm description as a string.
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * @param description the realm description as a string.
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /**
+     * @return the resource server for the realm.
+     */
     public String getResources() {
         return resources;
     }
 
+    /**
+     * @param resources set the resource server for the realm.
+     */
     public void setResources(String resources) {
         this.resources = resources;
     }
 
-    public double getVersion() {
+    /**
+     * @return get the version of the realm.
+     */
+    public String getVersion() {
         return version;
     }
 
-    public void setVersion(double version) {
+    /**
+     * @param version set the version of the realm.
+     */
+    public void setVersion(String version) {
         this.version = version;
     }
 
+    /**
+     * @return maximum number of players that may connect to the server.
+     */
     public int getSize() {
         return size;
     }
 
+    /**
+     * @param size sets the maximum number of players that may connect to the server.
+     */
     public void setSize(int size) {
         this.size = size;
     }
 
+    /**
+     * @return type of the realm, a description.
+     */
     public String getType() {
         return type;
     }
 
+    /**
+     * @param type sets the type description of the realm.
+     */
     public void setType(String type) {
         this.type = type;
     }
 
+    /**
+     * @return the lifetime of the realm.
+     */
     public String getLifetime() {
         return lifetime;
     }
 
+    /**
+     * @param lifetime sets the lifetime of the realm.
+     */
     public void setLifetime(String lifetime) {
         this.lifetime = lifetime;
     }
 
+    /**
+     * @return get the number of connected players.
+     */
     public int getPlayers() {
         return players;
     }
 
+    /**
+     * @param players set the number of connected players.
+     */
     public void setPlayers(int players) {
         this.players = players;
     }
 
+    /**
+     * @return true if the realm is trusted.
+     */
     public Boolean getTrusted() {
         return trusted;
     }
 
+    /**
+     * @param trusted indicates if the realm is trusted, non third-party server.
+     */
     public void setTrusted(Boolean trusted) {
         this.trusted = trusted;
     }
 
+    /**
+     * @return true if the connection is secure.
+     */
     public Boolean getSecure() {
         return secure;
     }
 
+    /**
+     * @param secure indicates if the connection to the server must be secured.
+     */
     public void setSecure(Boolean secure) {
         this.secure = secure;
     }
 
+    /**
+     * @return the epoch ms in which the realm was last updated.
+     */
     public long getUpdated() {
         return updated;
     }
 
-    public RealmSettings setUpdated(long updated) {
+    /**
+     * @param updated sets the time in epoch ms when the realm was last updated in the registry.
+     * @return fluent
+     */
+    public RegisteredRealm setUpdated(long updated) {
         this.updated = updated;
         return this;
     }
 
+    /**
+     * @return the name of the realm.
+     */
     public String getName() {
         return name;
     }
 
-    public RealmSettings setName(String name) {
+    /**
+     * @param name the new name of the realm.
+     * @return fluent
+     */
+    public RegisteredRealm setName(String name) {
         this.name = name;
         return this;
     }

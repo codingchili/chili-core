@@ -38,7 +38,7 @@ public class RealmSettings extends AttributeConfigurable {
     private Token authentication;
     private String description;
     private String resources;
-    private double version;
+    private String version;
     private int size;
     private String type;
     private String lifetime;
@@ -299,7 +299,7 @@ public class RealmSettings extends AttributeConfigurable {
     /**
      * @return get the version of the realm.
      */
-    public double getVersion() {
+    public String getVersion() {
         return version;
     }
 
@@ -307,7 +307,7 @@ public class RealmSettings extends AttributeConfigurable {
      * @param version the version to set for the realm.
      * @return fluent
      */
-    private RealmSettings setVersion(double version) {
+    private RealmSettings setVersion(String version) {
         this.version = version;
         return this;
     }
