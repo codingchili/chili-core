@@ -7,7 +7,7 @@
       "com.codingchili.patching.Service",
       "com.codingchili.realm.Service",
       "com.codingchili.router.Service",
-      "com.codingchili.social.Service",
+      "com.codingchili.social.controller.SocialHandler",
       "com.codingchili.website.Service",
       "com.codingchili.realmregistry.Service"
     ],

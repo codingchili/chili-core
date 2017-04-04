@@ -1,11 +1,10 @@
 package com.codingchili.core.security;
 
-import de.mkammerer.argon2.Argon2;
-import de.mkammerer.argon2.Argon2Factory;
-import io.vertx.core.*;
+import com.codingchili.core.context.*;
+import com.codingchili.core.security.exception.*;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.security.exception.HashMismatchException;
+import de.mkammerer.argon2.*;
+import io.vertx.core.*;
 
 /**
  * @author Robin Duda

@@ -1,18 +1,15 @@
 package com.codingchili.social.controller;
 
-import com.codingchili.common.Strings;
-import io.vertx.core.Context;
-import io.vertx.core.Vertx;
-
+import com.codingchili.common.*;
 import com.codingchili.core.context.*;
 import com.codingchili.core.protocol.*;
 
-import static com.codingchili.common.Strings.SOCIAL_NODE;
+import static com.codingchili.common.Strings.*;
 
 /**
  * @author Robin Duda
- *
- * Social handler to handle friendlists and xr-messaging.
+ *         <p>
+ *         Social handler to handle friendlists and xr-messaging.
  */
 public class SocialHandler implements CoreHandler {
     private final Protocol<RequestHandler<Request>> protocol = new Protocol<>();

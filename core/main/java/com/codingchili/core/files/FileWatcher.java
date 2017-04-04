@@ -1,20 +1,19 @@
 package com.codingchili.core.files;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.HashMap;
+import java.nio.file.attribute.*;
+import java.util.*;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.TimerSource;
+import com.codingchili.core.context.*;
 
-import static com.codingchili.core.configuration.CoreStrings.DIR_SEPARATOR;
+import static com.codingchili.core.configuration.CoreStrings.*;
 import static java.nio.file.StandardWatchEventKinds.*;
 
 /**
  * @author Robin Duda
- *
- * Watches changes to files in a registered directory and all its subdirectories.
+ *         <p>
+ *         Watches changes to files in a registered directory and all its subdirectories.
  */
 class FileWatcher {
     private final HashMap<Path, WatchKey> keys = new HashMap<>();
@@ -63,6 +62,7 @@ class FileWatcher {
                             listener.onFileModify(getPath(path, event));
                         }
                     });
+            key.reset();
         }
     }
 

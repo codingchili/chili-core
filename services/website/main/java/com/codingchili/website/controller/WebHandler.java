@@ -1,14 +1,13 @@
 package com.codingchili.website.controller;
 
-import com.codingchili.common.Strings;
-import com.codingchili.website.configuration.WebserverContext;
-
-import com.codingchili.core.configuration.CachedFileStoreSettings;
-import com.codingchili.core.files.exception.FileMissingException;
-import com.codingchili.core.files.CachedFileStore;
+import com.codingchili.common.*;
+import com.codingchili.core.configuration.*;
+import com.codingchili.core.context.*;
+import com.codingchili.core.files.*;
+import com.codingchili.core.files.exception.*;
 import com.codingchili.core.protocol.*;
-import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
-import com.codingchili.core.protocol.exception.HandlerMissingException;
+import com.codingchili.core.protocol.exception.*;
+import com.codingchili.website.configuration.*;
 
 import static com.codingchili.common.Strings.*;
 
@@ -50,11 +49,7 @@ public class WebHandler<T extends WebserverContext> extends AbstractHandler<T> {
     }
 
     @Override
-    public void handle(Request request) throws AuthorizationRequiredException {
-        try {
-            protocol.get(Access.PUBLIC, request.route()).handle(request);
-        } catch (HandlerMissingException e) {
-            request.error(e);
-        }
+    public void handle(Request request) throws CoreException {
+        protocol.get(Access.PUBLIC, request.route()).handle(request);
     }
 }

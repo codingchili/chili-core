@@ -95,7 +95,7 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
         if (enabled.get()) {
             JsonObject event = eventFromLog(data);
             setColor(event);
-            write(parseJsonLog(event, getEvent(data)));
+            write(parseJsonLog(event, consumeEvent(data)));
         }
         return this;
     }
@@ -120,18 +120,18 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
         return timestamp(Instant.now().toEpochMilli());
     }
 
-    private String getLevel(JsonObject data) {
+    private String consumeLevel(JsonObject data) {
         return (String) data.remove(LOG_LEVEL);
     }
 
-    private String getEvent(JsonObject data) {
+    private String consumeEvent(JsonObject data) {
         return (String) data.remove(LOG_EVENT);
     }
 
     private String parseJsonLog(JsonObject data, String event) {
-        String level = getLevel(data);
+        String level = consumeLevel(data);
         StringBuilder text = new StringBuilder(String.format("%s %s [%s] ", time(),
-                (level == null) ? "" : getLevel(data),
+                (level == null) ? "" : level,
                 (event == null) ? "" : event.toUpperCase()));
 
         for (String key : data.fieldNames()) {
