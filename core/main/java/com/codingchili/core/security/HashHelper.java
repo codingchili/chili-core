@@ -19,9 +19,9 @@ import com.codingchili.core.security.exception.HashMismatchException;
  */
 
 public class HashHelper {
-    private static final int ITERATIONS = 2;
-    private static final int MEMORY = 65536;
-    private static final int PARALLELISM = 1;
+    private static final int ITERATIONS = 1;
+    private static final int MEMORY = 8192;
+    private static final int PARALLELISM = 4;
     private static final int HASH_LENGTH = 32;
     private static final int SALT_LENGTH = 16;
     private final static Argon2 argon2 = Argon2Factory.create(SALT_LENGTH, HASH_LENGTH);
