@@ -1,8 +1,9 @@
 package com.codingchili.core.protocol.exception;
 
-import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreException;
 import com.codingchili.core.protocol.ResponseStatus;
+
+import static com.codingchili.core.configuration.CoreStrings.getHandlerMissing;
 
 /**
  * @author Robin Duda
@@ -11,7 +12,7 @@ import com.codingchili.core.protocol.ResponseStatus;
  */
 public class HandlerMissingException extends CoreException {
 
-    public HandlerMissingException() {
-        super(CoreStrings.ERROR_HANDLER_MISSING, ResponseStatus.ERROR);
+    public HandlerMissingException(String handler) {
+        super(getHandlerMissing(handler), ResponseStatus.ERROR);
     }
 }

@@ -180,7 +180,6 @@ public abstract class CoreStrings {
     public static final String ERROR_TOKEN_FACTORY = "Token factory error to generate token.";
     public static final String ERROR_CLUSTERING_REQUIRED = "Running in non-clustered mode.";
     public static final String ERROR_NOT_AUTHORIZED = "Insufficient authorization level to access resource.";
-    public static final String ERROR_HANDLER_MISSING = "The requested handler was not found.";
     public static final String ERROR_LAUNCHER_STARTUP = "Failed to start the launcher with clustering.";
     public static final String ERRROR_LAUNCHER_SHUTDOWN = "system has been shut down..";
     public static final String ERROR_VALIDATION_FAILURE = "Provided data did not pass validation.";
@@ -190,6 +189,10 @@ public abstract class CoreStrings {
     public static final String ERROR_STORAGE_EXCEPTION = "Failed to perform a storage operation.";
     public static final String CONFIGURED_BLOCKS = "Configured deployment blocks";
     public static final String ERROR_PATCH_RELOADED = "The patch version changed during patch session.";
+
+    public static String getHandlerMissing(String name) {
+        return String.format("The requested handler '%s' was not found.", name);
+    }
 
     /**
      * Replaces tags in a logging message.
@@ -520,7 +523,8 @@ public abstract class CoreStrings {
         return Paths.get("").toAbsolutePath().normalize().toString();
     }
 
-    public static String getDeserializePayloadException() {
-        return "Failed to deserialize invalid payload.";
+    public static String getDeserializePayloadException(String message, Class clazz) {
+        return "Failed to deserialize invalid payload, into '" + clazz.getSimpleName() + "' " +
+                "error was '" + message + "'.";
     }
 }

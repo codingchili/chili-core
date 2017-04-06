@@ -53,9 +53,9 @@ public class CharacterHandler<T extends RealmContext> extends AbstractHandler<T>
         sendMaster(new RealmUpdate(context.realm()));
     }
 
-    private void sendMaster(Object object) {
-        context.bus().send(NODE_AUTHENTICATION_REALMS, Serializer.json(object), response -> {
-            UpdateResponse update = UpdateResponse.from(response);
+    private void sendMaster(RealmUpdate realm) {
+        context.bus().send(NODE_AUTHENTICATION_REALMS, Serializer.json(realm), response -> {
+            UpdateResponse update = new UpdateResponse(response.result());
 
             if (update.is(ACCEPTED)) {
                 if (!registered) {
@@ -65,7 +65,7 @@ public class CharacterHandler<T extends RealmContext> extends AbstractHandler<T>
                 registered = true;
             } else {
                 registered = false;
-                context.onRealmRejected(context.realm().getName());
+                context.onRealmRejected(context.realm().getName(), update.message());
             }
         });
     }

@@ -31,7 +31,7 @@ public class AuthenticationGenerator {
     private String directory;
 
     public AuthenticationGenerator(Logger logger) {
-        this(null, logger);
+        this(DIR_CONFIG, logger);
     }
 
     public AuthenticationGenerator(String directory, Logger logger) {
@@ -115,7 +115,7 @@ public class AuthenticationGenerator {
     }
 
     private String getService(String name) {
-        if (directory == null) {
+        if (directory.equals(DIR_CONFIG)) {
             return CoreStrings.getService(name);
         } else {
             return directory + DIR_ROOT + name + EXT_JSON;

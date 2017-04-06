@@ -1,9 +1,6 @@
 package com.codingchili.core.protocol;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.CoreException;
-import com.codingchili.core.context.ServiceContext;
-import com.codingchili.core.context.SystemContext;
+import com.codingchili.core.context.*;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
 
@@ -101,7 +98,7 @@ public interface CoreHandler extends Verticle {
         } catch (HandlerMissingException e) {
             request.error(e);
             logger().onHandlerMissing(request.route());
-        } catch (CoreException e) {
+        } catch (CoreException | CoreRuntimeException e) {
             request.error(e);
         }
     }

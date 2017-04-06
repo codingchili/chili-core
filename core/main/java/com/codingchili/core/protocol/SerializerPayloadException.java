@@ -11,7 +11,7 @@ import static com.codingchili.core.configuration.CoreStrings.getDeserializePaylo
  */
 public class SerializerPayloadException extends CoreRuntimeException {
 
-    protected SerializerPayloadException() {
-        super(getDeserializePayloadException());
+    protected SerializerPayloadException(String message, Class clazz) {
+        super(getDeserializePayloadException(message, clazz));
     }
 }

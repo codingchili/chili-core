@@ -113,6 +113,8 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
         json.remove(ID_TOKEN);
         json.remove(LOG_TIME);
         json.remove(LOG_EVENT);
+        json.remove(LOG_APPLICATION);
+        json.remove(LOG_AGENT);
         return json;
     }
 
@@ -130,14 +132,14 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
 
     private String parseJsonLog(JsonObject data, String event) {
         String level = consumeLevel(data);
-        StringBuilder text = new StringBuilder(String.format("%s %s [%s] ", time(),
+        StringBuilder text = new StringBuilder(String.format("%-12s %-7s [%s]\t", time(),
                 (level == null) ? "" : level,
                 (event == null) ? "" : event.toUpperCase()));
 
         for (String key : data.fieldNames()) {
             Object object = data.getValue(key);
             if (object != null) {
-                text.append(String.format("%s=%s ", key, object.toString()));
+                text.append(String.format("%-1s=%s ", key, object.toString()));
             }
         }
         return text.toString();

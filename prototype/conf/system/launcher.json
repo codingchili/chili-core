@@ -1,5 +1,6 @@
 {
   "version": "CORE-1.0.0-PR",
+  "application": "prototype",
   "blocks": {
     "default": [
       "com.codingchili.logging.Service",

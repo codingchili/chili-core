@@ -24,7 +24,6 @@ import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
  *         HTTP/REST transport listener.
  */
 public class RestListener extends ClusterNode {
-    private static final Map<Integer, Router> routers = new HashMap<>();
     private final RouterHandler<RouterContext> handler;
     private Router router;
 
@@ -35,19 +34,11 @@ public class RestListener extends ClusterNode {
     @Override
     public void init(Vertx vertx, Context context) {
         super.init(vertx, context);
+        router = Router.router(vertx);
+        router.route().handler(BodyHandler.create());
+        RestHelper.EnableCors(router);
+        router.route().handler(this::packet);
 
-        synchronized (routers) {
-            if (routers.containsKey(listener().getPort())) {
-                router = routers.get(listener().getPort());
-            }
-            else {
-                router = Router.router(vertx);
-                router.route().handler(BodyHandler.create());
-                RestHelper.EnableCors(router);
-                router.route().handler(this::packet);
-                routers.put(listener().getPort(), router);
-            }
-        }
     }
 
     @Override

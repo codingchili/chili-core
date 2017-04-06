@@ -46,7 +46,7 @@ class AuthorizationHandler<T> {
         } else if (authorized.containsKey(route)) {
             throw new AuthorizationRequiredException();
         } else {
-            throw new HandlerMissingException();
+            throw new HandlerMissingException(route);
         }
     }
 
@@ -56,7 +56,7 @@ class AuthorizationHandler<T> {
         } else if (unauthorized.containsKey(route)) {
             return unauthorized.get(route);
         } else {
-            throw new HandlerMissingException();
+            throw new HandlerMissingException(route);
         }
     }
 

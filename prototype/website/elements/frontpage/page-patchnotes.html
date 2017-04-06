@@ -115,7 +115,7 @@
                 var self = this;
 
                 patchserver.patch({
-                    success: function (data) {
+                    accepted: function (data) {
                         self.set('patch', data);
                         application.loadedVersion({name: data.name, version: data.version});
                     },

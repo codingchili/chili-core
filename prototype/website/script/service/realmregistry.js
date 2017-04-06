@@ -1,7 +1,7 @@
 var realmregistry = {
-    network : new Network('client.realm.node'),
+    network : new Network('client.realmregistry.node'),
     
     list: function(callback) {
-        this.network.send(callback, 'list');
+        this.network.send(callback, 'realmlist');
     }
 };

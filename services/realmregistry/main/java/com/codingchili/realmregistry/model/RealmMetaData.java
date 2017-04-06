@@ -12,7 +12,6 @@ import com.codingchili.core.configuration.Attributes;
  *         Contains realm metadata used in the realm-list.
  */
 public class RealmMetaData extends Attributes {
-    private List<String> classes;
     private long updated;
     private String name;
     private String description;
@@ -38,7 +37,6 @@ public class RealmMetaData extends Attributes {
                 .setSize(settings.getSize())
                 .setType(settings.getType())
                 .setLifetime(settings.getLifetime())
-                .setClasses(settings.getClasses())
                 .setPlayers(settings.getPlayers())
                 .setTrusted(settings.getTrusted())
                 .setUpdated(settings.getUpdated())
@@ -62,15 +60,6 @@ public class RealmMetaData extends Attributes {
 
     private void setSecure(Boolean secure) {
         this.secure = secure;
-    }
-
-    public List<String> getClasses() {
-        return classes;
-    }
-
-    public RealmMetaData setClasses(List<String> classes) {
-        this.classes = classes;
-        return this;
     }
 
     public String getName() {

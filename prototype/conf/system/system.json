@@ -1,6 +1,6 @@
 {
   "metricRate" : 15000,
-  "handlers" : 1,
+  "handlers" : 4,
   "metrics" : false,
   "deployTimeout" : 3000,
   "shutdownLogTimeout" : 3000,

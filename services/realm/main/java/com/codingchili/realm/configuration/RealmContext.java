@@ -92,9 +92,10 @@ public class RealmContext extends ServiceContext {
                 .put(ID_REALM, realm));
     }
 
-    public void onRealmRejected(String realm) {
+    public void onRealmRejected(String realm, String message) {
         log(event(LOG_REALM_REJECTED, Level.WARNING)
-                .put(ID_REALM, realm));
+                .put(ID_REALM, realm)
+                .put(ID_MESSAGE, message));
     }
 
     public void onRealmStopped(Future<Void> future, String realm) {

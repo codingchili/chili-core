@@ -240,7 +240,9 @@
         </div>
 
     </template>
-    <script>
+</dom-module>
+
+<script>
         Polymer({
             is: 'realm-list',
 
@@ -250,11 +252,8 @@
                 this.set("sort", this.favoriteSort.bind(this));
 
                 application.onAuthentication((function (authentication) {
-                    this.set("favourites", authentication.favourites);
-                    this.set("realms", authentication.realms);
-                    this.applyAll();
-
-                    this.pingAll();
+                    this.set("favourites", authentication.account.servers);
+                    this.update();
                     this.timer = setInterval(this.update.bind(this), 6000);
 
                     window.dispatchEvent(new Event('resize'));
@@ -330,13 +329,14 @@
             },
 
             update: function () {
+                var self = this;
                 realmregistry.list({
-                    success: function (data) {
-                        this.load(data.realms);
+                    accepted: function (data) {
+                        self.load(data.realms);
                     },
                     failed: function (error) {
                         clearInterval(this.timer);
-                        application.error("Failed to retrieve realm list from realm registry. (" + error + ")");
+                        application.error("Failed to retrieve realm list from realm registry.");
                     }
                 });
             },
@@ -400,7 +400,7 @@
             },
 
             applyAll: function () {
-                if (this.realms.hasOwnProperty('length')) {
+                if (this.realms && this.realms.hasOwnProperty('length')) {
                     for (var i = 0; i < this.realms.length; i++) {
                         this.apply(i);
                     }
@@ -450,7 +450,7 @@
             },
 
             pingAll: function () {
-                for (var i = 0; i < this.realms.length; i++) {
+                for (var i = 0; this.realms && i < this.realms.length; i++) {
 
                     setTimeout((function (index) {
                         return (function () {
@@ -463,14 +463,15 @@
 
             ping: function (realm) {
                 var start = performance.now();
+                var self = this;
 
                 realmserver(realm).ping({
-                    success: function () {
+                    accepted: function () {
                         var ping = parseInt((performance.now() - start), 10);
-                        this.setPing(realm, ping)
+                        self.setPing(realm, ping)
                     },
                     failed: function () {
-                        this.setPing(realm, "?");
+                        self.setPing(realm, "?");
                     }
                 });
             },
@@ -498,4 +499,3 @@
             }
         });
     </script>
-</dom-module>

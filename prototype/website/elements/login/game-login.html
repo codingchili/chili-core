@@ -77,93 +77,53 @@
                 var self = this;
                 this.$['toast-login'].open();
 
-                this.set('toastText', "log log load");
+                this.set('toastText', 'log log load');
                 authentication.login({
-                    success: function (data) {
-                        console.log(data);
-                        if (data.status != ResponseStatus.ACCEPTED) {
-                            self.set('toastText', data.message);
-                            self.$['toast-login'].open();
-                        }
+                    accepted: function (data) {
+                        self.resetForm();
+                        application.authenticated(data);
+                    },
+                    unauthorized: function (data) {
+                        self.$['toast-login'].open();
+                        self.password = "";
+                        self.$['password'].focus();
+                    },
+                    missing: function(data) {
+                        self.$['toast-login'].open();
+                        self.showRegisterForm();
+                        self.$['password-repeat'].focus();
+                    },
+                    error: function (data) {
+                        self.set('toastText', e.message);
+                    },
+                    failed: function () {
+                        application.error('Failed to establish a connection to the authentication server.')
+                    }
+                }, this.username, this.password);
+            },
+
+            register: function (e) {
+                var self = this;
+                this.$['toast-login'].open()
+                this.set('toastText', 'log log register');
+
+                authentication.register({
+                    accepted: function (data) {
+                        self.resetForm();
+                        application.authenticated(data);
+                    },
+                    bad: function (data) {
+                        self.$['toast-login']
+                    },
+                    conflict: function (data) {
+                        self.$['toast-login'].open();
+                        self.$['username'].focus();
                     },
                     failed: function () {
                         application.error("Failed to establish a connection to the authentication server.")
                     }
-                }, this.username, this.password);
-
-               /* $.ajax({
-                    type: "POST",
-                    url: api.authentication("authenticate"),
-                    dataType: "json",
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify({
-                        account: {
-                            username: this.username,
-                            password: this.password
-                        },
-                        route: 'authenticate',
-                        target: 'client.authentication.node'
-                    }),
-                    success: (function (data) {
-                        this.resetForm();
-                        application.authenticated(data);
-                    }).bind(this),
-                    statusCode: {
-                        404: (function () {
-                            this.$['toast-missing'].open();
-                            this.showRegisterForm();
-                            this.$['password-repeat'].focus();
-                        }).bind(this),
-                        401: (function () {
-                            this.$['toast-password'].open();
-                            this.password = "";
-                            this.$['password'].focus();
-                        }).bind(this)
-                    },
-                    error: function (code) {
-                        if (code.status != 401 && code.status != 404)
-                            application.error("Failed to establish a connection to the authentication server.")
-                    }
-                });*/
+                }, this.username, this.password, this.email);
             },
-
-            register: function (e) {
-                this.$['toast-register'].open();
-
-                if (this.password != this["password-repeat"] || this.password.length < 8)
-                    this.$['toast-validation-failed'].open();
-                else
-                    $.ajax({
-                        type: "POST",
-                        url: api.authentication("register"),
-                        dataType: "json",
-                        contentType: "application/json; charset=utf-8",
-                        data: JSON.stringify({
-                            account: {
-                                username: this.username,
-                                password: this.password,
-                                email: this.email
-                            },
-                            target: 'client.authentication.node',
-                            route: 'register'
-                        }),
-                        success: (function (data) {
-                            this.resetForm();
-                            application.authenticated(data);
-                        }).bind(this),
-                        statusCode: {
-                            409: (function () {
-                                this.$['toast-conflict'].open();
-                                this.$['username'].focus();
-                            }).bind(this)
-                        },
-                        error: function (code) {
-                            if (code.status != 409)
-                                application.error("Failed to establish a connection to the authentication server.")
-                        }
-                    });
-            },
-
             resetForm: function () {
                 this.password = "";
                 this["password-repeat"] = "";

@@ -1,38 +1,45 @@
 package com.codingchili.core.protocol;
 
+import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 
+import static com.codingchili.core.configuration.CoreStrings.ID_MESSAGE;
+import static com.codingchili.core.configuration.CoreStrings.ID_STATUS;
 import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
 
 /**
  * @author Robin Duda
- *
- * Basic form of a request response.
+ *         <p>
+ *         Basic form of a request response.
  */
 public abstract class ProtocolMessage {
-    private ResponseStatus status = ACCEPTED;
+    private JsonObject data;
 
-    public ProtocolMessage() {
-    }
-
-    public ProtocolMessage(ResponseStatus status) {
-        this.status = status;
-    }
-
-    public JsonObject json() {
-        return Serializer.json(this);
+    public ProtocolMessage(Message message) {
+        this.data = (JsonObject) message.body();
     }
 
     public boolean is(ResponseStatus status) {
-        return this.status.equals(status);
+        return status().equals(status);
     }
 
-    public ResponseStatus getStatus() {
-        return status;
+    public ResponseStatus status() {
+        if (data.containsKey(ID_STATUS)) {
+            return ResponseStatus.valueOf(data.getString(ID_STATUS));
+        } else {
+            return ResponseStatus.ERROR;
+        }
     }
 
-    public ProtocolMessage setStatus(ResponseStatus status) {
-        this.status = status;
-        return this;
+    public String message() {
+        if (data.containsKey(ID_MESSAGE)) {
+            return data.getString(ID_MESSAGE);
+        } else {
+            return "";
+        }
+    }
+
+    public JsonObject data() {
+        return data;
     }
 }

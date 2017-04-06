@@ -58,7 +58,7 @@ public class Serializer {
         try {
             return (T) mapper.readValue(data, clazz);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new SerializerPayloadException(e.getMessage(), clazz);
         }
     }
 
@@ -76,7 +76,7 @@ public class Serializer {
             return (T) json;
         } else {
             if (json == null) {
-                throw new SerializerPayloadException();
+                throw new SerializerPayloadException("null", clazz);
             } else {
                 return unpack(json.encode(), clazz);
             }

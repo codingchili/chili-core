@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "conf/service/[^/]*": {
+    "service/[^/]*": {
       "preshare": [
         "global"
       ],
@@ -12,21 +12,21 @@
         }
       }
     },
-    "logserver": {
+    "service/logserver": {
       "preshare": [],
       "secrets": [
         "secret"
       ],
       "tokens": {}
     },
-    "authserver": {
+    "service/authserver": {
       "preshare": [
         "clientSecret"
       ],
       "secrets": [],
       "tokens": {}
     },
-    "realmregistry": {
+    "service/realmregistry": {
       "preshare": [
         "clientSecret"
       ],
@@ -34,7 +34,7 @@
         "realmSecret"
       ]
     },
-    "conf/realm/[^/]*": {
+    "realm/[^/]*": {
       "preshare": [
         "global"
       ],
@@ -47,7 +47,7 @@
           "secret": "secret"
         },
         "authentication": {
-          "service": "authserver",
+          "service": "realmregistry",
           "secret": "realmSecret"
         }
       }

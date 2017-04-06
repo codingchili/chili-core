@@ -1,62 +1,55 @@
 {
-  "identity": {
-    "node": "routing.node",
-    "host": "server.1"
+  "identity" : {
+    "node" : "routing.node",
+    "host" : "server.1"
   },
-  "transport": [
-    {
-      "api": {},
-      "type": "UDP",
-      "port": 80,
-      "timeout": 2000,
-      "maxRequestBytes": 512
-    },
-    {
-      "api": {},
-      "type": "TCP",
-      "port": 8010,
-      "timeout": 2000,
-      "maxRequestBytes": 512
-    },
-    {
-      "api": {},
-      "type": "WEBSOCKET",
-      "port": 80,
-      "timeout": 4000,
-      "maxRequestBytes": 512
-    },
-    {
-      "api": {
-        "/webseed": {
-          "target": "patching.node",
-          "route": "webseed"
-        },
-        "/api/news": {
-          "target": "patching.node",
-          "route": "news"
-        },
-        "/api/gameinfo": {
-          "target": "patching.node",
-          "route":"gameinfo"
-        },
-        "/api/download": {
-          "target": "patching.node",
-          "route": "download"
-        }
+  "transport" : [ {
+    "api" : { },
+    "type" : "UDP",
+    "port" : 80,
+    "timeout" : 2000,
+    "maxRequestBytes" : 512
+  }, {
+    "api" : { },
+    "type" : "TCP",
+    "port" : 8010,
+    "timeout" : 2000,
+    "maxRequestBytes" : 512
+  }, {
+    "api" : { },
+    "type" : "WEBSOCKET",
+    "port" : 8020,
+    "timeout" : 4000,
+    "maxRequestBytes" : 512
+  }, {
+    "api" : {
+      "/webseed" : {
+        "target" : "patching.node",
+        "route" : "webseed"
       },
-      "type": "REST",
-      "port": 80,
-      "timeout": 3000,
-      "maxRequestBytes": 512
-    }
-  ],
-  "hidden": [
-    "syslog.node"
-  ],
-  "global": "1ffFQuhs0Y0bv0fRdSclbfUdAUC0gEjHNEB/lT7wZ3Fk8Qifrt0uNlPBx1I/1N5EbG0tZwXNTjwpEXaRYKe+EA==",
-  "logging": {
-    "key": "3XqqgwOUiUTYOAvF2Ob2yuyT1RuC8oNBxqOSW088ji0wYihcCrPQ7wrYUY0U7p7jELkydE2dyZc5MXmyLZWqqw==",
-    "expiry": 1489733003,
-    "domain": "routing.node@server.1"
+      "/api/news" : {
+        "target" : "patching.node",
+        "route" : "news"
+      },
+      "/api/gameinfo" : {
+        "target" : "patching.node",
+        "route" : "gameinfo"
+      },
+      "/api/download" : {
+        "target" : "patching.node",
+        "route" : "download"
+      }
+    },
+    "type" : "REST",
+    "port" : 80,
+    "timeout" : 3000,
+    "maxRequestBytes" : 512
+  } ],
+  "hidden" : [ "syslog.node" ],
+  "global" : "GWl4Q5YOzy8ndxBWJ+J9F/aSYinXLGB6spkGQuZIfm/94UG5y3LjRqgAnzkmx7pzciMZW1scKlylrLGfRIkDrg==",
+  "logging" : {
+    "key" : "e3fPX1hVbDokPCZYyvHyuYyxskzGu+Sv4FEHNPiTRWrWyNf819hM0fZ0Oj7eM1bQ5cgRtVFkEl10jZWFYB6+KA==",
+    "expiry" : 1491975043,
+    "domain" : "routing.node@server.1"
   }
 }

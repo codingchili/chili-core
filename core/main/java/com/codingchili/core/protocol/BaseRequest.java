@@ -1,6 +1,10 @@
 package com.codingchili.core.protocol;
 
+import java.util.LinkedHashMap;
+
 import com.codingchili.core.context.CoreException;
+import com.codingchili.core.context.CoreRuntimeException;
+import com.codingchili.core.context.exception.CoreExceptionFormat;
 import com.codingchili.core.protocol.exception.UnmappedException;
 import com.codingchili.core.security.Token;
 
@@ -22,8 +26,8 @@ public abstract class BaseRequest implements Request {
 
     @Override
     public void error(Throwable exception) {
-        if (exception instanceof CoreException) {
-            send(((CoreException) exception).status(), exception);
+        if (exception instanceof CoreException || exception instanceof CoreRuntimeException) {
+            send(((CoreExceptionFormat) exception).status(), exception);
         } else {
             send(ResponseStatus.ERROR, new UnmappedException());
         }
@@ -41,6 +45,9 @@ public abstract class BaseRequest implements Request {
 
     @Override
     public String target() {
+        if (data().getValue(PROTOCOL_TARGET) instanceof LinkedHashMap) {
+            System.out.println("wth");
+        }
         String target = data().getString(PROTOCOL_TARGET);
 
         if (target == null) {

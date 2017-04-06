@@ -58,9 +58,9 @@ public abstract class Strings extends CoreStrings {
 
     public static final String NODE_AUTHENTICATION_CLIENTS = "client.authentication.node";
     public static final String NODE_AUTHENTICATION_REALMS = "realm.authentication.node";
+    public static final String NODE_REALM_CLIENTS = "client.realmregistry.node";
     public static final String NODE_WEBSERVER = "webserver.node";
     public static final String NODE_PATCHING = "patching.node";
-    public static final String NODE_REALM_CLIENTS = "client.realm.node";
     public static final String NODE_REALM = "realm.node";
     public static final String NODE_CLIENT_LOGGING = "client.logging.node";
     public static final String NODE_ROUTING = "routing.node";

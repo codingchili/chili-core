@@ -13,6 +13,7 @@ import com.codingchili.core.files.JsonFileStore;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.RemoteIdentity;
 import com.codingchili.core.security.Token;
+
 import com.codingchili.realm.instance.configuration.InstanceSettings;
 import com.codingchili.realm.instance.model.Affliction;
 import com.codingchili.realm.instance.model.PlayerCharacter;
@@ -39,6 +40,7 @@ public class RealmSettings extends AttributeConfigurable {
     private String description;
     private String resources;
     private String version;
+    private String remote;
     private int size;
     private String type;
     private String lifetime;
@@ -131,7 +133,15 @@ public class RealmSettings extends AttributeConfigurable {
      * @return the remote name of the realm.
      */
     public String getRemote() {
-        return name + NODE_REALM;
+        return remote;
+    }
+
+    /**
+     * @param remote set the remote address for this realm.
+     */
+    public RealmSettings setRemote(String remote) {
+        this.remote = remote;
+        return this;
     }
 
     /**

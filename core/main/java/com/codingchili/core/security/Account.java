@@ -2,6 +2,9 @@ package com.codingchili.core.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.codingchili.core.storage.Storable;
 
 /**
@@ -11,6 +14,7 @@ import com.codingchili.core.storage.Storable;
  *         Password is to be consumed once read.
  */
 public class Account implements Storable {
+    private List<String> servers = new ArrayList<>();
     private String username = "";
     private char[] password = "".toCharArray();
     private String email = "";
@@ -50,6 +54,15 @@ public class Account implements Storable {
     public Account setPassword(String password) {
         this.password = password.toCharArray();
         return this;
+    }
+
+    public List<String> getServers() {
+        servers.add("srv1");
+        return servers;
+    }
+
+    public void setServers(List<String> servers) {
+        this.servers = servers;
     }
 
     public String getEmail() {

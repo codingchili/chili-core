@@ -18,8 +18,6 @@ import com.codingchili.core.storage.Storable;
 @JsonIgnoreProperties({"instances"})
 public class RegisteredRealm extends AttributeConfigurable implements Storable {
     private RemoteIdentity identity;
-    private List<String> classes = new ArrayList<>();
-    private List<String> afflictions = new ArrayList<>();
     private Token authentication;
     private String description;
     private String resources;
@@ -67,33 +65,6 @@ public class RegisteredRealm extends AttributeConfigurable implements Storable {
         this.identity = identity;
     }
 
-    /**
-     * @return a list of available classes.
-     */
-    public List<String> getClasses() {
-        return classes;
-    }
-
-    /**
-     * @param classes sets a list of available classes.
-     */
-    public void setClasses(List<String> classes) {
-        this.classes = classes;
-    }
-
-    /**
-     * @return return a list of configured afflictions.
-     */
-    public List<String> getAfflictions() {
-        return afflictions;
-    }
-
-    /**
-     * @param afflictions set a list of afflictions.
-     */
-    public void setAfflictions(List<String> afflictions) {
-        this.afflictions = afflictions;
-    }
 
     /**
      * @return returns the authentication token for the realm.
