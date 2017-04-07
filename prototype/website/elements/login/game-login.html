@@ -3,6 +3,9 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/iron-fit-behavior/iron-fit-behavior.html">
+<link rel="import" href="../../bower_components/iron-a11y-announcer/iron-a11y-announcer.html">
+<link rel="import" href="../../bower_components/iron-overlay-behavior/iron-overlay-behavior.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/scale-up-animation.html">
 <link rel="import" href="../../bower_components/neon-animation/animations/fade-out-animation.html">
 
@@ -19,26 +22,29 @@
             :host {
                 display: inline-block;
             }
-
             .title {
                 text-align: center;
                 padding-top: 16px;
             }
-
-            paper-material {
+            .container {
                 width: 525px;
             }
-
             .register {
                 margin-top: 32px;
+            }
+            .fit-login {
+                width: 100%;
+                min-width: 0;
+                border-radius: 0;
+                margin: 0;
             }
 
         </style>
 
-        <div class="container center-box">
+        <div class="container center-box" id="container">
             <paper-material elevation="3">
                 <div class="title">
-                    <h4>{{toastText}}</h4>
+                    <h4>{{title}}</h4>
                 </div>
 
                 <paper-input value="{{username}}" id="username" label="Username" on-keydown="submit"
@@ -61,9 +67,9 @@
                 </div>
             </paper-material>
 
-            <paper-toast class="toast-login" id="toast-login"
-                         text="{{toastText}}"></paper-toast>
-        </div>
+            <paper-toast class="toast-login fit-login" id="toast-login"
+                         text="{{toastText}}" opened></paper-toast>
+            </div>
 
     </template>
     <script>
@@ -77,7 +83,6 @@
                 var self = this;
                 this.$['toast-login'].open();
 
-                this.set('toastText', 'log log load');
                 authentication.login({
                     accepted: function (data) {
                         self.resetForm();
@@ -105,7 +110,6 @@
             register: function (e) {
                 var self = this;
                 this.$['toast-login'].open()
-                this.set('toastText', 'log log register');
 
                 authentication.register({
                     accepted: function (data) {
@@ -113,7 +117,7 @@
                         application.authenticated(data);
                     },
                     bad: function (data) {
-                        self.$['toast-login']
+                        self.$['toast-login'].open();
                     },
                     conflict: function (data) {
                         self.$['toast-login'].open();
@@ -132,14 +136,14 @@
             },
 
             showLoginForm: function () {
-                this.title = "Authentication";
+                this.title = "Login";
                 this.hideregisterform = true;
                 this.hideloginform = false;
                 this.$['username'].focus();
             },
 
             showRegisterForm: function () {
-                this.title = "Registration";
+                this.title = "Register";
                 this.hideregisterform = false;
                 this.hideloginform = true;
                 this.$['username'].focus();
@@ -155,5 +159,7 @@
                 }
             }
         });
+
+
     </script>
 </dom-module>

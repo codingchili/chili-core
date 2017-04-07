@@ -127,5 +127,5 @@ var application = {
 };
 
 $(document).ready(function () {
-    application.view('page');
+    application.view('game-login');
 });

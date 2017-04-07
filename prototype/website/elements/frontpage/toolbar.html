@@ -16,30 +16,33 @@
             :host {
                 display: inline-block;
             }
-
             paper-toolbar {
                 position: fixed;
                 width: 100%;
+                font-size: 10px;
             }
-
             paper-button {
                 width: 100px;
                 margin: 0;
                 padding: 0;
             }
-
             .logout {
                 width: 32px;
                 height: 32px;
                 display: inline-block;
-                margin-top: -6px;
+                margin-top: -10px;
                 margin-right: 12px;
             }
-
-            .menu {
+            .menu-right {
                 float: right;
             }
-
+            .version {
+                position: absolute;
+                font-size: 8px;
+                left: 0px;
+                width: 100%;
+                text-align: center;
+            }
             .title {
                 margin-left: 24px;
             }
@@ -48,13 +51,17 @@
         <paper-header-panel class="fit">
             <paper-toolbar>
                 <p>
-                    <span class="title"><paper-button on-tap="mainpage">Dungeon</paper-button></span>
+                    <span class="title"><paper-button on-tap="mainpage">START</paper-button></span>
 
-                <span class="menu">
+                <span class="menu-right">
                     <iron-icon primary class="logout" icon="icons:highlight-off" hidden$="{{hidelogout}}"
                                on-tap="logout"
                                title="Log out"></iron-icon>
                 </span>
+
+                    <span class="version">
+                        {{version}}
+                    </span>
                 </p>
             </paper-toolbar>
 
@@ -74,6 +81,10 @@
 
                 application.onAuthentication(function (account) {
                     self.hidelogout = false;
+                });
+
+                application.onVersion(function (version) {
+                    self.set('version', version.name + ' ' + version.version);
                 });
 
                 application.onError(function () {

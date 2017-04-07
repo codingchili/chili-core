@@ -32,7 +32,6 @@ public class ContextMock extends RegistryContext {
                 .setName("realmName")
                 .setAuthentication(new Token(new TokenFactory("s".getBytes()), "realmName"));
 
-        realm.getClasses().add("class.name");
 
         realms.put(Future.future(), realm);
     }

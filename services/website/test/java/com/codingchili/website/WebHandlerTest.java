@@ -1,6 +1,7 @@
 package com.codingchili.website;
 
 import com.codingchili.common.Strings;
+import com.codingchili.core.context.*;
 import com.codingchili.website.configuration.WebserverContext;
 import com.codingchili.website.configuration.WebserverSettings;
 import com.codingchili.website.controller.WebHandler;
@@ -93,7 +94,7 @@ public class WebHandlerTest {
     private void handle(String action, ResponseListener listener) {
         try {
             handler.handle(RequestMock.get(action, listener, null));
-        } catch (AuthorizationRequiredException e) {
+        } catch (CoreException e) {
             throw new RuntimeException(e);
         }
     }

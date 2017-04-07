@@ -38,13 +38,10 @@
     <script>
         Polymer({
             is: 'footer-template',
-
             ready: function () {
-
                 application.onVersion((function (version) {
                     this.set('version', version.name + ' ' + version.version);
                 }).bind(this));
-
             }
         });
     </script>
