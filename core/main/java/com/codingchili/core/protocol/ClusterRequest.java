@@ -4,6 +4,8 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 
+import com.codingchili.core.files.Configurations;
+
 import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_STATUS;
 
 /**
@@ -12,7 +14,7 @@ import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_STATUS;
  * A request in the cluster.
  */
 public class ClusterRequest extends BaseRequest {
-    private int timeout = 3000;
+    private int timeout = Configurations.system().getClusterTimeout();
     private Buffer buffer;
     private final JsonObject json;
     private final Message message;

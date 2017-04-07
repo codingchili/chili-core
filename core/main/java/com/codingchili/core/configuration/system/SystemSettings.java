@@ -23,6 +23,7 @@ public class SystemSettings extends BaseConfigurable {
     private int cachedFilePoll = 2000;
     private boolean consoleLogging = true;
     private int workerPoolSize = 32;
+    private int clusterTimeout = 3000;
 
     public SystemSettings() {
         path = CoreStrings.PATH_SYSTEM;
@@ -179,5 +180,13 @@ public class SystemSettings extends BaseConfigurable {
      */
     public void setWorkerPoolSize(int workerPoolSize) {
         this.workerPoolSize = workerPoolSize;
+    }
+
+    public int getClusterTimeout() {
+        return clusterTimeout;
+    }
+
+    public void setClusterTimeout(int clusterTimeout) {
+        this.clusterTimeout = clusterTimeout;
     }
 }

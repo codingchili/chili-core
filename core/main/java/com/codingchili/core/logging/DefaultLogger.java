@@ -7,8 +7,8 @@ import java.time.Instant;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.Delay;
+import com.codingchili.core.configuration.Environment;
+import com.codingchili.core.context.*;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.files.Configurations.launcher;
@@ -22,12 +22,14 @@ public abstract class DefaultLogger extends Handler implements Logger {
     private Level level = Level.INFO;
     CoreContext context;
     JsonLogger logger;
+    String name;
 
     protected DefaultLogger() {
     }
 
-    DefaultLogger(CoreContext context) {
+    DefaultLogger(CoreContext context, String name) {
         this.context = context;
+        this.name = name;
     }
 
     @Override
@@ -51,8 +53,8 @@ public abstract class DefaultLogger extends Handler implements Logger {
                 .put(LOG_TIME, Instant.now().toEpochMilli());
 
         if (context != null) {
-            event.put(LOG_HOST, context.identity().getHost())
-                    .put(LOG_NODE, context.identity().getNode())
+            event.put(LOG_HOST, Environment.hostname().orElse(ID_UNDEFINED))
+                    .put(LOG_NODE, name)
                     .put(LOG_APPLICATION, launcher().getApplication())
                     .put(LOG_AGENT, context.handler());
         }

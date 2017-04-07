@@ -65,11 +65,12 @@
                     <paper-button class="register flex" on-tap="showRegisterForm">Register</paper-button>
                     <paper-button raised class="primary flex" on-tap="authenticate">Authenticate</paper-button>
                 </div>
-            </paper-material>
 
-            <paper-toast class="toast-login fit-login" id="toast-login"
-                         text="{{toastText}}" opened></paper-toast>
-            </div>
+        </paper-material>
+
+                <paper-toast class="toast-login" id="toast-login"
+                             text="{{toaster}}"></paper-toast>
+        </div>
 
     </template>
     <script>
@@ -77,6 +78,7 @@
             is: 'game-login',
             ready: function () {
                 this.showLoginForm();
+                this.$['toast-login'].open();
             },
 
             authenticate: function (e) {
@@ -99,7 +101,7 @@
                         self.$['password-repeat'].focus();
                     },
                     error: function (data) {
-                        self.set('toastText', e.message);
+                        self.toaster = data.message;
                     },
                     failed: function () {
                         application.error('Failed to establish a connection to the authentication server.')
@@ -109,7 +111,7 @@
 
             register: function (e) {
                 var self = this;
-                this.$['toast-login'].open()
+                this.$['toast-login'].open();
 
                 authentication.register({
                     accepted: function (data) {
@@ -159,7 +161,5 @@
                 }
             }
         });
-
-
     </script>
 </dom-module>

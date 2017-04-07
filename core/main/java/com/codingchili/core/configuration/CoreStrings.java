@@ -129,6 +129,7 @@ public abstract class CoreStrings {
     public static final String ID_MESSAGE = "message";
     public static final String ID_QUERY = "query";
     public static final String ID_OPTIONS = "options";
+    public static final String ID_UNDEFINED = "undefined";
 
     // Node names.
     public static final String NODE_LOCAL = "local";

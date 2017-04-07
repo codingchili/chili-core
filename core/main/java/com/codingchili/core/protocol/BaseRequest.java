@@ -45,9 +45,6 @@ public abstract class BaseRequest implements Request {
 
     @Override
     public String target() {
-        if (data().getValue(PROTOCOL_TARGET) instanceof LinkedHashMap) {
-            System.out.println("wth");
-        }
         String target = data().getString(PROTOCOL_TARGET);
 
         if (target == null) {

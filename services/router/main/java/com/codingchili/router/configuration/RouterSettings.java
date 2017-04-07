@@ -6,11 +6,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.codingchili.core.configuration.ServiceConfigurable;
 import com.codingchili.core.security.RemoteIdentity;
 
 import com.codingchili.router.model.WireType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @author Robin Duda
@@ -62,6 +64,10 @@ public class RouterSettings extends ServiceConfigurable {
         return hidden;
     }
 
+    public void setHidden(Set<String> hidden) {
+        this.hidden = hidden.stream().map(String::toLowerCase).collect(Collectors.toSet());
+    }
+
     /**
      * Get configuration for the specified listener.
      *
@@ -85,7 +91,12 @@ public class RouterSettings extends ServiceConfigurable {
      * @return fluent
      */
     public RouterSettings addHidden(String route) {
-        hidden.add(route);
+        hidden.add(route.toLowerCase());
         return this;
+    }
+
+    @JsonIgnore
+    public boolean isHidden(String target) {
+        return hidden.contains(target.toLowerCase());
     }
 }

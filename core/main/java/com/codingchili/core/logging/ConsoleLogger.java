@@ -31,7 +31,7 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
     }
 
     public ConsoleLogger(CoreContext context) {
-        super(context);
+        super(context, ID_SYSTEM);
         logger = this;
 
         AnsiConsole.systemInstall();

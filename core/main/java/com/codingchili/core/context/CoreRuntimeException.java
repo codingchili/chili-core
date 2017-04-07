@@ -14,7 +14,7 @@ public class CoreRuntimeException extends RuntimeException implements CoreExcept
     /**
      * @param description of the generated error and the cause.
      */
-    protected CoreRuntimeException(String description) {
+    public CoreRuntimeException(String description) {
         super(description);
     }
 
@@ -22,7 +22,7 @@ public class CoreRuntimeException extends RuntimeException implements CoreExcept
      * @param error description of the error and the cause.
      * @param status the error level.
      */
-    protected CoreRuntimeException(String error, ResponseStatus status) {
+    public CoreRuntimeException(String error, ResponseStatus status) {
         super(error);
         this.status = status;
     }

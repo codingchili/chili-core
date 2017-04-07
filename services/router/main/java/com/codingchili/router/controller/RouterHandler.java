@@ -56,12 +56,15 @@ public class RouterHandler<T extends RouterContext> extends AbstractHandler<T> {
 
                     switch (status) {
                         case TIMEOUT:
+                            context.onNodeTimeout(request.target(), request.route(), request.timeout());
                             request.error(new RequestTimedOutException(request));
                             break;
                         case NO_HANDLERS:
+                            context.onNodeNotReachable(request.target());
                             request.error(new NodeNotReachableException(request));
                             break;
                         case RECIPIENT_FAILURE:
+                            context.onRecipientFailure(request.target(), request.route());
                             request.error(new NodeFailedToAcknowledge(request));
                             break;
                     }
