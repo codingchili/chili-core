@@ -1,7 +1,7 @@
 {
   "identity" : {
     "node" : "logging.node",
-    "host" : "server.1"
+    "version" : "1"
   },
   "elastic" : {
     "remote" : "localhost",

@@ -9,7 +9,7 @@
   },
   "identity" : {
     "node" : "Angel Oak.realm.node",
-    "host" : "server.1"
+    "version" : "1"
   },
   "authentication" : {
     "key" : "klm+qEvTyjkYcrz46lVBlUSvO0OiORub4/fvtPmp49VS7+7nB6pmPVLTawZJwL42ZWQhDPS49KPQfzwZrdc9/g==",

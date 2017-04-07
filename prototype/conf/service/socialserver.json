@@ -1,7 +1,7 @@
 {
   "identity" : {
     "node" : "social.node",
-    "host" : "server.1"
+    "version" : "1"
   },
   "message" : "hello world!!!",
   "global" : "GWl4Q5YOzy8ndxBWJ+J9F/aSYinXLGB6spkGQuZIfm/94UG5y3LjRqgAnzkmx7pzciMZW1scKlylrLGfRIkDrg==",

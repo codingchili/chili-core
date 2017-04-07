@@ -7,14 +7,18 @@ import java.io.Serializable;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.Environment;
 
+import static com.codingchili.core.configuration.CoreStrings.ID_DEFAULT;
+import static com.codingchili.core.configuration.CoreStrings.ID_UNDEFINED;
+
 /**
  * @author Robin Duda
  *
  * Defines a remote identity as the node/service name and the hostname.
  */
 public class RemoteIdentity implements Serializable {
-    private String node = "unconfigured";
-    private String host = Environment.hostname().orElse("undefined");
+    private String node = ID_UNDEFINED;
+    private String version = ID_UNDEFINED;
+    private String host = Environment.hostname().orElse(ID_UNDEFINED);
 
     public RemoteIdentity() {}
 
@@ -30,6 +34,14 @@ public class RemoteIdentity implements Serializable {
     public RemoteIdentity setNode(String node) {
         this.node = node;
         return this;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     public String getHost() {

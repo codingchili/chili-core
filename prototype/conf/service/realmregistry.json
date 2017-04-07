@@ -1,7 +1,7 @@
 {
   "identity" : {
     "node" : "realmregistry.node",
-    "host" : "server.1"
+    "version" : "1"
   },
   "realms" : [ "Angel Oak", "Developer Realm", "Iron Oak", "Staging Realm", "Wisteria", "Red Maple" ],
   "realmSecret" : "d4eK7V3mnoFEvL9BbBs2EfLyyDfN7cwWR2pVOkEjZk1IOCEmN+X6NTPhBOGTzdohV1MxBJbeTyG768w3WNsK2A==",
