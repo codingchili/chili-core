@@ -7,7 +7,7 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.context.SystemContext;
+import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.testing.ContextMock;
 
 import static com.codingchili.core.configuration.CoreStrings.NODE_LOGGING;
@@ -19,7 +19,7 @@ import static com.codingchili.core.configuration.CoreStrings.NODE_LOGGING;
  */
 @RunWith(VertxUnitRunner.class)
 public class RemoteLoggerTest {
-    private SystemContext context;
+    private ServiceContext context;
 
     @Before
     public void setUp() {
