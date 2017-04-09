@@ -21,14 +21,14 @@ import static com.codingchili.core.configuration.CoreStrings.NODE_EXT;
 public abstract class ServiceContext extends SystemContext {
     protected Logger logger;
 
-    protected ServiceContext(CoreContext context) {
+    protected ServiceContext(CoreContext context, String address) {
         super(context);
-        this.logger = new RemoteLogger(this);
+        this.logger = new RemoteLogger(this, address);
     }
 
-    protected ServiceContext(Vertx vertx) {
+    protected ServiceContext(Vertx vertx, String address) {
         super(vertx);
-        this.logger = new RemoteLogger(this);
+        this.logger = new RemoteLogger(this, address);
     }
 
     /**
@@ -42,7 +42,7 @@ public abstract class ServiceContext extends SystemContext {
 
     @Override
     public RemoteIdentity identity() {
-        return new RemoteIdentity(service().node(), service().host());
+        return service().getIdentity();
     }
 
     @Override

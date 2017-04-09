@@ -17,7 +17,7 @@ public class RemoteLogger extends DefaultLogger {
     private final DeliveryOptions options;
 
     public RemoteLogger(ServiceContext context) {
-        super(context, context.identity().getNode());
+        super(context);
         this.context = context;
         this.options = new DeliveryOptions()
                 .setSendTimeout(8000);

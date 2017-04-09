@@ -3,6 +3,7 @@ package com.codingchili.core.security;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
+import java.util.*;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.Environment;
@@ -17,7 +18,7 @@ import static com.codingchili.core.configuration.CoreStrings.ID_UNDEFINED;
  */
 public class RemoteIdentity implements Serializable {
     private String node = ID_UNDEFINED;
-    private String version = ID_UNDEFINED;
+    private String version;
     private String host = Environment.hostname().orElse(ID_UNDEFINED);
 
     public RemoteIdentity() {}
@@ -40,8 +41,18 @@ public class RemoteIdentity implements Serializable {
         return version;
     }
 
-    public void setVersion(String version) {
+    @JsonIgnore
+    public Optional<String> version() {
+        if (getVersion() == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(getVersion());
+        }
+    }
+
+    public RemoteIdentity setVersion(String version) {
         this.version = version;
+        return this;
     }
 
     public String getHost() {

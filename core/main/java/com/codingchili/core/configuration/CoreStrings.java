@@ -55,29 +55,30 @@ public abstract class CoreStrings {
     public static final String STORAGE_ARRAY = "[]";
 
     public static final String DB_DIR = "db";
+
     public static final String WATCHER_COMPLETED = "executed";
     public static final String WATCHER_PAUSED = "paused";
     public static final String WATCHER_RESUMED = "resumed";
     public static final String EXT_JSON = ".json";
-
     public static final String EXT_HTML = ".html";
+
     public static final String EXT_TXT = ".txt";
     public static final String ANY = "*";
     public static final String NODE_LOGGING = "syslog.node";
-
     // protocol constants.
     public static final String PROTOCOL_REAL_IP = "X-Real-IP";
 
     public static final String PROTOCOL_CONNECTION = "connection";
+
     public static final String PROTOCOL_STATUS = "status";
     public static final String PROTOCOL_ROUTE = "route";
     public static final String PROTOCOL_TARGET = "target";
     public static final String PROTOCOL_LOGGING = "logging";
-
     // launcher commands.
     public static final String COMMAND_PREFIX = "--";
 
     public static final String GENERATE_SECRETS = getCommand("generate-secrets");
+
     public static final String GENERATE_TOKENS = getCommand("generate-tokens");
     public static final String GENERATE_PRESHARED = getCommand("generate-preshared");
     public static final String GENERATE = getCommand("generate");
@@ -87,7 +88,6 @@ public abstract class CoreStrings {
     public static final String PARAM_ITERATIONS = getCommand("iterations");
     public static final String PARAM_HTML = getCommand("html");
     public static final String PARAM_TEMPLATE = getCommand("template");
-
     public static String getCommand(String command) {
         return COMMAND_PREFIX + command;
     }
@@ -96,6 +96,7 @@ public abstract class CoreStrings {
     public static final String ID_TOKEN = "token";
 
     public static final String ID_NAME = "name";
+
     public static final String ID_FILE = "file";
     public static final String ID_DATA = "data";
     public static final String PROTOCOL_MESSAGE = "message";
@@ -130,11 +131,10 @@ public abstract class CoreStrings {
     public static final String ID_QUERY = "query";
     public static final String ID_OPTIONS = "options";
     public static final String ID_UNDEFINED = "undefined";
-
     // Node names.
     public static final String NODE_LOCAL = "local";
-    public static final String NODE_EXT = ".node";
 
+    public static final String NODE_EXT = ".node";
     // Storage constants
     public static final String DEFAULT_DB = "chili";
 
@@ -142,6 +142,7 @@ public abstract class CoreStrings {
     public static final String LOG_APPLICATION = "application";
 
     public static final String LOG_AT = "@";
+
     public static final String LOG_EVENT = "event";
     public static final String LOG_VERSION = "version";
     public static final String LOG_USER_AGENT = "User-Agent";
@@ -177,8 +178,8 @@ public abstract class CoreStrings {
     public static final String LOG_STORAGE_WATCHER = "storage.watcher";
     public static final String[] LOG_HIDDEN_TAGS = new String[]{"dev", "LOCAL", "3.6.3"};
     public static final String ERROR_REUSABLEQUERY_UNBOUND = "Reusable query not bound to a storage.";
-
     public static final String ERROR_TOKEN_FACTORY = "Token factory error to generate token.";
+
     public static final String ERROR_CLUSTERING_REQUIRED = "Running in non-clustered mode.";
     public static final String ERROR_NOT_AUTHORIZED = "Insufficient authorization level to access resource.";
     public static final String ERROR_LAUNCHER_STARTUP = "Failed to start the launcher with clustering.";
@@ -190,7 +191,6 @@ public abstract class CoreStrings {
     public static final String ERROR_STORAGE_EXCEPTION = "Failed to perform a storage operation.";
     public static final String CONFIGURED_BLOCKS = "Configured deployment blocks";
     public static final String ERROR_PATCH_RELOADED = "The patch version changed during patch session.";
-
     public static String getHandlerMissing(String name) {
         return String.format("The requested handler '%s' was not found.", name);
     }
@@ -323,6 +323,10 @@ public abstract class CoreStrings {
 
     public static String testDirectory() {
         return testDirectory("");
+    }
+
+    public static String getIllegalPathToConfigurable(Class clazz) {
+        return String.format("Illegal path to configurable with class '%s', was null.", clazz);
     }
 
     public static String testDirectory(String name) {

@@ -1,13 +1,10 @@
 package com.codingchili.core.protocol;
 
 import com.codingchili.core.context.*;
-import com.codingchili.core.logging.Logger;
-import com.codingchili.core.protocol.exception.HandlerMissingException;
+import com.codingchili.core.logging.*;
+import com.codingchili.core.protocol.exception.*;
 
-import io.vertx.core.Context;
-import io.vertx.core.Future;
-import io.vertx.core.Verticle;
-import io.vertx.core.Vertx;
+import io.vertx.core.*;
 
 /**
  * @author Robin Duda

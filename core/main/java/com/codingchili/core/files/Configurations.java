@@ -15,8 +15,7 @@ import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.exception.InvalidConfigurableException;
 import com.codingchili.core.configuration.system.*;
 import com.codingchili.core.context.*;
-import com.codingchili.core.files.exception.FileReadException;
-import com.codingchili.core.files.exception.NoSuchResourceException;
+import com.codingchili.core.files.exception.*;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.Serializer;
@@ -108,6 +107,9 @@ public abstract class Configurations {
      */
     @SuppressWarnings("unchecked")
     public static <T extends Configurable> T get(String path, Class<T> clazz) {
+        if (path == null) {
+            throw new InvalidConfigurationPath(clazz);
+        }
         if (configs.containsKey(path) && configs.get(path).clazz.equals(clazz)) {
             return (T) configs.get(path).configurable;
         } else {

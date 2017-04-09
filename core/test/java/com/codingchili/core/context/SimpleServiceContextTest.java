@@ -16,7 +16,7 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
  */
 @RunWith(VertxUnitRunner.class)
 public class SimpleServiceContextTest {
-    private static final String TESTNODE = "testnode";
+    private static final String TESTNODE = "testnode.node";
     private CoreContext core;
 
     @Before

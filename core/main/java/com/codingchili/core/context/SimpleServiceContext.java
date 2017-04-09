@@ -1,12 +1,10 @@
 package com.codingchili.core.context;
 
-import static com.codingchili.core.configuration.CoreStrings.EXT_JSON;
-import static com.codingchili.core.configuration.CoreStrings.NODE_EXT;
+import com.codingchili.core.configuration.*;
+import com.codingchili.core.files.*;
+import com.codingchili.core.security.*;
 
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.configuration.ServiceConfigurable;
-import com.codingchili.core.files.Configurations;
-import com.codingchili.core.security.RemoteIdentity;
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
@@ -17,14 +15,29 @@ public class SimpleServiceContext extends ServiceContext {
     private String path;
 
     /**
+     * Creates a new simple service context without a version.
+     *
      * @param context core instance to branch on.
      * @param node    the name and address of the node.
      */
     public SimpleServiceContext(CoreContext context, String node) {
-        super(context);
+        this(context, node, null);
+    }
+
+    /**
+     * Creates a new simple service context with a version.
+     *
+     * @param context core instance to branch on.
+     * @param node    the name and address of the node.
+     * @param version the version of the handler.
+     */
+    public SimpleServiceContext(CoreContext context, String node, String version) {
+        super(context, node);
         this.path = CoreStrings.DIR_SERVICES + CoreStrings.remove(node, NODE_EXT) + EXT_JSON;
         Configurations.put(new ServiceConfigurable(path)
-                .setIdentity(new RemoteIdentity().setNode(node)));
+                .setIdentity(new RemoteIdentity()
+                        .setNode(node)
+                        .setVersion(version)));
     }
 
     /**
