@@ -54,7 +54,7 @@ public class PatchHandlerTest {
 
             @Override
             public RemoteIdentity identity() {
-                return new RemoteIdentity("PatchHandlerTest", "");
+                return new RemoteIdentity("PatchHandlerTest");
             }
         };
 

@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 import java.util.concurrent.TimeUnit;
 
 import com.codingchili.core.protocol.ResponseStatus;
-import com.codingchili.core.security.RemoteIdentity;
 
 import static com.codingchili.common.Strings.*;
 
@@ -67,7 +66,7 @@ public abstract class TransportTestCases {
                 .setHttpOptions(new HttpServerOptions().setCompressionSupported(false))
                 .addMapping(PATCHING_ROOT, new Endpoint(NODE_PATCHING));
 
-        RouterSettings settings = new RouterSettings(new RemoteIdentity("node", "host"))
+        RouterSettings settings = new RouterSettings("router.node")
                 .addHidden(NODE_LOGGING)
                 .addTransport(listener);
 
@@ -94,7 +93,7 @@ public abstract class TransportTestCases {
             async.complete();
         }, new JsonObject()
                 .put(DATA, new String(new byte[MAX_REQUEST_BYTES]).replace("\0", ONE_CHAR))
-                .put(PROTOCOL_TARGET, NODE_ROUTING));
+                .put(PROTOCOL_TARGET, NODE_ROUTER));
     }
 
     @Test
@@ -105,7 +104,7 @@ public abstract class TransportTestCases {
             test.assertEquals(ResponseStatus.ACCEPTED, status);
             async.complete();
         }, new JsonObject()
-                .put(PROTOCOL_TARGET, NODE_ROUTING)
+                .put(PROTOCOL_TARGET, NODE_ROUTER)
                 .put(PROTOCOL_ROUTE, ID_PING));
     }
 

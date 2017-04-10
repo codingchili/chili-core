@@ -3,9 +3,7 @@ package com.codingchili.core.protocol;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.CoreException;
-import com.codingchili.core.context.ServiceContext;
+import com.codingchili.core.context.*;
 import com.codingchili.core.logging.Logger;
 
 /**
@@ -16,7 +14,7 @@ import com.codingchili.core.logging.Logger;
 public abstract class AbstractHandler<T extends ServiceContext> implements CoreHandler {
     private final Logger logger;
     protected final T context;
-    private final String address;
+    protected String address;
 
     /**
      * @param context the context to attach to the handler.
@@ -24,8 +22,8 @@ public abstract class AbstractHandler<T extends ServiceContext> implements CoreH
      */
     protected AbstractHandler(T context, String address) {
         this.context = context;
-        this.address = address;
         this.logger = context.logger();
+        this.address = address;
     }
 
     @Override
@@ -34,12 +32,12 @@ public abstract class AbstractHandler<T extends ServiceContext> implements CoreH
     }
 
     @Override
-    public abstract void handle(Request request) throws CoreException;
-
-    @Override
     public String address() {
         return address;
     }
+
+    @Override
+    public abstract void handle(Request request) throws CoreException;
 
     @Override
     public T context() {

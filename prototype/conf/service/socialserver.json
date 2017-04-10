@@ -1,13 +1,10 @@
 {
-  "identity" : {
-    "node" : "social.node",
-    "version" : "1"
-  },
-  "message" : "hello world!!!",
-  "global" : "GWl4Q5YOzy8ndxBWJ+J9F/aSYinXLGB6spkGQuZIfm/94UG5y3LjRqgAnzkmx7pzciMZW1scKlylrLGfRIkDrg==",
-  "logging" : {
-    "key" : "1zGJd9Q8Xd/PMsAyZrLpIhrTHZKrrlUSayHyyK0yiRvdMBuhy4vPma49ERqzbmkutkzQsx7hqSbNcDbLOpxSZg==",
-    "expiry" : 1491975043,
-    "domain" : "social.node@server.1"
+  "node": "social.node",
+  "message": "hello world!!!",
+  "global": "GWl4Q5YOzy8ndxBWJ+J9F/aSYinXLGB6spkGQuZIfm/94UG5y3LjRqgAnzkmx7pzciMZW1scKlylrLGfRIkDrg==",
+  "logging": {
+    "key": "1zGJd9Q8Xd/PMsAyZrLpIhrTHZKrrlUSayHyyK0yiRvdMBuhy4vPma49ERqzbmkutkzQsx7hqSbNcDbLOpxSZg==",
+    "expiry": 1491975043,
+    "domain": "social.node@server.1"
   }
 }

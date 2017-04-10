@@ -44,7 +44,7 @@ public class StorageLoader<Value extends Storable> {
                     .<Value>newInstance(future, storage);
 
         } catch (ReflectiveOperationException e) {
-            context.console().log(CoreStrings.getStorageLoaderError(plugin, DB, collection), Level.SEVERE);
+            context.logger().log(CoreStrings.getStorageLoaderError(plugin, DB, collection), Level.SEVERE);
             e.printStackTrace();
             System.exit(0);
         }

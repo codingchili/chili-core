@@ -46,7 +46,7 @@ public class LaunchContext extends SystemContext {
 
     @Override
     public RemoteIdentity identity() {
-        return new RemoteIdentity(LAUNCHER, super.identity().getHost());
+        return new RemoteIdentity(LAUNCHER);
     }
 
     public LauncherSettings settings() {

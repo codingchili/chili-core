@@ -3,7 +3,6 @@ package com.codingchili.core.logging;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.ServiceContext;
 
 import static com.codingchili.core.configuration.CoreStrings.NODE_LOGGING;
@@ -15,6 +14,7 @@ import static com.codingchili.core.configuration.CoreStrings.NODE_LOGGING;
  */
 public class RemoteLogger extends DefaultLogger {
     private final DeliveryOptions options;
+    private ConsoleLogger console = new ConsoleLogger();
 
     public RemoteLogger(ServiceContext context) {
         super(context);
@@ -25,7 +25,7 @@ public class RemoteLogger extends DefaultLogger {
 
     @Override
     public Logger log(JsonObject data) {
-        context.console().log(data);
+        console.log(data);
         context.bus().send(NODE_LOGGING, data, options);
         return this;
     }

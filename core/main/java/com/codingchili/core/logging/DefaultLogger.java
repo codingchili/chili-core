@@ -58,14 +58,14 @@ public abstract class DefaultLogger extends Handler implements Logger {
      *
      * @param event the log event to add metadata to.
      */
-    abstract void addMetadata(JsonObject event);
-    // todo move to RemoteLogger and ConsoleLogger..
-    /*if (context != null) {
-        event.put(LOG_HOST, Environment.hostname().orElse(ID_UNDEFINED))
-                .put(LOG_NODE, name)
-                .put(LOG_APPLICATION, launcher().getApplication())
-                .put(LOG_AGENT, context.handler());
-    }*/
+    protected void addMetadata(JsonObject event) {
+        if (context != null) {
+            event.put(LOG_HOST, Environment.hostname().orElse(ID_UNDEFINED))
+                    .put(LOG_NODE, context.address())
+                    .put(LOG_APPLICATION, launcher().getApplication())
+                    .put(LOG_AGENT, context.handler());
+        }
+    }
 
     @Override
     public void onAlreadyInitialized() {

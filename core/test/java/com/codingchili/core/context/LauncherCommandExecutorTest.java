@@ -55,7 +55,7 @@ public class LauncherCommandExecutorTest {
     public void testHiddenCommandNotVisible(TestContext test) {
         new LauncherCommandExecutor(new LaunchContextMock(logged -> {
             test.assertFalse(logged.contains(HIDDEN));
-        }).console()).add(getHiddenCommand()).execute(HELP);
+        }).logger()).add(getHiddenCommand()).execute(HELP);
     }
 
     private Command getHiddenCommand() {
@@ -93,7 +93,7 @@ public class LauncherCommandExecutorTest {
 
     private CommandExecutor execute(String arg, MockLogListener listener) {
         return new LauncherCommandExecutor(
-                new LaunchContextMock(listener).console()).execute(Future.future(), arg);
+                new LaunchContextMock(listener).logger()).execute(Future.future(), arg);
     }
 
     private String getOutput(String arg) {

@@ -48,9 +48,9 @@ public class PatchKeeper<T extends PatchFile> extends CachedFileStore {
             String relativePath = Strings.format(path, context.directory());
             files.put(relativePath, new PatchFile(relativePath, file.length(), file.lastModified(), bytes));
 
-            context.console().onFileLoaded(relativePath);
+            context.logger().onFileLoaded(relativePath);
         } catch (IOException e) {
-            context.console().onFileLoadError(Strings.format(path, context.directory()));
+            context.logger().onFileLoadError(Strings.format(path, context.directory()));
         }
     }
 

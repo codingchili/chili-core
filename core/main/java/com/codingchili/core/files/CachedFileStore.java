@@ -45,7 +45,7 @@ public class CachedFileStore<T> implements FileStoreListener {
             stores.put(settings.getDirectory(), this);
         } else {
             if (!store.settings.equals(settings)) {
-                context.console().onError(new ConfigurationMismatchException());
+                context.logger().onError(new ConfigurationMismatchException());
             }
         }
         this.files = stores.get(settings.getDirectory()).files;
@@ -63,7 +63,7 @@ public class CachedFileStore<T> implements FileStoreListener {
             }
             watchDirectory();
         } catch (IOException e) {
-            context.console().onFileLoadError(e.getMessage());
+            context.logger().onFileLoadError(e.getMessage());
         }
         return this;
     }
@@ -111,9 +111,9 @@ public class CachedFileStore<T> implements FileStoreListener {
 
             files.put(filePath, Buffer.buffer(fileBytes));
 
-            context.console().onFileLoaded(filePath);
+            context.logger().onFileLoaded(filePath);
         } catch (IOException e) {
-            context.console().onFileLoadError(path.toString());
+            context.logger().onFileLoadError(path.toString());
         }
     }
 

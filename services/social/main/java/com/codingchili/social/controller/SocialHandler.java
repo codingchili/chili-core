@@ -27,6 +27,11 @@ public class SocialHandler implements CoreHandler {
     }
 
     @Override
+    public String address() {
+        return SOCIAL_NODE;
+    }
+
+    @Override
     public ServiceContext context() {
         return context;
     }

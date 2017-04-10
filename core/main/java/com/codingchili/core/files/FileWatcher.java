@@ -41,7 +41,7 @@ class FileWatcher {
 
             this.start();
         } catch (IOException e) {
-            context.console().onError(e);
+            context.logger().onError(e);
         }
     }
 

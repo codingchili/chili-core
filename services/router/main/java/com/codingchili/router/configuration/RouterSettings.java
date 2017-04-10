@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.codingchili.core.configuration.ServiceConfigurable;
-import com.codingchili.core.security.RemoteIdentity;
 
 import com.codingchili.router.model.WireType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  * @author Robin Duda
  *         <p>
- *         Settings for the router node.
+ *         Settings for the router identity.
  */
 public class RouterSettings extends ServiceConfigurable {
     public static final String PATH_ROUTING = getService("routingserver");
@@ -27,8 +26,8 @@ public class RouterSettings extends ServiceConfigurable {
     public RouterSettings() {
     }
 
-    public RouterSettings(RemoteIdentity identity) {
-        super.setIdentity(identity);
+    public RouterSettings(String address) {
+        super.setNode(address);
     }
 
     /**

@@ -63,7 +63,7 @@ public abstract class Strings extends CoreStrings {
     public static final String NODE_PATCHING = "patching.node";
     public static final String NODE_REALM = "realm.node";
     public static final String NODE_CLIENT_LOGGING = "client.logging.node";
-    public static final String NODE_ROUTING = "routing.node";
+    public static final String NODE_ROUTER = "routing.node";
     public static final String SOCIAL_NODE = "social.node";
 
     public static final String COLLECTION_REALMS = "realms";

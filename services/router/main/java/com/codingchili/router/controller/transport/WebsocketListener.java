@@ -4,6 +4,7 @@ import com.codingchili.router.configuration.ListenerSettings;
 import com.codingchili.router.configuration.RouterContext;
 import com.codingchili.router.controller.RouterHandler;
 import com.codingchili.router.model.WireType;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.ServerWebSocket;
@@ -33,12 +34,11 @@ public class WebsocketListener extends ClusterNode {
             if (listen.succeeded()) {
                 listener().addListenPort(listen.result().actualPort());
                 handler.start(start);
-            }
-            else {
+            } else {
                 start.fail(listen.cause());
             }
-        }).requestHandler(handlerino -> {
-
+        }).requestHandler(rest -> {
+            rest.response().setStatusCode(HttpResponseStatus.NOT_IMPLEMENTED.code()).end();
         });
     }
 
@@ -47,8 +47,7 @@ public class WebsocketListener extends ClusterNode {
 
         if (buffer.length() > listener().getMaxRequestBytes()) {
             request.error(new RequestPayloadSizeException());
-        }
-        else {
+        } else {
             handler.process(request);
         }
     }

@@ -203,7 +203,7 @@ public class StorageContext<Value> extends SystemContext {
     }
 
     private void log(JsonObject json) {
-        console().log(json.put(LOG_STORAGE_DB, DB).put(LOG_STORAGE_COLLECTION, collection));
+        logger().log(json.put(LOG_STORAGE_DB, DB).put(LOG_STORAGE_COLLECTION, collection));
     }
 
     /**

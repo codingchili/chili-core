@@ -59,9 +59,9 @@ public abstract class Configurations {
      */
     public static void initialize(CoreContext context) {
         if (initialized.get()) {
-            context.console().onAlreadyInitialized();
+            context.logger().onAlreadyInitialized();
         } else {
-            logger = context.console();
+            logger = context.logger();
 
             new FileWatcherBuilder(context)
                     .rate(Configurations::getConfigurationPoll)

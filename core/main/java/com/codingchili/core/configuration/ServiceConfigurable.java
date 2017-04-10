@@ -3,16 +3,13 @@ package com.codingchili.core.configuration;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import com.codingchili.core.security.RemoteIdentity;
-
 /**
  * @author Robin Duda
  *         <p>
  *         Service configurables are loaded by service contexts for use in services.
  */
 public class ServiceConfigurable extends BaseConfigurable {
-    private RemoteIdentity identity = new RemoteIdentity("unconfigured",
-            Environment.hostname().orElse("undefined"));
+    private String node = "undefined";
 
     public ServiceConfigurable() {
     }
@@ -23,20 +20,20 @@ public class ServiceConfigurable extends BaseConfigurable {
 
     @JsonIgnore
     public String host() {
-        return identity.getHost();
+        return Environment.hostname().orElse("undefined");
     }
 
     @JsonIgnore
     public String node() {
-        return identity.getNode();
+        return node;
     }
 
-    public RemoteIdentity getIdentity() {
-        return identity;
+    public String getNode() {
+        return node();
     }
 
-    public ServiceConfigurable setIdentity(RemoteIdentity identity) {
-        this.identity = identity;
+    public ServiceConfigurable setNode(String node) {
+        this.node = node;
         return this;
     }
 }

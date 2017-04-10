@@ -1,8 +1,7 @@
 package com.codingchili.core.protocol;
 
-import java.util.*;
-
-import io.vertx.core.*;
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Future;
 
 /**
  * @author Robin Duda
@@ -33,19 +32,10 @@ public class ClusterListener extends AbstractVerticle {
 
     @Override
     public void start(Future<Void> start) {
-        handler.context().bus().consumer(addressOf(handler)).handler(message -> {
+        handler.context().bus().consumer(handler.context().address()).handler(message -> {
             handler.process(new ClusterRequest(message));
         });
         handler.start(start);
-    }
-
-    private String addressOf(CoreHandler handler) {
-        Optional<String> version = handler.context().identity().version();
-        if (version.isPresent()) {
-            return String.format("%s.%s", version.get(), handler.address());
-        } else {
-            return handler.address();
-        }
     }
 
     @Override

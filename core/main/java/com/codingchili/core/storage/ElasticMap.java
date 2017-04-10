@@ -60,7 +60,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
             client.admin().indices().create(new CreateIndexRequest(context.DB())).get();
         } catch (UnknownHostException | InterruptedException | ExecutionException e) {
-            context.console().onError(e);
+            context.logger().onError(e);
         }
         future.complete(this);
     }

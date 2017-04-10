@@ -94,10 +94,9 @@ public abstract class CoreStrings {
 
     // keys used in json objects.
     public static final String ID_TOKEN = "token";
-
     public static final String ID_NAME = "name";
-
     public static final String ID_FILE = "file";
+    public static final String ID_NODE = "node";
     public static final String ID_DATA = "data";
     public static final String PROTOCOL_MESSAGE = "message";
     public static final String ID_VERSION = "version";

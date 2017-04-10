@@ -52,7 +52,7 @@ class RestRequest extends BaseRequest {
         }
 
         if (!data.containsKey(PROTOCOL_TARGET)) {
-            data.put(PROTOCOL_TARGET, NODE_WEBSERVER);
+            data.put(PROTOCOL_TARGET, settings.getDefaultTarget());
         }
     }
 

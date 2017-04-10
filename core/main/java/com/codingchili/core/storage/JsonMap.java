@@ -9,7 +9,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.files.JsonFileStore;
@@ -46,7 +45,7 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
             try {
                 this.db = JsonFileStore.readObject(context.dbPath());
             } catch (NoSuchResourceException e) {
-                context.console().log(getFileReadError(context.dbPath()));
+                context.logger().log(getFileReadError(context.dbPath()));
             }
         }
         this.context = context;

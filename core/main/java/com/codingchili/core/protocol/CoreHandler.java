@@ -29,15 +29,6 @@ public interface CoreHandler extends Verticle {
     void handle(Request request) throws CoreException;
 
     /**
-     * Get the address of which the handler is providing handlers for.
-     *
-     * @return the address as a string representation.
-     */
-    default String address() {
-        return context().service().node();
-    }
-
-    /**
      * @return a logger attached to the service context.
      */
     default Logger logger() {
@@ -48,6 +39,11 @@ public interface CoreHandler extends Verticle {
      * @return the context of the service.
      */
     ServiceContext context();
+
+    /**
+     * @return the node of the handler.
+     */
+    String address();
 
     /**
      * @return returns the vertx instance in the services context.

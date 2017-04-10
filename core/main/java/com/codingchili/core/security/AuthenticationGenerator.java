@@ -122,14 +122,14 @@ public class AuthenticationGenerator {
         }
     }
 
-    private RemoteIdentity getIdentity(JsonObject config) {
-        RemoteIdentity identity;
+    private String getIdentity(JsonObject config) {
+        String identity;
 
-        if (config.containsKey(ID_IDENTITY)) {
-            identity = unpack(config.getJsonObject(ID_IDENTITY), RemoteIdentity.class);
+        if (config.containsKey(ID_NODE)) {
+            identity = config.getString(ID_NODE);
         } else {
-            identity = new RemoteIdentity();
-            config.put(ID_IDENTITY, json(identity));
+            identity = ID_UNDEFINED;
+            config.put(ID_NODE, identity);
             logger.log(getIdentityNotConfigured(getClass().getSimpleName()));
         }
         return identity;

@@ -22,10 +22,10 @@ public class RouterHandler<T extends RouterContext> extends AbstractHandler<T> {
     private final Validator validator = new Validator();
 
     public RouterHandler(T context) {
-        super(context, NODE_ROUTING);
+        super(context, NODE_ROUTER);
 
         protocol.use(ANY, this::sendCluster)
-                .use(NODE_ROUTING, Request::accept);
+                .use(NODE_ROUTER, Request::accept);
     }
 
     @Override

@@ -8,8 +8,6 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.protocol.ResponseStatus;
-
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
 
@@ -56,7 +54,7 @@ public class RestListenerIT extends TransportTestCases {
     public void testRouterSupportsGet(TestContext context) {
         Async async = context.async();
 
-        sendGetRequest(String.format("/?%s=%s&%s=%s", PROTOCOL_ROUTE, ID_PING, PROTOCOL_TARGET, NODE_ROUTING),
+        sendGetRequest(String.format("/?%s=%s&%s=%s", PROTOCOL_ROUTE, ID_PING, PROTOCOL_TARGET, NODE_ROUTER),
                 (result, status) -> {
                     context.assertEquals(ACCEPTED, status);
                     async.complete();

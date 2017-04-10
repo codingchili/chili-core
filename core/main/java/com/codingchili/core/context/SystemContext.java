@@ -80,7 +80,7 @@ public class SystemContext implements CoreContext {
                 if (timeout.getMS() > 0) {
                     periodic(timeout, name, handler);
                 }
-                console().onTimerSourceChanged(name, initial, timeout.getMS());
+                logger().onTimerSourceChanged(name, initial, timeout.getMS());
             }
             handler.handle(event);
         });
@@ -146,7 +146,7 @@ public class SystemContext implements CoreContext {
     }
 
     @Override
-    public Logger console() {
+    public Logger logger() {
         if (system().isConsoleLogging()) {
             return console.setEnabled(true);
         } else {
@@ -161,7 +161,12 @@ public class SystemContext implements CoreContext {
 
     @Override
     public RemoteIdentity identity() {
-        return new RemoteIdentity(ID_SYSTEM, CoreStrings.NODE_LOCAL);
+        return new RemoteIdentity(ID_SYSTEM);
+    }
+
+    @Override
+    public String address() {
+        return ID_SYSTEM;
     }
 
 
@@ -170,6 +175,6 @@ public class SystemContext implements CoreContext {
     }
 
     protected JsonObject event(String event, Level level) {
-        return console().event(event, level);
+        return logger().event(event, level);
     }
 }

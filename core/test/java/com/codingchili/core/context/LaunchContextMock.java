@@ -70,7 +70,7 @@ class LaunchContextMock extends LaunchContext {
     }
 
     @Override
-    public Logger console() {
+    public Logger logger() {
         return logger;
     }
 }

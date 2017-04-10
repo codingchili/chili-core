@@ -64,7 +64,8 @@ public class ClusterListenerTest {
         private Async stop;
 
         TestHandler(T context, String address) {
-            super(context, address);
+            super(context, "");
+            this.address = address;
         }
 
         @Override

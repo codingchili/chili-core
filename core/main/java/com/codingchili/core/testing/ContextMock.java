@@ -11,11 +11,11 @@ import io.vertx.core.*;
  */
 public class ContextMock extends ServiceContext implements CoreContext {
     public ContextMock(Vertx vertx) {
-        super(vertx, "");
+        super(vertx);
     }
 
     public ContextMock(CoreContext context) {
-        super(context, "");
+        super(context);
     }
 
     @Override
@@ -25,7 +25,12 @@ public class ContextMock extends ServiceContext implements CoreContext {
     }
 
     @Override
+    public String address() {
+        return "";
+    }
+
+    @Override
     public RemoteIdentity identity() {
-        return new RemoteIdentity("mock.node", "localhost");
+        return new RemoteIdentity("mock.node");
     }
 }

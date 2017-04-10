@@ -76,7 +76,7 @@ public class ConfigurationsTest {
 
         Configurations.initialize(new ContextMock(context) {
             @Override
-            public Logger console() {
+            public Logger logger() {
                 return new ConsoleLogger() {
 
                     @Override

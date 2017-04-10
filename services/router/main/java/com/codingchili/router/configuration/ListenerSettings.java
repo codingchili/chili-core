@@ -17,6 +17,7 @@ public class ListenerSettings {
     private Map<String, Endpoint> api = new HashMap<>();
     private WireType type = WireType.REST;
     private Set<Integer> actualPorts = new HashSet<>();
+    private String defaultTarget = "no target specified";
     private int port = 8080;
     private int timeout = 3000;
     private int maxRequestBytes = 64;
@@ -30,7 +31,7 @@ public class ListenerSettings {
 
     /**
      * @param timeout the timeout in MS which the router times out the request.
-     * @return
+     * @return fluent
      */
     public ListenerSettings setTimeout(int timeout) {
         this.timeout = timeout;
@@ -102,8 +103,8 @@ public class ListenerSettings {
     }
 
     /**
-     * @param route the name of the route/node/target to map
-     * @param api the endpoint the request is mapped to.
+     * @param route the name of the route/identity/target to map
+     * @param api   the endpoint the request is mapped to.
      * @return fluent
      */
     public ListenerSettings addApi(String route, Endpoint api) {
@@ -156,5 +157,19 @@ public class ListenerSettings {
     @JsonIgnore
     public Set<Integer> getListenPorts() {
         return actualPorts;
+    }
+
+    /**
+     * @return get the default target to use if unspecified.
+     */
+    public String getDefaultTarget() {
+        return defaultTarget;
+    }
+
+    /**
+     * @param defaultTarget sets the default target where target is unspecified.
+     */
+    public void setDefaultTarget(String defaultTarget) {
+        this.defaultTarget = defaultTarget;
     }
 }

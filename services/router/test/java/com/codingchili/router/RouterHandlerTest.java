@@ -203,7 +203,7 @@ public class RouterHandlerTest {
     public void testPingRouter(TestContext test) {
         Async async = test.async();
 
-        handle(NODE_ROUTING, (response, status) -> {
+        handle(NODE_ROUTER, (response, status) -> {
             test.assertEquals(status, ResponseStatus.ACCEPTED);
             async.complete();
         });

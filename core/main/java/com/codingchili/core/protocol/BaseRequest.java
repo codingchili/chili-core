@@ -17,7 +17,7 @@ import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
  * Base request class, extend this class for new transports.
  */
 public abstract class BaseRequest implements Request {
-    public static final String TARGET_UNDEFINED = "webserver.node";
+    public static final String TARGET_UNDEFINED = ID_UNDEFINED;
 
     @Override
     public void accept() {
