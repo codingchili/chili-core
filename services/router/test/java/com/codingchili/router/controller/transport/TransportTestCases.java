@@ -63,6 +63,7 @@ public abstract class TransportTestCases {
                 .setPort(0)
                 .setType(wireType)
                 .setTimeout(7000)
+                .setDefaultTarget(NODE_WEBSERVER)
                 .setHttpOptions(new HttpServerOptions().setCompressionSupported(false))
                 .addMapping(PATCHING_ROOT, new Endpoint(NODE_PATCHING));
 

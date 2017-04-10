@@ -169,7 +169,8 @@ public class ListenerSettings {
     /**
      * @param defaultTarget sets the default target where target is unspecified.
      */
-    public void setDefaultTarget(String defaultTarget) {
+    public ListenerSettings setDefaultTarget(String defaultTarget) {
         this.defaultTarget = defaultTarget;
+        return this;
     }
 }

@@ -19,8 +19,7 @@ public class RemoteLogger extends DefaultLogger {
     public RemoteLogger(ServiceContext context) {
         super(context);
         this.context = context;
-        this.options = new DeliveryOptions()
-                .setSendTimeout(8000);
+        this.options = new DeliveryOptions().setSendTimeout(8000);
     }
 
     @Override
