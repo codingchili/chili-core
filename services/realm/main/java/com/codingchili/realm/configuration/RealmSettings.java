@@ -11,7 +11,6 @@ import java.util.List;
 import com.codingchili.core.configuration.AttributeConfigurable;
 import com.codingchili.core.files.JsonFileStore;
 import com.codingchili.core.protocol.Serializer;
-import com.codingchili.core.security.RemoteIdentity;
 import com.codingchili.core.security.Token;
 
 import com.codingchili.realm.instance.configuration.InstanceSettings;
@@ -32,7 +31,6 @@ import io.vertx.core.json.JsonObject;
 @JsonIgnoreProperties({"instances"})
 public class RealmSettings extends AttributeConfigurable {
     private final List<InstanceSettings> instances = new ArrayList<>();
-    private RemoteIdentity identity;
     private List<PlayerClass> classes = new ArrayList<>();
     private List<Affliction> afflictions = new ArrayList<>();
     private PlayerCharacter template = new PlayerCharacter();
@@ -391,20 +389,6 @@ public class RealmSettings extends AttributeConfigurable {
      */
     public List<InstanceSettings> getInstances() {
         return instances;
-    }
-
-    /**
-     * @return the identity of the realm.
-     */
-    public RemoteIdentity getIdentity() {
-        return identity;
-    }
-
-    /**
-     * @param identity sets the identity of the realm.
-     */
-    public void setIdentity(RemoteIdentity identity) {
-        this.identity = identity;
     }
 
     @Override

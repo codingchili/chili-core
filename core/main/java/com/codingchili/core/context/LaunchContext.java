@@ -1,16 +1,15 @@
 package com.codingchili.core.context;
 
-import io.vertx.core.*;
-
 import java.util.*;
 
-import com.codingchili.core.configuration.Environment;
+import com.codingchili.core.configuration.*;
 import com.codingchili.core.configuration.exception.*;
-import com.codingchili.core.configuration.system.LauncherSettings;
-import com.codingchili.core.files.Configurations;
-import com.codingchili.core.security.RemoteIdentity;
+import com.codingchili.core.configuration.system.*;
+import com.codingchili.core.files.*;
 
-import static com.codingchili.core.configuration.CoreStrings.ID_DEFAULT;
+import io.vertx.core.*;
+
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
@@ -31,6 +30,11 @@ public class LaunchContext extends SystemContext {
         this.args = args;
     }
 
+    @Override
+    public String node() {
+        return LAUNCHER;
+    }
+
     /**
      * @param vertx creates a launcher context from a vertx instance.
      */
@@ -42,11 +46,6 @@ public class LaunchContext extends SystemContext {
     @Override
     public void deploy(String node, Handler<AsyncResult<String>> handler) {
         vertx.deployVerticle(node, handler);
-    }
-
-    @Override
-    public RemoteIdentity identity() {
-        return new RemoteIdentity(LAUNCHER);
     }
 
     public LauncherSettings settings() {
@@ -61,7 +60,8 @@ public class LaunchContext extends SystemContext {
         return settings().getBlocks().containsKey(block);
     }
 
-    private List<String> getBlockForRemote(String remote) throws RemoteBlockNotConfiguredException, BlockNotConfiguredException {
+    private List<String> getBlockForRemote(String remote) throws RemoteBlockNotConfiguredException,
+            BlockNotConfiguredException {
         String block = settings().getHosts().get(remote);
 
         if (isBlockConfigured(block)) {

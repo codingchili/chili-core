@@ -114,7 +114,7 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
         json.remove(LOG_TIME);
         json.remove(LOG_EVENT);
         json.remove(LOG_APPLICATION);
-        json.remove(LOG_AGENT);
+        json.remove(LOG_CONTEXT);
         return json;
     }
 

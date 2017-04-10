@@ -2,11 +2,7 @@ package com.codingchili.realmregistry.configuration;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.codingchili.core.configuration.AttributeConfigurable;
-import com.codingchili.core.security.RemoteIdentity;
 import com.codingchili.core.security.Token;
 import com.codingchili.core.storage.Storable;
 
@@ -17,7 +13,6 @@ import com.codingchili.core.storage.Storable;
  */
 @JsonIgnoreProperties({"instances"})
 public class RegisteredRealm extends AttributeConfigurable implements Storable {
-    private RemoteIdentity identity;
     private Token authentication;
     private String description;
     private String resources;
@@ -50,21 +45,6 @@ public class RegisteredRealm extends AttributeConfigurable implements Storable {
     public void setRemote(String remote) {
         this.remote = remote;
     }
-
-    /**
-     * @return get the remote identity of the server.
-     */
-    public RemoteIdentity getIdentity() {
-        return identity;
-    }
-
-    /**
-     * @param identity set the servers remote identity.
-     */
-    public void setIdentity(RemoteIdentity identity) {
-        this.identity = identity;
-    }
-
 
     /**
      * @return returns the authentication token for the realm.

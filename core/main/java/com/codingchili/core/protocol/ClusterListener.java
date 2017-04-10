@@ -32,7 +32,7 @@ public class ClusterListener extends AbstractVerticle {
 
     @Override
     public void start(Future<Void> start) {
-        handler.context().bus().consumer(handler.context().address()).handler(message -> {
+        handler.context().bus().consumer(handler.address()).handler(message -> {
             handler.process(new ClusterRequest(message));
         });
         handler.start(start);

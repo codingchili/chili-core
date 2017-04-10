@@ -1,11 +1,11 @@
 {
-  "node": "authentication.node",
-  "storage": "com.codingchili.core.storage.IndexedMap",
-  "clientSecret": "GhBJbUh8hUv5tPDTNYNOvMM9mjahmScV4rHwpuVL/1bapJVLSu7moExWGehpOTEzg1i0EpRyyc51bgXMpj+nEw==",
-  "global": "GWl4Q5YOzy8ndxBWJ+J9F/aSYinXLGB6spkGQuZIfm/94UG5y3LjRqgAnzkmx7pzciMZW1scKlylrLGfRIkDrg==",
-  "logging": {
-    "key": "sg8UKPG5VtkspQySatjjhsmchO1ldh1LQD9L6w8agF3+AAqy+wFgC7gWMaPZFcoOF0e0LKliCg2gK6Z6G4PZEg==",
-    "expiry": 1491975043,
-    "domain": "authentication.node@server.1"
+  "node" : "authentication.node",
+  "storage" : "com.codingchili.core.storage.IndexedMap",
+  "clientSecret" : "BBSedQbFNIIigwE1gd6lJHUWo9eNKJ8U7bj34vpJYOXyXxHvknMmnEQX4ftqGc22ulb8Ys+7PP886JD5/TBVzg==",
+  "global" : "apY/v3XaM+9zJCXF6h3HDjCTylXqQCbdEHWRMvFsSOK4rKIR8QwLhpATXizBB1yNm1m9c1HK5P3Oyt9SRT7BnA==",
+  "logging" : {
+    "key" : "cfF/DTNE8yy2NPMvQ8IEjMID0WJuUhQKmWC8q40aKsOEr4XO2ln8zMXTPbvp61cIXfKSqMbER557EUIj+YlSog==",
+    "expiry" : 1492409893,
+    "domain" : "authentication.node"
   }
 }

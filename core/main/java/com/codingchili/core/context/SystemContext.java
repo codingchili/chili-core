@@ -1,18 +1,17 @@
 package com.codingchili.core.context;
 
-import io.vertx.core.*;
-import io.vertx.core.eventbus.EventBus;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.dropwizard.MetricsService;
-
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.configuration.system.SystemSettings;
-import com.codingchili.core.files.Configurations;
+import com.codingchili.core.configuration.*;
+import com.codingchili.core.configuration.system.*;
+import com.codingchili.core.files.*;
 import com.codingchili.core.logging.*;
 import com.codingchili.core.protocol.*;
-import com.codingchili.core.security.RemoteIdentity;
 
-import static com.codingchili.core.configuration.CoreStrings.ID_SYSTEM;
+import io.vertx.core.*;
+import io.vertx.core.eventbus.*;
+import io.vertx.core.json.*;
+import io.vertx.ext.dropwizard.*;
+
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 
 /**
@@ -160,15 +159,9 @@ public class SystemContext implements CoreContext {
     }
 
     @Override
-    public RemoteIdentity identity() {
-        return new RemoteIdentity(ID_SYSTEM);
-    }
-
-    @Override
-    public String address() {
+    public String node() {
         return ID_SYSTEM;
     }
-
 
     protected JsonObject event(String event) {
         return event(event, Level.INFO);

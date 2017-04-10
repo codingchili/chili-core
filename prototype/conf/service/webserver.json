@@ -1,12 +1,12 @@
 {
-  "node": "website.node",
-  "startPage": "index.html",
-  "missingPage": "404.html",
-  "gzip": false,
-  "global": "GWl4Q5YOzy8ndxBWJ+J9F/aSYinXLGB6spkGQuZIfm/94UG5y3LjRqgAnzkmx7pzciMZW1scKlylrLGfRIkDrg==",
-  "logging": {
-    "key": "fFPNELWyFO8JfJcFcX0ON/d5QFVtKQJ8d67k91ZmZFKqlWnUtq30xfET7o3EgbGKcGRagv+MlaPSJxdplq4usw==",
-    "expiry": 1491975043,
-    "domain": "website.node@server.1"
+  "node" : "website.node",
+  "startPage" : "index.html",
+  "missingPage" : "404.html",
+  "gzip" : false,
+  "global" : "apY/v3XaM+9zJCXF6h3HDjCTylXqQCbdEHWRMvFsSOK4rKIR8QwLhpATXizBB1yNm1m9c1HK5P3Oyt9SRT7BnA==",
+  "logging" : {
+    "key" : "hNtpy3YZCTD/mw2U9QuLle9gJLOTX+5w/OQ6Rp5C9JQLCwJHOIePEzXg5qca9PeyVMOIeWaks4mo9ap7qExRRw==",
+    "expiry" : 1492409893,
+    "domain" : "website.node"
   }
 }

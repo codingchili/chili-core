@@ -1,12 +1,10 @@
 package com.codingchili.core.context;
 
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
+import com.codingchili.core.configuration.*;
+import com.codingchili.core.logging.*;
 
-import com.codingchili.core.configuration.ServiceConfigurable;
-import com.codingchili.core.logging.Logger;
-import com.codingchili.core.logging.RemoteLogger;
-import com.codingchili.core.security.RemoteIdentity;
+import io.vertx.core.*;
+import io.vertx.core.json.*;
 
 /**
  * @author Robin Duda
@@ -31,13 +29,13 @@ public abstract class ServiceContext extends SystemContext {
     public abstract ServiceConfigurable service();
 
     @Override
-    public Logger logger() {
-        return logger;
+    public String node() {
+        return service().node();
     }
 
     @Override
-    public RemoteIdentity identity() {
-        return new RemoteIdentity();
+    public Logger logger() {
+        return logger;
     }
 
     @Override

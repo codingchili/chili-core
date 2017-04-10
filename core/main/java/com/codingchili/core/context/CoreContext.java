@@ -7,7 +7,6 @@ import io.vertx.core.eventbus.EventBus;
 import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.*;
-import com.codingchili.core.security.RemoteIdentity;
 
 /**
  * @author Robin Duda
@@ -114,14 +113,9 @@ public interface CoreContext {
     <T> void blocking(Handler<Future<T>> blocking, boolean ordered, Handler<AsyncResult<T>> result);
 
     /**
-     * @return the identity of the service or system component owning the context.
-     */
-    RemoteIdentity identity();
-
-    /**
      * @return the identity of the context. The root context should return 'system' or 'local'.
      */
-    String address();
+    String node();
 
     /**
      * @return returns the name of the context scope.

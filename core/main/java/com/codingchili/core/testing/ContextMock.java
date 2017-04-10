@@ -2,7 +2,6 @@ package com.codingchili.core.testing;
 
 import com.codingchili.core.configuration.*;
 import com.codingchili.core.context.*;
-import com.codingchili.core.security.*;
 
 import io.vertx.core.*;
 
@@ -10,6 +9,8 @@ import io.vertx.core.*;
  * @author Robin Duda
  */
 public class ContextMock extends ServiceContext implements CoreContext {
+    public static final String NODE = "name.node";
+
     public ContextMock(Vertx vertx) {
         super(vertx);
     }
@@ -25,12 +26,7 @@ public class ContextMock extends ServiceContext implements CoreContext {
     }
 
     @Override
-    public String address() {
-        return "";
-    }
-
-    @Override
-    public RemoteIdentity identity() {
-        return new RemoteIdentity("mock.node");
+    public String node() {
+        return NODE;
     }
 }

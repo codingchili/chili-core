@@ -146,6 +146,7 @@ public abstract class CoreStrings {
     public static final String LOG_VERSION = "version";
     public static final String LOG_USER_AGENT = "User-Agent";
     public static final String LOG_AGENT = "agent";
+    public static final String LOG_CONTEXT = "context";
     public static final String LOG_TIME = "time";
     public static final String LOG_NODE = "node";
     public static final String LOG_HOST = "host";

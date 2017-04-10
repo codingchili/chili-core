@@ -15,7 +15,6 @@ import org.junit.runner.RunWith;
 import java.util.concurrent.TimeUnit;
 
 import com.codingchili.core.protocol.ResponseStatus;
-import com.codingchili.core.security.RemoteIdentity;
 import com.codingchili.core.testing.RequestMock;
 import com.codingchili.core.testing.ResponseListener;
 
@@ -50,11 +49,6 @@ public class PatchHandlerTest {
             @Override
             public String directory() {
                 return testDirectory();
-            }
-
-            @Override
-            public RemoteIdentity identity() {
-                return new RemoteIdentity("PatchHandlerTest");
             }
         };
 

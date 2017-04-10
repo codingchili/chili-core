@@ -18,10 +18,6 @@ public class Token implements Serializable {
     public Token() {
     }
 
-    public Token(TokenFactory factory, RemoteIdentity identity) {
-        this(factory, identity.toString());
-    }
-
     public Token(TokenFactory factory, String domain) {
         try {
             this.domain = domain;

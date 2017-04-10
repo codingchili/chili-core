@@ -1,21 +1,19 @@
 package com.codingchili.realm.controller;
 
-import com.codingchili.realm.configuration.RealmContext;
-import com.codingchili.realm.instance.configuration.InstanceContext;
-import com.codingchili.realm.instance.configuration.InstanceSettings;
-import com.codingchili.realm.instance.controller.InstanceHandler;
-import com.codingchili.realm.instance.model.PlayerCharacter;
-import com.codingchili.realm.instance.model.PlayerClass;
-import com.codingchili.realm.model.*;
-import io.vertx.core.Future;
+import java.util.*;
 
-import java.util.Collection;
-
-import com.codingchili.core.context.CoreException;
+import com.codingchili.core.context.*;
 import com.codingchili.core.protocol.*;
+import com.codingchili.realm.configuration.*;
+import com.codingchili.realm.instance.configuration.*;
+import com.codingchili.realm.instance.controller.*;
+import com.codingchili.realm.instance.model.*;
+import com.codingchili.realm.model.*;
+
+import io.vertx.core.*;
 
 import static com.codingchili.common.Strings.*;
-import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
+import static com.codingchili.core.protocol.ResponseStatus.*;
 
 /**
  * @author Robin Duda
@@ -55,17 +53,19 @@ public class CharacterHandler<T extends RealmContext> extends AbstractHandler<T>
 
     private void sendMaster(RealmUpdate realm) {
         context.bus().send(NODE_AUTHENTICATION_REALMS, Serializer.json(realm), response -> {
-            UpdateResponse update = new UpdateResponse(response.result());
+            if (response.succeeded()) {
+                UpdateResponse update = new UpdateResponse(response.result());
 
-            if (update.is(ACCEPTED)) {
-                if (!registered) {
-                    context.onRealmRegistered(context.realm().getName());
+                if (update.is(ACCEPTED)) {
+                    if (!registered) {
+                        context.onRealmRegistered(context.realm().getName());
+                    }
+
+                    registered = true;
+                } else {
+                    registered = false;
+                    context.onRealmRejected(context.realm().getName(), update.message());
                 }
-
-                registered = true;
-            } else {
-                registered = false;
-                context.onRealmRejected(context.realm().getName(), update.message());
             }
         });
     }
