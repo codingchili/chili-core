@@ -32,13 +32,6 @@
             .register {
                 margin-top: 32px;
             }
-            .fit-login {
-                width: 100%;
-                min-width: 0;
-                border-radius: 0;
-                margin: 0;
-            }
-
         </style>
 
         <div class="container center-box" id="container">
@@ -68,40 +61,43 @@
 
         </paper-material>
 
-                <paper-toast class="toast-login" id="toast-login"
-                             text="{{toaster}}"></paper-toast>
+                <paper-toast class="loginToast fit-bottom" id="loginToast"
+                             text="{{toasttext}}"></paper-toast>
         </div>
 
     </template>
-    <script>
+</dom-module>
+
+<script>
         Polymer({
             is: 'game-login',
             ready: function () {
                 this.showLoginForm();
-                this.$['toast-login'].open();
+                loginToast.fitInto = container;
             },
 
             authenticate: function (e) {
                 var self = this;
-                this.$['toast-login'].open();
+                self.showToast('Authenticating..');
 
                 authentication.login({
                     accepted: function (data) {
+                        self.showToast('Loading..');
                         self.resetForm();
                         application.authenticated(data);
                     },
                     unauthorized: function (data) {
-                        self.$['toast-login'].open();
+                        self.showToast('Invalid user credentials');
                         self.password = "";
                         self.$['password'].focus();
                     },
                     missing: function(data) {
-                        self.$['toast-login'].open();
+                        self.showToast('The specified username does not exist');
                         self.showRegisterForm();
                         self.$['password-repeat'].focus();
                     },
-                    error: function (data) {
-                        self.toaster = data.message;
+                    error: function (e) {
+                        self.showToast(e.message);
                     },
                     failed: function () {
                         application.error('Failed to establish a connection to the authentication server.')
@@ -111,19 +107,24 @@
 
             register: function (e) {
                 var self = this;
-                this.$['toast-login'].open();
+                self.showToast('Registering..')
 
                 authentication.register({
                     accepted: function (data) {
+                        self.showToast('Loading..')
                         self.resetForm();
                         application.authenticated(data);
                     },
                     bad: function (data) {
-                        self.$['toast-login'].open();
+                        self.$['loginToast'].open();
+                        self.showToast('Error: ' + e);
                     },
                     conflict: function (data) {
-                        self.$['toast-login'].open();
+                        self.showToast('Error: username taken.')
                         self.$['username'].focus();
+                    },
+                    error: function (e) {
+                        self.showToast(e.message);
                     },
                     failed: function () {
                         application.error("Failed to establish a connection to the authentication server.")
@@ -151,6 +152,12 @@
                 this.$['username'].focus();
             },
 
+            showToast: function (text) {
+                loginToast.refit();
+                this.set('toasttext', text);
+                this.$['loginToast'].open();
+            },
+
             submit: function (e) {
                 if (e.keyCode == 13) {
                     if (!this.hideregisterform)
@@ -162,4 +169,3 @@
             }
         });
     </script>
-</dom-module>
