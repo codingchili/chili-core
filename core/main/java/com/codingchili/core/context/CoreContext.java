@@ -3,6 +3,7 @@ package com.codingchili.core.context;
 import io.vertx.core.*;
 import io.vertx.core.Handler;
 import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.file.FileSystem;
 
 import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.logging.Logger;
@@ -24,6 +25,13 @@ public interface CoreContext {
      * @return get the EventBus attached to the vertx instance.
      */
     EventBus bus();
+
+    /**
+     * @return get filesystem access.
+     */
+    default FileSystem fileSystem() {
+        return vertx().fileSystem();
+    }
 
     /**
      * @return the system configuration.

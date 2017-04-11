@@ -4,6 +4,7 @@ import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 
 import com.codingchili.core.logging.*;
+import com.codingchili.core.protocol.CoreHandler;
 
 
 /**
@@ -14,6 +15,16 @@ public class LoggerMock extends DefaultLogger {
     @Override
     public void onAlreadyInitialized() {
 
+    }
+
+    @Override
+    public void onHandlerStarted(Future<Void> future, CoreHandler handler) {
+        future.complete();
+    }
+
+    @Override
+    public void onHandlerStopped(Future<Void> future, CoreHandler handler) {
+        future.complete();
     }
 
     @Override

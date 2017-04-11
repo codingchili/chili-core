@@ -4,6 +4,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
 import com.codingchili.core.protocol.AbstractHandler;
+import com.codingchili.core.protocol.CoreHandler;
 
 /**
  * @author Robin Duda
@@ -16,7 +17,7 @@ public abstract class Deploy {
      * Deploys the given handler with its contained context.
      * @param handler the handler to be deployed.
      */
-    public static void service(AbstractHandler handler) {
+    public static void service(CoreHandler handler) {
         handler.context().deploy(handler);
     }
 

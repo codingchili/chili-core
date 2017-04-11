@@ -1,5 +1,6 @@
 package com.codingchili.core.files;
 
+import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 
 import java.io.IOException;
@@ -101,20 +102,20 @@ public class CachedFileStore<T> implements FileStoreListener {
 
     @Override
     public void onFileModify(Path path) {
-        try {
-            byte[] fileBytes = Files.readAllBytes(path);
-            String filePath = CoreStrings.format(path, settings.getDirectory());
+        context.fileSystem().readFile(path.toAbsolutePath().toString(), done -> {
+            if (done.succeeded()) {
+                byte[] fileBytes = done.result().getBytes();
+                String filePath = CoreStrings.format(path, settings.getDirectory());
 
-            if (settings.isGzip()) {
-                fileBytes = Serializer.gzip(fileBytes);
+                if (settings.isGzip()) {
+                    fileBytes = Serializer.gzip(fileBytes);
+                }
+                files.put(filePath, Buffer.buffer(fileBytes));
+                context.logger().onFileLoaded(filePath);
+            } else {
+                context.logger().onFileLoadError(path.toString());
             }
-
-            files.put(filePath, Buffer.buffer(fileBytes));
-
-            context.logger().onFileLoaded(filePath);
-        } catch (IOException e) {
-            context.logger().onFileLoadError(path.toString());
-        }
+        });
     }
 
     @Override

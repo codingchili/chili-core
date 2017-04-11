@@ -4,10 +4,12 @@ import com.codingchili.common.Strings;
 import com.codingchili.realmregistry.configuration.RegisteredRealm;
 import com.codingchili.realmregistry.configuration.RegistryContext;
 import com.codingchili.realmregistry.model.*;
+import io.vertx.core.Future;
 
 import java.time.Instant;
 
 import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.protocol.*;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
@@ -18,12 +20,13 @@ import static com.codingchili.common.Strings.NODE_AUTHENTICATION_REALMS;
  * @author Robin Duda
  *         Routing used to authenticate realms and generate realmName lists.
  */
-public class RealmHandler<T extends RegistryContext> extends AbstractHandler<T> {
+public class RealmHandler implements CoreHandler {
     private final Protocol<RequestHandler<RealmRequest>> protocol = new Protocol<>();
     private AsyncRealmStore realms;
+    private RegistryContext context;
 
-    public RealmHandler(T context) {
-        super(context, NODE_AUTHENTICATION_REALMS);
+    public RealmHandler(RegistryContext context) {
+        this.context = context;
 
         realms = context.getRealmStore();
 
@@ -65,5 +68,15 @@ public class RealmHandler<T extends RegistryContext> extends AbstractHandler<T> 
                 request.error(new RealmDisconnectException());
             }
         }, request.realmName());
+    }
+
+    @Override
+    public RegistryContext context() {
+        return context;
+    }
+
+    @Override
+    public String address() {
+        return NODE_AUTHENTICATION_REALMS;
     }
 }

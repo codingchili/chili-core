@@ -5,6 +5,7 @@ import com.codingchili.realmregistry.model.RealmDB;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 
+import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.Level;
@@ -33,15 +34,15 @@ public class RegistryContext extends ServiceContext {
         this.realms = realms;
     }
 
-    public static void create(Future<RegistryContext> future, Vertx vertx) {
-        RegistryContext context = new RegistryContext(vertx);
+    public static void create(Future<RegistryContext> future, CoreContext core) {
+        RegistryContext context = new RegistryContext(core.vertx());
 
         new StorageLoader<RegisteredRealm>().indexed(context)
                 .withCollection(COLLECTION_REALMS)
                 .withClass(RegisteredRealm.class)
                 .build(prepare -> {
                     AsyncRealmStore realms = new RealmDB(prepare.result());
-                    future.complete(new RegistryContext(realms, vertx));
+                    future.complete(new RegistryContext(realms, core.vertx()));
                 });
     }
 

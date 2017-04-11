@@ -6,6 +6,7 @@ import java.util.logging.*;
 
 import com.codingchili.core.configuration.*;
 import com.codingchili.core.context.*;
+import com.codingchili.core.protocol.CoreHandler;
 
 import io.vertx.core.*;
 import io.vertx.core.json.*;
@@ -83,6 +84,20 @@ public abstract class DefaultLogger extends Handler implements Logger {
     public void onServerStopped(Future<Void> future) {
         log(event(LOG_SERVER_STOP, Level.SEVERE));
         Delay.forShutdown(future);
+    }
+
+    @Override
+    public void onHandlerStarted(Future<Void> future, CoreHandler handler) {
+        log(event(LOG_HANDLER_START, Level.INFO)
+                .put(ID_MESSAGE, handler.address()));
+        future.complete();
+    }
+
+    @Override
+    public void onHandlerStopped(Future<Void> future, CoreHandler handler) {
+        log(event(LOG_HANDLER_STOP, Level.WARNING)
+                .put(ID_MESSAGE, handler.address()));
+        future.complete();
     }
 
     @Override

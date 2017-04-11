@@ -1,7 +1,6 @@
 package com.codingchili.core.protocol;
 
 import com.codingchili.core.context.*;
-import com.codingchili.core.logging.*;
 import com.codingchili.core.protocol.exception.*;
 
 import io.vertx.core.*;
@@ -18,7 +17,7 @@ public interface CoreHandler extends Verticle {
      *
      * @param core core context that the service was deployed from.
      */
-    void init(CoreContext core);
+    default void init(CoreContext core) {}
 
     /**
      * Handles an incoming request without exception handling.
@@ -29,16 +28,9 @@ public interface CoreHandler extends Verticle {
     void handle(Request request) throws CoreException;
 
     /**
-     * @return a logger attached to the service context.
-     */
-    default Logger logger() {
-        return context().logger();
-    }
-
-    /**
      * @return the context of the service.
      */
-    ServiceContext context();
+    CoreContext context();
 
     /**
      * @return the node of the handler.
@@ -68,7 +60,7 @@ public interface CoreHandler extends Verticle {
      * @param future complete when cleanup is completed.
      */
     default void stop(Future<Void> future) {
-        logger().onServerStopped(future);
+        context().logger().onHandlerStopped(future, this);
     }
 
     /**
@@ -77,7 +69,7 @@ public interface CoreHandler extends Verticle {
      * @param future complete when start initialization is done.
      */
     default void start(Future<Void> future) {
-        logger().onServerStarted(future);
+        context().logger().onHandlerStarted(future, this);
     }
 
     /**
@@ -90,7 +82,7 @@ public interface CoreHandler extends Verticle {
             handle(request);
         } catch (HandlerMissingException e) {
             request.error(e);
-            logger().onHandlerMissing(request.route());
+            context().logger().onHandlerMissing(request.route());
         } catch (CoreException | CoreRuntimeException e) {
             request.error(e);
         }

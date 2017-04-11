@@ -31,7 +31,7 @@ import static com.codingchili.common.Strings.*;
 public class RealmHandlerTest {
     private static final String REALM_NAME = "test-realm";
     private RegisteredRealm realmconfig = new RegisteredRealm();
-    private RealmHandler<RegistryContext> handler;
+    private RealmHandler handler;
     private ContextMock mock;
 
     @Rule
@@ -40,7 +40,7 @@ public class RealmHandlerTest {
     @Before
     public void setUp() {
         mock = new ContextMock(Vertx.vertx());
-        handler = new RealmHandler<>(mock);
+        handler = new RealmHandler(mock);
 
         realmconfig.setAuthentication(new Token(mock.getRealmFactory(), REALM_NAME));
         realmconfig.setName(REALM_NAME);

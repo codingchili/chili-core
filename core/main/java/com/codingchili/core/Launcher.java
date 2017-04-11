@@ -15,6 +15,7 @@ import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
 import com.codingchili.core.protocol.ClusterNode;
+import com.codingchili.core.protocol.CoreService;
 
 import io.vertx.core.*;
 
@@ -40,7 +41,7 @@ public class Launcher extends ClusterNode {
         new Launcher(new LaunchContext(args));
     }
 
-    Launcher(LaunchContext context) {
+    public Launcher(LaunchContext context) {
         Future<Void> future = Future.future();
         this.context = context;
 
@@ -145,13 +146,14 @@ public class Launcher extends ClusterNode {
 
     @Override
     public void start(Future<Void> start) throws Exception {
-        initialize();
+        initialize(context);
         start.complete();
     }
 
-    private void initialize() {
-        Configurations.initialize(context);
-        Delay.initialize(context);
+    public void initialize(CoreContext core) {
+        Configurations.initialize(core);
+        Delay.initialize(core);
+        CoreService.holder.initialize(core);
     }
 
     @Override

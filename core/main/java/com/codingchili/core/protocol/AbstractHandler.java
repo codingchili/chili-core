@@ -1,10 +1,7 @@
 package com.codingchili.core.protocol;
 
-import io.vertx.core.Context;
-import io.vertx.core.Vertx;
-
-import com.codingchili.core.context.*;
-import com.codingchili.core.logging.Logger;
+import com.codingchili.core.context.CoreException;
+import com.codingchili.core.context.ServiceContext;
 
 /**
  * @author Robin Duda
@@ -12,7 +9,6 @@ import com.codingchili.core.logging.Logger;
  *         Base handler for processing incoming messages.
  */
 public abstract class AbstractHandler<T extends ServiceContext> implements CoreHandler {
-    private final Logger logger;
     protected final T context;
     protected String address;
 
@@ -22,13 +18,7 @@ public abstract class AbstractHandler<T extends ServiceContext> implements CoreH
      */
     protected AbstractHandler(T context, String address) {
         this.context = context;
-        this.logger = context.logger();
         this.address = address;
-    }
-
-    @Override
-    public Logger logger() {
-        return logger;
     }
 
     @Override
@@ -42,18 +32,5 @@ public abstract class AbstractHandler<T extends ServiceContext> implements CoreH
     @Override
     public T context() {
         return context;
-    }
-
-    @Override
-    public Vertx getVertx() {
-        return context.vertx();
-    }
-
-    @Override
-    public void init(CoreContext context) {
-    }
-
-    @Override
-    public void init(Vertx vertx, Context context) {
     }
 }

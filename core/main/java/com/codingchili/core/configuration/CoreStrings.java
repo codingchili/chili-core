@@ -151,6 +151,8 @@ public abstract class CoreStrings {
     public static final String LOG_NODE = "node";
     public static final String LOG_HOST = "host";
     public static final String LOG_SECURITY = "security";
+    public static final String LOG_HANDLER_STOP = "handler.stop";
+    public static final String LOG_HANDLER_START = "handler.start";
     public static final String LOG_SERVER_START = "server.start";
     public static final String LOG_SERVER_STOP = "server.stop";
     public static final String LOG_MESSAGE = "message";
