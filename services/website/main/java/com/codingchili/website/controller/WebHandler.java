@@ -27,8 +27,6 @@ public class WebHandler<T extends WebserverContext> extends AbstractHandler<T> {
                 .setDirectory(context.resources())
                 .setGzip(context.isGzip()));
 
-        files.initialize();
-
         protocol.use(Strings.ID_PING, Request::accept, Access.PUBLIC)
                 .use(ANY, this::serve, Access.PUBLIC);
     }

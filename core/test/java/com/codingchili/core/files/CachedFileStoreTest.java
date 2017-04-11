@@ -2,7 +2,7 @@ package com.codingchili.core.files;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.*;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -30,7 +30,9 @@ public class CachedFileStoreTest {
     private Vertx vertx;
 
     @Before
-    public void setUp() {
+    public void setUp(TestContext test) {
+        Async async = test.async();
+        async.complete();
         CachedFileStore.reset();
         vertx = Vertx.vertx();
     }
@@ -85,8 +87,8 @@ public class CachedFileStoreTest {
     }
 
     private CachedFileStore<Buffer> getStore(String directory, boolean isGzip) {
-        return new CachedFileStore<Buffer>(new ContextMock(vertx), new CachedFileStoreSettings()
+        return new CachedFileStore<>(new ContextMock(vertx), new CachedFileStoreSettings()
                 .setDirectory(directory)
-                .setGzip(isGzip)).initialize();
+                .setGzip(isGzip));
     }
 }

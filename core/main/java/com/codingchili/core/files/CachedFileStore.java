@@ -1,20 +1,19 @@
 package com.codingchili.core.files;
 
-import io.vertx.core.Future;
-import io.vertx.core.buffer.Buffer;
-
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
+import java.nio.file.attribute.*;
+import java.util.*;
+import java.util.concurrent.*;
 
-import com.codingchili.core.configuration.CachedFileStoreSettings;
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.configuration.exception.ConfigurationMismatchException;
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.files.exception.FileMissingException;
-import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.configuration.*;
+import com.codingchili.core.configuration.exception.*;
+import com.codingchili.core.context.*;
+import com.codingchili.core.files.exception.*;
+import com.codingchili.core.protocol.*;
+
+import io.vertx.core.*;
+import io.vertx.core.buffer.*;
 
 /**
  * @author Robin Duda
@@ -37,27 +36,27 @@ public class CachedFileStore<T> implements FileStoreListener {
      */
     @SuppressWarnings("unchecked")
     public CachedFileStore(CoreContext context, CachedFileStoreSettings settings) {
-        CachedFileStore store = stores.get(settings.getDirectory());
-
         this.context = context;
         this.settings = settings;
 
-        if (store == null) {
-            stores.put(settings.getDirectory(), this);
-        } else {
-            if (!store.settings.equals(settings)) {
-                context.logger().onError(new ConfigurationMismatchException());
+        synchronized (this) {
+            CachedFileStore store = stores.get(settings.getDirectory());
+            if (store == null) {
+                stores.put(settings.getDirectory(), this);
+                initialize();
+            } else {
+                if (!store.settings.equals(settings)) {
+                    context.logger().onError(new ConfigurationMismatchException());
+                }
             }
+            this.files = stores.get(settings.getDirectory()).files;
         }
-        this.files = stores.get(settings.getDirectory()).files;
     }
 
     /**
      * Initializes the filestore by loading the files in specified directory.
-     *
-     * @return a loaded cachedfilestore.
      */
-    public CachedFileStore<T> initialize() {
+    private void initialize() {
         try {
             if (files.size() == 0) {
                 loadFiles();
@@ -66,7 +65,6 @@ public class CachedFileStore<T> implements FileStoreListener {
         } catch (IOException e) {
             context.logger().onFileLoadError(e.getMessage());
         }
-        return this;
     }
 
     /**
@@ -89,7 +87,8 @@ public class CachedFileStore<T> implements FileStoreListener {
 
             @Override
             public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
-                onFileModify(path);
+                addFile(path, readFileSync(path));
+                context.logger().onFileLoaded(path.toString());
                 return FileVisitResult.CONTINUE;
             }
 
@@ -102,20 +101,32 @@ public class CachedFileStore<T> implements FileStoreListener {
 
     @Override
     public void onFileModify(Path path) {
-        context.fileSystem().readFile(path.toAbsolutePath().toString(), done -> {
+        readFile(done -> {
             if (done.succeeded()) {
-                byte[] fileBytes = done.result().getBytes();
-                String filePath = CoreStrings.format(path, settings.getDirectory());
-
-                if (settings.isGzip()) {
-                    fileBytes = Serializer.gzip(fileBytes);
-                }
-                files.put(filePath, Buffer.buffer(fileBytes));
-                context.logger().onFileLoaded(filePath);
+                addFile(path, done.result());
+                context.logger().onFileLoaded(path.toString());
             } else {
                 context.logger().onFileLoadError(path.toString());
             }
-        });
+        }, path);
+    }
+
+    private void addFile(Path path, Buffer buffer) {
+        byte[] fileBytes = buffer.getBytes();
+        String filePath = CoreStrings.format(path, settings.getDirectory());
+
+        if (settings.isGzip()) {
+            fileBytes = Serializer.gzip(fileBytes);
+        }
+        files.put(filePath, Buffer.buffer(fileBytes));
+    }
+
+    private Buffer readFileSync(Path path) {
+        return context.fileSystem().readFileBlocking(path.toAbsolutePath().toString());
+    }
+
+    private void readFile(Handler<AsyncResult<Buffer>> handler, Path path) {
+        context.fileSystem().readFile(path.toAbsolutePath().toString(), handler);
     }
 
     @Override

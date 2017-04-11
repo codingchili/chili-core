@@ -28,10 +28,7 @@ public class PatchKeeper<T extends PatchFile> extends CachedFileStore {
 
     public PatchKeeper(PatchContext context) {
         super(context, new CachedFileStoreSettings().setDirectory(context.directory()));
-
         this.context = context;
-        initialize();
-
         context.onPatchLoaded(getName(), getVersion());
     }
 

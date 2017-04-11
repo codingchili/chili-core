@@ -34,11 +34,11 @@ The configuration directory **'conf' must be in the same directory as the jar fi
 The configuration structure
 ```
 ├── resources/
-|   ├── version.json
-|   ├── game/
-|   ├── gui/
+│   ├── version.json
+│   ├── game/
+│   ├── gui/
 ├── website/
-|   ├── bower.json
+│   ├── bower.json
 ├── conf/
 │   ├── system/*
 │   ├── realm/
