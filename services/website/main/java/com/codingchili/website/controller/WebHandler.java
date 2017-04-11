@@ -16,12 +16,13 @@ import static com.codingchili.common.Strings.*;
  *         <p>
  *         Handles incoming requests for files. (website files)
  */
-public class WebHandler<T extends WebserverContext> extends AbstractHandler<T> {
+public class WebHandler implements CoreHandler {
     private final Protocol<RequestHandler<Request>> protocol = new Protocol<>();
     private final CachedFileStore files;
+    private WebserverContext context;
 
-    public WebHandler(T context) {
-        super(context, NODE_WEBSERVER);
+    public WebHandler(WebserverContext context) {
+        this.context = context;
 
         this.files = new CachedFileStore(context, new CachedFileStoreSettings()
                 .setDirectory(context.resources())
@@ -49,5 +50,15 @@ public class WebHandler<T extends WebserverContext> extends AbstractHandler<T> {
     @Override
     public void handle(Request request) throws CoreException {
         protocol.get(Access.PUBLIC, request.route()).handle(request);
+    }
+
+    @Override
+    public ServiceContext context() {
+        return context;
+    }
+
+    @Override
+    public String address() {
+        return NODE_WEBSERVER;
     }
 }

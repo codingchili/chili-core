@@ -26,7 +26,7 @@ public abstract class Deploy {
      * @param handler the handler to be deployed.
      * @param result the handler to call when deployment is completed.
      */
-    public static void service(AbstractHandler handler, Handler<AsyncResult<String>> result) {
+    public static void service(CoreHandler handler, Handler<AsyncResult<String>> result) {
         handler.context().deploy(handler, result);
     }
 }

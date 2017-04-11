@@ -1,16 +1,15 @@
 package com.codingchili.website;
 
+import com.codingchili.core.context.*;
+import com.codingchili.core.protocol.*;
 import com.codingchili.website.configuration.WebserverContext;
 import com.codingchili.website.controller.WebHandler;
 import io.vertx.core.*;
 
-import com.codingchili.core.context.Deploy;
-import com.codingchili.core.protocol.ClusterNode;
-
 /**
  * @author Robin Duda
  */
-public class Service extends ClusterNode {
+public class Service implements CoreService {
     private WebserverContext context;
 
     public Service() {}
@@ -20,20 +19,22 @@ public class Service extends ClusterNode {
     }
 
     @Override
-    public void init(Vertx vertx, Context context) {
-        super.init(vertx, context);
-
+    public void init(CoreContext core) {
         if (this.context == null) {
-            this.context = new WebserverContext(vertx);
+            this.context = new WebserverContext(core);
         }
     }
 
     @Override
-    public void start(Future<Void> start) throws Exception {
+    public void stop(Future<Void> stop) {
+        context.logger().onServerStopped(stop);
+    }
 
-        for (int i = 0; i < settings.getHandlers(); i++) {
-            Deploy.service(new WebHandler<>(context));
+    @Override
+    public void start(Future<Void> start) {
+        for (int i = 0; i < settings().getHandlers(); i++) {
+            Deploy.service(new WebHandler(context));
         }
-        start.complete();
+        context.logger().onServerStarted(start);
     }
 }

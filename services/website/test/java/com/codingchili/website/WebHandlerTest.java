@@ -39,13 +39,13 @@ public class WebHandlerTest {
 
     @Before
     public void setUp() {
-        context = new WebserverContext(Vertx.vertx());
+        context = new WebserverContext(new SystemContext(Vertx.vertx()));
         Configurations.initialize(context);
         Configurations.put(new WebserverSettings()
                 .setResources(CoreStrings.testDirectory())
                 .setStartPage("index.html")
                 .setMissingPage("404.html"));
-        handler = new WebHandler<>(context);
+        handler = new WebHandler(context);
     }
 
     @After

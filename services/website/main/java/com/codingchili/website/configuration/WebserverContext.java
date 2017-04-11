@@ -1,15 +1,13 @@
 package com.codingchili.website.configuration;
 
-import io.vertx.core.Vertx;
+import java.nio.file.*;
 
-import java.nio.file.Paths;
-
-import com.codingchili.core.context.ServiceContext;
-import com.codingchili.core.files.Configurations;
-import com.codingchili.core.protocol.Request;
+import com.codingchili.core.context.*;
+import com.codingchili.core.files.*;
+import com.codingchili.core.protocol.*;
 
 import static com.codingchili.common.Strings.*;
-import static com.codingchili.website.configuration.WebserverSettings.PATH_WEBSERVER;
+import static com.codingchili.website.configuration.WebserverSettings.*;
 
 /**
  * @author Robin Duda
@@ -18,8 +16,8 @@ import static com.codingchili.website.configuration.WebserverSettings.PATH_WEBSE
  */
 public class WebserverContext extends ServiceContext {
 
-    public WebserverContext(Vertx vertx) {
-        super(vertx);
+    public WebserverContext(CoreContext core) {
+        super(core);
     }
 
     public WebserverSettings service() {
