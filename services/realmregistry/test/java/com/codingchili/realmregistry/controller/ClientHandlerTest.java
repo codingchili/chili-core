@@ -42,7 +42,7 @@ public class ClientHandlerTest {
     @Before
     public void setUp() throws IOException {
         context = new ContextMock(Vertx.vertx());
-        handler = new ClientHandler<>(context);
+        handler = new ClientHandler(context);
     }
 
     @After

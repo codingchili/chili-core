@@ -1,25 +1,24 @@
 package com.codingchili.realmregistry.controller;
 
-import com.codingchili.realmregistry.configuration.RegistryContext;
+import com.codingchili.core.context.*;
+import com.codingchili.core.protocol.*;
+import com.codingchili.realmregistry.configuration.*;
 import com.codingchili.realmregistry.model.*;
 
-import com.codingchili.core.context.CoreException;
-import com.codingchili.core.protocol.*;
-
 import static com.codingchili.common.Strings.*;
-import static com.codingchili.core.protocol.Access.PUBLIC;
+import static com.codingchili.core.protocol.Access.*;
 
 /**
  * @author Robin Duda
  *         Routing used to authenticate users and create/delete characters.
  */
-public class ClientHandler<T extends RegistryContext> extends AbstractHandler<T> {
+public class ClientHandler implements CoreHandler {
     private final Protocol<RequestHandler<ClientRequest>> protocol = new Protocol<>();
     private final AsyncRealmStore realms;
+    private RegistryContext context;
 
-    public ClientHandler(T context) {
-        super(context, NODE_REALM_CLIENTS);
-
+    public ClientHandler(RegistryContext context) {
+        this.context = context;
         realms = context.getRealmStore();
 
         protocol.use(CLIENT_REALM_LIST, this::realmlist, PUBLIC)
@@ -35,6 +34,16 @@ public class ClientHandler<T extends RegistryContext> extends AbstractHandler<T>
     @Override
     public void handle(Request request) throws CoreException {
         protocol.get(authenticate(request), request.route()).handle(new ClientRequest(request));
+    }
+
+    @Override
+    public RegistryContext context() {
+        return context;
+    }
+
+    @Override
+    public String address() {
+        return NODE_REALM_CLIENTS;
     }
 
     private void realmToken(ClientRequest request) {

@@ -30,7 +30,7 @@ public interface CoreHandler extends Verticle {
     /**
      * @return the context of the service.
      */
-    CoreContext context();
+    ServiceContext context();
 
     /**
      * @return the node of the handler.

@@ -37,7 +37,7 @@ public class Service implements CoreService {
 
                 for (int i = 0; i < settings().getHandlers(); i++) {
                     Deploy.service(new RealmHandler(context));
-                    Deploy.service(new ClientHandler<>(context));
+                    Deploy.service(new ClientHandler(context));
                 }
                 core.logger().onServerStarted(start);
             } else {
