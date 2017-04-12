@@ -3,7 +3,6 @@ package com.codingchili.core.context;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
-import com.codingchili.core.protocol.AbstractHandler;
 import com.codingchili.core.protocol.CoreHandler;
 
 /**
