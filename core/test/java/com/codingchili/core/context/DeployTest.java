@@ -50,10 +50,13 @@ public class DeployTest {
         });
     }
 
-    private class TestHandler extends AbstractHandler<ContextMock> {
+    private class TestHandler implements CoreHandler {
+        private String address;
+        private ContextMock context;
 
         TestHandler(ContextMock context, String address) {
-            super(context, address);
+            this.address = address;
+            this.context = context;
         }
 
         @Override
@@ -64,6 +67,16 @@ public class DeployTest {
         @Override
         public void handle(Request request) throws CoreException {
             //
+        }
+
+        @Override
+        public ServiceContext context() {
+            return context;
+        }
+
+        @Override
+        public String address() {
+            return address;
         }
 
         @Override

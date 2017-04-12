@@ -30,7 +30,7 @@ public class ClusterListenerTest {
     @Before
     public void setUp(TestContext test) {
         this.context = new ContextMock(Vertx.vertx());
-        this.handler = new TestHandler<>(context, REPLY_ADDRESS);
+        this.handler = new TestHandler(context, REPLY_ADDRESS);
         this.cluster = ClusterListener.with(handler);
 
         context.deploy(cluster, test.asyncAssertSuccess());
@@ -59,12 +59,14 @@ public class ClusterListenerTest {
         cluster.stop(Future.future());
     }
 
-    private class TestHandler<T extends ServiceContext> extends AbstractHandler<T> {
+    private class TestHandler implements CoreHandler {
         private boolean startCalled = false;
+        private ServiceContext context;
+        private String address;
         private Async stop;
 
-        TestHandler(T context, String address) {
-            super(context, "");
+        TestHandler(ServiceContext context, String address) {
+            this.context = context;
             this.address = address;
         }
 
@@ -75,6 +77,16 @@ public class ClusterListenerTest {
         @Override
         public void handle(Request request) throws CoreException {
             context().bus().send(REPLY_ADDRESS, TEST_MESSAGE);
+        }
+
+        @Override
+        public ServiceContext context() {
+            return context;
+        }
+
+        @Override
+        public String address() {
+            return address;
         }
 
         @Override
