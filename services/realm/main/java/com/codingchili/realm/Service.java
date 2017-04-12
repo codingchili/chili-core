@@ -52,7 +52,7 @@ public class Service extends ClusterNode {
                 Future<RealmContext> providerFuture = Future.future();
 
                 providerFuture.setHandler(provider -> {
-                    Deploy.service(new CharacterHandler<>(provider.result()), deploy -> {
+                    Deploy.service(new CharacterHandler(provider.result()), deploy -> {
                         if (deploy.failed()) {
                             provider.result().onDeployRealmFailure(realm.getName());
                             throw new RuntimeException(deploy.cause());

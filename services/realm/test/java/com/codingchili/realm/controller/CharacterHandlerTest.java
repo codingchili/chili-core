@@ -48,7 +48,7 @@ public class CharacterHandlerTest {
     public void setUp(TestContext test) {
         Async async = test.async();
         context = new ContextMock(Vertx.vertx());
-        handler = new CharacterHandler<>(context);
+        handler = new CharacterHandler(context);
         clientToken = context.getClientFactory();
         characters = context.getCharacterStore();
         createCharacters(async);

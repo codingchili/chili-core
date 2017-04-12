@@ -1,9 +1,9 @@
 package com.codingchili.realm.instance.controller;
 
+import com.codingchili.core.context.*;
 import com.codingchili.realm.instance.configuration.InstanceContext;
 import io.vertx.core.Future;
 
-import com.codingchili.core.context.CoreException;
 import com.codingchili.core.protocol.*;
 
 import static com.codingchili.common.Strings.ID_PING;
@@ -12,12 +12,12 @@ import static com.codingchili.common.Strings.ID_PING;
  * @author Robin Duda
  *         Handles players in a get.
  */
-public class InstanceHandler<T extends InstanceContext> extends AbstractHandler<T> {
+public class InstanceHandler implements CoreHandler {
     private final Protocol<RequestHandler<InstanceRequest>> protocol = new Protocol<>();
+    private InstanceContext context;
 
-    public InstanceHandler(T context) {
-        super(context, context.address());
-
+    public InstanceHandler(InstanceContext context) {
+        this.context = context;
         protocol.use(ID_PING, this::ping, Access.PUBLIC);
     }
 
@@ -36,6 +36,16 @@ public class InstanceHandler<T extends InstanceContext> extends AbstractHandler<
     @Override
     public void handle(Request request) throws CoreException {
         protocol.get(authenticator(request), request.route()).handle(new InstanceRequest(request));
+    }
+
+    @Override
+    public InstanceContext context() {
+        return context;
+    }
+
+    @Override
+    public String address() {
+        return context.address();
     }
 
     @Override

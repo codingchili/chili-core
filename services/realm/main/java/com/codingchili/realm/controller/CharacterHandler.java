@@ -19,13 +19,14 @@ import static com.codingchili.core.protocol.ResponseStatus.*;
  * @author Robin Duda
  *         Handles traveling between instances.
  */
-public class CharacterHandler<T extends RealmContext> extends AbstractHandler<T> {
+public class CharacterHandler implements CoreHandler {
     private final Protocol<RequestHandler<RealmRequest>> protocol = new Protocol<>();
     private final AsyncCharacterStore characters;
     private boolean registered = false;
+    private RealmContext context;
 
-    public CharacterHandler(T context) {
-        super(context, context.address());
+    public CharacterHandler(RealmContext context) {
+        this.context = context;
 
         characters = context.getCharacterStore();
 
@@ -43,7 +44,7 @@ public class CharacterHandler<T extends RealmContext> extends AbstractHandler<T>
         for (InstanceSettings instance : context.instances()) {
             InstanceContext iContext = new InstanceContext(context, instance);
 
-            context.deploy(new InstanceHandler<>(iContext));
+            context.deploy(new InstanceHandler(iContext));
         }
     }
 
@@ -141,6 +142,16 @@ public class CharacterHandler<T extends RealmContext> extends AbstractHandler<T>
     @Override
     public void handle(Request request) throws CoreException {
         protocol.get(authenticator(request), request.route()).handle(new RealmRequest(request));
+    }
+
+    @Override
+    public RealmContext context() {
+        return context;
+    }
+
+    @Override
+    public String address() {
+        return context.address();
     }
 
     @Override

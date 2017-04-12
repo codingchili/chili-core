@@ -36,7 +36,6 @@ public final class CachedFileStore implements FileStoreListener {
      *                 any existing configuration for the given path the configuration is
      *                 ignored.
      */
-    @SuppressWarnings("unchecked")
     public CachedFileStore(CoreContext context, CachedFileStoreSettings settings) {
         this.context = context;
         this.logger = context.logger();
@@ -135,7 +134,6 @@ public final class CachedFileStore implements FileStoreListener {
         return files.values();
     }
 
-    @SuppressWarnings("unchecked")
     public CachedFile getFile(String path) throws FileMissingException {
         CachedFile file = files.get(path);
 
