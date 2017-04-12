@@ -1,22 +1,20 @@
 package com.codingchili.patching;
 
-import com.codingchili.core.testing.*;
-import com.codingchili.patching.configuration.PatchContext;
-import com.codingchili.patching.controller.PatchHandler;
-import io.vertx.core.Vertx;
-import io.vertx.core.file.*;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.Timeout;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
+import java.util.concurrent.*;
+
 import org.junit.*;
-import org.junit.runner.RunWith;
+import org.junit.runner.*;
 
-import java.util.concurrent.TimeUnit;
+import com.codingchili.core.protocol.*;
+import com.codingchili.core.testing.*;
+import com.codingchili.patching.configuration.*;
+import com.codingchili.patching.controller.*;
 
-import com.codingchili.core.protocol.ResponseStatus;
+import io.vertx.core.*;
+import io.vertx.core.file.*;
+import io.vertx.core.json.*;
+import io.vertx.ext.unit.*;
+import io.vertx.ext.unit.junit.*;
 
 import static com.codingchili.common.Strings.*;
 
@@ -45,18 +43,19 @@ public class PatchHandlerTest {
     public static void startUp() {
         vertx = Vertx.vertx();
 
-        PatchContext provider = new ContextMock(vertx) {
+        PatchContext context = new ContextMock(vertx) {
             @Override
             public String directory() {
                 return testDirectory();
             }
+
             @Override
             public FileSystem fileSystem() {
                 return new FileSystemMock(vertx);
             }
         };
 
-        handler = new PatchHandler<>(provider);
+        handler = new PatchHandler(context);
     }
 
     @AfterClass

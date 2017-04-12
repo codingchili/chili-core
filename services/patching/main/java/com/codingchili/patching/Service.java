@@ -33,7 +33,7 @@ public class Service extends ClusterNode {
     @Override
     public void start(Future<Void> start) {
         for (int i = 0; i < settings.getHandlers(); i++) {
-            Deploy.service(new PatchHandler<>(context));
+            Deploy.service(new PatchHandler(context));
         }
 
         start.complete();
