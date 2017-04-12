@@ -6,23 +6,12 @@
         <password>dev-pass</password>
     </group>
 
-    <map name="accounts">
+    <map name="*">
         <backup-count>0</backup-count>
-        <max-idle-seconds>0</max-idle-seconds>
+        <async-backup-count>1</async-backup-count>
+        <max-idle-seconds>31556926</max-idle-seconds>
         <eviction-policy>LRU</eviction-policy>
-        <time-to-live-seconds>2678400</time-to-live-seconds>
-        <max-size>55000</max-size>
-        <eviction-percentage>30</eviction-percentage>
-        <merge-policy>com.hazelcast.map.merge.PutIfAbsentMapMergePolicy</merge-policy>
-    </map>
-
-    <map name="realms">
-        <backup-count>0</backup-count>
-        <max-idle-seconds>0</max-idle-seconds>
-        <eviction-policy>LRU</eviction-policy>
-        <time-to-live-seconds>60</time-to-live-seconds>
-        <max-size>300</max-size>
-        <eviction-percentage>30</eviction-percentage>
+        <eviction-percentage>5</eviction-percentage>
         <merge-policy>com.hazelcast.map.merge.PutIfAbsentMapMergePolicy</merge-policy>
     </map>
 
