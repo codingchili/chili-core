@@ -1,6 +1,6 @@
 package com.codingchili.patching;
 
-import com.codingchili.core.files.*;
+import com.codingchili.core.testing.*;
 import com.codingchili.patching.configuration.PatchContext;
 import com.codingchili.patching.controller.PatchHandler;
 import io.vertx.core.Vertx;
@@ -17,8 +17,6 @@ import org.junit.runner.RunWith;
 import java.util.concurrent.TimeUnit;
 
 import com.codingchili.core.protocol.ResponseStatus;
-import com.codingchili.core.testing.RequestMock;
-import com.codingchili.core.testing.ResponseListener;
 
 import static com.codingchili.common.Strings.*;
 

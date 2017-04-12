@@ -1,4 +1,4 @@
-package com.codingchili.core.files;
+package com.codingchili.core.testing;
 
 import java.util.*;
 
@@ -252,61 +252,61 @@ public class FileSystemMock implements FileSystem {
 
     @Override
     public FileSystem writeFile(String path, Buffer data, Handler<AsyncResult<Void>> handler) {
-        return this;
+        return fs.writeFile(path, data, handler);
     }
 
     @Override
     public FileSystem writeFileBlocking(String path, Buffer data) {
-        return this;
+        return fs.writeFileBlocking(path, data);
     }
 
     @Override
     public FileSystem open(String path, OpenOptions options, Handler<AsyncResult<AsyncFile>> handler) {
-        return this;
+        return fs.open(path, options, handler);
     }
 
     @Override
     public AsyncFile openBlocking(String path, OpenOptions options) {
-        return null;
+        return fs.openBlocking(path, options);
     }
 
     @Override
     public FileSystem createFile(String path, Handler<AsyncResult<Void>> handler) {
-        return this;
+        return fs.createFile(path, handler);
     }
 
     @Override
     public FileSystem createFileBlocking(String path) {
-        return this;
+        return fs.createFileBlocking(path);
     }
 
     @Override
     public FileSystem createFile(String path, String perms, Handler<AsyncResult<Void>> handler) {
-        return this;
+        return fs.createFile(path, perms, handler);
     }
 
     @Override
     public FileSystem createFileBlocking(String path, String perms) {
-        return this;
+        return fs.createFileBlocking(path, perms);
     }
 
     @Override
     public FileSystem exists(String path, Handler<AsyncResult<Boolean>> handler) {
-        return this;
+        return fs.exists(path, handler);
     }
 
     @Override
     public boolean existsBlocking(String path) {
-        return false;
+        return fs.existsBlocking(path);
     }
 
     @Override
     public FileSystem fsProps(String path, Handler<AsyncResult<FileSystemProps>> handler) {
-        return this;
+        return fs.fsProps(path, handler);
     }
 
     @Override
     public FileSystemProps fsPropsBlocking(String path) {
-        return null;
+        return fs.fsPropsBlocking(path);
     }
 }
