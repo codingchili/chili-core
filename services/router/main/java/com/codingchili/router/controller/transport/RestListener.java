@@ -24,10 +24,10 @@ import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
  *         HTTP/REST transport listener.
  */
 public class RestListener extends ClusterNode {
-    private final RouterHandler<RouterContext> handler;
+    private final RouterHandler handler;
     private Router router;
 
-    public RestListener(RouterHandler<RouterContext> handler) {
+    public RestListener(RouterHandler handler) {
         this.handler = handler;
     }
 

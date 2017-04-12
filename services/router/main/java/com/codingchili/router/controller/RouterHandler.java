@@ -1,9 +1,9 @@
 package com.codingchili.router.controller;
 
+import com.codingchili.core.context.*;
 import com.codingchili.router.configuration.RouterContext;
 import io.vertx.core.eventbus.*;
 
-import com.codingchili.core.context.CoreException;
 import com.codingchili.core.protocol.*;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.RequestValidationException;
@@ -17,13 +17,13 @@ import static com.codingchili.core.protocol.Access.AUTHORIZED;
  *
  * Forwards messages to other nodes from an input transport.
  */
-public class RouterHandler<T extends RouterContext> extends AbstractHandler<T> {
+public class RouterHandler implements CoreHandler {
     private final Protocol<RequestHandler<Request>> protocol = new Protocol<>();
     private final Validator validator = new Validator();
+    private RouterContext context;
 
-    public RouterHandler(T context) {
-        super(context, NODE_ROUTER);
-
+    public RouterHandler(RouterContext context) {
+        this.context = context;
         protocol.use(ANY, this::sendCluster)
                 .use(NODE_ROUTER, Request::accept);
     }
@@ -73,5 +73,15 @@ public class RouterHandler<T extends RouterContext> extends AbstractHandler<T> {
                 }
             }
         });
+    }
+
+    @Override
+    public RouterContext context() {
+        return context;
+    }
+
+    @Override
+    public String address() {
+        return NODE_ROUTER;
     }
 }

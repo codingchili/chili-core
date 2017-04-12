@@ -18,9 +18,9 @@ import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
  * UDP transport listener.
  */
 public class UdpListener extends ClusterNode {
-    private final RouterHandler<RouterContext> handler;
+    private final RouterHandler handler;
 
-    public UdpListener(RouterHandler<RouterContext> handler) {
+    public UdpListener(RouterHandler handler) {
         this.handler = handler;
     }
 

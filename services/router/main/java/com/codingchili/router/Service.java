@@ -41,7 +41,7 @@ public class Service extends ClusterNode {
         List<Future> deployments = new ArrayList<>();
 
         for (ListenerSettings listener : context.transports()) {
-            RouterHandler<RouterContext> handler = new RouterHandler<>(context);
+            RouterHandler handler = new RouterHandler(context);
 
             for (int i = 0; i < settings.getHandlers(); i++) {
                 Future<String> future = Future.future();

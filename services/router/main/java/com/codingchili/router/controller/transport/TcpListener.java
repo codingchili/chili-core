@@ -19,9 +19,9 @@ import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
  * TCP listener implementation.
  */
 public class TcpListener extends ClusterNode {
-    private RouterHandler<RouterContext> handler;
+    private RouterHandler handler;
 
-    public TcpListener(RouterHandler<RouterContext> handler) {
+    public TcpListener(RouterHandler handler) {
         this.handler = handler;
     }
 

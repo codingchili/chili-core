@@ -20,9 +20,9 @@ import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
  *         Websocket transport listener.
  */
 public class WebsocketListener extends ClusterNode {
-    private final RouterHandler<RouterContext> handler;
+    private final RouterHandler handler;
 
-    public WebsocketListener(RouterHandler<RouterContext> handler) {
+    public WebsocketListener(RouterHandler handler) {
         this.handler = handler;
     }
 

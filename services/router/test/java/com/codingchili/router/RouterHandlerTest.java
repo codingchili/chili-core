@@ -46,7 +46,7 @@ public class RouterHandlerTest {
     public void setUp() {
         vertx = Vertx.vertx();
         system().setClusterTimeout(500);
-        handler = new RouterHandler<>(new RouterContext(vertx) {
+        handler = new RouterHandler(new RouterContext(vertx) {
 
             @Override
             public RouterSettings service() {
