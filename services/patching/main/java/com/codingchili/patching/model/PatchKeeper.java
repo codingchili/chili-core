@@ -1,91 +1,45 @@
 package com.codingchili.patching.model;
 
-import com.codingchili.common.Strings;
-import com.codingchili.patching.configuration.PatchContext;
-import com.codingchili.patching.configuration.PatchNotes;
-import io.vertx.core.buffer.Buffer;
+import com.codingchili.core.files.*;
+import com.codingchili.core.files.exception.*;
+import com.codingchili.core.logging.*;
+import com.codingchili.core.files.CachedFile;
+import com.codingchili.patching.configuration.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.concurrent.ConcurrentHashMap;
-
-import com.codingchili.core.configuration.CachedFileStoreSettings;
-import com.codingchili.core.files.exception.FileMissingException;
-import com.codingchili.core.files.CachedFileStore;
-import com.codingchili.core.protocol.Serializer;
+import io.vertx.core.buffer.*;
 
 
 /**
  * @author Robin Duda
- *
- * Handles patch files.
+ *         <p>
+ *         Handles patch files.
  */
-public class PatchKeeper<T extends PatchFile> extends CachedFileStore {
-    private ConcurrentHashMap<String, PatchFile> files = new ConcurrentHashMap<>();
+public class PatchKeeper implements FileStoreListener {
+    private CachedFileStore store;
     private PatchContext context;
+    private Logger logger;
 
     public PatchKeeper(PatchContext context) {
-        super(context, new CachedFileStoreSettings().setDirectory(context.directory()));
+        store = new CachedFileStore(context, context.fileStoreSettings());
         this.context = context;
+        this.logger = context.logger();
         context.onPatchLoaded(getName(), getVersion());
     }
 
-    @Override
-    public void onFileModify(Path path) {
-        try {
-            byte[] bytes = Files.readAllBytes(path);
-
-            if (context.gzip()) {
-                bytes = Serializer.gzip(bytes);
-            }
-
-            File file = path.toFile();
-            String relativePath = Strings.format(path, context.directory());
-            files.put(relativePath, new PatchFile(relativePath, file.length(), file.lastModified(), bytes));
-
-            context.logger().onFileLoaded(relativePath);
-        } catch (IOException e) {
-            context.logger().onFileLoadError(Strings.format(path, context.directory()));
-        }
-    }
-
-    @Override
-    public void onFileRemove(Path path) {
-        files.remove(Strings.format(path, context.directory()));
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public T getFile(String path) {
-        return (T) files.get(path);
-    }
-
-    public PatchFile getFile(String path, String version) throws FileMissingException, PatchReloadedException {
+    public CachedFile getFile(String path, String version) throws FileMissingException, PatchReloadedException {
         if (version.compareTo(getVersion()) < 0) {
             throw new PatchReloadedException();
         } else {
-            PatchFile file = files.get(path);
-
-            if (file != null) {
-                return files.get(path);
-            } else {
-                throw new FileMissingException(path);
-            }
+            return store.getFile(path);
         }
     }
 
     public Buffer getBuffer(String path, int start, int end) throws FileMissingException {
-        if (files.containsKey(path)) {
-            return Buffer.buffer(files.get(path).getBytes()).getBuffer(start, end);
-        } else {
-            throw new FileMissingException(path);
-        }
+        return store.getFile(path).getBuffer().getBuffer(start, end);
     }
 
     public PatchDetails getDetails() {
-        return new PatchDetails(files.values(), getPatchNotes());
+        return new PatchDetails(store.getFiles(), getPatchNotes());
     }
 
     private PatchNotes getPatchNotes() {

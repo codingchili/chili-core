@@ -10,9 +10,9 @@ import com.codingchili.core.configuration.*;
 import com.codingchili.core.configuration.exception.*;
 import com.codingchili.core.context.*;
 import com.codingchili.core.files.exception.*;
+import com.codingchili.core.logging.*;
 import com.codingchili.core.protocol.*;
 
-import io.vertx.core.*;
 import io.vertx.core.buffer.*;
 
 /**
@@ -20,10 +20,12 @@ import io.vertx.core.buffer.*;
  *         <p>
  *         Caches files from disk in memory and reloads them on change.
  */
-public class CachedFileStore<T> implements FileStoreListener {
+public final class CachedFileStore implements FileStoreListener {
     private static final HashMap<String, CachedFileStore> stores = new HashMap<>();
-    private ConcurrentHashMap<String, Buffer> files = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, CachedFile> files = new ConcurrentHashMap<>();
+    private List<FileStoreListener> listeners = new LinkedList<>();
     private CachedFileStoreSettings settings;
+    private Logger logger;
     protected CoreContext context;
 
     /**
@@ -37,6 +39,7 @@ public class CachedFileStore<T> implements FileStoreListener {
     @SuppressWarnings("unchecked")
     public CachedFileStore(CoreContext context, CachedFileStoreSettings settings) {
         this.context = context;
+        this.logger = context.logger();
         this.settings = settings;
 
         synchronized (this) {
@@ -46,10 +49,11 @@ public class CachedFileStore<T> implements FileStoreListener {
                 initialize();
             } else {
                 if (!store.settings.equals(settings)) {
-                    context.logger().onError(new ConfigurationMismatchException());
+                    logger.onError(new ConfigurationMismatchException());
                 }
             }
             this.files = stores.get(settings.getDirectory()).files;
+            this.listeners = stores.get(settings.getDirectory()).listeners;
         }
     }
 
@@ -63,7 +67,7 @@ public class CachedFileStore<T> implements FileStoreListener {
             }
             watchDirectory();
         } catch (IOException e) {
-            context.logger().onFileLoadError(e.getMessage());
+            logger.onFileLoadError(e.getMessage());
         }
     }
 
@@ -87,8 +91,7 @@ public class CachedFileStore<T> implements FileStoreListener {
 
             @Override
             public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
-                addFile(path, readFileSync(path));
-                context.logger().onFileLoaded(path.toString());
+                onFileModify(path);
                 return FileVisitResult.CONTINUE;
             }
 
@@ -101,14 +104,14 @@ public class CachedFileStore<T> implements FileStoreListener {
 
     @Override
     public void onFileModify(Path path) {
-        readFile(done -> {
+        context.fileSystem().readFile(path.toAbsolutePath().toString(), done -> {
             if (done.succeeded()) {
                 addFile(path, done.result());
-                context.logger().onFileLoaded(path.toString());
+                logger.onFileLoaded(path.toString());
             } else {
-                context.logger().onFileLoadError(path.toString());
+                logger.onFileLoadError(path.toString());
             }
-        }, path);
+        });
     }
 
     private void addFile(Path path, Buffer buffer) {
@@ -118,30 +121,37 @@ public class CachedFileStore<T> implements FileStoreListener {
         if (settings.isGzip()) {
             fileBytes = Serializer.gzip(fileBytes);
         }
-        files.put(filePath, Buffer.buffer(fileBytes));
-    }
-
-    private Buffer readFileSync(Path path) {
-        return context.fileSystem().readFileBlocking(path.toAbsolutePath().toString());
-    }
-
-    private void readFile(Handler<AsyncResult<Buffer>> handler, Path path) {
-        context.fileSystem().readFile(path.toAbsolutePath().toString(), handler);
+        files.put(filePath, new CachedFile(fileBytes, path, filePath));
+        listeners.forEach(listener -> listener.onFileModify(path));
     }
 
     @Override
     public void onFileRemove(Path path) {
+        listeners.forEach(listener -> listener.onFileRemove(path));
         files.remove(CoreStrings.format(path, settings.getDirectory()));
     }
 
-    @SuppressWarnings("unchecked")
-    public T getFile(String path) throws FileMissingException {
-        Buffer buffer = files.get(path);
+    public Collection<CachedFile> getFiles() {
+        return files.values();
+    }
 
-        if (buffer != null) {
-            return (T) buffer;
+    @SuppressWarnings("unchecked")
+    public CachedFile getFile(String path) throws FileMissingException {
+        CachedFile file = files.get(path);
+
+        if (file != null) {
+            return file;
         } else {
             throw new FileMissingException(path);
         }
+    }
+
+    /**
+     * @param listener a modify/remove event listener.
+     * @return fluent
+     */
+    public CachedFileStore addListener(FileStoreListener listener) {
+        listeners.add(listener);
+        return this;
     }
 }

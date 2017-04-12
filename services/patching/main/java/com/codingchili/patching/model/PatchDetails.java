@@ -1,32 +1,33 @@
 package com.codingchili.patching.model;
 
-import com.codingchili.patching.configuration.PatchNotes;
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import com.codingchili.core.files.*;
+import com.codingchili.patching.configuration.*;
 
 /**
  * @author Robin Duda
+ *         <p>
+ *         Contains information about files in a patch version.
  */
 class PatchDetails {
-    private ArrayList<PatchFile> files = new ArrayList<>();
+    private Collection<CachedFile> files = new ArrayList<>();
     private String name;
     private String version;
 
-    PatchDetails(Collection<PatchFile> files, PatchNotes notes) {
+    PatchDetails(Collection<CachedFile> files, PatchNotes notes) {
         this.name = notes.getName();
         this.version = notes.getVersion();
 
-        files.stream().forEach(file -> {
-            this.files.add(new PatchFile(file.getPath(), file.getSize(), file.getModified()));
-        });
+        // remove the byte contents of the file.
+        files.forEach(file -> this.files.add(new CachedFile(file).setBytes(new byte[]{})));
     }
 
-    public ArrayList<PatchFile> getFiles() {
+    public Collection<CachedFile> getFiles() {
         return files;
     }
 
-    public void setFiles(ArrayList<PatchFile> files) {
+    public void setFiles(Collection<CachedFile> files) {
         this.files = files;
     }
 

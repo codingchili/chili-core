@@ -1,6 +1,6 @@
 package com.codingchili.patching.controller;
 
-import com.codingchili.patching.model.PatchFile;
+import com.codingchili.core.files.CachedFile;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,7 +22,7 @@ class PatchRequest extends ClusterRequest {
         super(request);
     }
 
-    public void file(PatchFile file) {
+    public void file(CachedFile file) {
         write(file);
     }
 

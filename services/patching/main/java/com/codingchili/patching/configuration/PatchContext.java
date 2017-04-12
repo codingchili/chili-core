@@ -1,10 +1,11 @@
 package com.codingchili.patching.configuration;
 
+import com.codingchili.core.configuration.*;
+import com.codingchili.core.files.*;
 import com.codingchili.patching.model.PatchKeeper;
 import io.vertx.core.Vertx;
 
 import com.codingchili.core.context.ServiceContext;
-import com.codingchili.core.files.Configurations;
 
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.patching.configuration.PatchServerSettings.PATH_PATCHSERVER;
@@ -52,5 +53,11 @@ public class PatchContext extends ServiceContext {
 
     public String directory() {
         return service().getDirectory();
+    }
+
+    public CachedFileStoreSettings fileStoreSettings() {
+        return new CachedFileStoreSettings()
+                .setDirectory(directory())
+                .setGzip(gzip());
     }
 }

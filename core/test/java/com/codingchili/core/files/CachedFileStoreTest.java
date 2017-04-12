@@ -1,38 +1,42 @@
 package com.codingchili.core.files;
 
-import io.vertx.core.Vertx;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.ext.unit.*;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.*;
-import org.junit.runner.RunWith;
-
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.*;
+import java.util.concurrent.atomic.*;
 
-import com.codingchili.core.configuration.CachedFileStoreSettings;
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.files.exception.FileMissingException;
-import com.codingchili.core.protocol.Serializer;
-import com.codingchili.core.testing.ContextMock;
+import org.junit.*;
+import org.junit.runner.*;
+
+import com.codingchili.core.configuration.*;
+import com.codingchili.core.files.exception.*;
+import com.codingchili.core.protocol.*;
+import com.codingchili.core.testing.*;
+
+import io.vertx.core.*;
+import io.vertx.core.buffer.*;
+import io.vertx.core.file.FileSystem;
+import io.vertx.ext.unit.*;
+import io.vertx.ext.unit.junit.*;
 
 /**
  * @author Robin Duda
- *
- * Tests the loading of files in CachedFileStore.
+ *         <p>
+ *         Tests the loading of files in CachedFileStore.
  */
 @RunWith(VertxUnitRunner.class)
 public class CachedFileStoreTest {
-    private static final String TEST_DIRECTORY = CoreStrings.testDirectory("CachedFileStore");
-    private static final String TEST_FILE_ABSOLUTE = CoreStrings.testFile("CachedFileStore", "test.txt");
-    private static final String TEST_FILE = "test.txt";
-    private static final String TEST_FILE_TRAVERSAL = "../TraversalTestFile.txt";
+    private static final String TEST_NAME = "CachedFileStore";
+    private static final String FILE = "test.txt";
+    private static final String DIRECTORY = CoreStrings.testDirectory(TEST_NAME);
+    private static final String FILE_ABS = CoreStrings.testFile(TEST_NAME, FILE);
+    private static final String FILE_TRAVERSAL = "../TraversalTestFile.txt";
+    private AtomicBoolean removeCalled = new AtomicBoolean(false);
+    private AtomicBoolean modifyCalled = new AtomicBoolean(false);
     private Vertx vertx;
 
     @Before
-    public void setUp(TestContext test) {
-        Async async = test.async();
-        async.complete();
+    public void setUp() {
+        Configurations.system().setCachedFilePoll(20);
         CachedFileStore.reset();
         vertx = Vertx.vertx();
     }
@@ -43,17 +47,17 @@ public class CachedFileStoreTest {
     }
 
     @Test
-    public void failGetWithTraversal(TestContext context) {
+    public void failGetWithTraversal(TestContext test) {
         try {
-            getStore(TEST_DIRECTORY).getFile(TEST_FILE_TRAVERSAL);
-            context.fail("Should not be able to access file.");
+            getStore(DIRECTORY).getFile(FILE_TRAVERSAL);
+            test.fail("Should not be able to access file.");
         } catch (FileMissingException ignored) {
         }
     }
 
     @Test
     public void succeedGetFile() throws FileMissingException, IOException {
-        Buffer fromStore = getStore(TEST_DIRECTORY).getFile(TEST_FILE);
+        Buffer fromStore = getStore(DIRECTORY).getFile(FILE).getBuffer();
         Buffer fromDisk = getFromDisk();
 
         Assert.assertEquals(fromDisk.length(), fromStore.length());
@@ -64,13 +68,13 @@ public class CachedFileStoreTest {
     }
 
     private Buffer getFromDisk() throws IOException {
-        Path path = Paths.get(TEST_FILE_ABSOLUTE);
+        Path path = Paths.get(FILE_ABS);
         return Buffer.buffer(Files.readAllBytes(path));
     }
 
     @Test
     public void succeedGetFileWithGzip() throws FileMissingException, IOException {
-        Buffer fromStore = getStore(TEST_DIRECTORY, true).getFile(TEST_FILE);
+        Buffer fromStore = getStore(DIRECTORY, true).getFile(FILE).getBuffer();
         Buffer fromDisk = getFromDisk();
 
         fromStore = Buffer.buffer(Serializer.ungzip(fromStore.getBytes()));
@@ -82,13 +86,29 @@ public class CachedFileStoreTest {
         }
     }
 
-    private CachedFileStore<Buffer> getStore(String directory) {
+    private CachedFileStore getStore(String directory) {
         return getStore(directory, false);
     }
 
-    private CachedFileStore<Buffer> getStore(String directory, boolean isGzip) {
-        return new CachedFileStore<>(new ContextMock(vertx), new CachedFileStoreSettings()
+    private CachedFileStore getStore(String directory, boolean isGzip) {
+        return new CachedFileStore(new ContextMock(vertx) {
+            @Override
+            public FileSystem fileSystem() {
+                return new FileSystemMock(vertx);
+            }
+        }, new CachedFileStoreSettings()
                 .setDirectory(directory)
-                .setGzip(isGzip));
+                .setGzip(isGzip))
+                .addListener(new FileStoreListener() {
+                    @Override
+                    public void onFileModify(Path path) {
+                        modifyCalled.set(true);
+                    }
+
+                    @Override
+                    public void onFileRemove(Path path) {
+                        removeCalled.set(true);
+                    }
+                });
     }
 }

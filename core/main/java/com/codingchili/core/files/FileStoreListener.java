@@ -7,7 +7,7 @@ import java.nio.file.Path;
  *         <p>
  *         Interface to be used with a FileWatcher to be notified of changes.
  */
-interface FileStoreListener {
+public interface FileStoreListener {
     /**
      * Triggered when a file on the registered path has been modified or created.
      *

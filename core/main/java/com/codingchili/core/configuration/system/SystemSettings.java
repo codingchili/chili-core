@@ -20,7 +20,7 @@ public class SystemSettings extends BaseConfigurable {
     private int shutdownLogTimeout = 3000;
     private int shutdownHookTimeout = 3000;
     private int configurationPoll = 1500;
-    private int cachedFilePoll = 2000;
+    private int cachedFilePoll = 1500;
     private boolean consoleLogging = true;
     private int workerPoolSize = 32;
     private int clusterTimeout = 3000;

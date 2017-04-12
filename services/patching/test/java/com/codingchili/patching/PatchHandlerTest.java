@@ -1,8 +1,10 @@
 package com.codingchili.patching;
 
+import com.codingchili.core.files.*;
 import com.codingchili.patching.configuration.PatchContext;
 import com.codingchili.patching.controller.PatchHandler;
 import io.vertx.core.Vertx;
+import io.vertx.core.file.*;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
@@ -50,6 +52,10 @@ public class PatchHandlerTest {
             public String directory() {
                 return testDirectory();
             }
+            @Override
+            public FileSystem fileSystem() {
+                return new FileSystemMock(vertx);
+            }
         };
 
         handler = new PatchHandler<>(provider);
@@ -65,7 +71,6 @@ public class PatchHandlerTest {
         Async async = context.async();
 
         handle(PATCH_IDENTIFIER, (response, status) -> {
-
             context.assertTrue(response.containsKey(ID_NAME));
             context.assertTrue(response.containsKey(ID_VERSION));
             context.assertTrue(response.containsKey(ID_DATE));
