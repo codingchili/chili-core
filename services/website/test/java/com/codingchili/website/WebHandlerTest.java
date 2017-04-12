@@ -2,10 +2,12 @@ package com.codingchili.website;
 
 import com.codingchili.common.Strings;
 import com.codingchili.core.context.*;
+import com.codingchili.core.testing.*;
 import com.codingchili.website.configuration.WebserverContext;
 import com.codingchili.website.configuration.WebserverSettings;
 import com.codingchili.website.controller.WebHandler;
 import io.vertx.core.Vertx;
+import io.vertx.core.file.*;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
@@ -19,8 +21,6 @@ import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
-import com.codingchili.core.testing.RequestMock;
-import com.codingchili.core.testing.ResponseListener;
 
 import static com.codingchili.common.Strings.ID_BUFFER;
 
@@ -39,7 +39,12 @@ public class WebHandlerTest {
 
     @Before
     public void setUp() {
-        context = new WebserverContext(new SystemContext(Vertx.vertx()));
+        context = new WebserverContext(new SystemContext(Vertx.vertx())) {
+            @Override
+            public FileSystem fileSystem() {
+                return new FileSystemMock(vertx);
+            }
+        };
         Configurations.initialize(context);
         Configurations.put(new WebserverSettings()
                 .setResources(CoreStrings.testDirectory())

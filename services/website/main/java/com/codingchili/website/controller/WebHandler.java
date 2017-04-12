@@ -41,7 +41,7 @@ public class WebHandler implements CoreHandler {
                 context.onPageLoaded(request);
             }
 
-            request.write(files.getFile(file));
+            request.write(files.getFile(file).getBuffer());
         } catch (FileMissingException e) {
             request.error(e);
         }
