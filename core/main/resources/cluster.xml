@@ -6,7 +6,7 @@
         <password>dev-pass</password>
     </group>
 
-    <map name="*">
+    <map name=".*">
         <backup-count>0</backup-count>
         <async-backup-count>1</async-backup-count>
         <max-idle-seconds>31556926</max-idle-seconds>
