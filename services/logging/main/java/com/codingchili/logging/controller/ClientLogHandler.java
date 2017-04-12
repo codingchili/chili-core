@@ -16,9 +16,9 @@ import static com.codingchili.common.Strings.*;
  *
  * Log handler for messages incoming from clients.
  */
-public class ClientLogHandler<T extends LogContext> extends AbstractLogHandler<T> {
+public class ClientLogHandler extends AbstractLogHandler {
 
-    public ClientLogHandler(T context) {
+    public ClientLogHandler(LogContext context) {
         super(context, NODE_CLIENT_LOGGING);
     }
 
@@ -38,7 +38,7 @@ public class ClientLogHandler<T extends LogContext> extends AbstractLogHandler<T
 
     private boolean verifyToken(JsonObject logdata) {
         if (logdata.containsKey(ID_TOKEN)) {
-            return context.verifyToken(Serializer.unpack(logdata.getJsonObject(ID_TOKEN), Token.class));
+            return context().verifyToken(Serializer.unpack(logdata.getJsonObject(ID_TOKEN), Token.class));
         } else {
             return false;
         }

@@ -13,9 +13,9 @@ import static com.codingchili.common.Strings.*;
  *
  * Log handler for log messages incoming from services.
  */
-public class ServiceLogHandler<T extends LogContext> extends AbstractLogHandler<T> {
+public class ServiceLogHandler extends AbstractLogHandler {
 
-    public ServiceLogHandler(T context) {
+    public ServiceLogHandler(LogContext context) {
         super(context, NODE_LOGGING);
     }
 

@@ -27,8 +27,8 @@ public class Service extends ClusterNode {
         LogContext context = new LogContext(new SystemContext(vertx));
 
         for (int i = 0; i < settings.getHandlers(); i++) {
-            Deploy.service(new ServiceLogHandler<>(context));
-            Deploy.service(new ClientLogHandler<>(context));
+            Deploy.service(new ServiceLogHandler(context));
+            Deploy.service(new ClientLogHandler(context));
         }
         start.complete();
     }

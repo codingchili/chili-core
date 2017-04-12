@@ -1,9 +1,9 @@
 package com.codingchili.logging.controller;
 
+import com.codingchili.core.context.*;
 import com.codingchili.logging.configuration.LogContext;
 import com.codingchili.logging.model.StorageLogger;
 
-import com.codingchili.core.context.CoreException;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.protocol.*;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
@@ -16,13 +16,16 @@ import static com.codingchili.core.protocol.Access.*;
  *         <p>
  *         Base log handler to receive remote logging events.
  */
-abstract class AbstractLogHandler<T extends LogContext> extends AbstractHandler<T> {
+abstract class AbstractLogHandler implements CoreHandler {
     private final Protocol<RequestHandler<Request>> protocol = new Protocol<>();
     final ConsoleLogger console;
     final StorageLogger store;
+    private LogContext context;
+    private String address;
 
-    AbstractLogHandler(T context, String address) {
-        super(context, address);
+    AbstractLogHandler(LogContext context, String address) {
+        this.context = context;
+        this.address = address;
 
         console = new ConsoleLogger(context);
         store = new StorageLogger(context);
@@ -39,6 +42,16 @@ abstract class AbstractLogHandler<T extends LogContext> extends AbstractHandler<
             console.onHandlerMissing(request.route());
             store.onHandlerMissing(request.route());
         }
+    }
+
+    @Override
+    public LogContext context() {
+        return context;
+    }
+
+    @Override
+    public String address() {
+        return address;
     }
 
     protected abstract void log(Request request);

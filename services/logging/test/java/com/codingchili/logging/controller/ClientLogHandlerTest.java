@@ -19,7 +19,7 @@ public class ClientLogHandlerTest extends SharedLogHandlerTest {
 
     public ClientLogHandlerTest() {
         super();
-        handler = new ClientLogHandler<>(context);
+        handler = new ClientLogHandler(context);
     }
 
     @Test

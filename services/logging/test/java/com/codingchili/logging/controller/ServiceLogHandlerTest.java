@@ -18,7 +18,7 @@ public class ServiceLogHandlerTest extends SharedLogHandlerTest {
 
     public ServiceLogHandlerTest() {
         super();
-        handler = new ServiceLogHandler<>(context);
+        handler = new ServiceLogHandler(context);
     }
 
     @Before
@@ -26,6 +26,6 @@ public class ServiceLogHandlerTest extends SharedLogHandlerTest {
         context = new LogContext(new SystemContext(Vertx.vertx()));
         context.storage().clear(clear -> {
         });
-        handler = new ServiceLogHandler<>(context);
+        handler = new ServiceLogHandler(context);
     }
 }
