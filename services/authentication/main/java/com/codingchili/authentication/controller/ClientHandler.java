@@ -1,12 +1,10 @@
 package com.codingchili.authentication.controller;
 
-import com.codingchili.authentication.configuration.AuthenticationContext;
-import com.codingchili.authentication.model.AsyncAccountStore;
-import com.codingchili.authentication.model.ClientAuthentication;
-
-import com.codingchili.core.context.CoreException;
+import com.codingchili.authentication.configuration.*;
+import com.codingchili.authentication.model.*;
+import com.codingchili.core.context.*;
 import com.codingchili.core.protocol.*;
-import com.codingchili.core.security.Account;
+import com.codingchili.core.security.*;
 
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.core.protocol.Access.*;
@@ -15,12 +13,13 @@ import static com.codingchili.core.protocol.Access.*;
  * @author Robin Duda
  *         Routing used to register/authenticate accounts.
  */
-public class ClientHandler<T extends AuthenticationContext> extends AbstractHandler<T> {
+public class ClientHandler implements CoreHandler {
     private final Protocol<RequestHandler<ClientRequest>> protocol = new Protocol<>();
     private final AsyncAccountStore accounts;
+    private AuthenticationContext context;
 
-    public ClientHandler(T context) {
-        super(context, NODE_AUTHENTICATION_CLIENTS);
+    public ClientHandler(AuthenticationContext context) {
+        this.context = context;
 
         accounts = context.getAccountStore();
 
@@ -66,5 +65,15 @@ public class ClientHandler<T extends AuthenticationContext> extends AbstractHand
             context.onRegistered(account.getUsername(), request.sender());
         else
             context.onAuthenticated(account.getUsername(), request.sender());
+    }
+
+    @Override
+    public ServiceContext context() {
+        return context;
+    }
+
+    @Override
+    public String address() {
+        return NODE_AUTHENTICATION_CLIENTS;
     }
 }

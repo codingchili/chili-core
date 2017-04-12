@@ -22,7 +22,7 @@ public class Service extends ClusterNode {
                 AuthenticationContext context = future.result();
 
                 for (int i = 0; i < settings.getHandlers(); i++) {
-                    Deploy.service(new ClientHandler<>(context));
+                    Deploy.service(new ClientHandler(context));
                 }
 
                 start.complete();
