@@ -27,10 +27,24 @@
                 padding-top: 16px;
             }
             .container {
+                margin: auto;
+                position: absolute;
+                top: 0; left: 0; bottom: 0; right: 0;
                 width: 525px;
+                min-width: 326px;
+                height: 186px;
+            }
+            @media(max-width: 525px) {
+                .container {
+                    width: 96%;
+                    margin: auto;
+                }
             }
             .register {
                 margin-top: 32px;
+            }
+            #loginToast {
+                text-align: center;
             }
         </style>
 
@@ -59,10 +73,11 @@
                     <paper-button raised class="primary flex" on-tap="authenticate">Authenticate</paper-button>
                 </div>
 
-        </paper-material>
+            </paper-material>
 
-                <paper-toast class="loginToast fit-bottom" id="loginToast"
-                             text="{{toasttext}}"></paper-toast>
+            <paper-toast class="fit-bottom" id="loginToast" text="{{toasttext}}"></paper-toast>
+        </div>
+
         </div>
 
     </template>
@@ -73,7 +88,6 @@
             is: 'game-login',
             ready: function () {
                 this.showLoginForm();
-                loginToast.fitInto = container;
             },
 
             authenticate: function (e) {
@@ -107,29 +121,33 @@
 
             register: function (e) {
                 var self = this;
-                self.showToast('Registering..')
 
-                authentication.register({
-                    accepted: function (data) {
-                        self.showToast('Loading..')
-                        self.resetForm();
-                        application.authenticated(data);
-                    },
-                    bad: function (data) {
-                        self.$['loginToast'].open();
-                        self.showToast('Error: ' + e);
-                    },
-                    conflict: function (data) {
-                        self.showToast('Error: username taken.')
-                        self.$['username'].focus();
-                    },
-                    error: function (e) {
-                        self.showToast(e.message);
-                    },
-                    failed: function () {
-                        application.error("Failed to establish a connection to the authentication server.")
-                    }
-                }, this.username, this.password, this.email);
+                if (this.password === this['password-repeat']) {
+                    self.showToast('Registering..')
+                    authentication.register({
+                        accepted: function (data) {
+                            self.showToast('Loading..')
+                            self.resetForm();
+                            application.authenticated(data);
+                        },
+                        bad: function (data) {
+                            self.$['loginToast'].open();
+                            self.showToast('Error: ' + e);
+                        },
+                        conflict: function (data) {
+                            self.showToast('Error: username taken.')
+                            self.$['username'].focus();
+                        },
+                        error: function (e) {
+                            self.showToast(e.message);
+                        },
+                        failed: function () {
+                            application.error("Failed to establish a connection to the authentication server.")
+                        }
+                    }, this.username, this.password, this.email);
+                } else {
+                    this.showToast('Password (repeat) does not match the password.');
+                }
             },
             resetForm: function () {
                 this.password = "";
@@ -153,7 +171,6 @@
             },
 
             showToast: function (text) {
-                loginToast.refit();
                 this.set('toasttext', text);
                 this.$['loginToast'].open();
             },
@@ -168,4 +185,6 @@
                 }
             }
         });
-    </script>
+
+
+</script>

@@ -37,8 +37,9 @@
                 float: right;
             }
             .version {
+                z-index: -1;
                 position: absolute;
-                font-size: 8px;
+                font-size: 12px;
                 left: 0px;
                 width: 100%;
                 text-align: center;
@@ -98,7 +99,7 @@
             },
 
             mainpage: function () {
-                document.location.href = "/";
+                application.showStart();
             }
 
         });

@@ -103,6 +103,11 @@ var application = {
         application.publish('onGameStart', {});
     },
 
+    showStart: function() {
+        application.view('page');
+        application.publish('onViewStart', {});
+    },
+
     view: function (view) {
         for (var i = 0; i < this.views.length; i++) {
             if (this.views[i] == view)
