@@ -1,7 +1,5 @@
 package com.codingchili.core.security;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +14,7 @@ import com.codingchili.core.storage.Storable;
 public class Account implements Storable {
     private List<String> servers = new ArrayList<>();
     private String username = "";
-    private char[] password = "".toCharArray();
+    private String password = "";
     private String email = "";
 
     public Account() {
@@ -24,7 +22,7 @@ public class Account implements Storable {
 
     public Account(String username, String password) {
         this.username = username;
-        this.password = password.toCharArray();
+        this.password = password;
     }
 
     public Account(Account account) {
@@ -48,16 +46,15 @@ public class Account implements Storable {
      * @return a copy of the raw char array as a string.
      */
     public String getPassword() {
-        return new String(password);
+        return password;
     }
 
     public Account setPassword(String password) {
-        this.password = password.toCharArray();
+        this.password = password;
         return this;
     }
 
     public List<String> getServers() {
-        servers.add("srv1");
         return servers;
     }
 
@@ -74,8 +71,13 @@ public class Account implements Storable {
         return this;
     }
 
-    @JsonIgnore
-    public char[] getCharPassword() {
-        return password;
+    @Override
+    public String id() {
+        return username;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return compareTo(other) == 0;
     }
 }

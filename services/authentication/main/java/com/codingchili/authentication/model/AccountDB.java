@@ -61,7 +61,7 @@ public class AccountDB implements AsyncAccountStore {
                     fail(future, map);
                 }
             });
-        }, account.getCharPassword());
+        }, account.getPassword());
     }
 
     private void fail(Handler<AsyncResult<Account>> future, AsyncResult result) {
@@ -83,7 +83,7 @@ public class AccountDB implements AsyncAccountStore {
             } else {
                 future.handle(failedFuture(new AccountPasswordException()));
             }
-        }, authenticated.getHash(), unauthenticated.getCharPassword());
+        }, authenticated.getHash(), unauthenticated.getPassword());
     }
 
     private Account filter(AccountMapping account) {
@@ -93,7 +93,7 @@ public class AccountDB implements AsyncAccountStore {
     }
 
     private Account filter(Account account) {
-        hasher.wipe(account.getCharPassword());
+        account.setPassword(null);
         return account;
     }
 }

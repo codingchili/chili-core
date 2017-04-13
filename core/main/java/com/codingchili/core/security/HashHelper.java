@@ -36,12 +36,8 @@ public class HashHelper {
      * @param plaintext plaintext password to be hashed.
      * @return the hash in argon format.
      */
-    public String hash(char[] plaintext) {
-        try {
-            return argon2.hash(ITERATIONS, MEMORY, PARALLELISM, plaintext);
-        } finally {
-            argon2.wipeArray(plaintext);
-        }
+    public String hash(String plaintext) {
+        return argon2.hash(ITERATIONS, MEMORY, PARALLELISM, plaintext);
     }
 
     /**
@@ -51,13 +47,9 @@ public class HashHelper {
      * @param expected  the expected outcome of the hash operation.
      * @param plaintext the plaintext password to be hashed and compared to expected.
      */
-    public void verify(Handler<AsyncResult<Void>> future, String expected, char[] plaintext) {
+    public void verify(Handler<AsyncResult<Void>> future, String expected, String plaintext) {
         context.<Boolean>blocking(blocked -> {
-            try {
-                blocked.complete(argon2.verify(expected, plaintext));
-            } finally {
-                argon2.wipeArray(plaintext);
-            }
+            blocked.complete(argon2.verify(expected, plaintext));
         }, hashed -> {
             if (hashed.result()) {
                 future.handle(Future.succeededFuture());
@@ -73,7 +65,7 @@ public class HashHelper {
      * @param future    callback for string result with hex encoded hash.
      * @param plaintext plaintext password to be hashed.
      */
-    public void hash(Handler<AsyncResult<String>> future, char[] plaintext) {
+    public void hash(Handler<AsyncResult<String>> future, String plaintext) {
         context.<String>blocking(blocking -> {
             blocking.complete(hash(plaintext));
         }, result -> {

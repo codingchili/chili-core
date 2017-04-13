@@ -38,7 +38,11 @@ public interface Storable extends Serializable, Cloneable, Comparable, Shareable
      */
     @Override
     default int compareTo(Object other) {
-        return id().compareTo(other.toString());
+        if (other instanceof Storable) {
+            return id().compareTo(((Storable) other).id());
+        } else {
+            return -1;
+        }
     }
 
     /**

@@ -16,8 +16,8 @@ import com.codingchili.core.context.SystemContext;
  */
 @RunWith(VertxUnitRunner.class)
 public class ByteComparatorTest {
-    private static final char[] password = "pass".toCharArray();
-    private static final char[] wrong = "wrong".toCharArray();
+    private static final String password = "pass";
+    private static final String wrong = "wrong";
     private HashHelper hasher;
     private Vertx vertx;
 

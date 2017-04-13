@@ -22,7 +22,7 @@ import com.codingchili.core.context.SystemContext;
 public class HashHelperTest {
     private static final int HASH_TIME_LIMIT = 10000;
     private static final int HASH_TIME_MIN = 100;
-    private static final String wrongPlaintext = "wrong";
+    private static final String PLAINTEXT_WRONG = "wrong";
     private static final String PLAINTEXT = "pass";
     private Vertx vertx;
     private WorkerExecutor executor;
@@ -42,20 +42,20 @@ public class HashHelperTest {
 
     @Test
     public void testHashesAreUnique(TestContext test) {
-        String hash = hasher.hash(password());
-        String hash2 = hasher.hash(password());
+        String hash = hasher.hash(PLAINTEXT);
+        String hash2 = hasher.hash(PLAINTEXT);
 
         test.assertNotNull(hash);
         test.assertTrue(hash.length() != 0);
-        test.assertNotEquals(hash, password());
+        test.assertNotEquals(hash, PLAINTEXT);
         test.assertNotEquals(hash, hash2);
     }
 
     @Test
     public void testFailVerifyWrongPassword(TestContext test) {
         Async async = test.async();
-        String hash = hasher.hash(password());
-        String hash2 = hasher.hash(wrong());
+        String hash = hasher.hash(PLAINTEXT);
+        String hash2 = hasher.hash(PLAINTEXT_WRONG);
 
         test.assertNotEquals(hash, hash2);
         test.assertNotNull(hash);
@@ -66,18 +66,18 @@ public class HashHelperTest {
         hasher.verify(result -> {
             Assert.assertTrue(result.failed());
             async.complete();
-        }, new String(password()), "other".toCharArray());
+        }, PLAINTEXT, "other");
     }
 
     @Test
     public void testVerifySuccess(TestContext test) {
         Async async = test.async();
-        String hash = hasher.hash(password());
+        String hash = hasher.hash(PLAINTEXT);
 
         hasher.verify(result -> {
             test.assertTrue(result.succeeded());
             async.complete();
-        }, hash, password());
+        }, hash, PLAINTEXT);
     }
 
     @Test
@@ -88,7 +88,7 @@ public class HashHelperTest {
 
         for (int i = 0; i < 100; i++) {
             executor.executeBlocking((blocking) -> {
-                hasher.hash(password());
+                hasher.hash(PLAINTEXT);
                 blocking.complete();
             }, false, (result) -> {
                 if (countdown.decrementAndGet() == 0) {
@@ -109,25 +109,7 @@ public class HashHelperTest {
             test.assertTrue(hash.succeeded());
             test.assertNotNull(hash.result());
             async.complete();
-        }, password());
-    }
-
-    @Test
-    public void testWipePassword(TestContext test) {
-        Account account = new Account().setPassword(new String(password()));
-        hasher.wipe(account.getCharPassword());
-
-        for (int i = 0; i < account.getCharPassword().length; i++) {
-            test.assertEquals('\0', account.getCharPassword()[i]);
-        }
-    }
-
-    private char[] wrong() {
-        return wrongPlaintext.toCharArray();
-    }
-
-    private char[] password() {
-        return PLAINTEXT.toCharArray();
+        }, PLAINTEXT);
     }
 
     private long getTimeMS() {
