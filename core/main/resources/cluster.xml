@@ -6,12 +6,13 @@
         <password>dev-pass</password>
     </group>
 
-    <map name=".*">
+    <map name="*">
         <backup-count>0</backup-count>
         <async-backup-count>1</async-backup-count>
         <max-idle-seconds>31556926</max-idle-seconds>
         <eviction-policy>LRU</eviction-policy>
         <eviction-percentage>5</eviction-percentage>
+        <in-memory-format>OBJECT</in-memory-format>
         <merge-policy>com.hazelcast.map.merge.PutIfAbsentMapMergePolicy</merge-policy>
     </map>
 

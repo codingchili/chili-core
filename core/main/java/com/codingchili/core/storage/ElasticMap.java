@@ -26,8 +26,7 @@ import org.junit.Ignore;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
@@ -152,7 +151,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public void values(Handler<AsyncResult<List<Value>>> handler) {
+    public void values(Handler<AsyncResult<Collection<Value>>> handler) {
         client.prepareSearch(context.DB()).setTypes(context.collection())
                 .setFetchSource(true)
                 .setSize(Integer.MAX_VALUE)
@@ -264,7 +263,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
             }
 
             @Override
-            public void execute(Handler<AsyncResult<List<Value>>> handler) {
+            public void execute(Handler<AsyncResult<Collection<Value>>> handler) {
                 if (!builder.equals(new BoolQueryBuilder())) {
                     statements.add(builder);
                 }

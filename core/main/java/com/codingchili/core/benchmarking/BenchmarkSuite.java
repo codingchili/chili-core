@@ -7,11 +7,7 @@ import java.util.function.Consumer;
 import com.codingchili.core.context.CommandExecutor;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.SystemContext;
-import com.codingchili.core.storage.HazelMap;
-import com.codingchili.core.storage.IndexedMap;
-import com.codingchili.core.storage.JsonMap;
-import com.codingchili.core.storage.PrivateMap;
-import com.codingchili.core.storage.SharedMap;
+import com.codingchili.core.storage.*;
 
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -62,9 +58,7 @@ public class BenchmarkSuite {
         } else {
             report = new BenchmarkConsoleReport(result);
         }
-        if (template.isPresent()) {
-            report.template(template.get());
-        }
+        template.ifPresent(report::template);
         report.display();
         future.complete();
     }

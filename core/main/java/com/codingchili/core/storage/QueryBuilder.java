@@ -3,8 +3,7 @@ package com.codingchili.core.storage;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 
 import com.codingchili.core.context.TimerSource;
@@ -186,7 +185,7 @@ public interface QueryBuilder<Value extends Storable> {
      *
      * @param handler the handler to be invoked when the result is completed.
      */
-    void execute(Handler<AsyncResult<List<Value>>> handler);
+    void execute(Handler<AsyncResult<Collection<Value>>> handler);
 
     /**
      * Executes the query periodically.
@@ -195,7 +194,7 @@ public interface QueryBuilder<Value extends Storable> {
      * @param timer    the source of the interval.
      * @return fluent.
      */
-    EntryWatcher<Value> poll(Consumer<List<Value>> consumer, TimerSource timer);
+    EntryWatcher<Value> poll(Consumer<Collection<Value>> consumer, TimerSource timer);
 
     /**
      * Generates unique ids for the triggers that are used. Should be overridden

@@ -2,7 +2,7 @@ package com.codingchili.core.storage;
 
 import io.vertx.core.json.JsonObject;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.function.Consumer;
 
 import com.codingchili.core.configuration.CoreStrings;
@@ -55,7 +55,7 @@ abstract class AbstractQueryBuilder<Value extends Storable> implements QueryBuil
     }
 
     @Override
-    public EntryWatcher<Value> poll(Consumer<List<Value>> consumer, TimerSource timer) {
+    public EntryWatcher<Value> poll(Consumer<Collection<Value>> consumer, TimerSource timer) {
         return new EntryWatcher<>(storage, this, timer).start(consumer);
     }
 

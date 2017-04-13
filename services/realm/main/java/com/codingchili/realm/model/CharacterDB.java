@@ -3,6 +3,7 @@ package com.codingchili.realm.model;
 import com.codingchili.realm.instance.model.PlayerCharacter;
 import io.vertx.core.*;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.codingchili.core.storage.AsyncStorage;
@@ -29,7 +30,7 @@ public class CharacterDB implements AsyncCharacterStore {
     }
 
     @Override
-    public void findByUsername(Handler<AsyncResult<List<PlayerCharacter>>> future, String username) {
+    public void findByUsername(Handler<AsyncResult<Collection<PlayerCharacter>>> future, String username) {
         characters.query(ID_ACCOUNT).equalTo(username).execute(future);
     }
 
@@ -39,7 +40,7 @@ public class CharacterDB implements AsyncCharacterStore {
                 .and(ID_NAME).equalTo(character).execute(get -> {
 
             if (get.succeeded() && get.result().size() != 0) {
-                future.handle(Future.succeededFuture(get.result().get(0)));
+                future.handle(Future.succeededFuture(get.result().iterator().next()));
             } else {
                 future.handle(Future.failedFuture(new CharacterMissingException(character)));
             }

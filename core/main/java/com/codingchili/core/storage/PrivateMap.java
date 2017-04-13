@@ -2,8 +2,7 @@ package com.codingchili.core.storage;
 
 import io.vertx.core.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.codingchili.core.context.FutureHelper;
@@ -87,8 +86,8 @@ public class PrivateMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public void values(Handler<AsyncResult<List<Value>>> handler) {
-        handler.handle(Future.succeededFuture(new ArrayList<>(map.values())));
+    public void values(Handler<AsyncResult<Collection<Value>>> handler) {
+        handler.handle(Future.succeededFuture(map.values()));
 
     }
 

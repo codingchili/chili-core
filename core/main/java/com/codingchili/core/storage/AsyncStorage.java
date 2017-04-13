@@ -3,7 +3,7 @@ package com.codingchili.core.storage;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
-import java.util.List;
+import java.util.Collection;
 
 import com.codingchili.core.context.StorageContext;
 
@@ -62,7 +62,7 @@ public interface AsyncStorage<Value extends Storable> {
      *
      * @param handler callback
      */
-    void values(Handler<AsyncResult<List<Value>>> handler);
+    void values(Handler<AsyncResult<Collection<Value>>> handler);
 
     /**
      * removes all existing entries from the storage.

@@ -3,8 +3,7 @@ package com.codingchili.core.storage;
 import io.vertx.core.*;
 import io.vertx.core.shareddata.LocalMap;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
@@ -78,8 +77,8 @@ public class SharedMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public void values(Handler<AsyncResult<List<Value>>> handler) {
-        handler.handle(Future.succeededFuture(new ArrayList<>(map.values())));
+    public void values(Handler<AsyncResult<Collection<Value>>> handler) {
+        handler.handle(Future.succeededFuture(map.values()));
     }
 
     @Override

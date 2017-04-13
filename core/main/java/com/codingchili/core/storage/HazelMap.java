@@ -126,9 +126,9 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public void values(Handler<AsyncResult<List<Value>>> handler) {
-        context.<ArrayList<Value>>blocking(blocked -> {
-            blocked.complete(new ArrayList<>(imap.values()));
+    public void values(Handler<AsyncResult<Collection<Value>>> handler) {
+        context.<Collection<Value>>blocking(blocked -> {
+            blocked.complete(imap.values());
         }, completed -> {
             handler.handle(result(completed.result()));
         });
@@ -160,7 +160,7 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
     private void addIndex(String field) {
         if (!indexed.contains(field)) {
             indexed.add(field);
-            imap.addIndex(field.replace(STORAGE_ARRAY, HAZEL_ARRAY), true);
+            imap.addIndex(field.replace(STORAGE_ARRAY, HAZEL_ARRAY), false);
         }
     }
 
@@ -221,9 +221,7 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
 
             @Override
             public QueryBuilder<Value> startsWith(String text) {
-                if (new Validator().plainText(text)) {
-                    predicates.add(Predicates.ilike(attribute(), text + "%"));
-                }
+                predicates.add(Predicates.ilike(attribute(), text + "%"));
                 return this;
             }
 
@@ -246,11 +244,11 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
             }
 
             @Override
-            public void execute(Handler<AsyncResult<List<Value>>> handler) {
+            public void execute(Handler<AsyncResult<Collection<Value>>> handler) {
                 apply(operator, attribute());
 
-                context.<List<Value>>blocking(task -> {
-                    task.complete(new ArrayList<>(imap.values(getPredicateWithPager())));
+                context.<Collection<Value>>blocking(task -> {
+                    task.complete(imap.values(getPredicateWithPager()));
                 }, false, result -> {
                     if (result.succeeded()) {
                         handler.handle(result(result.result()));

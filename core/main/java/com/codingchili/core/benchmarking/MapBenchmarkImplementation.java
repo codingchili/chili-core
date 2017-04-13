@@ -33,6 +33,7 @@ public class MapBenchmarkImplementation extends BaseBenchmarkImplementation {
 
         add(this::putOne, "put all")
                 .add(this::getOne, "get all")
+                .add(this::values, "values")
                 .add(this::betweenQuery, "between query")
                 .add(this::equalToQuery, "equal to query")
                 .add(this::equalToPrimaryKey, "equal to primary key")
@@ -115,6 +116,13 @@ public class MapBenchmarkImplementation extends BaseBenchmarkImplementation {
         storage.query(StorageObject.levelField)
                 .between((long) (low - 1), (long) (low + 1))
                 .execute(done -> future.complete());
+    }
+
+    /**
+     * Measures the time taken to return all values stored in the map.
+     */
+    private void values(Future<Void> future) {
+        storage.values(done -> future.complete());
     }
 
     /**

@@ -33,7 +33,7 @@ public interface CoreHandler extends Verticle {
     ServiceContext context();
 
     /**
-     * @return the node of the handler.
+     * @return the address of the handler.
      */
     String address();
 

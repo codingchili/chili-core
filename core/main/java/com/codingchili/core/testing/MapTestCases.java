@@ -8,6 +8,7 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -276,7 +277,8 @@ public class MapTestCases {
         store.query(NAME).equalTo(TWO).execute(query -> {
             test.assertTrue(query.succeeded(), errorText(query));
             test.assertEquals(1, query.result().size());
-            test.assertEquals(TWO, query.result().get(0).id());
+            test.assertEquals(TWO, query.result().iterator().next().id());
+            test.assertEquals(TWO, query.result().iterator().next().id());
             async.complete();
         });
     }
@@ -315,7 +317,7 @@ public class MapTestCases {
         store.query(NAME).matches(".*flake[0]").execute(query -> {
             test.assertTrue(query.succeeded(), errorText(query));
             test.assertEquals(1, query.result().size());
-            test.assertTrue(query.result().get(0).id().contains("flake0"));
+            test.assertTrue(query.result().iterator().next().id().contains("flake0"));
             async.complete();
         });
     }
@@ -397,7 +399,7 @@ public class MapTestCases {
         });
     }
 
-    private void findWithSort(Handler<AsyncResult<List<StorageObject>>> handler, SortOrder mode, TestContext test) {
+    private void findWithSort(Handler<AsyncResult<Collection<StorageObject>>> handler, SortOrder mode, TestContext test) {
         int pageSize = 10;
 
         store.query(NAME)
@@ -412,8 +414,8 @@ public class MapTestCases {
                 });
     }
 
-    private boolean sortedByLevel(List<StorageObject> items, SortOrder order) {
-        int lastLevel = (items.size() != 0) ? items.get(0).getLevel() : 0;
+    private boolean sortedByLevel(Collection<StorageObject> items, SortOrder order) {
+        int lastLevel = (items.size() != 0) ? items.iterator().next().getLevel() : 0;
 
         for (StorageObject item : items) {
             if (item.getLevel() < lastLevel && order.equals(SortOrder.ASCENDING) ||
@@ -710,12 +712,12 @@ public class MapTestCases {
         builder.execute(query -> {
             test.assertTrue(query.succeeded());
             test.assertEquals(expectedHits, query.result().size());
-            StorageObject first = query.result().get(0);
+            StorageObject first = query.result().iterator().next();
 
             builder.execute(inner -> {
                 test.assertTrue(inner.succeeded());
                 test.assertEquals(expectedHits, inner.result().size());
-                test.assertEquals(first, inner.result().get(0));
+                test.assertEquals(first, inner.result().iterator().next());
                 async.complete();
             });
         });

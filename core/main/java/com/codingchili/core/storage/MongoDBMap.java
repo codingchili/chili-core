@@ -135,7 +135,7 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public void values(Handler<AsyncResult<List<Value>>> handler) {
+    public void values(Handler<AsyncResult<Collection<Value>>> handler) {
         client.find(collection, new JsonObject(), found -> {
             if (found.succeeded()) {
                 handler.handle(result(toList(found.result())));
@@ -263,7 +263,7 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
             }
 
             @Override
-            public void execute(Handler<AsyncResult<List<Value>>> handler) {
+            public void execute(Handler<AsyncResult<Collection<Value>>> handler) {
                 apply();
 
                 client.findWithOptions(collection, new JsonObject().put(OR, statements), getOptions(), find -> {
@@ -297,7 +297,7 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
         return context;
     }
 
-    private List<Value> toList(List<JsonObject> results) {
+    private List<Value> toList(Collection<JsonObject> results) {
         return results.stream().map(json -> context.toValue(json)).collect(Collectors.toList());
     }
 }

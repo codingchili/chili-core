@@ -4,6 +4,7 @@ import com.codingchili.realm.instance.model.PlayerCharacter;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -26,7 +27,7 @@ public interface AsyncCharacterStore
      * @param future   callback
      * @param username the name of the account the characters belong to.
      */
-    void findByUsername(Handler<AsyncResult<List<PlayerCharacter>>> future, String username);
+    void findByUsername(Handler<AsyncResult<Collection<PlayerCharacter>>> future, String username);
 
     /**
      * Finds a single character.

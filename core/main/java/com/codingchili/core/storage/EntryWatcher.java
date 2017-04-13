@@ -1,5 +1,6 @@
 package com.codingchili.core.storage;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -18,7 +19,7 @@ public class EntryWatcher<Value extends Storable> {
     private AtomicBoolean active = new AtomicBoolean(false);
     private QueryBuilder<Value> query;
     private AsyncStorage<Value> storage;
-    private Consumer<List<Value>> consumer;
+    private Consumer<Collection<Value>> consumer;
     private StorageContext context;
     private TimerSource timer;
 
@@ -65,7 +66,7 @@ public class EntryWatcher<Value extends Storable> {
      * @param consumer the new consumer to handle results
      * @return fluent
      */
-    public EntryWatcher<Value> setConsumer(Consumer<List<Value>> consumer) {
+    public EntryWatcher<Value> setConsumer(Consumer<Collection<Value>> consumer) {
         this.consumer = consumer;
         return this;
     }
@@ -76,7 +77,7 @@ public class EntryWatcher<Value extends Storable> {
      * @param consumer the consumer that receives the results of the query.
      * @return fluent
      */
-    public EntryWatcher<Value> start(Consumer<List<Value>> consumer) {
+    public EntryWatcher<Value> start(Consumer<Collection<Value>> consumer) {
         this.consumer = consumer;
         active.set(true);
 

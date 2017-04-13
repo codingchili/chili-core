@@ -110,7 +110,7 @@ class JsonStreamQuery<Value extends Storable> {
             }
 
             @Override
-            public void execute(Handler<AsyncResult<List<Value>>> handler) {
+            public void execute(Handler<AsyncResult<Collection<Value>>> handler) {
                 context.blocking(task -> {
                     Stream<JsonObject> stream = results().stream();
 
