@@ -31,11 +31,11 @@ import static com.codingchili.common.Strings.*;
 
 @RunWith(VertxUnitRunner.class)
 public class ClientHandlerTest {
-    private static final char[] PASSWORD = "password".toCharArray();
+    private static final String PASSWORD = "password";
     private static final String USERNAME = "username";
     private static final String USERNAME_NEW = "new-username";
     private static final String USERNAME_MISSING = "missing-username";
-    private static final char[] PASSWORD_WRONG = "wrong-password".toCharArray();
+    private static final String PASSWORD_WRONG = "wrong-password";
     private static AuthenticationContext context;
     private static ClientHandler handler;
 
@@ -64,7 +64,7 @@ public class ClientHandlerTest {
             async.complete();
         });
 
-        accounts.register(future, new Account(USERNAME, new String(PASSWORD)));
+        accounts.register(future, new Account(USERNAME, PASSWORD));
     }
 
     @Test
@@ -73,6 +73,11 @@ public class ClientHandlerTest {
 
         handle(CLIENT_AUTHENTICATE, (response, status) -> {
             test.assertEquals(ResponseStatus.ACCEPTED, status);
+            test.assertTrue(response.containsKey(ID_TOKEN));
+            test.assertTrue(response.containsKey(ID_ACCOUNT));
+            JsonObject account = response.getJsonObject(ID_ACCOUNT);
+            test.assertFalse(account.containsKey(ID_PASSWORD));
+            test.assertFalse(response.getBoolean(ID_REGISTERED));
             async.complete();
         }, account(USERNAME, PASSWORD));
     }
@@ -103,14 +108,19 @@ public class ClientHandlerTest {
 
         handle(CLIENT_REGISTER, (response, status) -> {
             test.assertEquals(ResponseStatus.ACCEPTED, status);
+            test.assertTrue(response.containsKey(ID_ACCOUNT));
+            JsonObject account = response.getJsonObject(ID_ACCOUNT);
+            test.assertFalse(account.containsKey(ID_PASSWORD));
+            test.assertTrue(response.containsKey(ID_TOKEN));
+            test.assertTrue(response.getBoolean(ID_REGISTERED));
             async.complete();
         }, account(USERNAME_NEW, PASSWORD));
     }
 
-    private JsonObject account(String username, char[] password) {
+    private JsonObject account(String username, String password) {
         return new JsonObject().put(ID_ACCOUNT, new JsonObject()
                 .put(ID_USERNAME, username)
-                .put(ID_PASSWORD, new String(password)));
+                .put(ID_PASSWORD, password));
     }
 
     @Test

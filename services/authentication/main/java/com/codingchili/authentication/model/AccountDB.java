@@ -88,6 +88,7 @@ public class AccountDB implements AsyncAccountStore {
 
     private Account filter(AccountMapping account) {
         return new Account()
+                .setPassword(null)
                 .setEmail(account.getEmail())
                 .setUsername(account.getUsername());
     }

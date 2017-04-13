@@ -124,6 +124,7 @@ public abstract class CoreStrings {
     public static final String ID_CONTEXT = "context";
     public static final String ID_USERNAME = "username";
     public static final String ID_PASSWORD = "password";
+    public static final String ID_REGISTERED = "registered";
     public static final String ID_STATUS = "status";
     public static final String ID_COUNT = "count";
     public static final String ID_MESSAGE = "message";
