@@ -50,4 +50,14 @@ public class AccountMapping implements Storable {
     public String id() {
         return username;
     }
+
+    @Override
+    public int hashCode() {
+        return id().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return compareTo(other) == 0;
+    }
 }

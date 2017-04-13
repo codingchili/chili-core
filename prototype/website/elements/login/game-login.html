@@ -135,7 +135,7 @@
                             self.showToast('Error: ' + e);
                         },
                         conflict: function (data) {
-                            self.showToast('Error: username taken.')
+                            self.showToast('The username is not available.')
                             self.$['username'].focus();
                         },
                         error: function (e) {
@@ -147,6 +147,7 @@
                     }, this.username, this.password, this.email);
                 } else {
                     this.showToast('Password (repeat) does not match the password.');
+                    this.$['password-repeat'].focus();
                 }
             },
             resetForm: function () {
