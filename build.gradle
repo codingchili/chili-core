@@ -1,7 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'idea'
 
-project.version = "1.0-SNAPSHOT"
+project.version = "1.0.3-SNAPSHOT"
 project.group = 'com.codingchili'
 
 subprojects {
