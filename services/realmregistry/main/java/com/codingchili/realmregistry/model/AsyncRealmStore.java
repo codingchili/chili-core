@@ -26,7 +26,7 @@ public interface AsyncRealmStore {
      * Sign an user authentication token with a realms secret.
      *
      * @param future    callback
-     * @param realmName name of the realm that should sign the token.
+     * @param realmName handler of the realm that should sign the token.
      * @param domain    the domain (username) in which the token is valid.
      */
     void signToken(Handler<AsyncResult<Token>> future, String realmName, String domain);
@@ -35,7 +35,7 @@ public interface AsyncRealmStore {
      * Get all information available about a realm.
      *
      * @param future    callback
-     * @param realmName name of the realm to find.
+     * @param realmName handler of the realm to find.
      */
     void get(Handler<AsyncResult<RegisteredRealm>> future, String realmName);
 
@@ -51,7 +51,7 @@ public interface AsyncRealmStore {
      * Removes a realm from the cluster-wide get.
      *
      * @param future    callback
-     * @param realmName name of the realm.
+     * @param realmName handler of the realm.
      */
     void remove(Handler<AsyncResult<Void>> future, String realmName);
 

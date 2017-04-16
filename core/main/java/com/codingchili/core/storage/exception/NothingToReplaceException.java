@@ -5,8 +5,8 @@ import com.codingchili.core.context.CoreException;
 
 /**
  * @author Robin Duda
- *
- * Throw when the replace operation cannot complete as there is nothing to replace.
+ *         <p>
+ *         Throw when the replace operation cannot complete as there is nothing to replace.
  */
 public class NothingToReplaceException extends CoreException {
 

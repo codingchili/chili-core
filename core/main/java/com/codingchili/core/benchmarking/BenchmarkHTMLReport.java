@@ -1,12 +1,15 @@
 package com.codingchili.core.benchmarking;
 
-import static com.codingchili.core.configuration.CoreStrings.EXT_HTML;
-import static com.codingchili.core.configuration.CoreStrings.getFileFriendlyDate;
+import de.neuland.jade4j.Jade4J;
+import de.neuland.jade4j.JadeConfiguration;
+import de.neuland.jade4j.template.JadeTemplate;
+import de.neuland.jade4j.template.TemplateLoader;
+import io.vertx.core.VertxException;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.json.JsonObject;
 
 import java.awt.*;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.*;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
@@ -17,13 +20,7 @@ import com.codingchili.core.configuration.system.LauncherSettings;
 import com.codingchili.core.files.Resource;
 import com.codingchili.core.files.exception.NoSuchResourceException;
 
-import de.neuland.jade4j.Jade4J;
-import de.neuland.jade4j.JadeConfiguration;
-import de.neuland.jade4j.template.JadeTemplate;
-import de.neuland.jade4j.template.TemplateLoader;
-import io.vertx.core.VertxException;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.json.JsonObject;
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda

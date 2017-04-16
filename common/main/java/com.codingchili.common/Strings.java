@@ -90,6 +90,7 @@ public abstract class Strings extends CoreStrings {
     public static final String LOG_PAGE_LOAD = "page.load";
     public static final String LOG_PATCHER_LOADED = "patcher.loaded";
     public static final String LOG_REALM_DEPLOY_ERROR = "realm.deploy.error";
+    public static final String LOG_INSTANCE_DEPLOY_ERROR = "instance.deploy.error";
     public static final String ID_PIECE = "piece";
     public static final String LOG_USER = "user";
     public static final String LOG_NODE_TIMEOUT = "timeout";

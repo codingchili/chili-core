@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.security.Token;
 import com.codingchili.core.security.TokenFactory;
 import com.codingchili.core.testing.RequestMock;
@@ -85,7 +86,7 @@ public class ClientHandlerTest {
         return Serializer.json(new Token(context.getClientFactory(), USERNAME));
     }
 
-    @Test
+    @Test(expected = AuthorizationRequiredException.class)
     public void failCreateRealmTokenWhenInvalidToken(TestContext test) {
         handle(Strings.CLIENT_REALM_TOKEN, (response, status) -> {
             test.assertEquals(ResponseStatus.UNAUTHORIZED, status);
@@ -109,6 +110,6 @@ public class ClientHandlerTest {
     }
 
     private void handle(String action, ResponseListener listener, JsonObject data) {
-        handler.process(RequestMock.get(action, listener, data));
+        handler.handle(RequestMock.get(action, listener, data));
     }
 }

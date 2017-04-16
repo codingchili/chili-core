@@ -1,10 +1,10 @@
 package com.codingchili.core.testing;
 
-import java.util.*;
-
 import io.vertx.core.*;
-import io.vertx.core.buffer.*;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.file.*;
+
+import java.util.List;
 
 /**
  * Mock filesystem: turns asynchronous reads into sync reads to avoid dealing

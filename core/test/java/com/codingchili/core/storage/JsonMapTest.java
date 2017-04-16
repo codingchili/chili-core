@@ -7,7 +7,6 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
-import java.io.IOException;
 import java.nio.file.Paths;
 
 import com.codingchili.core.files.JsonFileStore;

@@ -15,8 +15,8 @@ import com.codingchili.core.testing.ContextMock;
 
 /**
  * @author Robin Duda
- *
- * Tests the timers and metrics in the system context.
+ *         <p>
+ *         Tests the timers and metrics in the system context.
  */
 @RunWith(VertxUnitRunner.class)
 public class SystemContextTest {

@@ -7,6 +7,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 
 import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.security.Token;
 import com.codingchili.core.security.TokenFactory;
 import com.codingchili.core.storage.StorageLoader;
@@ -17,7 +18,7 @@ import com.codingchili.core.storage.StorageLoader;
 public class ContextMock extends RegistryContext {
 
     public ContextMock(Vertx vertx) {
-        super(vertx);
+        super(new SystemContext(vertx));
 
         this.realmFactory = new TokenFactory(new RealmRegistrySettings().getRealmSecret());
 

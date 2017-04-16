@@ -5,8 +5,8 @@ import java.util.List;
 
 /**
  * @author Robin Duda
- *
- * "Abstract" implementation of a map group.
+ *         <p>
+ *         "Abstract" implementation of a map group.
  */
 public class BaseBenchmarkGroup implements BenchmarkGroup {
     private List<BenchmarkImplementation> implementations = new ArrayList<>();

@@ -1,19 +1,18 @@
 package com.codingchili.core.context;
 
-import static com.codingchili.core.configuration.CoreStrings.HELP;
-import static org.junit.Assert.fail;
-
 import io.vertx.core.Future;
-import org.junit.*;
-import org.junit.runner.RunWith;
-
-import com.codingchili.core.context.exception.CommandAlreadyExistsException;
-
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.*;
+import org.junit.runner.RunWith;
 
 import java.util.Optional;
+
+import com.codingchili.core.context.exception.CommandAlreadyExistsException;
+
+import static com.codingchili.core.configuration.CoreStrings.HELP;
+import static org.junit.Assert.fail;
 
 /**
  * @author Robin Duda

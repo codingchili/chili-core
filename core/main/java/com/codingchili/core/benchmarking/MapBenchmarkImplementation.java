@@ -1,19 +1,15 @@
 package com.codingchili.core.benchmarking;
 
-import static com.codingchili.core.configuration.CoreStrings.ID_NAME;
+import io.vertx.core.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.storage.AsyncStorage;
-import com.codingchili.core.storage.Storable;
-import com.codingchili.core.storage.StorageLoader;
+import com.codingchili.core.storage.*;
 import com.codingchili.core.testing.StorageObject;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
+import static com.codingchili.core.configuration.CoreStrings.ID_NAME;
 
 /**
  * @author Robin Duda

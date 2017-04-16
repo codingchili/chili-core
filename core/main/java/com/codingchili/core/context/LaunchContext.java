@@ -1,15 +1,16 @@
 package com.codingchili.core.context;
 
-import java.util.*;
-
-import com.codingchili.core.configuration.*;
-import com.codingchili.core.configuration.exception.*;
-import com.codingchili.core.configuration.system.*;
-import com.codingchili.core.files.*;
-
 import io.vertx.core.*;
 
-import static com.codingchili.core.configuration.CoreStrings.*;
+import java.util.List;
+import java.util.Optional;
+
+import com.codingchili.core.configuration.Environment;
+import com.codingchili.core.configuration.exception.*;
+import com.codingchili.core.configuration.system.LauncherSettings;
+import com.codingchili.core.files.Configurations;
+
+import static com.codingchili.core.configuration.CoreStrings.ID_DEFAULT;
 
 /**
  * @author Robin Duda
@@ -19,8 +20,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 public class LaunchContext extends SystemContext {
     private static final String BLOCK_DEFAULT = "default";
     private static final String LAUNCHER = "launcher";
-    private Vertx vertx;
-    private String[] args;
+    private String[] args = new String[] {};
 
     /**
      * @param args process arguments to create a launcher for.
@@ -35,17 +35,9 @@ public class LaunchContext extends SystemContext {
         return LAUNCHER;
     }
 
-    /**
-     * @param vertx creates a launcher context from a vertx instance.
-     */
-    public LaunchContext(Vertx vertx) {
-        super(vertx);
-        this.vertx = vertx;
-    }
-
     @Override
-    public void deploy(String node, Handler<AsyncResult<String>> handler) {
-        vertx.deployVerticle(node, handler);
+    public void deploy(String node, Handler<AsyncResult<String>> done) {
+        super.deploy(node, done);
     }
 
     public LauncherSettings settings() {
@@ -88,10 +80,10 @@ public class LaunchContext extends SystemContext {
     /**
      * Get the configured services for the given block or remote identifier.
      *
-     * @param block the name of the configured block or the hostname.
+     * @param block the handler of the configured block or the hostname.
      * @return a list of configured services for the given block or host.
      * @throws RemoteBlockNotConfiguredException when no block is configured for given host.
-     * @throws BlockNotConfiguredException       when no block is configured for given block-name.
+     * @throws BlockNotConfiguredException       when no block is configured for given block-handler.
      */
     protected List<String> block(String block) throws CoreException {
         List<String> blocks;
@@ -147,5 +139,12 @@ public class LaunchContext extends SystemContext {
         } else {
             return BLOCK_DEFAULT;
         }
+    }
+
+    public void setVertx(Vertx vertx) {
+        if (this.vertx != null) {
+            this.vertx.close();
+        }
+        this.vertx = vertx;
     }
 }

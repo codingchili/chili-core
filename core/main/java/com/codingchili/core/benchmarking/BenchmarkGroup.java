@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface BenchmarkGroup {
     /**
-     * The name of the benchmark group, for example "networking" or "storage".
+     * The handler of the benchmark group, for example "networking" or "storage".
      * Benchmarks are grouped under this in the reports.
      *
      * @return a string that identifies a group of benchmarks.

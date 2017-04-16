@@ -8,8 +8,7 @@ import io.vertx.core.Future;
  *         Benchmark operation called when benchmarking.
  */
 @FunctionalInterface
-interface BenchmarkOperation
-{
+interface BenchmarkOperation {
     /**
      * Returns a future so that benchmark operations may be composed in order.
      *

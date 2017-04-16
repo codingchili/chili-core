@@ -3,6 +3,7 @@ package com.codingchili.core.storage;
 import io.vertx.core.json.JsonObject;
 
 import java.util.Collection;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import com.codingchili.core.configuration.CoreStrings;
@@ -23,6 +24,7 @@ import static com.codingchili.core.protocol.Serializer.getValueByPath;
  */
 abstract class AbstractQueryBuilder<Value extends Storable> implements QueryBuilder<Value> {
     private AsyncStorage<Value> storage;
+    private String name = UUID.randomUUID().toString();
     private boolean isAttributeArray = false;
     private String orderByAttribute;
     private String arrayNotation = "";
@@ -111,6 +113,17 @@ abstract class AbstractQueryBuilder<Value extends Storable> implements QueryBuil
     public QueryBuilder<Value> order(SortOrder order) {
         this.sortOrder = order;
         this.isOrdered = true;
+        return this;
+    }
+
+    @Override
+    public String name() {
+        return name;
+    }
+
+    @Override
+    public QueryBuilder<Value> setName(String name) {
+        this.name = name;
         return this;
     }
 

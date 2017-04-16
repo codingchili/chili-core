@@ -11,8 +11,8 @@ import com.codingchili.core.security.exception.TokenException;
 
 /**
  * @author Robin Duda
- *
- * Verifies and generates tokens for access.
+ *         <p>
+ *         Verifies and generates tokens for access.
  */
 public class TokenFactory {
     private final byte[] secret;
@@ -34,8 +34,8 @@ public class TokenFactory {
     /**
      * Checks if a token and its parameters is valid against the secret.
      *
-     * @param key hex encoded token to be verified.
-     * @param domain context name of the requestor.
+     * @param key    hex encoded token to be verified.
+     * @param domain context handler of the requestor.
      * @param expiry the unix epoch time in which it is expired.
      * @return true if the token is accepted.
      */

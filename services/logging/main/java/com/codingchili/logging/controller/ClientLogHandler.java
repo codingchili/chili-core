@@ -3,7 +3,7 @@ package com.codingchili.logging.controller;
 import com.codingchili.logging.configuration.LogContext;
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.protocol.Request;
+import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.security.Token;
@@ -38,7 +38,7 @@ public class ClientLogHandler extends AbstractLogHandler {
 
     private boolean verifyToken(JsonObject logdata) {
         if (logdata.containsKey(ID_TOKEN)) {
-            return context().verifyToken(Serializer.unpack(logdata.getJsonObject(ID_TOKEN), Token.class));
+            return context.verifyToken(Serializer.unpack(logdata.getJsonObject(ID_TOKEN), Token.class));
         } else {
             return false;
         }

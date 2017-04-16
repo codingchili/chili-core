@@ -1,6 +1,8 @@
 package com.codingchili.realmregistry.controller;
 
 import com.codingchili.core.context.*;
+import com.codingchili.core.listener.CoreHandler;
+import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.*;
 import com.codingchili.realmregistry.configuration.*;
 import com.codingchili.realmregistry.model.*;
@@ -32,13 +34,8 @@ public class ClientHandler implements CoreHandler {
     }
 
     @Override
-    public void handle(Request request) throws CoreException {
+    public void handle(Request request) {
         protocol.get(authenticate(request), request.route()).handle(new ClientRequest(request));
-    }
-
-    @Override
-    public RegistryContext context() {
-        return context;
     }
 
     @Override

@@ -1,13 +1,13 @@
 package com.codingchili.router.controller;
 
-import com.codingchili.core.context.*;
 import com.codingchili.router.configuration.RouterContext;
 import io.vertx.core.eventbus.*;
 
-import com.codingchili.core.protocol.*;
+import com.codingchili.core.listener.CoreHandler;
+import com.codingchili.core.listener.Request;
+import com.codingchili.core.protocol.Protocol;
+import com.codingchili.core.protocol.RequestHandler;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
-import com.codingchili.core.protocol.exception.RequestValidationException;
-import com.codingchili.core.security.Validator;
 
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.core.protocol.Access.AUTHORIZED;
@@ -19,7 +19,6 @@ import static com.codingchili.core.protocol.Access.AUTHORIZED;
  */
 public class RouterHandler implements CoreHandler {
     private final Protocol<RequestHandler<Request>> protocol = new Protocol<>();
-    private final Validator validator = new Validator();
     private RouterContext context;
 
     public RouterHandler(RouterContext context) {
@@ -29,16 +28,11 @@ public class RouterHandler implements CoreHandler {
     }
 
     @Override
-    public void handle(Request request) throws CoreException {
-        try {
-            if (context.isRouteHidden(request.target())) {
-                request.error(new AuthorizationRequiredException());
-            } else {
-                validator.validate(request.data());
-                protocol.get(AUTHORIZED, request.target()).handle(request);
-            }
-        } catch (RequestValidationException e) {
-            request.error(e);
+    public void handle(Request request) {
+        if (context.isRouteHidden(request.target())) {
+            request.error(new AuthorizationRequiredException());
+        } else {
+            protocol.get(AUTHORIZED, request.target()).handle(request);
         }
     }
 
@@ -73,11 +67,6 @@ public class RouterHandler implements CoreHandler {
                 }
             }
         });
-    }
-
-    @Override
-    public RouterContext context() {
-        return context;
     }
 
     @Override

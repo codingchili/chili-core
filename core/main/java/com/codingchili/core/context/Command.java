@@ -19,7 +19,8 @@ public interface Command {
 
     /**
      * Executes a command.
-     * @param future callback
+     *
+     * @param future   callback
      * @param executor the executor executing the command, can be used to get properties.
      */
     void execute(Future<Void> future, CommandExecutor executor);

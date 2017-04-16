@@ -31,7 +31,7 @@ class LaunchContextMock extends LaunchContext {
     }
 
     public LaunchContextMock(MockLogListener listener) {
-        super(new String[] {});
+        super(new String[]{});
         this.logger = new LoggerMock(listener);
     }
 

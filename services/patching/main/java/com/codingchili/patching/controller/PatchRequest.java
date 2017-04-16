@@ -5,8 +5,8 @@ import com.codingchili.core.files.CachedFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.codingchili.core.protocol.ClusterRequest;
-import com.codingchili.core.protocol.Request;
+import com.codingchili.core.listener.transport.ClusterRequest;
+import com.codingchili.core.listener.Request;
 
 import static com.codingchili.common.Strings.*;
 

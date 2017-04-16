@@ -4,8 +4,8 @@ import com.codingchili.core.configuration.CoreStrings;
 
 /**
  * @author Robin Duda
- *
- * Throw when the given class is not a valid configurable.
+ *         <p>
+ *         Throw when the given class is not a valid configurable.
  */
 public class InvalidConfigurableException extends RuntimeException {
     public InvalidConfigurableException(Class<?> clazz) {

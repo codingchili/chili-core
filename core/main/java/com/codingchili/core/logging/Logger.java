@@ -3,7 +3,7 @@ package com.codingchili.core.logging;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.protocol.CoreHandler;
+import com.codingchili.core.listener.CoreHandler;
 
 
 /**
@@ -16,7 +16,7 @@ public interface Logger extends JsonLogger, StringLogger {
     /**
      * Create a logging event.
      *
-     * @param event name of the event to generate
+     * @param event handler of the event to generate
      * @param level the severity level of the event
      * @return a JsonObject with a generated event, level, timestamp and context.
      */
@@ -32,19 +32,24 @@ public interface Logger extends JsonLogger, StringLogger {
      *
      * @param future callback is called when the event is written
      */
-    void onServerStarted(Future<Void> future);
+    void onServiceStarted(Future<Void> future);
 
     /**
      * Emit when a server has stopped.
      *
      * @param future callback is called when the event is written.
      */
-    void onServerStopped(Future<Void> future);
+    void onServiceStopped(Future<Void> future);
+
+    /**
+     * @param cause the reason why the service has failed.
+     */
+    void onServiceFailed(Throwable cause);
 
     /**
      * Emit when failing to load specified fileName;
      *
-     * @param fileName name of the file that failed to load
+     * @param fileName handler of the file that failed to load
      */
     void onFileLoadError(String fileName);
 
@@ -58,7 +63,7 @@ public interface Logger extends JsonLogger, StringLogger {
     /**
      * Throw when a requested handler was not found.
      *
-     * @param route the name of the missing handler.
+     * @param route the handler of the missing handler.
      */
     void onHandlerMissing(String route);
 
@@ -89,7 +94,7 @@ public interface Logger extends JsonLogger, StringLogger {
     /**
      * Emit when the cache of a component has been cleared.
      *
-     * @param component the name of the component.
+     * @param component the handler of the component.
      */
     void onCacheCleared(String component);
 
@@ -104,7 +109,7 @@ public interface Logger extends JsonLogger, StringLogger {
     /**
      * Emit when error to save file.
      *
-     * @param fileName name of the entity that failed saving.
+     * @param fileName handler of the entity that failed saving.
      */
     void onFileSaveError(String fileName);
 
@@ -126,7 +131,7 @@ public interface Logger extends JsonLogger, StringLogger {
     /**
      * Emit when the interval of a periodic timer has changed.
      *
-     * @param name     name of the timer that changed interval
+     * @param name     handler of the timer that changed interval
      * @param initial  the previous value of the interval
      * @param interval the new interval of the timer
      */
@@ -135,7 +140,7 @@ public interface Logger extends JsonLogger, StringLogger {
     /**
      * Emit when a property in the security configuration is misconfigured.
      *
-     * @param target     the name of the target that is missing the requested property identifier.
+     * @param target     the handler of the target that is missing the requested property identifier.
      * @param identifier the secret that was requested
      */
     void onSecurityDependencyMissing(String target, String identifier);

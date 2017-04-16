@@ -16,17 +16,17 @@ public interface Benchmark extends BenchmarkResult {
     BenchmarkOperation operation();
 
     /**
-     * The name of the single benchmark operation to run. Should typically
-     * match the method name.
+     * The handler of the single benchmark operation to run. Should typically
+     * match the method handler.
      *
-     * @return a string that identifies the name the Benchmark operation.
+     * @return a string that identifies the handler the Benchmark operation.
      */
     String getName();
 
     /**
-     * Return the name of the implementation that generated the result.
+     * Return the handler of the implementation that generated the result.
      *
-     * @return name of the implementation.
+     * @return handler of the implementation.
      */
     String getImplementation();
 

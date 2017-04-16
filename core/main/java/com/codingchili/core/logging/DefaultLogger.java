@@ -1,18 +1,19 @@
 package com.codingchili.core.logging;
 
-import java.time.*;
+import io.vertx.core.Future;
+import io.vertx.core.json.JsonObject;
+
+import java.time.Instant;
 import java.util.logging.Handler;
-import java.util.logging.*;
+import java.util.logging.LogRecord;
 
-import com.codingchili.core.configuration.*;
-import com.codingchili.core.context.*;
-import com.codingchili.core.protocol.CoreHandler;
-
-import io.vertx.core.*;
-import io.vertx.core.json.*;
+import com.codingchili.core.configuration.Environment;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.Delay;
+import com.codingchili.core.listener.CoreHandler;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
-import static com.codingchili.core.files.Configurations.*;
+import static com.codingchili.core.files.Configurations.launcher;
 
 /**
  * @author Robin Duda
@@ -64,7 +65,7 @@ public abstract class DefaultLogger extends Handler implements Logger {
             event.put(LOG_HOST, Environment.hostname().orElse(ID_UNDEFINED))
                     .put(LOG_NODE, context.node())
                     .put(LOG_APPLICATION, launcher().getApplication())
-                    .put(LOG_CONTEXT, context.handler());
+                    .put(LOG_CONTEXT, context.name());
         }
     }
 
@@ -75,15 +76,21 @@ public abstract class DefaultLogger extends Handler implements Logger {
     }
 
     @Override
-    public void onServerStarted(Future<Void> future) {
+    public void onServiceStarted(Future<Void> future) {
         log(event(LOG_SERVER_START, Level.STARTUP));
         future.complete();
     }
 
     @Override
-    public void onServerStopped(Future<Void> future) {
-        log(event(LOG_SERVER_STOP, Level.SEVERE));
+    public void onServiceStopped(Future<Void> future) {
+        log(event(LOG_SERVER_FAILED, Level.SEVERE));
         Delay.forShutdown(future);
+    }
+
+    @Override
+    public void onServiceFailed(Throwable cause) {
+        log(event(LOG_SERVER_FAILED, Level.SEVERE)
+                .put(ID_MESSAGE, cause.getMessage()));
     }
 
     @Override

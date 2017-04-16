@@ -19,9 +19,9 @@ import com.codingchili.core.testing.ContextMock;
 
 /**
  * @author Robin Duda
- *
- * Tests that the FileWatcher emits modified/delete events when a file is
- * created/deleted/modified and that it ignores files outside the specified directory.
+ *         <p>
+ *         Tests that the FileWatcher emits modified/delete events when a file is
+ *         created/deleted/modified and that it ignores files outside the specified directory.
  */
 @RunWith(VertxUnitRunner.class)
 public class FileWatcherIT {
@@ -51,11 +51,11 @@ public class FileWatcherIT {
         JsonFileStore.writeObject(new JsonObject(), TOUCH_JSON);
 
         listenFiles(new FileStoreListener() {
-                    @Override
-                    public void onFileModify(Path path) {
-                        async.complete();
-                    }
-                });
+            @Override
+            public void onFileModify(Path path) {
+                async.complete();
+            }
+        });
 
         JsonFileStore.writeObject(new JsonObject(), TOUCH_JSON);
     }

@@ -3,7 +3,7 @@ package com.codingchili.router.controller;
 import com.codingchili.common.Strings;
 
 import com.codingchili.core.context.CoreException;
-import com.codingchili.core.protocol.Request;
+import com.codingchili.core.listener.Request;
 
 /**
  * @author Robin Duda

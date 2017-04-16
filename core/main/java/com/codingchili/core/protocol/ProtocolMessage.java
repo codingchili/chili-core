@@ -3,9 +3,7 @@ package com.codingchili.core.protocol;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 
-import static com.codingchili.core.configuration.CoreStrings.ID_MESSAGE;
-import static com.codingchili.core.configuration.CoreStrings.ID_STATUS;
-import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda

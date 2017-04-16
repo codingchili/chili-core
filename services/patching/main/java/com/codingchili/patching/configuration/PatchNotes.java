@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 /**
  * @author Robin Duda
- *         Contains a list of patch notes, version and name for the website.
+ *         Contains a list of patch notes, version and handler for the website.
  */
 public class PatchNotes {
     private String version = "0";

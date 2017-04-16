@@ -5,10 +5,10 @@ import java.util.List;
 
 /**
  * @author Robin Duda
- *
- * Contains listings for available routes and their respective
- * access level. Used to create a service description from a
- * protocol instance.
+ *         <p>
+ *         Contains listings for available routes and their respective
+ *         access level. Used to create a service description from a
+ *         protocol instance.
  */
 class ProtocolMapping {
     private List<ProtocolEntry> routes = new ArrayList<>();

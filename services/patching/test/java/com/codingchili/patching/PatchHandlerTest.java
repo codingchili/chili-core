@@ -5,6 +5,7 @@ import java.util.concurrent.*;
 import org.junit.*;
 import org.junit.runner.*;
 
+import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.protocol.*;
 import com.codingchili.core.testing.*;
 import com.codingchili.patching.configuration.*;
@@ -43,7 +44,7 @@ public class PatchHandlerTest {
     public static void startUp() {
         vertx = Vertx.vertx();
 
-        PatchContext context = new ContextMock(vertx) {
+        PatchContext context = new PatchContext(new SystemContext(vertx)) {
             @Override
             public String directory() {
                 return testDirectory();
@@ -190,6 +191,6 @@ public class PatchHandlerTest {
     }
 
     private void handle(String action, ResponseListener listener, JsonObject data) {
-        handler.process(RequestMock.get(action, listener, data));
+        handler.handle(RequestMock.get(action, listener, data));
     }
 }

@@ -7,9 +7,9 @@ import com.codingchili.core.security.TokenIdentifier;
 
 /**
  * @author Robin Duda
- *
- * Defines preshared secrets between services, local secrets and tokens
- * which are generated from another services secret.
+ *         <p>
+ *         Defines preshared secrets between services, local secrets and tokens
+ *         which are generated from another services secret.
  */
 public class AuthenticationDependency {
     private HashSet<String> preshare = new HashSet<>();

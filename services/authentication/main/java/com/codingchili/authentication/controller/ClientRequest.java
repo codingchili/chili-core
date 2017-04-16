@@ -1,12 +1,13 @@
 package com.codingchili.authentication.controller;
 
 
-import com.codingchili.common.Strings;
-
+import com.codingchili.core.listener.Request;
+import com.codingchili.core.listener.transport.ClusterRequest;
 import com.codingchili.core.protocol.*;
 import com.codingchili.core.security.Account;
 
 import static com.codingchili.common.Strings.ID_ACCOUNT;
+import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_CONNECTION;
 
 /**
  * @author Robin Duda
@@ -20,7 +21,7 @@ class ClientRequest extends ClusterRequest {
     }
 
     public String sender() {
-        return data().getString(Strings.PROTOCOL_CONNECTION);
+        return data().getString(PROTOCOL_CONNECTION);
     }
 
     public Account getAccount() {

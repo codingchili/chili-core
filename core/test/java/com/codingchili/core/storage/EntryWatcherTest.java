@@ -46,7 +46,8 @@ public class EntryWatcherTest {
                 this.storage = result.result();
 
                 getQuery().poll(entry -> entry.forEach(item -> {
-                    storage.remove(item.id(), removed -> {});
+                    storage.remove(item.id(), removed -> {
+                    });
                 }), () -> REMOVE_INTERVAL);
 
                 storage.put(object, put -> {
@@ -60,7 +61,7 @@ public class EntryWatcherTest {
     }
 
     private QueryBuilder<StorageObject> getQuery() {
-        return storage.query(LEVEL).between(Long.MIN_VALUE,  0L)
+        return storage.query(LEVEL).between(Long.MIN_VALUE, 0L)
                 .or(LEVEL).between(100L, Long.MAX_VALUE);
     }
 

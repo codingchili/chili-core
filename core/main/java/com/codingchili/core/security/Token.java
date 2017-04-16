@@ -7,8 +7,8 @@ import com.codingchili.core.configuration.CoreStrings;
 
 /**
  * @author Robin Duda
- *
- * Used to authenticate requests between services.
+ *         <p>
+ *         Used to authenticate requests between services.
  */
 public class Token implements Serializable {
     private String key;

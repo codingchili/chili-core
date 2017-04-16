@@ -33,10 +33,14 @@ public class RealmContext extends ServiceContext {
         super(vertx);
     }
 
-    public static void create(Future<RealmContext> future, RealmSettings realm, Vertx vertx) {
-        RealmContext context = new RealmContext(vertx);
+    public RealmContext(CoreContext core) {
+        super(core);
+    }
 
-        new StorageLoader<PlayerCharacter>(new StorageContext<>(vertx))
+    public static void create(Future<RealmContext> future, RealmSettings realm, CoreContext core) {
+        RealmContext context = new RealmContext(core);
+
+        new StorageLoader<PlayerCharacter>(new StorageContext<>(core))
                 .withPlugin(context.service().getStorage())
                 .withClass(PlayerCharacter.class)
                 .withCollection(COLLECTION_CHARACTERS)
@@ -113,5 +117,10 @@ public class RealmContext extends ServiceContext {
     public void onDeployRealmFailure(String realm) {
         log(event(LOG_REALM_DEPLOY_ERROR, Level.SEVERE)
                 .put(LOG_MESSAGE, getDeployFailError(realm)));
+    }
+
+    public void onInstanceFailed(String instance, Throwable cause) {
+        log(event(LOG_INSTANCE_DEPLOY_ERROR, Level.SEVERE)
+        .put(LOG_MESSAGE, getdeployInstanceError(instance, cause)));
     }
 }

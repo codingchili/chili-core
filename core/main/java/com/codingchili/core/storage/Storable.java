@@ -54,7 +54,7 @@ public interface Storable extends Serializable, Cloneable, Comparable, Shareable
      * Only required when ordering by attribute with {@link HazelMap}
      *
      * @param other     the other object to compare to.
-     * @param attribute name of the attribute that should be tested.
+     * @param attribute handler of the attribute that should be tested.
      * @return integer that matches implementation of @see Comparable#compareTo(Object)
      */
     @JsonIgnore

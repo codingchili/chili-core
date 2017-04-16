@@ -1,10 +1,8 @@
 package com.codingchili.core.context;
 
-import static com.codingchili.core.configuration.CoreStrings.COMMAND_PREFIX;
+import io.vertx.core.Future;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -15,7 +13,7 @@ import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
 
-import io.vertx.core.Future;
+import static com.codingchili.core.configuration.CoreStrings.COMMAND_PREFIX;
 
 /**
  * @author Robin Duda

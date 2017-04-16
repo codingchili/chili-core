@@ -4,7 +4,7 @@ import java.nio.file.*;
 
 import com.codingchili.core.context.*;
 import com.codingchili.core.files.*;
-import com.codingchili.core.protocol.*;
+import com.codingchili.core.listener.Request;
 
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.website.configuration.WebserverSettings.*;

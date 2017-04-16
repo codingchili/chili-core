@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.security.Token;
 import com.codingchili.core.security.TokenFactory;
 import com.codingchili.core.testing.RequestMock;
@@ -185,7 +186,7 @@ public class CharacterHandlerTest {
                 .put(ID_TOKEN, getClientToken()));
     }
 
-    @Test
+    @Test(expected = AuthorizationRequiredException.class)
     public void failListCharactersOnRealmWhenInvalidToken(TestContext test) {
         handle(Strings.CLIENT_CHARACTER_LIST, (response, status) -> {
             test.assertEquals(ResponseStatus.UNAUTHORIZED, status);
@@ -193,7 +194,7 @@ public class CharacterHandlerTest {
                 .put(ID_TOKEN, Serializer.json(getInvalidClientToken())));
     }
 
-    @Test
+    @Test(expected = AuthorizationRequiredException.class)
     public void failToCreateCharacterWhenInvalidToken(TestContext test) {
         handle(Strings.CLIENT_CHARACTER_CREATE, (response, status) -> {
             test.assertEquals(ResponseStatus.UNAUTHORIZED, status);
@@ -201,7 +202,7 @@ public class CharacterHandlerTest {
                 .put(ID_TOKEN, getInvalidClientToken()));
     }
 
-    @Test
+    @Test(expected = AuthorizationRequiredException.class)
     public void failToRemoveCharacterWhenInvalidToken(TestContext test) {
         handle(CLIENT_CHARACTER_REMOVE, (response, status) -> {
             test.assertEquals(ResponseStatus.UNAUTHORIZED, status);
@@ -210,11 +211,11 @@ public class CharacterHandlerTest {
     }
 
     private void handle(String action, ResponseListener listener) {
-        handler.process(RequestMock.get(action, listener, null));
+        handler.handle(RequestMock.get(action, listener, null));
     }
 
     private void handle(String action, ResponseListener listener, JsonObject data) {
-        handler.process(RequestMock.get(action, listener, data));
+        handler.handle(RequestMock.get(action, listener, data));
     }
 
     private JsonObject getInvalidClientToken() {

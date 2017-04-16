@@ -2,7 +2,7 @@ package com.codingchili.core.storage;
 
 import io.vertx.core.*;
 
-import java.util.*;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.codingchili.core.context.FutureHelper;

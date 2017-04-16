@@ -3,7 +3,7 @@ package com.codingchili.logging.controller;
 import com.codingchili.logging.configuration.LogContext;
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.protocol.Request;
+import com.codingchili.core.listener.Request;
 
 import static com.codingchili.common.Strings.*;
 
@@ -26,7 +26,7 @@ public class ServiceLogHandler extends AbstractLogHandler {
 
         logdata.remove(PROTOCOL_ROUTE);
 
-        if (!NODE_LOGGING.equals(node) && context().consoleEnabled()) {
+        if (!NODE_LOGGING.equals(node) && context.consoleEnabled()) {
             console.log(logdata);
         }
         store.log(logdata);

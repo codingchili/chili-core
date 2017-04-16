@@ -2,13 +2,12 @@ package com.codingchili.authentication.configuration;
 
 import com.codingchili.authentication.model.*;
 import io.vertx.core.Future;
-import io.vertx.core.Vertx;
 
+import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.Level;
-import com.codingchili.core.security.Token;
-import com.codingchili.core.security.TokenFactory;
+import com.codingchili.core.security.*;
 import com.codingchili.core.storage.StorageLoader;
 
 import static com.codingchili.authentication.configuration.AuthenticationSettings.PATH_AUTHSERVER;
@@ -16,16 +15,18 @@ import static com.codingchili.common.Strings.*;
 
 /**
  * @author Robin Duda
+ *
+ * Authentication service context.
  */
 public class AuthenticationContext extends ServiceContext {
     private AsyncAccountStore accounts;
 
-    public AuthenticationContext(Vertx vertx) {
-        super(vertx);
+    public AuthenticationContext(CoreContext core) {
+        super(core);
     }
 
-    public static void create(Future<AuthenticationContext> future, Vertx vertx) {
-        AuthenticationContext context = new AuthenticationContext(vertx);
+    public static void create(Future<AuthenticationContext> future, CoreContext core) {
+        AuthenticationContext context = new AuthenticationContext(core);
         new StorageLoader<AccountMapping>(context)
                 .withPlugin(context.service().getStorage())
                 .withCollection(COLLECTION_ACCOUNTS)
@@ -52,9 +53,9 @@ public class AuthenticationContext extends ServiceContext {
         return Configurations.get(PATH_AUTHSERVER, AuthenticationSettings.class);
     }
 
-    public void onAuthenticationFailure(String username, String host) {
+    public void onAuthenticationFailure(Account account, String host) {
         log(event(LOG_ACCOUNT_UNAUTHORIZED, Level.WARNING)
-                .put(LOG_USER, username)
+                .put(LOG_USER, account.getUsername())
                 .put(LOG_REMOTE, host));
     }
 

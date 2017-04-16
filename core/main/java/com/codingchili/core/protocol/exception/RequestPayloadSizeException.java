@@ -6,11 +6,15 @@ import com.codingchili.core.protocol.ResponseStatus;
 
 /**
  * @author Robin Duda
- *
- * Throw when a request with too large payload has been received.
+ *         <p>
+ *         Throw when a request with too large payload has been received.
  */
 public class RequestPayloadSizeException extends CoreException {
-    public RequestPayloadSizeException() {
-        super(CoreStrings.ERROR_REQUEST_SIZE_TOO_LARGE, ResponseStatus.BAD);
+
+    /**
+     * @param maxRequestBytes the maximum number of bytes.
+     */
+    public RequestPayloadSizeException(int maxRequestBytes) {
+        super(CoreStrings.getRequestTooLarge(maxRequestBytes), ResponseStatus.BAD);
     }
 }

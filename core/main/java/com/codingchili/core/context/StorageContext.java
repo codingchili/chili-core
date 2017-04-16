@@ -20,7 +20,6 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  *         context used by storage plugins.
  */
 public class StorageContext<Value> extends SystemContext {
-    private Validator validator = new Validator();
     private String identifier = "storage-" + UUID.randomUUID();
     private String DB = "";
     private String collection = "";
@@ -144,7 +143,7 @@ public class StorageContext<Value> extends SystemContext {
      * @return true if the given comparable contains only plaintext
      */
     public boolean validate(Comparable comparable) {
-        return validator.plainText(comparable) && comparable.toString().length() >= minFeedbackChars();
+        return Validator.plainText(comparable) && comparable.toString().length() >= minFeedbackChars();
     }
 
     public Integer minFeedbackChars() {

@@ -225,7 +225,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
             @Override
             public QueryBuilder<Value> like(String text) {
-                text = new Validator().toPlainText(text).toLowerCase();
+                text = Validator.toPlainText(text).toLowerCase();
                 builder.must(QueryBuilders.wildcardQuery(attribute(), "*" + text + "*"));
                 return this;
             }

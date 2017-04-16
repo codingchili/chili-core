@@ -6,8 +6,8 @@ import com.codingchili.realmregistry.controller.RealmHandler;
 import io.vertx.core.Future;
 
 import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.Deploy;
-import com.codingchili.core.protocol.CoreService;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.listener.CoreService;
 
 
 /**
@@ -18,13 +18,13 @@ public class Service implements CoreService {
     private CoreContext core;
 
     @Override
-    public void init(CoreContext context) {
-        this.core = context;
+    public void init(CoreContext core) {
+        this.core = core;
     }
 
     @Override
     public void stop(Future<Void> stop) {
-        core.logger().onServerStopped(stop);
+        core.logger().onServiceStopped(stop);
     }
 
     @Override
@@ -35,11 +35,11 @@ public class Service implements CoreService {
             if (future.succeeded()) {
                 RegistryContext context = future.result();
 
-                for (int i = 0; i < settings().getHandlers(); i++) {
-                    Deploy.service(new RealmHandler(context));
-                    Deploy.service(new ClientHandler(context));
+                for (int i = 0; i < Configurations.system().getHandlers(); i++) {
+                    context.handler(new RealmHandler(context), done -> {});
+                    context.handler(new ClientHandler(context), done -> {});
                 }
-                core.logger().onServerStarted(start);
+                core.logger().onServiceStarted(start);
             } else {
                 start.fail(future.cause());
             }

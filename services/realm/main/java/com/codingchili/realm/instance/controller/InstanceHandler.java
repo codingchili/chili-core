@@ -4,6 +4,8 @@ import com.codingchili.core.context.*;
 import com.codingchili.realm.instance.configuration.InstanceContext;
 import io.vertx.core.Future;
 
+import com.codingchili.core.listener.CoreHandler;
+import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.*;
 
 import static com.codingchili.common.Strings.ID_PING;
@@ -34,13 +36,8 @@ public class InstanceHandler implements CoreHandler {
     }
 
     @Override
-    public void handle(Request request) throws CoreException {
+    public void handle(Request request) {
         protocol.get(authenticator(request), request.route()).handle(new InstanceRequest(request));
-    }
-
-    @Override
-    public InstanceContext context() {
-        return context;
     }
 
     @Override

@@ -11,14 +11,15 @@ import com.codingchili.core.configuration.BaseConfigurable;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.AuthenticationDependency;
 import com.codingchili.core.configuration.system.SecuritySettings;
-import com.codingchili.core.files.*;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.files.JsonFileStore;
 import com.codingchili.core.files.exception.NoSuchResourceException;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.security.exception.SecurityMissingDependencyException;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.files.Configurations.security;
-import static com.codingchili.core.protocol.Serializer.*;
+import static com.codingchili.core.protocol.Serializer.json;
 
 /**
  * @author Robin Duda

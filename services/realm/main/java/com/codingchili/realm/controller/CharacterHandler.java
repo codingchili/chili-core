@@ -3,6 +3,8 @@ package com.codingchili.realm.controller;
 import java.util.*;
 
 import com.codingchili.core.context.*;
+import com.codingchili.core.listener.CoreHandler;
+import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.*;
 import com.codingchili.realm.configuration.*;
 import com.codingchili.realm.instance.configuration.*;
@@ -27,10 +29,8 @@ public class CharacterHandler implements CoreHandler {
 
     public CharacterHandler(RealmContext context) {
         this.context = context;
+        this.characters = context.getCharacterStore();
 
-        characters = context.getCharacterStore();
-
-        startInstances();
         context.periodic(context::updateRate, getClass().getSimpleName(), this::registerRealm);
 
         protocol.use(ANY, this::instanceHandler)
@@ -40,12 +40,34 @@ public class CharacterHandler implements CoreHandler {
                 .use(ID_PING, Request::accept, Access.PUBLIC);
     }
 
-    private void startInstances() {
-        for (InstanceSettings instance : context.instances()) {
-            InstanceContext iContext = new InstanceContext(context, instance);
+    @Override
+    public void start(Future<Void> future) {
+        context.onRealmStarted(context.realm().getName());
+        startInstances(future);
+    }
 
-            context.deploy(new InstanceHandler(iContext));
+    private void startInstances(Future<Void> future) {
+        List<Future> futures = new ArrayList<>();
+        for (InstanceSettings instance : context.instances()) {
+            Future deploy = Future.future();
+            futures.add(deploy);
+
+            context.handler(new InstanceHandler(new InstanceContext(context, instance)), (done) -> {
+                if (done.succeeded()) {
+                    deploy.complete();
+                } else {
+                    context.onInstanceFailed(instance.getName(), done.cause());
+                    deploy.fail(done.cause());
+                }
+            });
         }
+        CompositeFuture.all(futures).setHandler(done -> {
+            if (done.succeeded()) {
+                future.complete();
+            } else {
+                future.fail(done.cause());
+            }
+        });
     }
 
     private void registerRealm(Long handler) {
@@ -140,13 +162,8 @@ public class CharacterHandler implements CoreHandler {
     }
 
     @Override
-    public void handle(Request request) throws CoreException {
+    public void handle(Request request) {
         protocol.get(authenticator(request), request.route()).handle(new RealmRequest(request));
-    }
-
-    @Override
-    public RealmContext context() {
-        return context;
     }
 
     @Override
@@ -157,11 +174,5 @@ public class CharacterHandler implements CoreHandler {
     @Override
     public void stop(Future<Void> future) {
         context.onRealmStopped(future, context.realm().getName());
-    }
-
-    @Override
-    public void start(Future<Void> future) {
-        context.onRealmStarted(context.realm().getName());
-        future.complete();
     }
 }

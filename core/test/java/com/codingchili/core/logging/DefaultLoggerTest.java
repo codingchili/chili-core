@@ -13,8 +13,8 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
- *
- * Verifies the creation of logging events in DefaultLogger.
+ *         <p>
+ *         Verifies the creation of logging events in DefaultLogger.
  */
 @RunWith(VertxUnitRunner.class)
 public class DefaultLoggerTest {
@@ -22,7 +22,8 @@ public class DefaultLoggerTest {
 
     @Before
     public void setUp() {
-        this.logger = new LoggerMock((line) -> {});
+        this.logger = new LoggerMock((line) -> {
+        });
     }
 
     @Test

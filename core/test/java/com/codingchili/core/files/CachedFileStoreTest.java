@@ -1,22 +1,23 @@
 package com.codingchili.core.files;
 
-import java.io.*;
-import java.nio.file.*;
-import java.util.concurrent.atomic.*;
-
-import org.junit.*;
-import org.junit.runner.*;
-
-import com.codingchili.core.configuration.*;
-import com.codingchili.core.files.exception.*;
-import com.codingchili.core.protocol.*;
-import com.codingchili.core.testing.*;
-
-import io.vertx.core.*;
-import io.vertx.core.buffer.*;
+import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.file.FileSystem;
-import io.vertx.ext.unit.*;
-import io.vertx.ext.unit.junit.*;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.*;
+import org.junit.runner.RunWith;
+
+import java.io.IOException;
+import java.nio.file.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import com.codingchili.core.configuration.CachedFileStoreSettings;
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.files.exception.FileMissingException;
+import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.testing.ContextMock;
+import com.codingchili.core.testing.FileSystemMock;
 
 /**
  * @author Robin Duda

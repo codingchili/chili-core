@@ -7,8 +7,8 @@ import com.codingchili.core.storage.NestedStorable;
 
 /**
  * @author Robin Duda
- *
- * Object used for testing, nested within StorageObject.
+ *         <p>
+ *         Object used for testing, nested within StorageObject.
  */
 public class NestedObject implements NestedStorable {
     private String name;

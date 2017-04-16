@@ -5,8 +5,8 @@ import com.codingchili.core.context.CoreException;
 
 /**
  * @author Robin Duda
- *
- * Throw when the requested service block is not configured.
+ *         <p>
+ *         Throw when the requested service block is not configured.
  */
 public class RemoteBlockNotConfiguredException extends CoreException {
     public RemoteBlockNotConfiguredException(String remote, String block) {

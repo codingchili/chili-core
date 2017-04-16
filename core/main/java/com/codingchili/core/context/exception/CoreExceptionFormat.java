@@ -4,8 +4,8 @@ import com.codingchili.core.protocol.ResponseStatus;
 
 /**
  * @author Robin Duda
- *
- * Base format for all core based exceptions.
+ *         <p>
+ *         Base format for all core based exceptions.
  */
 public interface CoreExceptionFormat {
     /**

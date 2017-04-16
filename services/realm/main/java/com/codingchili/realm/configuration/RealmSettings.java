@@ -113,7 +113,7 @@ public class RealmSettings extends AttributeConfigurable {
      * specified realm.
      *
      * @param path  to the file to look if overridden.
-     * @param realm the name of the realm.
+     * @param realm the handler of the realm.
      * @return a path to the overridden resource or the path itself.
      */
     private static String override(String path, String realm) {
@@ -128,7 +128,7 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     /**
-     * @return the remote name of the realm.
+     * @return the remote handler of the realm.
      */
     public String getRemote() {
         return remote;
@@ -273,14 +273,14 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     /**
-     * @return get the name of this realm.
+     * @return get the handler of this realm.
      */
     public String getName() {
         return name;
     }
 
     /**
-     * @param name set the name of this realm
+     * @param name set the handler of this realm
      * @return fluent
      */
     public RealmSettings setName(String name) {

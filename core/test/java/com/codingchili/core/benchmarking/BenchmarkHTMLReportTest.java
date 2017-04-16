@@ -7,7 +7,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.awt.*;
-import java.nio.file.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import com.codingchili.core.files.exception.NoSuchResourceException;
 

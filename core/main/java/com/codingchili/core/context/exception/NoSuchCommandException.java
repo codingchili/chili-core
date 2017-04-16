@@ -5,8 +5,8 @@ import com.codingchili.core.context.CoreException;
 
 /**
  * @author Robin Duda
- *
- * Throw when a command was given on the terminal that does not exist.
+ *         <p>
+ *         Throw when a command was given on the terminal that does not exist.
  */
 public class NoSuchCommandException extends CoreException {
 

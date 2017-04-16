@@ -2,14 +2,14 @@ package com.codingchili.core.testing;
 
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.protocol.Request;
+import com.codingchili.core.listener.Request;
 import com.codingchili.core.security.Token;
 
 
 /**
  * @author Robin Duda
- *
- * An empty request for testing.
+ *         <p>
+ *         An empty request for testing.
  */
 public class EmptyRequest implements Request {
     @Override
@@ -51,6 +51,16 @@ public class EmptyRequest implements Request {
 
     @Override
     public int timeout() {
+        return 0;
+    }
+
+    @Override
+    public int size() {
+        return 0;
+    }
+
+    @Override
+    public int maxSize() {
         return 0;
     }
 }

@@ -97,10 +97,6 @@ public class WebHandlerTest {
     }
 
     private void handle(String action, ResponseListener listener) {
-        try {
-            handler.handle(RequestMock.get(action, listener, null));
-        } catch (CoreException e) {
-            throw new RuntimeException(e);
-        }
+        handler.handle(RequestMock.get(action, listener, null));
     }
 }

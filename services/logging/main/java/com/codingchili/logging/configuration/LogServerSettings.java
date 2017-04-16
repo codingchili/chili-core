@@ -64,14 +64,14 @@ public class LogServerSettings extends ServiceConfigurable {
     }
 
     /**
-     * @return the name of the collection that messages are stored in.
+     * @return the handler of the collection that messages are stored in.
      */
     public String getCollection() {
         return collection;
     }
 
     /**
-     * @param collection sets the name of the collection where messages are stored.
+     * @param collection sets the handler of the collection where messages are stored.
      */
     public void setCollection(String collection) {
         this.collection = collection;

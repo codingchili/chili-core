@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.codingchili.core.files.exception.NoSuchResourceException;
@@ -19,8 +19,8 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
- *
- * Tests the JSON file store.
+ *         <p>
+ *         Tests the JSON file store.
  */
 @RunWith(VertxUnitRunner.class)
 public class JsonFileStoreTest {

@@ -17,6 +17,7 @@ class FileWatcherBuilder {
 
     /**
      * Sets the listener that is called on file changes.
+     *
      * @param listener the listener to be used.
      */
     FileWatcherBuilder withListener(FileStoreListener listener) {
@@ -26,6 +27,7 @@ class FileWatcherBuilder {
 
     /**
      * Defines the directory that should be watched relative from the application root.
+     *
      * @param directory the directory to be watched, includes its subdirectories.
      */
     FileWatcherBuilder onDirectory(String directory) {
@@ -35,6 +37,7 @@ class FileWatcherBuilder {
 
     /**
      * The rate in which to poll the file change events.
+     *
      * @param rate a timersource in milliseconds.
      */
     FileWatcherBuilder rate(TimerSource rate) {

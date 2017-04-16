@@ -14,8 +14,8 @@ import com.codingchili.core.testing.ContextMock;
 
 /**
  * @author Robin Duda
- *
- * Verifies that the STARTUP_DELAY system is working, is required for some tests.
+ *         <p>
+ *         Verifies that the STARTUP_DELAY system is working, is required for some tests.
  */
 @RunWith(VertxUnitRunner.class)
 public class DelayTest {

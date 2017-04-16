@@ -2,6 +2,8 @@ package com.codingchili.patching.controller;
 
 import com.codingchili.core.context.*;
 import com.codingchili.core.files.exception.*;
+import com.codingchili.core.listener.CoreHandler;
+import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.*;
 import com.codingchili.patching.configuration.*;
 import com.codingchili.patching.model.*;
@@ -33,13 +35,8 @@ public class PatchHandler implements CoreHandler {
     }
 
     @Override
-    public void handle(Request request) throws CoreException {
+    public void handle(Request request) {
         protocol.get(AUTHORIZED, request.route()).handle(new PatchRequest(request));
-    }
-
-    @Override
-    public ServiceContext context() {
-        return context;
     }
 
     @Override

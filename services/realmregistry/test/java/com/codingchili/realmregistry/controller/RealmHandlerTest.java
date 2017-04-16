@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.security.Token;
 import com.codingchili.core.testing.RequestMock;
 import com.codingchili.core.testing.ResponseListener;
@@ -51,14 +52,14 @@ public class RealmHandlerTest {
         mock.vertx().close(test.asyncAssertSuccess());
     }
 
-    @Test
+    @Test(expected = AuthorizationRequiredException.class)
     public void failRegisterRealmTest(TestContext test) {
         handle(REALM_UPDATE, (response, status) -> {
             test.assertEquals(ResponseStatus.UNAUTHORIZED, status);
         });
     }
 
-    @Test
+    @Test(expected = AuthorizationRequiredException.class)
     public void failWithClientToken(TestContext test) {
         Token token = new Token(mock.getClientFactory(), realmconfig.getName());
         realmconfig.setAuthentication(token);
@@ -79,7 +80,7 @@ public class RealmHandlerTest {
                 .put(ID_TOKEN, getToken()));
     }
 
-    @Test
+    @Test(expected = AuthorizationRequiredException.class)
     public void failUpdateRealmTest(TestContext test) {
         handle(REALM_UPDATE, (response, status) -> {
             test.assertEquals(ResponseStatus.UNAUTHORIZED, status);
@@ -106,7 +107,7 @@ public class RealmHandlerTest {
                 .put(ID_TOKEN, getToken()));
     }
 
-    @Test
+    @Test(expected = AuthorizationRequiredException.class)
     public void failRealmClose(TestContext test) {
         handle(CLIENT_CLOSE, (response, status) -> {
             test.assertEquals(ResponseStatus.UNAUTHORIZED, status);
@@ -120,14 +121,14 @@ public class RealmHandlerTest {
         });
     }
 
-    @Test
+    @Test(expected = AuthorizationRequiredException.class)
     public void failUpdateWhenInvalidToken(TestContext test) {
         handle(REALM_UPDATE, (response, status) -> {
             test.assertEquals(status, ResponseStatus.UNAUTHORIZED);
         });
     }
 
-    @Test
+    @Test(expected = AuthorizationRequiredException.class)
     public void failCloseWhenInvalidToken(TestContext test) {
         handle(CLIENT_CLOSE, (response, status) -> {
             test.assertEquals(status, ResponseStatus.UNAUTHORIZED);
@@ -139,7 +140,7 @@ public class RealmHandlerTest {
     }
 
     private void handle(String action, ResponseListener listener, JsonObject data) {
-        handler.process(RequestMock.get(action, listener, data));
+        handler.handle(RequestMock.get(action, listener, data));
     }
 
     private JsonObject getToken() {

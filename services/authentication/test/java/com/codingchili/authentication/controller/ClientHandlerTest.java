@@ -149,6 +149,6 @@ public class ClientHandlerTest {
     }
 
     private void handle(String action, ResponseListener listener, JsonObject data) {
-        handler.process(RequestMock.get(action, listener, data));
+        handler.handle(RequestMock.get(action, listener, data));
     }
 }

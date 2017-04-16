@@ -20,8 +20,8 @@ import com.codingchili.core.testing.ContextMock;
 
 /**
  * @author Robin Duda
- *
- * Tests for the configuration system.
+ *         <p>
+ *         Tests for the configuration system.
  */
 @RunWith(VertxUnitRunner.class)
 public class ConfigurationsTest {
@@ -48,11 +48,6 @@ public class ConfigurationsTest {
     @Test
     public void loadLauncherConfiguration() throws IOException {
         Assert.assertNotNull(Configurations.launcher());
-    }
-
-    @Test
-    public void loadValidatorConfiguration() {
-        Assert.assertNotNull(Configurations.validator());
     }
 
     @Test

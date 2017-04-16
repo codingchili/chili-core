@@ -12,7 +12,6 @@ import java.util.*;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.security.Validator;
 import com.codingchili.core.storage.exception.*;
 
 import static com.codingchili.core.configuration.CoreStrings.STORAGE_ARRAY;
@@ -51,7 +50,7 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
                     addIndex(Storable.idField);
                     future.complete(this);
                 } else {
-                    future.fail(CoreStrings.ERROR_CLUSTERING_REQUIRED);
+                    future.fail(CoreStrings.ERROR_NOT_CLUSTERED);
                 }
             } else {
                 future.fail(cluster.cause());

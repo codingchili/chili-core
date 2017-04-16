@@ -4,18 +4,17 @@ import io.vertx.core.Future;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.ArrayList;
 
 import com.codingchili.core.configuration.system.LauncherSettings;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.testing.MockLogListener;
 
 import static com.codingchili.core.configuration.CoreStrings.HELP;
-
-import java.util.ArrayList;
 
 /**
  * @author Robin Duda
@@ -59,7 +58,8 @@ public class LauncherCommandExecutorTest {
     }
 
     private Command getHiddenCommand() {
-        return new BaseCommand((executor) -> {}, HIDDEN, HIDDEN).setVisible(false);
+        return new BaseCommand((executor) -> {
+        }, HIDDEN, HIDDEN).setVisible(false);
     }
 
     @Test

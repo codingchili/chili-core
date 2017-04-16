@@ -8,9 +8,10 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.io.*;
-import java.util.Optional;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+
+import com.codingchili.core.protocol.exception.SerializerPayloadException;
 
 import static com.codingchili.core.configuration.CoreStrings.STORAGE_ARRAY;
 
@@ -50,7 +51,7 @@ public class Serializer {
      *
      * @param data  json-encoded string.
      * @param clazz the class to instantiate.
-     * @param <T> must be bound to the clazz parameter
+     * @param <T>   must be bound to the clazz parameter
      * @return an object specified by the type parameter.
      */
     @SuppressWarnings("unchecked")
@@ -67,7 +68,7 @@ public class Serializer {
      *
      * @param json  json object to be unpacked.
      * @param clazz the class to instantiate.
-     * @param <T> must be bound to the clazz parameter
+     * @param <T>   must be bound to the clazz parameter
      * @return an object specified by the type parameter.
      */
     @SuppressWarnings("unchecked")

@@ -1,37 +1,37 @@
 package com.codingchili.core.context;
 
-import com.codingchili.core.configuration.*;
-import com.codingchili.core.configuration.system.*;
-import com.codingchili.core.files.*;
-import com.codingchili.core.logging.*;
-import com.codingchili.core.protocol.*;
-
 import io.vertx.core.*;
-import io.vertx.core.eventbus.*;
-import io.vertx.core.json.*;
-import io.vertx.ext.dropwizard.*;
+import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.dropwizard.MetricsService;
 
-import static com.codingchili.core.configuration.CoreStrings.*;
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.configuration.system.SystemSettings;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.listener.*;
+import com.codingchili.core.listener.transport.ClusterListener;
+import com.codingchili.core.logging.*;
+
+import static com.codingchili.core.configuration.CoreStrings.ID_SYSTEM;
 
 
 /**
  * @author Robin Duda
- *
- * Implementation of the CoreContext, each context gets its own worker pool.
+ *         <p>
+ *         Implementation of the CoreContext, each context gets its own worker pool.
  */
 public class SystemContext implements CoreContext {
-    private final ConsoleLogger console;
     private WorkerExecutor executor;
+    private ConsoleLogger console;
     protected Vertx vertx;
 
-    SystemContext(CoreContext context) {
+    protected SystemContext(CoreContext context) {
         this(context.vertx());
     }
 
     public SystemContext(Vertx vertx) {
         this.vertx = vertx;
         this.console = new ConsoleLogger(this);
-
         initialize();
     }
 
@@ -39,11 +39,10 @@ public class SystemContext implements CoreContext {
         executor = vertx.createSharedWorkerExecutor("systemcontext", system().getWorkerPoolSize());
 
         MetricsService metrics = MetricsService.create(vertx);
-
         periodic(this::getMetricTimer, CoreStrings.LOG_METRICS, handler -> {
             if (system().isMetrics()) {
                 JsonObject json = metrics.getMetricsSnapshot(vertx);
-                onMetricsSnapshot(json);
+                this.onMetricsSnapshot(json);
             }
         });
     }
@@ -90,43 +89,54 @@ public class SystemContext implements CoreContext {
         return vertx.setTimer(ms, handler);
     }
 
-
     @Override
     public void cancel(long timer) {
         vertx.cancelTimer(timer);
     }
 
     @Override
-    public void deploy(CoreHandler handler) {
-        deploy(ClusterListener.with(handler), result -> {
-            if (result.failed()) {
-                throw new RuntimeException(result.cause());
+    public void deploy(String target, Handler<AsyncResult<String>> done) {
+        try {
+            Object deployment = Class.forName(target).<Object>newInstance();
+
+            if (deployment instanceof CoreHandler) {
+                handler((CoreHandler) deployment, done);
+            } else if (deployment instanceof CoreListener) {
+                CoreListener listener = (CoreListener) deployment;
+                listener.handler(new BusForwarder(this, target));
+                listener.settings(ListenerSettings::new);
+                listener(listener, done);
+            } else if (deployment instanceof CoreService) {
+                service((CoreService) deployment, done);
+            } else if (deployment instanceof Verticle) {
+                vertx.deployVerticle((Verticle) deployment, done);
             }
-        });
+
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void deploy(Verticle verticle) {
-        vertx.deployVerticle(verticle, result -> {
-            if (result.failed()) {
-                throw new RuntimeException(result.cause());
-            }
-        });
+    public void handler(CoreHandler handler, Handler<AsyncResult<String>> done) {
+        vertx.deployVerticle(new CoreVerticle(new ClusterListener()
+                .settings(ListenerSettings::new)
+                .handler(handler), this), done);
     }
 
     @Override
-    public void deploy(String verticle, Handler<AsyncResult<String>> result) {
-        vertx.deployVerticle(verticle, result);
+    public void listener(CoreListener listener, Handler<AsyncResult<String>> done) {
+        vertx.deployVerticle(new CoreVerticle(listener, this), done);
     }
 
     @Override
-    public void deploy(CoreHandler handler, Handler<AsyncResult<String>> result) {
-        vertx.deployVerticle(ClusterListener.with(handler), result);
+    public void service(CoreService service, Handler<AsyncResult<String>> done) {
+        vertx.deployVerticle(new CoreVerticle(service, this), done);
     }
 
     @Override
-    public void deploy(Verticle verticle, Handler<AsyncResult<String>> result) {
-        vertx.deployVerticle(verticle, result);
+    public void stop(String deploymentId) {
+        vertx.undeploy(deploymentId);
     }
 
     @Override
@@ -140,7 +150,7 @@ public class SystemContext implements CoreContext {
     }
 
     @Override
-    public String handler() {
+    public String name() {
         return getClass().getSimpleName();
     }
 

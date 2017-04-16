@@ -6,8 +6,8 @@ import java.util.*;
 
 /**
  * @author Robin Duda
- *
- * Base implementation of a benchmark.
+ *         <p>
+ *         Base implementation of a benchmark.
  */
 public class BaseBenchmark implements Benchmark {
     private static final int EPOCH_BASE = 3600000;

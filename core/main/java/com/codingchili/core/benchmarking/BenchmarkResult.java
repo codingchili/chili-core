@@ -2,8 +2,8 @@ package com.codingchili.core.benchmarking;
 
 /**
  * @author Robin Duda
- *
- * Results for benchmarks.
+ *         <p>
+ *         Results for benchmarks.
  */
 public interface BenchmarkResult {
 

@@ -2,8 +2,8 @@ package com.codingchili.core.logging;
 
 /**
  * @author Robin Duda
- *
- * Interface for text-only logger.
+ *         <p>
+ *         Interface for text-only logger.
  */
 interface StringLogger {
     /**
@@ -13,7 +13,7 @@ interface StringLogger {
     Logger log(String line);
 
     /**
-     * @param line the text line to be logged.
+     * @param line  the text line to be logged.
      * @param level the logging level to log with.
      * @return fluent
      */

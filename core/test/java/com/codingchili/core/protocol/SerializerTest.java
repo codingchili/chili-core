@@ -13,8 +13,8 @@ import com.codingchili.core.security.TokenFactory;
 
 /**
  * @author Robin Duda
- *
- * Tests for the serializer.
+ *         <p>
+ *         Tests for the serializer.
  */
 @RunWith(VertxUnitRunner.class)
 public class SerializerTest {

@@ -184,7 +184,6 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
         addIndex(field);
 
         return new AbstractQueryBuilder<Value>(this, field) {
-            Validator validator = new Validator();
             JsonArray statements = new JsonArray();
             JsonArray builder = new JsonArray();
 
@@ -220,7 +219,7 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
 
             @Override
             public QueryBuilder<Value> like(String text) {
-                text = validator.toPlainText(text);
+                text = Validator.toPlainText(text);
                 builder.add(new JsonObject()
                         .put(attribute(), new JsonObject()
                                 .put(REGEX, "^.*" + text + ".*$")
@@ -230,7 +229,7 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
 
             @Override
             public QueryBuilder<Value> startsWith(String text) {
-                text = validator.toPlainText(text);
+                text = Validator.toPlainText(text);
                 builder.add(new JsonObject()
                         .put(attribute(), new JsonObject()
                                 .put(REGEX, "^" + text + ".*")));

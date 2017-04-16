@@ -1,9 +1,11 @@
 package com.codingchili.core.protocol;
 
+import com.codingchili.core.listener.Request;
+
 /**
  * @author Robin Duda
- *
- * Protocol exception handler.
+ *         <p>
+ *         Protocol exception handler.
  */
 @FunctionalInterface
 public interface ExceptionHandler {

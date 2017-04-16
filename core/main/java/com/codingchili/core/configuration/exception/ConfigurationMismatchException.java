@@ -5,9 +5,9 @@ import com.codingchili.core.context.CoreException;
 
 /**
  * @author Robin Duda
- *
- * Throw when a change has been made to a configuration file that cannot
- * be applied to runtime.
+ *         <p>
+ *         Throw when a change has been made to a configuration file that cannot
+ *         be applied to runtime.
  */
 public class ConfigurationMismatchException extends CoreException {
     public ConfigurationMismatchException() {

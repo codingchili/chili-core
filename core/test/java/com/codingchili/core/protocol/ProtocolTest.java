@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
 import com.codingchili.core.testing.EmptyRequest;
@@ -15,8 +16,8 @@ import static com.codingchili.core.protocol.Access.*;
 
 /**
  * @author Robin Duda
- *
- * Tests the protocol class and its authorization mechanism.
+ *         <p>
+ *         Tests the protocol class and its authorization mechanism.
  */
 @RunWith(VertxUnitRunner.class)
 public class ProtocolTest {

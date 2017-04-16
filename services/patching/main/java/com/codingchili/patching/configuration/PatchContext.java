@@ -1,6 +1,7 @@
 package com.codingchili.patching.configuration;
 
 import com.codingchili.core.configuration.*;
+import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.files.*;
 import com.codingchili.patching.model.PatchKeeper;
 import io.vertx.core.Vertx;
@@ -16,8 +17,8 @@ import static com.codingchili.patching.configuration.PatchServerSettings.PATH_PA
 public class PatchContext extends ServiceContext {
     private PatchKeeper keeper;
 
-    public PatchContext(Vertx vertx) {
-        super(vertx);
+    public PatchContext(CoreContext core) {
+        super(core);
         this.keeper = new PatchKeeper(this);
     }
 

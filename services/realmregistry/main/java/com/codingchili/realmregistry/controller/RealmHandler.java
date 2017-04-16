@@ -4,12 +4,12 @@ import com.codingchili.common.Strings;
 import com.codingchili.realmregistry.configuration.RegisteredRealm;
 import com.codingchili.realmregistry.configuration.RegistryContext;
 import com.codingchili.realmregistry.model.*;
-import io.vertx.core.Future;
 
 import java.time.Instant;
 
 import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.context.ServiceContext;
+import com.codingchili.core.listener.CoreHandler;
+import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.*;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
@@ -68,11 +68,6 @@ public class RealmHandler implements CoreHandler {
                 request.error(new RealmDisconnectException());
             }
         }, request.realmName());
-    }
-
-    @Override
-    public RegistryContext context() {
-        return context;
     }
 
     @Override

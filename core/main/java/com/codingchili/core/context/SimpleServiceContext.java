@@ -1,7 +1,8 @@
 package com.codingchili.core.context;
 
-import com.codingchili.core.configuration.*;
-import com.codingchili.core.files.*;
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.configuration.ServiceConfigurable;
+import com.codingchili.core.files.Configurations;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 

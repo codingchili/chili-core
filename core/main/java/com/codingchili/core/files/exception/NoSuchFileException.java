@@ -5,8 +5,8 @@ import com.codingchili.core.context.CoreRuntimeException;
 
 /**
  * @author Robin Duda
- *
- * Throw when a file is missing.
+ *         <p>
+ *         Throw when a file is missing.
  */
 public class NoSuchFileException extends CoreRuntimeException {
 

@@ -1,7 +1,7 @@
 package com.codingchili.core.files.exception;
 
-import com.codingchili.core.configuration.*;
-import com.codingchili.core.context.*;
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.context.CoreRuntimeException;
 
 /**
  * @author Robin Duda

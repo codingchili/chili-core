@@ -5,8 +5,10 @@ import com.codingchili.core.configuration.*;
 import com.codingchili.core.context.*;
 import com.codingchili.core.files.*;
 import com.codingchili.core.files.exception.*;
+import com.codingchili.core.listener.CoreHandler;
+import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.*;
-import com.codingchili.core.protocol.exception.*;
+
 import com.codingchili.website.configuration.*;
 
 import static com.codingchili.common.Strings.*;
@@ -48,13 +50,8 @@ public class WebHandler implements CoreHandler {
     }
 
     @Override
-    public void handle(Request request) throws CoreException {
+    public void handle(Request request) {
         protocol.get(Access.PUBLIC, request.route()).handle(request);
-    }
-
-    @Override
-    public ServiceContext context() {
-        return context;
     }
 
     @Override

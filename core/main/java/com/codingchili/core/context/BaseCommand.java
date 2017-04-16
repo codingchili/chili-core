@@ -1,8 +1,9 @@
 package com.codingchili.core.context;
 
-import java.util.function.*;
-
 import io.vertx.core.Future;
+
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 /**
  * @author Robin Duda
@@ -19,7 +20,7 @@ public class BaseCommand implements Command {
      * Creates a new asynchronous command.
      *
      * @param consumer    the function to be called when the command is executed.
-     * @param name        the name of the command
+     * @param name        the handler of the command
      * @param description the command description
      */
     public BaseCommand(BiFunction<Future<Void>, CommandExecutor, Void> consumer, String name, String description) {
@@ -32,7 +33,7 @@ public class BaseCommand implements Command {
      * Creates a  new synchronous command
      *
      * @param runnable    executed when the command is invoked
-     * @param name        the name of the command
+     * @param name        the handler of the command
      * @param description the command description
      */
     public BaseCommand(Consumer<CommandExecutor> runnable, String name, String description) {

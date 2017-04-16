@@ -1,13 +1,14 @@
 package com.codingchili.core.context;
 
 import io.vertx.core.*;
-import io.vertx.core.Handler;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.file.FileSystem;
 
 import com.codingchili.core.configuration.system.SystemSettings;
+import com.codingchili.core.listener.CoreListener;
 import com.codingchili.core.logging.Logger;
-import com.codingchili.core.protocol.*;
+import com.codingchili.core.listener.CoreHandler;
+import com.codingchili.core.listener.CoreService;
 
 /**
  * @author Robin Duda
@@ -64,40 +65,45 @@ public interface CoreContext {
     void cancel(long timer);
 
     /**
-     * Deploy a new handler in the cluster from given handler.
+     * Instantiates an object of the given class identifier and determines the type
+     * that should be deployed. May be a {@link CoreHandler} {@link CoreService}
+     * {@link CoreListener} or a plain {@link Verticle}.
      *
-     * @param handler the handler to be used to handle incoming requests.
+     * @param target the target class to deploy.
+     * @param done   callback handler on completion.
      */
-    void deploy(CoreHandler handler);
-
-    /**
-     * @param verticle deploys the given verticle.
-     */
-    void deploy(Verticle verticle);
-
-    /**
-     * Deploys a given verticle by name with a completion handler.
-     *
-     * @param verticle the name of the verticle to deploy.
-     * @param result   the handler to be invoked on deployment completion.
-     */
-    void deploy(String verticle, Handler<AsyncResult<String>> result);
+    void deploy(String target, Handler<AsyncResult<String>> done);
 
     /**
      * Deploys a new handler in the cluster from given handler with a completion handler.
      *
      * @param handler the handler to be used to handle incoming requests.
-     * @param result  the handler to be invoked on deployment completion.
+     * @param done    the handler to be invoked on deployment completion.
      */
-    void deploy(CoreHandler handler, Handler<AsyncResult<String>> result);
+    void handler(CoreHandler handler, Handler<AsyncResult<String>> done);
 
     /**
      * Deploys the given verticle with a completion handler.
      *
-     * @param verticle the verticle to be deployed.
-     * @param result   the handler to be invoked on deployment completion.
+     * @param listener the verticle to be deployed.
+     * @param done     the handler to be invoked on deployment completion.
      */
-    void deploy(Verticle verticle, Handler<AsyncResult<String>> result);
+    void listener(CoreListener listener, Handler<AsyncResult<String>> done);
+
+    /**
+     * Deploys the given verticle with a completion handler.
+     *
+     * @param service the verticle to be deployed.
+     * @param done    the handler to be invoked on deployment completion.
+     */
+    void service(CoreService service, Handler<AsyncResult<String>> done);
+
+    /**
+     * Undeploys a deployed handler by the deployment id.
+     *
+     * @param deploymentId the id of the deployment to undeploy.
+     */
+    void stop(String deploymentId);
 
     /**
      * Call to execute the given blocking handler on a worker thread that is
@@ -128,7 +134,7 @@ public interface CoreContext {
     /**
      * @return returns the name of the context scope.
      */
-    String handler();
+    String name();
 
     /**
      * @return get the logger logger which writes to std out.

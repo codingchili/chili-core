@@ -9,8 +9,8 @@ import com.codingchili.core.configuration.RegexComponent;
 
 /**
  * @author Robin Duda
- *
- * Contains settings for validating strings with regexes, length and field names.
+ *         <p>
+ *         Contains settings for validating strings with regexes, length and field names.
  */
 public class ParserSettings {
     public ArrayList<String> keys = new ArrayList<>();

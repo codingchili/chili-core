@@ -1,23 +1,17 @@
 package com.codingchili.core;
 
+import io.vertx.core.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.context.CommandExecutor;
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.CoreException;
-import com.codingchili.core.context.Delay;
-import com.codingchili.core.context.LaunchContext;
-import com.codingchili.core.context.LauncherCommandExecutor;
+import com.codingchili.core.context.*;
 import com.codingchili.core.files.Configurations;
+import com.codingchili.core.listener.*;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
-import com.codingchili.core.protocol.ClusterNode;
-import com.codingchili.core.protocol.CoreService;
-
-import io.vertx.core.*;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.files.Configurations.system;
@@ -27,10 +21,10 @@ import static com.codingchili.core.files.Configurations.system;
  *         <p>
  *         Launches all the components of the system on a single host.
  */
-public class Launcher extends ClusterNode {
+public class Launcher implements CoreService {
     private static final ConsoleLogger logger = new ConsoleLogger();
     private static List<String> nodes = new ArrayList<>();
-    private CoreContext context;
+    private LaunchContext context;
 
     /**
      * Starts the launcher with the given arguments.
@@ -67,15 +61,16 @@ public class Launcher extends ClusterNode {
 
     void exit() {
         logger.reset();
-        System.exit(0);
+        context.vertx().close();
     }
 
     private void cluster() {
         Vertx.clusteredVertx(system().getOptions(), (clustered) -> {
             if (clustered.succeeded()) {
-                context = new LaunchContext(clustered.result());
+                context.setVertx(clustered.result());
+                init(context);
 
-                context.deploy(this, deployed -> {
+                context.service(this, deployed -> {
                     if (deployed.failed()) {
                         throw new RuntimeException(deployed.cause());
                     } else {
@@ -116,15 +111,18 @@ public class Launcher extends ClusterNode {
     private boolean isVerticle(String node) {
         try {
             Class<?> clazz = Class.forName(node);
-            boolean isDeployable = Verticle.class.isAssignableFrom(clazz);
+            boolean isDeployable = Verticle.class.isAssignableFrom(clazz) ||
+                    CoreHandler.class.isAssignableFrom(clazz) ||
+                    CoreService.class.isAssignableFrom(clazz) ||
+                    CoreListener.class.isAssignableFrom(clazz);
 
             if (!isDeployable) {
-                logger.log(CoreStrings.getNodeNotVerticle(node), Level.SEVERE);
+                logger.log(getUnsupportedDeployment(node), Level.SEVERE);
                 exit();
             }
             return isDeployable;
         } catch (ClassNotFoundException e) {
-            logger.log(CoreStrings.getNodeNotFound(node), Level.SEVERE);
+            logger.log(getNodeNotFound(node), Level.SEVERE);
             exit();
             return false;
         }
@@ -145,19 +143,8 @@ public class Launcher extends ClusterNode {
     }
 
     @Override
-    public void start(Future<Void> start) throws Exception {
-        initialize(context);
-        start.complete();
-    }
-
-    public void initialize(CoreContext core) {
+    public void init(CoreContext core) {
         Configurations.initialize(core);
         Delay.initialize(core);
-        CoreService.holder.initialize(core);
-    }
-
-    @Override
-    public void stop(Future<Void> stop) {
-        stop.complete();
     }
 }

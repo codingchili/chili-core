@@ -7,8 +7,8 @@ import java.util.Set;
 
 /**
  * @author Robin Duda
- *
- * Keeps track of which fields are already indexed on shared instances of maps.
+ *         <p>
+ *         Keeps track of which fields are already indexed on shared instances of maps.
  */
 public class SharedIndexCollection<Value> extends ConcurrentIndexedCollection<Value> {
     private Set<String> indexed = new ConcurrentHashSet<>();

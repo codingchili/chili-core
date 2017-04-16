@@ -2,12 +2,12 @@ package com.codingchili.core.security;
 
 import io.vertx.core.json.JsonObject;
 
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 
 import com.codingchili.core.configuration.RegexComponent;
 import com.codingchili.core.configuration.system.ParserSettings;
 import com.codingchili.core.configuration.system.ValidatorSettings;
-import com.codingchili.core.files.Configurations;
 import com.codingchili.core.protocol.exception.RequestValidationException;
 
 /**
@@ -20,9 +20,13 @@ public class Validator {
     private static final String REGEX_SPECIAL_CHARS = "[^A-Za-z0-9 \\-:&]";
     private static final int MIN = 0;
     private static final int MAX = 1;
+    private Supplier<ValidatorSettings> settings;
 
-    private ValidatorSettings settings() {
-        return Configurations.validator();
+    /**
+     * @param settings creates a new validator with the given settings.
+     */
+    public Validator(Supplier<ValidatorSettings> settings) {
+        this.settings = settings;
     }
 
     /**
@@ -38,7 +42,7 @@ public class Validator {
     public JsonObject validate(JsonObject json) throws RequestValidationException {
 
         for (String field : json.fieldNames()) {
-            for (ParserSettings validator : settings().getValidators().values()) {
+            for (ParserSettings validator : settings.get().getValidators().values()) {
 
                 if (json.getValue(field) instanceof JsonObject) {
                     validate(json.getJsonObject(field), field);
@@ -56,7 +60,7 @@ public class Validator {
      * Validates nested JSON objects within a JSON object.
      *
      * @param json      the json object to validate.
-     * @param fieldName the name of the field to validate.
+     * @param fieldName the handler of the field to validate.
      * @throws RequestValidationException when the evaluation is configured to reject a value
      */
     private void validate(JsonObject json, String fieldName) throws RequestValidationException {
@@ -64,7 +68,7 @@ public class Validator {
             if (json.getValue(field) instanceof JsonObject) {
                 validate(json, fieldName + "." + field);
             } else {
-                for (ParserSettings validator : settings().getValidators().values()) {
+                for (ParserSettings validator : settings.get().getValidators().values()) {
                     if (validator.keys.contains(fieldName + "." + field)) {
                         json.put(field, validate(validator, json.getValue(field)));
                     }
@@ -107,7 +111,7 @@ public class Validator {
      * @param value the value to test.
      * @return true if the value is plaintext.
      */
-    public boolean plainText(Comparable value) {
+    public static boolean plainText(Comparable value) {
         return value != null && value.toString().matches(REGEX_PLAINTEXT);
     }
 
@@ -117,7 +121,7 @@ public class Validator {
      * @param input the string to be sanitized.
      * @return a plaintext string consisting of only A-Z, a-z, 0-9, whitespace, dash, colon or ampersand.
      */
-    public String toPlainText(String input) {
+    public static String toPlainText(String input) {
         return input.replaceAll(REGEX_SPECIAL_CHARS, "");
     }
 }

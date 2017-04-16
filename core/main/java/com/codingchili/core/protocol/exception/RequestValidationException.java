@@ -6,8 +6,8 @@ import com.codingchili.core.protocol.ResponseStatus;
 
 /**
  * @author Robin Duda
- *
- * Throw when a request has error validation.
+ *         <p>
+ *         Throw when a request has error validation.
  */
 public class RequestValidationException extends CoreException {
 

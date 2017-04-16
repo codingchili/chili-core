@@ -1,14 +1,16 @@
 package com.codingchili.core.configuration;
 
+import io.vertx.core.Verticle;
+
 import java.nio.file.*;
 import java.text.DecimalFormat;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.codingchili.core.benchmarking.*;
+import com.codingchili.core.listener.*;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
 
@@ -20,7 +22,6 @@ import com.codingchili.core.logging.Level;
  */
 public abstract class CoreStrings {
     // paths to configuration files.
-    public static final String PATH_VALIDATOR = "conf/system/validator.json";
     public static final String PATH_LAUNCHER = "conf/system/launcher.json";
     public static final String PATH_SECURITY = "conf/system/security.json";
     public static final String PATH_SYSTEM = "conf/system/system.json";
@@ -49,6 +50,10 @@ public abstract class CoreStrings {
 
     public static String getLoopbackAddress() {
         return (ipVersion.equals(IPVersion.IP4) ? "127.0.0.1" : "::1");
+    }
+
+    public static String getRequestTooLarge(int maxRequestBytes) {
+        return String.format("Maximum request size of %d bytes exceeded.", maxRequestBytes);
     }
 
     // storage constants.
@@ -88,6 +93,7 @@ public abstract class CoreStrings {
     public static final String PARAM_ITERATIONS = getCommand("iterations");
     public static final String PARAM_HTML = getCommand("html");
     public static final String PARAM_TEMPLATE = getCommand("template");
+
     public static String getCommand(String command) {
         return COMMAND_PREFIX + command;
     }
@@ -156,6 +162,7 @@ public abstract class CoreStrings {
     public static final String LOG_HANDLER_START = "handler.start";
     public static final String LOG_SERVER_START = "server.start";
     public static final String LOG_SERVER_STOP = "server.stop";
+    public static final String LOG_SERVER_FAILED = "server.fail";
     public static final String LOG_MESSAGE = "message";
     public static final String LOG_LEVEL = "level";
     public static final String LOG_VERTX = "vertx";
@@ -183,17 +190,17 @@ public abstract class CoreStrings {
     public static final String ERROR_REUSABLEQUERY_UNBOUND = "Reusable query not bound to a storage.";
     public static final String ERROR_TOKEN_FACTORY = "Token factory error to generate token.";
 
-    public static final String ERROR_CLUSTERING_REQUIRED = "Running in non-clustered mode.";
+    public static final String ERROR_NOT_CLUSTERED = "Running in non-clustered mode.";
     public static final String ERROR_NOT_AUTHORIZED = "Insufficient authorization level to access resource.";
     public static final String ERROR_LAUNCHER_STARTUP = "Failed to start the launcher with clustering.";
     public static final String ERRROR_LAUNCHER_SHUTDOWN = "system has been shut down..";
     public static final String ERROR_VALIDATION_FAILURE = "Provided data did not pass validation.";
-    public static final String ERROR_REQUEST_SIZE_TOO_LARGE = "Maximum request size exceeded.";
     public static final String ERROR_CONFIGURATION_MISMATCH = "configuration mismatches with currently loaded.";
     public static final String ERROR_ALREADY_INITIALIZED = "Error already initialized.";
     public static final String ERROR_STORAGE_EXCEPTION = "Failed to perform a storage operation.";
     public static final String CONFIGURED_BLOCKS = "Configured deployment blocks";
     public static final String ERROR_PATCH_RELOADED = "The patch version changed during patch session.";
+
     public static String getHandlerMissing(String name) {
         return String.format("The requested handler '%s' was not found.", name);
     }
@@ -202,7 +209,7 @@ public abstract class CoreStrings {
      * Replaces tags in a logging message.
      *
      * @param text the source text
-     * @param tags the name of the tag without enclosing brackets.
+     * @param tags the handler of the tag without enclosing brackets.
      * @return the source text with any matching tags removed.
      */
     public static String replaceTags(String text, String[] tags) {
@@ -218,6 +225,11 @@ public abstract class CoreStrings {
 
     public static String getDeployFailError(String service) {
         return "Failed to deploy " + service + ", already deployed in cluster";
+    }
+
+    public static String getdeployInstanceError(String instance, Throwable throwable) {
+        return String.format("Failed to deploy instance '%s', error was '%s'",
+                instance, throwable.getMessage());
     }
 
     public static String getFileReadError(String file) {
@@ -274,8 +286,10 @@ public abstract class CoreStrings {
         return "Error: no services are configured for block '" + block + "'.";
     }
 
-    public static String getNodeNotVerticle(String node) {
-        return "Error: Service '" + node + "' must extend 'ClusterNode' or implement 'Verticle'.";
+    public static String getUnsupportedDeployment(String node) {
+        return String.format("Error: deployment target '%s' is not among the supported types [%s, %s, %s, %s].",
+                node, CoreService.class.getSimpleName(), CoreListener.class.getSimpleName(),
+                CoreHandler.class.getSimpleName(), Verticle.class.getSimpleName());
     }
 
     public static String getNodeNotFound(String node) {

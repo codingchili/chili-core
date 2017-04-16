@@ -3,18 +3,19 @@ package com.codingchili.core;
 import io.vertx.core.*;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-import com.codingchili.core.context.Delay;
-import com.codingchili.core.context.LaunchContext;
-import com.codingchili.core.protocol.ClusterNode;
-import com.codingchili.core.testing.ContextMock;
+import com.codingchili.core.context.*;
+import com.codingchili.core.listener.*;
 
 import static com.codingchili.core.files.Configurations.system;
 
@@ -25,18 +26,22 @@ import static com.codingchili.core.files.Configurations.system;
  */
 @RunWith(VertxUnitRunner.class)
 public class LauncherIT {
+    private static TestContext test;
     private static Async async;
-    private ContextMock context;
+    private LaunchContext context;
 
     @Before
     public void setUp() {
-        context = new ContextMock(Vertx.vertx());
         Delay.initialize(context);
     }
 
+    @Rule
+    public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
+
     @After
     public void tearDown(TestContext test) {
-        context.vertx().close(test.asyncAssertSuccess());
+        if (context != null)
+            context.vertx().close(test.asyncAssertSuccess());
     }
 
     @Test
@@ -54,7 +59,7 @@ public class LauncherIT {
         async = test.async();
         system().setMetrics(true);
         onStart = (vx) -> test.assertTrue(vx.isMetricsEnabled());
-        launchWithSuccess(TestNode.class);
+        launchWithSuccess(TestService.class);
     }
 
     @Test
@@ -62,13 +67,28 @@ public class LauncherIT {
         async = test.async();
         system().setMetrics(false);
         onStart = (vx) -> test.assertFalse(vx.isMetricsEnabled());
-        launchWithSuccess(TestNode.class);
+        launchWithSuccess(TestService.class);
+    }
+
+    @Test
+    public void testDeployHandler(TestContext test) {
+        LauncherIT.test = test;
+        async = test.async();
+        launchWithSuccess(TestHandler.class);
+    }
+
+    @Test
+    public void testDeployListener(TestContext test) {
+        LauncherIT.test = test;
+        async = test.async();
+        launchWithSuccess(TestListener.class);
     }
 
     @Test
     public void testDeployAService(TestContext test) {
+        LauncherIT.test = test;
         async = test.async();
-        launchWithSuccess(TestNode.class);
+        launchWithSuccess(TestService.class);
     }
 
     @Test
@@ -95,7 +115,7 @@ public class LauncherIT {
     }
 
     public LaunchContext getLaunchContextFor(String node) {
-        return new LaunchContext(new String[]{}) {
+        context = new LaunchContext(new String[]{}) {
             @Override
             protected List<String> block(String block) {
                 List<String> list = new ArrayList<>();
@@ -103,19 +123,88 @@ public class LauncherIT {
                 return list;
             }
         };
+        return context;
     }
 
-    private static Consumer<Vertx> onStart = (vx) -> {};
+    private static Consumer<Vertx> onStart = (vx) -> {
+    };
 
     /**
      * Testnode that calls async-complete on deploy.
      */
-    public static class TestNode extends ClusterNode {
+    public static class TestService implements CoreService {
+        private CoreContext core;
+
         @Override
-        public void start(Future<Void> future) {
-            onStart.accept(vertx);
+        public void init(CoreContext core) {
+            this.core = core;
+        }
+
+        @Override
+        public void stop(Future<Void> stop) {
+            stop.complete();
+        }
+
+        @Override
+        public void start(Future<Void> start) {
+            test.assertNotNull(core);
+            onStart.accept(core.vertx());
             async.complete();
-            future.complete();
+            start.complete();
+        }
+    }
+
+    public static class TestHandler implements CoreHandler {
+
+        public TestHandler() {
+            async.complete();
+        }
+
+        @Override
+        public void handle(Request request) {
+
+        }
+
+        @Override
+        public String address() {
+            return "";
+        }
+    }
+
+    public static class TestListener implements CoreListener {
+        private ListenerSettings settings;
+        private CoreContext core;
+        private CoreHandler handler;
+
+        @Override
+        public void init(CoreContext core) {
+            this.core = core;
+        }
+
+        @Override
+        public CoreListener settings(Supplier<ListenerSettings> settings) {
+            this.settings = settings.get();
+            return this;
+        }
+
+        @Override
+        public CoreListener handler(CoreHandler handler) {
+            this.handler = handler;
+            return this;
+        }
+
+        @Override
+        public void start(Future<Void> start) {
+            test.assertNotNull(settings);
+            test.assertNotNull(core);
+            test.assertNotNull(handler);
+            async.complete();
+            start.complete();
+        }
+
+        @Override
+        public void stop(Future<Void> stop) {
+            stop.complete();
         }
     }
 

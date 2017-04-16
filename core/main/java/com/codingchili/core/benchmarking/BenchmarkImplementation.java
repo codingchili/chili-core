@@ -1,13 +1,11 @@
 package com.codingchili.core.benchmarking;
 
+import io.vertx.core.*;
+
 import java.util.List;
 import java.util.Map;
 
 import com.codingchili.core.context.CoreContext;
-
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
 
 /**
  * @author Robin Duda

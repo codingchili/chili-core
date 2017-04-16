@@ -8,7 +8,7 @@ import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.DecodeException;
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.protocol.ClusterRequest;
+import com.codingchili.core.listener.transport.ClusterRequest;
 import com.codingchili.core.protocol.ResponseStatus;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
@@ -102,8 +102,7 @@ public abstract class RequestMock {
         }
 
         @Override
-        public boolean isSend()
-        {
+        public boolean isSend() {
             return false; // publish to all listeners for tests.
         }
 

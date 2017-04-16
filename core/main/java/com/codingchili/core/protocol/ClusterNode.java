@@ -7,13 +7,13 @@ import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
 
-import static com.codingchili.core.configuration.CoreStrings.ERROR_CLUSTERING_REQUIRED;
+import static com.codingchili.core.configuration.CoreStrings.ERROR_NOT_CLUSTERED;
 
 /**
  * @author Robin Duda
- *
- * A node in the cluster, all startable services should
- * implement this class for the Launcher to accept it.
+ *         <p>
+ *         A node in the cluster, all startable services should
+ *         implement this class for the Launcher to accept it.
  */
 public abstract class ClusterNode implements Verticle {
     protected Vertx vertx;
@@ -25,7 +25,7 @@ public abstract class ClusterNode implements Verticle {
         this.vertx = vertx;
 
         if (!vertx.isClustered()) {
-            new ConsoleLogger().log(ERROR_CLUSTERING_REQUIRED, Level.WARNING);
+            new ConsoleLogger().log(ERROR_NOT_CLUSTERED, Level.WARNING);
         }
     }
 

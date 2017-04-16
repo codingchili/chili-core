@@ -2,9 +2,9 @@ package com.codingchili.core.context;
 
 /**
  * @author Robin Duda
- *
- * Provides a method to get a timer interval that may change
- * after retrieving it.
+ *         <p>
+ *         Provides a method to get a timer interval that may change
+ *         after retrieving it.
  */
 @FunctionalInterface
 public interface TimerSource {

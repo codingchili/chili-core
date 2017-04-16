@@ -6,32 +6,37 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.codingchili.core.configuration.RegexComponent;
 import com.codingchili.core.configuration.system.ParserSettings;
 import com.codingchili.core.configuration.system.ValidatorSettings;
-import com.codingchili.core.files.Configurations;
 import com.codingchili.core.protocol.exception.RequestValidationException;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
+import static com.codingchili.core.security.RegexAction.*;
 
 /**
  * @author Robin Duda
- *
- * Tests the validation mechanism.
+ *         <p>
+ *         Tests the validation mechanism.
  */
 @RunWith(VertxUnitRunner.class)
 public class ValidatorTest {
     private static final String NESTED = "nested";
     private static final String KEY = "key";
-    private static Validator validator = new Validator();
+    private static Validator validator;
     private static ValidatorSettings settings;
 
     @Before
     public void setUp() {
-        settings = Configurations.validator();
-        settings.add(NESTED,
-                new ParserSettings()
-                        .length(0, 8)
-                        .addKey(NESTED + "." + KEY));
+        settings = new ValidatorSettings().setValidators(getDefaultValidators())
+                .add(NESTED,
+                        new ParserSettings()
+                                .length(0, 8)
+                                .addKey(NESTED + "." + KEY));
+        validator = new Validator(() -> settings);
     }
 
     @Test
@@ -72,7 +77,7 @@ public class ValidatorTest {
     }
 
     private boolean plaintext(Comparable comparable) {
-        return validator.plainText(comparable);
+        return Validator.plainText(comparable);
     }
 
     @Test
@@ -140,5 +145,30 @@ public class ValidatorTest {
 
     private JsonObject validate(JsonObject json) throws RequestValidationException {
         return validator.validate(json);
+    }
+
+    private Map<String, ParserSettings> getDefaultValidators() {
+        Map<String, ParserSettings> validators = new HashMap<>();
+
+        validators.put("display-name", new ParserSettings()
+                .addKey("username")
+                .addKey("name")
+                .length(4, 32)
+                .addRegex(new RegexComponent()
+                        .setAction(REJECT)
+                        .setLine("[A-Z,a-z,0-9]*"))
+        );
+
+
+        validators.put("chat-messages", new ParserSettings()
+                .addKey("message")
+                .length(1, 76)
+                .addRegex(new RegexComponent()
+                        .setAction(REPLACE)
+                        .setLine("(f..(c|k))")
+                        .setReplacement("*^$#!?"))
+        );
+
+        return validators;
     }
 }

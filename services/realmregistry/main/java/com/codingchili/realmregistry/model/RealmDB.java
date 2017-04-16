@@ -23,6 +23,7 @@ import static io.vertx.core.Future.*;
  *         Allows the deployment of multiple handlers.
  */
 public class RealmDB implements AsyncRealmStore {
+    private static final String STALE_REALM_WATCHER = "stale realm watcher";
     private final AsyncStorage<RegisteredRealm> realms;
     private EntryWatcher<RegisteredRealm> watcher;
     private int timeout = 15000;
@@ -36,7 +37,7 @@ public class RealmDB implements AsyncRealmStore {
     }
 
     private QueryBuilder<RegisteredRealm> getStaleQuery() {
-        return realms.query(ID_MODIFIED).between(0L, getLastValidTime());
+        return realms.query(ID_MODIFIED).between(0L, getLastValidTime()).setName(STALE_REALM_WATCHER);
     }
 
     private long getLastValidTime() {

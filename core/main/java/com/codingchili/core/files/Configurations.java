@@ -5,7 +5,8 @@ import io.vertx.core.json.JsonObject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -14,7 +15,7 @@ import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.exception.InvalidConfigurableException;
 import com.codingchili.core.configuration.system.*;
-import com.codingchili.core.context.*;
+import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.files.exception.*;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
@@ -48,7 +49,6 @@ public abstract class Configurations {
         configs.put(PATH_LAUNCHER, new ConfigEntry(new LauncherSettings(), LauncherSettings.class));
         configs.put(PATH_SECURITY, new ConfigEntry(new SecuritySettings(), SecuritySettings.class));
         configs.put(PATH_SYSTEM, new ConfigEntry(new SystemSettings(), SystemSettings.class));
-        configs.put(PATH_VALIDATOR, new ConfigEntry(new ValidatorSettings(), ValidatorSettings.class));
         configs.put(PATH_STORAGE, new ConfigEntry(new StorageSettings(), StorageSettings.class));
     }
 
@@ -289,13 +289,6 @@ public abstract class Configurations {
      */
     public static SecuritySettings security() {
         return get(PATH_SECURITY, SecuritySettings.class);
-    }
-
-    /**
-     * @return validator settings stored in the cache.
-     */
-    public static ValidatorSettings validator() {
-        return get(PATH_VALIDATOR, ValidatorSettings.class);
     }
 
     /**

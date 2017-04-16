@@ -2,17 +2,14 @@ package com.codingchili.core.benchmarking;
 
 import io.vertx.core.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.codingchili.core.context.CoreContext;
 
 /**
  * @author Robin Duda
- *
- * "Abstract" benchmark-implementation.
+ *         <p>
+ *         "Abstract" benchmark-implementation.
  */
 public class BaseBenchmarkImplementation implements BenchmarkImplementation {
     private Map<String, Object> properties = new HashMap<>();

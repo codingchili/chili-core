@@ -23,8 +23,8 @@ public class RegistryContext extends ServiceContext {
     protected AsyncRealmStore realms;
     protected TokenFactory realmFactory;
 
-    protected RegistryContext(Vertx vertx) {
-        super(vertx);
+    protected RegistryContext(CoreContext core) {
+        super(core);
     }
 
     private RegistryContext(AsyncRealmStore realms, Vertx vertx) {
@@ -35,7 +35,7 @@ public class RegistryContext extends ServiceContext {
     }
 
     public static void create(Future<RegistryContext> future, CoreContext core) {
-        RegistryContext context = new RegistryContext(core.vertx());
+        RegistryContext context = new RegistryContext(core);
 
         new StorageLoader<RegisteredRealm>().indexed(context)
                 .withCollection(COLLECTION_REALMS)

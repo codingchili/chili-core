@@ -1,13 +1,14 @@
 package com.codingchili.core.files;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.file.*;
-import java.nio.file.attribute.*;
-import java.util.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashMap;
 
-import com.codingchili.core.context.*;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.TimerSource;
 
-import static com.codingchili.core.configuration.CoreStrings.*;
+import static com.codingchili.core.configuration.CoreStrings.DIR_SEPARATOR;
 import static java.nio.file.StandardWatchEventKinds.*;
 
 /**

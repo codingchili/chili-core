@@ -1,12 +1,20 @@
 {
-  "attributes" : { },
-  "name" : "Druid",
-  "description" : "The Druid has a strong attunement with nature, with access to spells to aid their allies or curse their foes.",
-  "spells" : [ {
-    "name" : "natures blessing",
-    "description" : "Reduces the chance of being inflicted with negative effects by half..",
-    "passive" : true
-  }],
-  "keywords" : [ "healing", "buffs", "anti-mobility" ],
-  "weapons" : [ "staff" ]
+  "attributes": {},
+  "name": "Druid",
+  "description": "The Druid has a strong attunement with nature, with access to spells to aid their allies or curse their foes.",
+  "spells": [
+    {
+      "name": "natures blessing",
+      "description": "Reduces the chance of being inflicted with negative effects by half..",
+      "passive": true
+    }
+  ],
+  "keywords": [
+    "healing",
+    "buffs",
+    "anti-mobility"
+  ],
+  "weapons": [
+    "staff"
+  ]
 }

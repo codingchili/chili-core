@@ -12,8 +12,8 @@ import com.codingchili.core.protocol.Serializer;
 
 /**
  * @author Robin Duda
- *
- * Tests the implementation of attributes.
+ *         <p>
+ *         Tests the implementation of attributes.
  */
 @RunWith(VertxUnitRunner.class)
 public class AttributesTest {

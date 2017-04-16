@@ -1,11 +1,13 @@
 package com.codingchili.logging.controller;
 
-import com.codingchili.core.context.*;
 import com.codingchili.logging.configuration.LogContext;
 import com.codingchili.logging.model.StorageLogger;
 
+import com.codingchili.core.listener.CoreHandler;
+import com.codingchili.core.listener.Request;
 import com.codingchili.core.logging.ConsoleLogger;
-import com.codingchili.core.protocol.*;
+import com.codingchili.core.protocol.Protocol;
+import com.codingchili.core.protocol.RequestHandler;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
 
 import static com.codingchili.common.Strings.*;
@@ -20,7 +22,7 @@ abstract class AbstractLogHandler implements CoreHandler {
     private final Protocol<RequestHandler<Request>> protocol = new Protocol<>();
     final ConsoleLogger console;
     final StorageLogger store;
-    private LogContext context;
+    LogContext context;
     private String address;
 
     AbstractLogHandler(LogContext context, String address) {
@@ -35,18 +37,13 @@ abstract class AbstractLogHandler implements CoreHandler {
     }
 
     @Override
-    public void handle(Request request) throws CoreException {
+    public void handle(Request request) {
         try {
             protocol.get(AUTHORIZED, request.route()).handle(request);
         } catch (HandlerMissingException e) {
             console.onHandlerMissing(request.route());
             store.onHandlerMissing(request.route());
         }
-    }
-
-    @Override
-    public LogContext context() {
-        return context;
     }
 
     @Override

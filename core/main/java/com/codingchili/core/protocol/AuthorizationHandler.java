@@ -7,8 +7,8 @@ import com.codingchili.core.protocol.exception.HandlerMissingException;
 
 /**
  * @author Robin Duda
- *
- * Handles authorization for a protoocol.
+ *         <p>
+ *         Handles authorization for a protoocol.
  */
 class AuthorizationHandler<T> {
     private final HashMap<String, T> authorized = new HashMap<>();

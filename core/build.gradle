@@ -10,14 +10,14 @@ jar {
         }
     }
     manifest {
-        attributes 'Implementation-Title' : 'chili-core',
+        attributes 'Implementation-Title': 'chili-core',
                 'Implementation-Version': version,
                 'Main-Class': 'com.codingchili.core.Launcher'
     }
 }
 
-test{
-     maxHeapSize = "512m"
+test {
+    maxHeapSize = "512m"
 }
 
 dependencies {
@@ -28,7 +28,7 @@ dependencies {
     compile group: 'io.vertx', name: 'vertx-hazelcast', version: '3.4.1'
     compile group: 'io.vertx', name: 'vertx-mongo-client', version: '3.4.1'
     compile group: 'io.vertx', name: 'vertx-dropwizard-metrics', version: '3.4.1'
-    compile group: 'de.neuland-bfi', name:'jade4j', version: '1.2.5'
+    compile group: 'de.neuland-bfi', name: 'jade4j', version: '1.2.5'
     compile group: 'de.mkammerer', name: 'argon2-jvm', version: '2.2'
     compile group: 'org.fusesource.jansi', name: 'jansi', version: '1.14'
 

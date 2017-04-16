@@ -2,14 +2,15 @@ package com.codingchili.core.security;
 
 /**
  * @author Robin Duda
- *
- * Compares byte arrays in constant-time.
+ *         <p>
+ *         Compares byte arrays in constant-time.
  */
 public abstract class ByteComparator {
 
     /**
      * Compares two strings in constant time.
-     * @param first the first string.
+     *
+     * @param first  the first string.
      * @param second the second string.
      * @return true if both Strings are of equal size and content.
      */
@@ -19,7 +20,8 @@ public abstract class ByteComparator {
 
     /**
      * Compares two byte arrays in constant time.
-     * @param first the first array.
+     *
+     * @param first  the first array.
      * @param second the second array.
      * @return true if both arrays are of equal size and content.
      */

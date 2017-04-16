@@ -18,7 +18,7 @@ public class MockGroup extends BaseBenchmarkGroup {
      * Creates a new mock group with two mock implementations.
      *
      * @param context    used to execute asynchronous benchmarks.
-     * @param name       the name of the group
+     * @param name       the handler of the group
      * @param iterations number of iterations to perform
      */
     public MockGroup(CoreContext context, String name, int iterations) {

@@ -4,8 +4,8 @@ import com.codingchili.core.security.RegexAction;
 
 /**
  * @author Robin Duda
- *
- * Contains settings used for a single regex validator action.
+ *         <p>
+ *         Contains settings used for a single regex validator action.
  */
 public class RegexComponent {
     public RegexAction action;

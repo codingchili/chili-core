@@ -4,9 +4,9 @@ import io.vertx.ext.unit.TestContext;
 
 /**
  * @author Robin Duda
- *
- * Asserts that all test methods of a listener is called and that
- * they are called in the expected order.
+ *         <p>
+ *         Asserts that all test methods of a listener is called and that
+ *         they are called in the expected order.
  */
 public class MockListener implements BenchmarkListener {
     private TestContext test;
@@ -28,8 +28,8 @@ public class MockListener implements BenchmarkListener {
 
     public void assertAllEventsTriggered() {
         test.assertTrue(isGroupStarted && isGroupCompleted && isImplementationWarmupStarted &&
-        isImplementationWarmupComplete && isImplementationTestBegin && isImplementationCompleted &&
-        isProgressUpdated && isBenchmarkCompleted, "all listeners was not activated.");
+                isImplementationWarmupComplete && isImplementationTestBegin && isImplementationCompleted &&
+                isProgressUpdated && isBenchmarkCompleted, "all listeners was not activated.");
     }
 
     @Override

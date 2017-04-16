@@ -2,6 +2,8 @@ package com.codingchili.realmregistry.controller;
 
 import com.codingchili.realmregistry.configuration.RegisteredRealm;
 
+import com.codingchili.core.listener.Request;
+import com.codingchili.core.listener.transport.ClusterRequest;
 import com.codingchili.core.protocol.*;
 import com.codingchili.core.security.Token;
 

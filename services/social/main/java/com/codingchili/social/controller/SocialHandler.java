@@ -2,6 +2,8 @@ package com.codingchili.social.controller;
 
 import com.codingchili.common.*;
 import com.codingchili.core.context.*;
+import com.codingchili.core.listener.CoreHandler;
+import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.*;
 
 import static com.codingchili.common.Strings.*;
@@ -22,17 +24,12 @@ public class SocialHandler implements CoreHandler {
     }
 
     @Override
-    public void handle(Request request) throws CoreException {
+    public void handle(Request request) {
         protocol.get(request.route()).handle(request);
     }
 
     @Override
     public String address() {
         return SOCIAL_NODE;
-    }
-
-    @Override
-    public ServiceContext context() {
-        return context;
     }
 }

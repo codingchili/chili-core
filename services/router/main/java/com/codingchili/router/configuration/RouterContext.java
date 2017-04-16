@@ -7,11 +7,13 @@ import static com.codingchili.router.configuration.RouterSettings.PATH_ROUTING;
 
 import java.util.List;
 
+import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.Level;
+import com.codingchili.core.listener.ListenerSettings;
 
-import com.codingchili.router.model.WireType;
+import com.codingchili.core.listener.WireType;
 
 import io.vertx.core.Vertx;
 
@@ -24,6 +26,10 @@ public class RouterContext extends ServiceContext {
 
     public RouterContext(Vertx vertx) {
         super(vertx);
+    }
+
+    public RouterContext(CoreContext core) {
+        super(core);
     }
 
     public RouterSettings service() {

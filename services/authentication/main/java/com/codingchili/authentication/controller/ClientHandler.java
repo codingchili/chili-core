@@ -2,7 +2,9 @@ package com.codingchili.authentication.controller;
 
 import com.codingchili.authentication.configuration.*;
 import com.codingchili.authentication.model.*;
-import com.codingchili.core.context.*;
+
+import com.codingchili.core.listener.CoreHandler;
+import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.*;
 import com.codingchili.core.security.*;
 
@@ -29,7 +31,7 @@ public class ClientHandler implements CoreHandler {
     }
 
     @Override
-    public void handle(Request request) throws CoreException {
+    public void handle(Request request) {
         Access access = (context.verifyClientToken(request.token())) ? AUTHORIZED : PUBLIC;
         protocol.get(access, request.route()).handle(new ClientRequest(request));
     }
@@ -50,6 +52,9 @@ public class ClientHandler implements CoreHandler {
                 sendAuthentication(authentication.result(), request, false);
             } else {
                 request.error(authentication.cause());
+
+                if (authentication.cause() instanceof AccountPasswordException)
+                    context.onAuthenticationFailure(request.getAccount(), request.sender());
             }
         }, request.getAccount());
     }
@@ -65,11 +70,6 @@ public class ClientHandler implements CoreHandler {
             context.onRegistered(account.getUsername(), request.sender());
         else
             context.onAuthenticated(account.getUsername(), request.sender());
-    }
-
-    @Override
-    public ServiceContext context() {
-        return context;
     }
 
     @Override

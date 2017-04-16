@@ -1,0 +1,110 @@
+package com.codingchili.core.listener;
+
+import io.vertx.core.Future;
+import io.vertx.core.Vertx;
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.*;
+import org.junit.runner.RunWith;
+
+import com.codingchili.core.context.CoreException;
+import com.codingchili.core.context.ServiceContext;
+import com.codingchili.core.listener.transport.ClusterListener;
+import com.codingchili.core.testing.ContextMock;
+import com.codingchili.core.testing.EmptyRequest;
+
+/**
+ * @author Robin Duda
+ *         <p>
+ *         Tests the cluster listener.
+ */
+@RunWith(VertxUnitRunner.class)
+public class ClusterListenerTest {
+    private static final String TEST_MESSAGE = "{}";
+    private static final String REPLY_ADDRESS = "clusterlistener-test";
+    private ContextMock context;
+    private TestHandler handler;
+    private CoreListener cluster;
+    private String deployment;
+
+    @Before
+    public void setUp(TestContext test) {
+        Async async = test.async();
+        this.context = new ContextMock(Vertx.vertx());
+        this.handler = new TestHandler(context, REPLY_ADDRESS);
+        this.cluster = new ClusterListener().handler(handler).settings(ListenerSettings::new);
+
+        context.listener(cluster, done -> {
+            if (done.failed()) {
+                done.cause().printStackTrace();
+            }
+            test.assertTrue(done.succeeded());
+            this.deployment = done.result();
+            async.complete();
+        });
+    }
+
+    @After
+    public void tearDown(TestContext test) {
+        context.vertx().close(test.asyncAssertSuccess());
+    }
+
+    @Test
+    public void deployHandlerTest(TestContext test) throws CoreException {
+        Async async = test.async();
+        context.bus().consumer(REPLY_ADDRESS, event -> async.complete());
+        handler.handle(new EmptyRequest());
+    }
+
+    @Test
+    public void handlerOnStartCalled(TestContext test) throws CoreException {
+        test.assertTrue(handler.startCalled);
+    }
+
+    @Test
+    public void handlerOnStopCalled(TestContext test) throws CoreException {
+        handler.setStopHandler(test.async());
+        context.vertx().undeploy(deployment);
+    }
+
+    private class TestHandler implements CoreHandler {
+        private boolean startCalled = false;
+        private ServiceContext context;
+        private String address;
+        private Async stop;
+
+        TestHandler(ServiceContext context, String address) {
+            this.context = context;
+            this.address = address;
+        }
+
+        @Override
+        public void handle(Request request) {
+            context.bus().send(REPLY_ADDRESS, TEST_MESSAGE);
+        }
+
+        @Override
+        public String address() {
+            return address;
+        }
+
+        @Override
+        public void stop(Future<Void> future) {
+            if (stop != null) {
+                stop.complete();
+            }
+            future.complete();
+        }
+
+        @Override
+        public void start(Future<Void> future) {
+            startCalled = true;
+            future.complete();
+        }
+
+        void setStopHandler(Async stop) {
+            this.stop = stop;
+        }
+    }
+}

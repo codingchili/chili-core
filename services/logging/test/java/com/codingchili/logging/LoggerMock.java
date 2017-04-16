@@ -4,7 +4,7 @@ import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 
 import com.codingchili.core.logging.*;
-import com.codingchili.core.protocol.CoreHandler;
+import com.codingchili.core.listener.CoreHandler;
 
 
 /**
@@ -28,12 +28,12 @@ public class LoggerMock extends DefaultLogger {
     }
 
     @Override
-    public void onServerStarted(Future<Void> future) {
+    public void onServiceStarted(Future<Void> future) {
         future.complete();
     }
 
     @Override
-    public void onServerStopped(Future<Void> future) {
+    public void onServiceStopped(Future<Void> future) {
         future.complete();
     }
 

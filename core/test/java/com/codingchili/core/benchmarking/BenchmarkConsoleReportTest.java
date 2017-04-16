@@ -1,15 +1,12 @@
 package com.codingchili.core.benchmarking;
 
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
+import java.nio.file.Paths;
 
 /**
  * @author Robin Duda

@@ -15,8 +15,8 @@ import com.codingchili.core.context.SystemContext;
 
 /**
  * @author Robin Duda
- *
- * Tests for the HashHelper
+ *         <p>
+ *         Tests for the HashHelper
  */
 @RunWith(VertxUnitRunner.class)
 public class HashHelperTest {

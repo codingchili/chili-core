@@ -6,7 +6,8 @@ package com.codingchili.core.storage;
 public interface StringQueryParser {
     /**
      * Parses a string into a builder.
-     * @param builder used to construct the query from the given string
+     *
+     * @param builder    used to construct the query from the given string
      * @param expression the expression to parse.
      * @return the constructed query
      */

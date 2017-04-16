@@ -19,7 +19,7 @@ public class RealmRegistrySettings extends ServiceConfigurable {
     private int realmTimeout = 5000;
 
     /**
-     * @param name the name of the realm to check if trusted.
+     * @param name the handler of the realm to check if trusted.
      * @return true if the realm is not a third-party realm.
      */
     public boolean isTrustedRealm(String name) {
@@ -48,7 +48,7 @@ public class RealmRegistrySettings extends ServiceConfigurable {
     }
 
     /**
-     * @param realm name of the realm to add.
+     * @param realm handler of the realm to add.
      */
     @JsonIgnore
     protected void addRealm(String realm) {

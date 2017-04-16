@@ -33,14 +33,14 @@ public class RegisteredRealm extends AttributeConfigurable implements Storable {
     }
 
     /**
-     * @return get the remote name of the server.
+     * @return get the remote handler of the server.
      */
     public String getRemote() {
         return remote;
     }
 
     /**
-     * @param remote set the remote name of the server.
+     * @param remote set the remote handler of the server.
      */
     public void setRemote(String remote) {
         this.remote = remote;
@@ -205,14 +205,14 @@ public class RegisteredRealm extends AttributeConfigurable implements Storable {
     }
 
     /**
-     * @return the name of the realm.
+     * @return the handler of the realm.
      */
     public String getName() {
         return name;
     }
 
     /**
-     * @param name the new name of the realm.
+     * @param name the new handler of the realm.
      * @return fluent
      */
     public RegisteredRealm setName(String name) {
