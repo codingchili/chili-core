@@ -9,6 +9,7 @@ public interface BenchmarkResult {
 
     /**
      * Start measuring of the execution time.
+     * @return fluent
      */
     Benchmark start();
 

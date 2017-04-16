@@ -35,7 +35,7 @@ public class BaseBenchmarkImplementation implements BenchmarkImplementation {
     }
 
     @Override
-    public void initialize(CoreContext context, Handler<AsyncResult<Void>> future) {
+    public void initialize(CoreContext core, Handler<AsyncResult<Void>> future) {
         future.handle(Future.succeededFuture());
     }
 

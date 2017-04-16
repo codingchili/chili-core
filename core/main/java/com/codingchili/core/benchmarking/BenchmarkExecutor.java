@@ -17,7 +17,6 @@ import com.codingchili.core.context.CoreContext;
  *         Creates and runs a group of benchmarks. Benchmarks are run for one implementation at a time
  *         and are executed in the same order as they are added to the group. The order for each
  *         benchmark test is also preserved. No more than one benchmark is executed concurrently.
- *         <p>
  */
 public class BenchmarkExecutor {
     private BenchmarkListener listener = new BaseBenchmarkListener();
@@ -172,6 +171,7 @@ public class BenchmarkExecutor {
      * Sets the executor event listener.
      *
      * @param listener the listener to execute on events.
+     * @return fluent
      */
     public BenchmarkExecutor setListener(BenchmarkListener listener) {
         this.listener = listener;

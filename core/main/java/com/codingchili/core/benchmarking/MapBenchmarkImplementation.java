@@ -38,8 +38,8 @@ public class MapBenchmarkImplementation extends BaseBenchmarkImplementation {
     }
 
     @Override
-    public void initialize(CoreContext context, Handler<AsyncResult<Void>> handler) {
-        new StorageLoader<>(new StorageContext<>(context))
+    public void initialize(CoreContext core, Handler<AsyncResult<Void>> handler) {
+        new StorageLoader<>(new StorageContext<>(core))
                 .withPlugin(plugin)
                 .withClass(StorageObject.class)
                 .withDB(DB, COLLECTION).build(store -> {

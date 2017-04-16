@@ -1,6 +1,7 @@
 package com.codingchili.core.listener;
 
-import com.codingchili.core.context.*;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
 import com.codingchili.core.protocol.exception.RequestPayloadSizeException;
 
@@ -14,6 +15,8 @@ public class RequestProcessor {
      * Handles an incoming request by calling the handlers handle method with the
      * given request. Handles missing handlers by logging to the contexts logger.
      *
+     * @param core    a core context for logging
+     * @param handler a handler for the request
      * @param request the request to be handled by the handler
      */
     public static void accept(CoreContext core, CoreHandler handler, Request request) {

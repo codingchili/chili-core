@@ -62,6 +62,8 @@ public class BenchmarkSuite {
     /**
      * Runs all core map benchmarks.
      *
+     * @param context  the core context to run benchmark on
+     * @param listener benchmark listener to use
      * @return a future that is completed with the results of the benchmark.
      */
     public Future<List<BenchmarkGroup>> maps(CoreContext context, BenchmarkListener listener) {

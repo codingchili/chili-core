@@ -30,8 +30,9 @@ public class CachedFile {
     }
 
     /**
-     * @param bytes the contents of the cached file.
-     * @param path  a path to the file on disk for reading metadata.
+     * @param bytes    the contents of the cached file.
+     * @param path     a path to the file on disk for reading metadata.
+     * @param fileName the name of the file
      */
     public CachedFile(byte[] bytes, Path path, String fileName) {
         File file = path.toFile();

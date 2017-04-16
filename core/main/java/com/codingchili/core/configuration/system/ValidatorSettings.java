@@ -35,6 +35,7 @@ public class ValidatorSettings extends BaseConfigurable {
 
     /**
      * @param validators sets the validator name:validator mappings.
+     * @return fluent
      */
     public ValidatorSettings setValidators(Map<String, ParserSettings> validators) {
         this.validators = validators;
@@ -46,6 +47,7 @@ public class ValidatorSettings extends BaseConfigurable {
      *
      * @param name     the name of the parser settings to add
      * @param settings the settings for the validation to apply.
+     * @return fluent
      */
     public ValidatorSettings add(String name, ParserSettings settings) {
         validators.put(name, settings);

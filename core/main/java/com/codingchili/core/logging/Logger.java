@@ -149,6 +149,7 @@ public interface Logger extends JsonLogger, StringLogger {
      * called when a handler is stopped.
      *
      * @param future callback
+     * @param handler the handler that was stopped
      */
     void onHandlerStopped(Future<Void> future, CoreHandler handler);
 
@@ -156,6 +157,7 @@ public interface Logger extends JsonLogger, StringLogger {
      * called when a handler is started.
      *
      * @param future callback
+     * @param handler the handler that was started
      */
     void onHandlerStarted(Future<Void> future, CoreHandler handler);
 }

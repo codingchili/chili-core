@@ -17,12 +17,15 @@ public interface BenchmarkImplementation {
     /**
      * Prepares an implementation for testing.
      *
+     * @param core   the context to use for the benchmark
      * @param future called when the setup is complete.
      */
-    void initialize(CoreContext context, Handler<AsyncResult<Void>> future);
+    void initialize(CoreContext core, Handler<AsyncResult<Void>> future);
 
     /**
      * Called before each benchmark is executed.
+     *
+     * @param future callback
      */
     void next(Future<Void> future);
 
@@ -81,6 +84,7 @@ public interface BenchmarkImplementation {
     /**
      * May be used in the reporting phase to restructure results.
      *
+     * @param name the name of the implementation
      * @return fluent.
      */
     BenchmarkImplementation setName(String name);

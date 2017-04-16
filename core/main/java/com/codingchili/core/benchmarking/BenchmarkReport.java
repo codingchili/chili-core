@@ -26,12 +26,15 @@ public interface BenchmarkReport {
     /**
      * saves the results to file.
      *
+     * @param path where the report is written
      * @return fluent
      */
     BenchmarkReport saveTo(String path);
 
     /**
      * saves the report to file using a generated filename.
+     *
+     * @return path to the report file that was saved
      */
     String saveToFile();
 }

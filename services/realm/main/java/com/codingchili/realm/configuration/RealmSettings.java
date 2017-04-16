@@ -136,6 +136,7 @@ public class RealmSettings extends AttributeConfigurable {
 
     /**
      * @param remote set the remote address for this realm.
+     * @return fluent
      */
     public RealmSettings setRemote(String remote) {
         this.remote = remote;

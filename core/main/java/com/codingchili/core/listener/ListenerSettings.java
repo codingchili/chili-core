@@ -61,7 +61,7 @@ public class ListenerSettings {
 
     /**
      * @param type the type to set for the listener.
-     * @return
+     * @return fluent
      */
     public ListenerSettings setType(WireType type) {
         this.type = type;
@@ -166,6 +166,7 @@ public class ListenerSettings {
 
     /**
      * @param defaultTarget sets the default target where target is unspecified.
+     * @return fluent
      */
     public ListenerSettings setDefaultTarget(String defaultTarget) {
         this.defaultTarget = defaultTarget;
