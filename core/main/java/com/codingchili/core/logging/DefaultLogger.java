@@ -77,19 +77,19 @@ public abstract class DefaultLogger extends Handler implements Logger {
 
     @Override
     public void onServiceStarted(Future<Void> future) {
-        log(event(LOG_SERVER_START, Level.STARTUP));
+        log(event(LOG_SERVICE_START, Level.STARTUP));
         future.complete();
     }
 
     @Override
     public void onServiceStopped(Future<Void> future) {
-        log(event(LOG_SERVER_FAILED, Level.SEVERE));
+        log(event(LOG_SERVICE_STOP, Level.SEVERE));
         Delay.forShutdown(future);
     }
 
     @Override
     public void onServiceFailed(Throwable cause) {
-        log(event(LOG_SERVER_FAILED, Level.SEVERE)
+        log(event(LOG_SERVICE_FAIL, Level.SEVERE)
                 .put(ID_MESSAGE, cause.getMessage()));
     }
 

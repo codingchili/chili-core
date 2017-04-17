@@ -136,6 +136,7 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
      *
      * @param fieldName the field to add indexing to.
      */
+    @SuppressWarnings("unchecked")
     private Attribute<Value, String> createIndex(String fieldName, boolean multiValue) {
         Attribute<Value, String> attribute = null;
 

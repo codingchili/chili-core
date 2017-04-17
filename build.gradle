@@ -57,6 +57,10 @@ task archivePrototype(type: Zip, dependsOn: subprojects.jar) {
         into 'lib'
     }
 
+    from (project('common').jar) {
+        into 'lib'
+    }
+
     from (project('services').subprojects.jar) {
         into 'lib'
     }
