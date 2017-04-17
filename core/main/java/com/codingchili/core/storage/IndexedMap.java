@@ -86,7 +86,7 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
     public void remove(String key, Handler<AsyncResult<Void>> handler) {
         get(key, got -> {
             if (got.succeeded()) {
-                db.update(Collections.singleton(got.result()), Collections.emptyList());
+                db.remove(got.result());
                 handler.handle(succeededFuture());
             } else {
                 handler.handle(failedFuture(new NothingToRemoveException(key)));
@@ -264,7 +264,7 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
                             .collect(Collectors.toList());
 
                     handler.handle(succeededFuture(list));
-                }, false, handler);
+                }, handler);
             }
 
             private QueryOptions getQueryOptions() {

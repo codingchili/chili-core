@@ -219,4 +219,14 @@ public class RegisteredRealm extends AttributeConfigurable implements Storable {
         this.name = name;
         return this;
     }
+
+    @Override
+    public int hashCode() {
+        return id().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return compareTo(other) == 0;
+    }
 }

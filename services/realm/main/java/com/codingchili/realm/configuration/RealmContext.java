@@ -6,7 +6,6 @@ import com.codingchili.realm.instance.model.PlayerClass;
 import com.codingchili.realm.model.AsyncCharacterStore;
 import com.codingchili.realm.model.CharacterDB;
 import io.vertx.core.Future;
-import io.vertx.core.Vertx;
 
 import java.util.List;
 
@@ -28,10 +27,6 @@ import static com.codingchili.realm.configuration.RealmServerSettings.PATH_REALM
 public class RealmContext extends ServiceContext {
     private AsyncCharacterStore characters;
     private String settings;
-
-    public RealmContext(Vertx vertx) {
-        super(vertx);
-    }
 
     public RealmContext(CoreContext core) {
         super(core);

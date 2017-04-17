@@ -1,21 +1,23 @@
 package com.codingchili.realm.controller;
 
+import com.codingchili.realm.configuration.RealmContext;
+import com.codingchili.realm.instance.configuration.InstanceContext;
+import com.codingchili.realm.instance.configuration.InstanceSettings;
+import com.codingchili.realm.instance.controller.InstanceHandler;
+import com.codingchili.realm.instance.model.PlayerCharacter;
+import com.codingchili.realm.instance.model.PlayerClass;
+import com.codingchili.realm.model.*;
+import io.vertx.core.CompositeFuture;
+import io.vertx.core.Future;
+
 import java.util.*;
 
-import com.codingchili.core.context.*;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.*;
-import com.codingchili.realm.configuration.*;
-import com.codingchili.realm.instance.configuration.*;
-import com.codingchili.realm.instance.controller.*;
-import com.codingchili.realm.instance.model.*;
-import com.codingchili.realm.model.*;
-
-import io.vertx.core.*;
 
 import static com.codingchili.common.Strings.*;
-import static com.codingchili.core.protocol.ResponseStatus.*;
+import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
 
 /**
  * @author Robin Duda
@@ -71,10 +73,8 @@ public class CharacterHandler implements CoreHandler {
     }
 
     private void registerRealm(Long handler) {
-        sendMaster(new RealmUpdate(context.realm()));
-    }
+        RealmUpdate realm = new RealmUpdate(context.realm());
 
-    private void sendMaster(RealmUpdate realm) {
         context.bus().send(NODE_AUTHENTICATION_REALMS, Serializer.json(realm), response -> {
             if (response.succeeded()) {
                 UpdateResponse update = new UpdateResponse(response.result());
@@ -83,7 +83,6 @@ public class CharacterHandler implements CoreHandler {
                     if (!registered) {
                         context.onRealmRegistered(context.realm().getName());
                     }
-
                     registered = true;
                 } else {
                     registered = false;

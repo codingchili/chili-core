@@ -12,7 +12,7 @@ import com.codingchili.core.security.Token;
 import com.codingchili.core.security.TokenFactory;
 import com.codingchili.core.storage.*;
 
-import static com.codingchili.core.configuration.CoreStrings.*;
+import static com.codingchili.core.configuration.CoreStrings.ID_UPDATED;
 import static io.vertx.core.Future.*;
 
 
@@ -31,13 +31,13 @@ public class RealmDB implements AsyncRealmStore {
     public RealmDB(AsyncStorage<RegisteredRealm> map) {
         this.realms = map;
 
-        this.watcher = getStaleQuery().poll(stale -> {
-            stale.forEach(item -> realms.remove(item.id(), (removed) -> {}));
-        }, this::getTimeout);
+        this.watcher = new EntryWatcher<>(realms, this::getStaleQuery, this::getTimeout)
+                .setConsumer(items -> items.forEach(item ->
+                        realms.remove(item.id(), (removed) -> {})));
     }
 
     private QueryBuilder<RegisteredRealm> getStaleQuery() {
-        return realms.query(ID_MODIFIED).between(0L, getLastValidTime()).setName(STALE_REALM_WATCHER);
+        return realms.query(ID_UPDATED).between(0L, getLastValidTime()).setName(STALE_REALM_WATCHER);
     }
 
     private long getLastValidTime() {
@@ -57,7 +57,7 @@ public class RealmDB implements AsyncRealmStore {
 
     @Override
     public void getMetadataList(Handler<AsyncResult<List<RealmMetaData>>> future) {
-        realms.query(ID_NAME).like("").execute(map -> {
+        realms.values(map -> {
             if (map.succeeded()) {
                 List<RealmMetaData> list = map.result().stream()
                         .map(RealmMetaData::new)

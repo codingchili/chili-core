@@ -3,6 +3,7 @@ package com.codingchili.core.storage;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.context.TimerSource;
@@ -16,7 +17,7 @@ import com.codingchili.core.context.TimerSource;
  */
 public class EntryWatcher<Value extends Storable> {
     private AtomicBoolean active = new AtomicBoolean(false);
-    private QueryBuilder<Value> query;
+    private Supplier<QueryBuilder<Value>> query;
     private AsyncStorage<Value> storage;
     private Consumer<Collection<Value>> consumer;
     private StorageContext context;
@@ -30,7 +31,7 @@ public class EntryWatcher<Value extends Storable> {
      * @param query   the query to be executed
      * @param timer   interval of the query executions
      */
-    public EntryWatcher(AsyncStorage<Value> storage, QueryBuilder<Value> query, TimerSource timer) {
+    public EntryWatcher(AsyncStorage<Value> storage, Supplier<QueryBuilder<Value>> query, TimerSource timer) {
         this.context = storage.context();
         this.storage = storage;
         this.query = query;
@@ -44,7 +45,7 @@ public class EntryWatcher<Value extends Storable> {
      * @return fluent
      */
     public EntryWatcher<Value> setQuery(QueryBuilder<Value> query) {
-        this.query = query;
+        this.query = () -> query;
         return this;
     }
 
@@ -89,12 +90,12 @@ public class EntryWatcher<Value extends Storable> {
     }
 
     private void execute() {
-        query.execute(q -> {
+        query().execute(q -> {
             if (q.succeeded()) {
                 consumer.accept(q.result());
-                context.onWatcherCompleted(query.name(), q.result().size());
+                context.onWatcherCompleted(query().name(), q.result().size());
             } else {
-                context.onWatcherFailed(query.name(), q.cause().getMessage());
+                context.onWatcherFailed(query().name(), q.cause().getMessage());
             }
         });
     }
@@ -104,7 +105,7 @@ public class EntryWatcher<Value extends Storable> {
      */
     public void pause() {
         active.set(false);
-        context.onWatcherPaused(query.name());
+        context.onWatcherPaused(query().name());
     }
 
     /**
@@ -112,7 +113,11 @@ public class EntryWatcher<Value extends Storable> {
      */
     public void resume() {
         active.set(true);
-        context.onWatcherResumed(query.name());
+        context.onWatcherResumed(query().name());
+    }
+
+    private QueryBuilder<Value> query() {
+        return query.get();
     }
 
     /**

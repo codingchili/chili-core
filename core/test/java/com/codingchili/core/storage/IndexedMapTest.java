@@ -6,6 +6,7 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 
 import com.codingchili.core.testing.MapTestCases;
+import com.codingchili.core.testing.StorageObject;
 
 /**
  * @author Robin Duda

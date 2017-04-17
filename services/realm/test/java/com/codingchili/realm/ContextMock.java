@@ -9,6 +9,7 @@ import com.codingchili.realm.model.CharacterDB;
 import io.vertx.core.Vertx;
 
 import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.security.Token;
 import com.codingchili.core.security.TokenFactory;
 import com.codingchili.core.storage.StorageLoader;
@@ -23,7 +24,7 @@ public class ContextMock extends RealmContext {
     private AsyncCharacterStore characters;
 
     public ContextMock(Vertx vertx) {
-        super(vertx);
+        super(new SystemContext(vertx));
 
         realm = new RealmSettings()
                 .setName("realmName")

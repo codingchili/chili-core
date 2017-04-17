@@ -6,10 +6,10 @@
   } ],
   "storage" : "com.codingchili.core.storage.IndexedMap",
   "realmUpdates" : 5000,
-  "global" : "apY/v3XaM+9zJCXF6h3HDjCTylXqQCbdEHWRMvFsSOK4rKIR8QwLhpATXizBB1yNm1m9c1HK5P3Oyt9SRT7BnA==",
+  "global" : "0hhJXzrfdRU9/zhk2d20YwvcUZz6lXCRx5Or8I5hBOY5eQtQ1+73aKP3gwzoCtYwv4lZG9EfpuIfMaYKzK376Q==",
   "logging" : {
-    "key" : "45efvJmwaGOPnStIETbK8JoibfhJ8I1LkvyMuaG1KlK+cCDfF1WHcFUzNtwCgJbBHbc9jt6ZtisDvuFzMUArlA==",
-    "expiry" : 1492409893,
+    "key" : "YIhqLsfPgvbRNtzuqdQiYoOmOuW/7FsvBSFvsFnxfBdJvj722wmToUJF10RohkDgj7EWahejhEJ0uKb9p81YTA==",
+    "expiry" : 1493020641,
     "domain" : "realmserver.node"
   }
 }

@@ -31,7 +31,6 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 public abstract class Configurations {
     private static final ConcurrentHashMap<String, ConfigEntry> configs = new ConcurrentHashMap<>();
     private static final AtomicBoolean initialized = new AtomicBoolean(false);
-    private static final AtomicBoolean monitoring = new AtomicBoolean(true);
     private static Logger logger = new ConsoleLogger();
 
     /*
@@ -74,7 +73,7 @@ public abstract class Configurations {
     }
 
     private static void reloadAll() {
-        loaded().stream().forEach(configurable -> reload(configurable.getPath()));
+        loaded().forEach(configurable -> reload(configurable.getPath()));
     }
 
     private static int getConfigurationPoll() {
@@ -84,16 +83,12 @@ public abstract class Configurations {
     private static class ConfigurationFileWatcher implements FileStoreListener {
         @Override
         public void onFileModify(Path path) {
-            if (monitoring.get()) {
-                Configurations.reload(CoreStrings.format(path, DIR_CONFIG));
-            }
+            Configurations.reload(path.toString().replaceAll("\\\\", DIR_ROOT));
         }
 
         @Override
         public void onFileRemove(Path path) {
-            if (monitoring.get()) {
-                Configurations.reload(CoreStrings.format(path, DIR_CONFIG));
-            }
+            Configurations.reload(path.toString().replaceAll("\\\\", DIR_ROOT));
         }
     }
 
@@ -129,15 +124,14 @@ public abstract class Configurations {
     /**
      * Disables monitoring of changes, saves all configurations back to disk.
      */
-    public static void shutdown() {
-        monitoring.set(false);
+    static void shutdown() {
         initialized.set(false);
         saveAll();
         init();
     }
 
     private static void saveAll() {
-        loaded().stream().forEach(Configurations::save);
+        loaded().forEach(Configurations::save);
     }
 
     /**
@@ -169,7 +163,6 @@ public abstract class Configurations {
                 throw new InvalidConfigurableException(clazz);
             }
         }
-
         config.setPath(path);
         configs.put(path, new ConfigEntry(config, clazz));
 
@@ -212,8 +205,9 @@ public abstract class Configurations {
      *
      * @param path of the configurable to reload.
      */
+    @SuppressWarnings("unchecked")
     static void reload(String path) {
-        if (configs.containsKey(path) && JsonFileStore.exists(path)) {
+        if (configs.containsKey(path)) {
             Configurations.load(path, configs.get(path).clazz);
         }
     }
@@ -235,9 +229,7 @@ public abstract class Configurations {
      */
     public static Collection<Configurable> loaded() {
         ArrayList<Configurable> loaded = new ArrayList<>();
-
         configs.values().forEach(entry -> loaded.add(entry.configurable));
-
         return loaded;
     }
 
@@ -260,7 +252,7 @@ public abstract class Configurations {
     }
 
     /**
-     * List all available configuration files from the server root.
+     * List all available configuration files from the server configuration root.
      *
      * @return a list of paths to configuration files.
      */

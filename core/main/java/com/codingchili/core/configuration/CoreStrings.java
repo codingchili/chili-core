@@ -109,6 +109,7 @@ public abstract class CoreStrings {
     public static final String ID_BYTES = "bytes";
     public static final String ID_PATH = "path";
     public static final String ID_MODIFIED = "modified";
+    public static final String ID_UPDATED = "updated";
     public static final String ID_SIZE = "size";
     public static final String ID_DOMAIN = "domain";
     public static final String ID_PING = "ping";
@@ -187,11 +188,10 @@ public abstract class CoreStrings {
     public static final String LOG_STORAGE_DB = "dabatase";
     public static final String LOG_STORAGE_WATCHER = "storage.watcher";
     public static final String[] LOG_HIDDEN_TAGS = new String[]{"dev", "LOCAL", "3.6.3"};
-    public static final String ERROR_REUSABLEQUERY_UNBOUND = "Reusable query not bound to a storage.";
     public static final String ERROR_TOKEN_FACTORY = "Token factory error to generate token.";
 
     public static final String ERROR_NOT_CLUSTERED = "Running in non-clustered mode.";
-    public static final String ERROR_NOT_AUTHORIZED = "Insufficient authorization level to access resource.";
+    public static final String ERROR_NOT_AUTHORIZED = "Failed to authorize request.";
     public static final String ERROR_LAUNCHER_STARTUP = "Failed to start the launcher with clustering.";
     public static final String ERRROR_LAUNCHER_SHUTDOWN = "system has been shut down..";
     public static final String ERROR_VALIDATION_FAILURE = "Provided data did not pass validation.";

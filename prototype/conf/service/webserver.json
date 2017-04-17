@@ -3,10 +3,10 @@
   "startPage" : "index.html",
   "missingPage" : "404.html",
   "gzip" : false,
-  "global" : "apY/v3XaM+9zJCXF6h3HDjCTylXqQCbdEHWRMvFsSOK4rKIR8QwLhpATXizBB1yNm1m9c1HK5P3Oyt9SRT7BnA==",
+  "global" : "0hhJXzrfdRU9/zhk2d20YwvcUZz6lXCRx5Or8I5hBOY5eQtQ1+73aKP3gwzoCtYwv4lZG9EfpuIfMaYKzK376Q==",
   "logging" : {
-    "key" : "hNtpy3YZCTD/mw2U9QuLle9gJLOTX+5w/OQ6Rp5C9JQLCwJHOIePEzXg5qca9PeyVMOIeWaks4mo9ap7qExRRw==",
-    "expiry" : 1492409893,
+    "key" : "5coOGMhsBB8jTNYFVpGRCMy+Wc+uilxI7os65PJth2uCdhv2hPS7UQppkt9dUjX2qxPCw8P4MR9iQyz2O6SEOA==",
+    "expiry" : 1493020641,
     "domain" : "website.node"
   }
 }
