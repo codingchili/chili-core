@@ -1,20 +1,19 @@
 package com.codingchili.core.files;
 
-import io.vertx.core.buffer.Buffer;
-
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 
-import com.codingchili.core.configuration.CachedFileStoreSettings;
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.configuration.exception.ConfigurationMismatchException;
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.files.exception.FileMissingException;
-import com.codingchili.core.logging.Logger;
-import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.configuration.*;
+import com.codingchili.core.configuration.exception.*;
+import com.codingchili.core.context.*;
+import com.codingchili.core.files.exception.*;
+import com.codingchili.core.logging.*;
+import com.codingchili.core.protocol.*;
+
+import io.vertx.core.buffer.*;
 
 /**
  * @author Robin Duda
@@ -91,7 +90,7 @@ public final class CachedFileStore implements FileStoreListener {
 
             @Override
             public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
-                onFileModify(path);
+                loadFile(path, true);
                 return FileVisitResult.CONTINUE;
             }
 
@@ -104,10 +103,15 @@ public final class CachedFileStore implements FileStoreListener {
 
     @Override
     public void onFileModify(Path path) {
+        loadFile(path, false);
+    }
+
+    private void loadFile(Path path, boolean startup) {
         context.fileSystem().readFile(path.toAbsolutePath().toString(), done -> {
             if (done.succeeded()) {
                 addFile(path, done.result());
-                logger.onFileLoaded(path.toString());
+                if (!startup)
+                    logger.onFileLoaded(path.toString());
             } else {
                 logger.onFileLoadError(path.toString());
             }

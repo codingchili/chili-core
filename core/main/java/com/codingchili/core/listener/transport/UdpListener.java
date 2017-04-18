@@ -50,6 +50,11 @@ public class UdpListener implements CoreListener {
         });
     }
 
+    @Override
+    public void stop(Future<Void> stop) {
+        handler.stop(stop);
+    }
+
     private void handle(DatagramPacket connection) {
         RequestProcessor.accept(core, handler, new UdpRequest(core, settings.get(), connection));
     }

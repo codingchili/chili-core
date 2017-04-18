@@ -14,26 +14,24 @@ import com.codingchili.core.listener.CoreService;
  *         Receives logging data from the other components and writes it to an elasticsearch cluster or logger.
  */
 public class Service implements CoreService {
-    private CoreContext core;
+    private LogContext context;
 
     @Override
     public void init(CoreContext core) {
-        this.core = core;
+        this.context = new LogContext(core);
     }
 
     @Override
     public void stop(Future<Void> stop) {
-        stop.complete();
+        context.logger().onServiceStopped(stop);
     }
 
     @Override
     public void start(Future<Void> start) {
-        LogContext context = new LogContext(core);
-
-        for (int i = 0; i < core.system().getHandlers(); i++) {
+        for (int i = 0; i < context.system().getHandlers(); i++) {
             context.handler(new ServiceLogHandler(context), done -> {});
             context.handler(new ClientLogHandler(context), done -> {});
         }
-        start.complete();
+        context.logger().onServiceStarted(start);
     }
 }

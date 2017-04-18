@@ -1,10 +1,13 @@
 package com.codingchili.core.listener;
 
+import java.util.concurrent.*;
+
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
+import io.vertx.ext.unit.junit.*;
+
 import org.junit.*;
 import org.junit.runner.RunWith;
 
@@ -27,6 +30,9 @@ public class ClusterListenerTest {
     private TestHandler handler;
     private CoreListener cluster;
     private String deployment;
+
+    @Rule
+    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
 
     @Before
     public void setUp(TestContext test) {

@@ -52,6 +52,11 @@ public class TcpListener implements CoreListener {
         });
     }
 
+    @Override
+    public void stop(Future<Void> stop) {
+        handler.stop(stop);
+    }
+
     private void packet(NetSocket socket, Buffer data) {
         RequestProcessor.accept(core, handler, new TcpRequest(socket, data, settings.get()));
     }

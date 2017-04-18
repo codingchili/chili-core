@@ -15,6 +15,7 @@ import com.codingchili.core.listener.CoreService;
  *         Starts up the client handler and the realmName handler.
  */
 public class Service implements CoreService {
+    private RegistryContext context;
     private CoreContext core;
 
     @Override
@@ -24,7 +25,7 @@ public class Service implements CoreService {
 
     @Override
     public void stop(Future<Void> stop) {
-        core.logger().onServiceStopped(stop);
+        context.logger().onServiceStopped(stop);
     }
 
     @Override
@@ -33,13 +34,13 @@ public class Service implements CoreService {
 
         providerFuture.setHandler(future -> {
             if (future.succeeded()) {
-                RegistryContext context = future.result();
+                context = future.result();
 
                 for (int i = 0; i < Configurations.system().getHandlers(); i++) {
                     context.handler(new RealmHandler(context), done -> {});
                     context.handler(new ClientHandler(context), done -> {});
                 }
-                core.logger().onServiceStarted(start);
+                context.logger().onServiceStarted(start);
             } else {
                 start.fail(future.cause());
             }

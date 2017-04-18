@@ -26,6 +26,7 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
     private static final String INFO = "\u001B[36m";
     private static final String WHITE = "\u001B[37m";
     private final AtomicBoolean enabled = new AtomicBoolean(true);
+    private Level level = Level.INFO;
 
     public ConsoleLogger() {
     }
@@ -33,39 +34,27 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
     public ConsoleLogger(CoreContext context) {
         super(context);
         logger = this;
-
         AnsiConsole.systemInstall();
     }
 
-    private void setColor(String color) {
-        AnsiConsole.out.print(color);
-    }
-
-    private void setColor(Level level) {
+    private String getColor(Level level) {
         switch (level) {
             case SEVERE:
-                setColor(SEVERE);
-                break;
+                return SEVERE;
             case WARNING:
-                setColor(WARNING);
-                break;
+                return WARNING;
             case INFO:
-                setColor(INFO);
-                break;
+                return INFO;
             case STARTUP:
-                setColor(STARTUP);
-                break;
+                return STARTUP;
             case PURPLE:
-                setColor(PURPLE);
-                break;
+                return PURPLE;
             case WHITE:
-                setColor(WHITE);
-                break;
+                return WHITE;
             case BLUE:
-                setColor(BLUE);
-                break;
+                return BLUE;
             default:
-                setColor(INFO);
+                return INFO;
         }
     }
 
@@ -77,15 +66,14 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
 
     @Override
     public Logger level(Level level) {
-        setColor(level);
+        this.level = level;
         return this;
     }
 
     @Override
     public Logger log(String line, Level level) {
         if (enabled.get()) {
-            setColor(level);
-            write(line);
+            write(getColor(level), line);
         }
         return this;
     }
@@ -94,16 +82,14 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
     public Logger log(JsonObject data) {
         if (enabled.get()) {
             JsonObject event = eventFromLog(data);
-            setColor(event);
-            write(parseJsonLog(event, consumeEvent(data)));
+            write(getColor(event), parseJsonLog(event, consumeEvent(data)));
         }
         return this;
     }
 
-    private void write(String text) {
+    private void write(String color, String text) {
         text = replaceTags(text, LOG_HIDDEN_TAGS);
-        AnsiConsole.out.println(text);
-        setColor(INFO);
+        AnsiConsole.out.print(String.format("%s%s\n", color, text));
         AnsiConsole.out.flush();
     }
 
@@ -168,9 +154,11 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
         return text.toString();
     }
 
-    private void setColor(JsonObject json) {
+    private String getColor(JsonObject json) {
         if (json.containsKey(LOG_LEVEL)) {
-            setColor(Level.valueOf(json.getString(LOG_LEVEL)));
+            return getColor(Level.valueOf(json.getString(LOG_LEVEL)));
+        } else {
+            return getColor(level);
         }
     }
 
@@ -180,6 +168,6 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
     }
 
     public void reset() {
-        setColor(RESET);
+        AnsiConsole.out.print(RESET);
     }
 }

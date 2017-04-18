@@ -1,6 +1,7 @@
 package com.codingchili.realm;
 
 import com.codingchili.common.Strings;
+import com.codingchili.core.context.*;
 import com.codingchili.realm.configuration.*;
 import com.codingchili.realm.controller.CharacterHandler;
 import com.codingchili.realm.model.RealmNotUniqueException;
@@ -8,7 +9,6 @@ import io.vertx.core.Future;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.CoreService;
 
@@ -20,16 +20,16 @@ import static com.codingchili.realm.configuration.RealmServerSettings.PATH_REALM
  *         root game server, deploys realmName servers.
  */
 public class Service implements CoreService {
-    private CoreContext core;
+    private RealmServerContext context;
 
     @Override
     public void init(CoreContext core) {
-        this.core = core;
+        this.context = new RealmServerContext(core);
     }
 
     @Override
     public void stop(Future<Void> stop) {
-        stop.complete();
+        context.logger().onServiceStopped(stop);
     }
 
     @Override
@@ -42,8 +42,7 @@ public class Service implements CoreService {
             Future<Void> future = Future.future();
             deploy(future, realm);
         }
-
-        start.complete();
+        context.logger().onServiceStarted(start);
     }
 
     /**
@@ -54,16 +53,16 @@ public class Service implements CoreService {
      */
     private void deploy(Future future, RealmSettings realm) {
         // Check if the routing id for the realm is unique
-        core.bus().send(realm.getRemote(), getPing(), getDeliveryOptions(), response -> {
+        context.bus().send(realm.getRemote(), getPing(), getDeliveryOptions(), response -> {
 
             if (response.failed()) {
                 // If no response then the id is not already in use.
                 Future<RealmContext> providerFuture = Future.future();
 
                 providerFuture.setHandler(provider -> {
-                    RealmContext context = provider.result();
+                    RealmContext realmContext = provider.result();
 
-                    context.handler(new CharacterHandler(context), deploy -> {
+                    realmContext.handler(new CharacterHandler(realmContext), deploy -> {
                         if (deploy.failed()) {
                             provider.result().onDeployRealmFailure(realm.getName());
                             throw new RuntimeException(deploy.cause());
@@ -71,7 +70,7 @@ public class Service implements CoreService {
                     });
                 });
 
-                RealmContext.create(providerFuture, realm, core);
+                RealmContext.create(providerFuture, realm, context);
             } else {
                 future.fail(new RealmNotUniqueException());
             }

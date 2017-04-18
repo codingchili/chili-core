@@ -39,7 +39,7 @@ public class Service implements CoreService {
 
     @Override
     public void stop(Future<Void> stop) {
-        stop.complete();
+        context.logger().onServiceStopped(stop);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class Service implements CoreService {
                 }
             }
         }
-        all(deployments).setHandler(done -> start.complete());
+        all(deployments).setHandler(done -> context.logger().onServiceStarted(start));
     }
 
     private void start(Supplier<CoreListener> listener, WireType type, Future<String> future) {

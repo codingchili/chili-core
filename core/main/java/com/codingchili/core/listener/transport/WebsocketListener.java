@@ -55,6 +55,11 @@ public class WebsocketListener implements CoreListener {
         });
     }
 
+    @Override
+    public void stop(Future<Void> stop) {
+        handler.stop(stop);
+    }
+
     private void handle(ServerWebSocket socket, Buffer buffer) {
         RequestProcessor.accept(core, handler, new WebsocketRequest(socket, buffer, settings.get()));
     }

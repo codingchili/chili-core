@@ -130,11 +130,13 @@ public class Launcher implements CoreService {
 
     private void addShutdownHook(Vertx vertx) {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            AtomicBoolean cleanup = new AtomicBoolean(true);
+            vertx.setTimer(context.system().getShutdownHookTimeout(),
+                    handler -> cleanup.set(false));
             vertx.deploymentIDs().forEach(vertx::undeploy);
-            try {
-                Thread.sleep(Configurations.system().getShutdownHookTimeout());
-            } catch (InterruptedException ignored) {
-            }
+
+            while (cleanup.get()) {}
+
             logger.log(ERRROR_LAUNCHER_SHUTDOWN, Level.SEVERE);
             logger.reset();
         }));
