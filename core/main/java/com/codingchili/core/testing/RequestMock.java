@@ -1,5 +1,8 @@
 package com.codingchili.core.testing;
 
+import com.codingchili.core.listener.transport.ClusterRequest;
+import com.codingchili.core.protocol.ResponseStatus;
+
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
@@ -7,9 +10,6 @@ import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.DecodeException;
 import io.vertx.core.json.JsonObject;
-
-import com.codingchili.core.listener.transport.ClusterRequest;
-import com.codingchili.core.protocol.ResponseStatus;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;

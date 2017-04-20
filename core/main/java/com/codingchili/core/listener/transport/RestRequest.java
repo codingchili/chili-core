@@ -1,18 +1,20 @@
 package com.codingchili.core.listener.transport;
 
+import java.util.Map;
+
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.listener.BaseRequest;
+import com.codingchili.core.listener.Endpoint;
+import com.codingchili.core.listener.ListenerSettings;
+import com.codingchili.core.protocol.Protocol;
+import com.codingchili.core.protocol.ResponseStatus;
+
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.DecodeException;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
-
-import java.util.Map;
-
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.listener.*;
-import com.codingchili.core.protocol.Protocol;
-import com.codingchili.core.protocol.ResponseStatus;
 
 /**
  * @author Robin Duda

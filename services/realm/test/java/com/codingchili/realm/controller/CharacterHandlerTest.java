@@ -1,21 +1,14 @@
 package com.codingchili.realm.controller;
 
-import com.codingchili.common.Strings;
-import com.codingchili.realm.ContextMock;
-import com.codingchili.realm.instance.model.PlayerCharacter;
-import com.codingchili.realm.model.AsyncCharacterStore;
-import io.vertx.core.*;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.Timeout;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.*;
-import org.junit.runner.RunWith;
-
 import java.util.concurrent.TimeUnit;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import com.codingchili.common.Strings;
 import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
@@ -23,6 +16,19 @@ import com.codingchili.core.security.Token;
 import com.codingchili.core.security.TokenFactory;
 import com.codingchili.core.testing.RequestMock;
 import com.codingchili.core.testing.ResponseListener;
+import com.codingchili.realm.ContextMock;
+import com.codingchili.realm.instance.model.PlayerCharacter;
+import com.codingchili.realm.model.AsyncCharacterStore;
+
+import io.vertx.core.CompositeFuture;
+import io.vertx.core.Future;
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.Timeout;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 import static com.codingchili.common.Strings.*;
 
@@ -43,7 +49,7 @@ public class CharacterHandlerTest {
     private ContextMock context;
 
     @Rule
-    public Timeout timeout = new Timeout(3, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
 
     @Before
     public void setUp(TestContext test) {

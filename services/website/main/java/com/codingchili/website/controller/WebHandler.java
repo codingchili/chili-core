@@ -1,15 +1,17 @@
 package com.codingchili.website.controller;
 
-import com.codingchili.common.*;
-import com.codingchili.core.configuration.*;
-import com.codingchili.core.context.*;
-import com.codingchili.core.files.*;
-import com.codingchili.core.files.exception.*;
+import com.codingchili.common.Strings;
+import com.codingchili.core.configuration.CachedFileStoreSettings;
+import com.codingchili.core.files.CachedFileStore;
+import com.codingchili.core.files.exception.FileMissingException;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
-import com.codingchili.core.protocol.*;
+import com.codingchili.core.protocol.Access;
+import com.codingchili.core.protocol.Protocol;
+import com.codingchili.core.protocol.RequestHandler;
+import com.codingchili.website.configuration.WebserverContext;
 
-import com.codingchili.website.configuration.*;
+import io.vertx.core.Future;
 
 import static com.codingchili.common.Strings.*;
 
@@ -52,6 +54,11 @@ public class WebHandler implements CoreHandler {
     @Override
     public void handle(Request request) {
         protocol.get(Access.PUBLIC, request.route()).handle(request);
+    }
+
+    @Override
+    public void start(Future<Void> start) {
+        context.logger().onHandlerStarted(start, this);
     }
 
     @Override

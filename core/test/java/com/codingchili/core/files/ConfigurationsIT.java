@@ -1,13 +1,14 @@
 package com.codingchili.core.files;
 
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.configuration.ConfigurableTest;
+
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 

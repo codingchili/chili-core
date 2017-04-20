@@ -1,21 +1,29 @@
 package com.codingchili.patching;
 
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
 
-import org.junit.*;
-import org.junit.runner.*;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.codingchili.core.context.SystemContext;
-import com.codingchili.core.protocol.*;
-import com.codingchili.core.testing.*;
-import com.codingchili.patching.configuration.*;
-import com.codingchili.patching.controller.*;
+import com.codingchili.core.protocol.ResponseStatus;
+import com.codingchili.core.testing.FileSystemMock;
+import com.codingchili.core.testing.RequestMock;
+import com.codingchili.core.testing.ResponseListener;
+import com.codingchili.patching.configuration.PatchContext;
+import com.codingchili.patching.controller.PatchHandler;
 
-import io.vertx.core.*;
-import io.vertx.core.file.*;
-import io.vertx.core.json.*;
-import io.vertx.ext.unit.*;
-import io.vertx.ext.unit.junit.*;
+import io.vertx.core.Vertx;
+import io.vertx.core.file.FileSystem;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.Timeout;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 import static com.codingchili.common.Strings.*;
 

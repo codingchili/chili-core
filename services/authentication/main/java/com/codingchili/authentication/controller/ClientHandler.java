@@ -1,12 +1,15 @@
 package com.codingchili.authentication.controller;
 
-import com.codingchili.authentication.configuration.*;
-import com.codingchili.authentication.model.*;
-
+import com.codingchili.authentication.configuration.AuthenticationContext;
+import com.codingchili.authentication.model.AccountPasswordException;
+import com.codingchili.authentication.model.AsyncAccountStore;
+import com.codingchili.authentication.model.ClientAuthentication;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
-import com.codingchili.core.protocol.*;
-import com.codingchili.core.security.*;
+import com.codingchili.core.protocol.Access;
+import com.codingchili.core.protocol.Protocol;
+import com.codingchili.core.protocol.RequestHandler;
+import com.codingchili.core.security.Account;
 
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.core.protocol.Access.*;

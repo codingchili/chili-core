@@ -1,17 +1,23 @@
 package com.codingchili.core;
 
-import io.vertx.core.*;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.context.*;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.Delay;
+import com.codingchili.core.context.LaunchContext;
+import com.codingchili.core.context.LauncherCommandExecutor;
 import com.codingchili.core.files.Configurations;
-import com.codingchili.core.listener.*;
+import com.codingchili.core.listener.CoreHandler;
+import com.codingchili.core.listener.CoreListener;
+import com.codingchili.core.listener.CoreService;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
+
+import io.vertx.core.Future;
+import io.vertx.core.Verticle;
+import io.vertx.core.Vertx;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.files.Configurations.system;
@@ -44,6 +50,7 @@ public class Launcher implements CoreService {
         new LauncherCommandExecutor().execute(future, context.args());
         future.setHandler(done -> {
             try {
+                // the CommandExecutor has failed to execute the command.
                 if (done.failed()) {
                     nodes = context.block(context.args());
                     nodes = new ArrayList<>(nodes);
@@ -70,11 +77,12 @@ public class Launcher implements CoreService {
                 context.setVertx(clustered.result());
                 init(context);
 
-                context.service(this, deployed -> {
+                // the Launcher is a good example of a service.
+                context.service(() -> this, deployed -> {
                     if (deployed.failed()) {
                         throw new RuntimeException(deployed.cause());
                     } else {
-                        addShutdownHook(clustered.result());
+                        addShutdownHook();
                         deployServices(nodes);
                     }
                 });
@@ -91,7 +99,7 @@ public class Launcher implements CoreService {
     private void deployServices(List<String> nodes) {
         String node = nodes.get(0);
 
-        if (isVerticle(node)) {
+        if (isDeployable(node)) {
             context.deploy(nodes.get(0), deploy -> {
                 if (deploy.succeeded()) {
                     nodes.remove(0);
@@ -103,12 +111,10 @@ public class Launcher implements CoreService {
                     throw new RuntimeException(deploy.cause());
                 }
             });
-        } else {
-            nodes.remove(0);
         }
     }
 
-    private boolean isVerticle(String node) {
+    private boolean isDeployable(String node) {
         try {
             Class<?> clazz = Class.forName(node);
             boolean isDeployable = Verticle.class.isAssignableFrom(clazz) ||
@@ -128,15 +134,13 @@ public class Launcher implements CoreService {
         }
     }
 
-    private void addShutdownHook(Vertx vertx) {
+    private void addShutdownHook() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            AtomicBoolean cleanup = new AtomicBoolean(true);
-            vertx.setTimer(context.system().getShutdownHookTimeout(),
-                    handler -> cleanup.set(false));
-            vertx.deploymentIDs().forEach(vertx::undeploy);
-
-            while (cleanup.get()) {}
-
+            try {
+                Thread.sleep(system().getShutdownHookTimeout());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             logger.log(ERRROR_LAUNCHER_SHUTDOWN, Level.SEVERE);
             logger.reset();
         }));

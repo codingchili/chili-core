@@ -1,5 +1,15 @@
 package com.codingchili.core.storage;
 
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.storage.exception.NothingToRemoveException;
+import com.codingchili.core.storage.exception.NothingToReplaceException;
+import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
+import com.codingchili.core.storage.exception.ValueMissingException;
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.attribute.MultiValueAttribute;
 import com.googlecode.cqengine.index.navigable.NavigableIndex;
@@ -11,15 +21,10 @@ import com.googlecode.cqengine.query.QueryFactory;
 import com.googlecode.cqengine.query.option.AttributeOrder;
 import com.googlecode.cqengine.query.option.QueryOptions;
 import com.googlecode.cqengine.resultset.ResultSet;
-import io.vertx.core.*;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
-import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.protocol.Serializer;
-import com.codingchili.core.storage.exception.*;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
 
 import static com.googlecode.cqengine.query.QueryFactory.*;
 import static io.vertx.core.Future.*;

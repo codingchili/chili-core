@@ -1,17 +1,20 @@
 package com.codingchili.core.context;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import com.codingchili.core.configuration.system.SystemSettings;
+import com.codingchili.core.testing.ContextMock;
+
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.*;
-import org.junit.runner.RunWith;
-
-import java.util.concurrent.atomic.AtomicInteger;
-
-import com.codingchili.core.configuration.system.SystemSettings;
-import com.codingchili.core.testing.ContextMock;
 
 /**
  * @author Robin Duda

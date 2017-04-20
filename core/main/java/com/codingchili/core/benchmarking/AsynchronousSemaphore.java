@@ -1,12 +1,14 @@
 package com.codingchili.core.benchmarking;
 
-import io.vertx.core.*;
-
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.codingchili.core.context.CoreContext;
+
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
 
 import static com.codingchili.core.configuration.CoreStrings.getSemaphoreTimeout;
 

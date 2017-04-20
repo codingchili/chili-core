@@ -1,12 +1,12 @@
 package com.codingchili.core.storage;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
-
 import java.util.Collection;
 import java.util.function.Consumer;
 
 import com.codingchili.core.context.TimerSource;
+
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 
 /**
  * @author Robin Duda

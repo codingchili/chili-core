@@ -1,11 +1,11 @@
 package com.codingchili.patching;
 
-import com.codingchili.core.context.*;
-import com.codingchili.core.listener.*;
-import com.codingchili.patching.configuration.*;
-import com.codingchili.patching.controller.*;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.listener.CoreService;
+import com.codingchili.patching.configuration.PatchContext;
+import com.codingchili.patching.controller.PatchHandler;
 
-import io.vertx.core.*;
+import io.vertx.core.Future;
 
 /**
  * @author Robin Duda
@@ -26,10 +26,8 @@ public class Service implements CoreService {
 
     @Override
     public void start(Future<Void> start) {
-        for (int i = 0; i < context.system().getHandlers(); i++) {
-            context.handler(new PatchHandler(context), (done) -> {
-            });
-        }
-        context.logger().onServiceStarted(start);
+        context.handler(() -> new PatchHandler(context), (done) -> {
+            context.logger().onServiceStarted(start);
+        });
     }
 }

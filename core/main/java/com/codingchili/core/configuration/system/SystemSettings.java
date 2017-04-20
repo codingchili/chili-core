@@ -1,11 +1,11 @@
 package com.codingchili.core.configuration.system;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.vertx.core.VertxOptions;
-import io.vertx.core.metrics.MetricsOptions;
-
 import com.codingchili.core.configuration.BaseConfigurable;
 import com.codingchili.core.configuration.CoreStrings;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import io.vertx.core.VertxOptions;
+import io.vertx.core.metrics.MetricsOptions;
 
 /**
  * @author Robin Duda
@@ -14,7 +14,9 @@ import com.codingchili.core.configuration.CoreStrings;
  */
 public class SystemSettings extends BaseConfigurable {
     private int metricRate = 15000;
+    private int services = 1;
     private int handlers = Runtime.getRuntime().availableProcessors();
+    private int listeners = Runtime.getRuntime().availableProcessors();
     private boolean metrics = false;
     private int deployTimeout = 3000;
     private int shutdownLogTimeout = 3000;
@@ -188,5 +190,21 @@ public class SystemSettings extends BaseConfigurable {
 
     public void setClusterTimeout(int clusterTimeout) {
         this.clusterTimeout = clusterTimeout;
+    }
+
+    public int getListeners() {
+        return listeners;
+    }
+
+    public void setListeners(int listeners) {
+        this.listeners = listeners;
+    }
+
+    public int getServices() {
+        return services;
+    }
+
+    public void setServices(int services) {
+        this.services = services;
     }
 }

@@ -1,12 +1,13 @@
 package com.codingchili.patching.controller;
 
-import com.codingchili.core.context.*;
-import com.codingchili.core.files.exception.*;
+import com.codingchili.core.files.exception.FileMissingException;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
-import com.codingchili.core.protocol.*;
-import com.codingchili.patching.configuration.*;
-import com.codingchili.patching.model.*;
+import com.codingchili.core.protocol.Protocol;
+import com.codingchili.core.protocol.RequestHandler;
+import com.codingchili.patching.configuration.PatchContext;
+import com.codingchili.patching.model.PatchKeeper;
+import com.codingchili.patching.model.PatchReloadedException;
 
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.core.protocol.Access.*;

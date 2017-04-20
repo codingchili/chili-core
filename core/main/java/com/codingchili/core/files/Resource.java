@@ -1,13 +1,18 @@
 package com.codingchili.core.files;
 
-import io.vertx.core.buffer.Buffer;
-
-import java.io.*;
-import java.nio.file.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.codingchili.core.files.exception.FileWriteException;
+
+import io.vertx.core.buffer.Buffer;
 
 import static com.codingchili.core.configuration.CoreStrings.getAbsolutePath;
 

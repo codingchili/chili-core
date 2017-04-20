@@ -1,16 +1,17 @@
 package com.codingchili.core.benchmarking;
 
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import java.awt.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import com.codingchili.core.files.exception.NoSuchResourceException;
+
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 /**
  * @author Robin Duda

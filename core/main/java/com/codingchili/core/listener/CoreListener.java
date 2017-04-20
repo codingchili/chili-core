@@ -7,7 +7,7 @@ import java.util.function.Supplier;
  *         <p>
  *         Listeners handles incoming messages and forwards them to a handler.
  */
-public interface CoreListener extends CoreLifecycle {
+public interface CoreListener extends CoreDeployment {
 
     /**
      * @param settings listener settings for the listener.

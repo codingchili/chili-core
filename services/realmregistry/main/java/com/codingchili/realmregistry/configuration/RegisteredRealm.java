@@ -1,10 +1,9 @@
 package com.codingchili.realmregistry.configuration;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import com.codingchili.core.configuration.AttributeConfigurable;
 import com.codingchili.core.security.Token;
 import com.codingchili.core.storage.Storable;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * @author Robin Duda

@@ -1,18 +1,21 @@
 package com.codingchili.core.security;
 
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.*;
-import org.junit.runner.RunWith;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.codingchili.core.configuration.RegexComponent;
 import com.codingchili.core.configuration.system.ParserSettings;
 import com.codingchili.core.configuration.system.ValidatorSettings;
 import com.codingchili.core.protocol.exception.RequestValidationException;
+
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.security.RegexAction.*;

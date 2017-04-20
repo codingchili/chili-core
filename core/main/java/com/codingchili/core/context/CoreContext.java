@@ -1,14 +1,16 @@
 package com.codingchili.core.context;
 
+import java.util.function.Supplier;
+
+import com.codingchili.core.configuration.system.SystemSettings;
+import com.codingchili.core.listener.CoreHandler;
+import com.codingchili.core.listener.CoreListener;
+import com.codingchili.core.listener.CoreService;
+import com.codingchili.core.logging.Logger;
+
 import io.vertx.core.*;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.file.FileSystem;
-
-import com.codingchili.core.configuration.system.SystemSettings;
-import com.codingchili.core.listener.CoreListener;
-import com.codingchili.core.logging.Logger;
-import com.codingchili.core.listener.CoreHandler;
-import com.codingchili.core.listener.CoreService;
 
 /**
  * @author Robin Duda
@@ -80,7 +82,7 @@ public interface CoreContext {
      * @param handler the handler to be used to handle incoming requests.
      * @param done    the handler to be invoked on deployment completion.
      */
-    void handler(CoreHandler handler, Handler<AsyncResult<String>> done);
+    void handler(Supplier<CoreHandler> handler, Handler<AsyncResult<String>> done);
 
     /**
      * Deploys the given verticle with a completion handler.
@@ -88,7 +90,7 @@ public interface CoreContext {
      * @param listener the verticle to be deployed.
      * @param done     the handler to be invoked on deployment completion.
      */
-    void listener(CoreListener listener, Handler<AsyncResult<String>> done);
+    void listener(Supplier<CoreListener> listener, Handler<AsyncResult<String>> done);
 
     /**
      * Deploys the given verticle with a completion handler.
@@ -96,7 +98,7 @@ public interface CoreContext {
      * @param service the verticle to be deployed.
      * @param done    the handler to be invoked on deployment completion.
      */
-    void service(CoreService service, Handler<AsyncResult<String>> done);
+    void service(Supplier<CoreService> service, Handler<AsyncResult<String>> done);
 
     /**
      * Undeploys a deployed handler by the deployment id.

@@ -1,11 +1,7 @@
 package com.codingchili.realmregistry.model;
 
-import com.codingchili.realmregistry.configuration.RegisteredRealm;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.codingchili.core.configuration.Attributes;
+import com.codingchili.realmregistry.configuration.RegisteredRealm;
 
 /**
  * @author Robin Duda

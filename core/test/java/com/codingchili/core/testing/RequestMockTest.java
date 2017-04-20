@@ -1,14 +1,15 @@
 package com.codingchili.core.testing;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import com.codingchili.core.listener.Request;
+
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import com.codingchili.core.listener.Request;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.protocol.ResponseStatus.*;

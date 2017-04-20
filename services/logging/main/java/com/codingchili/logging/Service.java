@@ -1,13 +1,13 @@
 package com.codingchili.logging;
 
 
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.listener.CoreService;
 import com.codingchili.logging.configuration.LogContext;
 import com.codingchili.logging.controller.ClientLogHandler;
 import com.codingchili.logging.controller.ServiceLogHandler;
-import io.vertx.core.*;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.listener.CoreService;
+import io.vertx.core.Future;
 
 /**
  * @author Robin Duda
@@ -28,10 +28,10 @@ public class Service implements CoreService {
 
     @Override
     public void start(Future<Void> start) {
-        for (int i = 0; i < context.system().getHandlers(); i++) {
-            context.handler(new ServiceLogHandler(context), done -> {});
-            context.handler(new ClientLogHandler(context), done -> {});
-        }
-        context.logger().onServiceStarted(start);
+        context.handler(() -> new ServiceLogHandler(context), service -> {
+            context.handler(() -> new ClientLogHandler(context), client -> {
+                context.logger().onServiceStarted(start);
+            });
+        });
     }
 }

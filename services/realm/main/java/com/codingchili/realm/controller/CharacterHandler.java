@@ -1,20 +1,19 @@
 package com.codingchili.realm.controller;
 
-import com.codingchili.realm.configuration.RealmContext;
-import com.codingchili.realm.instance.configuration.InstanceContext;
-import com.codingchili.realm.instance.configuration.InstanceSettings;
-import com.codingchili.realm.instance.controller.InstanceHandler;
-import com.codingchili.realm.instance.model.PlayerCharacter;
-import com.codingchili.realm.instance.model.PlayerClass;
-import com.codingchili.realm.model.*;
-import io.vertx.core.CompositeFuture;
-import io.vertx.core.Future;
-
-import java.util.*;
+import java.util.Collection;
 
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
-import com.codingchili.core.protocol.*;
+import com.codingchili.core.protocol.Access;
+import com.codingchili.core.protocol.Protocol;
+import com.codingchili.core.protocol.RequestHandler;
+import com.codingchili.core.protocol.Serializer;
+import com.codingchili.realm.configuration.RealmContext;
+import com.codingchili.realm.instance.model.PlayerCharacter;
+import com.codingchili.realm.instance.model.PlayerClass;
+import com.codingchili.realm.model.*;
+
+import io.vertx.core.Future;
 
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
@@ -45,31 +44,11 @@ public class CharacterHandler implements CoreHandler {
     @Override
     public void start(Future<Void> future) {
         context.onRealmStarted(context.realm().getName());
-        startInstances(future);
+        future.complete();
     }
 
-    private void startInstances(Future<Void> future) {
-        List<Future> futures = new ArrayList<>();
-        for (InstanceSettings instance : context.instances()) {
-            Future deploy = Future.future();
-            futures.add(deploy);
-
-            context.handler(new InstanceHandler(new InstanceContext(context, instance)), (done) -> {
-                if (done.succeeded()) {
-                    deploy.complete();
-                } else {
-                    context.onInstanceFailed(instance.getName(), done.cause());
-                    deploy.fail(done.cause());
-                }
-            });
-        }
-        CompositeFuture.all(futures).setHandler(done -> {
-            if (done.succeeded()) {
-                future.complete();
-            } else {
-                future.fail(done.cause());
-            }
-        });
+    private void instanceHandler(Request request) {
+        // forward on bus?
     }
 
     private void registerRealm(Long handler) {
@@ -146,12 +125,6 @@ public class CharacterHandler implements CoreHandler {
             throw new PlayerClassDisabledException();
     }
 
-    private void instanceHandler(RealmRequest request) {
-        context.bus().send(request.instance(), request, result -> {
-
-        });
-    }
-
     private Access authenticator(Request request) {
         if (context.verifyToken(request.token())) {
             return Access.AUTHORIZED;
@@ -173,5 +146,6 @@ public class CharacterHandler implements CoreHandler {
     @Override
     public void stop(Future<Void> future) {
         context.onRealmStopped(future, context.realm().getName());
+        future.complete();
     }
 }

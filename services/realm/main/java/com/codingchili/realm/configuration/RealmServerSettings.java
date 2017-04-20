@@ -1,13 +1,12 @@
 package com.codingchili.realm.configuration;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import com.codingchili.core.configuration.ServiceConfigurable;
 import com.codingchili.core.storage.IndexedMap;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * @author Robin Duda

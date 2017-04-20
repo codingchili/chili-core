@@ -1,11 +1,11 @@
 package com.codingchili.realm.model;
 
+import java.util.Collection;
+
 import com.codingchili.realm.instance.model.PlayerCharacter;
+
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
-
-import java.util.Collection;
-import java.util.List;
 
 /**
  * @author Robin Duda

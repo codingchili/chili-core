@@ -1,12 +1,13 @@
 package com.codingchili.core.security;
 
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
+import java.util.Base64;
+import java.util.HashSet;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Base64;
-import java.util.HashSet;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 /**
  * @author Robin Duda

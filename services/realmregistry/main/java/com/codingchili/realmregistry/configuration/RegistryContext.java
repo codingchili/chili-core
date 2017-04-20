@@ -1,10 +1,5 @@
 package com.codingchili.realmregistry.configuration;
 
-import com.codingchili.realmregistry.model.AsyncRealmStore;
-import com.codingchili.realmregistry.model.RealmDB;
-import io.vertx.core.Future;
-import io.vertx.core.Vertx;
-
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.files.Configurations;
@@ -12,6 +7,11 @@ import com.codingchili.core.logging.Level;
 import com.codingchili.core.security.Token;
 import com.codingchili.core.security.TokenFactory;
 import com.codingchili.core.storage.StorageLoader;
+import com.codingchili.realmregistry.model.AsyncRealmStore;
+import com.codingchili.realmregistry.model.RealmDB;
+
+import io.vertx.core.Future;
+import io.vertx.core.Vertx;
 
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.realmregistry.configuration.RealmRegistrySettings.PATH_REALMREGISTRY;

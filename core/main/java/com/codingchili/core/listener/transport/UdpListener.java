@@ -1,12 +1,16 @@
 package com.codingchili.core.listener.transport;
 
-import io.vertx.core.Future;
-import io.vertx.core.datagram.DatagramPacket;
-
 import java.util.function.Supplier;
 
 import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.listener.*;
+import com.codingchili.core.context.DeploymentAware;
+import com.codingchili.core.listener.CoreHandler;
+import com.codingchili.core.listener.CoreListener;
+import com.codingchili.core.listener.ListenerSettings;
+import com.codingchili.core.listener.RequestProcessor;
+
+import io.vertx.core.Future;
+import io.vertx.core.datagram.DatagramPacket;
 
 import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
 
@@ -15,7 +19,7 @@ import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
  *         <p>
  *         UDP transport listener.
  */
-public class UdpListener implements CoreListener {
+public class UdpListener implements CoreListener, DeploymentAware {
     private CoreHandler handler;
     private CoreContext core;
     private Supplier<ListenerSettings> settings;
@@ -57,5 +61,10 @@ public class UdpListener implements CoreListener {
 
     private void handle(DatagramPacket connection) {
         RequestProcessor.accept(core, handler, new UdpRequest(core, settings.get(), connection));
+    }
+
+    @Override
+    public int instances() {
+        return 1;
     }
 }

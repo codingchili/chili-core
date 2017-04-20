@@ -1,11 +1,10 @@
 package com.codingchili.core.configuration.system;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import com.codingchili.core.configuration.RegexComponent;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @author Robin Duda

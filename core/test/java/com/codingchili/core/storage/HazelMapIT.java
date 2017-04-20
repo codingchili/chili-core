@@ -1,14 +1,18 @@
 package com.codingchili.core.storage;
 
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
+
+import com.codingchili.core.testing.MapTestCases;
+
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.*;
-import org.junit.runner.RunWith;
-
-import com.codingchili.core.testing.MapTestCases;
 
 /**
  * @author Robin Duda

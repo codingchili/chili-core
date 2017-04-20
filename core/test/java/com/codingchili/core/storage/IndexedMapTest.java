@@ -1,12 +1,14 @@
 package com.codingchili.core.storage;
 
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 
 import com.codingchili.core.testing.MapTestCases;
-import com.codingchili.core.testing.StorageObject;
+
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 /**
  * @author Robin Duda

@@ -1,6 +1,8 @@
 package com.codingchili.core.testing;
 
-import com.codingchili.core.logging.*;
+import com.codingchili.core.logging.ConsoleLogger;
+import com.codingchili.core.logging.Level;
+import com.codingchili.core.logging.Logger;
 
 /**
  * @author Robin Duda

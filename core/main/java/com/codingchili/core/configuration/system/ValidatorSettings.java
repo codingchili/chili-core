@@ -1,11 +1,10 @@
 package com.codingchili.core.configuration.system;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import com.codingchili.core.configuration.BaseConfigurable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import static com.codingchili.core.configuration.CoreStrings.getNoSuchValidator;
 

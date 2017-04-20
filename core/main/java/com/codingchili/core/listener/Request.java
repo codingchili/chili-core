@@ -1,8 +1,8 @@
 package com.codingchili.core.listener;
 
-import io.vertx.core.json.JsonObject;
-
 import com.codingchili.core.security.Token;
+
+import io.vertx.core.json.JsonObject;
 
 /**
  * @author Robin Duda

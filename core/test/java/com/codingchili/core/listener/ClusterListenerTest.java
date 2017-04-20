@@ -1,14 +1,11 @@
 package com.codingchili.core.listener;
 
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
 
-import io.vertx.core.Future;
-import io.vertx.core.Vertx;
-import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.*;
-
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.codingchili.core.context.CoreException;
@@ -16,6 +13,15 @@ import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.listener.transport.ClusterListener;
 import com.codingchili.core.testing.ContextMock;
 import com.codingchili.core.testing.EmptyRequest;
+
+import io.vertx.core.Future;
+import io.vertx.core.Vertx;
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.Timeout;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
+
+import static com.codingchili.core.files.Configurations.system;
 
 /**
  * @author Robin Duda
@@ -41,7 +47,7 @@ public class ClusterListenerTest {
         this.handler = new TestHandler(context, REPLY_ADDRESS);
         this.cluster = new ClusterListener().handler(handler).settings(ListenerSettings::new);
 
-        context.listener(cluster, done -> {
+        context.listener(() -> cluster, done -> {
             if (done.failed()) {
                 done.cause().printStackTrace();
             }
@@ -70,8 +76,8 @@ public class ClusterListenerTest {
 
     @Test
     public void handlerOnStopCalled(TestContext test) throws CoreException {
-        handler.setStopHandler(test.async());
-        context.vertx().undeploy(deployment);
+        handler.setStopHandler(test.async(system().getListeners()));
+        context.stop(deployment);
     }
 
     private class TestHandler implements CoreHandler {
@@ -98,7 +104,7 @@ public class ClusterListenerTest {
         @Override
         public void stop(Future<Void> future) {
             if (stop != null) {
-                stop.complete();
+                stop.countDown();
             }
             future.complete();
         }

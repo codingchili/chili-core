@@ -1,10 +1,11 @@
 package com.codingchili.core.files;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.vertx.core.buffer.Buffer;
-
 import java.io.File;
 import java.nio.file.Path;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import io.vertx.core.buffer.Buffer;
 
 /**
  * @author Robin Duda

@@ -1,9 +1,10 @@
 package com.codingchili.core.storage;
 
-import com.googlecode.cqengine.ConcurrentIndexedCollection;
-import io.vertx.core.impl.ConcurrentHashSet;
-
 import java.util.Set;
+
+import com.googlecode.cqengine.ConcurrentIndexedCollection;
+
+import io.vertx.core.impl.ConcurrentHashSet;
 
 /**
  * @author Robin Duda

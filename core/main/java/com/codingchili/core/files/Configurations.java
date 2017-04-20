@@ -1,10 +1,10 @@
 package com.codingchili.core.files;
 
-import io.vertx.core.json.JsonObject;
-
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,12 +14,19 @@ import java.util.stream.Collectors;
 import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.exception.InvalidConfigurableException;
-import com.codingchili.core.configuration.system.*;
+import com.codingchili.core.configuration.system.LauncherSettings;
+import com.codingchili.core.configuration.system.SecuritySettings;
+import com.codingchili.core.configuration.system.StorageSettings;
+import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.files.exception.*;
+import com.codingchili.core.files.exception.FileReadException;
+import com.codingchili.core.files.exception.InvalidConfigurationPath;
+import com.codingchili.core.files.exception.NoSuchResourceException;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.Serializer;
+
+import io.vertx.core.json.JsonObject;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 

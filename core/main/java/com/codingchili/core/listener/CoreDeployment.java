@@ -1,13 +1,13 @@
 package com.codingchili.core.listener;
 
-import io.vertx.core.Future;
-
 import com.codingchili.core.context.CoreContext;
+
+import io.vertx.core.Future;
 
 /**
  * @author Robin Duda
  */
-public interface CoreLifecycle {
+public interface CoreDeployment {
     /**
      * Init method that is called with the context that the service was
      * deployed from.

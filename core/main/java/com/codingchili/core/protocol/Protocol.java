@@ -1,9 +1,9 @@
 package com.codingchili.core.protocol;
 
-import io.vertx.core.json.JsonObject;
-
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
+
+import io.vertx.core.json.JsonObject;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 

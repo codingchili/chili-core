@@ -1,9 +1,10 @@
 package com.codingchili.core.storage;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.vertx.core.shareddata.Shareable;
-
 import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import io.vertx.core.shareddata.Shareable;
 
 /**
  * @author Robin Duda

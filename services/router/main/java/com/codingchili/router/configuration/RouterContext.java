@@ -1,21 +1,21 @@
 package com.codingchili.router.configuration;
 
-import static com.codingchili.common.Strings.*;
-import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_ROUTE;
-import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_TARGET;
-import static com.codingchili.router.configuration.RouterSettings.PATH_ROUTING;
-
 import java.util.List;
 
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.files.Configurations;
-import com.codingchili.core.logging.Level;
 import com.codingchili.core.listener.ListenerSettings;
-
 import com.codingchili.core.listener.WireType;
+import com.codingchili.core.logging.Level;
 
 import io.vertx.core.Vertx;
+
+import static com.codingchili.common.Strings.ID_MESSAGE;
+import static com.codingchili.common.Strings.*;
+import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_ROUTE;
+import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_TARGET;
+import static com.codingchili.router.configuration.RouterSettings.PATH_ROUTING;
 
 /**
  * @author Robin Duda

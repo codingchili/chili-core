@@ -1,9 +1,9 @@
 package com.codingchili.core.testing;
 
-import io.vertx.core.json.JsonObject;
-
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.security.Token;
+
+import io.vertx.core.json.JsonObject;
 
 
 /**

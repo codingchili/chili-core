@@ -1,14 +1,17 @@
 package com.codingchili.realmregistry.controller;
 
-import com.codingchili.core.context.*;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
-import com.codingchili.core.protocol.*;
-import com.codingchili.realmregistry.configuration.*;
-import com.codingchili.realmregistry.model.*;
+import com.codingchili.core.protocol.Access;
+import com.codingchili.core.protocol.Protocol;
+import com.codingchili.core.protocol.RequestHandler;
+import com.codingchili.realmregistry.configuration.RegistryContext;
+import com.codingchili.realmregistry.model.AsyncRealmStore;
+import com.codingchili.realmregistry.model.RealmList;
+import com.codingchili.realmregistry.model.RealmMissingException;
 
 import static com.codingchili.common.Strings.*;
-import static com.codingchili.core.protocol.Access.*;
+import static com.codingchili.core.protocol.Access.PUBLIC;
 
 /**
  * @author Robin Duda

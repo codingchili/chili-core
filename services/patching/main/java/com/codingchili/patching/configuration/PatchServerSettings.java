@@ -1,7 +1,6 @@
 package com.codingchili.patching.configuration;
 
 import com.codingchili.common.Strings;
-
 import com.codingchili.core.configuration.ServiceConfigurable;
 
 import static com.codingchili.common.Strings.DIR_RESOURCES;

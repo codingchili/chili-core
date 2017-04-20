@@ -1,11 +1,12 @@
 package com.codingchili.realm.instance.configuration;
 
-import com.codingchili.realm.instance.model.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import com.codingchili.core.configuration.BaseConfigurable;
+import com.codingchili.realm.instance.model.Node;
+import com.codingchili.realm.instance.model.Npc;
+import com.codingchili.realm.instance.model.Portal;
 
 import static com.codingchili.common.Strings.*;
 

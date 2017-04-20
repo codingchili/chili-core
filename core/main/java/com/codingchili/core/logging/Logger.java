@@ -1,9 +1,9 @@
 package com.codingchili.core.logging;
 
+import com.codingchili.core.listener.CoreHandler;
+
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
-
-import com.codingchili.core.listener.CoreHandler;
 
 
 /**

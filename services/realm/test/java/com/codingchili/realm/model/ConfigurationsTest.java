@@ -1,23 +1,29 @@
 package com.codingchili.realm.model;
 
-import com.codingchili.realm.instance.model.*;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.unit.junit.Timeout;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-import io.vertx.ext.unit.TestContext;
-import org.junit.*;
-import org.junit.runner.RunWith;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.files.JsonFileStore;
 import com.codingchili.core.files.exception.NoSuchResourceException;
 import com.codingchili.core.protocol.Serializer;
+import com.codingchili.realm.instance.model.Affliction;
+import com.codingchili.realm.instance.model.Inventory;
+import com.codingchili.realm.instance.model.PlayerCharacter;
+import com.codingchili.realm.instance.model.PlayerClass;
+
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.Timeout;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 

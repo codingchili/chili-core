@@ -1,12 +1,11 @@
 package com.codingchili.realmregistry.configuration;
 
-import com.codingchili.common.Strings;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import com.codingchili.common.Strings;
 import com.codingchili.core.configuration.ServiceConfigurable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Settings for the realm registry.

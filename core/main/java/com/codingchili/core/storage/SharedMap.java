@@ -1,13 +1,18 @@
 package com.codingchili.core.storage;
 
-import io.vertx.core.*;
-import io.vertx.core.shareddata.LocalMap;
-
 import java.util.Collection;
 
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.storage.exception.*;
+import com.codingchili.core.storage.exception.NothingToRemoveException;
+import com.codingchili.core.storage.exception.NothingToReplaceException;
+import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
+import com.codingchili.core.storage.exception.ValueMissingException;
+
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.shareddata.LocalMap;
 
 import static com.codingchili.core.context.FutureHelper.*;
 
