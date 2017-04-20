@@ -75,7 +75,7 @@ public class Launcher implements CoreService {
         Vertx.clusteredVertx(system().getOptions(), (clustered) -> {
             if (clustered.succeeded()) {
                 context.setVertx(clustered.result());
-                init(context);
+                initialize(context);
 
                 // the Launcher is a good example of a service.
                 context.service(() -> this, deployed -> {
@@ -147,7 +147,16 @@ public class Launcher implements CoreService {
     }
 
     @Override
-    public void init(CoreContext core) {
+    public void start(Future<Void> start) {
+        context.logger().onServiceStarted(start);
+    }
+
+    @Override
+    public void stop(Future<Void> stop) {
+        context.logger().onServiceStopped(stop);
+    }
+
+    public void initialize(CoreContext core) {
         Configurations.initialize(core);
         Delay.initialize(core);
     }
