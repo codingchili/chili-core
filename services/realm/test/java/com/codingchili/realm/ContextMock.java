@@ -32,7 +32,7 @@ public class ContextMock extends RealmContext {
 
         realm.getClasses().add(new PlayerClass().setName("class.name"));
 
-        new StorageLoader<PlayerCharacter>().privatemap(new StorageContext<PlayerCharacter>(vertx))
+        new StorageLoader<PlayerCharacter>().privatemap(new StorageContext<PlayerCharacter>(this))
                 .withDB("", "")
                 .withClass(PlayerCharacter.class)
                 .build(storage -> {

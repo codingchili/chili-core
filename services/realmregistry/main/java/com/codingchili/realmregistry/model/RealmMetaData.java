@@ -37,8 +37,6 @@ public class RealmMetaData extends Attributes {
                 .setTrusted(settings.getTrusted())
                 .setUpdated(settings.getUpdated())
                 .setSecure(settings.getSecure());
-
-        this.setAttributes(settings.getAttributes());
     }
 
     public long getUpdated() {

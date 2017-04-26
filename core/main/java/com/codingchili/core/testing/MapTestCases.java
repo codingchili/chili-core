@@ -284,7 +284,6 @@ public class MapTestCases {
             test.assertTrue(query.succeeded(), errorText(query));
             test.assertEquals(1, query.result().size());
             test.assertEquals(TWO, query.result().iterator().next().id());
-            test.assertEquals(TWO, query.result().iterator().next().id());
             async.complete();
         });
     }
@@ -744,7 +743,7 @@ public class MapTestCases {
     @Test
     public void testStorageIsShared(TestContext test) {
         Async async = test.async();
-        StorageContext context2 = new StorageContext<>(context.vertx());
+        StorageContext context2 = new StorageContext<>(context);
 
         // creates a new storage using another context with the same DB/colletion
         new StorageLoader<StorageObject>(context2)

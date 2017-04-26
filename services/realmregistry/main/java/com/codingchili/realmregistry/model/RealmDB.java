@@ -34,7 +34,7 @@ public class RealmDB implements AsyncRealmStore {
         this.realms = map;
 
         this.watcher = new EntryWatcher<>(realms, this::getStaleQuery, this::getTimeout)
-                .setConsumer(items -> items.forEach(item ->
+                .start(items -> items.forEach(item ->
                         realms.remove(item.id(), (removed) -> {})));
     }
 

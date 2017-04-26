@@ -1,17 +1,14 @@
 package com.codingchili.realmregistry.configuration;
 
-import com.codingchili.core.configuration.AttributeConfigurable;
 import com.codingchili.core.security.Token;
 import com.codingchili.core.storage.Storable;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * @author Robin Duda
  *         <p>
  *         Contains information about a realm, received from a realmserver..
  */
-@JsonIgnoreProperties({"instances"})
-public class RegisteredRealm extends AttributeConfigurable implements Storable {
+public class RegisteredRealm implements Storable {
     private Token authentication;
     private String description;
     private String resources;
@@ -204,14 +201,14 @@ public class RegisteredRealm extends AttributeConfigurable implements Storable {
     }
 
     /**
-     * @return the handler of the realm.
+     * @return the name of the realm.
      */
     public String getName() {
         return name;
     }
 
     /**
-     * @param name the new handler of the realm.
+     * @param name the new name of the realm.
      * @return fluent
      */
     public RegisteredRealm setName(String name) {
@@ -221,7 +218,12 @@ public class RegisteredRealm extends AttributeConfigurable implements Storable {
 
     @Override
     public int hashCode() {
-        return id().hashCode();
+        return name.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "name=" + name + " description=" + description;
     }
 
     @Override

@@ -17,9 +17,9 @@ import com.codingchili.core.context.TimerSource;
  */
 public class EntryWatcher<Value extends Storable> {
     private AtomicBoolean active = new AtomicBoolean(false);
+    private Consumer<Collection<Value>> consumer = (collection) -> {};
     private Supplier<QueryBuilder<Value>> query;
     private AsyncStorage<Value> storage;
-    private Consumer<Collection<Value>> consumer;
     private StorageContext context;
     private TimerSource timer;
 

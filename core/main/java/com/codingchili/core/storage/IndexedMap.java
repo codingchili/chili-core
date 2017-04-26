@@ -90,8 +90,7 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
     @Override
     public void remove(String key, Handler<AsyncResult<Void>> handler) {
         get(key, got -> {
-            if (got.succeeded()) {
-                db.remove(got.result());
+            if (got.succeeded() && db.remove(got.result())) {
                 handler.handle(succeededFuture());
             } else {
                 handler.handle(failedFuture(new NothingToRemoveException(key)));
@@ -143,7 +142,7 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
      */
     @SuppressWarnings("unchecked")
     private Attribute<Value, String> createIndex(String fieldName, boolean multiValue) {
-        Attribute<Value, String> attribute = null;
+        Attribute<Value, String> attribute;
 
         if (!fields.containsKey(fieldName)) {
             if (multiValue) {
@@ -151,7 +150,7 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
                     @Override
                     public Iterable<String> getValues(Value indexing, QueryOptions queryOptions) {
                         return Arrays.stream(Serializer.getValueByPath(context.toJson(indexing), fieldName))
-                                .map(item -> item + "")::iterator;
+                                .map(item -> (item + "").toLowerCase())::iterator;
                     }
                 };
             } else {
@@ -170,7 +169,7 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
                 }
             }
         }
-        return attribute;
+        return fields.get(fieldName);
     }
 
     @Override
@@ -195,8 +194,7 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
 
             private QueryBuilder<Value> prepareField(String attribute) {
                 setAttribute(attribute);
-                createIndex(attribute(), isAttributeArray());
-                field = fields.get(attribute());
+                field = createIndex(attribute(), isAttributeArray());
                 return this;
             }
 
@@ -206,7 +204,7 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
                 if (statements.size() >= 2) {
                     bucket = QueryFactory.and(statements.remove(0), statements.remove(0), statements);
                 } else if (statements.size() == 1) {
-                    bucket = statements.remove(0);
+                    bucket = statements.get(0);
                 } else {
                     return; // empty statement, ignore.
                 }
@@ -248,7 +246,7 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
 
             @Override
             public QueryBuilder<Value> equalTo(Comparable match) {
-                statements.add(QueryFactory.equal(field, match + ""));
+                statements.add(QueryFactory.equal(field, (match + "").toLowerCase()));
                 return this;
             }
 
