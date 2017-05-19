@@ -1,12 +1,14 @@
 package com.codingchili.patching.model;
 
-import com.codingchili.core.files.*;
-import com.codingchili.core.files.exception.*;
-import com.codingchili.core.logging.*;
 import com.codingchili.core.files.CachedFile;
-import com.codingchili.patching.configuration.*;
+import com.codingchili.core.files.CachedFileStore;
+import com.codingchili.core.files.FileStoreListener;
+import com.codingchili.core.files.exception.FileMissingException;
+import com.codingchili.core.logging.Logger;
+import com.codingchili.patching.configuration.PatchContext;
+import com.codingchili.patching.configuration.PatchNotes;
 
-import io.vertx.core.buffer.*;
+import io.vertx.core.buffer.Buffer;
 
 
 /**

@@ -1,13 +1,15 @@
 package com.codingchili.realm.instance.configuration;
 
-import com.codingchili.realm.configuration.*;
-import io.vertx.core.Future;
-
 import com.codingchili.core.context.Delay;
 import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.Level;
 import com.codingchili.core.security.Token;
+import com.codingchili.realm.configuration.RealmContext;
+import com.codingchili.realm.configuration.RealmServerSettings;
+import com.codingchili.realm.configuration.RealmSettings;
+
+import io.vertx.core.Future;
 
 import static com.codingchili.common.Strings.*;
 

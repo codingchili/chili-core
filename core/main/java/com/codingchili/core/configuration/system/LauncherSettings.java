@@ -1,10 +1,11 @@
 package com.codingchili.core.configuration.system;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import com.codingchili.core.configuration.BaseConfigurable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 

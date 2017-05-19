@@ -1,12 +1,14 @@
 package com.codingchili.realm.instance.controller;
 
-import com.codingchili.core.context.*;
-import com.codingchili.realm.instance.configuration.InstanceContext;
-import io.vertx.core.Future;
-
+import com.codingchili.core.context.DeploymentAware;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
-import com.codingchili.core.protocol.*;
+import com.codingchili.core.protocol.Access;
+import com.codingchili.core.protocol.Protocol;
+import com.codingchili.core.protocol.RequestHandler;
+import com.codingchili.realm.instance.configuration.InstanceContext;
+
+import io.vertx.core.Future;
 
 import static com.codingchili.common.Strings.ID_PING;
 
@@ -14,7 +16,7 @@ import static com.codingchili.common.Strings.ID_PING;
  * @author Robin Duda
  *         Handles players in a get.
  */
-public class InstanceHandler implements CoreHandler {
+public class InstanceHandler implements CoreHandler, DeploymentAware {
     private final Protocol<RequestHandler<InstanceRequest>> protocol = new Protocol<>();
     private InstanceContext context;
 
@@ -54,5 +56,10 @@ public class InstanceHandler implements CoreHandler {
     public void start(Future<Void> future) {
         context.onInstanceStarted(context.realm().getName(), context.instance().getName());
         future.complete();
+    }
+
+    @Override
+    public int instances() {
+        return 1;
     }
 }

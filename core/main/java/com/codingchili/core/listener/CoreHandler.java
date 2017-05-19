@@ -5,7 +5,7 @@ package com.codingchili.core.listener;
  *         <p>
  *         A simplified handler that may be deployed directly.
  */
-public interface CoreHandler extends CoreLifecycle {
+public interface CoreHandler extends CoreDeployment {
 
     /**
      * Handles an incoming request without exception handling.

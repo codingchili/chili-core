@@ -1,9 +1,9 @@
 package com.codingchili.realm.configuration;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import static com.codingchili.common.Strings.*;
 

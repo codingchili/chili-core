@@ -1,20 +1,24 @@
 package com.codingchili.core.context;
 
-import io.vertx.core.*;
-import io.vertx.core.eventbus.EventBus;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.dropwizard.MetricsService;
-
-import java.lang.reflect.InvocationTargetException;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.function.Supplier;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.*;
 import com.codingchili.core.listener.transport.ClusterListener;
-import com.codingchili.core.logging.*;
+import com.codingchili.core.logging.ConsoleLogger;
+import com.codingchili.core.logging.Level;
+import com.codingchili.core.logging.Logger;
 
-import static com.codingchili.core.configuration.CoreStrings.ID_SYSTEM;
+import io.vertx.core.*;
+import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.dropwizard.MetricsService;
+
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 
 /**
@@ -23,6 +27,7 @@ import static com.codingchili.core.configuration.CoreStrings.ID_SYSTEM;
  *         Implementation of the CoreContext, each context gets its own worker pool.
  */
 public class SystemContext implements CoreContext {
+    private Map<String, List<String>> deployments = new HashMap<>();
     private WorkerExecutor executor;
     private ConsoleLogger console;
     protected Vertx vertx;
@@ -98,48 +103,98 @@ public class SystemContext implements CoreContext {
 
     @Override
     public void deploy(String target, Handler<AsyncResult<String>> done) {
-        try {
-            Object deployment = Class.forName(target).getConstructor().<Object>newInstance();
+        Supplier<Object> deployment = () -> {
+            try {
+                return Class.forName(target).<Object>newInstance();
+            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+                throw new CoreRuntimeException(e.getMessage());
+            }
+        };
 
-            if (deployment instanceof CoreHandler) {
-                handler((CoreHandler) deployment, done);
-            } else if (deployment instanceof CoreListener) {
-                CoreListener listener = (CoreListener) deployment;
+        if (deployment.get() instanceof CoreHandler) {
+            handler(() -> (CoreHandler) deployment.get(), done);
+        } else if (deployment.get() instanceof CoreListener) {
+            listener(() -> {
+                CoreListener listener = (CoreListener) deployment.get();
                 listener.handler(new BusForwarder(this, target));
                 listener.settings(ListenerSettings::new);
-                listener(listener, done);
-            } else if (deployment instanceof CoreService) {
-                service((CoreService) deployment, done);
-            } else if (deployment instanceof Verticle) {
-                vertx.deployVerticle((Verticle) deployment, done);
-            }
+                return listener;
+            }, done);
+        } else if (deployment.get() instanceof CoreService) {
+            service(() -> (CoreService) deployment.get(), done);
+        } else if (deployment.get() instanceof Verticle) {
+            deployN(target, done);
+        } else {
+            done.handle(Future.failedFuture(getUnsupportedDeployment(target)));
+        }
+    }
 
-        } catch (NoSuchMethodException | InvocationTargetException | ClassNotFoundException |
-                InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+    private void deployN(String verticle, Handler<AsyncResult<String>> done) {
+        vertx.deployVerticle(verticle,
+                new DeploymentOptions().setInstances(system().getHandlers()), done);
+    }
+
+    @Override
+    public void handler(Supplier<CoreHandler> handler, Handler<AsyncResult<String>> done) {
+        deployN(() -> new ClusterListener()
+                .settings(ListenerSettings::new)
+                .handler(handler.get()), done);
+    }
+
+    @Override
+    public void listener(Supplier<CoreListener> listener, Handler<AsyncResult<String>> done) {
+        deployN(listener::get, done);
+    }
+
+    @Override
+    public void service(Supplier<CoreService> service, Handler<AsyncResult<String>> done) {
+        deployN(service::get, done);
+    }
+
+    private void deployN(Supplier<CoreDeployment> supplier, Handler<AsyncResult<String>> done) {
+        CoreDeployment deployment = supplier.get();
+        CountDownLatch latch = new CountDownLatch(getHandlerCount(deployment));
+        String deploymentId = UUID.randomUUID().toString();
+        List<String> completed = new ArrayList<>();
+        int toDeploy = getHandlerCount(deployment);
+
+        for (int i = 0; i < getHandlerCount(deployment); i++) {
+            vertx.deployVerticle(new CoreVerticle(deployment, this), deployed -> {
+                if (deployed.succeeded()) {
+                    completed.add(deployed.result());
+                    latch.countDown();
+                    if (latch.getCount() == 0) {
+                        done.handle(Future.succeededFuture(deploymentId));
+                        deployments.put(deploymentId, completed);
+                    }
+                } else {
+                    done.handle(Future.failedFuture(deployed.cause()));
+                }
+            });
+            if (i < getHandlerCount(deployment) - 1)
+                deployment = supplier.get();
+        }
+    }
+
+    private int getHandlerCount(CoreDeployment deployable) {
+        if (deployable instanceof DeploymentAware) {
+            return ((DeploymentAware) deployable).instances();
+        } else if (deployable instanceof CoreListener) {
+            return system().getListeners();
+        } else if (deployable instanceof CoreService) {
+            return system().getServices();
+        } else {
+            return system().getHandlers();
         }
     }
 
     @Override
-    public void handler(CoreHandler handler, Handler<AsyncResult<String>> done) {
-        vertx.deployVerticle(new CoreVerticle(new ClusterListener()
-                .settings(ListenerSettings::new)
-                .handler(handler), this), done);
-    }
-
-    @Override
-    public void listener(CoreListener listener, Handler<AsyncResult<String>> done) {
-        vertx.deployVerticle(new CoreVerticle(listener, this), done);
-    }
-
-    @Override
-    public void service(CoreService service, Handler<AsyncResult<String>> done) {
-        vertx.deployVerticle(new CoreVerticle(service, this), done);
-    }
-
-    @Override
     public void stop(String deploymentId) {
-        vertx.undeploy(deploymentId);
+        if (deployments.containsKey(deploymentId)) {
+            deployments.get(deploymentId).forEach(vertx::undeploy);
+        } else {
+            vertx.undeploy(deploymentId);
+        }
     }
 
     @Override

@@ -1,9 +1,10 @@
 package com.codingchili.patching.model;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
-import com.codingchili.core.files.*;
-import com.codingchili.patching.configuration.*;
+import com.codingchili.core.files.CachedFile;
+import com.codingchili.patching.configuration.PatchNotes;
 
 /**
  * @author Robin Duda

@@ -1,13 +1,12 @@
 package com.codingchili.realmregistry;
 
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.listener.CoreService;
 import com.codingchili.realmregistry.configuration.RegistryContext;
 import com.codingchili.realmregistry.controller.ClientHandler;
 import com.codingchili.realmregistry.controller.RealmHandler;
-import io.vertx.core.Future;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.files.Configurations;
-import com.codingchili.core.listener.CoreService;
+import io.vertx.core.Future;
 
 
 /**
@@ -36,11 +35,11 @@ public class Service implements CoreService {
             if (future.succeeded()) {
                 context = future.result();
 
-                for (int i = 0; i < Configurations.system().getHandlers(); i++) {
-                    context.handler(new RealmHandler(context), done -> {});
-                    context.handler(new ClientHandler(context), done -> {});
-                }
-                context.logger().onServiceStarted(start);
+                context.handler(() -> new RealmHandler(context), realms -> {
+                    context.handler(() -> new ClientHandler(context), clients-> {
+                        context.logger().onServiceStarted(start);
+                    });
+                });
             } else {
                 start.fail(future.cause());
             }

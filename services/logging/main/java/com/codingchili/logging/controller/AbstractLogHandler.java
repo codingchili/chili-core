@@ -1,14 +1,13 @@
 package com.codingchili.logging.controller;
 
-import com.codingchili.logging.configuration.LogContext;
-import com.codingchili.logging.model.StorageLogger;
-
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.protocol.Protocol;
 import com.codingchili.core.protocol.RequestHandler;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
+import com.codingchili.logging.configuration.LogContext;
+import com.codingchili.logging.model.StorageLogger;
 
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.core.protocol.Access.*;

@@ -1,9 +1,9 @@
 package com.codingchili.logging.controller;
 
-import com.codingchili.logging.configuration.LogContext;
-import io.vertx.core.json.JsonObject;
-
 import com.codingchili.core.listener.Request;
+import com.codingchili.logging.configuration.LogContext;
+
+import io.vertx.core.json.JsonObject;
 
 import static com.codingchili.common.Strings.*;
 

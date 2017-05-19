@@ -1,12 +1,12 @@
 package com.codingchili.core.configuration;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.vertx.core.json.JsonObject;
-
 import java.io.Serializable;
 
 import com.codingchili.core.files.JsonFileStore;
 import com.codingchili.core.protocol.Serializer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import io.vertx.core.json.JsonObject;
 
 /**
  * @author Robin Duda

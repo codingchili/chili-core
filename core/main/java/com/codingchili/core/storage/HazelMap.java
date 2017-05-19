@@ -1,18 +1,27 @@
 package com.codingchili.core.storage;
 
-import com.hazelcast.core.*;
-import com.hazelcast.query.*;
-import io.vertx.core.*;
-import io.vertx.core.impl.ConcurrentHashSet;
-import io.vertx.core.shareddata.AsyncMap;
-
 import java.io.Serializable;
 import java.util.*;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.storage.exception.*;
+import com.codingchili.core.storage.exception.NothingToRemoveException;
+import com.codingchili.core.storage.exception.NothingToReplaceException;
+import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
+import com.codingchili.core.storage.exception.ValueMissingException;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IMap;
+import com.hazelcast.query.PagingPredicate;
+import com.hazelcast.query.Predicate;
+import com.hazelcast.query.Predicates;
+
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.impl.ConcurrentHashSet;
+import io.vertx.core.shareddata.AsyncMap;
 
 import static com.codingchili.core.configuration.CoreStrings.STORAGE_ARRAY;
 import static com.codingchili.core.context.FutureHelper.*;

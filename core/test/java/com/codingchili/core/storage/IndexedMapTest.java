@@ -1,12 +1,19 @@
 package com.codingchili.core.storage;
 
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.codingchili.core.testing.MapTestCases;
 import com.codingchili.core.testing.StorageObject;
+
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
+
+import static com.codingchili.core.configuration.CoreStrings.ID_NAME;
 
 /**
  * @author Robin Duda
@@ -15,6 +22,7 @@ import com.codingchili.core.testing.StorageObject;
  */
 @RunWith(VertxUnitRunner.class)
 public class IndexedMapTest extends MapTestCases {
+    private static final String TEST_UPPER = "testUPPER";
 
     @Before
     public void setUp(TestContext test) {
@@ -26,8 +34,24 @@ public class IndexedMapTest extends MapTestCases {
         super.tearDown(test);
     }
 
-    @Ignore("Searching with case insensitivity is not supported for CQEngine.")
-    @Override
-    public void testCaseSensitivityLikeIgnored(TestContext test) {
+    @Test
+    public void testQueryWithUppercases(TestContext test) {
+        Async async = test.async();
+        StorageObject item = new StorageObject(TEST_UPPER, 1);
+        store.put(item, done -> {
+            test.assertTrue(done.succeeded());
+
+            store.query(ID_NAME).equalTo(TEST_UPPER).execute(query -> {
+                test.assertTrue(query.succeeded(), errorText(query));
+                test.assertEquals(1, query.result().size());
+                test.assertEquals(TEST_UPPER, query.result().iterator().next().id());
+                async.complete();
+            });
+        });
+    }
+
+    @Ignore("Does not support mixing multiple modes of restricted character cases.")
+    @Test
+    public void testCaseSensitivityEqualsNotIgnored(TestContext test) {
     }
 }

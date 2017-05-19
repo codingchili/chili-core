@@ -1,9 +1,8 @@
 package com.codingchili.core.storage;
 
-import io.vertx.core.*;
-import io.vertx.core.json.JsonObject;
-
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -13,7 +12,16 @@ import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.files.JsonFileStore;
 import com.codingchili.core.files.exception.NoSuchResourceException;
-import com.codingchili.core.storage.exception.*;
+import com.codingchili.core.storage.exception.NothingToRemoveException;
+import com.codingchili.core.storage.exception.NothingToReplaceException;
+import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
+import com.codingchili.core.storage.exception.ValueMissingException;
+
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.WorkerExecutor;
+import io.vertx.core.json.JsonObject;
 
 import static com.codingchili.core.configuration.CoreStrings.getFileReadError;
 import static com.codingchili.core.context.FutureHelper.*;

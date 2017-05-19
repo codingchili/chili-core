@@ -1,10 +1,12 @@
 package com.codingchili.logging.model;
 
-import com.codingchili.logging.configuration.LogContext;
-import io.vertx.core.json.JsonObject;
-
-import com.codingchili.core.logging.*;
+import com.codingchili.core.logging.DefaultLogger;
+import com.codingchili.core.logging.JsonLogger;
+import com.codingchili.core.logging.Logger;
 import com.codingchili.core.storage.JsonItem;
+import com.codingchili.logging.configuration.LogContext;
+
+import io.vertx.core.json.JsonObject;
 
 /**
  * @author Robin Duda

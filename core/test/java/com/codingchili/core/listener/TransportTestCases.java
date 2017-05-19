@@ -1,5 +1,15 @@
 package com.codingchili.core.listener;
 
+import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
+
+import org.junit.*;
+import org.junit.runner.RunWith;
+
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.protocol.ResponseStatus;
+import com.codingchili.core.testing.ContextMock;
+
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerOptions;
@@ -8,16 +18,6 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.*;
-import org.junit.runner.RunWith;
-
-import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
-
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.context.*;
-import com.codingchili.core.protocol.*;
-import com.codingchili.core.testing.ContextMock;
 
 /**
  * @author Robin Duda
@@ -74,7 +74,7 @@ public abstract class TransportTestCases {
                 .setHttpOptions(new HttpServerOptions().setCompressionSupported(false))
                 .addMapping(PATCHING_ROOT, new Endpoint(NODE_PATCHING));
 
-        context.listener(listener.get().settings(() -> settings).handler(new TestHandler()), deploy -> {
+        context.listener(() -> listener.get().settings(() -> settings).handler(new TestHandler()), deploy -> {
             if (deploy.failed()) {
                 deploy.cause().printStackTrace();
             }

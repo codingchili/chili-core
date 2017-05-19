@@ -1,12 +1,16 @@
 package com.codingchili.social.controller;
 
-import com.codingchili.common.*;
-import com.codingchili.core.context.*;
+import com.codingchili.common.Strings;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.ServiceContext;
+import com.codingchili.core.context.SimpleServiceContext;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
-import com.codingchili.core.protocol.*;
+import com.codingchili.core.protocol.Access;
+import com.codingchili.core.protocol.Protocol;
+import com.codingchili.core.protocol.RequestHandler;
 
-import static com.codingchili.common.Strings.*;
+import static com.codingchili.common.Strings.SOCIAL_NODE;
 
 /**
  * @author Robin Duda

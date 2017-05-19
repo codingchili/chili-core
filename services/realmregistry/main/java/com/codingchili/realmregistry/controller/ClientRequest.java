@@ -1,10 +1,9 @@
 package com.codingchili.realmregistry.controller;
 
 import com.codingchili.common.Strings;
-
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.listener.transport.ClusterRequest;
-import com.codingchili.core.protocol.*;
+import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Token;
 
 import static com.codingchili.common.Strings.ID_TOKEN;

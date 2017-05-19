@@ -3,7 +3,7 @@ package com.codingchili.authentication.controller;
 
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.listener.transport.ClusterRequest;
-import com.codingchili.core.protocol.*;
+import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Account;
 
 import static com.codingchili.common.Strings.ID_ACCOUNT;

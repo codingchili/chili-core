@@ -72,18 +72,13 @@ public class StorageObject implements Storable {
     }
 
     @Override
-    public boolean equals(Object other) {
-        return other instanceof StorageObject && (name.equals(((StorageObject) other).name));
-    }
-
-    @Override
     public int hashCode() {
         return name.hashCode();
     }
 
     @Override
-    public int compareTo(Object o) {
-        return name.compareTo(((StorageObject) o).id());
+    public boolean equals(Object other) {
+        return compareTo(other) == 0;
     }
 
     @Override

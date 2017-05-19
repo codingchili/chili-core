@@ -7,7 +7,7 @@ package com.codingchili.core.listener;
  *         <p>
  *         A service initializes a set of handlers.
  */
-public interface CoreService extends CoreLifecycle {
+public interface CoreService extends CoreDeployment {
 
     /**
      * @return the handler of the service for logging purposes.

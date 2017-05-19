@@ -1,12 +1,13 @@
 package com.codingchili.core.listener;
 
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.runner.RunWith;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.listener.transport.WebsocketListener;
+
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 /**
  * @author Robin Duda

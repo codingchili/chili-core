@@ -1,8 +1,5 @@
 package com.codingchili.core.protocol;
 
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,6 +7,10 @@ import org.junit.runner.RunWith;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.security.Token;
 import com.codingchili.core.security.TokenFactory;
+
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 /**
  * @author Robin Duda

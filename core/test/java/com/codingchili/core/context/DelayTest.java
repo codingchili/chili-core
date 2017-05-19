@@ -1,16 +1,19 @@
 package com.codingchili.core.context;
 
-import io.vertx.core.Future;
-import io.vertx.core.Vertx;
-import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.context.exception.SystemNotInitializedException;
 import com.codingchili.core.testing.ContextMock;
+
+import io.vertx.core.Future;
+import io.vertx.core.Vertx;
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 /**
  * @author Robin Duda

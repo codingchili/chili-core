@@ -1,7 +1,5 @@
 package com.codingchili.core.storage;
 
-import io.vertx.core.json.JsonObject;
-
 import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -9,6 +7,8 @@ import java.util.function.Consumer;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.TimerSource;
 import com.codingchili.core.files.Configurations;
+
+import io.vertx.core.json.JsonObject;
 
 import static com.codingchili.core.configuration.CoreStrings.STORAGE_ARRAY;
 import static com.codingchili.core.protocol.Serializer.getValueByPath;

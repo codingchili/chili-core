@@ -1,18 +1,18 @@
 package com.codingchili.realm;
 
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.context.SystemContext;
+import com.codingchili.core.security.Token;
+import com.codingchili.core.security.TokenFactory;
+import com.codingchili.core.storage.StorageLoader;
 import com.codingchili.realm.configuration.RealmContext;
 import com.codingchili.realm.configuration.RealmSettings;
 import com.codingchili.realm.instance.model.PlayerCharacter;
 import com.codingchili.realm.instance.model.PlayerClass;
 import com.codingchili.realm.model.AsyncCharacterStore;
 import com.codingchili.realm.model.CharacterDB;
-import io.vertx.core.Vertx;
 
-import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.context.SystemContext;
-import com.codingchili.core.security.Token;
-import com.codingchili.core.security.TokenFactory;
-import com.codingchili.core.storage.StorageLoader;
+import io.vertx.core.Vertx;
 
 /**
  * @author Robin Duda
@@ -32,7 +32,7 @@ public class ContextMock extends RealmContext {
 
         realm.getClasses().add(new PlayerClass().setName("class.name"));
 
-        new StorageLoader<PlayerCharacter>().privatemap(new StorageContext<PlayerCharacter>(vertx))
+        new StorageLoader<PlayerCharacter>().privatemap(new StorageContext<PlayerCharacter>(this))
                 .withDB("", "")
                 .withClass(PlayerCharacter.class)
                 .build(storage -> {

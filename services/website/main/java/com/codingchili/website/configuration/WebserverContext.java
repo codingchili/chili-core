@@ -1,13 +1,14 @@
 package com.codingchili.website.configuration;
 
-import java.nio.file.*;
+import java.nio.file.Paths;
 
-import com.codingchili.core.context.*;
-import com.codingchili.core.files.*;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.ServiceContext;
+import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.Request;
 
 import static com.codingchili.common.Strings.*;
-import static com.codingchili.website.configuration.WebserverSettings.*;
+import static com.codingchili.website.configuration.WebserverSettings.PATH_WEBSERVER;
 
 /**
  * @author Robin Duda

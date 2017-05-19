@@ -1,7 +1,6 @@
 package com.codingchili.website.configuration;
 
 import com.codingchili.common.Strings;
-
 import com.codingchili.core.configuration.ServiceConfigurable;
 
 /**

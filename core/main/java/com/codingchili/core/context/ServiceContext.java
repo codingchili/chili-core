@@ -1,11 +1,11 @@
 package com.codingchili.core.context;
 
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
-
 import com.codingchili.core.configuration.ServiceConfigurable;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.logging.RemoteLogger;
+
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 
 /**
  * @author Robin Duda

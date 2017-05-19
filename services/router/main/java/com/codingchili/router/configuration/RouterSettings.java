@@ -1,7 +1,5 @@
 package com.codingchili.router.configuration;
 
-import static com.codingchili.core.configuration.CoreStrings.getService;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -10,9 +8,10 @@ import java.util.stream.Collectors;
 
 import com.codingchili.core.configuration.ServiceConfigurable;
 import com.codingchili.core.listener.ListenerSettings;
-
 import com.codingchili.core.listener.WireType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import static com.codingchili.core.configuration.CoreStrings.getService;
 
 /**
  * @author Robin Duda

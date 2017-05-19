@@ -1,12 +1,13 @@
 package com.codingchili.patching.configuration;
 
-import com.codingchili.core.configuration.*;
-import com.codingchili.core.context.*;
-import com.codingchili.core.files.*;
-import com.codingchili.patching.model.*;
+import com.codingchili.core.configuration.CachedFileStoreSettings;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.ServiceContext;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.patching.model.PatchKeeper;
 
 import static com.codingchili.common.Strings.*;
-import static com.codingchili.patching.configuration.PatchServerSettings.*;
+import static com.codingchili.patching.configuration.PatchServerSettings.PATH_PATCHSERVER;
 
 /**
  * @author Robin Duda

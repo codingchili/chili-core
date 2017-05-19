@@ -1,9 +1,5 @@
 package com.codingchili.realm.configuration;
 
-import static com.codingchili.common.Strings.*;
-import static com.codingchili.core.files.Configurations.available;
-import static com.codingchili.core.files.Configurations.get;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +8,6 @@ import com.codingchili.core.configuration.AttributeConfigurable;
 import com.codingchili.core.files.JsonFileStore;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Token;
-
 import com.codingchili.realm.instance.configuration.InstanceSettings;
 import com.codingchili.realm.instance.model.Affliction;
 import com.codingchili.realm.instance.model.PlayerCharacter;
@@ -22,6 +17,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+
+import static com.codingchili.common.Strings.*;
+import static com.codingchili.core.files.Configurations.*;
 
 /**
  * @author Robin Duda

@@ -1,9 +1,8 @@
 package com.codingchili.realm.model;
 
 
-import com.codingchili.realm.configuration.RealmSettings;
-
 import com.codingchili.core.security.Token;
+import com.codingchili.realm.configuration.RealmSettings;
 
 import static com.codingchili.common.Strings.REALM_UPDATE;
 

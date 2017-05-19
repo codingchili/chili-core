@@ -1,12 +1,13 @@
 package com.codingchili.core.logging;
 
-import io.vertx.core.json.JsonObject;
-import org.fusesource.jansi.AnsiConsole;
-
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.fusesource.jansi.AnsiConsole;
+
 import com.codingchili.core.context.CoreContext;
+
+import io.vertx.core.json.JsonObject;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 

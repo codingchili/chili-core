@@ -2,7 +2,9 @@ package com.codingchili.core.benchmarking;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Robin Duda

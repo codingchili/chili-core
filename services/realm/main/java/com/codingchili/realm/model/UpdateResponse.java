@@ -1,8 +1,8 @@
 package com.codingchili.realm.model;
 
-import io.vertx.core.eventbus.Message;
+import com.codingchili.core.protocol.ProtocolMessage;
 
-import com.codingchili.core.protocol.*;
+import io.vertx.core.eventbus.Message;
 
 /**
  * @author Robin Duda

@@ -1,10 +1,12 @@
 package com.codingchili.logging;
 
+import com.codingchili.core.listener.CoreHandler;
+import com.codingchili.core.logging.DefaultLogger;
+import com.codingchili.core.logging.Level;
+import com.codingchili.core.logging.Logger;
+
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
-
-import com.codingchili.core.logging.*;
-import com.codingchili.core.listener.CoreHandler;
 
 
 /**

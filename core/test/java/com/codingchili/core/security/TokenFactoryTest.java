@@ -1,8 +1,10 @@
 package com.codingchili.core.security;
 
-import org.junit.*;
-
 import java.time.Instant;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.codingchili.core.security.exception.TokenException;
 

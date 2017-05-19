@@ -1,11 +1,5 @@
 package com.codingchili.core.storage;
 
-import io.vertx.core.*;
-import io.vertx.core.impl.ConcurrentHashSet;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.mongo.*;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -13,7 +7,21 @@ import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Validator;
-import com.codingchili.core.storage.exception.*;
+import com.codingchili.core.storage.exception.NothingToRemoveException;
+import com.codingchili.core.storage.exception.NothingToReplaceException;
+import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
+import com.codingchili.core.storage.exception.ValueMissingException;
+
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.impl.ConcurrentHashSet;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.mongo.FindOptions;
+import io.vertx.ext.mongo.IndexOptions;
+import io.vertx.ext.mongo.MongoClient;
+import io.vertx.ext.mongo.UpdateOptions;
 
 import static com.codingchili.core.context.FutureHelper.*;
 

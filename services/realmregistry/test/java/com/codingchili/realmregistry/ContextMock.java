@@ -1,16 +1,18 @@
 package com.codingchili.realmregistry;
 
-import com.codingchili.realmregistry.configuration.*;
-import com.codingchili.realmregistry.model.AsyncRealmStore;
-import com.codingchili.realmregistry.model.RealmDB;
-import io.vertx.core.Future;
-import io.vertx.core.Vertx;
-
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.security.Token;
 import com.codingchili.core.security.TokenFactory;
 import com.codingchili.core.storage.StorageLoader;
+import com.codingchili.realmregistry.configuration.RealmRegistrySettings;
+import com.codingchili.realmregistry.configuration.RegisteredRealm;
+import com.codingchili.realmregistry.configuration.RegistryContext;
+import com.codingchili.realmregistry.model.AsyncRealmStore;
+import com.codingchili.realmregistry.model.RealmDB;
+
+import io.vertx.core.Future;
+import io.vertx.core.Vertx;
 
 /**
  * @author Robin Duda
@@ -22,7 +24,7 @@ public class ContextMock extends RegistryContext {
 
         this.realmFactory = new TokenFactory(new RealmRegistrySettings().getRealmSecret());
 
-        new StorageLoader<RegisteredRealm>().privatemap(new StorageContext<>(vertx))
+        new StorageLoader<RegisteredRealm>().privatemap(new StorageContext<>(this))
                 .withClass(RegisteredRealm.class)
                 .withDB("", "")
                 .build(result -> {

@@ -2,11 +2,10 @@ package com.codingchili.authentication;
 
 import com.codingchili.authentication.configuration.AuthenticationContext;
 import com.codingchili.authentication.controller.ClientHandler;
-import io.vertx.core.Future;
-
 import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.CoreService;
+
+import io.vertx.core.Future;
 
 /**
  * @author Robin Duda
@@ -34,15 +33,13 @@ public class Service implements CoreService {
             if (future.succeeded()) {
                 context = future.result();
 
-                for (int i = 0; i < Configurations.system().getHandlers(); i++) {
-                    context.handler(new ClientHandler(context), (done) -> {
-                        if (done.failed()) {
-                            context.logger().onError(done.cause());
-                        }
-                    });
-                }
-
-                context.logger().onServiceStarted(start);
+                context.handler(() -> new ClientHandler(context), (done) -> {
+                    if (done.failed()) {
+                        context.logger().onError(done.cause());
+                    } else {
+                        context.logger().onServiceStarted(start);
+                    }
+                });
             } else {
                 start.fail(future.cause());
             }

@@ -1,22 +1,29 @@
 package com.codingchili.core.testing;
 
-import io.vertx.core.*;
-import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.Timeout;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.*;
-import org.junit.runner.RunWith;
-
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.junit.*;
+import org.junit.runner.RunWith;
 
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.storage.*;
-import com.codingchili.core.storage.exception.*;
+import com.codingchili.core.storage.exception.NothingToRemoveException;
+import com.codingchili.core.storage.exception.NothingToReplaceException;
+import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
+import com.codingchili.core.storage.exception.ValueMissingException;
+
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.Timeout;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 
 /**
@@ -276,7 +283,6 @@ public class MapTestCases {
         store.query(NAME).equalTo(TWO).execute(query -> {
             test.assertTrue(query.succeeded(), errorText(query));
             test.assertEquals(1, query.result().size());
-            test.assertEquals(TWO, query.result().iterator().next().id());
             test.assertEquals(TWO, query.result().iterator().next().id());
             async.complete();
         });
@@ -737,7 +743,7 @@ public class MapTestCases {
     @Test
     public void testStorageIsShared(TestContext test) {
         Async async = test.async();
-        StorageContext context2 = new StorageContext<>(context.vertx());
+        StorageContext context2 = new StorageContext<>(context);
 
         // creates a new storage using another context with the same DB/colletion
         new StorageLoader<StorageObject>(context2)

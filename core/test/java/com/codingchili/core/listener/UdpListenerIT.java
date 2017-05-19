@@ -1,10 +1,11 @@
 package com.codingchili.core.listener;
 
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.runner.RunWith;
 
 import com.codingchili.core.listener.transport.UdpListener;
+
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 
 /**

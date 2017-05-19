@@ -1,8 +1,23 @@
 package com.codingchili.router.controller;
 
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import com.codingchili.common.Strings;
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.protocol.ResponseStatus;
+import com.codingchili.core.testing.RequestMock;
+import com.codingchili.core.testing.ResponseListener;
 import com.codingchili.router.configuration.RouterContext;
 import com.codingchili.router.configuration.RouterSettings;
+
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.Message;
@@ -11,18 +26,6 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.*;
-import org.junit.runner.RunWith;
-
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.listener.RequestProcessor;
-import com.codingchili.core.protocol.ResponseStatus;
-import com.codingchili.core.testing.RequestMock;
-import com.codingchili.core.testing.ResponseListener;
 
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.core.files.Configurations.system;

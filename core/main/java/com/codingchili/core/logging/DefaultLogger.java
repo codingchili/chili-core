@@ -1,8 +1,5 @@
 package com.codingchili.core.logging;
 
-import io.vertx.core.Future;
-import io.vertx.core.json.JsonObject;
-
 import java.time.Instant;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
@@ -11,6 +8,9 @@ import com.codingchili.core.configuration.Environment;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.Delay;
 import com.codingchili.core.listener.CoreHandler;
+
+import io.vertx.core.Future;
+import io.vertx.core.json.JsonObject;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.files.Configurations.launcher;

@@ -1,26 +1,31 @@
 package com.codingchili.website;
 
+import java.util.concurrent.TimeUnit;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import com.codingchili.common.Strings;
-import com.codingchili.core.context.*;
-import com.codingchili.core.testing.*;
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.context.SystemContext;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.protocol.ResponseStatus;
+import com.codingchili.core.testing.FileSystemMock;
+import com.codingchili.core.testing.RequestMock;
+import com.codingchili.core.testing.ResponseListener;
 import com.codingchili.website.configuration.WebserverContext;
 import com.codingchili.website.configuration.WebserverSettings;
 import com.codingchili.website.controller.WebHandler;
+
 import io.vertx.core.Vertx;
-import io.vertx.core.file.*;
+import io.vertx.core.file.FileSystem;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.*;
-import org.junit.runner.RunWith;
-
-import java.util.concurrent.TimeUnit;
-
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.files.Configurations;
-import com.codingchili.core.protocol.ResponseStatus;
-import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 
 import static com.codingchili.common.Strings.ID_BUFFER;
 
