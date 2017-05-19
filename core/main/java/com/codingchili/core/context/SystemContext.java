@@ -1,5 +1,6 @@
 package com.codingchili.core.context;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Supplier;
@@ -105,8 +106,9 @@ public class SystemContext implements CoreContext {
     public void deploy(String target, Handler<AsyncResult<String>> done) {
         Supplier<Object> deployment = () -> {
             try {
-                return Class.forName(target).<Object>newInstance();
-            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+                return Class.forName(target).getConstructor().newInstance();
+            } catch (NoSuchMethodException | InvocationTargetException |InstantiationException |
+                    IllegalAccessException | ClassNotFoundException e) {
                 throw new CoreRuntimeException(e.getMessage());
             }
         };

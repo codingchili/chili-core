@@ -9,8 +9,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.configuration.Configurable;
-import com.codingchili.core.files.Configurations;
 import com.codingchili.core.files.JsonFileStore;
 import com.codingchili.core.files.exception.NoSuchResourceException;
 import com.codingchili.core.protocol.Serializer;
@@ -89,9 +87,5 @@ public class ConfigurationsTest {
         Inventory inventory = player.getInventory();
         Assert.assertFalse(inventory.getEquipped().isEmpty());
         Assert.assertFalse(inventory.getItems().isEmpty());
-    }
-
-    private Configurable load(String path, Class clazz) {
-        return Configurations.get(path, clazz);
     }
 }

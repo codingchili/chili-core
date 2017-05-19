@@ -69,8 +69,8 @@ public class CharacterHandlerTest {
     private void createCharacters(Async async) {
         PlayerCharacter add = new PlayerCharacter().setName(CHARACTER_NAME).setAccount(USERNAME);
         PlayerCharacter delete = new PlayerCharacter().setName(CHARACTER_NAME_DELETED).setAccount(USERNAME);
-        Future addFuture = Future.future();
-        Future removeFuture = Future.future();
+        Future<Void> addFuture = Future.future();
+        Future<Void> removeFuture = Future.future();
 
         CompositeFuture.all(addFuture, removeFuture).setHandler(done -> {
             async.complete();

@@ -70,7 +70,7 @@ public class ValidatorTest {
         test.assertTrue(plaintext("abc-102"));
         test.assertTrue(plaintext(1000));
         test.assertTrue(plaintext(1000L));
-        test.assertTrue(plaintext(new Byte("0")));
+        test.assertTrue(plaintext(Byte.valueOf("0")));
 
         String[] invalid = {"?", "_", "%", "^", ".", "*"};
 

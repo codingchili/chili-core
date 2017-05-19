@@ -100,7 +100,8 @@ public class ConfigurationsTest {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Configurable load(String path, Class clazz) {
-        return Configurations.get(path, clazz);
+        return Configurations.get(path, (Class<Configurable>) clazz);
     }
 }

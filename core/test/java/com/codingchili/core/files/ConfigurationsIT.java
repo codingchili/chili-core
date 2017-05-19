@@ -86,7 +86,7 @@ public class ConfigurationsIT {
     public void listAllAvailableOnSubpath() {
         String directory = testDirectory(CONFIGURATIONS);
 
-        Configurations.available(directory).stream()
+        Configurations.available(directory)
                 .forEach(path -> Assert.assertTrue(path.startsWith(directory)));
     }
 
@@ -114,9 +114,5 @@ public class ConfigurationsIT {
 
         ConfigurableTest loaded = Configurations.get(TEST_PATH, ConfigurableTest.class);
         test.assertEquals(NEW_DATA, loaded.getData());
-    }
-
-    private Configurable load(String path, Class clazz) {
-        return Configurations.get(path, clazz);
     }
 }
