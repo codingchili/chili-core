@@ -86,12 +86,12 @@ public class MapTestCases {
             Assert.assertTrue(clear.succeeded());
             AtomicInteger inserted = new AtomicInteger(0);
 
-            for (Long i = 0L; i < TEST_ITEM_COUNT; i++) {
-                StorageObject object = new StorageObject("id." + i, new Long(i % LEVEL_BUCKET_SIZE).intValue());
+            for (long i = 0L; i < TEST_ITEM_COUNT; i++) {
+                StorageObject object = new StorageObject("id." + i, Long.valueOf(i % LEVEL_BUCKET_SIZE).intValue());
 
                 if (i % SNOWFLAKE_INTERVAL == 0) {
                     object.setName(SNOWFLAKE_NAME_PREFIX + i);
-                    object.setLevel(new Long(9000L + (i / SNOWFLAKE_INTERVAL)).intValue());
+                    object.setLevel(Long.valueOf(9000L + (i / SNOWFLAKE_INTERVAL)).intValue());
                     object.getKeywords().add(SNOW_KEYWORD);
                 }
 

@@ -5,6 +5,8 @@ import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.dropwizard.MetricsService;
 
+import java.lang.reflect.InvocationTargetException;
+
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.files.Configurations;
@@ -97,7 +99,7 @@ public class SystemContext implements CoreContext {
     @Override
     public void deploy(String target, Handler<AsyncResult<String>> done) {
         try {
-            Object deployment = Class.forName(target).<Object>newInstance();
+            Object deployment = Class.forName(target).getConstructor().<Object>newInstance();
 
             if (deployment instanceof CoreHandler) {
                 handler((CoreHandler) deployment, done);
@@ -112,7 +114,8 @@ public class SystemContext implements CoreContext {
                 vertx.deployVerticle((Verticle) deployment, done);
             }
 
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+        } catch (NoSuchMethodException | InvocationTargetException | ClassNotFoundException |
+                InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }

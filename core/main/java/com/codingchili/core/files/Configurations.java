@@ -156,7 +156,7 @@ public abstract class Configurations {
             }
         } else {
             try {
-                config = clazz.<T>newInstance();
+                config = clazz.<T>getConstructor().newInstance();
                 defaultsLoaded = true;
             } catch (ReflectiveOperationException e) {
                 logger.onInvalidConfigurable(clazz);
