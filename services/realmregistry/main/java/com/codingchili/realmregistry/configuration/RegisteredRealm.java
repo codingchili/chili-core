@@ -25,7 +25,7 @@ public class RegisteredRealm implements Storable {
 
     @Override
     public String id() {
-        return name;
+        return name.toLowerCase();
     }
 
     /**
@@ -110,8 +110,9 @@ public class RegisteredRealm implements Storable {
     /**
      * @param size sets the maximum number of players that may connect to the server.
      */
-    public void setSize(int size) {
+    public RegisteredRealm setSize(int size) {
         this.size = size;
+        return this;
     }
 
     /**
@@ -218,7 +219,7 @@ public class RegisteredRealm implements Storable {
 
     @Override
     public int hashCode() {
-        return name.hashCode();
+        return id().hashCode();
     }
 
     @Override
