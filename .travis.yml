@@ -2,14 +2,9 @@ language: java
 sudo: false
 dist: trusty
 jdk: oraclejdk9
-install:
-  - ./gradlew -version
+install: true
 script:
-  - ./gradlew build
-  - ./gradlew sourcesJar -x test
-  - ./gradlew archivePrototype -x test
-  - ./gradlew archiveJavadoc -x test
-  - ./gradlew archiveTestReport -x test
+  - ./gradlew build && ./gradlew sourcesJar -x test && ./gradlew archivePrototype -x test && ./gradlew archiveJavadoc -x test && ./gradlew archiveTestReport -x test
 notifications:
   email: true
 before_cache:
