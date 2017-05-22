@@ -4,11 +4,12 @@ dist: trusty
 jdk: oraclejdk9
 install: true
 script:
-  - gradle build
-  - gradle sourcesJar -x test
-  - gradle archivePrototype -x test
-  - gradle archiveJavadoc -x test
-  - gradle archiveTestReport -x test
+  - ./gradlew version
+  - ./gradlew build
+  - ./gradlew sourcesJar -x test
+  - ./gradlew archivePrototype -x test
+  - ./gradlew archiveJavadoc -x test
+  - ./gradlew archiveTestReport -x test
 notifications:
   email: true
 before_cache:
