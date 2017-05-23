@@ -109,6 +109,7 @@ public class RegisteredRealm implements Storable {
 
     /**
      * @param size sets the maximum number of players that may connect to the server.
+     * @return fluent
      */
     public RegisteredRealm setSize(int size) {
         this.size = size;
