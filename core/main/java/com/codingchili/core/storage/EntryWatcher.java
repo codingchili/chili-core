@@ -90,12 +90,13 @@ public class EntryWatcher<Value extends Storable> {
     }
 
     private void execute() {
-        query().execute(q -> {
+        QueryBuilder<Value> query = this.query.get();
+        query.execute(q -> {
             if (q.succeeded()) {
                 consumer.accept(q.result());
-                context.onWatcherCompleted(query().name(), q.result().size());
+                context.onWatcherCompleted(query.name(), q.result().size());
             } else {
-                context.onWatcherFailed(query().name(), q.cause().getMessage());
+                context.onWatcherFailed(query.name(), q.cause().getMessage());
             }
         });
     }
@@ -105,7 +106,7 @@ public class EntryWatcher<Value extends Storable> {
      */
     public void pause() {
         active.set(false);
-        context.onWatcherPaused(query().name());
+        context.onWatcherPaused(query.get().name());
     }
 
     /**
@@ -113,11 +114,7 @@ public class EntryWatcher<Value extends Storable> {
      */
     public void resume() {
         active.set(true);
-        context.onWatcherResumed(query().name());
-    }
-
-    private QueryBuilder<Value> query() {
-        return query.get();
+        context.onWatcherResumed(query.get().name());
     }
 
     /**

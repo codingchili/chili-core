@@ -100,6 +100,11 @@ public class LauncherIT {
     }
 
     @Test
+    public void testMakeSureTestsRunWithJDK9(TestContext test) {
+        test.fail("test passed, executed with jdk9 successfully.");
+    }
+    
+    @Test
     public void testDeployVerticle(TestContext test) {
         async = test.async(system().getHandlers());
         launchWithSuccess(TestNodeVerticle.class);
