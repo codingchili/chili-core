@@ -1,6 +1,7 @@
 package com.codingchili.realmregistry.model;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,6 +15,7 @@ import com.codingchili.realmregistry.configuration.RegisteredRealm;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
+import static com.codingchili.core.configuration.CoreStrings.ID_NAME;
 import static com.codingchili.core.configuration.CoreStrings.ID_UPDATED;
 import static io.vertx.core.Future.*;
 
@@ -74,9 +76,10 @@ public class RealmDB implements AsyncRealmStore {
 
     @Override
     public void signToken(Handler<AsyncResult<Token>> future, String realm, String domain) {
-        realms.get(realm, map -> {
-            if (map.succeeded()) {
-                RegisteredRealm settings = map.result();
+        realms.query(ID_NAME).equalTo(realm).execute(map -> {
+            Collection<RegisteredRealm> realms = map.result();
+            if (map.succeeded() && realms.size() > 0) {
+                RegisteredRealm settings = realms.iterator().next();
                 future.handle(succeededFuture(new Token(new TokenFactory(getSecretBytes(settings)), domain)));
             } else {
                 future.handle(failedFuture(map.cause()));
