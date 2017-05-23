@@ -2,9 +2,9 @@ language: java
 sudo: false
 dist: trusty
 jdk: oraclejdk9
-install:
-  - ./gradlew -version
+install: true
 script:
+  - ./gradlew -version
   - ./gradlew build
   - ./gradlew sourcesJar -x test
   - ./gradlew archivePrototype -x test

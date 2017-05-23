@@ -17,6 +17,11 @@ Builds project jars and run tests
 gradlew build
 ```
 
+Note: when targeting java 9 the following hacks are needed for Netty/Vert.x
+```
+--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/sun.net.dns=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
+```
+
 Build a standalone prototype zip
 ```
 gradlew archivePrototype

@@ -44,7 +44,7 @@ public class LauncherIT {
     }
 
     @Rule
-    public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(15, TimeUnit.SECONDS);
 
     @After
     public void tearDown(TestContext test) {
