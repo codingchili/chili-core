@@ -6,7 +6,6 @@ import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
 import io.vertx.core.json.JsonObject;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -28,25 +27,32 @@ public class Protocol<Handler extends RequestHandler> {
      * @param handler contains methods to be mapped.
      */
     public Protocol(CoreHandler handler) {
+        annotated(handler);
+    }
+
+    public Protocol annotated(CoreHandler handler) {
         Method[] methods = handler.getClass().getDeclaredMethods();
 
         for (Method method : methods) {
-            Annotation annotation = method.getAnnotation(Public.class);
+            Public routePublic = method.getAnnotation(Public.class);
+            Private routePrivate = method.getAnnotation(Private.class);
 
-            if (annotation != null) {
-                use(((Public) annotation).value(), wrap(handler, method), Access.PUBLIC);
-            } else {
-                annotation = method.getAnnotation(Private.class);
-                if (annotation != null) {
-                    use(((Private) annotation).value(), wrap(handler, method), Access.AUTHORIZED);
-                }
+            if (routePublic != null) {
+                wrap(routePublic.value(), handler, method, Access.PUBLIC);
+                handlers.document(routePublic.value(), routePublic.doc());
+            }
+
+            if (routePrivate != null) {
+                wrap(routePrivate.value(), handler, method, Access.AUTHORIZED);
+                handlers.document(routePrivate.value(), routePrivate.doc());
             }
         }
+        return this;
     }
 
     @SuppressWarnings("unchecked")
-    private Handler wrap(CoreHandler handler, Method method) {
-        return (Handler) new RequestHandler<Request>() {
+    private void wrap(String route, CoreHandler handler, Method method, Access access) {
+        use(route, (Handler) new RequestHandler<Request>() {
             @Override
             public void handle(Request request) {
                 try {
@@ -55,7 +61,19 @@ public class Protocol<Handler extends RequestHandler> {
                     throw new RuntimeException(e);
                 }
             }
-        };
+        }, access);
+    }
+
+    /**
+     * Returns the route handler for the given target route and its access level.
+     *
+     * @param route the handler route to find.
+     * @return the handler that is mapped to the route.
+     * @throws AuthorizationRequiredException when authorization level is not fulfilled for the given route.
+     * @throws HandlerMissingException        when the requested route handler is not registered.
+     */
+    public Handler get(String route) throws AuthorizationRequiredException, HandlerMissingException {
+        return get(Access.AUTHORIZED, route);
     }
 
     /**
@@ -73,18 +91,6 @@ public class Protocol<Handler extends RequestHandler> {
         } else {
             return handlers.get(ANY, access);
         }
-    }
-
-    /**
-     * Returns the route handler for the given target route and its access level.
-     *
-     * @param route the handler route to find.
-     * @return the handler that is mapped to the route.
-     * @throws AuthorizationRequiredException when authorization level is not fulfilled for the given route.
-     * @throws HandlerMissingException        when the requested route handler is not registered.
-     */
-    public Handler get(String route) throws AuthorizationRequiredException, HandlerMissingException {
-        return get(Access.AUTHORIZED, route);
     }
 
     /**

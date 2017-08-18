@@ -13,8 +13,8 @@ import java.util.List;
 class ProtocolMapping {
     private List<ProtocolEntry> routes = new ArrayList<>();
 
-    public void add(String route, Access access) {
-        routes.add(new ProtocolEntry(route, access));
+    public void add(String route, String doc, Access access) {
+        routes.add(new ProtocolEntry(route, doc, access));
     }
 
     public List<ProtocolEntry> getRoutes() {
@@ -26,11 +26,13 @@ class ProtocolMapping {
     }
 
     public class ProtocolEntry {
+        private String documentation;
         private String route;
         private Access access;
 
-        ProtocolEntry(String route, Access access) {
+        ProtocolEntry(String route, String documentation, Access access) {
             this.route = route;
+            this.documentation = documentation;
             this.access = access;
         }
 
@@ -48,6 +50,14 @@ class ProtocolMapping {
 
         public void setAccess(Access access) {
             this.access = access;
+        }
+
+        public String getDocumentation() {
+            return documentation;
+        }
+
+        public void setDocumentation(String documentation) {
+            this.documentation = documentation;
         }
     }
 }

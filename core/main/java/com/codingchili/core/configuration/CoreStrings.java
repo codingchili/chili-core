@@ -1,5 +1,15 @@
 package com.codingchili.core.configuration;
 
+import com.codingchili.core.benchmarking.Benchmark;
+import com.codingchili.core.benchmarking.BenchmarkGroup;
+import com.codingchili.core.benchmarking.BenchmarkImplementation;
+import com.codingchili.core.listener.CoreHandler;
+import com.codingchili.core.listener.CoreListener;
+import com.codingchili.core.listener.CoreService;
+import com.codingchili.core.logging.ConsoleLogger;
+import com.codingchili.core.logging.Level;
+import io.vertx.core.Verticle;
+
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,17 +20,6 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.codingchili.core.benchmarking.Benchmark;
-import com.codingchili.core.benchmarking.BenchmarkGroup;
-import com.codingchili.core.benchmarking.BenchmarkImplementation;
-import com.codingchili.core.listener.CoreHandler;
-import com.codingchili.core.listener.CoreListener;
-import com.codingchili.core.listener.CoreService;
-import com.codingchili.core.logging.ConsoleLogger;
-import com.codingchili.core.logging.Level;
-
-import io.vertx.core.Verticle;
 
 /**
  * @author Robin Duda
@@ -83,6 +82,7 @@ public abstract class CoreStrings {
 
     public static final String PROTOCOL_CONNECTION = "connection";
 
+    public static final String PROTOCOL_ROUTES = "routes";
     public static final String PROTOCOL_STATUS = "status";
     public static final String PROTOCOL_ROUTE = "route";
     public static final String PROTOCOL_TARGET = "target";

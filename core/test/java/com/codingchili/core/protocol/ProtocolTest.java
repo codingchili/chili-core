@@ -15,13 +15,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 import static com.codingchili.core.protocol.Access.AUTHORIZED;
 import static com.codingchili.core.protocol.Access.PUBLIC;
-import static com.codingchili.core.protocol.ProtocolTest.AnnotatedRouter.ADDRESS;
-import static com.codingchili.core.protocol.ProtocolTest.AnnotatedRouter.PRIVATE_ROUTE;
-import static com.codingchili.core.protocol.ProtocolTest.AnnotatedRouter.PUBLIC_ROUTE;
+import static com.codingchili.core.protocol.ProtocolTest.AnnotatedRouter.*;
 
 /**
  * @author Robin Duda
@@ -32,6 +31,7 @@ import static com.codingchili.core.protocol.ProtocolTest.AnnotatedRouter.PUBLIC_
 public class ProtocolTest {
     private static final String TEST = "test";
     private static final String ANOTHER = "another";
+    public static final String DOCSTRING_TEXT = "docstring text";
     private Protocol<RequestHandler<Request>> protocol;
 
     @Before
@@ -125,6 +125,14 @@ public class ProtocolTest {
     }
 
     @Test
+    public void testAnnotatedDocumentation(TestContext test) {
+        AnnotatedRouter router = new AnnotatedRouter();
+        List<ProtocolMapping.ProtocolEntry> list = router.protocol.list().getRoutes();
+        test.assertEquals(DOC_PRIVATE, list.get(0).getDocumentation());
+        test.assertEquals(DOC_PUBLIC, list.get(1).getDocumentation());
+    }
+
+    @Test
     public void testCoreHandlerMissingAddress(TestContext test) {
         try {
             new AnnotatedRouterNoAddress().address();
@@ -157,14 +165,16 @@ public class ProtocolTest {
         static final String PUBLIC_ROUTE = "public";
         static final String PRIVATE_ROUTE = "private";
         static final String ADDRESS = "home";
+        static final String DOC_PUBLIC = "a public route";
+        static final String DOC_PRIVATE = "a private route";
         private Protocol<RequestHandler<Request>> protocol = new Protocol<>(this);
 
-        @Public(PUBLIC_ROUTE)
+        @Public(value = PUBLIC_ROUTE, doc = DOC_PUBLIC)
         public void route(TestRequest request) {
             request.write(PUBLIC_ROUTE);
         }
 
-        @Private(PRIVATE_ROUTE)
+        @Private(value = PRIVATE_ROUTE, doc = DOC_PRIVATE)
         public void route2(TestRequest request) {
             request.write(PRIVATE_ROUTE);
         }

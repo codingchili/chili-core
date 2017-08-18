@@ -12,4 +12,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Private {
     String value();
+    String doc() default "";
 }

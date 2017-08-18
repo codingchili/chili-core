@@ -1,13 +1,14 @@
 package com.codingchili.core.configuration.system;
 
+import com.codingchili.core.configuration.BaseConfigurable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.codingchili.core.configuration.BaseConfigurable;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import static com.codingchili.core.configuration.CoreStrings.*;
+import static com.codingchili.core.configuration.CoreStrings.PATH_LAUNCHER;
+import static com.codingchili.core.configuration.CoreStrings.getBlockNotConfigured;
 
 /**
  * @author Robin Duda
@@ -16,7 +17,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  */
 public class LauncherSettings extends BaseConfigurable {
     private String application = "";
-    private String version = "CORE-1.0.0-PR";
+    private String version = "CORE-1.0.3-PR";
     private HashMap<String, List<String>> blocks = defaultBlockConfiguration();
     private HashMap<String, String> hosts = defaultHostConfiguration();
 

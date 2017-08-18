@@ -1,14 +1,13 @@
 package com.codingchili.core.security;
 
+import com.codingchili.core.security.exception.TokenException;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.Base64;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
-import com.codingchili.core.security.exception.TokenException;
 
 /**
  * @author Robin Duda
@@ -71,7 +70,7 @@ public class TokenFactory {
      * @param expiry indicates when the token expires.
      * @return a signed token as a base64 string.
      */
-    String signToken(String domain, long expiry) throws TokenException {
+    public String signToken(String domain, long expiry) throws TokenException {
         try {
             return Base64.getEncoder().encodeToString(generateToken(domain, expiry));
         } catch (InvalidKeyException | NoSuchAlgorithmException e) {

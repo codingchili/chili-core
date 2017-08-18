@@ -11,5 +11,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Public {
-    public String value();
+    String value();
+    String doc() default "";
 }
