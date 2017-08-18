@@ -45,12 +45,12 @@ public class Protocol<Handler extends RequestHandler> {
     }
 
     @SuppressWarnings("unchecked")
-    private Handler wrap(Object coreHandler, Method method) {
+    private Handler wrap(CoreHandler handler, Method method) {
         return (Handler) new RequestHandler<Request>() {
             @Override
             public void handle(Request request) {
                 try {
-                    method.invoke(coreHandler, request);
+                    method.invoke(handler, request);
                 } catch (InvocationTargetException | IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
