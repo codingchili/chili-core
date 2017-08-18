@@ -1,9 +1,14 @@
 package com.codingchili.core.protocol;
 
+import com.codingchili.core.listener.CoreHandler;
+import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
-
 import io.vertx.core.json.JsonObject;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
@@ -14,6 +19,44 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  */
 public class Protocol<Handler extends RequestHandler> {
     private final AuthorizationHandler<Handler> handlers = new AuthorizationHandler<>();
+
+    public Protocol() {}
+
+    /**
+     * Creates a protocol by mapping @Public and @Private annotated methods.
+     *
+     * @param handler contains methods to be mapped.
+     */
+    public Protocol(CoreHandler handler) {
+        Method[] methods = handler.getClass().getDeclaredMethods();
+
+        for (Method method : methods) {
+            Annotation annotation = method.getAnnotation(Public.class);
+
+            if (annotation != null) {
+                use(((Public) annotation).value(), wrap(handler, method), Access.PUBLIC);
+            } else {
+                annotation = method.getAnnotation(Private.class);
+                if (annotation != null) {
+                    use(((Private) annotation).value(), wrap(handler, method), Access.AUTHORIZED);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Handler wrap(Object coreHandler, Method method) {
+        return (Handler) new RequestHandler<Request>() {
+            @Override
+            public void handle(Request request) {
+                try {
+                    method.invoke(coreHandler, request);
+                } catch (InvocationTargetException | IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+    }
 
     /**
      * Returns the route handler for the given target route and its access level.

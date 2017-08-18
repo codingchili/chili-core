@@ -1,19 +1,27 @@
 package com.codingchili.core.protocol;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.listener.BaseRequest;
+import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
 import com.codingchili.core.testing.EmptyRequest;
-
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import static com.codingchili.core.protocol.Access.*;
+import java.util.function.Consumer;
+
+import static com.codingchili.core.protocol.Access.AUTHORIZED;
+import static com.codingchili.core.protocol.Access.PUBLIC;
+import static com.codingchili.core.protocol.ProtocolTest.AnnotatedRouter.ADDRESS;
+import static com.codingchili.core.protocol.ProtocolTest.AnnotatedRouter.PRIVATE_ROUTE;
+import static com.codingchili.core.protocol.ProtocolTest.AnnotatedRouter.PUBLIC_ROUTE;
 
 /**
  * @author Robin Duda
@@ -99,6 +107,38 @@ public class ProtocolTest {
     }
 
     @Test
+    public void testAnnotatedPublic(TestContext test) {
+        new AnnotatedRouter().handle(new TestRequest((response) -> {
+            test.assertEquals(response, PUBLIC_ROUTE);
+        }, PUBLIC_ROUTE, Access.PUBLIC));
+    }
+
+    @Test
+    public void testAnnotatedPrivate(TestContext test) {
+        try {
+            new AnnotatedRouter().handle(new TestRequest((response) -> {
+                test.assertEquals(response, PRIVATE_ROUTE);
+            }, PRIVATE_ROUTE, Access.PUBLIC));
+            test.fail("Unauthorized call did not fail.");
+        } catch (AuthorizationRequiredException ignored) {
+        }
+    }
+
+    @Test
+    public void testCoreHandlerMissingAddress(TestContext test) {
+        try {
+            new AnnotatedRouterNoAddress().address();
+            test.fail("Test case must fail when implementing class fails to provide address.");
+        } catch (RuntimeException ignored) {
+        }
+    }
+
+    @Test
+    public void testCoreHandlerAnnotatedAddress(TestContext test) {
+        test.assertEquals(new AnnotatedRouter().address(), ADDRESS);
+    }
+
+    @Test
     public void testListRoutes(TestContext test) {
         protocol.use(TEST, Request::accept, PUBLIC)
                 .use(ANOTHER, Request::accept, AUTHORIZED);
@@ -110,5 +150,72 @@ public class ProtocolTest {
         test.assertEquals(ANOTHER, mapping.getRoutes().get(0).getRoute());
         test.assertEquals(PUBLIC, mapping.getRoutes().get(1).getAccess());
         test.assertEquals(TEST, mapping.getRoutes().get(1).getRoute());
+    }
+
+    @Address(AnnotatedRouter.ADDRESS)
+    public class AnnotatedRouter implements CoreHandler {
+        static final String PUBLIC_ROUTE = "public";
+        static final String PRIVATE_ROUTE = "private";
+        static final String ADDRESS = "home";
+        private Protocol<RequestHandler<Request>> protocol = new Protocol<>(this);
+
+        @Public(PUBLIC_ROUTE)
+        public void route(TestRequest request) {
+            request.write(PUBLIC_ROUTE);
+        }
+
+        @Private(PRIVATE_ROUTE)
+        public void route2(TestRequest request) {
+            request.write(PRIVATE_ROUTE);
+        }
+
+        @Override
+        public void handle(Request request) {
+            protocol.get(((TestRequest) request).authorized(), request.route()).handle(request);
+        }
+    }
+
+    // no @Address annotation and does not implement getAddress.
+    public class AnnotatedRouterNoAddress implements CoreHandler {
+        @Override
+        public void handle(Request request) {
+            //
+        }
+    }
+
+    public class TestRequest extends BaseRequest {
+        private Consumer<String> listener;
+        private Access access;
+        private String route;
+
+        public TestRequest(Consumer<String> listener, String route, Access access) {
+            this.listener = listener;
+            this.route = route;
+            this.access = access;
+        }
+
+        public Access authorized() {
+            return access;
+        }
+
+        @Override
+        public void write(Object object) {
+            listener.accept(object.toString());
+        }
+
+        @Override
+        public JsonObject data() {
+            return new JsonObject().put(CoreStrings.PROTOCOL_ROUTE, route);
+        }
+
+        @Override
+        public int timeout() {
+            return 0;
+        }
+
+        @Override
+        public int size() {
+            return 0;
+        }
     }
 }
