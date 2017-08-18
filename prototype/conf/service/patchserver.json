@@ -30,10 +30,10 @@
   },
   "gzip" : false,
   "directory" : "resources/",
-  "global" : "0hhJXzrfdRU9/zhk2d20YwvcUZz6lXCRx5Or8I5hBOY5eQtQ1+73aKP3gwzoCtYwv4lZG9EfpuIfMaYKzK376Q==",
+  "global" : "XLHtKfhr000jy0fM4p17gqFBSppSedze83g3H1PGrHKlPDEMhf3s7YJWzptFZiB69AdubAnWCZbvg6rAQT5dEA==",
   "logging" : {
-    "key" : "t7AYwMxJISAhpooJzgVyhS8zm76LB9zmBiwy1delr1QNzr+TMZ9hENJtTEcJVq186pejIOQRf2PTucgkBHjh/A==",
-    "expiry" : 1493020641,
+    "key" : "hwrhE+vnMvhWjVS7jfmNGdm0I7IjdN2i/ltcN9+7qaKACNkRrcIQRxqNTQeEVm/97zUrt85ZhHrbHO+9rzLgZg==",
+    "expiry" : 1497889120,
     "domain" : "patching.node"
   }
 }

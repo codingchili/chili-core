@@ -44,10 +44,10 @@
     "defaultTarget" : "webserver.node"
   } ],
   "hidden" : [ "syslog.node" ],
-  "global" : "0hhJXzrfdRU9/zhk2d20YwvcUZz6lXCRx5Or8I5hBOY5eQtQ1+73aKP3gwzoCtYwv4lZG9EfpuIfMaYKzK376Q==",
+  "global" : "XLHtKfhr000jy0fM4p17gqFBSppSedze83g3H1PGrHKlPDEMhf3s7YJWzptFZiB69AdubAnWCZbvg6rAQT5dEA==",
   "logging" : {
-    "key" : "ThcuG66GyJwu2jrN/ROGI8GwBHI06k7MWqom91ou6iP26GnKgaeBFwenHylWLX4VHGe0GJ8yZgdfv+djSoiG4w==",
-    "expiry" : 1493020641,
+    "key" : "Xw469kVZzs1/hVL342ow/mkkadXIyy+l46GGZATalkWB7Jor10+VonNAfVtz2NKT/Cf/6mKdp8jtF+ANr7b8Gg==",
+    "expiry" : 1497889120,
     "domain" : "routing.node"
   }
 }

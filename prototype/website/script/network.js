@@ -10,6 +10,8 @@ function Network(service) {
         }
         json.target = service;
         json.route = route;
+
+        // todo provide multiple transport implementations here.
         $.ajax({
             type: "POST",
             url: this.remote,
@@ -24,8 +26,8 @@ function Network(service) {
                         case ResponseStatus.ACCEPTED:
                             if (callback.accepted) {
                                 callback.accepted(data);
-                                break;
                             }
+                            break;
                         case ResponseStatus.BAD:
                             if (callback.bad) {
                                 callback.bad(data);

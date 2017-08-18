@@ -182,32 +182,17 @@
 
             realmtoken: function (realm) {
                 this.showLoading("Authenticating..");
+                var self = this;
 
-                $.ajax({
-                    type: "POST",
-                    url: api.authentication("realmtoken"),
-                    dataType: "json",
-                    contentType: "text/plain",
-                    data: JSON.stringify(
-                            {
-                                token: application.authentication.token,
-                                realm: this.realm.name
-                            }
-                    ),
-                    statusCode: {
-                        200: (function (data) {
-                            this.token = data;
-                            this.loadCharacters();
-                        }).bind(this),
-                        401: (function () {
-                            application.error("Authentication server rejected the authentication token when creating a realm token.");
-                        })
+                realmregistry.realmtoken({
+                    accepted: function (data) {
+                        self.token = data;
+                        self.loadCharacters();
                     },
-                    error: function (code) {
-                        if (code.status != 401)
-                            application.error("Failed to connect to the authentication server to generate realm token.");
+                    error: function (error) {
+                        application.error(error.text);
                     }
-                });
+                }, this.realm.name);
             },
 
             random: function () {
@@ -217,30 +202,16 @@
 
             loadCharacters: function () {
                 this.showLoading("Loading characters..");
-
-                $.ajax({
-                    type: "POST",
-                    url: api.authentication("character-list"),
-                    dataType: "json",
-                    contentType: "text/plain",
-                    data: JSON.stringify({token: application.authentication.token, realm: this.realm.name}),
-                    statusCode: {
-                        200: (function (data) {
-                            data.realm.characters = data.characters;
-                            this.set("realm", data.realm);
-
-                            this.showCharacters();
-                            this.hideLoading();
-
-                            application.realmLoaded({realm: data.realm, token: this.token});
-                        }).bind(this),
-                        401: (function () {
-                            application.error("The authentication server rejected the realm token when listing characters.");
-                        }).bind(this)
+                new RealmServer(this.realm).characterlist({
+                    accepted: function(data) {
+                        data.realm.characters = data.characters;
+                        this.set("realm", data.realm);
+                        this.showCharacters();
+                        this.hideLoading();
+                        application.realmLoaded({realm: data.realm, token: this.token});
                     },
-                    error: function (code) {
-                        if (code.status != 401)
-                            application.error("Failed to connect to the authentication server to list characters.");
+                    unauthorized: function(data) {
+                        application.error("The authentication server rejected the realm token when listing characters.");
                     }
                 });
             },

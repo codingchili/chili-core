@@ -465,7 +465,7 @@
                 var start = performance.now();
                 var self = this;
 
-                realmserver(realm).ping({
+                RealmServer.ping({
                     accepted: function () {
                         var ping = parseInt((performance.now() - start), 10);
                         self.setPing(realm, ping)
@@ -473,7 +473,7 @@
                     failed: function () {
                         self.setPing(realm, "?");
                     }
-                });
+                }, realm);
             },
 
             setPing: function (realm, ping) {
