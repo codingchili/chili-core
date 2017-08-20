@@ -17,6 +17,8 @@ public interface CoreListener extends CoreDeployment {
 
     /**
      * @param handler the handler to invoke when the listener is triggered
+     *                the handler must be initialized with the current context by
+     *                the implementing class.
      * @return fluent
      */
     CoreListener handler(CoreHandler handler);

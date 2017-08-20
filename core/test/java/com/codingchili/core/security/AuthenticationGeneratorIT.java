@@ -1,13 +1,5 @@
 package com.codingchili.core.security;
 
-import java.io.IOException;
-import java.util.HashMap;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.AuthenticationDependency;
 import com.codingchili.core.configuration.system.SecuritySettings;
@@ -18,11 +10,17 @@ import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.exception.SecurityMissingDependencyException;
 import com.codingchili.core.testing.ContextMock;
-
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.io.IOException;
+import java.util.HashMap;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 

@@ -30,7 +30,7 @@ public abstract class BaseRequest implements Request {
         if (exception instanceof CoreException || exception instanceof CoreRuntimeException) {
             send(((CoreExceptionFormat) exception).status(), exception);
         } else {
-            send(ResponseStatus.ERROR, new UnmappedException());
+            send(ResponseStatus.ERROR, new UnmappedException(exception));
         }
     }
 

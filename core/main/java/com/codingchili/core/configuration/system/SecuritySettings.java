@@ -1,11 +1,11 @@
 package com.codingchili.core.configuration.system;
 
 
-import java.util.HashMap;
-import java.util.Optional;
-
 import com.codingchili.core.configuration.BaseConfigurable;
 import com.codingchili.core.configuration.CoreStrings;
+
+import java.util.HashMap;
+import java.util.Optional;
 
 /**
  * @author Robin Duda
@@ -23,6 +23,7 @@ import com.codingchili.core.configuration.CoreStrings;
 public class SecuritySettings extends BaseConfigurable {
     private HashMap<String, AuthenticationDependency> dependencies = new HashMap<>();
     private int secretBytes = 64;
+    private int tokenttl = 3600 * 24 * 7;
 
     public SecuritySettings() {
         super(CoreStrings.PATH_SECURITY);
@@ -77,5 +78,14 @@ public class SecuritySettings extends BaseConfigurable {
      */
     public void setDependencies(HashMap<String, AuthenticationDependency> dependencies) {
         this.dependencies = dependencies;
+    }
+
+    public int getTokenttl() {
+        return tokenttl;
+    }
+
+    public SecuritySettings setTokenttl(int tokenttl) {
+        this.tokenttl = tokenttl;
+        return this;
     }
 }

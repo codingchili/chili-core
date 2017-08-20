@@ -90,10 +90,11 @@ public class BaseRequestTest {
 
     @Test
     public void testNonCoreErrorConvertedToUnmappedException(TestContext test) {
-        request.error(new Exception("cannot write this"));
+        Exception e = new Exception("cannot write this");
+        request.error(e);
         System.out.println(response.encodePrettily());
         test.assertEquals(ERROR.toString(), response.getString(PROTOCOL_STATUS));
-        test.assertEquals(new UnmappedException().getMessage(), response.getString(PROTOCOL_MESSAGE));
+        test.assertEquals(new UnmappedException(e).getMessage(), response.getString(PROTOCOL_MESSAGE));
     }
 
     @Test
@@ -141,6 +142,9 @@ public class BaseRequestTest {
                 response.put(PROTOCOL_STATUS, ACCEPTED);
             }
         }
+
+        @Override
+        public void init() {}
 
         @Override
         public JsonObject data() {

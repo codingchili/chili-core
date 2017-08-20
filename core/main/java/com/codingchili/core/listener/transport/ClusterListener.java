@@ -1,7 +1,5 @@
 package com.codingchili.core.listener.transport;
 
-import java.util.function.Supplier;
-
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.DeploymentAware;
 import com.codingchili.core.files.Configurations;
@@ -9,8 +7,11 @@ import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.CoreListener;
 import com.codingchili.core.listener.ListenerSettings;
 import com.codingchili.core.listener.RequestProcessor;
-
 import io.vertx.core.Future;
+
+import java.util.function.Supplier;
+
+import static com.codingchili.core.configuration.CoreStrings.LOG_AT;
 
 /**
  * @author Robin Duda
@@ -26,6 +27,7 @@ public class ClusterListener implements CoreListener, DeploymentAware {
     @Override
     public void init(CoreContext core) {
         this.core = core;
+        handler.init(core);
     }
 
     @Override
@@ -38,6 +40,10 @@ public class ClusterListener implements CoreListener, DeploymentAware {
     public CoreListener handler(CoreHandler handler) {
         this.handler = handler;
         return this;
+    }
+
+    public CoreHandler handler() {
+        return handler;
     }
 
     @Override
@@ -57,5 +63,10 @@ public class ClusterListener implements CoreListener, DeploymentAware {
     public int instances() {
         return (handler instanceof DeploymentAware) ?
                 ((DeploymentAware) handler).instances() : Configurations.system().getListeners();
+    }
+
+    @Override
+    public String toString() {
+        return handler.getClass().getSimpleName() + LOG_AT + handler.address();
     }
 }

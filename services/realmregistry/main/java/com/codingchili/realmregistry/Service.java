@@ -6,7 +6,10 @@ import com.codingchili.realmregistry.configuration.RegistryContext;
 import com.codingchili.realmregistry.controller.ClientHandler;
 import com.codingchili.realmregistry.controller.RealmHandler;
 
+import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
+
+import static com.codingchili.core.context.FutureHelper.generic;
 
 
 /**
@@ -23,11 +26,6 @@ public class Service implements CoreService {
     }
 
     @Override
-    public void stop(Future<Void> stop) {
-        context.logger().onServiceStopped(stop);
-    }
-
-    @Override
     public void start(Future<Void> start) {
         Future<RegistryContext> providerFuture = Future.future();
 
@@ -35,11 +33,10 @@ public class Service implements CoreService {
             if (future.succeeded()) {
                 context = future.result();
 
-                context.handler(() -> new RealmHandler(context), realms -> {
-                    context.handler(() -> new ClientHandler(context), clients-> {
-                        context.logger().onServiceStarted(start);
-                    });
-                });
+                CompositeFuture.all(
+                        context.handler(() -> new RealmHandler(context)),
+                        context.handler(() -> new ClientHandler(context))
+                ).setHandler(generic(start));
             } else {
                 start.fail(future.cause());
             }

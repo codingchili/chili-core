@@ -1,9 +1,12 @@
 package com.codingchili.core.security;
 
+import com.codingchili.core.files.Configurations;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 import java.time.Instant;
-
-import com.codingchili.core.configuration.CoreStrings;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Robin Duda
@@ -11,21 +14,18 @@ import com.codingchili.core.configuration.CoreStrings;
  *         Used to authenticate requests between services.
  */
 public class Token implements Serializable {
-    private String key;
-    private long expiry;
-    private String domain;
+    private Map<String, Object> properties = new HashMap<>();
+    private String key = "";
+    private String domain = "";
+    private long expiry = Instant.now().getEpochSecond() +
+            Configurations.security().getTokenttl();
 
     public Token() {
     }
 
     public Token(TokenFactory factory, String domain) {
-        try {
-            this.domain = domain;
-            this.expiry = Instant.now().getEpochSecond() + 3600 * 24 * 7;
-            this.key = factory.signToken(domain, this.expiry);
-        } catch (Throwable e) {
-            throw new RuntimeException(CoreStrings.ERROR_TOKEN_FACTORY);
-        }
+        this.domain = domain;
+        factory.sign(this);
     }
 
     public String getKey() {
@@ -53,5 +53,24 @@ public class Token implements Serializable {
     public Token setDomain(String domain) {
         this.domain = domain;
         return this;
+    }
+
+    @JsonIgnore
+    @SuppressWarnings("unchecked")
+    public <T> T getProperty(String key) {
+        return (T) properties.get(key);
+    }
+
+    public Token addProperty(String key, Object value) {
+        properties.put(key, value);
+        return this;
+    }
+
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
     }
 }

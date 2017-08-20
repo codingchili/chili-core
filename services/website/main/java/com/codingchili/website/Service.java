@@ -7,6 +7,8 @@ import com.codingchili.website.controller.WebHandler;
 
 import io.vertx.core.Future;
 
+import static com.codingchili.core.context.FutureHelper.generic;
+
 /**
  * @author Robin Duda
  *
@@ -29,14 +31,7 @@ public class Service implements CoreService {
     }
 
     @Override
-    public void stop(Future<Void> stop) {
-        context.logger().onServiceStopped(stop);
-    }
-
-    @Override
     public void start(Future<Void> start) {
-        context.handler(() -> new WebHandler(context), done -> {
-            context.logger().onServiceStarted(start);
-        });
+        context.handler(() -> new WebHandler(context)).setHandler(generic(start));
     }
 }

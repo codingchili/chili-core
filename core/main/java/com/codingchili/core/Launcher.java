@@ -1,8 +1,5 @@
 package com.codingchili.core;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.Delay;
@@ -14,10 +11,12 @@ import com.codingchili.core.listener.CoreListener;
 import com.codingchili.core.listener.CoreService;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
-
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.files.Configurations.system;
@@ -78,7 +77,7 @@ public class Launcher implements CoreService {
                 initialize(context);
 
                 // the Launcher is a good example of a service.
-                context.service(() -> this, deployed -> {
+                context.service(() -> this).setHandler(deployed -> {
                     if (deployed.failed()) {
                         throw new RuntimeException(deployed.cause());
                     } else {
@@ -100,7 +99,7 @@ public class Launcher implements CoreService {
         String node = nodes.get(0);
 
         if (isDeployable(node)) {
-            context.deploy(nodes.get(0), deploy -> {
+            context.deploy(nodes.get(0)).setHandler(deploy -> {
                 if (deploy.succeeded()) {
                     nodes.remove(0);
 
@@ -147,13 +146,8 @@ public class Launcher implements CoreService {
     }
 
     @Override
-    public void start(Future<Void> start) {
-        context.logger().onServiceStarted(start);
-    }
-
-    @Override
     public void stop(Future<Void> stop) {
-        context.logger().onServiceStopped(stop);
+        context.logger().onServiceStopped(stop, this);
     }
 
     public void initialize(CoreContext core) {

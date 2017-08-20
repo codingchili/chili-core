@@ -1,6 +1,6 @@
 package com.codingchili.core.security;
 
-import com.codingchili.core.security.exception.TokenException;
+import com.codingchili.core.protocol.Serializer;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -8,6 +8,8 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.Base64;
+
+import static com.codingchili.core.configuration.CoreStrings.ERROR_TOKEN_FACTORY;
 
 /**
  * @author Robin Duda
@@ -25,24 +27,23 @@ public class TokenFactory {
     /**
      * @param token Containing token data.
      * @return true if the token is accepted.
-     * @see #verifyToken(String token, String username, Long expiry)
+     * @see #verifyToken(String token, Token token)
      */
     public boolean verifyToken(Token token) {
-        return token != null && (verifyToken(token.getKey(), token.getDomain(), token.getExpiry()));
+        return token != null && (verifyToken(token.getKey(), token));
     }
 
     /**
      * Checks if a token and its parameters is valid against the secret.
      *
      * @param key    hex encoded token to be verified.
-     * @param domain context handler of the requestor.
-     * @param expiry the unix epoch time in which it is expired.
+     * @param token the token to be verified
      * @return true if the token is accepted.
      */
-    private boolean verifyToken(String key, String domain, Long expiry) {
-        if (expiry > Instant.now().getEpochSecond()) {
+    private boolean verifyToken(String key, Token token) {
+        if (token.getExpiry() > Instant.now().getEpochSecond()) {
             try {
-                byte[] result = Base64.getEncoder().encode(generateToken(domain, expiry));
+                byte[] result = Base64.getEncoder().encode(generateKey(token));
 
                 return ByteComparator.compare(result, key.getBytes());
             } catch (NoSuchAlgorithmException | InvalidKeyException ignored) {
@@ -51,30 +52,30 @@ public class TokenFactory {
         return false;
     }
 
-    private byte[] generateToken(String domain, Long expiry) throws NoSuchAlgorithmException, InvalidKeyException {
+    private byte[] generateKey(Token token) throws NoSuchAlgorithmException, InvalidKeyException {
         Mac mac = Mac.getInstance(ALGORITHM);
 
-        SecretKeySpec key = new SecretKeySpec(secret, ALGORITHM);
-        mac.init(key);
+        SecretKeySpec spec = new SecretKeySpec(secret, ALGORITHM);
+        mac.init(spec);
 
-        mac.update(domain.getBytes());
-        mac.update(expiry.toString().getBytes());
+        // encoding to json object here to avoid byte differing byte representations.
+        mac.update(Serializer.pack(token.getProperties()).getBytes());
+        mac.update(token.getDomain().getBytes());
+        mac.update((token.getExpiry() + "").getBytes());
 
         return mac.doFinal();
     }
 
     /**
-     * Generates a new token from a given username.. be careful..
+     * Signs the given token using HMAC.
      *
-     * @param domain the token should be signed with.
-     * @param expiry indicates when the token expires.
-     * @return a signed token as a base64 string.
+     * @param token the token to sign, sets the key of this token.
      */
-    public String signToken(String domain, long expiry) throws TokenException {
+    public void sign(Token token) {
         try {
-            return Base64.getEncoder().encodeToString(generateToken(domain, expiry));
+            token.setKey(Base64.getEncoder().encodeToString(generateKey(token)));
         } catch (InvalidKeyException | NoSuchAlgorithmException e) {
-            throw new TokenException();
+            throw new RuntimeException(ERROR_TOKEN_FACTORY);
         }
     }
 }

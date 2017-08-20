@@ -5,20 +5,24 @@ import com.codingchili.core.context.CoreContext;
 /**
  * @author Robin Duda
  *         <p>
- *         Simple handler that forwards messages on the event bus.
+ *         A bus routerhandler with a static delivery address.
  */
-public class BusForwarder implements CoreHandler {
+public class BusForwarder extends BusRouter {
     private CoreContext core;
     private String address;
 
-    public BusForwarder(CoreContext core, String address) {
+    public BusForwarder(String address) {
         this.address = address;
+    }
+
+    @Override
+    public void init(CoreContext context) {
         this.core = core;
     }
 
     @Override
     public void handle(Request request) {
-        core.bus().send(address, request.data());
+        super.send(request, address);
     }
 
     @Override

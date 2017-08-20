@@ -36,6 +36,7 @@ public abstract class RequestMock {
     private static class ClusterRequestMock extends ClusterRequest {
         ClusterRequestMock(MessageMock message) {
             super(message);
+            super.init();
         }
     }
 

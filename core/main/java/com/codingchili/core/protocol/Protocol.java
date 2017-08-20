@@ -58,7 +58,7 @@ public class Protocol<Handler extends RequestHandler> {
                 try {
                     method.invoke(handler, request);
                 } catch (InvocationTargetException | IllegalAccessException e) {
-                    throw new RuntimeException(e);
+                    request.error(e.getCause());
                 }
             }
         }, access);
@@ -88,8 +88,10 @@ public class Protocol<Handler extends RequestHandler> {
     public Handler get(Access access, String route) throws AuthorizationRequiredException, HandlerMissingException {
         if (handlers.contains(route)) {
             return handlers.get(route, access);
+        } else if (handlers.contains(ANY)) {
+            return handlers.get(ANY, access);   // fallback to any route.
         } else {
-            return handlers.get(ANY, access);
+            throw new HandlerMissingException(route);
         }
     }
 

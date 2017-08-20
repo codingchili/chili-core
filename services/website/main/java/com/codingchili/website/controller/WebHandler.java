@@ -11,8 +11,6 @@ import com.codingchili.core.protocol.Protocol;
 import com.codingchili.core.protocol.RequestHandler;
 import com.codingchili.website.configuration.WebserverContext;
 
-import io.vertx.core.Future;
-
 import static com.codingchili.common.Strings.*;
 
 /**
@@ -54,11 +52,6 @@ public class WebHandler implements CoreHandler {
     @Override
     public void handle(Request request) {
         protocol.get(Access.PUBLIC, request.route()).handle(request);
-    }
-
-    @Override
-    public void start(Future<Void> start) {
-        context.logger().onHandlerStarted(start, this);
     }
 
     @Override

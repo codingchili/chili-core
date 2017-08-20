@@ -1,18 +1,16 @@
 package com.codingchili.core.context;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.codingchili.core.configuration.Environment;
 import com.codingchili.core.configuration.exception.BlockNotConfiguredException;
 import com.codingchili.core.configuration.exception.NoServicesConfiguredForBlock;
 import com.codingchili.core.configuration.exception.RemoteBlockNotConfiguredException;
 import com.codingchili.core.configuration.system.LauncherSettings;
 import com.codingchili.core.files.Configurations;
-
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+
+import java.util.List;
+import java.util.Optional;
 
 import static com.codingchili.core.configuration.CoreStrings.ID_DEFAULT;
 
@@ -29,7 +27,7 @@ public class LaunchContext extends SystemContext {
     /**
      * @param args process arguments to create a launcher for.
      */
-    public LaunchContext(String[] args) {
+    public LaunchContext(String... args) {
         super(Vertx.vertx());
         this.args = args;
     }
@@ -40,8 +38,8 @@ public class LaunchContext extends SystemContext {
     }
 
     @Override
-    public void deploy(String node, Handler<AsyncResult<String>> done) {
-        super.deploy(node, done);
+    public Future<String> deploy(String node) {
+        return super.deploy(node);
     }
 
     public LauncherSettings settings() {

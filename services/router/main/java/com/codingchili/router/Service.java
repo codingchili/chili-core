@@ -1,9 +1,5 @@
 package com.codingchili.router;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Supplier;
-
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.listener.CoreListener;
 import com.codingchili.core.listener.CoreService;
@@ -15,8 +11,11 @@ import com.codingchili.core.listener.transport.UdpListener;
 import com.codingchili.core.listener.transport.WebsocketListener;
 import com.codingchili.router.configuration.RouterContext;
 import com.codingchili.router.controller.RouterHandler;
-
 import io.vertx.core.Future;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
 
 import static io.vertx.core.CompositeFuture.all;
 
@@ -43,11 +42,6 @@ public class Service implements CoreService {
     }
 
     @Override
-    public void stop(Future<Void> stop) {
-        context.logger().onServiceStopped(stop);
-    }
-
-    @Override
     public void start(Future<Void> start) {
         List<Future> deployments = new ArrayList<>();
 
@@ -71,12 +65,15 @@ public class Service implements CoreService {
                     break;
             }
         }
-        all(deployments).setHandler(done -> context.logger().onServiceStarted(start));
+        all(deployments).setHandler(done -> {
+            context.logger().onServiceStarted(this);
+            start.complete();
+        });
     }
 
     private void start(Supplier<CoreListener> listener, WireType type, Future<String> future) {
         context.listener(() -> listener.get()
                 .handler(handler)
-                .settings(() -> context.getListener(type)), future);
+                .settings(() -> context.getListener(type))).setHandler(future);
     }
 }

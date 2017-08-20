@@ -18,6 +18,11 @@ public class EmptyRequest implements Request {
     }
 
     @Override
+    public void init() {
+
+    }
+
+    @Override
     public void write(Object object) {
 
     }

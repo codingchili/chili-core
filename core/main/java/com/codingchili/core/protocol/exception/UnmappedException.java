@@ -10,7 +10,8 @@ import com.codingchili.core.protocol.ResponseStatus;
  *         Never send any exception that might occur directly to clients.
  */
 public class UnmappedException extends CoreException {
-    public UnmappedException() {
-        super("An unmapped exception occured on the server", ResponseStatus.ERROR);
+    public UnmappedException(Throwable throwable) {
+        super(String.format("An unmapped exception '%s' occurred on the server", throwable.getClass().getName()),
+                ResponseStatus.ERROR);
     }
 }

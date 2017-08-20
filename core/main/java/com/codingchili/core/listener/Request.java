@@ -1,7 +1,7 @@
 package com.codingchili.core.listener;
 
 import com.codingchili.core.security.Token;
-
+import io.vertx.core.AsyncResult;
 import io.vertx.core.json.JsonObject;
 
 /**
@@ -10,6 +10,16 @@ import io.vertx.core.json.JsonObject;
  *         Base request class.
  */
 public interface Request {
+
+    /**
+     * Called after construction of the request and before processing begins.
+     * No data should be processed in the constructor since error messages cannot
+     * be propagated to the client if the construction of the request fails.
+     *
+     * All initial processing of data must be done in this method to allow
+     * proper error handling.
+     */
+    void init();
 
     /**
      * Writes an object to the connection that backs the current request.
@@ -23,6 +33,24 @@ public interface Request {
      * but that there is no response.
      */
     void accept();
+
+    /**
+     * Convenience method that converts the request to a future.
+     * - if the future fails: Request::error is called with the cause
+     * - if the future completes with null: Request::accept is called
+     * - if the future completed with value: Request::write is called
+     */
+    default void result(AsyncResult<?> event) {
+        if (event.succeeded()) {
+            if (event.result() != null) {
+                write(event.result());
+            } else {
+                accept();
+            }
+        } else {
+            error(event.cause());
+        }
+    }
 
     /**
      * Write an error and code to the response.

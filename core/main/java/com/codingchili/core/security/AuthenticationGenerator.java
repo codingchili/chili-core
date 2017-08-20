@@ -1,10 +1,5 @@
 package com.codingchili.core.security;
 
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 import com.codingchili.core.configuration.BaseConfigurable;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.AuthenticationDependency;
@@ -14,8 +9,12 @@ import com.codingchili.core.files.JsonFileStore;
 import com.codingchili.core.files.exception.NoSuchResourceException;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.security.exception.SecurityMissingDependencyException;
-
 import io.vertx.core.json.JsonObject;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.files.Configurations.security;

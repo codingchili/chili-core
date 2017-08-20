@@ -145,6 +145,7 @@ public abstract class CoreStrings {
     public static final String ID_MESSAGE = "message";
     public static final String ID_QUERY = "query";
     public static final String ID_OPTIONS = "options";
+    public static final String ID_HANDLER = "handler";
     public static final String ID_UNDEFINED = "undefined";
     // Node names.
     public static final String NODE_LOCAL = "local";
@@ -167,11 +168,11 @@ public abstract class CoreStrings {
     public static final String LOG_NODE = "node";
     public static final String LOG_HOST = "host";
     public static final String LOG_SECURITY = "security";
-    public static final String LOG_HANDLER_STOP = "handler.stop";
-    public static final String LOG_HANDLER_START = "handler.start";
     public static final String LOG_SERVICE_START = "service.start";
     public static final String LOG_SERVICE_STOP = "service.stop";
     public static final String LOG_SERVICE_FAIL = "service.fail";
+    public static final String LOG_LISTENER_STOP = "listener.stop";
+    public static final String LOG_LISTENER_START = "listener.start";
     public static final String LOG_MESSAGE = "message";
     public static final String LOG_LEVEL = "level";
     public static final String LOG_VERTX = "vertx";
@@ -189,6 +190,9 @@ public abstract class CoreStrings {
     public static final String LOG_PREVIOUS = "previous";
     public static final String LOG_NEW = "new";
     public static final String LOG_BENCHMARK = "benchmark";
+    public static final String LOG_NODE_TIMEOUT = "timeout";
+    public static final String LOG_NODE_UNREACHABLE = "unreachable";
+    public static final String LOG_NODE_FAILURE = "failure";
     public static final String LOG_VALUE_EXPIRED = "storage.expired";
     public static final String LOG_VALUE_EXPIRED_MISSING = "storage.failure";
     public static final String LOG_STORAGE_CLEARED = "storage.cleared";
@@ -196,7 +200,7 @@ public abstract class CoreStrings {
     public static final String LOG_STORAGE_DB = "dabatase";
     public static final String LOG_STORAGE_WATCHER = "storage.watcher";
     public static final String[] LOG_HIDDEN_TAGS = new String[]{"dev", "LOCAL", "3.6.3"};
-    public static final String ERROR_TOKEN_FACTORY = "Token factory error to generate token.";
+    public static final String ERROR_TOKEN_FACTORY = "Token factory error when generating token.";
 
     public static final String ERROR_NOT_CLUSTERED = "Running in non-clustered mode.";
     public static final String ERROR_NOT_AUTHORIZED = "Failed to authorize request.";
@@ -556,5 +560,23 @@ public abstract class CoreStrings {
     public static String getDeserializePayloadException(String message, Class clazz) {
         return "Failed to deserialize invalid payload, into '" + clazz.getSimpleName() + "' " +
                 "error was '" + message + "'.";
+    }
+
+    public static String getTimeOutEcxeption(String target, int timeout) {
+        return "Timed out after waiting for  " + timeout + "(ms) for address: " + target;
+    }
+
+    public static String getNodeNotReachable(String target) {
+        return "The remote node '" + target + "' is currently not available.";
+    }
+
+    public static String getNodeFailedToAcknowledge(String target, String route) {
+        return String.format("The remote node '%s' did not acknowledge handler '%s'.",
+                target, route);
+    }
+
+    public static String getServiceTimeout(String target, String route, int timeout) {
+        return String.format("Timed out waiting for '%s' to handle '%s' after %s ms.",
+                target, route, timeout);
     }
 }

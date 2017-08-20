@@ -1,9 +1,9 @@
 package com.codingchili.core.security;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.codingchili.core.storage.Storable;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Robin Duda
@@ -12,7 +12,7 @@ import com.codingchili.core.storage.Storable;
  *         Password is to be consumed once read.
  */
 public class Account implements Storable {
-    private List<String> servers = new ArrayList<>();
+    private Map<String, Object> properties = new HashMap<>();
     private String username = "";
     private String password = "";
     private String email = "";
@@ -54,12 +54,18 @@ public class Account implements Storable {
         return this;
     }
 
-    public List<String> getServers() {
-        return servers;
+    public Map<String, Object> getProperties() {
+        return properties;
     }
 
-    public void setServers(List<String> servers) {
-        this.servers = servers;
+    public Account setProperties(Map<String, Object> properties) {
+        this.properties = properties;
+        return this;
+    }
+
+    public Account addProperty(String key, Object value) {
+        properties.put(key, value);
+        return this;
     }
 
     public String getEmail() {

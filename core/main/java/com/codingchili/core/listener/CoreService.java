@@ -10,9 +10,9 @@ package com.codingchili.core.listener;
 public interface CoreService extends CoreDeployment {
 
     /**
-     * @return the handler of the service for logging purposes.
+     * @return the name of the service for logging purposes.
      */
-    default String service() {
+    default String name() {
         return getClass().getName();
     }
 }

@@ -1,22 +1,23 @@
 package com.codingchili.core.protocol;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-
 import com.codingchili.core.protocol.exception.SerializerPayloadException;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
+import static com.codingchili.core.configuration.CoreStrings.ID_COLLECTION;
 import static com.codingchili.core.configuration.CoreStrings.STORAGE_ARRAY;
 
 /**
@@ -97,6 +98,12 @@ public class Serializer {
     public static JsonObject json(Object object) {
         if (object instanceof JsonObject) {
             return (JsonObject) object;
+        } else if (object instanceof Collection) {
+                JsonArray array = new JsonArray();
+                ((Collection<Object>) object).stream()
+                        .map(Serializer::json)
+                        .forEach(array::add);
+                return new JsonObject().put(ID_COLLECTION, array);
         } else {
             return new JsonObject(pack(object));
         }

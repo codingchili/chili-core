@@ -18,13 +18,19 @@ class WebsocketRequest extends BaseRequest {
     private ServerWebSocket socket;
     private ListenerSettings settings;
     private JsonObject data;
+    private Buffer buffer;
 
 
     WebsocketRequest(ServerWebSocket socket, Buffer buffer, ListenerSettings settings) {
         this.size = buffer.length();
         this.socket = socket;
-        this.data = buffer.toJsonObject();
         this.settings = settings;
+        this.buffer = buffer;
+    }
+
+    @Override
+    public void init() {
+        this.data = buffer.toJsonObject();
     }
 
     @Override

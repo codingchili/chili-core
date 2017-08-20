@@ -1,22 +1,9 @@
 package com.codingchili.core;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.Delay;
 import com.codingchili.core.context.LaunchContext;
 import com.codingchili.core.listener.*;
-
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -24,6 +11,17 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static com.codingchili.core.files.Configurations.system;
 
@@ -123,7 +121,7 @@ public class LauncherIT {
     }
 
     public LaunchContext getLaunchContextFor(String node) {
-        context = new LaunchContext(new String[]{}) {
+        context = new LaunchContext() {
             @Override
             protected List<String> block(String block) {
                 List<String> list = new ArrayList<>();

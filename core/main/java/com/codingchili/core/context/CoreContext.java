@@ -1,16 +1,15 @@
 package com.codingchili.core.context;
 
-import java.util.function.Supplier;
-
 import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.CoreListener;
 import com.codingchili.core.listener.CoreService;
 import com.codingchili.core.logging.Logger;
-
 import io.vertx.core.*;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.file.FileSystem;
+
+import java.util.function.Supplier;
 
 /**
  * @author Robin Duda
@@ -72,33 +71,33 @@ public interface CoreContext {
      * {@link CoreListener} or a plain {@link Verticle}.
      *
      * @param target the target class to deploy.
-     * @param done   callback handler on completion.
+     * @return future completed on deployment.
      */
-    void deploy(String target, Handler<AsyncResult<String>> done);
+    Future<String> deploy(String target);
 
     /**
      * Deploys a new handler in the cluster from given handler with a completion handler.
      *
      * @param handler the handler to be used to handle incoming requests.
-     * @param done    the handler to be invoked on deployment completion.
+     * @return a future to be completed on deployment completion.
      */
-    void handler(Supplier<CoreHandler> handler, Handler<AsyncResult<String>> done);
+    Future<String> handler(Supplier<CoreHandler> handler);
 
     /**
      * Deploys the given verticle with a completion handler.
      *
      * @param listener the verticle to be deployed.
-     * @param done     the handler to be invoked on deployment completion.
+     * @return future completed on deployment completion.
      */
-    void listener(Supplier<CoreListener> listener, Handler<AsyncResult<String>> done);
+    Future<String> listener(Supplier<CoreListener> listener);
 
     /**
      * Deploys the given verticle with a completion handler.
      *
      * @param service the verticle to be deployed.
-     * @param done    the handler to be invoked on deployment completion.
+     * @return future to be completed on deployment completion.
      */
-    void service(Supplier<CoreService> service, Handler<AsyncResult<String>> done);
+    Future<String> service(Supplier<CoreService> service);
 
     /**
      * Undeploys a deployed handler by the deployment id.

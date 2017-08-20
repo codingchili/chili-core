@@ -15,15 +15,21 @@ import io.vertx.core.net.NetSocket;
  */
 class TcpRequest extends BaseRequest {
     private int size;
+    private Buffer buffer;
     private JsonObject data;
     private NetSocket socket;
     private ListenerSettings settings;
 
-    TcpRequest(NetSocket socket, Buffer data, ListenerSettings settings) {
-        this.size = data.length();
-        this.data = data.toJsonObject();
+    TcpRequest(NetSocket socket, Buffer buffer, ListenerSettings settings) {
+        this.size = buffer.length();
+        this.buffer = buffer;
         this.socket = socket;
         this.settings = settings;
+    }
+
+    @Override
+    public void init() {
+        this.data = buffer.toJsonObject();
     }
 
     @Override

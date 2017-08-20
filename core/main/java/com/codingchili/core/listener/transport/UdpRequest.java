@@ -26,6 +26,10 @@ class UdpRequest extends BaseRequest {
         this.context = context;
         this.listener = listener;
         this.packet = packet;
+    }
+
+    @Override
+    public void init() {
         this.data = packet.data().toJsonObject();
     }
 

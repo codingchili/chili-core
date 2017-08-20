@@ -1,8 +1,5 @@
 package com.codingchili.realm;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.codingchili.common.Strings;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.files.Configurations;
@@ -15,12 +12,15 @@ import com.codingchili.realm.instance.configuration.InstanceContext;
 import com.codingchili.realm.instance.configuration.InstanceSettings;
 import com.codingchili.realm.instance.controller.InstanceHandler;
 import com.codingchili.realm.model.RealmNotUniqueException;
-
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.codingchili.core.context.FutureHelper.generic;
 import static com.codingchili.core.files.Configurations.system;
 import static com.codingchili.realm.configuration.RealmServerSettings.PATH_REALMSERVER;
 
@@ -37,11 +37,6 @@ public class Service implements CoreService {
     }
 
     @Override
-    public void stop(Future<Void> stop) {
-        context.logger().onServiceStopped(stop);
-    }
-
-    @Override
     public void start(Future<Void> start) {
         RealmServerSettings server = Configurations.get(PATH_REALMSERVER, RealmServerSettings.class);
         List<Future> deployments = new ArrayList<>();
@@ -53,9 +48,7 @@ public class Service implements CoreService {
             deploy(future, realm);
             deployments.add(future);
         }
-        CompositeFuture.all(deployments).setHandler(done -> {
-            context.logger().onServiceStarted(start);
-        });
+        CompositeFuture.all(deployments).setHandler(generic(start));
     }
 
     /**
@@ -77,7 +70,7 @@ public class Service implements CoreService {
                     CoreListener listener = new ClusterListener()
                             .handler(new CharacterHandler(realmContext));
 
-                    realmContext.listener(() -> listener, deploy -> {
+                    realmContext.listener(() -> listener).setHandler(deploy -> {
                         if (deploy.failed()) {
                             provider.result().onDeployRealmFailure(realm.getName());
                             throw new RuntimeException(deploy.cause());
@@ -100,7 +93,7 @@ public class Service implements CoreService {
             Future deploy = Future.future();
             futures.add(deploy);
 
-            context.handler(() -> new InstanceHandler(new InstanceContext(context, instance)), (done) -> {
+            context.handler(() -> new InstanceHandler(new InstanceContext(context, instance))).setHandler((done) -> {
                 if (done.succeeded()) {
                     deploy.complete();
                 } else {

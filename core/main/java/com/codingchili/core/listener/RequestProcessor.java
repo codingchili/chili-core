@@ -1,7 +1,6 @@
 package com.codingchili.core.listener;
 
 import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
 import com.codingchili.core.protocol.exception.RequestPayloadSizeException;
 
@@ -24,11 +23,12 @@ public class RequestProcessor {
             request.error(new RequestPayloadSizeException(request.maxSize()));
         } else {
             try {
+                request.init();
                 handler.handle(request);
             } catch (HandlerMissingException missing) {
                 request.error(missing);
                 core.logger().onHandlerMissing(request.route());
-            } catch (CoreRuntimeException e) {
+            } catch (Throwable e) {
                 request.error(e);
             }
         }

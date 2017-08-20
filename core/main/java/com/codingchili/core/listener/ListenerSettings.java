@@ -1,13 +1,12 @@
 package com.codingchili.core.listener;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.vertx.core.http.HttpServerOptions;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import io.vertx.core.http.HttpServerOptions;
 
 /**
  * @author Robin Duda
@@ -19,10 +18,10 @@ public class ListenerSettings {
     private Map<String, Endpoint> api = new HashMap<>();
     private WireType type = WireType.REST;
     private Set<Integer> actualPorts = new HashSet<>();
-    private String defaultTarget = "no target specified";
+    private String defaultTarget = "default";
     private int port = 8080;
     private int timeout = 3000;
-    private int maxRequestBytes = 64;
+    private int maxRequestBytes = 256;
 
     /**
      * @return timeout in MS after the router times out the request.

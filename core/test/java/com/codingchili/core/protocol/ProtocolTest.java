@@ -227,5 +227,8 @@ public class ProtocolTest {
         public int size() {
             return 0;
         }
+
+        @Override
+        public void init() {}
     }
 }

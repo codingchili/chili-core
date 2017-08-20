@@ -21,10 +21,10 @@ import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_STATUS;
  *         Size does not apply to these requests.
  */
 public class ClusterRequest extends BaseRequest {
+    private final Message message;
     private int timeout = Configurations.system().getClusterTimeout();
     private Buffer buffer;
-    private final JsonObject json;
-    private final Message message;
+    private JsonObject json;
 
     protected ClusterRequest(Request request) {
         this(((ClusterRequest) request).getMessage());
@@ -37,6 +37,11 @@ public class ClusterRequest extends BaseRequest {
      * @param message the eventbus message
      */
     public ClusterRequest(Message message) {
+        this.message = message;
+    }
+
+    @Override
+    public void init() {
         if (message.body() instanceof Buffer) {
             this.buffer = (Buffer) message.body();
         }
@@ -45,8 +50,6 @@ public class ClusterRequest extends BaseRequest {
         } else {
             this.json = (JsonObject) message.body();
         }
-
-        this.message = message;
     }
 
     @Override

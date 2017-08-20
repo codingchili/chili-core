@@ -93,9 +93,6 @@ public abstract class Strings extends CoreStrings {
     public static final String LOG_INSTANCE_DEPLOY_ERROR = "instance.deploy.error";
     public static final String ID_PIECE = "piece";
     public static final String LOG_USER = "user";
-    public static final String LOG_NODE_TIMEOUT = "timeout";
-    public static final String LOG_NODE_UNREACHABLE = "unreachable";
-    public static final String LOG_NODE_FAILURE = "failure";
 
     //patching
     public static final String PATCH_IDENTIFIER = "patch";
@@ -116,23 +113,5 @@ public abstract class Strings extends CoreStrings {
 
     public static String getCharacterMissingError(String character) {
         return "Character " + character + " does not exist.";
-    }
-
-    public static String getTimeOutEcxeption(String target, int timeout) {
-        return "Timed out after waiting for  " + timeout + "(ms) for address: " + target;
-    }
-
-    public static String getNodeNotReachable(String target) {
-        return "The remote node '" + target + "' is currently not available.";
-    }
-
-    public static String getNodeFailedToAcknowledge(String target, String route) {
-        return String.format("The remote node '%s' did not acknowledge handler '%s'.",
-                target, route);
-    }
-
-    public static String getServiceTimeout(String target, String route, int timeout) {
-        return String.format("Timed out waiting for '%s' to handle '%s' after %s ms.",
-                target, route, timeout);
     }
 }

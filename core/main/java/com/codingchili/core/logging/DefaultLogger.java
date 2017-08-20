@@ -1,16 +1,16 @@
 package com.codingchili.core.logging;
 
-import java.time.Instant;
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
-
 import com.codingchili.core.configuration.Environment;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.Delay;
-import com.codingchili.core.listener.CoreHandler;
-
+import com.codingchili.core.listener.CoreListener;
+import com.codingchili.core.listener.CoreService;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
+
+import java.time.Instant;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.files.Configurations.launcher;
@@ -76,35 +76,37 @@ public abstract class DefaultLogger extends Handler implements Logger {
     }
 
     @Override
-    public void onServiceStarted(Future<Void> future) {
-        log(event(LOG_SERVICE_START, Level.STARTUP));
-        future.complete();
+    public void onServiceStarted(CoreService service) {
+        log(event(LOG_SERVICE_START, Level.STARTUP)
+            .put(ID_NAME, service.name()));
     }
 
     @Override
-    public void onServiceStopped(Future<Void> future) {
-        log(event(LOG_SERVICE_STOP, Level.SEVERE));
+    public void onServiceStopped(Future<Void> future, CoreService service) {
+        log(event(LOG_SERVICE_STOP, Level.SEVERE)
+            .put(ID_NAME, service.name()));
         Delay.forShutdown(future);
+    }
+
+    @Override
+    public void onListenerStarted(CoreListener listener) {
+        log(event(LOG_LISTENER_START, Level.STARTUP)
+            .put(ID_TYPE, listener.getClass().getSimpleName())
+            .put(ID_HANDLER, listener.toString())
+        );
+    }
+
+    @Override
+    public void onListenerStopped(CoreListener listener) {
+        log(event(LOG_LISTENER_STOP, Level.SEVERE)
+                .put(ID_TYPE, listener.getClass().getSimpleName())
+                .put(ID_HANDLER, listener.toString()));
     }
 
     @Override
     public void onServiceFailed(Throwable cause) {
         log(event(LOG_SERVICE_FAIL, Level.SEVERE)
                 .put(ID_MESSAGE, cause.getMessage()));
-    }
-
-    @Override
-    public void onHandlerStarted(Future<Void> future, CoreHandler handler) {
-        log(event(LOG_HANDLER_START, Level.INFO)
-                .put(ID_MESSAGE, handler.address()));
-        future.complete();
-    }
-
-    @Override
-    public void onHandlerStopped(Future<Void> future, CoreHandler handler) {
-        log(event(LOG_HANDLER_STOP, Level.WARNING)
-                .put(ID_MESSAGE, handler.address()));
-        future.complete();
     }
 
     @Override

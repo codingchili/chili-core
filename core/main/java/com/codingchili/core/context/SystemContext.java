@@ -1,10 +1,5 @@
 package com.codingchili.core.context;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-import java.util.concurrent.CountDownLatch;
-import java.util.function.Supplier;
-
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.files.Configurations;
@@ -13,13 +8,18 @@ import com.codingchili.core.listener.transport.ClusterListener;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
 import com.codingchili.core.logging.Logger;
-
 import io.vertx.core.*;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.dropwizard.MetricsService;
 
-import static com.codingchili.core.configuration.CoreStrings.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.function.Supplier;
+
+import static com.codingchili.core.configuration.CoreStrings.ID_SYSTEM;
+import static com.codingchili.core.configuration.CoreStrings.getUnsupportedDeployment;
 
 
 /**
@@ -33,10 +33,25 @@ public class SystemContext implements CoreContext {
     private ConsoleLogger console;
     protected Vertx vertx;
 
+    /**
+     * Creates a new system context that shares vertx instance with the given context.
+     * @param context context to clone vertx instance from.
+     */
     protected SystemContext(CoreContext context) {
         this(context.vertx());
     }
 
+    /**
+     * Creates a new vertx instance to be used for this context.
+     */
+    public SystemContext() {
+        this(Vertx.vertx());
+    }
+
+    /**
+     * Uses the given vertx context.
+     * @param vertx instance to use for this context.
+     */
     public SystemContext(Vertx vertx) {
         this.vertx = vertx;
         this.console = new ConsoleLogger(this);
@@ -45,6 +60,10 @@ public class SystemContext implements CoreContext {
 
     private void initialize() {
         executor = vertx.createSharedWorkerExecutor("systemcontext", system().getWorkerPoolSize());
+
+        vertx.exceptionHandler(throwable -> {
+           logger().onError(throwable);
+        });
 
         MetricsService metrics = MetricsService.create(vertx);
         periodic(this::getMetricTimer, CoreStrings.LOG_METRICS, handler -> {
@@ -103,7 +122,7 @@ public class SystemContext implements CoreContext {
     }
 
     @Override
-    public void deploy(String target, Handler<AsyncResult<String>> done) {
+    public Future<String> deploy(String target) {
         Supplier<Object> deployment = () -> {
             try {
                 return Class.forName(target).getConstructor().newInstance();
@@ -114,63 +133,71 @@ public class SystemContext implements CoreContext {
         };
 
         if (deployment.get() instanceof CoreHandler) {
-            handler(() -> (CoreHandler) deployment.get(), done);
+            return handler(() -> (CoreHandler) deployment.get());
         } else if (deployment.get() instanceof CoreListener) {
-            listener(() -> {
+            return listener(() -> {
                 CoreListener listener = (CoreListener) deployment.get();
-                listener.handler(new BusForwarder(this, target));
+                listener.handler(new BusRouter());
                 listener.settings(ListenerSettings::new);
                 return listener;
-            }, done);
+            });
         } else if (deployment.get() instanceof CoreService) {
-            service(() -> (CoreService) deployment.get(), done);
+            return service(() -> (CoreService) deployment.get());
         } else if (deployment.get() instanceof Verticle) {
-            deployN(target, done);
+            return deployN(target);
         } else {
-            done.handle(Future.failedFuture(getUnsupportedDeployment(target)));
+            return Future.failedFuture(getUnsupportedDeployment(target));
         }
     }
 
-    private void deployN(String verticle, Handler<AsyncResult<String>> done) {
-        vertx.deployVerticle(verticle,
-                new DeploymentOptions().setInstances(system().getHandlers()), done);
+    private Future<String> deployN(String verticle) {
+        Future<String> future = Future.future();
+        vertx.deployVerticle(verticle, new DeploymentOptions().setInstances(system().getHandlers()), future);
+        return future;
     }
 
     @Override
-    public void handler(Supplier<CoreHandler> handler, Handler<AsyncResult<String>> done) {
+    public Future<String> handler(Supplier<CoreHandler> handler) {
+        Future<String> future = Future.future();
         deployN(() -> new ClusterListener()
                 .settings(ListenerSettings::new)
-                .handler(handler.get()), done);
+                .handler(handler.get()), future);
+        return future;
     }
 
     @Override
-    public void listener(Supplier<CoreListener> listener, Handler<AsyncResult<String>> done) {
-        deployN(listener::get, done);
+    public Future<String> listener(Supplier<CoreListener> listener) {
+        Future<String> future = Future.future();
+        deployN(listener::get, future);
+        return future;
     }
 
     @Override
-    public void service(Supplier<CoreService> service, Handler<AsyncResult<String>> done) {
-        deployN(service::get, done);
+    public Future<String> service(Supplier<CoreService> service) {
+        Future<String> future = Future.future();
+        deployN(service::get, future);
+        return future;
     }
 
-    private void deployN(Supplier<CoreDeployment> supplier, Handler<AsyncResult<String>> done) {
+    private void deployN(Supplier<CoreDeployment> supplier, Future<String> done) {
         CoreDeployment deployment = supplier.get();
-        CountDownLatch latch = new CountDownLatch(getHandlerCount(deployment));
+        int handlerCount = getHandlerCount(deployment);
+        CountDownLatch latch = new CountDownLatch(handlerCount);
         String deploymentId = UUID.randomUUID().toString();
         List<String> completed = new ArrayList<>();
-        int toDeploy = getHandlerCount(deployment);
 
-        for (int i = 0; i < getHandlerCount(deployment); i++) {
-            vertx.deployVerticle(new CoreVerticle(deployment, this), deployed -> {
+        for (int i = 0; i < handlerCount; i++) {
+            CoreVerticle verticle = new CoreVerticle(deployment, this);
+            vertx.deployVerticle(verticle, deployed -> {
                 if (deployed.succeeded()) {
                     completed.add(deployed.result());
                     latch.countDown();
                     if (latch.getCount() == 0) {
-                        done.handle(Future.succeededFuture(deploymentId));
+                        done.complete(deploymentId);
                         deployments.put(deploymentId, completed);
                     }
                 } else {
-                    done.handle(Future.failedFuture(deployed.cause()));
+                    done.tryFail(deployed.cause());
                 }
             });
             if (i < getHandlerCount(deployment) - 1)

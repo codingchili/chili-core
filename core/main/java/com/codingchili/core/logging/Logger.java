@@ -1,7 +1,7 @@
 package com.codingchili.core.logging;
 
-import com.codingchili.core.listener.CoreHandler;
-
+import com.codingchili.core.listener.CoreListener;
+import com.codingchili.core.listener.CoreService;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 
@@ -26,25 +26,6 @@ public interface Logger extends JsonLogger, StringLogger {
      * Emit when multiple attempts to initialize singleton.
      */
     void onAlreadyInitialized();
-
-    /**
-     * Emit when a new server has started.
-     *
-     * @param future callback is called when the event is written
-     */
-    void onServiceStarted(Future<Void> future);
-
-    /**
-     * Emit when a server has stopped.
-     *
-     * @param future callback is called when the event is written.
-     */
-    void onServiceStopped(Future<Void> future);
-
-    /**
-     * @param cause the reason why the service has failed.
-     */
-    void onServiceFailed(Throwable cause);
 
     /**
      * Emit when failing to load specified fileName;
@@ -146,18 +127,33 @@ public interface Logger extends JsonLogger, StringLogger {
     void onSecurityDependencyMissing(String target, String identifier);
 
     /**
-     * called when a handler is stopped.
-     *
-     * @param future callback
-     * @param handler the handler that was stopped
+     * Emit when a new server has started.
      */
-    void onHandlerStopped(Future<Void> future, CoreHandler handler);
+    void onServiceStarted(CoreService service);
 
     /**
-     * called when a handler is started.
+     * Emit when a server has stopped.
      *
-     * @param future callback
-     * @param handler the handler that was started
+     * @param future callback is called when the event is written.
      */
-    void onHandlerStarted(Future<Void> future, CoreHandler handler);
+    void onServiceStopped(Future<Void> future, CoreService service);
+
+    /**
+     * @param cause the reason why the name has failed.
+     */
+    void onServiceFailed(Throwable cause);
+
+    /**
+     * called when a listener is started.
+     *
+     * @param listener the listener that was started
+     */
+    void onListenerStarted(CoreListener listener);
+
+    /**
+     * called when a listener is stopped.
+     *
+     * @param listener the listener that was stopped
+     */
+    void onListenerStopped(CoreListener listener);
 }

@@ -1,9 +1,5 @@
 package com.codingchili.core.storage;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.storage.exception.NothingToRemoveException;
@@ -21,13 +17,17 @@ import com.googlecode.cqengine.query.QueryFactory;
 import com.googlecode.cqengine.query.option.AttributeOrder;
 import com.googlecode.cqengine.query.option.QueryOptions;
 import com.googlecode.cqengine.resultset.ResultSet;
-
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 import static com.googlecode.cqengine.query.QueryFactory.*;
-import static io.vertx.core.Future.*;
+import static io.vertx.core.Future.failedFuture;
+import static io.vertx.core.Future.succeededFuture;
 
 /**
  * @author Robin Duda
@@ -262,12 +262,10 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
 
                 context.blocking(blocking -> {
                     ResultSet<Value> values = db.retrieve(builder, getQueryOptions());
-                    List<Value> list = StreamSupport.stream(values.spliterator(), false)
+                    blocking.complete(StreamSupport.stream(values.spliterator(), false)
                             .skip(pageSize * page)
                             .limit(pageSize)
-                            .collect(Collectors.toList());
-
-                    handler.handle(succeededFuture(list));
+                            .collect(Collectors.toList()));
                 }, handler);
             }
 

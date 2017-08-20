@@ -1,17 +1,17 @@
 package com.codingchili.core.listener.transport;
 
-import java.util.function.Supplier;
-
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.CoreListener;
 import com.codingchili.core.listener.ListenerSettings;
 import com.codingchili.core.listener.RequestProcessor;
-
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetSocket;
 
+import java.util.function.Supplier;
+
+import static com.codingchili.core.configuration.CoreStrings.LOG_AT;
 import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
 
 /**
@@ -27,6 +27,7 @@ public class TcpListener implements CoreListener {
     @Override
     public void init(CoreContext core) {
         this.core = core;
+        handler.init(core);
     }
 
     @Override
@@ -62,5 +63,11 @@ public class TcpListener implements CoreListener {
 
     private void packet(NetSocket socket, Buffer data) {
         RequestProcessor.accept(core, handler, new TcpRequest(socket, data, settings.get()));
+    }
+
+    @Override
+    public String toString() {
+        return handler.getClass().getSimpleName() + LOG_AT + handler.address() + " port :" +
+                settings.get().getPort();
     }
 }

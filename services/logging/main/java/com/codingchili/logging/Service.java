@@ -7,7 +7,10 @@ import com.codingchili.logging.configuration.LogContext;
 import com.codingchili.logging.controller.ClientLogHandler;
 import com.codingchili.logging.controller.ServiceLogHandler;
 
+import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
+
+import static com.codingchili.core.context.FutureHelper.generic;
 
 /**
  * @author Robin Duda
@@ -22,16 +25,10 @@ public class Service implements CoreService {
     }
 
     @Override
-    public void stop(Future<Void> stop) {
-        context.logger().onServiceStopped(stop);
-    }
-
-    @Override
     public void start(Future<Void> start) {
-        context.handler(() -> new ServiceLogHandler(context), service -> {
-            context.handler(() -> new ClientLogHandler(context), client -> {
-                context.logger().onServiceStarted(start);
-            });
-        });
+        CompositeFuture.all(
+                context.handler(() -> new ServiceLogHandler(context)),
+                context.handler(() -> new ClientLogHandler(context))
+        ).setHandler(generic(start));
     }
 }

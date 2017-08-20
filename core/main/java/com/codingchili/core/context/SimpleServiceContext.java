@@ -27,6 +27,14 @@ public class SimpleServiceContext extends ServiceContext {
     }
 
     /**
+     * Creates a new simple name context backed by a new system context.
+     * @param address the name and identity of the node.
+     */
+    public SimpleServiceContext(String address) {
+        this(new SystemContext(), address);
+    }
+
+    /**
      * @return the configuration associated with the current context.
      */
     public ServiceConfigurable service() {

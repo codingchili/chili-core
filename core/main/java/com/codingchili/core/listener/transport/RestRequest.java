@@ -1,20 +1,18 @@
 package com.codingchili.core.listener.transport;
 
-import java.util.Map;
-
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.listener.BaseRequest;
 import com.codingchili.core.listener.Endpoint;
 import com.codingchili.core.listener.ListenerSettings;
 import com.codingchili.core.protocol.Protocol;
 import com.codingchili.core.protocol.ResponseStatus;
-
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
-import io.vertx.core.json.DecodeException;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
+
+import java.util.Map;
 
 /**
  * @author Robin Duda
@@ -33,19 +31,22 @@ class RestRequest extends BaseRequest {
         this.context = context;
         this.request = request;
         this.settings = settings;
+    }
 
-        // Eager initialization; these values will always be used.
+    @Override
+    public void init() {
         parseData();
         parseHeaders();
     }
 
     private void parseData() {
-        try {
-            data = context.getBodyAsJson();
-        } catch (DecodeException e) {
+        String body = context.getBodyAsString();
+        if (body == null || body.length() == 0) {
             request.params().forEach(entry -> {
                 data.put(entry.getKey(), entry.getValue());
             });
+        } else {
+            data = new JsonObject(body);
         }
 
         parseApi();

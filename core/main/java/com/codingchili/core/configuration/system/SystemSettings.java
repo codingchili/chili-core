@@ -41,23 +41,25 @@ public class SystemSettings extends BaseConfigurable {
     /**
      * @param metricRate sets the interval in MS which metrics are collected.
      */
-    public void setMetricRate(int metricRate) {
+    public SystemSettings setMetricRate(int metricRate) {
         this.metricRate = metricRate;
+        return this;
     }
 
     /**
-     * @return the number of handlers to deploy for each service.
+     * @return the number of handlers to deploy for each name.
      */
     public int getHandlers() {
         return handlers;
     }
 
     /**
-     * @param handlers get the number of handlers to deploy for each service.
+     * @param handlers get the number of handlers to deploy for each name.
      *                 This is a recommendataion based on the available processors.
      */
-    public void setHandlers(int handlers) {
+    public SystemSettings setHandlers(int handlers) {
         this.handlers = handlers;
+        return this;
     }
 
     /**
@@ -70,13 +72,14 @@ public class SystemSettings extends BaseConfigurable {
     /**
      * @param deployTimeout the time in MS for a deploy to time out and fail.
      */
-    public void setDeployTimeout(int deployTimeout) {
+    public SystemSettings setDeployTimeout(int deployTimeout) {
         this.deployTimeout = deployTimeout;
+        return this;
     }
 
     /**
      * @return the timeout in MS which the log handler has to report to a remote
-     * or local log repository, before the service shuts down.
+     * or local log repository, before the name shuts down.
      */
     public int getShutdownLogTimeout() {
         return shutdownLogTimeout;
@@ -84,10 +87,11 @@ public class SystemSettings extends BaseConfigurable {
 
     /**
      * @param shutdownLogTimeout sets the time in MS which the log handler has to report
-     *                           to a remote or local log repository before the service is shut down.
+     *                           to a remote or local log repository before the name is shut down.
      */
-    public void setShutdownLogTimeout(int shutdownLogTimeout) {
+    public SystemSettings setShutdownLogTimeout(int shutdownLogTimeout) {
         this.shutdownLogTimeout = shutdownLogTimeout;
+        return this;
     }
 
     /**
@@ -100,8 +104,9 @@ public class SystemSettings extends BaseConfigurable {
     /**
      * @param shutdownHookTimeout set the shutdown hook timeout in MS.
      */
-    public void setShutdownHookTimeout(int shutdownHookTimeout) {
+    public SystemSettings setShutdownHookTimeout(int shutdownHookTimeout) {
         this.shutdownHookTimeout = shutdownHookTimeout;
+        return this;
     }
 
     /**
@@ -115,8 +120,9 @@ public class SystemSettings extends BaseConfigurable {
      * @param metrics if true enables the gathering of metrics, metrics are then logged
      *                to the configured logger.
      */
-    public void setMetrics(boolean metrics) {
+    public SystemSettings setMetrics(boolean metrics) {
         this.metrics = metrics;
+        return this;
     }
 
     /**
@@ -137,8 +143,9 @@ public class SystemSettings extends BaseConfigurable {
     /**
      * @param consoleLogging indicates if logging to console is allowed.
      */
-    public void setConsoleLogging(boolean consoleLogging) {
+    public SystemSettings setConsoleLogging(boolean consoleLogging) {
         this.consoleLogging = consoleLogging;
+        return this;
     }
 
     /**
@@ -151,8 +158,9 @@ public class SystemSettings extends BaseConfigurable {
     /**
      * @param configurationPoll set the interval time in MS which configuration files are checked for changes.
      */
-    public void setConfigurationPoll(int configurationPoll) {
+    public SystemSettings setConfigurationPoll(int configurationPoll) {
         this.configurationPoll = configurationPoll;
+        return this;
     }
 
     /**
@@ -165,8 +173,9 @@ public class SystemSettings extends BaseConfigurable {
     /**
      * @param cachedFilePoll set the time in ms for which files that are cached are refreshed.
      */
-    public void setCachedFilePoll(int cachedFilePoll) {
+    public SystemSettings setCachedFilePoll(int cachedFilePoll) {
         this.cachedFilePoll = cachedFilePoll;
+        return this;
     }
 
     /**
@@ -180,31 +189,35 @@ public class SystemSettings extends BaseConfigurable {
      * @param workerPoolSize sets the number of workers in worker pools.
      *                       must be called before the launcher is invoked.
      */
-    public void setWorkerPoolSize(int workerPoolSize) {
+    public SystemSettings setWorkerPoolSize(int workerPoolSize) {
         this.workerPoolSize = workerPoolSize;
+        return this;
     }
 
     public int getClusterTimeout() {
         return clusterTimeout;
     }
 
-    public void setClusterTimeout(int clusterTimeout) {
+    public SystemSettings setClusterTimeout(int clusterTimeout) {
         this.clusterTimeout = clusterTimeout;
+        return this;
     }
 
     public int getListeners() {
         return listeners;
     }
 
-    public void setListeners(int listeners) {
+    public SystemSettings setListeners(int listeners) {
         this.listeners = listeners;
+        return this;
     }
 
     public int getServices() {
         return services;
     }
 
-    public void setServices(int services) {
+    public SystemSettings setServices(int services) {
         this.services = services;
+        return this;
     }
 }

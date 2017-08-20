@@ -1,17 +1,17 @@
 package com.codingchili.core.listener.transport;
 
-import java.util.function.Supplier;
-
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.DeploymentAware;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.CoreListener;
 import com.codingchili.core.listener.ListenerSettings;
 import com.codingchili.core.listener.RequestProcessor;
-
 import io.vertx.core.Future;
 import io.vertx.core.datagram.DatagramPacket;
 
+import java.util.function.Supplier;
+
+import static com.codingchili.core.configuration.CoreStrings.LOG_AT;
 import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
 
 /**
@@ -27,6 +27,7 @@ public class UdpListener implements CoreListener, DeploymentAware {
     @Override
     public void init(CoreContext core) {
         this.core = core;
+        handler.init(core);
     }
 
     @Override
@@ -66,5 +67,11 @@ public class UdpListener implements CoreListener, DeploymentAware {
     @Override
     public int instances() {
         return 1;
+    }
+
+    @Override
+    public String toString() {
+        return handler.getClass().getSimpleName() + LOG_AT + handler.address() + " port :" +
+                settings.get().getPort();
     }
 }

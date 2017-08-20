@@ -7,6 +7,8 @@ import com.codingchili.patching.controller.PatchHandler;
 
 import io.vertx.core.Future;
 
+import static com.codingchili.core.context.FutureHelper.generic;
+
 /**
  * @author Robin Duda
  *         website and resource server.
@@ -20,14 +22,7 @@ public class Service implements CoreService {
     }
 
     @Override
-    public void stop(Future<Void> stop) {
-        context.logger().onServiceStopped(stop);
-    }
-
-    @Override
     public void start(Future<Void> start) {
-        context.handler(() -> new PatchHandler(context), (done) -> {
-            context.logger().onServiceStarted(start);
-        });
+        context.handler(() -> new PatchHandler(context)).setHandler(generic(start));
     }
 }

@@ -27,7 +27,7 @@ public class RestListenerIT extends TransportTestCases {
     }
 
     @Test
-    public void testRouterSupportsGet(TestContext context) {
+    public void testListenerSupportsGet(TestContext context) {
         Async async = context.async();
 
         sendGetRequest(String.format("/?%s=%s&%s=%s", PROTOCOL_ROUTE, ID_PING, PROTOCOL_TARGET, NODE_ROUTER),
