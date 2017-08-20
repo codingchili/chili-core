@@ -1,7 +1,7 @@
 package com.codingchili.realmregistry.controller;
 
 import com.codingchili.core.listener.Request;
-import com.codingchili.core.listener.transport.ClusterRequest;
+import com.codingchili.core.listener.RequestWrapper;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Token;
 import com.codingchili.realmregistry.configuration.RegisteredRealm;
@@ -11,7 +11,7 @@ import static com.codingchili.common.Strings.*;
 /**
  * @author Robin Duda
  */
-class RealmRequest extends ClusterRequest {
+class RealmRequest extends RequestWrapper {
     private RegisteredRealm realm = new RegisteredRealm();
 
     RealmRequest(Request request) {

@@ -2,7 +2,7 @@ package com.codingchili.authentication.controller;
 
 
 import com.codingchili.core.listener.Request;
-import com.codingchili.core.listener.transport.ClusterRequest;
+import com.codingchili.core.listener.RequestWrapper;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Account;
 
@@ -14,7 +14,7 @@ import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_CONNECTION
  *         <p>
  *         Client authentication request.
  */
-class ClientRequest extends ClusterRequest {
+class ClientRequest extends RequestWrapper {
 
     ClientRequest(Request request) {
         super(request);

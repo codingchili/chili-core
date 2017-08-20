@@ -1,7 +1,7 @@
 package com.codingchili.realm.controller;
 
 import com.codingchili.core.listener.Request;
-import com.codingchili.core.listener.transport.ClusterRequest;
+import com.codingchili.core.listener.RequestWrapper;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Account;
 
@@ -10,12 +10,10 @@ import static com.codingchili.common.Strings.*;
 /**
  * @author Robin Duda
  */
-class RealmRequest extends ClusterRequest {
-    private final Request request;
+class RealmRequest extends RequestWrapper {
 
     RealmRequest(Request request) {
         super(request);
-        this.request = request;
     }
 
     public String account() {

@@ -36,7 +36,7 @@ public class ClusterListenerTest {
     private String deployment;
 
     @Rule
-    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(8, TimeUnit.SECONDS);
 
     @Before
     public void setUp(TestContext test) {
