@@ -83,6 +83,11 @@ public class Account implements Storable {
     }
 
     @Override
+    public int hashCode() {
+        return id().hashCode();
+    }
+
+    @Override
     public boolean equals(Object other) {
         return compareTo(other) == 0;
     }
