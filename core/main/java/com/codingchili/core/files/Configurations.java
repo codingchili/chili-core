@@ -1,16 +1,5 @@
 package com.codingchili.core.files;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
-
 import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.exception.InvalidConfigurableException;
@@ -25,8 +14,18 @@ import com.codingchili.core.files.exception.NoSuchResourceException;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.Serializer;
-
 import io.vertx.core.json.JsonObject;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 

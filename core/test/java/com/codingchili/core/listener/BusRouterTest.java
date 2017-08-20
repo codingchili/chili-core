@@ -46,7 +46,7 @@ public class BusRouterTest {
     private CoreContext core;
 
     @Rule
-    public Timeout timeout = new Timeout(500, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(3, TimeUnit.SECONDS);
 
     @Before
     public void setUp() {

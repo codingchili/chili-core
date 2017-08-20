@@ -6,8 +6,8 @@ import com.codingchili.core.configuration.exception.NoServicesConfiguredForBlock
 import com.codingchili.core.configuration.exception.RemoteBlockNotConfiguredException;
 import com.codingchili.core.configuration.system.LauncherSettings;
 import com.codingchili.core.files.Configurations;
-import io.vertx.core.Future;
-import io.vertx.core.Vertx;
+import com.codingchili.core.logging.ConsoleLogger;
+import com.codingchili.core.logging.Logger;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,27 +19,16 @@ import static com.codingchili.core.configuration.CoreStrings.ID_DEFAULT;
  *         <p>
  *         Provides context for the Launcher system.
  */
-public class LaunchContext extends SystemContext {
+public class LaunchContext {
     private static final String BLOCK_DEFAULT = "default";
-    private static final String LAUNCHER = "launcher";
     private String[] args = new String[] {};
+    private Logger console = new ConsoleLogger();
 
     /**
      * @param args process arguments to create a launcher for.
      */
     public LaunchContext(String... args) {
-        super(Vertx.vertx());
         this.args = args;
-    }
-
-    @Override
-    public String node() {
-        return LAUNCHER;
-    }
-
-    @Override
-    public Future<String> deploy(String node) {
-        return super.deploy(node);
     }
 
     public LauncherSettings settings() {
@@ -143,10 +132,7 @@ public class LaunchContext extends SystemContext {
         }
     }
 
-    public void setVertx(Vertx vertx) {
-        if (this.vertx != null) {
-            this.vertx.close();
-        }
-        this.vertx = vertx;
+    public Logger logger() {
+        return console;
     }
 }

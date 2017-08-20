@@ -1,10 +1,10 @@
 package com.codingchili.core;
 
 import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.Delay;
 import com.codingchili.core.context.LaunchContext;
 import com.codingchili.core.context.LauncherCommandExecutor;
+import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.CoreListener;
@@ -29,7 +29,7 @@ import static com.codingchili.core.files.Configurations.system;
 public class Launcher implements CoreService {
     private static final ConsoleLogger logger = new ConsoleLogger();
     private static List<String> nodes = new ArrayList<>();
-    private LaunchContext context;
+    private SystemContext core;
 
     /**
      * Starts the launcher with the given arguments.
@@ -42,7 +42,6 @@ public class Launcher implements CoreService {
 
     public Launcher(LaunchContext context) {
         Future<Void> future = Future.future();
-        this.context = context;
 
         logger.log(CoreStrings.getStartupText(context.settings().getVersion()), Level.STARTUP);
 
@@ -67,17 +66,17 @@ public class Launcher implements CoreService {
 
     void exit() {
         logger.reset();
-        context.vertx().close();
     }
 
     private void cluster() {
         Vertx.clusteredVertx(system().getOptions(), (clustered) -> {
             if (clustered.succeeded()) {
-                context.setVertx(clustered.result());
-                initialize(context);
+                core = new SystemContext(clustered.result());
+                Configurations.initialize(core);
+                Delay.initialize(core);
 
                 // the Launcher is a good example of a service.
-                context.service(() -> this).setHandler(deployed -> {
+                core.service(() -> this).setHandler(deployed -> {
                     if (deployed.failed()) {
                         throw new RuntimeException(deployed.cause());
                     } else {
@@ -99,7 +98,7 @@ public class Launcher implements CoreService {
         String node = nodes.get(0);
 
         if (isDeployable(node)) {
-            context.deploy(nodes.get(0)).setHandler(deploy -> {
+            core.deploy(nodes.get(0)).setHandler(deploy -> {
                 if (deploy.succeeded()) {
                     nodes.remove(0);
 
@@ -143,15 +142,5 @@ public class Launcher implements CoreService {
             logger.log(ERRROR_LAUNCHER_SHUTDOWN, Level.SEVERE);
             logger.reset();
         }));
-    }
-
-    @Override
-    public void stop(Future<Void> stop) {
-        context.logger().onServiceStopped(stop, this);
-    }
-
-    public void initialize(CoreContext core) {
-        Configurations.initialize(core);
-        Delay.initialize(core);
     }
 }

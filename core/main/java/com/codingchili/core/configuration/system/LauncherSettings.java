@@ -4,9 +4,11 @@ import com.codingchili.core.configuration.BaseConfigurable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.codingchili.core.configuration.CoreStrings.ID_DEFAULT;
 import static com.codingchili.core.configuration.CoreStrings.PATH_LAUNCHER;
 import static com.codingchili.core.configuration.CoreStrings.getBlockNotConfigured;
 
@@ -130,6 +132,18 @@ public class LauncherSettings extends BaseConfigurable {
     @JsonIgnore
     public HashMap<String, List<String>> blocks() {
         return getBlocks();
+    }
+
+    /**
+     * Sets the given service class as the default block to be deployed.
+     *
+     * @param service the service to be deployed
+     * @return fluent
+     */
+    @JsonIgnore
+    public LauncherSettings service(Class service) {
+        blocks.put(ID_DEFAULT, Collections.singletonList(service.getName()));
+        return this;
     }
 
     /**

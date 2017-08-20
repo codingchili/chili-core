@@ -1,14 +1,14 @@
 package com.codingchili.core.context;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import com.codingchili.core.configuration.Environment;
 import com.codingchili.core.configuration.system.LauncherSettings;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.testing.LoggerMock;
 import com.codingchili.core.testing.MockLogListener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author Robin Duda

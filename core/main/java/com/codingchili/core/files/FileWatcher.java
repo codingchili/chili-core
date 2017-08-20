@@ -1,12 +1,12 @@
 package com.codingchili.core.files;
 
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.TimerSource;
+
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
-
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.TimerSource;
 
 import static com.codingchili.core.configuration.CoreStrings.DIR_SEPARATOR;
 import static java.nio.file.StandardWatchEventKinds.*;
@@ -32,15 +32,16 @@ class FileWatcher {
             WatchService watcher = FileSystems.getDefault().newWatchService();
             Path path = Paths.get(directory);
 
-            Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attributes) throws IOException {
-                    keys.put(dir, dir.register(watcher, ENTRY_MODIFY, ENTRY_DELETE, ENTRY_CREATE));
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-
-            this.start();
+            if (path.toFile().exists()) {
+                Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                    @Override
+                    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attributes) throws IOException {
+                        keys.put(dir, dir.register(watcher, ENTRY_MODIFY, ENTRY_DELETE, ENTRY_CREATE));
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+                this.start();
+            }
         } catch (IOException e) {
             context.logger().onError(e);
         }

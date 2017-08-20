@@ -3,6 +3,7 @@ package com.codingchili.core;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.Delay;
 import com.codingchili.core.context.LaunchContext;
+import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.listener.*;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
@@ -34,11 +35,12 @@ import static com.codingchili.core.files.Configurations.system;
 public class LauncherIT {
     private static TestContext test;
     private static Async async;
-    private LaunchContext context;
+    private CoreContext core;
 
     @Before
     public void setUp() {
-        Delay.initialize(context);
+        core = new SystemContext();
+        Delay.initialize(core);
     }
 
     @Rule
@@ -46,8 +48,8 @@ public class LauncherIT {
 
     @After
     public void tearDown(TestContext test) {
-        if (context != null)
-            context.vertx().close(test.asyncAssertSuccess());
+        if (core != null)
+            core.vertx().close(test.asyncAssertSuccess());
     }
 
     @Test
@@ -121,7 +123,7 @@ public class LauncherIT {
     }
 
     public LaunchContext getLaunchContextFor(String node) {
-        context = new LaunchContext() {
+        return new LaunchContext() {
             @Override
             protected List<String> block(String block) {
                 List<String> list = new ArrayList<>();
@@ -129,7 +131,6 @@ public class LauncherIT {
                 return list;
             }
         };
-        return context;
     }
 
     private static Consumer<Vertx> onStart = (vx) -> {
