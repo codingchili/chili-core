@@ -20,6 +20,7 @@ import static com.codingchili.core.configuration.CoreStrings.getBlockNotConfigur
 public class LauncherSettings extends BaseConfigurable {
     private String application = "";
     private String version = "CORE-1.0.3-PR";
+    private boolean clustered;
     private HashMap<String, List<String>> blocks = defaultBlockConfiguration();
     private HashMap<String, String> hosts = defaultHostConfiguration();
 
@@ -141,7 +142,7 @@ public class LauncherSettings extends BaseConfigurable {
      * @return fluent
      */
     @JsonIgnore
-    public LauncherSettings service(Class service) {
+    public LauncherSettings deployable(Class service) {
         blocks.put(ID_DEFAULT, Collections.singletonList(service.getName()));
         return this;
     }
@@ -164,4 +165,19 @@ public class LauncherSettings extends BaseConfigurable {
         return map;
     }
 
+    /**
+     * @return true if clustering is enabled.
+     */
+    public boolean isClustered() {
+        return clustered;
+    }
+
+    /**
+     * @param clustering enables or disables clustering.
+     * @return fluent
+     */
+    public LauncherSettings setClustered(boolean clustering) {
+        this.clustered = clustering;
+        return this;
+    }
 }

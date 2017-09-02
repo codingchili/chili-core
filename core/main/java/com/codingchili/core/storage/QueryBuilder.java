@@ -13,13 +13,13 @@ import io.vertx.core.Handler;
  *         <p>
  *         Interface for the query builder.
  *         <p>
- *         All queries must start with a single attribute handler, this is usually passed
+ *         All queries must start with a single attribute name, this is usually passed
  *         onto the query-builder constructor. To add constraints to the attribute
  *         use [between, like, equal, in.. etc], the attribute constraints are
  *         applied using the AND operator.
  *         <p>
  *         To match documents that matches at least one constraint for a single attribute,
- *         use the OR operation with the same attribute handler and then apply the constraint.
+ *         use the OR operation with the same attribute name and then apply the constraint.
  *         <p>
  *         To create more complex queries that spans over multiple attributes, use the AND/OR
  *         operation to combine/group constraints for attributes. Following are some examples of
@@ -27,16 +27,16 @@ import io.vertx.core.Handler;
  *         <p>
  *         Matches all documents where..
  *         <p>
- *         attribute handler starts with "veg" or contains "table'
+ *         attribute name starts with "veg" or contains "table'
  *         - attribute "name" startsWith "veg" or attribute "name" like "table"
  *         <p>
- *         attribute handler starts with "veg" AND contains "table'.
+ *         attribute name starts with "veg" AND contains "table'.
  *         - attribute "name" startsWith "veg" like "table"
  *         <p>
- *         attribute handler equals "vegetable" or "red".
+ *         attribute name equals "vegetable" or "red".
  *         - attribute "name" equals "vegetable" or attribute "name" equals "red"
  *         <p>
- *         attribute handler contains "veg" or "fruit".
+ *         attribute name contains "veg" or "fruit".
  *         - attribute "name" like "veg" or attribute "name" like "fruit"
  *         <p>
  *         attribute vegetable.color, json example: {vegetable: {color: ""}} is red, green or blue.
@@ -52,7 +52,7 @@ public interface QueryBuilder<Value extends Storable> {
     /**
      * Adds a new AND clause to the query.
      *
-     * @param attribute the handler of the attribute to be queried.
+     * @param attribute the name of the attribute to be queried.
      * @return fluent
      */
     QueryBuilder<Value> and(String attribute);
@@ -60,7 +60,7 @@ public interface QueryBuilder<Value extends Storable> {
     /**
      * Adds a new OR clause to the query.
      *
-     * @param attribute the handler of the attribute to be queried.
+     * @param attribute the name of the attribute to be queried.
      * @return fluent
      */
     QueryBuilder<Value> or(String attribute);
@@ -152,7 +152,7 @@ public interface QueryBuilder<Value extends Storable> {
     QueryBuilder<Value> order(SortOrder order);
 
     /**
-     * get the handler of the attribute that is currently being queried.
+     * get the name of the attribute that is currently being queried.
      *
      * @return attribute as string using dot notation
      */
@@ -174,9 +174,9 @@ public interface QueryBuilder<Value extends Storable> {
     boolean isAttributeArray();
 
     /**
-     * get the handler of the attribute that is used for sorting in dot notation
+     * get the name of the attribute that is used for sorting in dot notation
      *
-     * @return the handler of the attribute that the results are sorted on.
+     * @return the name of the attribute that the results are sorted on.
      */
     String getOrderByAttribute();
 
@@ -200,15 +200,15 @@ public interface QueryBuilder<Value extends Storable> {
      * Generates unique ids for the triggers that are used. Should be overridden
      * so that logging messages are a bit meaningful.
      *
-     * @return a handler that identifies this query.
+     * @return a name that identifies this query.
      */
     String name();
 
 
     /**
-     * Sets a handler for the query for identification.
+     * Sets a name for the query for identification.
      *
-     * @param name the handler to set
+     * @param name the name to set
      * @return fluent
      */
     QueryBuilder<Value> setName(String name);

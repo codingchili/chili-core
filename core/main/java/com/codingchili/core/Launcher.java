@@ -1,6 +1,7 @@
 package com.codingchili.core;
 
 import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.configuration.system.LauncherSettings;
 import com.codingchili.core.context.Delay;
 import com.codingchili.core.context.LaunchContext;
 import com.codingchili.core.context.LauncherCommandExecutor;
@@ -40,7 +41,15 @@ public class Launcher implements CoreService {
         new Launcher(new LaunchContext(args));
     }
 
-    public Launcher(LaunchContext context) {
+    /**
+     * Starts the launcher with the given context.
+     * @param context contains the launcher args and settings.
+     */
+    public static void start(LaunchContext context) {
+        new Launcher(context);
+    }
+
+    private Launcher(LaunchContext context) {
         Future<Void> future = Future.future();
 
         logger.log(CoreStrings.getStartupText(context.settings().getVersion()), Level.STARTUP);
@@ -52,7 +61,7 @@ public class Launcher implements CoreService {
                 if (done.failed()) {
                     nodes = context.block(context.args());
                     nodes = new ArrayList<>(nodes);
-                    cluster();
+                    clusterIfEnabled(context.settings());
                 } else {
                     exit();
                 }
@@ -68,25 +77,33 @@ public class Launcher implements CoreService {
         logger.reset();
     }
 
-    private void cluster() {
-        Vertx.clusteredVertx(system().getOptions(), (clustered) -> {
-            if (clustered.succeeded()) {
-                core = new SystemContext(clustered.result());
-                Configurations.initialize(core);
-                Delay.initialize(core);
+    private void clusterIfEnabled(LauncherSettings settings) {
+        if (settings.isClustered()) {
+            Vertx.clusteredVertx(system().getOptions(), (clustered) -> {
+                if (clustered.succeeded()) {
+                    start(clustered.result());
+                } else {
+                    logger.log(ERROR_LAUNCHER_STARTUP, Level.SEVERE);
+                    exit();
+                }
+            });
+        } else {
+            start(Vertx.vertx());
+        }
+    }
 
-                // the Launcher is a good example of a service.
-                core.service(() -> this).setHandler(deployed -> {
-                    if (deployed.failed()) {
-                        throw new RuntimeException(deployed.cause());
-                    } else {
-                        addShutdownHook();
-                        deployServices(nodes);
-                    }
-                });
+    private void start(Vertx vertx) {
+        core = new SystemContext(vertx);
+        Configurations.initialize(core);
+        Delay.initialize(core);
+
+        // the Launcher is a good example of a service.
+        core.service(() -> this).setHandler(deployed -> {
+            if (deployed.failed()) {
+                throw new RuntimeException(deployed.cause());
             } else {
-                logger.log(ERROR_LAUNCHER_STARTUP, Level.SEVERE);
-                exit();
+                addShutdownHook();
+                deployServices(nodes);
             }
         });
     }

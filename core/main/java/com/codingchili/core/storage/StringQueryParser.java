@@ -1,15 +1,20 @@
 package com.codingchili.core.storage;
 
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
+
+import java.util.Collection;
+
 /**
  * Parses string based queries.
  */
-public interface StringQueryParser {
+@FunctionalInterface
+public interface StringQueryParser<T extends Storable> {
     /**
      * Parses a string into a builder.
      *
-     * @param builder    used to construct the query from the given string
      * @param expression the expression to parse.
      * @return the constructed query
      */
-    QueryBuilder parse(QueryBuilder<?> builder, String expression);
+    Handler<AsyncResult<Collection<T>>> parse(String expression);
 }
