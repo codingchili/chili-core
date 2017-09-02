@@ -88,7 +88,7 @@ public class Launcher implements CoreService {
                 }
             });
         } else {
-            start(Vertx.vertx());
+            start(Vertx.vertx(system().getOptions()));
         }
     }
 
