@@ -49,7 +49,7 @@ public class Launcher implements CoreService {
         new Launcher(context);
     }
 
-    private Launcher(LaunchContext context) {
+    public Launcher(LaunchContext context) {
         Future<Void> future = Future.future();
 
         logger.log(CoreStrings.getStartupText(context.settings().getVersion()), Level.STARTUP);

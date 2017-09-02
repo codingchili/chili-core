@@ -2,6 +2,7 @@ package com.codingchili.core.storage.exception;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreException;
+import com.codingchili.core.protocol.ResponseStatus;
 
 /**
  * @author Robin Duda
@@ -11,6 +12,6 @@ import com.codingchili.core.context.CoreException;
 public class NothingToRemoveException extends CoreException {
 
     public NothingToRemoveException(Object key) {
-        super(CoreStrings.getNothingToRemoveException(key.toString()));
+        super(CoreStrings.getNothingToRemoveException(key.toString()), ResponseStatus.MISSING);
     }
 }
