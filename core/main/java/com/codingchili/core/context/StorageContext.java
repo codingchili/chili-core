@@ -26,7 +26,7 @@ public class StorageContext<Value> extends SystemContext {
     private String identifier = "storage-" + UUID.randomUUID();
     private String DB = "";
     private String collection = "";
-    private Class clazz;
+    private Class<Value> clazz;
     private String plugin;
 
     public StorageContext(CoreContext context) {
@@ -49,6 +49,20 @@ public class StorageContext<Value> extends SystemContext {
      */
     public RemoteStorage storage() {
         return settings().storage(plugin);
+    }
+
+    /**
+     * @return the class to be stored in the storage.
+     */
+    public Class<Value> clazz() {
+        return this.clazz;
+    }
+
+    /**
+     * @return the plugin identifier to us as storage.
+     */
+    public String plugin() {
+        return this.plugin;
     }
 
     /**

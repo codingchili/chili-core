@@ -19,6 +19,7 @@ public class SharedIndexCollection<Value> extends ConcurrentIndexedCollection<Va
     private Set<String> indexed = new ConcurrentHashSet<>();
 
     private SharedIndexCollection() {
+        super();
     }
 
    private SharedIndexCollection(StorageContext<Value> ctx, SimpleAttribute<Value, String> attribute) {
