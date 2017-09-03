@@ -73,6 +73,7 @@ public abstract class CoreStrings {
     public static final String WATCHER_RESUMED = "resumed";
     public static final String EXT_JSON = ".json";
     public static final String EXT_HTML = ".html";
+    public static final String EXT_DB = ".db";
 
     public static final String EXT_TXT = ".txt";
     public static final String ANY = "*";
@@ -261,8 +262,8 @@ public abstract class CoreStrings {
     }
 
     public static String getDBPath(String file) {
-        if (!file.endsWith(EXT_JSON)) {
-            file += EXT_JSON;
+        if (!file.endsWith(EXT_DB)) {
+            file += EXT_DB;
         }
         return DB_DIR + DIR_SEPARATOR + file;
     }
