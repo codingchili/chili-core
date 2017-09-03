@@ -32,7 +32,7 @@ public class SharedIndexCollection<Value> extends ConcurrentIndexedCollection<Va
     public static <Value extends Storable> SharedIndexCollection<Value> onDisk(
             StorageContext<Value> ctx, SimpleAttribute<Value, String> attribute) {
         File file = new File(ctx.dbPath()).getParentFile();
-        if (!file.mkdirs()) {
+        if (!file.exists() && !file.mkdirs()) {
             throw new RuntimeException("Failed to create dirs for DB " + file.toPath().toAbsolutePath());
         }
         return new SharedIndexCollection<>(ctx, attribute);
