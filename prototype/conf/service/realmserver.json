@@ -4,7 +4,7 @@
     "realm" : "Angel Oak",
     "instances" : [ ]
   } ],
-  "storage" : "com.codingchili.core.storage.IndexedMap",
+  "storage" : "com.codingchili.core.storage.IndexedMapPersisted",
   "realmUpdates" : 5000,
   "global" : "XLHtKfhr000jy0fM4p17gqFBSppSedze83g3H1PGrHKlPDEMhf3s7YJWzptFZiB69AdubAnWCZbvg6rAQT5dEA==",
   "logging" : {

@@ -55,8 +55,13 @@ public class StorageLoaderIT {
     }
 
     @Test
-    public void testLoadIndexedMap(TestContext test) {
-        loadStoragePlugin(test.async(), IndexedMap.class);
+    public void testLoadIndexedMapV(TestContext test) {
+        loadStoragePlugin(test.async(), IndexedMapVolatile.class);
+    }
+
+    @Test
+    public void testLoadIndexedMapP(TestContext test) {
+        loadStoragePlugin(test.async(), IndexedMapPersisted.class);
     }
 
     @Test

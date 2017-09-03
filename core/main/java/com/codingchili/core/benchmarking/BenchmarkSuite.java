@@ -80,9 +80,10 @@ public class BenchmarkSuite {
         add.accept(JsonMap.class);
         add.accept(PrivateMap.class);
         add.accept(SharedMap.class);
-        add.accept(IndexedMap.class);
+        add.accept(IndexedMapPersisted.class);
+        add.accept(IndexedMapVolatile.class);
         add.accept(HazelMap.class);
-        /*add.accept(ElasticMap.class);
+        /*add.accept(ElasticMap.class); requires external servers.
         add.accept(MongoDBMap.class);*/
 
         new BenchmarkExecutor(context)

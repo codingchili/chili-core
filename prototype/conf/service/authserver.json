@@ -1,6 +1,6 @@
 {
   "node" : "authentication.node",
-  "storage" : "com.codingchili.core.storage.IndexedMap",
+  "storage" : "com.codingchili.core.storage.IndexedMapPersisted",
   "clientSecret" : "QeqxlkzQZ58qhb4zFqu24VKekcJc/OWNlytUCdDVQoy0u0L4KkHexcmJ3smf25EzK9qMcpIlsYViAh9xSHc1rw==",
   "global" : "XLHtKfhr000jy0fM4p17gqFBSppSedze83g3H1PGrHKlPDEMhf3s7YJWzptFZiB69AdubAnWCZbvg6rAQT5dEA==",
   "logging" : {

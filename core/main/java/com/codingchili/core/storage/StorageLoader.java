@@ -116,8 +116,12 @@ public class StorageLoader<Value extends Storable> {
         return makeWith(context, HazelMap.class);
     }
 
-    public StorageLoader<Value> indexed(CoreContext context) {
-        return makeWith(context, IndexedMap.class);
+    public StorageLoader<Value> memIndex(CoreContext context) {
+        return makeWith(context, IndexedMapVolatile.class);
+    }
+
+    public StorageLoader<Value> diskIndex(CoreContext context) {
+        return makeWith(context, IndexedMapPersisted.class);
     }
 
     public StorageLoader<Value> jsonmap(CoreContext context) {

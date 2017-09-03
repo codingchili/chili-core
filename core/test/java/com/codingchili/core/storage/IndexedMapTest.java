@@ -26,7 +26,7 @@ public class IndexedMapTest extends MapTestCases {
 
     @Before
     public void setUp(TestContext test) {
-        super.setUp(test, IndexedMap.class);
+        super.setUp(test, IndexedMapVolatile.class);
     }
 
     @After

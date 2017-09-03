@@ -8,6 +8,7 @@ import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
 import com.codingchili.core.storage.exception.ValueMissingException;
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.attribute.MultiValueAttribute;
+import com.googlecode.cqengine.attribute.SimpleAttribute;
 import com.googlecode.cqengine.index.navigable.NavigableIndex;
 import com.googlecode.cqengine.index.radix.RadixTreeIndex;
 import com.googlecode.cqengine.index.suffix.SuffixTreeIndex;
@@ -36,18 +37,19 @@ import static io.vertx.core.Future.succeededFuture;
  *         The indexing is fully based on CQEngine. see http://github.com/npgall/cqengine
  *         The db/collection is shared over multiple instances.
  */
-public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
+public abstract class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
     private static final Map<String, SharedIndexCollection> maps = new HashMap<>();
     private final Map<String, Attribute<Value, String>> fields = new HashMap<>();
-    private final Attribute<Value, String> FIELD_ID;
+    private final SimpleAttribute<Value, String> FIELD_ID;
     private final StorageContext<Value> context;
-    private SharedIndexCollection<Value> db = new SharedIndexCollection<>();
+    private SharedIndexCollection<Value> db;
 
     @SuppressWarnings("unchecked")
-    public IndexedMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
+    protected IndexedMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
         this.context = context;
         FIELD_ID = attribute(Storable.idField, Storable::id);
         fields.put(Storable.idField, FIELD_ID);
+        this.db = getImplementation(context, FIELD_ID);
 
         // share collections that share the same identifier.
         synchronized (maps) {
@@ -60,6 +62,15 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
         }
         future.complete(this);
     }
+
+    /**
+     * Allows parameterization of the indexed collection.
+     * @param ctx the storage context used.
+     * @param attribute the primary attribute of the Storable
+     * @return a configured IndexedCollection with persistence etc configured.
+     */
+    protected abstract SharedIndexCollection<Value> getImplementation(
+            StorageContext<Value> ctx, SimpleAttribute<Value, String> attribute);
 
     @Override
     public void get(String key, Handler<AsyncResult<Value>> handler) {
@@ -266,6 +277,7 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
                             .skip(pageSize * page)
                             .limit(pageSize)
                             .collect(Collectors.toList()));
+                    values.close();
                 }, handler);
             }
 
@@ -284,7 +296,6 @@ public class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
                     return QueryFactory.noQueryOptions();
                 }
             }
-
         }.prepareField(attribute);
     }
 

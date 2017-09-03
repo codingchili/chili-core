@@ -37,7 +37,7 @@ public class RegistryContext extends ServiceContext {
     public static void create(Future<RegistryContext> future, CoreContext core) {
         RegistryContext context = new RegistryContext(core);
 
-        new StorageLoader<RegisteredRealm>().indexed(context)
+        new StorageLoader<RegisteredRealm>().diskIndex(context)
                 .withCollection(COLLECTION_REALMS)
                 .withClass(RegisteredRealm.class)
                 .build(prepare -> {

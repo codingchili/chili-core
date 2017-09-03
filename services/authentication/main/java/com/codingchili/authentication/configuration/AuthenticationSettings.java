@@ -3,7 +3,7 @@ package com.codingchili.authentication.configuration;
 import com.codingchili.common.Strings;
 import com.codingchili.core.configuration.ServiceConfigurable;
 import com.codingchili.core.configuration.system.ValidatorSettings;
-import com.codingchili.core.storage.IndexedMap;
+import com.codingchili.core.storage.IndexedMapPersisted;
 
 /**
  * Authentication service settings.
@@ -12,7 +12,7 @@ public class AuthenticationSettings extends ServiceConfigurable {
     static final String PATH_AUTHSERVER = Strings.getService("authserver");
     private ValidatorSettings validator = new ValidatorSettings();
     private byte[] clientSecret;
-    private String storage = IndexedMap.class.getName();
+    private String storage = IndexedMapPersisted.class.getName();
 
     /**
      * @return the configured client secret.
