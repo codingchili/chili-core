@@ -2,7 +2,6 @@ package com.codingchili.core.storage;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Collection;
 import java.util.regex.Matcher;
@@ -24,7 +23,7 @@ public class QueryParser<T extends Storable> implements StringQueryParser<T> {
 
     @Override
     public Handler<AsyncResult<Collection<T>>> parse(String expression) {
-        throw new NotImplementedException();
+        throw new RuntimeException("NOT IMPLEMENTED");
     }
 
     private static String name(String expression) {
