@@ -21,8 +21,8 @@ public class SharedIndexCollection<Value> extends ConcurrentIndexedCollection<Va
     private SharedIndexCollection() {
     }
 
-   private SharedIndexCollection(File file, SimpleAttribute<Value, String> attribute) {
-        super(DiskPersistence.onPrimaryKeyInFile(attribute, file));
+   private SharedIndexCollection(StorageContext<Value> ctx, SimpleAttribute<Value, String> attribute) {
+        super(DiskPersistence.onPrimaryKeyInFile(attribute, new File(ctx.dbPath())));
     }
 
     public static <Value extends Storable> SharedIndexCollection<Value> onHeap() {
@@ -31,11 +31,11 @@ public class SharedIndexCollection<Value> extends ConcurrentIndexedCollection<Va
 
     public static <Value extends Storable> SharedIndexCollection<Value> onDisk(
             StorageContext<Value> ctx, SimpleAttribute<Value, String> attribute) {
-        File file = new File(ctx.dbPath());
+        File file = new File(ctx.dbPath()).getParentFile();
         if (!file.mkdirs()) {
             throw new RuntimeException("Failed to create dirs for DB " + file.toPath().toAbsolutePath());
         }
-        return new SharedIndexCollection<>(file, attribute);
+        return new SharedIndexCollection<>(ctx, attribute);
     }
 
     public boolean isIndexed(String field) {
