@@ -162,10 +162,13 @@ public class MapTestCases {
         store.put(OBJECT_ONE, put -> {
             test.assertTrue(put.succeeded());
 
-            store.get(ONE, get -> {
-                test.assertEquals(OBJECT_ONE, get.result());
-                test.assertTrue(get.succeeded());
-                async.complete();
+            store.size(size -> {
+                test.assertEquals(TEST_ITEM_COUNT.intValue(), size.result());
+                store.get(ONE, get -> {
+                    test.assertEquals(OBJECT_ONE, get.result());
+                    test.assertTrue(get.succeeded());
+                    async.complete();
+                });
             });
         });
     }

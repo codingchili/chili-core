@@ -21,7 +21,7 @@ import static com.codingchili.core.configuration.CoreStrings.ID_NAME;
  *         Tests for the CQEngine indexed storage.
  */
 @RunWith(VertxUnitRunner.class)
-public class IndexedMapTest extends MapTestCases {
+public class IndexedMapVolatileTest extends MapTestCases {
     private static final String TEST_UPPER = "testUPPER";
 
     @Before

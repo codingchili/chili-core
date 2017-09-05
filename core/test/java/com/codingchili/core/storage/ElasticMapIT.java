@@ -18,7 +18,7 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
  *         Tests for the storage providers in core. Reuse these tests when new
  *         storage subsystems are implemented using the StorageLoader.
  */
-@Ignore("Requires running elasticsearch 5.2.2, travis runs an older version.")
+@Ignore("Requires running elasticsearch 5.3, travis runs an older version.")
 @RunWith(VertxUnitRunner.class)
 public class ElasticMapIT extends MapTestCases {
     private static final int ELASTIC_REFRESH = 1200;

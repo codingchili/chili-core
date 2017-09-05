@@ -6,6 +6,7 @@ project.group = 'com.codingchili'
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'maven'
     apply plugin: 'idea'
 
     version = rootProject.version

@@ -3,6 +3,8 @@ task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
 }
 
+install.dependsOn jar
+
 jar {
     from {
         (configurations.runtime).collect {
@@ -22,12 +24,12 @@ test {
 
 dependencies {
     compile group: 'junit', name: 'junit', version: '4.12'
-    compile group: 'io.vertx', name: 'vertx-core', version: '3.4.1'
-    compile group: 'io.vertx', name: 'vertx-unit', version: '3.4.1'
-    compile group: 'io.vertx', name: 'vertx-web', version: '3.4.1'
-    compile group: 'io.vertx', name: 'vertx-hazelcast', version: '3.4.1'
-    compile group: 'io.vertx', name: 'vertx-mongo-client', version: '3.4.1'
-    compile group: 'io.vertx', name: 'vertx-dropwizard-metrics', version: '3.4.1'
+    compile group: 'io.vertx', name: 'vertx-core', version: '3.4.2'
+    compile group: 'io.vertx', name: 'vertx-unit', version: '3.4.2'
+    compile group: 'io.vertx', name: 'vertx-web', version: '3.4.2'
+    compile group: 'io.vertx', name: 'vertx-hazelcast', version: '3.4.2'
+    compile group: 'io.vertx', name: 'vertx-mongo-client', version: '3.4.2'
+    compile group: 'io.vertx', name: 'vertx-dropwizard-metrics', version: '3.4.2'
     compile group: 'de.neuland-bfi', name: 'jade4j', version: '1.2.5'
     compile group: 'de.mkammerer', name: 'argon2-jvm', version: '2.2'
     compile group: 'org.fusesource.jansi', name: 'jansi', version: '1.14'
@@ -37,5 +39,5 @@ dependencies {
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.6.2'
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.6.2'
 
-    compile group: 'com.googlecode.cqengine', name: 'cqengine', version: '2.9.3'
+    compile group: 'com.googlecode.cqengine', name: 'cqengine', version: '2.12.1'
 }

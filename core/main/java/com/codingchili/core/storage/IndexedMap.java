@@ -2,7 +2,6 @@ package com.codingchili.core.storage;
 
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.protocol.Serializer;
-import com.codingchili.core.security.Account;
 import com.codingchili.core.storage.exception.NothingToRemoveException;
 import com.codingchili.core.storage.exception.NothingToReplaceException;
 import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
@@ -46,7 +45,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
     private SharedIndexCollection<Value> db;
 
     @SuppressWarnings("unchecked")
-    protected IndexedMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
+    public IndexedMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
         this.context = context;
         FIELD_ID = attribute(context.clazz(), String.class, Storable.idField, Storable::id);
         fields.put(Storable.idField, FIELD_ID);

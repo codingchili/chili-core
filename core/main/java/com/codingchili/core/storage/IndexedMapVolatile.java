@@ -11,7 +11,7 @@ import io.vertx.core.Future;
  */
 public class IndexedMapVolatile<Value extends Storable> extends IndexedMap<Value> {
 
-    protected IndexedMapVolatile(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
+    public IndexedMapVolatile(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
         super(future, context);
     }
 

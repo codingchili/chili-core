@@ -38,6 +38,7 @@ public class StorageObject implements Storable {
         return this;
     }
 
+    @Override
     public String id() {
         return name;
     }
