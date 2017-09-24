@@ -4,8 +4,8 @@ import com.codingchili.core.listener.Request;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Protocol exception handler.
+ * <p>
+ * Protocol exception handler.
  */
 @FunctionalInterface
 public interface ExceptionHandler {

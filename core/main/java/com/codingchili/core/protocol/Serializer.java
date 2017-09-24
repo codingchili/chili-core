@@ -13,7 +13,11 @@ import io.vertx.core.json.JsonObject;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -22,7 +26,7 @@ import static com.codingchili.core.configuration.CoreStrings.STORAGE_ARRAY;
 
 /**
  * @author Robin Duda
- *         serializes objects to JSON and back.
+ * serializes objects to JSON and back.
  */
 public class Serializer {
     private static ObjectMapper mapper = new ObjectMapper();
@@ -99,11 +103,11 @@ public class Serializer {
         if (object instanceof JsonObject) {
             return (JsonObject) object;
         } else if (object instanceof Collection) {
-                JsonArray array = new JsonArray();
-                ((Collection<Object>) object).stream()
-                        .map(Serializer::json)
-                        .forEach(array::add);
-                return new JsonObject().put(ID_COLLECTION, array);
+            JsonArray array = new JsonArray();
+            ((Collection<Object>) object).stream()
+                    .map(Serializer::json)
+                    .forEach(array::add);
+            return new JsonObject().put(ID_COLLECTION, array);
         } else {
             return new JsonObject(pack(object));
         }
@@ -186,4 +190,30 @@ public class Serializer {
             throw new RuntimeException(e.getMessage());
         }
     }
+
+    /**
+     * Serializes the non static member fields of the given class.
+     *
+     * @param template the class of which members should be described.
+     * @return a map that can be serialized to json with field name
+     *      mapped to type.
+     */
+    public static Map<String, String> describe(Class<?> template) {
+        Map<String, String> model = new HashMap<>();
+        String className = template.getName();
+        if (cache.containsKey(className)) {
+            model = cache.get(className);
+        } else {
+            for (Field field : template.getDeclaredFields()) {
+                if ((field.getModifiers() & Modifier.STATIC) == 0) {
+                    String generic = field.getGenericType().getTypeName();
+                    model.put(field.getName(), generic);
+                }
+            }
+        }
+        cache.put(className, model);
+        return model;
+    }
+
+    private static Map<String, Map<String, String>> cache = new HashMap<>();
 }

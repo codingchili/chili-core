@@ -6,12 +6,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that the annotated method requires authentication.
+ * Annotation that can add a description to handlers and
+ * routes in a handler. Retrieved when using the protocol
+ * documentation feature.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
-public @interface Private {
-    String value();
-
-    String doc() default "";
+public @interface Description {
+    String value() default "No description available.";
 }

@@ -3,12 +3,13 @@ package com.codingchili.core.protocol;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 
-import static com.codingchili.core.configuration.CoreStrings.*;
+import static com.codingchili.core.configuration.CoreStrings.ID_MESSAGE;
+import static com.codingchili.core.configuration.CoreStrings.ID_STATUS;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Basic form of a request response.
+ * <p>
+ * Basic form of a request response.
  */
 public abstract class ProtocolMessage {
     private JsonObject data;

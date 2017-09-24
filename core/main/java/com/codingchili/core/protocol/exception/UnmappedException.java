@@ -5,9 +5,9 @@ import com.codingchili.core.protocol.ResponseStatus;
 
 /**
  * @author Robin Duda
- *         <p>
- *         An exception that is safe to forward to clients.
- *         Never send any exception that might occur directly to clients.
+ * <p>
+ * An exception that is safe to forward to clients.
+ * Never send any exception that might occur directly to clients.
  */
 public class UnmappedException extends CoreException {
     public UnmappedException(Throwable throwable) {

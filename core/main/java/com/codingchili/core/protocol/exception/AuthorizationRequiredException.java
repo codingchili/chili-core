@@ -7,9 +7,9 @@ import static com.codingchili.core.configuration.CoreStrings.ERROR_NOT_AUTHORIZE
 
 /**
  * @author Robin Duda
- *         <p>
- *         Throw when authorization is required but was not possible, for example
- *         when authentication is missing.
+ * <p>
+ * Throw when authorization is required but was not possible, for example
+ * when authentication is missing.
  */
 public class AuthorizationRequiredException extends CoreRuntimeException {
 

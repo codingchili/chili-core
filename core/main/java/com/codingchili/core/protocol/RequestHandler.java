@@ -2,6 +2,8 @@ package com.codingchili.core.protocol;
 
 /**
  * @author Robin Duda
+ * <p>
+ * Functional interface used for routes in a handler.
  */
 
 @FunctionalInterface

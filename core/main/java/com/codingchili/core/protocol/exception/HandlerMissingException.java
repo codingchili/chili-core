@@ -7,8 +7,8 @@ import static com.codingchili.core.configuration.CoreStrings.getHandlerMissing;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Throw when a requested handler does not exist.
+ * <p>
+ * Throw when a requested handler does not exist.
  */
 public class HandlerMissingException extends CoreRuntimeException {
 
