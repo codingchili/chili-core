@@ -5,7 +5,7 @@ import com.codingchili.core.storage.Storable;
 
 /**
  * @author Robin Duda
- *         Database mapping not shared outside storage.
+ * Database mapping not shared outside storage.
  */
 public class AccountMapping implements Storable {
     private String username;

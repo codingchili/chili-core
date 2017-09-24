@@ -1,12 +1,12 @@
 package com.codingchili.realm.instance.model;
 
-import java.util.ArrayList;
-
 import com.codingchili.core.configuration.AttributeConfigurable;
+
+import java.util.ArrayList;
 
 /**
  * @author Robin Duda
- *         model for player classes.
+ * model for player classes.
  */
 public class PlayerClass extends AttributeConfigurable {
     private String name;

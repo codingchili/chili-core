@@ -3,9 +3,12 @@ subprojects {
         compile project(':core')
         compile project(':common')
     }
+    project.group = 'com.codingchili.service'
 }
 
-subprojects.each { subproject -> evaluationDependsOn(subproject.path) }
+subprojects.each {
+    subproject -> evaluationDependsOn(subproject.path)
+}
 
 task sourcesJar(type: Jar) {
     classifier 'sources'
@@ -15,7 +18,7 @@ task sourcesJar(type: Jar) {
 }
 
 task allJar(type: Jar, dependsOn: subprojects.jar) {
-    baseName = 'services'
+    baseName = 'service'
     subprojects.each { subproject ->
         from subproject.configurations.archives.allArtifacts.files.collect {
             zipTree(it)

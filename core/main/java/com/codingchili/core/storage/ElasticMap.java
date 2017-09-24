@@ -1,14 +1,11 @@
 package com.codingchili.core.storage;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
-
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.security.Validator;
+import com.codingchili.core.storage.exception.*;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.DocWriteResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
@@ -33,22 +30,24 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.junit.Ignore;
 
-import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.security.Validator;
-import com.codingchili.core.storage.exception.*;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-
-import static com.codingchili.core.context.FutureHelper.*;
+import static com.codingchili.core.context.FutureHelper.error;
+import static com.codingchili.core.context.FutureHelper.result;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Map implementation that uses ElasticSearch.
- *         Does not support case sensitivity for equals.
- *         Does not support ordering nested fields without server configuration
+ * <p>
+ * Map implementation that uses ElasticSearch.
+ * Does not support case sensitivity for equals.
+ * Does not support ordering nested fields without server configuration
  */
 @Ignore("Requires running elasticsearch server.")
 public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {

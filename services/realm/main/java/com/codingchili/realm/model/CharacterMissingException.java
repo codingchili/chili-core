@@ -4,7 +4,7 @@ import com.codingchili.common.Strings;
 
 /**
  * @author Robin Duda
- *         Thrown when a selected character is missing.
+ * Thrown when a selected character is missing.
  */
 public class CharacterMissingException extends Throwable {
     public CharacterMissingException(String character) {

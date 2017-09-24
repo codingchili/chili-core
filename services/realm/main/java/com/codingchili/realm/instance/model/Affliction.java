@@ -5,9 +5,9 @@ import java.util.ArrayList;
 
 /**
  * @author Robin Duda
- *         Describes an affliction, loaded from configurations.
- *
- *         Afflictions affects a character by modifying their attributes temporarily.
+ * Describes an affliction, loaded from configurations.
+ * <p>
+ * Afflictions affects a character by modifying their attributes temporarily.
  */
 public class Affliction implements Serializable {
     private String name;
@@ -23,6 +23,10 @@ public class Affliction implements Serializable {
 
     public Boolean getPermanent() {
         return permanent;
+    }
+
+    public void setPermanent(Boolean permanent) {
+        this.permanent = permanent;
     }
 
     public ArrayList<Affliction> getAffliction() {
@@ -43,10 +47,6 @@ public class Affliction implements Serializable {
 
     public Boolean isPermanent() {
         return permanent;
-    }
-
-    public void setPermanent(Boolean permanent) {
-        this.permanent = permanent;
     }
 
     public String getName() {

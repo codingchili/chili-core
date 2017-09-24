@@ -8,8 +8,8 @@ import io.vertx.core.json.JsonObject;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Interface to generate logging messages.
+ * <p>
+ * Interface to generate logging messages.
  */
 public interface Logger extends JsonLogger, StringLogger {
 

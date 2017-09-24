@@ -10,8 +10,8 @@ import java.util.Set;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Settings for transport listeners.
+ * <p>
+ * Settings for transport listeners.
  */
 public class ListenerSettings {
     private HttpServerOptions httpOptions = new HttpServerOptions();

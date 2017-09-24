@@ -8,8 +8,8 @@ import io.vertx.core.json.JsonObject;
 
 /**
  * @author Robin Duda
- *         <p>
- *         An empty request for testing.
+ * <p>
+ * An empty request for testing.
  */
 public class EmptyRequest implements Request {
     @Override

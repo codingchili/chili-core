@@ -1,33 +1,34 @@
 package com.codingchili.core.storage;
 
+import com.codingchili.core.context.StorageContext;
+import com.googlecode.cqengine.ConcurrentIndexedCollection;
+import com.googlecode.cqengine.attribute.SimpleAttribute;
+import com.googlecode.cqengine.persistence.disk.DiskPersistence;
+import com.googlecode.cqengine.persistence.onheap.OnHeapPersistence;
+import io.vertx.core.impl.ConcurrentHashSet;
+
 import java.io.File;
 import java.util.Set;
 
-import com.codingchili.core.context.StorageContext;
-import com.googlecode.cqengine.ConcurrentIndexedCollection;
-
-import com.googlecode.cqengine.attribute.SimpleAttribute;
-import com.googlecode.cqengine.persistence.disk.DiskPersistence;
-import io.vertx.core.impl.ConcurrentHashSet;
-
 /**
  * @author Robin Duda
- *         <p>
- *         Keeps track of which fields are already indexed on shared instances of maps.
+ * <p>
+ * Keeps track of which fields are already indexed on shared instances of maps.
  */
 public class SharedIndexCollection<Value> extends ConcurrentIndexedCollection<Value> {
     private Set<String> indexed = new ConcurrentHashSet<>();
 
-    private SharedIndexCollection() {
-        super();
+    private SharedIndexCollection(SimpleAttribute<Value, String> attribute) {
+        super(OnHeapPersistence.onPrimaryKey(attribute));
     }
 
-   private SharedIndexCollection(StorageContext<Value> ctx, SimpleAttribute<Value, String> attribute) {
+    private SharedIndexCollection(StorageContext<Value> ctx, SimpleAttribute<Value, String> attribute) {
         super(DiskPersistence.onPrimaryKeyInFile(attribute, new File(ctx.dbPath())));
     }
 
-    public static <Value extends Storable> SharedIndexCollection<Value> onHeap() {
-        return new SharedIndexCollection<>();
+    public static <Value extends Storable> SharedIndexCollection<Value> onHeap(
+            SimpleAttribute<Value, String> attribute) {
+        return new SharedIndexCollection<>(attribute);
     }
 
     public static <Value extends Storable> SharedIndexCollection<Value> onDisk(

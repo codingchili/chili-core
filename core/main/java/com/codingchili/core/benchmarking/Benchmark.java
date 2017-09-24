@@ -4,8 +4,8 @@ import java.util.Map;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Implemented by executable benchmarks.
+ * <p>
+ * Implemented by executable benchmarks.
  */
 public interface Benchmark extends BenchmarkResult {
     /**

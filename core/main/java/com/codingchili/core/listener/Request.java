@@ -6,8 +6,8 @@ import io.vertx.core.json.JsonObject;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Base request class.
+ * <p>
+ * Base request class.
  */
 public interface Request {
 
@@ -15,7 +15,7 @@ public interface Request {
      * Called after construction of the request and before processing begins.
      * No data should be processed in the constructor since error messages cannot
      * be propagated to the client if the construction of the request fails.
-     *
+     * <p>
      * All initial processing of data must be done in this method to allow
      * proper error handling.
      */

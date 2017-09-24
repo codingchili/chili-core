@@ -4,21 +4,20 @@ import com.codingchili.core.files.exception.FileMissingException;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.Protocol;
-import com.codingchili.core.protocol.RequestHandler;
+import com.codingchili.core.protocol.Role;
 import com.codingchili.patching.configuration.PatchContext;
 import com.codingchili.patching.model.PatchKeeper;
 import com.codingchili.patching.model.PatchReloadedException;
 
 import static com.codingchili.common.Strings.*;
-import static com.codingchili.core.protocol.Access.*;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Handles patching requests.
+ * <p>
+ * Handles patching requests.
  */
 public class PatchHandler implements CoreHandler {
-    private final Protocol<RequestHandler<PatchRequest>> protocol = new Protocol<>();
+    private final Protocol<PatchRequest> protocol = new Protocol<>();
     private final PatchKeeper patcher;
     private PatchContext context;
 
@@ -26,18 +25,19 @@ public class PatchHandler implements CoreHandler {
         this.context = context;
         this.patcher = context.getPatchKeeper();
 
-        protocol.use(PATCH_IDENTIFIER, this::patchinfo)
+        protocol.setRole(Role.PUBLIC)
+                .use(PATCH_IDENTIFIER, this::patchinfo)
                 .use(PATCH_GAME_INFO, this::gameinfo)
                 .use(PATCH_NEWS, this::news)
                 .use(PATCH_DATA, this::patchdata)
                 .use(PATCH_DOWNLOAD, this::download)
                 .use(PATCH_WEBSEED, this::webseed)
-                .use(ID_PING, Request::accept, PUBLIC);
+                .use(ID_PING, Request::accept);
     }
 
     @Override
     public void handle(Request request) {
-        protocol.get(AUTHORIZED, request.route()).handle(new PatchRequest(request));
+        protocol.get(request.route()).handle(new PatchRequest(request));
     }
 
     @Override

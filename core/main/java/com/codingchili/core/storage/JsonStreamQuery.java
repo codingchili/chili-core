@@ -1,23 +1,22 @@
 package com.codingchili.core.storage;
 
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.protocol.Serializer;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
+import io.vertx.core.json.JsonObject;
+
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.protocol.Serializer;
-
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
-import io.vertx.core.json.JsonObject;
-
 /**
  * @author Robin Duda
- *         <p>
- *         Query implementations for non-indexed json streams.
- *         Use an indexed collection if performance is needed.
- *         This implementation is mostly for testing.
+ * <p>
+ * Query implementations for non-indexed json streams.
+ * Use an indexed collection if performance is needed.
+ * This implementation is mostly for testing.
  */
 class JsonStreamQuery<Value extends Storable> {
     private StreamSource<JsonObject> source;

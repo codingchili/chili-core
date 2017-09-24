@@ -1,17 +1,16 @@
 package com.codingchili.core.storage;
 
-import java.io.Serializable;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import io.vertx.core.shareddata.Shareable;
+
+import java.io.Serializable;
 
 /**
  * @author Robin Duda
- *         <p>
- *         All classes using the storage system must implement storable.
- *         <p>
- *         If not errors such as "Not serializable" or "Illegal argument exception" will occur.
+ * <p>
+ * All classes using the storage system must implement storable.
+ * <p>
+ * If not errors such as "Not serializable" or "Illegal argument exception" will occur.
  */
 public interface Storable extends Serializable, Cloneable, Comparable, Shareable {
     String idField = "id";

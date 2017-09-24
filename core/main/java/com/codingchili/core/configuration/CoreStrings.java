@@ -23,9 +23,9 @@ import java.util.List;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Store json keys and protocol headers so that they are easily maintained.
- *         Extend this class in service implementations to add more constants.
+ * <p>
+ * Store json keys and protocol headers so that they are easily maintained.
+ * Extend this class in service implementations to add more constants.
  */
 public abstract class CoreStrings {
     // paths to configuration files.
@@ -39,60 +39,33 @@ public abstract class CoreStrings {
     public static final String DIR_SEPARATOR = "/";
     public static final String DIR_CONFIG = "conf/";
     public static final String DIR_SYSTEM = "conf/system/";
-    private static final String DIR_TEST = "test/resources/";
     public static final String DIR_SERVICES = "conf/service/";
     public static final String EMPTY = "";
     public static final String DIR_UP = "../";
-
-    // network constants
-    private static final String IP6_HOST = "::";
-    private static final String IP4_HOST = "0.0.0.0";
-    private static final IPVersion ipVersion = IPVersion.IP4;
-
-    private enum IPVersion {IP4, IP6;}
-
-    public static String getBindAddress() {
-        return (ipVersion.equals(IPVersion.IP4) ? IP4_HOST : IP6_HOST);
-    }
-
-    public static String getLoopbackAddress() {
-        return (ipVersion.equals(IPVersion.IP4) ? "127.0.0.1" : "::1");
-    }
-
-    public static String getRequestTooLarge(int maxRequestBytes) {
-        return String.format("Maximum request size of %d bytes exceeded.", maxRequestBytes);
-    }
-
     // storage constants.
     public static final String STORAGE_ARRAY = "[]";
-
     public static final String DB_DIR = "db";
-
     public static final String WATCHER_COMPLETED = "executed";
     public static final String WATCHER_PAUSED = "paused";
     public static final String WATCHER_RESUMED = "resumed";
     public static final String EXT_JSON = ".json";
     public static final String EXT_HTML = ".html";
     public static final String EXT_DB = ".db";
-
     public static final String EXT_TXT = ".txt";
     public static final String ANY = "*";
     public static final String NODE_LOGGING = "syslog.node";
     // protocol constants.
     public static final String PROTOCOL_REAL_IP = "X-Real-IP";
-
     public static final String PROTOCOL_CONNECTION = "connection";
-
     public static final String PROTOCOL_ROUTES = "routes";
     public static final String PROTOCOL_STATUS = "status";
     public static final String PROTOCOL_ROUTE = "route";
     public static final String PROTOCOL_TARGET = "target";
     public static final String PROTOCOL_LOGGING = "logging";
+    public static final String PROTOCOL_DOCUMENTATION = "documentation";
     // launcher commands.
     public static final String COMMAND_PREFIX = "--";
-
     public static final String GENERATE_SECRETS = getCommand("generate-secrets");
-
     public static final String GENERATE_TOKENS = getCommand("generate-tokens");
     public static final String GENERATE_PRESHARED = getCommand("generate-preshared");
     public static final String GENERATE = getCommand("generate");
@@ -102,11 +75,6 @@ public abstract class CoreStrings {
     public static final String PARAM_ITERATIONS = getCommand("iterations");
     public static final String PARAM_HTML = getCommand("html");
     public static final String PARAM_TEMPLATE = getCommand("template");
-
-    public static String getCommand(String command) {
-        return COMMAND_PREFIX + command;
-    }
-
     // keys used in json objects.
     public static final String ID_TOKEN = "token";
     public static final String ID_NAME = "name";
@@ -150,19 +118,15 @@ public abstract class CoreStrings {
     public static final String ID_UNDEFINED = "undefined";
     // Node names.
     public static final String NODE_LOCAL = "local";
-
     public static final String NODE_EXT = ".node";
     // Storage constants
     public static final String DEFAULT_DB = "chili";
-
     // logging constants
     public static final String LOG_APPLICATION = "application";
-
     public static final String LOG_AT = "@";
-
     public static final String LOG_EVENT = "event";
     public static final String LOG_VERSION = "version";
-    public static final String LOG_USER_AGENT = "User-Agent";
+    public static final String LOG_USER_AGENT = "USER-Agent";
     public static final String LOG_AGENT = "agent";
     public static final String LOG_CONTEXT = "context";
     public static final String LOG_TIME = "time";
@@ -202,7 +166,6 @@ public abstract class CoreStrings {
     public static final String LOG_STORAGE_WATCHER = "storage.watcher";
     public static final String[] LOG_HIDDEN_TAGS = new String[]{"dev", "LOCAL", "3.6.3"};
     public static final String ERROR_TOKEN_FACTORY = "Token factory error when generating token.";
-
     public static final String ERROR_NOT_CLUSTERED = "Running in non-clustered mode.";
     public static final String ERROR_NOT_AUTHORIZED = "Failed to authorize request.";
     public static final String ERROR_LAUNCHER_STARTUP = "Failed to start the launcher with clustering.";
@@ -213,6 +176,41 @@ public abstract class CoreStrings {
     public static final String ERROR_STORAGE_EXCEPTION = "Failed to perform a storage operation.";
     public static final String CONFIGURED_BLOCKS = "Configured deployment blocks";
     public static final String ERROR_PATCH_RELOADED = "The patch version changed during patch session.";
+    public static final String[] BENCHMARK_CONSOLE_REPORT_COLUMNS =
+            {"\n[GROUP]", " [IMPLEMENTATION]", " [BENCHMARK]", " [OP/s]", " [TIME]"};
+    private static final String DIR_TEST = "test/resources/";
+    // network constants
+    private static final String IP6_HOST = "::";
+    private static final String IP4_HOST = "0.0.0.0";
+    private static final IPVersion ipVersion = IPVersion.IP4;
+
+    public static String cannotDocumentBeforeUse() {
+        return "Cannot add documentation before adding a route.";
+    }
+
+    public static String cannotSetModelBeforeUse() {
+        return "Cannot add model before adding a route.";
+    }
+
+    public static String getMissingRole(String role) {
+        return String.format("Role '%s' is not configured in the role map.", role);
+    }
+
+    public static String getBindAddress() {
+        return (ipVersion.equals(IPVersion.IP4) ? IP4_HOST : IP6_HOST);
+    }
+
+    public static String getLoopbackAddress() {
+        return (ipVersion.equals(IPVersion.IP4) ? "127.0.0.1" : "::1");
+    }
+
+    public static String getRequestTooLarge(int maxRequestBytes) {
+        return String.format("Maximum request size of %d bytes exceeded.", maxRequestBytes);
+    }
+
+    public static String getCommand(String command) {
+        return COMMAND_PREFIX + command;
+    }
 
     public static String getHandlerMissing(String name) {
         return String.format("The requested handler '%s' was not found.", name);
@@ -253,8 +251,8 @@ public abstract class CoreStrings {
         return "Failed to write file '" + file + "'.";
     }
 
-    public static String getDBIdentifier(String DB, String collection) {
-        return DB + "-" + collection;
+    public static String getDBIdentifier(String DB, String collection, String plugin) {
+        return DB + "-" + collection + "-" + plugin;
     }
 
     public static String getFileMissingError(String filename) {
@@ -343,10 +341,6 @@ public abstract class CoreStrings {
                 System.getProperty("os.version"));
     }
 
-    public static void main(String[] args) {
-        System.out.println(getStartupText("1.0c"));
-    }
-
     public static String quote(String string) {
         return "'" + string + "'";
     }
@@ -429,6 +423,10 @@ public abstract class CoreStrings {
         return "resets system configuration files.";
     }
 
+    public static String getDescriptionMissing() {
+        return "No description provided.";
+    }
+
     public static String getGeneratePresharedDescription() {
         return "generates pre-shared keys for authentication.";
     }
@@ -486,14 +484,10 @@ public abstract class CoreStrings {
                 " " + progress + "%";
     }
 
-    public static final String[] BENCHMARK_CONSOLE_REPORT_COLUMNS =
-            {"\n[GROUP]", " [IMPLEMENTATION]", " [BENCHMARK]", " [OP/s]", " [TIME]"};
-
     public static String getBenchmarkCompleted(Benchmark benchmark) {
         return "Completed benchmark " + benchmark.getImplementation() +
                 "::" + benchmark.getName() + " in " + benchmark.getElapsedMS() + " ms.";
     }
-
 
     public static String getIllegalTemplateTokenCount(String token, int count) {
         return "template must accept " + count + " tokens ('" + token + "s').";
@@ -580,4 +574,6 @@ public abstract class CoreStrings {
         return String.format("Timed out waiting for '%s' to handle '%s' after %s ms.",
                 target, route, timeout);
     }
+
+    private enum IPVersion {IP4, IP6;}
 }

@@ -27,16 +27,15 @@ import static com.codingchili.core.files.Configurations.system;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Tests for the router handler.
+ * <p>
+ * Tests for the router handler.
  */
 @RunWith(VertxUnitRunner.class)
 public class RouterHandlerTest {
-    private RouterHandler handler;
-    private CoreContext core;
-
     @Rule
     public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
+    private RouterHandler handler;
+    private CoreContext core;
 
     @Before
     public void setUp() {

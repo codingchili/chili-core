@@ -1,18 +1,17 @@
 package com.codingchili.core.configuration;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Tests for the String constant/helper class.
+ * <p>
+ * Tests for the String constant/helper class.
  */
 @RunWith(VertxUnitRunner.class)
 public class CoreStringsTest {

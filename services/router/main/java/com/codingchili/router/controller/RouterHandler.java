@@ -3,22 +3,21 @@ package com.codingchili.router.controller;
 import com.codingchili.core.listener.BusRouter;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.Protocol;
-import com.codingchili.core.protocol.RequestHandler;
+import com.codingchili.core.protocol.Role;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.router.configuration.RouterContext;
 
 import static com.codingchili.common.Strings.ANY;
 import static com.codingchili.common.Strings.NODE_ROUTER;
-import static com.codingchili.core.protocol.Access.AUTHORIZED;
 
 /**
  * @author Robin Duda
- *
+ * <p>
  * Forwards messages to other nodes from an input transport.
  * Adds target filtering to the BusRouter.
  */
 public class RouterHandler extends BusRouter {
-    private final Protocol<RequestHandler<Request>> protocol = new Protocol<>();
+    private final Protocol<Request> protocol = new Protocol<>();
     private RouterContext context;
 
     public RouterHandler(RouterContext context) {
@@ -32,7 +31,7 @@ public class RouterHandler extends BusRouter {
         if (context.isRouteHidden(request.target())) {
             request.error(new AuthorizationRequiredException());
         } else {
-            protocol.get(AUTHORIZED, request.target()).handle(request);
+            protocol.get(request.target(), Role.USER).handle(request);
         }
     }
 

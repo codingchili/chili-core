@@ -1,7 +1,6 @@
 package com.codingchili.realm.configuration;
 
 import com.codingchili.core.configuration.ServiceConfigurable;
-import com.codingchili.core.storage.IndexedMap;
 import com.codingchili.core.storage.IndexedMapPersisted;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -11,7 +10,7 @@ import java.util.List;
 
 /**
  * @author Robin Duda
- *         Contains settings for the game server container.
+ * Contains settings for the game server container.
  */
 @JsonIgnoreProperties({"realms"})
 public class RealmServerSettings extends ServiceConfigurable {
@@ -43,17 +42,17 @@ public class RealmServerSettings extends ServiceConfigurable {
     }
 
     /**
-     * @param updateRate set the update rate in MS which realms report to the registry.
-     */
-    public void setRealmUpdates(int updateRate) {
-        this.realmUpdates = updateRate;
-    }
-
-    /**
      * @return get the time in MS which the realm must report to the registry.
      */
     public int getRealmUpdates() {
         return realmUpdates;
+    }
+
+    /**
+     * @param updateRate set the update rate in MS which realms report to the registry.
+     */
+    public void setRealmUpdates(int updateRate) {
+        this.realmUpdates = updateRate;
     }
 
     /**

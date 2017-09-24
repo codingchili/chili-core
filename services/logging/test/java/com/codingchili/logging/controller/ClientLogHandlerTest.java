@@ -1,18 +1,16 @@
 package com.codingchili.logging.controller;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import com.codingchili.common.Strings;
 import com.codingchili.core.protocol.ResponseStatus;
-
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * @author Robin Duda
- *
+ * <p>
  * Contains test cases for use by client- and service log handlers.
  */
 @RunWith(VertxUnitRunner.class)

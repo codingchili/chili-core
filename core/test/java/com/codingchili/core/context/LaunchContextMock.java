@@ -12,8 +12,8 @@ import java.util.List;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Mock of a launcher context.
+ * <p>
+ * Mock of a launcher context.
  */
 class LaunchContextMock extends LaunchContext {
     static final String HOST_1 = "host1";

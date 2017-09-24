@@ -1,16 +1,16 @@
 package com.codingchili.core.configuration.system;
 
-import java.util.HashMap;
-
 import com.codingchili.core.configuration.BaseConfigurable;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.storage.ElasticMap;
 import com.codingchili.core.storage.MongoDBMap;
 
+import java.util.HashMap;
+
 /**
  * @author Robin Duda
- *         <p>
- *         configuration used by storages.
+ * <p>
+ * configuration used by storages.
  */
 public class StorageSettings extends BaseConfigurable {
     private static final String LOCALHOST = "localhost";
@@ -51,6 +51,13 @@ public class StorageSettings extends BaseConfigurable {
     }
 
     /**
+     * @param storage a set of configurations mapped with plugins to set.
+     */
+    public void setStorage(HashMap<String, RemoteStorage> storage) {
+        this.storage = storage;
+    }
+
+    /**
      * @param config the remote configuration to add
      * @param plugin the plugin as a string that the configuration applies to
      * @return fluent
@@ -70,13 +77,6 @@ public class StorageSettings extends BaseConfigurable {
         } else {
             return new RemoteStorage();
         }
-    }
-
-    /**
-     * @param storage a set of configurations mapped with plugins to set.
-     */
-    public void setStorage(HashMap<String, RemoteStorage> storage) {
-        this.storage = storage;
     }
 
     /**

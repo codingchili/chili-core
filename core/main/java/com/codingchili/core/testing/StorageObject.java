@@ -7,8 +7,8 @@ import com.codingchili.core.storage.Storable;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Test class to simulate a stored object.
+ * <p>
+ * Test class to simulate a stored object.
  */
 public class StorageObject implements Storable {
     public static final String NESTED_PREFIX = "nested.";

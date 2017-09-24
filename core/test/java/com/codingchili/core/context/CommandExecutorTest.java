@@ -1,26 +1,24 @@
 package com.codingchili.core.context;
 
-import java.util.Optional;
-
+import com.codingchili.core.context.exception.CommandAlreadyExistsException;
+import io.vertx.core.Future;
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.context.exception.CommandAlreadyExistsException;
-
-import io.vertx.core.Future;
-import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
+import java.util.Optional;
 
 import static com.codingchili.core.configuration.CoreStrings.HELP;
 import static org.junit.Assert.fail;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Tests for the CommandExecutor
+ * <p>
+ * Tests for the CommandExecutor
  */
 @RunWith(VertxUnitRunner.class)
 public class CommandExecutorTest {

@@ -1,22 +1,20 @@
 package com.codingchili.core.benchmarking;
 
-import java.awt.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
+import com.codingchili.core.files.exception.NoSuchResourceException;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.files.exception.NoSuchResourceException;
-
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
+import java.awt.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Tests for the HTML reporter
+ * <p>
+ * Tests for the HTML reporter
  */
 @RunWith(VertxUnitRunner.class)
 public class BenchmarkHTMLReportTest extends BenchmarkReportTestCases {

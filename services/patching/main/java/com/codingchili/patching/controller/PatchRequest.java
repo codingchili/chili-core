@@ -11,7 +11,7 @@ import static com.codingchili.common.Strings.*;
 
 /**
  * @author Robin Duda
- *
+ * <p>
  * A request to the patch service.
  */
 class PatchRequest extends RequestWrapper {

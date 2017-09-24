@@ -1,16 +1,14 @@
 package com.codingchili.authentication.model;
 
 import com.codingchili.core.security.Account;
-
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
 /**
  * @author Robin Duda
- *         Asynchronous account store.
+ * Asynchronous account store.
  */
-public interface AsyncAccountStore
-{
+public interface AsyncAccountStore {
     /**
      * Finds an account in the store.
      *

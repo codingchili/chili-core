@@ -1,20 +1,18 @@
 package com.codingchili.core.logging;
 
-import java.time.Instant;
-import java.util.concurrent.atomic.AtomicBoolean;
-
+import com.codingchili.core.context.CoreContext;
+import io.vertx.core.json.JsonObject;
 import org.fusesource.jansi.AnsiConsole;
 
-import com.codingchili.core.context.CoreContext;
-
-import io.vertx.core.json.JsonObject;
+import java.time.Instant;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Implementation of a console logger.
+ * <p>
+ * Implementation of a console logger.
  */
 public class ConsoleLogger extends DefaultLogger implements StringLogger {
     private static final String RESET = "\u001B[0m";

@@ -1,11 +1,5 @@
 package com.codingchili.core.files;
 
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
-import org.junit.*;
-import org.junit.runner.RunWith;
-
 import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.configuration.ConfigurableTest;
 import com.codingchili.core.configuration.CoreStrings;
@@ -14,26 +8,29 @@ import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.testing.ContextMock;
-
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.*;
+import org.junit.runner.RunWith;
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Tests for the configuration system.
+ * <p>
+ * Tests for the configuration system.
  */
 @RunWith(VertxUnitRunner.class)
 public class ConfigurationsTest {
     private static final String CONFIGURATIONS = "Configurations";
     private static final String DEFAULT_JSON = "default.json";
-    private CoreContext context;
-
     @Rule
     public Timeout timeout = new Timeout(6, TimeUnit.SECONDS);
+    private CoreContext context;
 
     @Before
     public void setUp() {

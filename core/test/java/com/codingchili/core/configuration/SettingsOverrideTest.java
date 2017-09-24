@@ -1,14 +1,13 @@
 package com.codingchili.core.configuration;
 
+import com.codingchili.core.files.Configurations;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.files.Configurations;
-
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-
-import static com.codingchili.core.configuration.CoreStrings.*;
+import static com.codingchili.core.configuration.CoreStrings.testDirectory;
+import static com.codingchili.core.configuration.CoreStrings.testFile;
 
 /**
  * @author Robin Duda

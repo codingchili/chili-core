@@ -1,8 +1,5 @@
 package com.codingchili.core.storage;
 
-import java.io.Serializable;
-import java.util.*;
-
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
@@ -16,20 +13,23 @@ import com.hazelcast.core.IMap;
 import com.hazelcast.query.PagingPredicate;
 import com.hazelcast.query.Predicate;
 import com.hazelcast.query.Predicates;
-
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.impl.ConcurrentHashSet;
 import io.vertx.core.shareddata.AsyncMap;
 
+import java.io.Serializable;
+import java.util.*;
+
 import static com.codingchili.core.configuration.CoreStrings.STORAGE_ARRAY;
-import static com.codingchili.core.context.FutureHelper.*;
+import static com.codingchili.core.context.FutureHelper.error;
+import static com.codingchili.core.context.FutureHelper.result;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Initializes a new hazel async map.
+ * <p>
+ * Initializes a new hazel async map.
  */
 public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
     private static final String HAZEL_ARRAY = "[any]";

@@ -2,8 +2,8 @@ package com.codingchili.core.benchmarking;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Listens for progress during benchmarking.
+ * <p>
+ * Listens for progress during benchmarking.
  */
 public interface BenchmarkListener {
 

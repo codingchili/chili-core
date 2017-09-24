@@ -1,8 +1,5 @@
 package com.codingchili.core.storage;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.protocol.Serializer;
@@ -11,7 +8,6 @@ import com.codingchili.core.storage.exception.NothingToRemoveException;
 import com.codingchili.core.storage.exception.NothingToReplaceException;
 import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
 import com.codingchili.core.storage.exception.ValueMissingException;
-
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -23,12 +19,16 @@ import io.vertx.ext.mongo.IndexOptions;
 import io.vertx.ext.mongo.MongoClient;
 import io.vertx.ext.mongo.UpdateOptions;
 
-import static com.codingchili.core.context.FutureHelper.*;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.codingchili.core.context.FutureHelper.error;
+import static com.codingchili.core.context.FutureHelper.result;
 
 /**
  * @author Robin Duda
- *         <p>
- *         mongodb backed asyncmap.
+ * <p>
+ * mongodb backed asyncmap.
  */
 public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
     private static final JsonObject ALL_FIELDS = new JsonObject();

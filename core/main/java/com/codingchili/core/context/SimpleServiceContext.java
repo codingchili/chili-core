@@ -4,12 +4,13 @@ import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.ServiceConfigurable;
 import com.codingchili.core.files.Configurations;
 
-import static com.codingchili.core.configuration.CoreStrings.*;
+import static com.codingchili.core.configuration.CoreStrings.EXT_JSON;
+import static com.codingchili.core.configuration.CoreStrings.NODE_EXT;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Simple service context.
+ * <p>
+ * Simple service context.
  */
 public class SimpleServiceContext extends ServiceContext {
     private String path;
@@ -28,6 +29,7 @@ public class SimpleServiceContext extends ServiceContext {
 
     /**
      * Creates a new simple name context backed by a new system context.
+     *
      * @param address the name and identity of the node.
      */
     public SimpleServiceContext(String address) {

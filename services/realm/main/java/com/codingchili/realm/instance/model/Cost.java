@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 /**
  * @author Robin Duda
- *         Holds the cost of a spell.
+ * Holds the cost of a spell.
  */
 class Cost implements Serializable {
     private String requires;

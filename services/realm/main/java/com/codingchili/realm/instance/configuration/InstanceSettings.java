@@ -1,18 +1,19 @@
 package com.codingchili.realm.instance.configuration;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.codingchili.core.configuration.BaseConfigurable;
 import com.codingchili.realm.instance.model.Node;
 import com.codingchili.realm.instance.model.Npc;
 import com.codingchili.realm.instance.model.Portal;
 
-import static com.codingchili.common.Strings.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.codingchili.common.Strings.EXT_JSON;
+import static com.codingchili.common.Strings.PATH_INSTANCE;
 
 /**
  * @author Robin Duda
- *         Contains settings for an instance in a realm.
+ * Contains settings for an instance in a realm.
  */
 public class InstanceSettings extends BaseConfigurable {
     private List<Portal> portals = new ArrayList<>();
@@ -145,20 +146,20 @@ public class InstanceSettings extends BaseConfigurable {
     }
 
     /**
-     * @param npc adds a npc to the list of existing.
-     * @return fluent
-     */
-    public InstanceSettings addNpc(Npc npc) {
-        this.npc.add(npc);
-        return this;
-    }
-
-    /**
      * @param npc a list of npcs to set for the map.
      * @return fluent
      */
     protected InstanceSettings setNpc(List<Npc> npc) {
         this.npc = npc;
+        return this;
+    }
+
+    /**
+     * @param npc adds a npc to the list of existing.
+     * @return fluent
+     */
+    public InstanceSettings addNpc(Npc npc) {
+        this.npc.add(npc);
         return this;
     }
 

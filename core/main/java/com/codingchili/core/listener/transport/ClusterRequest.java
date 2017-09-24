@@ -6,7 +6,6 @@ import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.Protocol;
 import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.protocol.Serializer;
-
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
@@ -15,10 +14,10 @@ import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_STATUS;
 
 /**
  * @author Robin Duda
- *         <p>
- *         A request in the cluster.
- *
- *         Size does not apply to these requests.
+ * <p>
+ * A request in the cluster.
+ * <p>
+ * Size does not apply to these requests.
  */
 public class ClusterRequest extends BaseRequest {
     private final Message message;

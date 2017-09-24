@@ -1,13 +1,12 @@
 package com.codingchili.realm.model;
 
-import java.util.Collection;
-
 import com.codingchili.core.storage.AsyncStorage;
 import com.codingchili.realm.instance.model.PlayerCharacter;
-
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+
+import java.util.Collection;
 
 import static com.codingchili.common.Strings.ID_ACCOUNT;
 import static com.codingchili.core.configuration.CoreStrings.ID_NAME;
@@ -15,8 +14,8 @@ import static io.vertx.core.Future.failedFuture;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Storage for characters.
+ * <p>
+ * Storage for characters.
  */
 public class CharacterDB implements AsyncCharacterStore {
     private final AsyncStorage<PlayerCharacter> characters;

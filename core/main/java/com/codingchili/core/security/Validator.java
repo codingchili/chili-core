@@ -1,19 +1,18 @@
 package com.codingchili.core.security;
 
-import java.util.function.Supplier;
-import java.util.regex.Matcher;
-
 import com.codingchili.core.configuration.RegexComponent;
 import com.codingchili.core.configuration.system.ParserSettings;
 import com.codingchili.core.configuration.system.ValidatorSettings;
 import com.codingchili.core.protocol.exception.RequestValidationException;
-
 import io.vertx.core.json.JsonObject;
+
+import java.util.function.Supplier;
+import java.util.regex.Matcher;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Validates the contents of a json object according to the validation configuration.
+ * <p>
+ * Validates the contents of a json object according to the validation configuration.
  */
 public class Validator {
     private static final String REGEX_PLAINTEXT = "[A-Za-z0-9 \\-:&].*";
@@ -27,6 +26,27 @@ public class Validator {
      */
     public Validator(Supplier<ValidatorSettings> settings) {
         this.settings = settings;
+    }
+
+    /**
+     * tests if a comparable objects string format contains characters that are not
+     * in the accepted plaintext range of A-Z, a-z, 0-9, whitespace, dash, colon or ampersand.
+     *
+     * @param value the value to test.
+     * @return true if the value is plaintext.
+     */
+    public static boolean plainText(Comparable value) {
+        return value != null && value.toString().matches(REGEX_PLAINTEXT);
+    }
+
+    /**
+     * Converts a string into a plaintext string, stripping any potential unsafe characters.
+     *
+     * @param input the string to be sanitized.
+     * @return a plaintext string consisting of only A-Z, a-z, 0-9, whitespace, dash, colon or ampersand.
+     */
+    public static String toPlainText(String input) {
+        return input.replaceAll(REGEX_SPECIAL_CHARS, "");
     }
 
     /**
@@ -102,26 +122,5 @@ public class Validator {
             }
         }
         return text.trim();
-    }
-
-    /**
-     * tests if a comparable objects string format contains characters that are not
-     * in the accepted plaintext range of A-Z, a-z, 0-9, whitespace, dash, colon or ampersand.
-     *
-     * @param value the value to test.
-     * @return true if the value is plaintext.
-     */
-    public static boolean plainText(Comparable value) {
-        return value != null && value.toString().matches(REGEX_PLAINTEXT);
-    }
-
-    /**
-     * Converts a string into a plaintext string, stripping any potential unsafe characters.
-     *
-     * @param input the string to be sanitized.
-     * @return a plaintext string consisting of only A-Z, a-z, 0-9, whitespace, dash, colon or ampersand.
-     */
-    public static String toPlainText(String input) {
-        return input.replaceAll(REGEX_SPECIAL_CHARS, "");
     }
 }

@@ -1,14 +1,11 @@
 package com.codingchili.realmregistry.controller;
 
-import java.time.Instant;
-
 import com.codingchili.common.Strings;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
-import com.codingchili.core.protocol.Access;
 import com.codingchili.core.protocol.Protocol;
-import com.codingchili.core.protocol.RequestHandler;
+import com.codingchili.core.protocol.Role;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
 import com.codingchili.realmregistry.configuration.RegisteredRealm;
@@ -17,14 +14,16 @@ import com.codingchili.realmregistry.model.AsyncRealmStore;
 import com.codingchili.realmregistry.model.RealmDisconnectException;
 import com.codingchili.realmregistry.model.RealmUpdateException;
 
+import java.time.Instant;
+
 import static com.codingchili.common.Strings.NODE_AUTHENTICATION_REALMS;
 
 /**
  * @author Robin Duda
- *         Routing used to authenticate realms and generate realmName lists.
+ * Routing used to authenticate realms and generate realmName lists.
  */
 public class RealmHandler implements CoreHandler {
-    private final Protocol<RequestHandler<RealmRequest>> protocol = new Protocol<>();
+    private final Protocol<RealmRequest> protocol = new Protocol<>();
     private AsyncRealmStore realms;
     private RegistryContext context;
 
@@ -35,17 +34,17 @@ public class RealmHandler implements CoreHandler {
 
         protocol.use(Strings.REALM_UPDATE, this::update)
                 .use(Strings.CLIENT_CLOSE, this::disconnected)
-                .use(CoreStrings.ID_PING, Request::accept, Access.PUBLIC);
+                .use(CoreStrings.ID_PING, Request::accept, Role.PUBLIC);
     }
 
-    private Access authenticate(Request request) {
+    private Role authenticate(Request request) {
         boolean authorized = context.verifyRealmToken(request.token());
-        return (authorized) ? Access.AUTHORIZED : Access.PUBLIC;
+        return (authorized) ? Role.USER : Role.PUBLIC;
     }
 
     @Override
     public void handle(Request request) throws AuthorizationRequiredException, HandlerMissingException {
-        protocol.get(authenticate(request), request.route()).handle(new RealmRequest(request));
+        protocol.get(request.route(), authenticate(request)).handle(new RealmRequest(request));
     }
 
     private void update(RealmRequest request) {

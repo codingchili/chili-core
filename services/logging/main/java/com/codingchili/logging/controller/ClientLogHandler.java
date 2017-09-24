@@ -5,7 +5,6 @@ import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.security.Token;
 import com.codingchili.logging.configuration.LogContext;
-
 import io.vertx.core.json.JsonObject;
 
 import static com.codingchili.common.Strings.*;
@@ -13,7 +12,7 @@ import static com.codingchili.common.Strings.*;
 
 /**
  * @author Robin Duda
- *
+ * <p>
  * Log handler for messages incoming from clients.
  */
 public class ClientLogHandler extends AbstractLogHandler {

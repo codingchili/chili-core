@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 /**
  * @author Robin Duda
- *         Represents a characters inventory.
+ * Represents a characters inventory.
  */
 public class Inventory implements Serializable {
     private HashMap<String, Item> equipped;

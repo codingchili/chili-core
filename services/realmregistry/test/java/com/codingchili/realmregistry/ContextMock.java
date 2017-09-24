@@ -10,7 +10,6 @@ import com.codingchili.realmregistry.configuration.RegisteredRealm;
 import com.codingchili.realmregistry.configuration.RegistryContext;
 import com.codingchili.realmregistry.model.AsyncRealmStore;
 import com.codingchili.realmregistry.model.RealmDB;
-
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 

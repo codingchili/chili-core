@@ -6,20 +6,20 @@ import com.codingchili.authentication.model.AsyncAccountStore;
 import com.codingchili.authentication.model.ClientAuthentication;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
-import com.codingchili.core.protocol.Access;
 import com.codingchili.core.protocol.Protocol;
-import com.codingchili.core.protocol.RequestHandler;
+import com.codingchili.core.protocol.Role;
 import com.codingchili.core.security.Account;
 
 import static com.codingchili.common.Strings.*;
-import static com.codingchili.core.protocol.Access.*;
+import static com.codingchili.core.protocol.Role.PUBLIC;
+import static com.codingchili.core.protocol.Role.USER;
 
 /**
  * @author Robin Duda
- *         Routing used to register/authenticate accounts.
+ * Routing used to register/authenticate accounts.
  */
 public class ClientHandler implements CoreHandler {
-    private final Protocol<RequestHandler<ClientRequest>> protocol = new Protocol<>();
+    private final Protocol<ClientRequest> protocol = new Protocol<>();
     private final AsyncAccountStore accounts;
     private AuthenticationContext context;
 
@@ -35,8 +35,8 @@ public class ClientHandler implements CoreHandler {
 
     @Override
     public void handle(Request request) {
-        Access access = (context.verifyClientToken(request.token())) ? AUTHORIZED : PUBLIC;
-        protocol.get(access, request.route()).handle(new ClientRequest(request));
+        Role role = (context.verifyClientToken(request.token())) ? USER : PUBLIC;
+        protocol.get(request.route(), role).handle(new ClientRequest(request));
     }
 
     private void register(ClientRequest request) {

@@ -4,7 +4,7 @@ import java.time.Instant;
 
 /**
  * @author Robin Duda
- *         Contains configuration data for a news object on the website.
+ * Contains configuration data for a news object on the website.
  */
 class NewsItem {
     private String title = "title";

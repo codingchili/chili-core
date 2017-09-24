@@ -5,8 +5,8 @@ import com.codingchili.core.storage.Storable;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Contains information about a realm, received from a realmserver..
+ * <p>
+ * Contains information about a realm, received from a realmserver..
  */
 public class RegisteredRealm implements Storable {
     private Token authentication;

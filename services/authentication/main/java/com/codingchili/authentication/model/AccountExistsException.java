@@ -4,7 +4,7 @@ import com.codingchili.core.protocol.ResponseStatus;
 
 /**
  * @author Robin Duda
- *
+ * <p>
  * Thrown when an user already exists.
  */
 public class AccountExistsException extends AccountException {

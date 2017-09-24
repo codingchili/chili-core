@@ -1,28 +1,26 @@
 package com.codingchili.core.benchmarking;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.SystemContext;
-
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Tests base implementations of benchmark groups, implementations and benchmarks.
+ * <p>
+ * Tests base implementations of benchmark groups, implementations and benchmarks.
  */
 @RunWith(VertxUnitRunner.class)
 public class BenchmarkTests {

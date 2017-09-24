@@ -5,7 +5,7 @@ import com.codingchili.core.security.Token;
 
 /**
  * @author Robin Duda
- *         an authentication message from the server to the view.
+ * an authentication message from the server to the view.
  */
 public class ClientAuthentication {
     private Token token;
@@ -25,16 +25,16 @@ public class ClientAuthentication {
         return token;
     }
 
+    public void setToken(Token token) {
+        this.token = token;
+    }
+
     public boolean isRegistered() {
         return registered;
     }
 
     public void setRegistered(boolean registered) {
         this.registered = registered;
-    }
-
-    public void setToken(Token token) {
-        this.token = token;
     }
 
     public Account getAccount() {

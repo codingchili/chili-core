@@ -1,5 +1,11 @@
 package com.codingchili.core.files;
 
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.files.exception.NoSuchResourceException;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,19 +16,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.files.exception.NoSuchResourceException;
-
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-
 import static com.codingchili.core.configuration.CoreStrings.DIR_SEPARATOR;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Handles the loading/writing of json objects and lists to/from disk.
+ * <p>
+ * Handles the loading/writing of json objects and lists to/from disk.
  */
 public abstract class JsonFileStore {
 

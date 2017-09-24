@@ -6,8 +6,8 @@ import io.vertx.core.Future;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Indexed map configured with on-heap storage.
+ * <p>
+ * Indexed map configured with on-heap storage.
  */
 public class IndexedMapVolatile<Value extends Storable> extends IndexedMap<Value> {
 
@@ -18,6 +18,6 @@ public class IndexedMapVolatile<Value extends Storable> extends IndexedMap<Value
     @Override
     protected SharedIndexCollection<Value> getImplementation(
             StorageContext<Value> ctx, SimpleAttribute<Value, String> attribute) {
-        return SharedIndexCollection.onHeap();
+        return SharedIndexCollection.onHeap(attribute);
     }
 }

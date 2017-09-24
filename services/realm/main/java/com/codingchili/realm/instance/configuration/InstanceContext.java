@@ -8,7 +8,6 @@ import com.codingchili.core.security.Token;
 import com.codingchili.realm.configuration.RealmContext;
 import com.codingchili.realm.configuration.RealmServerSettings;
 import com.codingchili.realm.configuration.RealmSettings;
-
 import io.vertx.core.Future;
 
 import static com.codingchili.common.Strings.*;

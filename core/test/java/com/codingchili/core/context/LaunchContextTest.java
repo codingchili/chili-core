@@ -1,25 +1,23 @@
 package com.codingchili.core.context;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import com.codingchili.core.configuration.Environment;
 import com.codingchili.core.configuration.exception.BlockNotConfiguredException;
 import com.codingchili.core.configuration.exception.NoServicesConfiguredForBlock;
 import com.codingchili.core.configuration.exception.RemoteBlockNotConfiguredException;
-
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static com.codingchili.core.configuration.CoreStrings.getNoServicesConfiguredForBlock;
 import static com.codingchili.core.context.LaunchContextMock.*;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Tests for the launcher context.
+ * <p>
+ * Tests for the launcher context.
  */
 @RunWith(VertxUnitRunner.class)
 public class LaunchContextTest {

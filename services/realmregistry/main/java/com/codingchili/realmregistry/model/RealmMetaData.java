@@ -5,7 +5,7 @@ import com.codingchili.realmregistry.configuration.RegisteredRealm;
 
 /**
  * @author Robin Duda
- *         Contains realm metadata used in the realm-list.
+ * Contains realm metadata used in the realm-list.
  */
 public class RealmMetaData extends Attributes {
     private long updated;
@@ -21,7 +21,8 @@ public class RealmMetaData extends Attributes {
     private Boolean trusted;
     private Boolean secure;
 
-    public RealmMetaData() {}
+    public RealmMetaData() {
+    }
 
     public RealmMetaData(RegisteredRealm settings) {
 

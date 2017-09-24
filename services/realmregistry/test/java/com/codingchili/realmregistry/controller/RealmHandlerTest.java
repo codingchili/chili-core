@@ -1,13 +1,5 @@
 package com.codingchili.realmregistry.controller;
 
-import java.util.concurrent.TimeUnit;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
@@ -16,30 +8,35 @@ import com.codingchili.core.testing.RequestMock;
 import com.codingchili.core.testing.ResponseListener;
 import com.codingchili.realmregistry.ContextMock;
 import com.codingchili.realmregistry.configuration.RegisteredRealm;
-
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.util.concurrent.TimeUnit;
 
 import static com.codingchili.common.Strings.*;
 
 
 /**
  * @author Robin Duda
- *         tests the API from realmName->authentication server.
+ * tests the API from realmName->authentication server.
  */
 
 @RunWith(VertxUnitRunner.class)
 public class RealmHandlerTest {
     private static final String REALM_NAME = "test-realm";
+    @Rule
+    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
     private RegisteredRealm realmconfig = new RegisteredRealm();
     private RealmHandler handler;
     private ContextMock mock;
-
-    @Rule
-    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
 
     @Before
     public void setUp() {

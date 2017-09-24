@@ -4,8 +4,8 @@ import java.util.function.Supplier;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Listeners handles incoming messages and forwards them to a handler.
+ * <p>
+ * Listeners handles incoming messages and forwards them to a handler.
  */
 public interface CoreListener extends CoreDeployment {
 

@@ -5,7 +5,7 @@ import com.codingchili.core.storage.Storable;
 
 /**
  * @author Robin Duda
- *         model for player characters.
+ * model for player characters.
  */
 public class PlayerCharacter extends AttributeConfigurable implements Storable {
     private String account;

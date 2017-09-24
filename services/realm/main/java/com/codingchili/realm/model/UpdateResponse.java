@@ -1,7 +1,6 @@
 package com.codingchili.realm.model;
 
 import com.codingchili.core.protocol.ProtocolMessage;
-
 import io.vertx.core.eventbus.Message;
 
 /**

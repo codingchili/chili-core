@@ -17,8 +17,8 @@ import static com.codingchili.core.configuration.CoreStrings.HELP;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Tests the command parsing functionality.
+ * <p>
+ * Tests the command parsing functionality.
  */
 @RunWith(VertxUnitRunner.class)
 public class LauncherCommandExecutorTest {

@@ -1,29 +1,27 @@
 package com.codingchili.realm.controller;
 
-import java.util.Collection;
-
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
-import com.codingchili.core.protocol.Access;
 import com.codingchili.core.protocol.Protocol;
-import com.codingchili.core.protocol.RequestHandler;
+import com.codingchili.core.protocol.Role;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.realm.configuration.RealmContext;
 import com.codingchili.realm.instance.model.PlayerCharacter;
 import com.codingchili.realm.instance.model.PlayerClass;
 import com.codingchili.realm.model.*;
-
 import io.vertx.core.Future;
+
+import java.util.Collection;
 
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
 
 /**
  * @author Robin Duda
- *         Handles traveling between instances.
+ * Handles traveling between instances.
  */
 public class CharacterHandler implements CoreHandler {
-    private final Protocol<RequestHandler<RealmRequest>> protocol = new Protocol<>();
+    private final Protocol<RealmRequest> protocol = new Protocol<>();
     private final AsyncCharacterStore characters;
     private boolean registered = false;
     private RealmContext context;
@@ -38,7 +36,7 @@ public class CharacterHandler implements CoreHandler {
                 .use(CLIENT_CHARACTER_LIST, this::characterList)
                 .use(CLIENT_CHARACTER_CREATE, this::characterCreate)
                 .use(CLIENT_CHARACTER_REMOVE, this::characterRemove)
-                .use(ID_PING, Request::accept, Access.PUBLIC);
+                .use(ID_PING, Request::accept, Role.PUBLIC);
     }
 
     @Override
@@ -125,17 +123,17 @@ public class CharacterHandler implements CoreHandler {
             throw new PlayerClassDisabledException();
     }
 
-    private Access authenticator(Request request) {
+    private Role authenticator(Request request) {
         if (context.verifyToken(request.token())) {
-            return Access.AUTHORIZED;
+            return Role.USER;
         } else {
-            return Access.PUBLIC;
+            return Role.PUBLIC;
         }
     }
 
     @Override
     public void handle(Request request) {
-        protocol.get(authenticator(request), request.route()).handle(new RealmRequest(request));
+        protocol.get(request.route(), authenticator(request)).handle(new RealmRequest(request));
     }
 
     @Override

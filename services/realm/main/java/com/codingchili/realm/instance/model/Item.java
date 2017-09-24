@@ -1,12 +1,12 @@
 package com.codingchili.realm.instance.model;
 
-import java.io.Serializable;
-
 import com.codingchili.core.configuration.Attributes;
+
+import java.io.Serializable;
 
 /**
  * @author Robin Duda
- *         Contains item data.
+ * Contains item data.
  */
 class Item extends Attributes implements Serializable {
     private String name;

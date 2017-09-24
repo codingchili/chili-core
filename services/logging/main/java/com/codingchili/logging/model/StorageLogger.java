@@ -5,12 +5,11 @@ import com.codingchili.core.logging.JsonLogger;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.storage.JsonItem;
 import com.codingchili.logging.configuration.LogContext;
-
 import io.vertx.core.json.JsonObject;
 
 /**
  * @author Robin Duda
- *
+ * <p>
  * Logs to an output storage.
  */
 public class StorageLogger extends DefaultLogger implements JsonLogger {

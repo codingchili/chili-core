@@ -4,8 +4,8 @@ import io.vertx.core.json.JsonObject;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Extends the JsonObject making it storable.
+ * <p>
+ * Extends the JsonObject making it storable.
  */
 public class JsonItem extends JsonObject implements Storable {
 

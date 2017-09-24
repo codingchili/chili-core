@@ -4,9 +4,9 @@ import java.util.List;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Contains a set of benchmarks and groups them by type, for example
- *         "network" or "storage".
+ * <p>
+ * Contains a set of benchmarks and groups them by type, for example
+ * "network" or "storage".
  */
 public interface BenchmarkGroup {
     /**

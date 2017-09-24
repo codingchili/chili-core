@@ -5,8 +5,8 @@ import com.codingchili.core.context.CoreRuntimeException;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Throw when an error has occured while reading a file.
+ * <p>
+ * Throw when an error has occured while reading a file.
  */
 public class FileReadException extends CoreRuntimeException {
 

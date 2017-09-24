@@ -22,8 +22,8 @@ import static com.codingchili.core.protocol.Serializer.json;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Generates service security configuration based on system security mappings.
+ * <p>
+ * Generates service security configuration based on system security mappings.
  */
 public class AuthenticationGenerator {
     private final Logger logger;

@@ -2,8 +2,8 @@ package com.codingchili.core.configuration;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Simple configurable that maps to a json object.
+ * <p>
+ * Simple configurable that maps to a json object.
  */
 public class AttributeConfigurable extends Attributes implements Configurable {
     private String path;

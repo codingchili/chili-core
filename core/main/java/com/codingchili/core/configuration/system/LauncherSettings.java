@@ -8,14 +8,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.codingchili.core.configuration.CoreStrings.ID_DEFAULT;
-import static com.codingchili.core.configuration.CoreStrings.PATH_LAUNCHER;
-import static com.codingchili.core.configuration.CoreStrings.getBlockNotConfigured;
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Contains the settings for the launcher.
+ * <p>
+ * Contains the settings for the launcher.
  */
 public class LauncherSettings extends BaseConfigurable {
     private String application = "";
@@ -50,6 +48,13 @@ public class LauncherSettings extends BaseConfigurable {
     }
 
     /**
+     * @param blocks set the configured deployment blocks.
+     */
+    public void setBlocks(HashMap<String, List<String>> blocks) {
+        this.blocks = blocks;
+    }
+
+    /**
      * @param block name of the block to retrieve
      * @return a list of services attached to the block
      */
@@ -60,13 +65,6 @@ public class LauncherSettings extends BaseConfigurable {
         } else {
             throw new IllegalArgumentException(getBlockNotConfigured(block));
         }
-    }
-
-    /**
-     * @param blocks set the configured deployment blocks.
-     */
-    public void setBlocks(HashMap<String, List<String>> blocks) {
-        this.blocks = blocks;
     }
 
     /**

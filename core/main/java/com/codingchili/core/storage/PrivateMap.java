@@ -1,32 +1,32 @@
 package com.codingchili.core.storage;
 
-import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.storage.exception.NothingToRemoveException;
 import com.codingchili.core.storage.exception.NothingToReplaceException;
 import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
 import com.codingchili.core.storage.exception.ValueMissingException;
-
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 
-import static com.codingchili.core.context.FutureHelper.*;
+import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static com.codingchili.core.context.FutureHelper.error;
+import static com.codingchili.core.context.FutureHelper.result;
 
 
 /**
  * @author Robin Duda
- *         <p>
- *         Implements an async map for use with local data.
- *         <p>
- *         This storage implementation implements a fallback for supporting queries.
- *         When querying, all fields in the store are converted to json.
- *         This is very inefficient, if query support is required use another implementation.
- *         <p>
- *         This map is private, it is not shared within the JVM.
+ * <p>
+ * Implements an async map for use with local data.
+ * <p>
+ * This storage implementation implements a fallback for supporting queries.
+ * When querying, all fields in the store are converted to json.
+ * This is very inefficient, if query support is required use another implementation.
+ * <p>
+ * This map is private, it is not shared within the JVM.
  */
 public class PrivateMap<Value extends Storable> implements AsyncStorage<Value> {
     private ConcurrentHashMap<String, Value> map = new ConcurrentHashMap<>();

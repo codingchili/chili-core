@@ -11,13 +11,12 @@ import com.codingchili.realm.instance.model.PlayerCharacter;
 import com.codingchili.realm.instance.model.PlayerClass;
 import com.codingchili.realm.model.AsyncCharacterStore;
 import com.codingchili.realm.model.CharacterDB;
-
 import io.vertx.core.Vertx;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Context mock for realms.
+ * <p>
+ * Context mock for realms.
  */
 public class ContextMock extends RealmContext {
     private RealmSettings realm = new RealmSettings();

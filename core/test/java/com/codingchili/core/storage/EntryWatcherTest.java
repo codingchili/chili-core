@@ -1,16 +1,7 @@
 package com.codingchili.core.storage;
 
-import java.util.concurrent.TimeUnit;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.testing.StorageObject;
-
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -19,12 +10,19 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.util.concurrent.TimeUnit;
 
 
 /**
  * @author Robin Duda
- *         <p>
- *         Tests the stale handler for realms.
+ * <p>
+ * Tests the stale handler for realms.
  */
 @RunWith(VertxUnitRunner.class)
 public class EntryWatcherTest {
@@ -36,12 +34,11 @@ public class EntryWatcherTest {
     private static final int REMOVE_INTERVAL = 50;
     private static final int LEVEL_PERSIST = 50;
     private static final int LEVEL_REMOVE = 0;
+    @Rule
+    public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
     private AsyncStorage<StorageObject> storage;
     private StorageObject object = new StorageObject(TEST_NAME, 5);
     private StorageContext context;
-
-    @Rule
-    public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
 
     @Before
     public void setUp(TestContext test) {

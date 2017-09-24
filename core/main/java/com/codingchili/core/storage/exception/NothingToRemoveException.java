@@ -6,8 +6,8 @@ import com.codingchili.core.protocol.ResponseStatus;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Throw when the remove operation cannot be completed as there is nothing to be removed.
+ * <p>
+ * Throw when the remove operation cannot be completed as there is nothing to be removed.
  */
 public class NothingToRemoveException extends CoreException {
 

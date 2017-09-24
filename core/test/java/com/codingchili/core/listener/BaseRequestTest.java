@@ -1,18 +1,16 @@
 package com.codingchili.core.listener;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import com.codingchili.core.context.CoreException;
 import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.protocol.exception.UnmappedException;
 import com.codingchili.core.security.Token;
-
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.listener.BaseRequest.TARGET_UNDEFINED;
@@ -20,16 +18,16 @@ import static com.codingchili.core.protocol.ResponseStatus.*;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Test cases for request implementations.
+ * <p>
+ * Test cases for request implementations.
  */
 @RunWith(VertxUnitRunner.class)
 public class BaseRequestTest {
+    public static final String TEST = "test";
+    public static final String PASS = "pass";
     private static final String ROUTE = "route";
     private static final String TARGET = "/";
     private static final int TIMEOUT = 50;
-    public static final String TEST = "test";
-    public static final String PASS = "pass";
     private Token token = new Token().setKey("key").setExpiry(10L);
     private Request request = new RequestTest();
     private JsonObject response;
@@ -144,7 +142,8 @@ public class BaseRequestTest {
         }
 
         @Override
-        public void init() {}
+        public void init() {
+        }
 
         @Override
         public JsonObject data() {

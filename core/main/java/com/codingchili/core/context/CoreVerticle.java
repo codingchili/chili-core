@@ -11,9 +11,9 @@ import io.vertx.core.Vertx;
 
 /**
  * @author Robin Duda
- *         <p>
- *         A wrapper for the Vertx api to a deployable service/handler/listener in chili-core.
- *         Avoids having to deal with vertx specifics where it is not required.
+ * <p>
+ * A wrapper for the Vertx api to a deployable service/handler/listener in chili-core.
+ * Avoids having to deal with vertx specifics where it is not required.
  */
 class CoreVerticle implements Verticle, CoreDeployment {
     private Vertx vertx;
@@ -43,16 +43,16 @@ class CoreVerticle implements Verticle, CoreDeployment {
         Future<Void> future = Future.future();
 
         future.setHandler(done -> {
-           if (done.succeeded()) {
-               if (deployment instanceof CoreService) {
-                   logger.onServiceStarted((CoreService) deployment);
-               } else if (deployment instanceof CoreListener) {
-                   logger.onListenerStarted((CoreListener) deployment);
-               }
-               start.complete();
-           } else {
-               start.fail(done.cause());
-           }
+            if (done.succeeded()) {
+                if (deployment instanceof CoreService) {
+                    logger.onServiceStarted((CoreService) deployment);
+                } else if (deployment instanceof CoreListener) {
+                    logger.onListenerStarted((CoreListener) deployment);
+                }
+                start.complete();
+            } else {
+                start.fail(done.cause());
+            }
         });
 
         deployment.start(future);

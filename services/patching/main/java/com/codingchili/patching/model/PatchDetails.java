@@ -1,15 +1,15 @@
 package com.codingchili.patching.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import com.codingchili.core.files.CachedFile;
 import com.codingchili.patching.configuration.PatchNotes;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 /**
  * @author Robin Duda
- *         <p>
- *         Contains information about files in a patch version.
+ * <p>
+ * Contains information about files in a patch version.
  */
 class PatchDetails {
     private Collection<CachedFile> files = new ArrayList<>();

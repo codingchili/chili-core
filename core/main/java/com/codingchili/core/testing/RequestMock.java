@@ -16,8 +16,8 @@ import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Mocked request object.
+ * <p>
+ * Mocked request object.
  */
 public abstract class RequestMock {
 

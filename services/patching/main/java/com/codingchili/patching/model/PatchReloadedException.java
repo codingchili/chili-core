@@ -6,7 +6,7 @@ import com.codingchili.core.protocol.ResponseStatus;
 
 /**
  * @author Robin Duda
- *
+ * <p>
  * Throw when a patch version has changed during a patch session.
  */
 public class PatchReloadedException extends CoreException {

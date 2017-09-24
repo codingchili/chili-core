@@ -11,8 +11,8 @@ import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_CONNECTION
 
 /**
  * @author Robin Duda
- *         <p>
- *         Client authentication request.
+ * <p>
+ * Client authentication request.
  */
 class ClientRequest extends RequestWrapper {
 

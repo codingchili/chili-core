@@ -6,8 +6,8 @@ import io.vertx.core.Future;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Adds disk persistence to IndexedMap.
+ * <p>
+ * Adds disk persistence to IndexedMap.
  */
 public class IndexedMapPersisted<Value extends Storable> extends IndexedMap<Value> {
 

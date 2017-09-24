@@ -1,23 +1,24 @@
 package com.codingchili.core.storage;
 
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.context.TimerSource;
+
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.context.TimerSource;
-
 /**
  * @author Robin Duda
- *         <p>
- *         Periodically executes a reusable query.
- *         <p>
- *         May be used as a near-cache.
+ * <p>
+ * Periodically executes a reusable query.
+ * <p>
+ * May be used as a near-cache.
  */
 public class EntryWatcher<Value extends Storable> {
     private AtomicBoolean active = new AtomicBoolean(false);
-    private Consumer<Collection<Value>> consumer = (collection) -> {};
+    private Consumer<Collection<Value>> consumer = (collection) -> {
+    };
     private Supplier<QueryBuilder<Value>> query;
     private AsyncStorage<Value> storage;
     private StorageContext context;

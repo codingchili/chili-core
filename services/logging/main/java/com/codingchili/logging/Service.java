@@ -6,7 +6,6 @@ import com.codingchili.core.listener.CoreService;
 import com.codingchili.logging.configuration.LogContext;
 import com.codingchili.logging.controller.ClientLogHandler;
 import com.codingchili.logging.controller.ServiceLogHandler;
-
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 
@@ -14,7 +13,7 @@ import static com.codingchili.core.context.FutureHelper.generic;
 
 /**
  * @author Robin Duda
- *         Receives logging data from the other components and writes it to an elasticsearch cluster or logger.
+ * Receives logging data from the other components and writes it to an elasticsearch cluster or logger.
  */
 public class Service implements CoreService {
     private LogContext context;

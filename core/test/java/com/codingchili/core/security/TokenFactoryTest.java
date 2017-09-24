@@ -14,8 +14,8 @@ import java.util.Arrays;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Tests for the Token Factory
+ * <p>
+ * Tests for the Token Factory
  */
 @RunWith(VertxUnitRunner.class)
 public class TokenFactoryTest {

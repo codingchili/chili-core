@@ -1,29 +1,29 @@
 package com.codingchili.core.security;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.codingchili.core.configuration.RegexComponent;
+import com.codingchili.core.configuration.system.ParserSettings;
+import com.codingchili.core.configuration.system.ValidatorSettings;
+import com.codingchili.core.protocol.exception.RequestValidationException;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.configuration.RegexComponent;
-import com.codingchili.core.configuration.system.ParserSettings;
-import com.codingchili.core.configuration.system.ValidatorSettings;
-import com.codingchili.core.protocol.exception.RequestValidationException;
+import java.util.HashMap;
+import java.util.Map;
 
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-
-import static com.codingchili.core.configuration.CoreStrings.*;
-import static com.codingchili.core.security.RegexAction.*;
+import static com.codingchili.core.configuration.CoreStrings.ID_NAME;
+import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_MESSAGE;
+import static com.codingchili.core.security.RegexAction.REJECT;
+import static com.codingchili.core.security.RegexAction.REPLACE;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Tests the validation mechanism.
+ * <p>
+ * Tests the validation mechanism.
  */
 @RunWith(VertxUnitRunner.class)
 public class ValidatorTest {

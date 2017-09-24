@@ -7,14 +7,13 @@ import com.codingchili.core.files.exception.FileMissingException;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.patching.configuration.PatchContext;
 import com.codingchili.patching.configuration.PatchNotes;
-
 import io.vertx.core.buffer.Buffer;
 
 
 /**
  * @author Robin Duda
- *         <p>
- *         Handles patch files.
+ * <p>
+ * Handles patch files.
  */
 public class PatchKeeper implements FileStoreListener {
     private CachedFileStore store;

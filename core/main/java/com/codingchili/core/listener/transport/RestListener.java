@@ -18,8 +18,8 @@ import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
 
 /**
  * @author Robin Duda
- *         <p>
- *         HTTP/REST transport listener.
+ * <p>
+ * HTTP/REST transport listener.
  */
 public class RestListener implements CoreListener {
     private CoreContext core;

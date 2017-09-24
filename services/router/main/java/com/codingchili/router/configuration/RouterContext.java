@@ -13,8 +13,8 @@ import static com.codingchili.router.configuration.RouterSettings.PATH_ROUTING;
 
 /**
  * @author Robin Duda
- *         <p>
- *         A context for the router service.
+ * <p>
+ * A context for the router service.
  */
 public class RouterContext extends ServiceContext {
 

@@ -1,31 +1,28 @@
 package com.codingchili.core.storage;
 
-import java.util.concurrent.TimeUnit;
-
-import org.junit.*;
-import org.junit.runner.RunWith;
-
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.SystemContext;
-
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.*;
+import org.junit.runner.RunWith;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Tests the loading of the available storage plugins.
+ * <p>
+ * Tests the loading of the available storage plugins.
  */
 @RunWith(VertxUnitRunner.class)
 public class StorageLoaderIT {
-    private static CoreContext context;
     private static final String TEST_MAP = "test";
     private static final String TEST_COLLECTION = "collection";
-
+    private static CoreContext context;
     @Rule
     public Timeout timeout = new Timeout(8, TimeUnit.SECONDS);
 

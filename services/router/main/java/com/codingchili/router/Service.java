@@ -21,7 +21,7 @@ import static io.vertx.core.CompositeFuture.all;
 
 /**
  * @author Robin Duda
- *         root game server, deploys realmName servers.
+ * root game server, deploys realmName servers.
  */
 public class Service implements CoreService {
     private RouterContext context;

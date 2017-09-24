@@ -2,8 +2,8 @@ package com.codingchili.core.benchmarking;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Interface for benchmarking report creation.
+ * <p>
+ * Interface for benchmarking report creation.
  */
 public interface BenchmarkReport {
 

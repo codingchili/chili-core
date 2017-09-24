@@ -1,13 +1,5 @@
 package com.codingchili.patching;
 
-import java.util.concurrent.TimeUnit;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.testing.FileSystemMock;
@@ -15,7 +7,6 @@ import com.codingchili.core.testing.RequestMock;
 import com.codingchili.core.testing.ResponseListener;
 import com.codingchili.patching.configuration.PatchContext;
 import com.codingchili.patching.controller.PatchHandler;
-
 import io.vertx.core.Vertx;
 import io.vertx.core.file.FileSystem;
 import io.vertx.core.json.JsonArray;
@@ -24,14 +15,21 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.util.concurrent.TimeUnit;
 
 import static com.codingchili.common.Strings.*;
 
 
 /**
  * @author Robin Duda
- *         <p>
- *         Tests the patching server as a client.
+ * <p>
+ * Tests the patching server as a client.
  */
 
 @RunWith(VertxUnitRunner.class)

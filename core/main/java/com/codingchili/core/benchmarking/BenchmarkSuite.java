@@ -1,24 +1,23 @@
 package com.codingchili.core.benchmarking;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Consumer;
-
 import com.codingchili.core.context.CommandExecutor;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.storage.*;
-
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Contains system benchmarks..
+ * <p>
+ * Contains system benchmarks..
  */
 public class BenchmarkSuite {
     private static final String MAP_BENCHMARKS = "Map benchmarks";

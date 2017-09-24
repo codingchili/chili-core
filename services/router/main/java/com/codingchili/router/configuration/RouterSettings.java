@@ -1,22 +1,22 @@
 package com.codingchili.router.configuration;
 
+import com.codingchili.core.configuration.ServiceConfigurable;
+import com.codingchili.core.listener.ListenerSettings;
+import com.codingchili.core.listener.WireType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.codingchili.core.configuration.ServiceConfigurable;
-import com.codingchili.core.listener.ListenerSettings;
-import com.codingchili.core.listener.WireType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import static com.codingchili.core.configuration.CoreStrings.getService;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Settings for the router identity.
+ * <p>
+ * Settings for the router identity.
  */
 public class RouterSettings extends ServiceConfigurable {
     public static final String PATH_ROUTING = getService("routingserver");

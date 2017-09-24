@@ -7,7 +7,7 @@ import static com.codingchili.common.Strings.DIR_RESOURCES;
 
 /**
  * @author Robin Duda
- *         Contains settings for the patchserver.
+ * Contains settings for the patchserver.
  */
 public class PatchServerSettings extends ServiceConfigurable {
     public static final String PATH_PATCHSERVER = Strings.getService("patchserver");

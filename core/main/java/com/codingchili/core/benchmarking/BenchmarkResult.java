@@ -2,13 +2,14 @@ package com.codingchili.core.benchmarking;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Results for benchmarks.
+ * <p>
+ * Results for benchmarks.
  */
 public interface BenchmarkResult {
 
     /**
      * Start measuring of the execution time.
+     *
      * @return fluent
      */
     Benchmark start();

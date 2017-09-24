@@ -15,9 +15,9 @@ import static com.codingchili.core.configuration.CoreStrings.LOG_AT;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Listens for requests addressed to the attached handler and forwards
- *         the requests to it.
+ * <p>
+ * Listens for requests addressed to the attached handler and forwards
+ * the requests to it.
  */
 public class ClusterListener implements CoreListener, DeploymentAware {
     private Supplier<ListenerSettings> settings;

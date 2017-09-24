@@ -11,7 +11,6 @@ import com.codingchili.core.security.Account;
 import com.codingchili.core.security.Token;
 import com.codingchili.core.security.TokenFactory;
 import com.codingchili.core.storage.StorageLoader;
-
 import io.vertx.core.Future;
 
 import static com.codingchili.authentication.configuration.AuthenticationSettings.PATH_AUTHSERVER;
@@ -19,7 +18,7 @@ import static com.codingchili.common.Strings.*;
 
 /**
  * @author Robin Duda
- *
+ * <p>
  * Authentication service context.
  */
 public class AuthenticationContext extends ServiceContext {

@@ -1,22 +1,20 @@
 package com.codingchili.core.storage;
 
+import com.codingchili.core.testing.MapTestCases;
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.testing.MapTestCases;
-
-import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-
 /**
  * @author Robin Duda
- *         <p>
- *         Tests for the storage providers in core. Reuse these tests when new
- *         storage subsystems are implemented using the StorageLoader.
+ * <p>
+ * Tests for the storage providers in core. Reuse these tests when new
+ * storage subsystems are implemented using the StorageLoader.
  */
 @Ignore("Requires running elasticsearch 5.3, travis runs an older version.")
 @RunWith(VertxUnitRunner.class)

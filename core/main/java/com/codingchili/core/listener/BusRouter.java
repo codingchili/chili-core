@@ -20,9 +20,9 @@ import static io.vertx.core.eventbus.ReplyFailure.*;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Simple handler that routes messages to the event bus and
- *         passes eventbus errors back to sender.
+ * <p>
+ * Simple handler that routes messages to the event bus and
+ * passes eventbus errors back to sender.
  */
 @Address("dynamic")
 public class BusRouter implements CoreHandler {

@@ -5,8 +5,8 @@ import java.util.Base64;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Generates and verifies secret keys.
+ * <p>
+ * Generates and verifies secret keys.
  */
 abstract class SecretFactory {
     private static final SecureRandom random = new SecureRandom();

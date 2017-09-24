@@ -1,11 +1,12 @@
 package com.codingchili.realm.configuration;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import static com.codingchili.common.Strings.*;
+import static com.codingchili.common.Strings.EXT_JSON;
+import static com.codingchili.common.Strings.PATH_REALM;
 
 /**
  * @author Robin Duda

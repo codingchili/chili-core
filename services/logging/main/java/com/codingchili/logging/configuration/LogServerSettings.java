@@ -6,7 +6,7 @@ import com.codingchili.core.storage.JsonMap;
 
 /**
  * @author Robin Duda
- *         Contains settings for the logserver.
+ * Contains settings for the logserver.
  */
 public class LogServerSettings extends ServiceConfigurable {
     static final String PATH_LOGSERVER = Strings.getService("logserver");

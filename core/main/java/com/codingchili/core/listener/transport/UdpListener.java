@@ -16,8 +16,8 @@ import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
 
 /**
  * @author Robin Duda
- *         <p>
- *         UDP transport listener.
+ * <p>
+ * UDP transport listener.
  */
 public class UdpListener implements CoreListener, DeploymentAware {
     private CoreHandler handler;

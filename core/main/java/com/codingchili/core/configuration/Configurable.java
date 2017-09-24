@@ -1,17 +1,16 @@
 package com.codingchili.core.configuration;
 
-import java.io.Serializable;
-
 import com.codingchili.core.files.JsonFileStore;
 import com.codingchili.core.protocol.Serializer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import io.vertx.core.json.JsonObject;
+
+import java.io.Serializable;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Base configuration interface.
+ * <p>
+ * Base configuration interface.
  */
 public interface Configurable extends Serializable {
     /**

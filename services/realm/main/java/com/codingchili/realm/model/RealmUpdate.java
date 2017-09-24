@@ -8,7 +8,7 @@ import static com.codingchili.common.Strings.REALM_UPDATE;
 
 /**
  * @author Robin Duda
- *         A request to register a realm on the authentication server.
+ * A request to register a realm on the authentication server.
  */
 public class RealmUpdate {
     private RealmSettings realm;

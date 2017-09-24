@@ -3,43 +3,41 @@ package com.codingchili.realm.instance.controller;
 import com.codingchili.core.context.DeploymentAware;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
-import com.codingchili.core.protocol.Access;
 import com.codingchili.core.protocol.Protocol;
-import com.codingchili.core.protocol.RequestHandler;
+import com.codingchili.core.protocol.Role;
 import com.codingchili.realm.instance.configuration.InstanceContext;
-
 import io.vertx.core.Future;
 
 import static com.codingchili.common.Strings.ID_PING;
 
 /**
  * @author Robin Duda
- *         Handles players in a get.
+ * Handles players in a get.
  */
 public class InstanceHandler implements CoreHandler, DeploymentAware {
-    private final Protocol<RequestHandler<InstanceRequest>> protocol = new Protocol<>();
+    private final Protocol<InstanceRequest> protocol = new Protocol<>();
     private InstanceContext context;
 
     public InstanceHandler(InstanceContext context) {
         this.context = context;
-        protocol.use(ID_PING, this::ping, Access.PUBLIC);
+        protocol.use(ID_PING, this::ping, Role.PUBLIC);
     }
 
     private void ping(InstanceRequest request) {
         request.accept();
     }
 
-    private Access authenticator(Request request) {
+    private Role authenticator(Request request) {
         if (context.verifyToken(request.token())) {
-            return Access.AUTHORIZED;
+            return Role.USER;
         } else {
-            return Access.PUBLIC;
+            return Role.PUBLIC;
         }
     }
 
     @Override
     public void handle(Request request) {
-        protocol.get(authenticator(request), request.route()).handle(new InstanceRequest(request));
+        protocol.get(request.route(), authenticator(request)).handle(new InstanceRequest(request));
     }
 
     @Override

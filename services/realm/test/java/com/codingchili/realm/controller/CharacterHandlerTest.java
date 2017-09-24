@@ -1,13 +1,5 @@
 package com.codingchili.realm.controller;
 
-import java.util.concurrent.TimeUnit;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import com.codingchili.common.Strings;
 import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.protocol.Serializer;
@@ -19,7 +11,6 @@ import com.codingchili.core.testing.ResponseListener;
 import com.codingchili.realm.ContextMock;
 import com.codingchili.realm.instance.model.PlayerCharacter;
 import com.codingchili.realm.model.AsyncCharacterStore;
-
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -29,12 +20,19 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.util.concurrent.TimeUnit;
 
 import static com.codingchili.common.Strings.*;
 
 /**
  * @author Robin Duda
- *         tests the API from client->realmName.
+ * tests the API from client->realmName.
  */
 
 @RunWith(VertxUnitRunner.class)
@@ -43,13 +41,12 @@ public class CharacterHandlerTest {
     private static final String CHARACTER_NAME_DELETED = "character-deleted";
     private static final String CHARACTER_NAME = "character";
     private static final String CLASS_NAME = "class.name";
+    @Rule
+    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
     private AsyncCharacterStore characters;
     private TokenFactory clientToken;
     private CharacterHandler handler;
     private ContextMock context;
-
-    @Rule
-    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
 
     @Before
     public void setUp(TestContext test) {
@@ -65,7 +62,7 @@ public class CharacterHandlerTest {
     public void tearDown(TestContext test) {
         context.vertx().close(test.asyncAssertSuccess());
     }
-    
+
     private void createCharacters(Async async) {
         PlayerCharacter add = new PlayerCharacter().setName(CHARACTER_NAME).setAccount(USERNAME);
         PlayerCharacter delete = new PlayerCharacter().setName(CHARACTER_NAME_DELETED).setAccount(USERNAME);

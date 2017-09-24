@@ -4,9 +4,9 @@ import io.vertx.ext.unit.TestContext;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Asserts that all test methods of a listener is called and that
- *         they are called in the expected order.
+ * <p>
+ * Asserts that all test methods of a listener is called and that
+ * they are called in the expected order.
  */
 public class MockListener implements BenchmarkListener {
     private TestContext test;

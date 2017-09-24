@@ -1,22 +1,20 @@
 package com.codingchili.core.configuration;
 
-import java.util.HashMap;
-import java.util.Optional;
-
+import com.codingchili.core.protocol.Serializer;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.protocol.Serializer;
-
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
+import java.util.HashMap;
+import java.util.Optional;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Tests the implementation of attributes.
+ * <p>
+ * Tests the implementation of attributes.
  */
 @RunWith(VertxUnitRunner.class)
 public class AttributesTest {

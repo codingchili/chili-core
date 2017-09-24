@@ -1,32 +1,37 @@
 package com.codingchili.core.benchmarking;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import com.codingchili.core.context.CommandExecutor;
 import com.codingchili.core.context.SystemContext;
-
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.util.concurrent.TimeUnit;
 
 import static com.codingchili.core.configuration.CoreStrings.PARAM_ITERATIONS;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Tests for the benchmarking subsystem
+ * <p>
+ * Tests for the benchmarking subsystem
  */
 @RunWith(VertxUnitRunner.class)
 public class BenchmarkIT {
     private static final String STRING_ITERATIONS = "5";
-    private static final int ITERATIONS = 25;
+    private static final int ITERATIONS = 4;
     private static Vertx vertx;
+
+    @Rule
+    public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
 
     @BeforeClass
     public static void setUp(TestContext test) {

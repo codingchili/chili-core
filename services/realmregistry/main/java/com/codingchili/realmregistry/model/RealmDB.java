@@ -1,30 +1,30 @@
 package com.codingchili.realmregistry.model;
 
-import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.codingchili.core.security.Token;
 import com.codingchili.core.security.TokenFactory;
 import com.codingchili.core.storage.AsyncStorage;
 import com.codingchili.core.storage.EntryWatcher;
 import com.codingchili.core.storage.QueryBuilder;
 import com.codingchili.realmregistry.configuration.RegisteredRealm;
-
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
+import java.time.Instant;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static com.codingchili.core.configuration.CoreStrings.ID_NAME;
 import static com.codingchili.core.configuration.CoreStrings.ID_UPDATED;
-import static io.vertx.core.Future.*;
+import static io.vertx.core.Future.failedFuture;
+import static io.vertx.core.Future.succeededFuture;
 
 
 /**
  * @author Robin Duda
- *         <p>
- *         Shares realm data between the clienthandler and the realmhandler.
- *         Allows the deployment of multiple handlers.
+ * <p>
+ * Shares realm data between the clienthandler and the realmhandler.
+ * Allows the deployment of multiple handlers.
  */
 public class RealmDB implements AsyncRealmStore {
     private static final String STALE_REALM_WATCHER = "stale realm watcher";
@@ -37,7 +37,8 @@ public class RealmDB implements AsyncRealmStore {
 
         this.watcher = new EntryWatcher<>(realms, this::getStaleQuery, this::getTimeout)
                 .start(items -> items.forEach(item ->
-                        realms.remove(item.id(), (removed) -> {})));
+                        realms.remove(item.id(), (removed) -> {
+                        })));
     }
 
     private QueryBuilder<RegisteredRealm> getStaleQuery() {

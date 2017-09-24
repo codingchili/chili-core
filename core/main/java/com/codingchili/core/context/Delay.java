@@ -1,14 +1,13 @@
 package com.codingchili.core.context;
 
 import com.codingchili.core.context.exception.SystemNotInitializedException;
-
 import io.vertx.core.Future;
 import io.vertx.ext.unit.Async;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Delays given futures to allow for cleanup or to implement backoff timers.
+ * <p>
+ * Delays given futures to allow for cleanup or to implement backoff timers.
  */
 public abstract class Delay {
     private static CoreContext context;

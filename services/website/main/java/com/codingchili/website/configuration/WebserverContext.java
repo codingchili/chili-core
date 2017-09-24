@@ -1,18 +1,18 @@
 package com.codingchili.website.configuration;
 
-import java.nio.file.Paths;
-
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.Request;
+
+import java.nio.file.Paths;
 
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.website.configuration.WebserverSettings.PATH_WEBSERVER;
 
 /**
  * @author Robin Duda
- *
+ * <p>
  * Context for the web server.
  */
 public class WebserverContext extends ServiceContext {

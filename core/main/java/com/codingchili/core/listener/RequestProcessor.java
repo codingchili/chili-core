@@ -6,8 +6,8 @@ import com.codingchili.core.protocol.exception.RequestPayloadSizeException;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Handles incoming requests in an uniform way.
+ * <p>
+ * Handles incoming requests in an uniform way.
  */
 public class RequestProcessor {
     /**

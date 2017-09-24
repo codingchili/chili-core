@@ -1,18 +1,17 @@
 package com.codingchili.core.security;
 
-import java.util.Base64;
-import java.util.HashSet;
-
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
+import java.util.Base64;
+import java.util.HashSet;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Tests the generation and verification of secret keys in SecretFactory
+ * <p>
+ * Tests the generation and verification of secret keys in SecretFactory
  */
 @RunWith(VertxUnitRunner.class)
 public class SecretFactoryTest {

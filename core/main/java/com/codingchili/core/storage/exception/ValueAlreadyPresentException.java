@@ -6,8 +6,8 @@ import com.codingchili.core.protocol.ResponseStatus;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Throw when attempting to put-if-absent but value is not absent.
+ * <p>
+ * Throw when attempting to put-if-absent but value is not absent.
  */
 public class ValueAlreadyPresentException extends CoreException {
     public ValueAlreadyPresentException(Object key) {

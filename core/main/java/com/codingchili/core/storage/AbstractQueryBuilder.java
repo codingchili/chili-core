@@ -1,38 +1,37 @@
 package com.codingchili.core.storage;
 
-import java.util.Collection;
-import java.util.UUID;
-import java.util.function.Consumer;
-
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.TimerSource;
 import com.codingchili.core.files.Configurations;
-
 import io.vertx.core.json.JsonObject;
+
+import java.util.Collection;
+import java.util.UUID;
+import java.util.function.Consumer;
 
 import static com.codingchili.core.configuration.CoreStrings.STORAGE_ARRAY;
 import static com.codingchili.core.protocol.Serializer.getValueByPath;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Base class for the query builder.
- *         <p>
- *         Removes any array notations formatted as {@link CoreStrings#STORAGE_ARRAY}
- *         If an arrayNotation is supplied in the constructor, it will instead be replaced
- *         with the specified notation.
+ * <p>
+ * Base class for the query builder.
+ * <p>
+ * Removes any array notations formatted as {@link CoreStrings#STORAGE_ARRAY}
+ * If an arrayNotation is supplied in the constructor, it will instead be replaced
+ * with the specified notation.
  */
 abstract class AbstractQueryBuilder<Value extends Storable> implements QueryBuilder<Value> {
+    boolean isOrdered = false;
+    SortOrder sortOrder = SortOrder.ASCENDING;
+    int pageSize = Configurations.storage().getMaxResults();
+    int page = 0;
     private AsyncStorage<Value> storage;
     private String name = UUID.randomUUID().toString();
     private boolean isAttributeArray = false;
     private String orderByAttribute;
     private String arrayNotation = "";
     private String attribute;
-    boolean isOrdered = false;
-    SortOrder sortOrder = SortOrder.ASCENDING;
-    int pageSize = Configurations.storage().getMaxResults();
-    int page = 0;
 
     /**
      * Creates a new query builder with specified attribute. Array notations will be removed.

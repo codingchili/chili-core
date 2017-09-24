@@ -6,17 +6,17 @@ import com.codingchili.core.security.HashHelper;
 import com.codingchili.core.storage.AsyncStorage;
 import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
 import com.codingchili.core.storage.exception.ValueMissingException;
-
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 
-import static io.vertx.core.Future.*;
+import static io.vertx.core.Future.failedFuture;
+import static io.vertx.core.Future.succeededFuture;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Account storage logic.
+ * <p>
+ * Account storage logic.
  */
 public class AccountDB implements AsyncAccountStore {
     private final AsyncStorage<AccountMapping> accounts;

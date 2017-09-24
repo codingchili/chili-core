@@ -17,8 +17,8 @@ import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Websocket transport listener.
+ * <p>
+ * Websocket transport listener.
  */
 public class WebsocketListener implements CoreListener {
     private CoreContext core;

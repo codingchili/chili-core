@@ -19,33 +19,32 @@ import java.util.function.Supplier;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Contains test cases for transport implementations.
+ * <p>
+ * Contains test cases for transport implementations.
  */
 @Ignore("Extend this class to run the tests.")
 @RunWith(VertxUnitRunner.class)
 public abstract class TransportTestCases {
+    static final String NODE_ROUTER = "router.node";
+    static final String HOST = CoreStrings.getLoopbackAddress();
     private static final String NODE_PATCHING = "patching.node";
     private static final String NODE_WEBSERVER = "webserver.node";
     private static final String PATCHING_ROOT = "/patching";
-    static final String NODE_ROUTER = "router.node";
-    static final String HOST = CoreStrings.getLoopbackAddress();
     private static final int MAX_REQUEST_BYTES = 256;
     private static final String ONE_CHAR = "x";
     private static final String DATA = "data";
+    protected static Vertx vertx;
+    @Rule
+    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
+    protected int port;
     private Supplier<CoreListener> listener;
     private ContextMock context;
     private WireType wireType;
-    protected int port;
-    protected static Vertx vertx;
 
     TransportTestCases(WireType wireType, Supplier<CoreListener> listener) {
         this.wireType = wireType;
         this.listener = listener;
     }
-
-    @Rule
-    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
 
     @BeforeClass
     public static void setUpClass() {
@@ -107,20 +106,6 @@ public abstract class TransportTestCases {
                 .put(CoreStrings.PROTOCOL_ROUTE, CoreStrings.ID_PING));
     }
 
-    private class TestHandler implements CoreHandler {
-        private String address = "test.address.node";
-
-        @Override
-        public void handle(Request request) {
-            request.accept();
-        }
-
-        @Override
-        public String address() {
-            return address;
-        }
-    }
-
     /**
      * Implementing class must provide transport specific implementation.
      *
@@ -137,5 +122,19 @@ public abstract class TransportTestCases {
     @FunctionalInterface
     interface ResponseListener {
         void handle(JsonObject result, ResponseStatus status);
+    }
+
+    private class TestHandler implements CoreHandler {
+        private String address = "test.address.node";
+
+        @Override
+        public void handle(Request request) {
+            request.accept();
+        }
+
+        @Override
+        public String address() {
+            return address;
+        }
     }
 }

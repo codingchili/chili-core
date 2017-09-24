@@ -5,7 +5,6 @@ import com.codingchili.core.listener.CoreService;
 import com.codingchili.realmregistry.configuration.RegistryContext;
 import com.codingchili.realmregistry.controller.ClientHandler;
 import com.codingchili.realmregistry.controller.RealmHandler;
-
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 
@@ -14,7 +13,7 @@ import static com.codingchili.core.context.FutureHelper.generic;
 
 /**
  * @author Robin Duda
- *         Starts up the client handler and the realmName handler.
+ * Starts up the client handler and the realmName handler.
  */
 public class Service implements CoreService {
     private RegistryContext context;

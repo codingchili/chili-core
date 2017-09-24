@@ -16,12 +16,12 @@ import static com.codingchili.core.configuration.CoreStrings.ID_DEFAULT;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Provides context for the Launcher system.
+ * <p>
+ * Provides context for the Launcher system.
  */
 public class LaunchContext {
     private static final String BLOCK_DEFAULT = "default";
-    private String[] args = new String[] {};
+    private String[] args = new String[]{};
     private Logger console = new ConsoleLogger();
 
     /**

@@ -4,8 +4,8 @@ import com.codingchili.core.protocol.Address;
 
 /**
  * @author Robin Duda
- *         <p>
- *         A simplified handler that may be deployed directly.
+ * <p>
+ * A simplified handler that may be deployed directly.
  */
 public interface CoreHandler extends CoreDeployment {
 
@@ -19,7 +19,7 @@ public interface CoreHandler extends CoreDeployment {
     /**
      * @return the address of the handler. If not implemented the @Address
      * annotation will be used, if missing an error is thrown.
-     *
+     * <p>
      * Could potentially lead to Runtime errors but is allowed here as
      * this is called during deployment. Reconsider this decision later.
      */

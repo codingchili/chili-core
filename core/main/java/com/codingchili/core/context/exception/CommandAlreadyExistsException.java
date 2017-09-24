@@ -7,8 +7,8 @@ import static com.codingchili.core.configuration.CoreStrings.getCommandAlreadyEx
 
 /**
  * @author Robin Duda
- *         <p>
- *         Thrown when a command that is already registered to the commandexecutor is re-added.
+ * <p>
+ * Thrown when a command that is already registered to the commandexecutor is re-added.
  */
 public class CommandAlreadyExistsException extends CoreRuntimeException {
 

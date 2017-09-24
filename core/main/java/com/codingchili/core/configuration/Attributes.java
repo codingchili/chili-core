@@ -5,18 +5,18 @@ import java.util.Optional;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Extended by classes with dynamic attributes.
+ * <p>
+ * Extended by classes with dynamic attributes.
  */
 public abstract class Attributes {
     protected HashMap<String, Object> attributes = new HashMap<>();
 
-    public void setAttributes(HashMap<String, Object> attributes) {
-        this.attributes = attributes;
-    }
-
     public HashMap<String, Object> getAttributes() {
         return attributes;
+    }
+
+    public void setAttributes(HashMap<String, Object> attributes) {
+        this.attributes = attributes;
     }
 
     public void put(String key, Object object) {

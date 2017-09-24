@@ -3,14 +3,13 @@ package com.codingchili.core.context;
 import com.codingchili.core.configuration.ServiceConfigurable;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.logging.RemoteLogger;
-
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Provides basic context requirements for all service-contexts.
+ * <p>
+ * Provides basic context requirements for all service-contexts.
  */
 public abstract class ServiceContext extends SystemContext {
     protected Logger logger;

@@ -10,8 +10,8 @@ import java.util.Map;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Used to authenticate requests between services.
+ * <p>
+ * Used to authenticate requests between services.
  */
 public class Token implements Serializable {
     private Map<String, Object> properties = new HashMap<>();
@@ -70,7 +70,8 @@ public class Token implements Serializable {
         return properties;
     }
 
-    public void setProperties(Map<String, Object> properties) {
+    public Token setProperties(Map<String, Object> properties) {
         this.properties = properties;
+        return this;
     }
 }

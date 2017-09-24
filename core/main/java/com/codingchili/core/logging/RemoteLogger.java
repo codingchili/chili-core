@@ -1,7 +1,6 @@
 package com.codingchili.core.logging;
 
 import com.codingchili.core.context.ServiceContext;
-
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
 
@@ -9,8 +8,8 @@ import static com.codingchili.core.configuration.CoreStrings.NODE_LOGGING;
 
 /**
  * @author Robin Duda
- *         <p>
- *         A logger that logs to a remote host.
+ * <p>
+ * A logger that logs to a remote host.
  */
 public class RemoteLogger extends DefaultLogger {
     private final DeliveryOptions options;

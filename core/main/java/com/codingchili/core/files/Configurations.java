@@ -31,8 +31,8 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Handles loading and parsing of the configuration files.
+ * <p>
+ * Handles loading and parsing of the configuration files.
  */
 public abstract class Configurations {
     private static final ConcurrentHashMap<String, ConfigEntry> configs = new ConcurrentHashMap<>();
@@ -84,18 +84,6 @@ public abstract class Configurations {
 
     private static int getConfigurationPoll() {
         return system().getConfigurationPoll();
-    }
-
-    private static class ConfigurationFileWatcher implements FileStoreListener {
-        @Override
-        public void onFileModify(Path path) {
-            Configurations.reload(path.toString().replaceAll("\\\\", DIR_ROOT));
-        }
-
-        @Override
-        public void onFileRemove(Path path) {
-            Configurations.reload(path.toString().replaceAll("\\\\", DIR_ROOT));
-        }
     }
 
     /**
@@ -301,6 +289,18 @@ public abstract class Configurations {
      */
     public static StorageSettings storage() {
         return get(PATH_STORAGE, StorageSettings.class);
+    }
+
+    private static class ConfigurationFileWatcher implements FileStoreListener {
+        @Override
+        public void onFileModify(Path path) {
+            Configurations.reload(path.toString().replaceAll("\\\\", DIR_ROOT));
+        }
+
+        @Override
+        public void onFileRemove(Path path) {
+            Configurations.reload(path.toString().replaceAll("\\\\", DIR_ROOT));
+        }
     }
 
     private static class ConfigEntry {

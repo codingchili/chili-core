@@ -1,13 +1,13 @@
 package com.codingchili.core.benchmarking;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import com.codingchili.core.context.CoreContext;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Mock implementation for a benchmark implementation.
+ * <p>
+ * Mock implementation for a benchmark implementation.
  */
 public class MockImplementation extends BaseBenchmarkImplementation {
     private AtomicInteger firstBenchmarkExecutions = new AtomicInteger(0);

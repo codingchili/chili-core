@@ -4,15 +4,14 @@ import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.listener.BaseRequest;
 import com.codingchili.core.listener.ListenerSettings;
 import com.codingchili.core.protocol.Serializer;
-
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.datagram.DatagramPacket;
 import io.vertx.core.json.JsonObject;
 
 /**
  * @author Robin Duda
- *         <p>
- *         UDP request object.
+ * <p>
+ * UDP request object.
  */
 class UdpRequest extends BaseRequest {
     private int size;

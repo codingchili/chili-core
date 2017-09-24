@@ -1,14 +1,5 @@
 package com.codingchili.authentication.controller;
 
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import com.codingchili.authentication.configuration.AuthenticationContext;
 import com.codingchili.authentication.model.AsyncAccountStore;
 import com.codingchili.authentication.model.ContextMock;
@@ -17,7 +8,6 @@ import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Account;
 import com.codingchili.core.testing.RequestMock;
 import com.codingchili.core.testing.ResponseListener;
-
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
@@ -25,12 +15,20 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import static com.codingchili.common.Strings.*;
 
 /**
  * @author Robin Duda
- *         tests the API from client -> authentication server.
+ * tests the API from client -> authentication server.
  */
 
 @RunWith(VertxUnitRunner.class)
@@ -46,18 +44,6 @@ public class ClientHandlerTest {
     @Rule
     public Timeout timeout = new Timeout(50, TimeUnit.SECONDS);
 
-    @Before
-    public void setUp(TestContext test) throws IOException {
-        context = new ContextMock(Vertx.vertx());
-        handler = new ClientHandler(context);
-        addAccount(test);
-    }
-
-    @After
-    public void tearDown(TestContext test) {
-        context.vertx().close(test.asyncAssertSuccess());
-    }
-    
     private static void addAccount(TestContext test) {
         Async async = test.async();
         AsyncAccountStore accounts = context.getAccountStore();
@@ -69,6 +55,18 @@ public class ClientHandlerTest {
         });
 
         accounts.register(future, new Account(USERNAME, PASSWORD));
+    }
+
+    @Before
+    public void setUp(TestContext test) throws IOException {
+        context = new ContextMock(Vertx.vertx());
+        handler = new ClientHandler(context);
+        addAccount(test);
+    }
+
+    @After
+    public void tearDown(TestContext test) {
+        context.vertx().close(test.asyncAssertSuccess());
     }
 
     @Test

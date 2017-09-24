@@ -7,9 +7,9 @@ import java.util.Map;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Transfer object used for authentication from clients.
- *         Password is to be consumed once read.
+ * <p>
+ * Transfer object used for authentication from clients.
+ * Password is to be consumed once read.
  */
 public class Account implements Storable {
     private Map<String, Object> properties = new HashMap<>();

@@ -1,17 +1,15 @@
 package com.codingchili.realm.model;
 
-import java.util.Collection;
-
 import com.codingchili.realm.instance.model.PlayerCharacter;
-
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+
+import java.util.Collection;
 
 /**
  * @author Robin Duda
  */
-public interface AsyncCharacterStore
-{
+public interface AsyncCharacterStore {
     /**
      * Adds a character to an username.
      *

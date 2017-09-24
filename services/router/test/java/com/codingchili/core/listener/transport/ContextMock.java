@@ -2,7 +2,6 @@ package com.codingchili.core.listener.transport;
 
 import com.codingchili.router.configuration.RouterContext;
 import com.codingchili.router.configuration.RouterSettings;
-
 import io.vertx.core.Vertx;
 
 /**

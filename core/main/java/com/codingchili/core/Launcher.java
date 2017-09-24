@@ -24,30 +24,13 @@ import static com.codingchili.core.files.Configurations.system;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Launches all the components of the system on a single host.
+ * <p>
+ * Launches all the components of the system on a single host.
  */
 public class Launcher implements CoreService {
     private static final ConsoleLogger logger = new ConsoleLogger();
     private static List<String> nodes = new ArrayList<>();
     private SystemContext core;
-
-    /**
-     * Starts the launcher with the given arguments.
-     *
-     * @param args specifies which commands the launcher will execute.
-     */
-    public static void main(String[] args) {
-        new Launcher(new LaunchContext(args));
-    }
-
-    /**
-     * Starts the launcher with the given context.
-     * @param context contains the launcher args and settings.
-     */
-    public static void start(LaunchContext context) {
-        new Launcher(context);
-    }
 
     public Launcher(LaunchContext context) {
         Future<Void> future = Future.future();
@@ -71,6 +54,24 @@ public class Launcher implements CoreService {
                 exit();
             }
         });
+    }
+
+    /**
+     * Starts the launcher with the given arguments.
+     *
+     * @param args specifies which commands the launcher will execute.
+     */
+    public static void main(String[] args) {
+        new Launcher(new LaunchContext(args));
+    }
+
+    /**
+     * Starts the launcher with the given context.
+     *
+     * @param context contains the launcher args and settings.
+     */
+    public static void start(LaunchContext context) {
+        new Launcher(context);
     }
 
     void exit() {

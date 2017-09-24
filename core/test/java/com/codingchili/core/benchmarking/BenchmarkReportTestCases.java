@@ -1,17 +1,15 @@
 package com.codingchili.core.benchmarking;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.SystemContext;
+import io.vertx.core.Vertx;
+import io.vertx.ext.unit.TestContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.SystemContext;
-
-import io.vertx.core.Vertx;
-import io.vertx.ext.unit.TestContext;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Robin Duda

@@ -9,21 +9,16 @@ import java.util.regex.Pattern;
 
 /**
  * @author Robin Duda
- *         <p>
- *         parses a query in string format.
- *         <p>
- *         Implementation is pluggable.
+ * <p>
+ * parses a query in string format.
+ * <p>
+ * Implementation is pluggable.
  */
 public class QueryParser<T extends Storable> implements StringQueryParser<T> {
     private AsyncStorage<T> store;
 
     public QueryParser(AsyncStorage<T> store) {
         this.store = store;
-    }
-
-    @Override
-    public Handler<AsyncResult<Collection<T>>> parse(String expression) {
-        throw new RuntimeException("NOT IMPLEMENTED");
     }
 
     private static String name(String expression) {
@@ -35,5 +30,10 @@ public class QueryParser<T extends Storable> implements StringQueryParser<T> {
         } else {
             return QueryParser.class.getSimpleName();
         }
+    }
+
+    @Override
+    public Handler<AsyncResult<Collection<T>>> parse(String expression) {
+        throw new RuntimeException("NOT IMPLEMENTED");
     }
 }

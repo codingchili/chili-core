@@ -1,15 +1,15 @@
 package com.codingchili.core.configuration.system;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.codingchili.core.configuration.RegexComponent;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Robin Duda
- *         <p>
- *         Contains settings for validating strings with regexes, length and field names.
+ * <p>
+ * Contains settings for validating strings with regexes, length and field names.
  */
 public class ParserSettings {
     public ArrayList<String> keys = new ArrayList<>();

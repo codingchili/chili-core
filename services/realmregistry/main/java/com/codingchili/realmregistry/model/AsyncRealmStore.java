@@ -1,18 +1,17 @@
 package com.codingchili.realmregistry.model;
 
-import java.util.List;
-
 import com.codingchili.core.security.Token;
 import com.codingchili.realmregistry.configuration.RegisteredRealm;
-
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+
+import java.util.List;
 
 
 /**
  * @author Robin Duda
- *         <p>
- *         Asynchronous cluster-wide realm store.
+ * <p>
+ * Asynchronous cluster-wide realm store.
  */
 public interface AsyncRealmStore {
     /**

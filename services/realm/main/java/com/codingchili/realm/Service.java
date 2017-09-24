@@ -26,10 +26,20 @@ import static com.codingchili.realm.configuration.RealmServerSettings.PATH_REALM
 
 /**
  * @author Robin Duda
- *         root game server, deploys realmName servers.
+ * root game server, deploys realmName servers.
  */
 public class Service implements CoreService {
     private RealmServerContext context;
+
+    private static JsonObject getPing() {
+        return new JsonObject()
+                .put(Strings.PROTOCOL_ROUTE, Strings.ID_PING);
+    }
+
+    private static DeliveryOptions getDeliveryOptions() {
+        return new DeliveryOptions()
+                .setSendTimeout(system().getDeployTimeout());
+    }
 
     @Override
     public void init(CoreContext core) {
@@ -109,15 +119,5 @@ public class Service implements CoreService {
                 future.fail(done.cause());
             }
         });
-    }
-
-    private static JsonObject getPing() {
-        return new JsonObject()
-                .put(Strings.PROTOCOL_ROUTE, Strings.ID_PING);
-    }
-
-    private static DeliveryOptions getDeliveryOptions() {
-        return new DeliveryOptions()
-                .setSendTimeout(system().getDeployTimeout());
     }
 }

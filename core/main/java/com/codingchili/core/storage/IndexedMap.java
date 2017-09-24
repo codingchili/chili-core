@@ -21,32 +21,38 @@ import com.googlecode.cqengine.resultset.ResultSet;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.WorkerExecutor;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static com.googlecode.cqengine.query.QueryFactory.*;
+import static com.googlecode.cqengine.query.option.DeduplicationStrategy.LOGICAL_ELIMINATION;
 import static io.vertx.core.Future.failedFuture;
 import static io.vertx.core.Future.succeededFuture;
 
 /**
  * @author Robin Duda
- *         <p>
- *         A storage implementation that is local and indexed. Always use this when using queries.
- *         The indexing is fully based on CQEngine. see http://github.com/npgall/cqengine
- *         The db/collection is shared over multiple instances.
+ * <p>
+ * A storage implementation that is local and indexed. Always use this when using queries.
+ * The indexing is fully based on CQEngine. see http://github.com/npgall/cqengine
+ * The db/collection is shared over multiple instances.
  */
 public abstract class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
     private static final Map<String, SharedIndexCollection> maps = new HashMap<>();
     private final Map<String, Attribute<Value, String>> fields = new HashMap<>();
     private final SimpleAttribute<Value, String> FIELD_ID;
     private final StorageContext<Value> context;
+    private final WorkerExecutor executor;
     private SharedIndexCollection<Value> db;
 
     @SuppressWarnings("unchecked")
     public IndexedMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
         this.context = context;
+        executor = context.vertx().createSharedWorkerExecutor("IndexedMap", 1);
         FIELD_ID = attribute(context.clazz(), String.class, Storable.idField, Storable::id);
         fields.put(Storable.idField, FIELD_ID);
         this.db = getImplementation(context, FIELD_ID);
@@ -65,7 +71,8 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
 
     /**
      * Allows parameterization of the indexed collection.
-     * @param ctx the storage context used.
+     *
+     * @param ctx       the storage context used.
      * @param attribute the primary attribute of the Storable
      * @return a configured IndexedCollection with persistence etc configured.
      */
@@ -85,8 +92,13 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
 
     @Override
     public void put(Value value, Handler<AsyncResult<Void>> handler) {
-        db.update(Collections.singleton(value), Collections.singleton(value));
-        handler.handle(succeededFuture());
+        executor.executeBlocking(blocking -> get(value.id(), get -> {
+            if (get.succeeded()) {
+                db.remove(get.result());
+            }
+            db.add(value);
+            blocking.complete();
+        }), handler);
     }
 
     @Override
@@ -138,14 +150,6 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
     }
 
     /**
-     * when creating an index on a multivalued attribute a reflective operation is invoked.
-     * This reflective invocation fails since Value is of generic type. To circumvent this,
-     * a class that implements Storable, which is the common interface with Value is used.
-     */
-    private abstract class Generic implements Storable {
-    }
-
-    /**
      * Adds an index for the given attribute if one is not already added.
      * hack CQEngine to avoid having to specify attributes. (serialize to json, then get field value.)
      *
@@ -161,12 +165,12 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
                     @Override
                     public Iterable<String> getValues(Value indexing, QueryOptions queryOptions) {
                         return Arrays.stream(Serializer.getValueByPath(context.toJson(indexing), fieldName))
-                                .map(item -> (item + "").toLowerCase())::iterator;
+                                .map(item -> (item + ""))::iterator;
                     }
                 };
             } else {
                 attribute = attribute(fieldName, (indexing) -> {
-                    return (Serializer.getValueByPath(context.toJson(indexing), fieldName)[0] + "").toLowerCase();
+                    return (Serializer.getValueByPath(context.toJson(indexing), fieldName)[0] + "");
                 });
             }
             fields.put(fieldName, attribute);
@@ -236,13 +240,13 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
 
             @Override
             public QueryBuilder<Value> like(String text) {
-                statements.add(QueryFactory.contains(field, text.toLowerCase()));
+                statements.add(QueryFactory.contains(field, text));
                 return this;
             }
 
             @Override
             public QueryBuilder<Value> startsWith(String text) {
-                statements.add(QueryFactory.startsWith(field, text.toLowerCase()));
+                statements.add(QueryFactory.startsWith(field, text));
                 return this;
             }
 
@@ -257,13 +261,13 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
 
             @Override
             public QueryBuilder<Value> equalTo(Comparable match) {
-                statements.add(QueryFactory.equal(field, (match + "").toLowerCase()));
+                statements.add(QueryFactory.equal(field, (match + "")));
                 return this;
             }
 
             @Override
             public QueryBuilder<Value> matches(String regex) {
-                statements.add(QueryFactory.matchesRegex(field, regex.toLowerCase()));
+                statements.add(QueryFactory.matchesRegex(field, regex));
                 return this;
             }
 
@@ -291,9 +295,11 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
                     } else {
                         order = descending(missingLast(fields.get(getOrderByAttribute())));
                     }
-                    return QueryFactory.queryOptions(QueryFactory.orderBy(order));
+                    return queryOptions(
+                            QueryFactory.orderBy(order),
+                            deduplicate(LOGICAL_ELIMINATION));
                 } else {
-                    return QueryFactory.noQueryOptions();
+                    return queryOptions(QueryFactory.deduplicate(LOGICAL_ELIMINATION));
                 }
             }
         }.prepareField(attribute);
@@ -302,5 +308,13 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
     @Override
     public StorageContext<Value> context() {
         return context;
+    }
+
+    /**
+     * when creating an index on a multivalued attribute a reflective operation is invoked.
+     * This reflective invocation fails since Value is of generic type. To circumvent this,
+     * a class that implements Storable, which is the common interface with Value is used.
+     */
+    private abstract class Generic implements Storable {
     }
 }

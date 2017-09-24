@@ -29,8 +29,8 @@ import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Tests for the router handler.
+ * <p>
+ * Tests for the router handler.
  */
 @RunWith(VertxUnitRunner.class)
 public class BusRouterTest {
@@ -39,21 +39,19 @@ public class BusRouterTest {
     private static final String NODE_1 = "first.node";
     private static final String NODE_2 = "second.node";
     private static final String API_ROOT = "/web";
+    @Rule
+    public Timeout timeout = new Timeout(3, TimeUnit.SECONDS);
     private AtomicBoolean nodeTimeout = new AtomicBoolean(false);
     private AtomicBoolean nodeUnreachable = new AtomicBoolean(false);
     private AtomicBoolean recipientFailure = new AtomicBoolean(false);
     private BusRouter router;
     private CoreContext core;
 
-    @Rule
-    public Timeout timeout = new Timeout(3, TimeUnit.SECONDS);
-
     @Before
     public void setUp() {
         core = new SystemContext();
         system().setClusterTimeout(500);
-        router = new BusRouter()
-        {
+        router = new BusRouter() {
             @Override
             public void onNodeTimeout(Request request) {
                 nodeTimeout.set(true);

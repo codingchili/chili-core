@@ -1,13 +1,5 @@
 package com.codingchili.website;
 
-import java.util.concurrent.TimeUnit;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import com.codingchili.common.Strings;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.SystemContext;
@@ -19,28 +11,33 @@ import com.codingchili.core.testing.ResponseListener;
 import com.codingchili.website.configuration.WebserverContext;
 import com.codingchili.website.configuration.WebserverSettings;
 import com.codingchili.website.controller.WebHandler;
-
 import io.vertx.core.Vertx;
 import io.vertx.core.file.FileSystem;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.util.concurrent.TimeUnit;
 
 import static com.codingchili.common.Strings.ID_BUFFER;
 
 /**
  * @author Robin Duda
- *         tests the website/resource server.
+ * tests the website/resource server.
  */
 @RunWith(VertxUnitRunner.class)
 public class WebHandlerTest {
     private static final String ONE_MISSING_FILE = "one-missing-file";
-    private WebHandler handler;
-    private WebserverContext context;
-
     @Rule
     public Timeout timeout = new Timeout(30, TimeUnit.SECONDS);
+    private WebHandler handler;
+    private WebserverContext context;
 
     @Before
     public void setUp() {

@@ -71,7 +71,7 @@ public abstract class Strings extends CoreStrings {
     public static final String COLLECTION_CHARACTERS = "characters";
 
     public static final String LOG_VERSION = "version";
-    public static final String LOG_USER_AGENT = "User-Agent";
+    public static final String LOG_USER_AGENT = "USER-Agent";
     public static final String LOG_AGENT = "agent";
     public static final String LOG_REMOTE = "remote";
     public static final String LOG_INSTANCE = "instance";

@@ -13,8 +13,8 @@ import static com.codingchili.logging.configuration.LogServerSettings.PATH_LOGSE
 
 /**
  * @author Robin Duda
- *         <p>
- *         Context used by logging handlers.
+ * <p>
+ * Context used by logging handlers.
  */
 public class LogContext extends ServiceContext {
     private AsyncStorage<JsonItem> storage;

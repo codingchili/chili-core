@@ -23,11 +23,11 @@ public abstract class FutureHelper {
         Future<T> future = Future.future();
 
         future.setHandler(done -> {
-           if (done.succeeded()) {
-               typed.succeeded();
-           } else {
-               typed.fail(done.cause());
-           }
+            if (done.succeeded()) {
+                typed.succeeded();
+            } else {
+                typed.fail(done.cause());
+            }
         });
 
         return future;

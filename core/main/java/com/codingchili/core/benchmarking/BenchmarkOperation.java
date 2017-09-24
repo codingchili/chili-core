@@ -4,11 +4,11 @@ import io.vertx.core.Future;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Benchmark operation called when benchmarking.
+ * <p>
+ * Benchmark operation called when benchmarking.
  */
 @FunctionalInterface
-interface BenchmarkOperation {
+public interface BenchmarkOperation {
     /**
      * Returns a future so that benchmark operations may be composed in order.
      *

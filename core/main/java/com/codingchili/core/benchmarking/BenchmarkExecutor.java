@@ -1,24 +1,23 @@
 package com.codingchili.core.benchmarking;
 
+import com.codingchili.core.context.CoreContext;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.codingchili.core.context.CoreContext;
-
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-
 /**
  * @author Robin Duda
- *         <p>
- *         Micro-benchmarks runner.
- *         <p>
- *         Creates and runs a group of benchmarks. Benchmarks are run for one implementation at a time
- *         and are executed in the same order as they are added to the group. The order for each
- *         benchmark test is also preserved. No more than one benchmark is executed concurrently.
+ * <p>
+ * Micro-benchmarks runner.
+ * <p>
+ * Creates and runs a group of benchmarks. Benchmarks are run for one implementation at a time
+ * and are executed in the same order as they are added to the group. The order for each
+ * benchmark test is also preserved. No more than one benchmark is executed concurrently.
  */
 public class BenchmarkExecutor {
     private BenchmarkListener listener = new BaseBenchmarkListener();

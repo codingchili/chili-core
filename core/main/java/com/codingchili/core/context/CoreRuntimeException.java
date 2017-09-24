@@ -5,8 +5,8 @@ import com.codingchili.core.protocol.ResponseStatus;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Runtime exception.
+ * <p>
+ * Runtime exception.
  */
 public class CoreRuntimeException extends RuntimeException implements CoreExceptionFormat {
     private ResponseStatus status = ResponseStatus.ERROR;

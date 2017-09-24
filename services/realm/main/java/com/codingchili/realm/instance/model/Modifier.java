@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 /**
  * @author Robin Duda
- *         Modifies an attribute of a character.
+ * Modifies an attribute of a character.
  */
 class Modifier implements Serializable {
     private ArrayList<Affliction> affliction;

@@ -4,7 +4,7 @@ import com.codingchili.core.protocol.ResponseStatus;
 
 /**
  * @author Robin Duda
- *
+ * <p>
  * Throw when authentication fails.
  */
 public class AccountPasswordException extends AccountException {

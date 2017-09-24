@@ -1,9 +1,5 @@
 package com.codingchili.realm.configuration;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.codingchili.core.configuration.AttributeConfigurable;
 import com.codingchili.core.files.JsonFileStore;
 import com.codingchili.core.protocol.Serializer;
@@ -14,17 +10,21 @@ import com.codingchili.realm.instance.model.PlayerCharacter;
 import com.codingchili.realm.instance.model.PlayerClass;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.codingchili.common.Strings.*;
-import static com.codingchili.core.files.Configurations.*;
+import static com.codingchili.core.files.Configurations.available;
+import static com.codingchili.core.files.Configurations.get;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Contains the settings for a realmName.
+ * <p>
+ * Contains the settings for a realmName.
  */
 @JsonIgnoreProperties({"instances"})
 public class RealmSettings extends AttributeConfigurable {
@@ -45,6 +45,25 @@ public class RealmSettings extends AttributeConfigurable {
     private Boolean secure;
     private long updated;
     private String name;
+
+    /**
+     * Checks if an overridden resource exist in PATH_GAME_OVERRIDE for the
+     * specified realm.
+     *
+     * @param path  to the file to look if overridden.
+     * @param realm the handler of the realm.
+     * @return a path to the overridden resource or the path itself.
+     */
+    private static String override(String path, String realm) {
+        String overridePath = path.replace(PATH_GAME, PATH_GAME_OVERRIDE + realm);
+        File override = new File(overridePath);
+
+        if (override.exists()) {
+            return overridePath;
+        } else {
+            return path;
+        }
+    }
 
     public RealmSettings removeAuthentication() {
         RealmSettings copy = new RealmSettings()
@@ -104,25 +123,6 @@ public class RealmSettings extends AttributeConfigurable {
 
     private void readTemplate() {
         this.template = get(override(PATH_GAME_PLAYERTEMPLATE, name), PlayerCharacter.class);
-    }
-
-    /**
-     * Checks if an overridden resource exist in PATH_GAME_OVERRIDE for the
-     * specified realm.
-     *
-     * @param path  to the file to look if overridden.
-     * @param realm the handler of the realm.
-     * @return a path to the overridden resource or the path itself.
-     */
-    private static String override(String path, String realm) {
-        String overridePath = path.replace(PATH_GAME, PATH_GAME_OVERRIDE + realm);
-        File override = new File(overridePath);
-
-        if (override.exists()) {
-            return overridePath;
-        } else {
-            return path;
-        }
     }
 
     /**
@@ -256,19 +256,19 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     /**
+     * @return authentication token used to authenticate against the realm-registry.
+     */
+    public Token getAuthentication() {
+        return authentication;
+    }
+
+    /**
      * @param authentication the authentication to use against the realm-registry.
      * @return fluent.
      */
     public RealmSettings setAuthentication(Token authentication) {
         this.authentication = authentication;
         return this;
-    }
-
-    /**
-     * @return authentication token used to authenticate against the realm-registry.
-     */
-    public Token getAuthentication() {
-        return authentication;
     }
 
     /**
@@ -407,6 +407,11 @@ public class RealmSettings extends AttributeConfigurable {
         return json;
     }
 
+    @JsonIgnore
+    public long getUpdated() {
+        return updated;
+    }
+
     /**
      * @param updated set the last time in MS when the realm was updated in the registry.
      * @return fluent
@@ -414,11 +419,6 @@ public class RealmSettings extends AttributeConfigurable {
     public RealmSettings setUpdated(long updated) {
         this.updated = updated;
         return this;
-    }
-
-    @JsonIgnore
-    public long getUpdated() {
-        return updated;
     }
 
     @JsonIgnore

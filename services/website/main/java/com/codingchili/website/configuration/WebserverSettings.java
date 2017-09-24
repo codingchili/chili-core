@@ -5,8 +5,8 @@ import com.codingchili.core.configuration.ServiceConfigurable;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Settings for the web server.
+ * <p>
+ * Settings for the web server.
  */
 public class WebserverSettings extends ServiceConfigurable {
     public static final String PATH_WEBSERVER = Strings.getService("webserver");

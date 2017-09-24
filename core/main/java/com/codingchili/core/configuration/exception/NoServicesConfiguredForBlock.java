@@ -5,8 +5,8 @@ import com.codingchili.core.context.CoreException;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Throw when an executing block has zero configured services.
+ * <p>
+ * Throw when an executing block has zero configured services.
  */
 public class NoServicesConfiguredForBlock extends CoreException {
 

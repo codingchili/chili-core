@@ -1,14 +1,14 @@
 package com.codingchili.core.context;
 
+import io.vertx.core.Future;
+
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-import io.vertx.core.Future;
-
 /**
  * @author Robin Duda
- *         <p>
- *         A basic
+ * <p>
+ * A basic
  */
 public class BaseCommand implements Command {
     private BiFunction<Future<Void>, CommandExecutor, Void> command;

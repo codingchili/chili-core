@@ -2,8 +2,8 @@ package com.codingchili.core.configuration.system;
 
 /**
  * @author Robin Duda
- *         <p>
- *         configuration settings for a remote storage.
+ * <p>
+ * configuration settings for a remote storage.
  */
 public class RemoteStorage {
     private boolean persisted = false;

@@ -1,7 +1,5 @@
 package com.codingchili.core.context;
 
-import java.util.*;
-
 import com.codingchili.core.benchmarking.BenchmarkSuite;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.files.Configurations;
@@ -10,12 +8,14 @@ import com.codingchili.core.logging.Level;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.security.AuthenticationGenerator;
 
+import java.util.*;
+
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Command executor that registers launch commands to a CommandExecutor.
+ * <p>
+ * Command executor that registers launch commands to a CommandExecutor.
  */
 public class LauncherCommandExecutor extends CommandExecutor {
 
@@ -95,8 +95,8 @@ public class LauncherCommandExecutor extends CommandExecutor {
     }
 
     private class BlockRow {
-        final List<String> remotes = new ArrayList<>();
         public final String block;
+        final List<String> remotes = new ArrayList<>();
 
         BlockRow(String block) {
             this.block = block;

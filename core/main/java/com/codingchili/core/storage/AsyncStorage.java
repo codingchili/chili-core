@@ -1,20 +1,19 @@
 package com.codingchili.core.storage;
 
-import java.util.Collection;
-
 import com.codingchili.core.context.StorageContext;
-
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
+import java.util.Collection;
+
 /**
  * @author Robin Duda
- *         <p>
- *         Reuses the AsyncMap interface from hazelcast.
- *         <p>
- *         Storages implementing this class are recommended to create an index for
- *         attributes that are queried. It is highly recommended to create an index
- *         for the ID field, which is used by all {@link Storable} classes.
+ * <p>
+ * Reuses the AsyncMap interface from hazelcast.
+ * <p>
+ * Storages implementing this class are recommended to create an index for
+ * attributes that are queried. It is highly recommended to create an index
+ * for the ID field, which is used by all {@link Storable} classes.
  */
 public interface AsyncStorage<Value extends Storable> {
     /**

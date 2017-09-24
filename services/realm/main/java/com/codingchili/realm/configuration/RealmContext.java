@@ -1,7 +1,5 @@
 package com.codingchili.realm.configuration;
 
-import java.util.List;
-
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.Delay;
 import com.codingchili.core.context.ServiceContext;
@@ -16,16 +14,17 @@ import com.codingchili.realm.instance.model.PlayerCharacter;
 import com.codingchili.realm.instance.model.PlayerClass;
 import com.codingchili.realm.model.AsyncCharacterStore;
 import com.codingchili.realm.model.CharacterDB;
-
 import io.vertx.core.Future;
+
+import java.util.List;
 
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.realm.configuration.RealmServerSettings.PATH_REALMSERVER;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Context for realms.
+ * <p>
+ * Context for realms.
  */
 public class RealmContext extends ServiceContext {
     private AsyncCharacterStore characters;
@@ -119,6 +118,6 @@ public class RealmContext extends ServiceContext {
 
     public void onInstanceFailed(String instance, Throwable cause) {
         log(event(LOG_INSTANCE_DEPLOY_ERROR, Level.SEVERE)
-        .put(LOG_MESSAGE, getdeployInstanceError(instance, cause)));
+                .put(LOG_MESSAGE, getdeployInstanceError(instance, cause)));
     }
 }

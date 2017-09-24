@@ -4,7 +4,7 @@ import com.codingchili.core.protocol.ResponseStatus;
 
 /**
  * @author Robin Duda
- *
+ * <p>
  * Thrown when an account is not found.
  */
 public class AccountMissingException extends AccountException {

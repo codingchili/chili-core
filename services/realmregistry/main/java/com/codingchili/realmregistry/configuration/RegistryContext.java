@@ -9,7 +9,6 @@ import com.codingchili.core.security.TokenFactory;
 import com.codingchili.core.storage.StorageLoader;
 import com.codingchili.realmregistry.model.AsyncRealmStore;
 import com.codingchili.realmregistry.model.RealmDB;
-
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 

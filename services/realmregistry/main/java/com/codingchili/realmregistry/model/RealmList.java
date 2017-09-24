@@ -9,7 +9,8 @@ import java.util.List;
 public class RealmList {
     private List<RealmMetaData> realms = new ArrayList<>();
 
-    public RealmList() {}
+    public RealmList() {
+    }
 
     public RealmList(List<RealmMetaData> realms) {
         this.realms = realms;

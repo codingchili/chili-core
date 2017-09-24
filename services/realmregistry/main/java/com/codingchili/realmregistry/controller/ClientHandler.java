@@ -2,23 +2,22 @@ package com.codingchili.realmregistry.controller;
 
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
-import com.codingchili.core.protocol.Access;
 import com.codingchili.core.protocol.Protocol;
-import com.codingchili.core.protocol.RequestHandler;
+import com.codingchili.core.protocol.Role;
 import com.codingchili.realmregistry.configuration.RegistryContext;
 import com.codingchili.realmregistry.model.AsyncRealmStore;
 import com.codingchili.realmregistry.model.RealmList;
 import com.codingchili.realmregistry.model.RealmMissingException;
 
 import static com.codingchili.common.Strings.*;
-import static com.codingchili.core.protocol.Access.PUBLIC;
+import static com.codingchili.core.protocol.Role.PUBLIC;
 
 /**
  * @author Robin Duda
- *         Routing used to authenticate users and create/delete characters.
+ * Routing used to authenticate users and create/delete characters.
  */
 public class ClientHandler implements CoreHandler {
-    private final Protocol<RequestHandler<ClientRequest>> protocol = new Protocol<>();
+    private final Protocol<ClientRequest> protocol = new Protocol<>();
     private final AsyncRealmStore realms;
     private RegistryContext context;
 
@@ -31,14 +30,14 @@ public class ClientHandler implements CoreHandler {
                 .use(ID_PING, Request::accept, PUBLIC);
     }
 
-    private Access authenticate(Request request) {
+    private Role authenticate(Request request) {
         boolean authorized = context.verifyClientToken(request.token());
-        return (authorized) ? Access.AUTHORIZED : PUBLIC;
+        return (authorized) ? Role.USER : PUBLIC;
     }
 
     @Override
     public void handle(Request request) {
-        protocol.get(authenticate(request), request.route()).handle(new ClientRequest(request));
+        protocol.get(request.route(), authenticate(request)).handle(new ClientRequest(request));
     }
 
     @Override

@@ -1,19 +1,19 @@
 package com.codingchili.core.benchmarking;
 
+import com.codingchili.core.logging.ConsoleLogger;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.codingchili.core.logging.ConsoleLogger;
-
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Crates benchmark reports in the terminal.
+ * <p>
+ * Crates benchmark reports in the terminal.
  */
 public class BenchmarkConsoleReport implements BenchmarkReport {
     private static final int PARAM_COUNT = 5;

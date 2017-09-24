@@ -28,13 +28,17 @@ import static com.codingchili.core.files.Configurations.system;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Tests for the launcher.
+ * <p>
+ * Tests for the launcher.
  */
 @RunWith(VertxUnitRunner.class)
 public class LauncherIT {
     private static TestContext test;
     private static Async async;
+    private static Consumer<Vertx> onStart = (vx) -> {
+    };
+    @Rule
+    public Timeout timeout = new Timeout(15, TimeUnit.SECONDS);
     private CoreContext core;
 
     @Before
@@ -42,9 +46,6 @@ public class LauncherIT {
         core = new SystemContext();
         Delay.initialize(core);
     }
-
-    @Rule
-    public Timeout timeout = new Timeout(15, TimeUnit.SECONDS);
 
     @After
     public void tearDown(TestContext test) {
@@ -132,9 +133,6 @@ public class LauncherIT {
             }
         };
     }
-
-    private static Consumer<Vertx> onStart = (vx) -> {
-    };
 
     /**
      * Testnode that calls async-complete on deploy.

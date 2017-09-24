@@ -1,34 +1,32 @@
 package com.codingchili.core.files;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import com.codingchili.core.configuration.CachedFileStoreSettings;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.files.exception.FileMissingException;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.testing.ContextMock;
 import com.codingchili.core.testing.FileSystemMock;
-
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.file.FileSystem;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Tests the loading of files in CachedFileStore.
+ * <p>
+ * Tests the loading of files in CachedFileStore.
  */
 @RunWith(VertxUnitRunner.class)
 public class CachedFileStoreTest {

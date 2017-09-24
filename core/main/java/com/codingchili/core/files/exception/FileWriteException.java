@@ -5,8 +5,8 @@ import com.codingchili.core.context.CoreRuntimeException;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Throw when failed to write a file.
+ * <p>
+ * Throw when failed to write a file.
  */
 public class FileWriteException extends CoreRuntimeException {
 

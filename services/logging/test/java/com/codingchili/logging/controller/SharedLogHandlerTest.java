@@ -1,11 +1,5 @@
 package com.codingchili.logging.controller;
 
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
-import org.junit.*;
-import org.junit.runner.RunWith;
-
 import com.codingchili.common.Strings;
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.files.Configurations;
@@ -18,31 +12,34 @@ import com.codingchili.core.testing.RequestMock;
 import com.codingchili.core.testing.ResponseListener;
 import com.codingchili.logging.configuration.LogContext;
 import com.codingchili.logging.configuration.LogServerSettings;
-
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.*;
+import org.junit.runner.RunWith;
+
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static com.codingchili.core.configuration.CoreStrings.ID_TOKEN;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Base test cases for log handlers.
+ * <p>
+ * Base test cases for log handlers.
  */
 @Ignore("Extend this class to run the test cases")
 @RunWith(VertxUnitRunner.class)
 public class SharedLogHandlerTest {
     private static final int MESSAGE_COUNT = 50;
-    private TokenFactory factory;
-    AbstractLogHandler handler;
-    LogContext context;
-
     @Rule
     public Timeout timeout = new Timeout(50, TimeUnit.SECONDS);
+    AbstractLogHandler handler;
+    LogContext context;
+    private TokenFactory factory;
 
     public SharedLogHandlerTest() {
         LogServerSettings settings = new LogServerSettings();

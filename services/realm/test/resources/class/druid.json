@@ -1,7 +1,9 @@
 {
   "name": "Druid",
   "description": "Restores the balance of all things nature with their staff, aids their allies with magic buffs.",
-  "weapon": ["staff"],
+  "weapon": [
+    "staff"
+  ],
   "keywords": [
     "Healer",
     "Buffs",
@@ -84,8 +86,8 @@
           "modifies": "target",
           "attribute": "health",
           "using": {
-            "attribute":"spell",
-            "amplifier":2.0
+            "attribute": "spell",
+            "amplifier": 2.0
           }
         }
       ],

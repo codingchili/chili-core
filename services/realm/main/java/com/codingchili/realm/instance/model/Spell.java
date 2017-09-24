@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * @author Robin Duda
- *         A spell that may be cast by a player or NPC.
+ * A spell that may be cast by a player or NPC.
  */
 class Spell implements Serializable {
     private String name;

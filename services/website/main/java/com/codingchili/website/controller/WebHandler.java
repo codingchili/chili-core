@@ -6,20 +6,19 @@ import com.codingchili.core.files.CachedFileStore;
 import com.codingchili.core.files.exception.FileMissingException;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
-import com.codingchili.core.protocol.Access;
 import com.codingchili.core.protocol.Protocol;
-import com.codingchili.core.protocol.RequestHandler;
+import com.codingchili.core.protocol.Role;
 import com.codingchili.website.configuration.WebserverContext;
 
 import static com.codingchili.common.Strings.*;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Handles incoming requests for files. (website files)
+ * <p>
+ * Handles incoming requests for files. (website files)
  */
 public class WebHandler implements CoreHandler {
-    private final Protocol<RequestHandler<Request>> protocol = new Protocol<>();
+    private final Protocol<Request> protocol = new Protocol<>();
     private final CachedFileStore files;
     private WebserverContext context;
 
@@ -30,8 +29,8 @@ public class WebHandler implements CoreHandler {
                 .setDirectory(context.resources())
                 .setGzip(context.isGzip()));
 
-        protocol.use(Strings.ID_PING, Request::accept, Access.PUBLIC)
-                .use(ANY, this::serve, Access.PUBLIC);
+        protocol.use(Strings.ID_PING, Request::accept, Role.PUBLIC)
+                .use(ANY, this::serve, Role.PUBLIC);
     }
 
     private void serve(Request request) {
@@ -51,7 +50,7 @@ public class WebHandler implements CoreHandler {
 
     @Override
     public void handle(Request request) {
-        protocol.get(Access.PUBLIC, request.route()).handle(request);
+        protocol.get(request.route(), Role.PUBLIC).handle(request);
     }
 
     @Override

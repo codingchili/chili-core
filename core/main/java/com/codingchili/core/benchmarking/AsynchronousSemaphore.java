@@ -1,24 +1,23 @@
 package com.codingchili.core.benchmarking;
 
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import com.codingchili.core.context.CoreContext;
-
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.codingchili.core.configuration.CoreStrings.getSemaphoreTimeout;
 
 /**
  * @author Robin Duda
- *         <p>
- *         An asynchronous semaphore.
- *         <p>
- *         This implementation does not make sure that a principal releasing
- *         a permit actually owned the permit.
+ * <p>
+ * An asynchronous semaphore.
+ * <p>
+ * This implementation does not make sure that a principal releasing
+ * a permit actually owned the permit.
  */
 public class AsynchronousSemaphore {
     private final Queue<SemaphoreWaiter> waiters = new LinkedList<>();

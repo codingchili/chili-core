@@ -1,5 +1,6 @@
 package com.codingchili.core.testing;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -25,15 +26,19 @@ import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 
+import static com.codingchili.core.configuration.CoreStrings.DB_DIR;
+import static com.codingchili.core.configuration.CoreStrings.ID_NAME;
+
 
 /**
  * @author Robin Duda
- *         <p>
- *         Common test cases for the map implementations.
+ * <p>
+ * Common test cases for the map implementations.
  */
 @Ignore("Extend this class to run the tests.")
 @RunWith(VertxUnitRunner.class)
 public class MapTestCases {
+    protected static final String COLLECTION = "MapTestCases";
     private static final Long TEST_ITEM_COUNT = 200L;
     private static final Long SNOWFLAKE_INTERVAL = 10L;
     private static final Long SNOWFLAKE_COUNT = TEST_ITEM_COUNT / SNOWFLAKE_INTERVAL;
@@ -50,20 +55,12 @@ public class MapTestCases {
     private static final StorageObject OBJECT_TWO = new StorageObject(TWO, 2);
     private static final String SNOW_KEYWORD = "SNOW";
     private static final int LEVEL_BUCKET_SIZE = 10;
-    private Class plugin;
-    protected static final String DB = "spinach";
-    protected static final String COLLECTION = "leaves";
-    protected StorageContext<StorageObject> context;
-    protected AsyncStorage<StorageObject> store;
     protected static Integer STARTUP_DELAY = 1;
-
     @Rule
     public Timeout timeout = Timeout.seconds(10);
-
-    @Before
-    public void setUp(TestContext test) {
-        setUp(test, JsonMap.class);
-    }
+    protected Class plugin;
+    protected StorageContext<StorageObject> context;
+    protected AsyncStorage<StorageObject> store;
 
     protected void setUp(TestContext test, Class plugin) {
         setUp(test.async(), plugin, Vertx.vertx());
@@ -74,12 +71,12 @@ public class MapTestCases {
         context.vertx().close(test.asyncAssertSuccess());
     }
 
-    public void setUp(Async async, Class plugin, Vertx vertx) {
+    protected void setUp(Async async, Class plugin, Vertx vertx) {
         this.context = new StorageContext<>(vertx);
         this.plugin = plugin;
 
         new StorageLoader<StorageObject>(context)
-                .withDB(DB, COLLECTION)
+                .withDB(plugin.getSimpleName(), COLLECTION)
                 .withClass(StorageObject.class)
                 .withPlugin(plugin)
                 .build(result -> {
@@ -93,6 +90,15 @@ public class MapTestCases {
             Assert.assertTrue(clear.succeeded());
             AtomicInteger inserted = new AtomicInteger(0);
 
+            context.periodic(() -> 50, "startup timer", handler -> {
+                System.out.println("exxing " + inserted.get());
+                if (inserted.get() == TEST_ITEM_COUNT) {
+                    context.timer(STARTUP_DELAY, event -> {
+                        async.complete();
+                    });
+                    context.cancel(handler);
+                }
+            });
             for (long i = 0L; i < TEST_ITEM_COUNT; i++) {
                 StorageObject object = new StorageObject("id." + i, Long.valueOf(i % LEVEL_BUCKET_SIZE).intValue());
 
@@ -110,14 +116,6 @@ public class MapTestCases {
                     inserted.incrementAndGet();
                 });
             }
-            context.periodic(() -> 50, "startup timer..", handler -> {
-                if (inserted.get() == TEST_ITEM_COUNT) {
-                    context.timer(STARTUP_DELAY, event -> {
-                        async.complete();
-                    });
-                    context.cancel(handler);
-                }
-            });
         });
     }
 
@@ -395,18 +393,6 @@ public class MapTestCases {
         }, SortOrder.DESCENDING, test);
     }
 
-    @Test
-    public void testOrderResultsDisabled(TestContext test) {
-        Async async = test.async();
-
-        store.query(NAME).matches(REGEX_ALL).execute(find -> {
-            test.assertTrue(find.succeeded());
-            test.assertFalse(sortedByLevel(find.result(), SortOrder.ASCENDING));
-            test.assertFalse(sortedByLevel(find.result(), SortOrder.DESCENDING));
-            async.complete();
-        });
-    }
-
     private void findWithSort(Handler<AsyncResult<Collection<StorageObject>>> handler, SortOrder mode, TestContext test) {
         int pageSize = 10;
 
@@ -655,6 +641,23 @@ public class MapTestCases {
     }
 
     @Test
+    public void testQueryWithUppercases(TestContext test) {
+        Async async = test.async();
+        String upper = "UPPERcase";
+        StorageObject item = new StorageObject(upper, 1);
+        store.put(item, done -> {
+            test.assertTrue(done.succeeded());
+
+            store.query(ID_NAME).equalTo(upper).execute(query -> {
+                test.assertTrue(query.succeeded(), errorText(query));
+                test.assertEquals(1, query.result().size());
+                test.assertEquals(upper, query.result().iterator().next().id());
+                async.complete();
+            });
+        });
+    }
+
+    @Test
     public void testQueryFlatArray(TestContext test) {
         Async async = test.async();
 
@@ -750,7 +753,7 @@ public class MapTestCases {
 
         // creates a new storage using another context with the same DB/colletion
         new StorageLoader<StorageObject>(context2)
-                .withDB(DB, COLLECTION)
+                .withDB(plugin.getSimpleName(), COLLECTION)
                 .withClass(StorageObject.class)
                 .withPlugin(plugin)
                 .build(result -> {

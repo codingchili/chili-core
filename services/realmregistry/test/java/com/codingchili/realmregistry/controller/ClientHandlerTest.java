@@ -1,14 +1,5 @@
 package com.codingchili.realmregistry.controller;
 
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import com.codingchili.common.Strings;
 import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.protocol.Serializer;
@@ -19,30 +10,36 @@ import com.codingchili.core.testing.RequestMock;
 import com.codingchili.core.testing.ResponseListener;
 import com.codingchili.realmregistry.ContextMock;
 import com.codingchili.realmregistry.model.RealmList;
-
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import static com.codingchili.common.Strings.*;
 
 /**
  * @author Robin Duda
- *         tests the API from client -> authentication server.
+ * tests the API from client -> authentication server.
  */
 
 @RunWith(VertxUnitRunner.class)
 public class ClientHandlerTest {
     private static final String USERNAME = "username";
     private static final String REALM_NAME = "realmName";
-    private ClientHandler handler;
-    private ContextMock context;
-
     @Rule
     public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
+    private ClientHandler handler;
+    private ContextMock context;
 
     @Before
     public void setUp() throws IOException {

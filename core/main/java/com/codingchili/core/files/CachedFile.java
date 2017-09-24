@@ -1,16 +1,15 @@
 package com.codingchili.core.files;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.vertx.core.buffer.Buffer;
+
 import java.io.File;
 import java.nio.file.Path;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import io.vertx.core.buffer.Buffer;
-
 /**
  * @author Robin Duda
- *         <p>
- *         Represents a file loaded from disk into main memory.
+ * <p>
+ * Represents a file loaded from disk into main memory.
  */
 public class CachedFile {
     private String path;
@@ -72,12 +71,12 @@ public class CachedFile {
         this.size = size;
     }
 
+    public byte[] getBytes() {
+        return bytes;
+    }
+
     public CachedFile setBytes(byte[] bytes) {
         this.bytes = bytes;
         return this;
-    }
-
-    public byte[] getBytes() {
-        return bytes;
     }
 }

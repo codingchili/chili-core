@@ -5,7 +5,7 @@ import com.codingchili.core.protocol.ResponseStatus;
 
 /**
  * @author Robin Duda
- *
+ * <p>
  * Thrown when an authentication error has occured.
  */
 abstract class AccountException extends CoreException {

@@ -17,13 +17,13 @@ import static com.codingchili.core.files.Configurations.launcher;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Default logging implementation.
+ * <p>
+ * Default logging implementation.
  */
 public abstract class DefaultLogger extends Handler implements Logger {
-    private Level level = Level.INFO;
     CoreContext context;
     JsonLogger logger;
+    private Level level = Level.INFO;
 
     protected DefaultLogger() {
     }
@@ -78,21 +78,21 @@ public abstract class DefaultLogger extends Handler implements Logger {
     @Override
     public void onServiceStarted(CoreService service) {
         log(event(LOG_SERVICE_START, Level.STARTUP)
-            .put(ID_NAME, service.name()));
+                .put(ID_NAME, service.name()));
     }
 
     @Override
     public void onServiceStopped(Future<Void> future, CoreService service) {
         log(event(LOG_SERVICE_STOP, Level.SEVERE)
-            .put(ID_NAME, service.name()));
+                .put(ID_NAME, service.name()));
         Delay.forShutdown(future);
     }
 
     @Override
     public void onListenerStarted(CoreListener listener) {
         log(event(LOG_LISTENER_START, Level.STARTUP)
-            .put(ID_TYPE, listener.getClass().getSimpleName())
-            .put(ID_HANDLER, listener.toString())
+                .put(ID_TYPE, listener.getClass().getSimpleName())
+                .put(ID_HANDLER, listener.toString())
         );
     }
 

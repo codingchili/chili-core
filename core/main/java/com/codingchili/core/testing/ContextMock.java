@@ -3,7 +3,6 @@ package com.codingchili.core.testing;
 import com.codingchili.core.configuration.ServiceConfigurable;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.ServiceContext;
-
 import io.vertx.core.Vertx;
 
 /**

@@ -1,21 +1,19 @@
 package com.codingchili.core.logging;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import com.codingchili.core.testing.LoggerMock;
-
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Verifies the creation of logging events in DefaultLogger.
+ * <p>
+ * Verifies the creation of logging events in DefaultLogger.
  */
 @RunWith(VertxUnitRunner.class)
 public class DefaultLoggerTest {

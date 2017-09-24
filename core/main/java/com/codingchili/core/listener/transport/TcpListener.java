@@ -16,8 +16,8 @@ import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
 
 /**
  * @author Robin Duda
- *         <p>
- *         TCP listener implementation.
+ * <p>
+ * TCP listener implementation.
  */
 public class TcpListener implements CoreListener {
     private CoreContext core;

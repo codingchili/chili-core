@@ -1,7 +1,6 @@
 package com.codingchili.core.listener;
 
 import com.codingchili.core.context.CoreContext;
-
 import io.vertx.core.Future;
 
 /**
@@ -14,7 +13,8 @@ public interface CoreDeployment {
      *
      * @param core the core context to use.
      */
-    default void init(CoreContext core) {}
+    default void init(CoreContext core) {
+    }
 
     /**
      * @param stop complete when asynchronous shutdown is completed.

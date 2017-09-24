@@ -11,8 +11,8 @@ import java.util.Optional;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Utility class to get environment information. Use with care.
+ * <p>
+ * Utility class to get environment information. Use with care.
  */
 public class Environment {
 

@@ -24,17 +24,18 @@ import static com.codingchili.core.configuration.CoreStrings.getUnsupportedDeplo
 
 /**
  * @author Robin Duda
- *         <p>
- *         Implementation of the CoreContext, each context gets its own worker pool.
+ * <p>
+ * Implementation of the CoreContext, each context gets its own worker pool.
  */
 public class SystemContext implements CoreContext {
+    protected Vertx vertx;
     private Map<String, List<String>> deployments = new HashMap<>();
     private WorkerExecutor executor;
     private ConsoleLogger console;
-    protected Vertx vertx;
 
     /**
      * Creates a new system context that shares vertx instance with the given context.
+     *
      * @param context context to clone vertx instance from.
      */
     protected SystemContext(CoreContext context) {
@@ -50,6 +51,7 @@ public class SystemContext implements CoreContext {
 
     /**
      * Uses the given vertx context.
+     *
      * @param vertx instance to use for this context.
      */
     public SystemContext(Vertx vertx) {
@@ -62,7 +64,7 @@ public class SystemContext implements CoreContext {
         executor = vertx.createSharedWorkerExecutor("systemcontext", system().getWorkerPoolSize());
 
         vertx.exceptionHandler(throwable -> {
-           logger().onError(throwable);
+            logger().onError(throwable);
         });
 
         MetricsService metrics = MetricsService.create(vertx);
@@ -126,7 +128,7 @@ public class SystemContext implements CoreContext {
         Supplier<Object> deployment = () -> {
             try {
                 return Class.forName(target).getConstructor().newInstance();
-            } catch (NoSuchMethodException | InvocationTargetException |InstantiationException |
+            } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
                     IllegalAccessException | ClassNotFoundException e) {
                 throw new CoreRuntimeException(e.getMessage());
             }

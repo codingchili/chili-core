@@ -1,21 +1,23 @@
 package com.codingchili.core.protocol;
 
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.security.Token;
+import com.codingchili.core.security.TokenFactory;
+import com.codingchili.core.testing.StorageObject;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.security.Token;
-import com.codingchili.core.security.TokenFactory;
-
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Tests for the serializer.
+ * <p>
+ * Tests for the serializer.
  */
 @RunWith(VertxUnitRunner.class)
 public class SerializerTest {
@@ -30,27 +32,27 @@ public class SerializerTest {
     }
 
     @Test
-    public void testPackObjectToJsonString(TestContext context) {
+    public void testPackObjectToJsonString(TestContext test) {
         String packed = Serializer.pack(token);
 
-        context.assertTrue(packed.startsWith("{"));
-        context.assertTrue(packed.endsWith("}"));
+        test.assertTrue(packed.startsWith("{"));
+        test.assertTrue(packed.endsWith("}"));
     }
 
     @Test
-    public void testUnpackString(TestContext context) {
+    public void testUnpackString(TestContext test) {
         String packed = Serializer.pack(token);
         token = Serializer.unpack(packed, Token.class);
 
-        context.assertEquals(TEST, token.getDomain());
+        test.assertEquals(TEST, token.getDomain());
     }
 
     @Test
-    public void testUnpackJsonObject(TestContext context) {
+    public void testUnpackJsonObject(TestContext test) {
         String packed = Serializer.pack(token);
         Token token = Serializer.unpack(new JsonObject(packed), Token.class);
 
-        context.assertEquals(TEST, token.getDomain());
+        test.assertEquals(TEST, token.getDomain());
     }
 
     @Test
@@ -61,13 +63,25 @@ public class SerializerTest {
     }
 
     @Test
-    public void testGzipBytesAndUnzip(TestContext context) {
+    public void testGzipBytesAndUnzip(TestContext test) {
         String text = "string";
 
         byte[] gzip = Serializer.gzip(text.getBytes());
-        context.assertNotEquals(new String(text.getBytes()), new String(gzip));
+        test.assertNotEquals(new String(text.getBytes()), new String(gzip));
 
         byte[] ungzip = Serializer.ungzip(gzip);
-        context.assertEquals(new String(text.getBytes()), new String(ungzip));
+        test.assertEquals(new String(text.getBytes()), new String(ungzip));
+    }
+
+    @Test
+    public void testDescribeClass(TestContext test) {
+        Map<String, String> model = Serializer.describe(StorageObject.class);
+        test.assertTrue(model.containsKey("keywords"));
+        test.assertTrue(model.containsKey("level"));
+        test.assertTrue(model.containsKey("name"));
+        test.assertTrue(model.containsKey("nested"));
+        test.assertEquals(Integer.class.getName(), model.get("level"));
+        test.assertEquals("java.util.List<java.lang.String>", model.get("keywords"));
+        test.assertEquals(4, model.values().size());
     }
 }

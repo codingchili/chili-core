@@ -6,8 +6,8 @@ import com.codingchili.core.protocol.ResponseStatus;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Throw when a requested file is not present.
+ * <p>
+ * Throw when a requested file is not present.
  */
 public class FileMissingException extends CoreException {
     public FileMissingException(String filename) {

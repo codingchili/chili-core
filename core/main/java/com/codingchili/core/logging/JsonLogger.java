@@ -4,8 +4,8 @@ import io.vertx.core.json.JsonObject;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Interface for a logger that logs Json objects.
+ * <p>
+ * Interface for a logger that logs Json objects.
  */
 public interface JsonLogger {
     /**

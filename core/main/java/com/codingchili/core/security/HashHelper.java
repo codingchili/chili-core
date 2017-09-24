@@ -2,7 +2,6 @@ package com.codingchili.core.security;
 
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.security.exception.HashMismatchException;
-
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 import io.vertx.core.AsyncResult;
@@ -11,13 +10,13 @@ import io.vertx.core.Handler;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Handles the hashing of passwords and the generation
- *         of the salts used in the hashing; internally in Argon2.
- *         <p>
- *         Uses mutable data types for storing plaintext passwords
- *         to allow wiping. Reduces effectiveness of core dumps slightly,
- *         as awaiting gc takes much longer time.
+ * <p>
+ * Handles the hashing of passwords and the generation
+ * of the salts used in the hashing; internally in Argon2.
+ * <p>
+ * Uses mutable data types for storing plaintext passwords
+ * to allow wiping. Reduces effectiveness of core dumps slightly,
+ * as awaiting gc takes much longer time.
  */
 
 public class HashHelper {

@@ -13,8 +13,8 @@ import static java.nio.file.StandardWatchEventKinds.*;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Watches changes to files in a registered directory and all its subdirectories.
+ * <p>
+ * Watches changes to files in a registered directory and all its subdirectories.
  */
 class FileWatcher {
     private final HashMap<Path, WatchKey> keys = new HashMap<>();

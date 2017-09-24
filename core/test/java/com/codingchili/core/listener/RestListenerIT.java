@@ -1,23 +1,21 @@
 package com.codingchili.core.listener;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.listener.transport.RestListener;
-
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Test cases for HTTP/REST transport.
+ * <p>
+ * Test cases for HTTP/REST transport.
  */
 @RunWith(VertxUnitRunner.class)
 public class RestListenerIT extends TransportTestCases {

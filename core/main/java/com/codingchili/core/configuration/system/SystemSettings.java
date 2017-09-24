@@ -3,14 +3,13 @@ package com.codingchili.core.configuration.system;
 import com.codingchili.core.configuration.BaseConfigurable;
 import com.codingchili.core.configuration.CoreStrings;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import io.vertx.core.VertxOptions;
 import io.vertx.core.metrics.MetricsOptions;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Contains settings for the core system.
+ * <p>
+ * Contains settings for the core system.
  */
 public class SystemSettings extends BaseConfigurable {
     private int metricRate = 15000;

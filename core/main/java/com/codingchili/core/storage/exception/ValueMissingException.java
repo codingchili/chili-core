@@ -6,8 +6,8 @@ import com.codingchili.core.protocol.ResponseStatus;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Throw when an entity could not be found in storage.
+ * <p>
+ * Throw when an entity could not be found in storage.
  */
 public class ValueMissingException extends CoreException {
     public ValueMissingException(Object key) {

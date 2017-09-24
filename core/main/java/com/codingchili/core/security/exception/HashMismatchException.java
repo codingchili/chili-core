@@ -5,8 +5,8 @@ import com.codingchili.core.context.CoreException;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Throw when a hash comparison has failed.
+ * <p>
+ * Throw when a hash comparison has failed.
  */
 public class HashMismatchException extends CoreException {
     public HashMismatchException() {

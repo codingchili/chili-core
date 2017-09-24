@@ -16,8 +16,8 @@ import java.util.Map;
 
 /**
  * @author Robin Duda
- *         <p>
- *         HTTP/REST request object.
+ * <p>
+ * HTTP/REST request object.
  */
 class RestRequest extends BaseRequest {
     private RoutingContext context;

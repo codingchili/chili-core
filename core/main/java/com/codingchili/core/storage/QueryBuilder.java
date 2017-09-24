@@ -1,52 +1,51 @@
 package com.codingchili.core.storage;
 
-import java.util.Collection;
-import java.util.function.Consumer;
-
 import com.codingchili.core.context.TimerSource;
-
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
+import java.util.Collection;
+import java.util.function.Consumer;
+
 /**
  * @author Robin Duda
- *         <p>
- *         Interface for the query builder.
- *         <p>
- *         All queries must start with a single attribute name, this is usually passed
- *         onto the query-builder constructor. To add constraints to the attribute
- *         use [between, like, equal, in.. etc], the attribute constraints are
- *         applied using the AND operator.
- *         <p>
- *         To match documents that matches at least one constraint for a single attribute,
- *         use the OR operation with the same attribute name and then apply the constraint.
- *         <p>
- *         To create more complex queries that spans over multiple attributes, use the AND/OR
- *         operation to combine/group constraints for attributes. Following are some examples of
- *         usage:
- *         <p>
- *         Matches all documents where..
- *         <p>
- *         attribute name starts with "veg" or contains "table'
- *         - attribute "name" startsWith "veg" or attribute "name" like "table"
- *         <p>
- *         attribute name starts with "veg" AND contains "table'.
- *         - attribute "name" startsWith "veg" like "table"
- *         <p>
- *         attribute name equals "vegetable" or "red".
- *         - attribute "name" equals "vegetable" or attribute "name" equals "red"
- *         <p>
- *         attribute name contains "veg" or "fruit".
- *         - attribute "name" like "veg" or attribute "name" like "fruit"
- *         <p>
- *         attribute vegetable.color, json example: {vegetable: {color: ""}} is red, green or blue.
- *         - attribute "vegetable.color" in [red, green, blue]
- *         <p>
- *         attribute vegetable.color is "red", all matches are ordered by vegetable.price
- *         - attribute "vegetable.color" equals "red' orderBy "vegetable.price" descending
- *         <p>
- *         attribute vegetable.vitamins is [A,B,C], match if vegetable contains vitamin C or K
- *         - attribute "vegetable.vitamins[]" in [C,K]
+ * <p>
+ * Interface for the query builder.
+ * <p>
+ * All queries must start with a single attribute name, this is usually passed
+ * onto the query-builder constructor. To add constraints to the attribute
+ * use [between, like, equal, in.. etc], the attribute constraints are
+ * applied using the AND operator.
+ * <p>
+ * To match documents that matches at least one constraint for a single attribute,
+ * use the OR operation with the same attribute name and then apply the constraint.
+ * <p>
+ * To create more complex queries that spans over multiple attributes, use the AND/OR
+ * operation to combine/group constraints for attributes. Following are some examples of
+ * usage:
+ * <p>
+ * Matches all documents where..
+ * <p>
+ * attribute name starts with "veg" or contains "table'
+ * - attribute "name" startsWith "veg" or attribute "name" like "table"
+ * <p>
+ * attribute name starts with "veg" AND contains "table'.
+ * - attribute "name" startsWith "veg" like "table"
+ * <p>
+ * attribute name equals "vegetable" or "red".
+ * - attribute "name" equals "vegetable" or attribute "name" equals "red"
+ * <p>
+ * attribute name contains "veg" or "fruit".
+ * - attribute "name" like "veg" or attribute "name" like "fruit"
+ * <p>
+ * attribute vegetable.color, json example: {vegetable: {color: ""}} is red, green or blue.
+ * - attribute "vegetable.color" in [red, green, blue]
+ * <p>
+ * attribute vegetable.color is "red", all matches are ordered by vegetable.price
+ * - attribute "vegetable.color" equals "red' orderBy "vegetable.price" descending
+ * <p>
+ * attribute vegetable.vitamins is [A,B,C], match if vegetable contains vitamin C or K
+ * - attribute "vegetable.vitamins[]" in [C,K]
  */
 public interface QueryBuilder<Value extends Storable> {
     /**

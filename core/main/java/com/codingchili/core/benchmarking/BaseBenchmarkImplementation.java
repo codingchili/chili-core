@@ -1,25 +1,24 @@
 package com.codingchili.core.benchmarking;
 
+import com.codingchili.core.context.CoreContext;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.codingchili.core.context.CoreContext;
-
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-
 /**
  * @author Robin Duda
- *         <p>
- *         "Abstract" benchmark-implementation.
+ * <p>
+ * "Abstract" benchmark-implementation.
  */
 public class BaseBenchmarkImplementation implements BenchmarkImplementation {
+    protected BenchmarkGroup group;
     private Map<String, Object> properties = new HashMap<>();
     private List<Benchmark> benchmarks = new ArrayList<>();
-    protected BenchmarkGroup group;
     private String implementation;
 
     public BaseBenchmarkImplementation(BenchmarkGroup group, String name) {

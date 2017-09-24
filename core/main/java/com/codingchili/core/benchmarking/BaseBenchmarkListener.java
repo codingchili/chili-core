@@ -2,8 +2,8 @@ package com.codingchili.core.benchmarking;
 
 /**
  * @author Robin Duda
- *         <p>
- *         "Abstract" benchmark listener.
+ * <p>
+ * "Abstract" benchmark listener.
  */
 public class BaseBenchmarkListener implements BenchmarkListener {
 

@@ -2,8 +2,8 @@ package com.codingchili.core.security;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Compares byte arrays in constant-time.
+ * <p>
+ * Compares byte arrays in constant-time.
  */
 public abstract class ByteComparator {
 

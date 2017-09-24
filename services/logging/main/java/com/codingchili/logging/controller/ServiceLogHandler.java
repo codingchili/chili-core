@@ -2,7 +2,6 @@ package com.codingchili.logging.controller;
 
 import com.codingchili.core.listener.Request;
 import com.codingchili.logging.configuration.LogContext;
-
 import io.vertx.core.json.JsonObject;
 
 import static com.codingchili.common.Strings.*;
@@ -10,7 +9,7 @@ import static com.codingchili.common.Strings.*;
 
 /**
  * @author Robin Duda
- *
+ * <p>
  * Log handler for log messages incoming from services.
  */
 public class ServiceLogHandler extends AbstractLogHandler {

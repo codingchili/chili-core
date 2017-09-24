@@ -1,13 +1,13 @@
 package com.codingchili.core.benchmarking;
 
-import java.util.List;
-
 import com.codingchili.core.context.CoreContext;
+
+import java.util.List;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Mock implementation for a benchmark group.
+ * <p>
+ * Mock implementation for a benchmark group.
  */
 public class MockGroup extends BaseBenchmarkGroup {
     private boolean executed = false;

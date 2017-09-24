@@ -1,17 +1,15 @@
 package com.codingchili.core.listener;
 
-import org.junit.runner.RunWith;
-
 import com.codingchili.core.listener.transport.UdpListener;
-
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.runner.RunWith;
 
 
 /**
  * @author Robin Duda
- *         <p>
- *         Test cases for UDP transport.
+ * <p>
+ * Test cases for UDP transport.
  */
 @RunWith(VertxUnitRunner.class)
 public class UdpListenerIT extends TransportTestCases {

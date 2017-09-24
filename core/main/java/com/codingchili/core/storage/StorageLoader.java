@@ -4,7 +4,6 @@ import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.logging.Level;
-
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -13,8 +12,8 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Loads the given storage subsystem.
+ * <p>
+ * Loads the given storage subsystem.
  */
 public class StorageLoader<Value extends Storable> {
     private CoreContext context;

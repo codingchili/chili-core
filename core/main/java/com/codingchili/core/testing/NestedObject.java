@@ -7,8 +7,8 @@ import com.codingchili.core.storage.NestedStorable;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Object used for testing, nested within StorageObject.
+ * <p>
+ * Object used for testing, nested within StorageObject.
  */
 public class NestedObject implements NestedStorable {
     private String name;
@@ -29,16 +29,16 @@ public class NestedObject implements NestedStorable {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public List<Integer> getNumbers() {
         return numbers;
     }
 
     public void setNumbers(List<Integer> numbers) {
         this.numbers = numbers;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     @Override

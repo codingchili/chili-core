@@ -1,29 +1,29 @@
 package com.codingchili.core.storage;
 
-import java.util.Collection;
-
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.storage.exception.NothingToRemoveException;
 import com.codingchili.core.storage.exception.NothingToReplaceException;
 import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
 import com.codingchili.core.storage.exception.ValueMissingException;
-
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.shareddata.LocalMap;
 
-import static com.codingchili.core.context.FutureHelper.*;
+import java.util.Collection;
+
+import static com.codingchili.core.context.FutureHelper.error;
+import static com.codingchili.core.context.FutureHelper.result;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Storage implementation that uses vertx local-shared map.
- *         <p>
- *         This storage implementation implements a fallback for supporting queries.
- *         When querying, all fields in the store are converted to json.
- *         This is very inefficient, if query support is required use another implementation.
+ * <p>
+ * Storage implementation that uses vertx local-shared map.
+ * <p>
+ * This storage implementation implements a fallback for supporting queries.
+ * When querying, all fields in the store are converted to json.
+ * This is very inefficient, if query support is required use another implementation.
  */
 public class SharedMap<Value extends Storable> implements AsyncStorage<Value> {
     private StorageContext<Value> context;

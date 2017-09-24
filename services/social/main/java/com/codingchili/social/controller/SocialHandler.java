@@ -6,25 +6,24 @@ import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.context.SimpleServiceContext;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
-import com.codingchili.core.protocol.Access;
 import com.codingchili.core.protocol.Protocol;
-import com.codingchili.core.protocol.RequestHandler;
+import com.codingchili.core.protocol.Role;
 
 import static com.codingchili.common.Strings.SOCIAL_NODE;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Social handler to handle friendlists and xr-messaging.
+ * <p>
+ * Social handler to handle friendlists and xr-messaging.
  */
 public class SocialHandler implements CoreHandler {
-    private final Protocol<RequestHandler<Request>> protocol = new Protocol<>();
+    private final Protocol<Request> protocol = new Protocol<>();
     private ServiceContext context;
 
     @Override
     public void init(CoreContext context) {
         this.context = new SimpleServiceContext(context, SOCIAL_NODE);
-        protocol.use(Strings.ID_PING, Request::accept, Access.PUBLIC);
+        protocol.use(Strings.ID_PING, Request::accept, Role.PUBLIC);
     }
 
     @Override

@@ -10,7 +10,7 @@ import static com.codingchili.core.context.FutureHelper.generic;
 
 /**
  * @author Robin Duda
- *         Starts up the client handler and the realmName handler.
+ * Starts up the client handler and the realmName handler.
  */
 public class Service implements CoreService {
     private CoreContext core;

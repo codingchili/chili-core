@@ -1,5 +1,16 @@
 package com.codingchili.core.benchmarking;
 
+import com.codingchili.core.configuration.system.LauncherSettings;
+import com.codingchili.core.files.Resource;
+import com.codingchili.core.files.exception.NoSuchResourceException;
+import de.neuland.jade4j.Jade4J;
+import de.neuland.jade4j.JadeConfiguration;
+import de.neuland.jade4j.template.JadeTemplate;
+import de.neuland.jade4j.template.TemplateLoader;
+import io.vertx.core.VertxException;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.json.JsonObject;
+
 import java.awt.*;
 import java.io.IOException;
 import java.io.Reader;
@@ -10,24 +21,13 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
-import com.codingchili.core.configuration.system.LauncherSettings;
-import com.codingchili.core.files.Resource;
-import com.codingchili.core.files.exception.NoSuchResourceException;
-
-import de.neuland.jade4j.Jade4J;
-import de.neuland.jade4j.JadeConfiguration;
-import de.neuland.jade4j.template.JadeTemplate;
-import de.neuland.jade4j.template.TemplateLoader;
-import io.vertx.core.VertxException;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.json.JsonObject;
-
-import static com.codingchili.core.configuration.CoreStrings.*;
+import static com.codingchili.core.configuration.CoreStrings.EXT_HTML;
+import static com.codingchili.core.configuration.CoreStrings.getFileFriendlyDate;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Generates a HTML benchmark report with Jade.
+ * <p>
+ * Generates a HTML benchmark report with Jade.
  */
 public class BenchmarkHTMLReport implements BenchmarkReport {
     private static final String VERSION = "version";
@@ -52,6 +52,12 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
      */
     public BenchmarkHTMLReport(List<BenchmarkGroup> results) {
         this.results = results;
+    }
+
+    private static List<BenchmarkGroup> toList(BenchmarkGroup result) {
+        List<BenchmarkGroup> list = new ArrayList<>();
+        list.add(result);
+        return list;
     }
 
     private Buffer render() {
@@ -146,12 +152,6 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
         } catch (IOException e) {
             throw new VertxException(e);
         }
-    }
-
-    private static List<BenchmarkGroup> toList(BenchmarkGroup result) {
-        List<BenchmarkGroup> list = new ArrayList<>();
-        list.add(result);
-        return list;
     }
 
     /**

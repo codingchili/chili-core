@@ -6,7 +6,7 @@ import com.codingchili.core.protocol.ResponseStatus;
 
 /**
  * @author Robin Duda
- *
+ * <p>
  * Throw when an attempt to create a character that already exists occurs.
  */
 public class CharacterExistsException extends CoreException {

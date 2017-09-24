@@ -4,8 +4,8 @@ import com.codingchili.core.configuration.CoreStrings;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Throw when a subsystem was used before it was initialized.
+ * <p>
+ * Throw when a subsystem was used before it was initialized.
  */
 public class SystemNotInitializedException extends RuntimeException {
 

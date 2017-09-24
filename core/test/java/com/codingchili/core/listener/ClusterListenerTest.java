@@ -23,20 +23,19 @@ import static com.codingchili.core.files.Configurations.system;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Tests the cluster listener.
+ * <p>
+ * Tests the cluster listener.
  */
 @RunWith(VertxUnitRunner.class)
 public class ClusterListenerTest {
     private static final String TEST_MESSAGE = "{}";
     private static final String REPLY_ADDRESS = "clusterlistener-test";
+    @Rule
+    public Timeout timeout = new Timeout(8, TimeUnit.SECONDS);
     private ContextMock context;
     private TestHandler handler;
     private CoreListener cluster;
     private String deployment;
-
-    @Rule
-    public Timeout timeout = new Timeout(8, TimeUnit.SECONDS);
 
     @Before
     public void setUp(TestContext test) {

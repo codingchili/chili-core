@@ -1,12 +1,10 @@
 package com.codingchili.realmregistry;
 
+import com.codingchili.realmregistry.configuration.RealmRegistrySettings;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import com.codingchili.realmregistry.configuration.RealmRegistrySettings;
-
-import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 /**
  * @author Robin Duda

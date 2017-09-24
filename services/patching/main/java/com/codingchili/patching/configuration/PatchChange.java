@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 /**
  * @author Robin Duda
- *         Contains a changelist displayed on the website.
+ * Contains a changelist displayed on the website.
  */
 class PatchChange {
     private String title;

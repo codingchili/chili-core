@@ -13,9 +13,9 @@ import java.util.function.Supplier;
 
 /**
  * @author Robin Duda
- *         <p>
- *         Provides a simplified subset of the vertx toolkit with some wrapping
- *         to simplify usage.
+ * <p>
+ * Provides a simplified subset of the vertx toolkit with some wrapping
+ * to simplify usage.
  */
 public interface CoreContext {
     /**

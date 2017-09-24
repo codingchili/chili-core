@@ -13,12 +13,12 @@ import static com.codingchili.core.configuration.CoreStrings.ERROR_TOKEN_FACTORY
 
 /**
  * @author Robin Duda
- *         <p>
- *         Verifies and generates tokens for access.
+ * <p>
+ * Verifies and generates tokens for access.
  */
 public class TokenFactory {
-    private final byte[] secret;
     private static final String ALGORITHM = "HmacSHA512";
+    private final byte[] secret;
 
     public TokenFactory(byte[] secret) {
         this.secret = secret;
@@ -36,7 +36,7 @@ public class TokenFactory {
     /**
      * Checks if a token and its parameters is valid against the secret.
      *
-     * @param key    hex encoded token to be verified.
+     * @param key   hex encoded token to be verified.
      * @param token the token to be verified
      * @return true if the token is accepted.
      */

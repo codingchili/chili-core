@@ -4,14 +4,13 @@ import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.listener.CoreService;
 import com.codingchili.patching.configuration.PatchContext;
 import com.codingchili.patching.controller.PatchHandler;
-
 import io.vertx.core.Future;
 
 import static com.codingchili.core.context.FutureHelper.generic;
 
 /**
  * @author Robin Duda
- *         website and resource server.
+ * website and resource server.
  */
 public class Service implements CoreService {
     private PatchContext context;
