@@ -199,7 +199,7 @@ public class Protocol<RequestType extends Request> {
     /**
      * Registers a handler for the given route with an access level.
      * <p>
-     * Annotated alternative #{@link Api(RoleType)}
+     * Annotated alternative #{@link Api}
      *
      * @param route   the route to register a handler for.
      * @param handler the handler to be registered for the given route with the access level.

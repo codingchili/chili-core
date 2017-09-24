@@ -39,6 +39,7 @@ public class SystemSettings extends BaseConfigurable {
 
     /**
      * @param metricRate sets the interval in MS which metrics are collected.
+     * @return fluent
      */
     public SystemSettings setMetricRate(int metricRate) {
         this.metricRate = metricRate;
@@ -55,6 +56,7 @@ public class SystemSettings extends BaseConfigurable {
     /**
      * @param handlers get the number of handlers to deploy for each name.
      *                 This is a recommendataion based on the available processors.
+     * @return fluent
      */
     public SystemSettings setHandlers(int handlers) {
         this.handlers = handlers;
@@ -70,6 +72,7 @@ public class SystemSettings extends BaseConfigurable {
 
     /**
      * @param deployTimeout the time in MS for a deploy to time out and fail.
+     * @return fluent
      */
     public SystemSettings setDeployTimeout(int deployTimeout) {
         this.deployTimeout = deployTimeout;
@@ -87,6 +90,7 @@ public class SystemSettings extends BaseConfigurable {
     /**
      * @param shutdownLogTimeout sets the time in MS which the log handler has to report
      *                           to a remote or local log repository before the name is shut down.
+     * @return fluent
      */
     public SystemSettings setShutdownLogTimeout(int shutdownLogTimeout) {
         this.shutdownLogTimeout = shutdownLogTimeout;
@@ -102,6 +106,7 @@ public class SystemSettings extends BaseConfigurable {
 
     /**
      * @param shutdownHookTimeout set the shutdown hook timeout in MS.
+     * @return fluent
      */
     public SystemSettings setShutdownHookTimeout(int shutdownHookTimeout) {
         this.shutdownHookTimeout = shutdownHookTimeout;
@@ -118,6 +123,7 @@ public class SystemSettings extends BaseConfigurable {
     /**
      * @param metrics if true enables the gathering of metrics, metrics are then logged
      *                to the configured logger.
+     * @return fluent
      */
     public SystemSettings setMetrics(boolean metrics) {
         this.metrics = metrics;
@@ -141,6 +147,7 @@ public class SystemSettings extends BaseConfigurable {
 
     /**
      * @param consoleLogging indicates if logging to console is allowed.
+     * @return fluent
      */
     public SystemSettings setConsoleLogging(boolean consoleLogging) {
         this.consoleLogging = consoleLogging;
@@ -156,6 +163,7 @@ public class SystemSettings extends BaseConfigurable {
 
     /**
      * @param configurationPoll set the interval time in MS which configuration files are checked for changes.
+     * @return fluent
      */
     public SystemSettings setConfigurationPoll(int configurationPoll) {
         this.configurationPoll = configurationPoll;
@@ -171,6 +179,7 @@ public class SystemSettings extends BaseConfigurable {
 
     /**
      * @param cachedFilePoll set the time in ms for which files that are cached are refreshed.
+     * @return fluent
      */
     public SystemSettings setCachedFilePoll(int cachedFilePoll) {
         this.cachedFilePoll = cachedFilePoll;
@@ -187,6 +196,7 @@ public class SystemSettings extends BaseConfigurable {
     /**
      * @param workerPoolSize sets the number of workers in worker pools.
      *                       must be called before the launcher is invoked.
+     * @return fluent
      */
     public SystemSettings setWorkerPoolSize(int workerPoolSize) {
         this.workerPoolSize = workerPoolSize;
@@ -197,6 +207,10 @@ public class SystemSettings extends BaseConfigurable {
         return clusterTimeout;
     }
 
+    /**
+     * @param clusterTimeout cluster timeout in seconds
+     * @return fluent
+     */
     public SystemSettings setClusterTimeout(int clusterTimeout) {
         this.clusterTimeout = clusterTimeout;
         return this;
@@ -206,6 +220,10 @@ public class SystemSettings extends BaseConfigurable {
         return listeners;
     }
 
+    /**
+     * @param listeners number of listeners to deploy by default
+     * @return fluent
+     */
     public SystemSettings setListeners(int listeners) {
         this.listeners = listeners;
         return this;
@@ -215,6 +233,10 @@ public class SystemSettings extends BaseConfigurable {
         return services;
     }
 
+    /**
+     * @param services number of services to deploy by default
+     * @return fluent
+     */
     public SystemSettings setServices(int services) {
         this.services = services;
         return this;

@@ -128,6 +128,7 @@ public interface Logger extends JsonLogger, StringLogger {
 
     /**
      * Emit when a new server has started.
+     * @param service the service that was started
      */
     void onServiceStarted(CoreService service);
 
@@ -135,6 +136,7 @@ public interface Logger extends JsonLogger, StringLogger {
      * Emit when a server has stopped.
      *
      * @param future callback is called when the event is written.
+     * @param service the service that was stopped
      */
     void onServiceStopped(Future<Void> future, CoreService service);
 

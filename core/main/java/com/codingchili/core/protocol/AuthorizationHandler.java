@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Handles the mapping of routes to roles.
  *
- * @param <T>
+ * @param <T> type of requests to check authorization for
  */
 public interface AuthorizationHandler<T> {
 

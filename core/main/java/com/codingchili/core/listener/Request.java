@@ -39,6 +39,7 @@ public interface Request {
      * - if the future fails: Request::error is called with the cause
      * - if the future completes with null: Request::accept is called
      * - if the future completed with value: Request::write is called
+     * @param event an event to be converted into a result that can be written to a request.
      */
     default void result(AsyncResult<?> event) {
         if (event.succeeded()) {
