@@ -17,7 +17,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  */
 public class LauncherSettings extends BaseConfigurable {
     private String application = "";
-    private String version = "CORE-1.0.3-PR";
+    private String version = "CORE-1.0.5-PR";
     private boolean clustered;
     private HashMap<String, List<String>> blocks = defaultBlockConfiguration();
     private HashMap<String, String> hosts = defaultHostConfiguration();

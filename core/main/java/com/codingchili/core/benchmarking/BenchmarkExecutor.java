@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * benchmark test is also preserved. No more than one benchmark is executed concurrently.
  */
 public class BenchmarkExecutor {
-    private BenchmarkListener listener = new BaseBenchmarkListener();
+    private BenchmarkListener listener = new BenchmarkListener() {};
     private AtomicBoolean warmup = new AtomicBoolean(true);
     private CoreContext context;
 

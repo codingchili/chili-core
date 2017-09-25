@@ -167,7 +167,7 @@ public class Protocol<RequestType extends Request> {
         MethodHandle handle = methodToHandle(method);
         use(route, request -> {
             try {
-                handle.bindTo(handler).invokeWithArguments(request);
+                handle.invoke(handler, request);
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
