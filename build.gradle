@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'idea'
 
 project.version = "1.0.5"
-project.group = 'com.codingchili'
+project.group = 'com.github.codingchili'
 
 subprojects {
     apply plugin: 'java'
@@ -83,12 +83,11 @@ task prototype(type: JavaExec, dependsOn: subprojects.classes) {
 task alljavadoc(type: Javadoc) {
     source subprojects.collect { it.sourceSets.main.allJava }
     classpath = files(subprojects.collect { it.sourceSets.main.compileClasspath })
-    destinationDir = file("${buildDir}/docs/javadoc")
 }
 
-task archiveJavadoc(type: Zip, dependsOn: alljavadoc) {
-    baseName = 'javadocs'
-    from fileTree(file("${buildDir}/docs/javadoc"))
+task javadocJar(type: Jar, dependsOn: alljavadoc) {
+    classifier = 'javadoc'
+    from alljavadoc.destinationDir
 }
 
 task testReport(type: TestReport, dependsOn: 'build') {
