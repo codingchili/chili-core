@@ -75,7 +75,7 @@ The configuration structure
 │   │   ├── storage.json
 │   │   ├── system.json
 ```
-#####Explanation
+##### Explanation
 - **conf/system/** contains framework configuration.
 - Default configuration may be generated using --reconfigure.
 - Configuration of services typically reside in **conf/services/**
@@ -99,4 +99,4 @@ Issues and PR's are welcome with :blue_heart:.
 The MIT License (MIT)
 Copyright (c) 2017 Robin Duda
 
-See: LICENSE.md
+See: [License](./LICENSE.md)
