@@ -8,6 +8,7 @@ import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.protocol.exception.UnmappedException;
 import com.codingchili.core.security.Token;
+import io.vertx.core.json.DecodeException;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
@@ -29,6 +30,8 @@ public abstract class BaseRequest implements Request {
     public void error(Throwable exception) {
         if (exception instanceof CoreException || exception instanceof CoreRuntimeException) {
             send(((CoreExceptionFormat) exception).status(), exception);
+        } else if (exception instanceof DecodeException) {
+            send(ResponseStatus.ERROR, exception);
         } else {
             send(ResponseStatus.ERROR, new UnmappedException(exception));
         }
