@@ -26,6 +26,10 @@ task allJar(type: Jar, dependsOn: subprojects.jar) {
     }
 }
 
+jar.dependsOn allJar
+
+/* services.jar is required for gradle install.
 jar {
     actions = []
 }.dependsOn allJar
+*/
