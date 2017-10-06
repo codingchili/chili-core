@@ -22,6 +22,10 @@ test {
     maxHeapSize = "512m"
 }
 
+artifacts {
+    archives sourcesJar
+}
+
 dependencies {
     compile group: 'junit', name: 'junit', version: '4.12'
     compile group: 'io.vertx', name: 'vertx-core', version: '3.4.2'

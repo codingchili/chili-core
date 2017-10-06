@@ -80,19 +80,14 @@ task prototype(type: JavaExec, dependsOn: subprojects.classes) {
     }
 }
 
-task sourcesJar(type: Jar) {
-    source subprojects.collect { it.sourceSets.main.allJava }
-    classifier = 'sources'
-}
-
-task javadoc(type: Javadoc) {
+task alljavadoc(type: Javadoc) {
     source subprojects.collect { it.sourceSets.main.allJava }
     classpath = files(subprojects.collect { it.sourceSets.main.compileClasspath })
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
+task javadocJar(type: Jar, dependsOn: alljavadoc) {
     classifier = 'javadoc'
-    from javadoc.destinationDir
+    from alljavadoc.destinationDir
 }
 
 task testReport(type: TestReport, dependsOn: 'build') {
@@ -105,7 +100,8 @@ task archiveTestReport(type: Zip, dependsOn: testReport) {
     from fileTree(file("$buildDir/reports/allTests"))
 }
 
+javadoc.dependsOn javadocJar
+
 artifacts {
-    archives sourcesJar
     archives javadocJar
 }
