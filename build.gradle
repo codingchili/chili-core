@@ -99,3 +99,8 @@ task archiveTestReport(type: Zip, dependsOn: testReport) {
     baseName = 'testreport'
     from fileTree(file("$buildDir/reports/allTests"))
 }
+
+artifacts {
+    alljavadoc
+    javadocJar
+}
