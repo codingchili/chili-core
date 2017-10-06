@@ -8,7 +8,7 @@ script:
   - ./gradlew build
   - ./gradlew sourcesJar -x test
   - ./gradlew archivePrototype -x test
-  - ./gradlew archiveJavadoc -x test
+  - ./gradlew javadocJar -x test
   - ./gradlew archiveTestReport -x test
 notifications:
   email: true
