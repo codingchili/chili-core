@@ -1,5 +1,6 @@
 package com.codingchili.patching;
 
+import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.testing.FileSystemMock;
@@ -7,7 +8,6 @@ import com.codingchili.core.testing.RequestMock;
 import com.codingchili.core.testing.ResponseListener;
 import com.codingchili.patching.configuration.PatchContext;
 import com.codingchili.patching.controller.PatchHandler;
-import io.vertx.core.Vertx;
 import io.vertx.core.file.FileSystem;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -41,16 +41,16 @@ public class PatchHandlerTest {
     private static final String BYTE_PREFIX_HEADER = "bytes=";
     private static final String RANGE_DELIMETER = "-";
     private static PatchHandler handler;
-    private static Vertx vertx;
+    private static CoreContext system;
 
     @Rule
     public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
 
     @BeforeClass
     public static void startUp() {
-        vertx = Vertx.vertx();
+        system = new SystemContext();
 
-        PatchContext context = new PatchContext(new SystemContext(vertx)) {
+        PatchContext context = new PatchContext(system) {
             @Override
             public String directory() {
                 return testDirectory();
@@ -67,7 +67,7 @@ public class PatchHandlerTest {
 
     @AfterClass
     public static void tearDown(TestContext context) {
-        vertx.close(context.asyncAssertSuccess());
+        system.close(context.asyncAssertSuccess());
     }
 
     @Test

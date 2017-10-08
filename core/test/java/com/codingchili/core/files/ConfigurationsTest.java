@@ -8,7 +8,6 @@ import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.testing.ContextMock;
-import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
@@ -34,13 +33,13 @@ public class ConfigurationsTest {
 
     @Before
     public void setUp() {
-        context = new ContextMock(Vertx.vertx());
+        context = new ContextMock();
         Configurations.reset();
     }
 
     @After
     public void tearDown(TestContext test) {
-        context.vertx().close(test.asyncAssertSuccess());
+        context.close(test.asyncAssertSuccess());
         Configurations.reset();
         Configurations.shutdown();
     }
@@ -71,8 +70,8 @@ public class ConfigurationsTest {
 
         Configurations.initialize(new ContextMock(context) {
             @Override
-            public Logger logger() {
-                return new ConsoleLogger() {
+            public Logger logger(Class aClass) {
+                return new ConsoleLogger(aClass) {
 
                     @Override
                     public void onConfigurationDefaultsLoaded(String path, Class<?> clazz) {

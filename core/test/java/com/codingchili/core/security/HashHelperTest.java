@@ -1,5 +1,6 @@
 package com.codingchili.core.security;
 
+import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.SystemContext;
 import io.vertx.core.Vertx;
 import io.vertx.core.WorkerExecutor;
@@ -26,20 +27,20 @@ public class HashHelperTest {
     private static final int HASH_TIME_MIN = 100;
     private static final String PLAINTEXT_WRONG = "wrong";
     private static final String PLAINTEXT = "pass";
-    private Vertx vertx;
+    private CoreContext context;
     private WorkerExecutor executor;
     private HashHelper hasher;
 
     @Before
     public void setUp() {
-        vertx = Vertx.vertx();
-        executor = vertx.createSharedWorkerExecutor("worker_pool_name", 8);
-        hasher = new HashHelper(new SystemContext(vertx));
+        context = new SystemContext();
+        hasher = new HashHelper(new SystemContext());
+        executor = context.vertx().createSharedWorkerExecutor("worker_pool_name", 8);
     }
 
     @After
-    public void tearDown(TestContext context) {
-        vertx.close(context.asyncAssertSuccess());
+    public void tearDown(TestContext test) {
+        context.close(test.asyncAssertSuccess());
     }
 
     @Test

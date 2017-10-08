@@ -47,19 +47,19 @@ public class AuthenticationGeneratorIT {
 
     @Before
     public void setUp() {
-        context = new ContextMock(Vertx.vertx());
+        context = new ContextMock();
         Configurations.initialize(context);
 
         Configurations.put(createSecuritySettings());
 
         generator = new AuthenticationGenerator(
                 CoreStrings.testDirectory(AUTHENTICATION_GENERATOR) + DIR_ROOT,
-                new ConsoleLogger());
+                new ConsoleLogger(getClass()));
     }
 
     @After
     public void tearDown(TestContext test) {
-        context.vertx().close(test.asyncAssertSuccess());
+        context.close(test.asyncAssertSuccess());
     }
 
     private SecuritySettings createSecuritySettings() {

@@ -20,6 +20,7 @@ import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
  * TCP listener implementation.
  */
 public class TcpListener implements CoreListener {
+    private RequestProcessor processor;
     private CoreContext core;
     private CoreHandler handler;
     private Supplier<ListenerSettings> settings;
@@ -44,6 +45,8 @@ public class TcpListener implements CoreListener {
 
     @Override
     public void start(Future<Void> start) {
+        this.processor = new RequestProcessor(core, handler);
+
         core.vertx().createNetServer().connectHandler(handler -> {
             handler.handler(data -> packet(handler, data));
         }).listen(settings.get().getPort(), getBindAddress(), listen -> {
@@ -62,7 +65,7 @@ public class TcpListener implements CoreListener {
     }
 
     private void packet(NetSocket socket, Buffer data) {
-        RequestProcessor.accept(core, handler, new TcpRequest(socket, data, settings.get()));
+        processor.accept(new TcpRequest(socket, data, settings.get()));
     }
 
     @Override

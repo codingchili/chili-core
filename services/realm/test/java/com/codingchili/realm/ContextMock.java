@@ -1,5 +1,6 @@
 package com.codingchili.realm;
 
+import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.security.Token;
@@ -22,8 +23,12 @@ public class ContextMock extends RealmContext {
     private RealmSettings realm = new RealmSettings();
     private AsyncCharacterStore characters;
 
-    public ContextMock(Vertx vertx) {
-        super(new SystemContext(vertx));
+    public ContextMock() {
+        this(new SystemContext());
+    }
+
+    public ContextMock(CoreContext context) {
+        super(context);
 
         realm = new RealmSettings()
                 .setName("realmName")

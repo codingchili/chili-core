@@ -13,6 +13,7 @@ public class LoggerMock extends ConsoleLogger {
     private MockLogListener listener;
 
     public LoggerMock(MockLogListener listener) {
+        super(listener.getClass());
         this.listener = listener;
     }
 

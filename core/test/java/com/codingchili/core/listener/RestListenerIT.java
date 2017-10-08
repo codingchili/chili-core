@@ -18,25 +18,25 @@ import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
  * Test cases for HTTP/REST transport.
  */
 @RunWith(VertxUnitRunner.class)
-public class RestListenerIT extends TransportTestCases {
+public class RestListenerIT extends ListenerTestCases {
 
     public RestListenerIT() {
         super(WireType.REST, RestListener::new);
     }
 
     @Test
-    public void testListenerSupportsGet(TestContext context) {
-        Async async = context.async();
+    public void testListenerSupportsGet(TestContext test) {
+        Async async = test.async();
 
         sendGetRequest(String.format("/?%s=%s&%s=%s", PROTOCOL_ROUTE, ID_PING, PROTOCOL_TARGET, NODE_ROUTER),
                 (result, status) -> {
-                    context.assertEquals(ACCEPTED, status);
+                    test.assertEquals(ACCEPTED, status);
                     async.complete();
                 });
     }
 
     private void sendGetRequest(String action, ResponseListener listener) {
-        vertx.createHttpClient().getNow(port, HOST, action, handler -> {
+        context.vertx().createHttpClient().getNow(port, HOST, action, handler -> {
             handler.bodyHandler(body -> handleBody(listener, body));
         });
     }
@@ -54,7 +54,7 @@ public class RestListenerIT extends TransportTestCases {
             data.remove(PROTOCOL_ROUTE);
         }
 
-        vertx.createHttpClient().post(port, HOST, target, handler -> {
+        context.vertx().createHttpClient().post(port, HOST, target, handler -> {
             handler.bodyHandler(body -> handleBody(listener, body));
         }).end(data.encode());
     }

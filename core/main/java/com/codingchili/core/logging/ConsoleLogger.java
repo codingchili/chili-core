@@ -27,11 +27,12 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
     private final AtomicBoolean enabled = new AtomicBoolean(true);
     private Level level = Level.INFO;
 
-    public ConsoleLogger() {
+    public ConsoleLogger(Class aClass) {
+        this(null, aClass);
     }
 
-    public ConsoleLogger(CoreContext context) {
-        super(context);
+    public ConsoleLogger(CoreContext context, Class aClass) {
+        super(context, aClass);
         logger = this;
         AnsiConsole.systemInstall();
     }

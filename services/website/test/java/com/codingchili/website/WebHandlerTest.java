@@ -41,7 +41,7 @@ public class WebHandlerTest {
 
     @Before
     public void setUp() {
-        context = new WebserverContext(new SystemContext(Vertx.vertx())) {
+        context = new WebserverContext(new SystemContext()) {
             @Override
             public FileSystem fileSystem() {
                 return new FileSystemMock(vertx);
@@ -57,7 +57,7 @@ public class WebHandlerTest {
 
     @After
     public void tearDown(TestContext test) {
-        context.vertx().close(test.asyncAssertSuccess());
+        context.close(test.asyncAssertSuccess());
     }
 
     @Test

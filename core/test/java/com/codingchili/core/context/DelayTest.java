@@ -24,7 +24,7 @@ public class DelayTest {
 
     @Before
     public void setUp() {
-        this.context = new ContextMock(Vertx.vertx()) {
+        this.context = new ContextMock() {
             @Override
             public SystemSettings system() {
                 SystemSettings settings = new SystemSettings();
@@ -37,7 +37,7 @@ public class DelayTest {
 
     @After
     public void tearDown(TestContext test) {
-        context.vertx().close(test.asyncAssertSuccess());
+        context.close(test.asyncAssertSuccess());
     }
 
     @Test

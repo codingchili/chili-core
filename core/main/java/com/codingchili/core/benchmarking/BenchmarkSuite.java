@@ -5,8 +5,6 @@ import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.storage.*;
 import io.vertx.core.Future;
-import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +19,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  */
 public class BenchmarkSuite {
     private static final String MAP_BENCHMARKS = "Map benchmarks";
-    private int iterations = 2000;
+    private int iterations = 15;
 
     /**
      * Creates a clustered vertx instance on which all registered benchmarks will run.
@@ -33,17 +31,15 @@ public class BenchmarkSuite {
         executor.getProperty(PARAM_ITERATIONS).ifPresent(iterations ->
                 this.iterations = Integer.parseInt(iterations));
 
-        Vertx.clusteredVertx(new VertxOptions(), cluster -> {
-            CoreContext context = new SystemContext(cluster.result());
-
-            maps(context, new BenchmarkConsoleListener()).setHandler(done -> {
-                if (done.succeeded()) {
-                    createReport(future, done.result(), executor);
-                } else {
-                    future.fail(done.cause());
-                }
-                context.vertx().close();
-            });
+        SystemContext.clustered(cluster -> {
+                maps(cluster.result(), new BenchmarkConsoleListener()).setHandler(done -> {
+                    if (done.succeeded()) {
+                        createReport(future, done.result(), executor);
+                    } else {
+                        future.fail(done.cause());
+                    }
+                    cluster.result().close();
+                });
         });
         return null;
     }

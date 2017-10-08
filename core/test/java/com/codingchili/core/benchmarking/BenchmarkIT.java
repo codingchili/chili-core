@@ -1,10 +1,9 @@
 package com.codingchili.core.benchmarking;
 
 import com.codingchili.core.context.CommandExecutor;
+import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.SystemContext;
 import io.vertx.core.Future;
-import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
@@ -28,7 +27,7 @@ import static com.codingchili.core.configuration.CoreStrings.PARAM_ITERATIONS;
 public class BenchmarkIT {
     private static final String STRING_ITERATIONS = "5";
     private static final int ITERATIONS = 4;
-    private static Vertx vertx;
+    private static CoreContext context;
 
     @Rule
     public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
@@ -37,15 +36,15 @@ public class BenchmarkIT {
     public static void setUp(TestContext test) {
         Async async = test.async();
 
-        Vertx.clusteredVertx(new VertxOptions(), cluster -> {
-            vertx = cluster.result();
+        SystemContext.clustered(clustering -> {
+            context = clustering.result();
             async.complete();
         });
     }
 
     @AfterClass
     public static void tearDown(TestContext test) {
-        vertx.close(test.asyncAssertSuccess());
+        context.close(test.asyncAssertSuccess());
     }
 
     @Test
@@ -58,7 +57,6 @@ public class BenchmarkIT {
      */
     public void testRunBenchmarkSuites(TestContext test) {
         Async async = test.async();
-        SystemContext context = new SystemContext(vertx);
         MockListener listener = new MockListener(test);
 
         new BenchmarkSuite().setIterations(ITERATIONS).maps(context, listener)

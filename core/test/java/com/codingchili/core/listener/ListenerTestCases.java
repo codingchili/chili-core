@@ -24,7 +24,13 @@ import java.util.function.Supplier;
  */
 @Ignore("Extend this class to run the tests.")
 @RunWith(VertxUnitRunner.class)
-public abstract class TransportTestCases {
+public abstract class ListenerTestCases {
+    @Rule
+    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
+
+    protected int port;
+    protected static ContextMock context;
+
     static final String NODE_ROUTER = "router.node";
     static final String HOST = CoreStrings.getLoopbackAddress();
     private static final String NODE_PATCHING = "patching.node";
@@ -33,34 +39,27 @@ public abstract class TransportTestCases {
     private static final int MAX_REQUEST_BYTES = 256;
     private static final String ONE_CHAR = "x";
     private static final String DATA = "data";
-    protected static Vertx vertx;
-    @Rule
-    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
-    protected int port;
     private Supplier<CoreListener> listener;
-    private ContextMock context;
     private WireType wireType;
 
-    TransportTestCases(WireType wireType, Supplier<CoreListener> listener) {
+    ListenerTestCases(WireType wireType, Supplier<CoreListener> listener) {
         this.wireType = wireType;
         this.listener = listener;
     }
 
     @BeforeClass
     public static void setUpClass() {
-        vertx = Vertx.vertx();
+         context = new ContextMock();
     }
 
     @AfterClass
     public static void tearDown(TestContext test) {
-        vertx.close(test.asyncAssertSuccess());
+        context.close(test.asyncAssertSuccess());
     }
 
     @Before
     public void setUp(TestContext test) {
         Async async = test.async();
-
-        context = new ContextMock(vertx);
 
         ListenerSettings settings = new ListenerSettings()
                 .setMaxRequestBytes(MAX_REQUEST_BYTES)
@@ -74,6 +73,7 @@ public abstract class TransportTestCases {
         context.listener(() -> listener.get().settings(() -> settings).handler(new TestHandler())).setHandler(deploy -> {
             if (deploy.failed()) {
                 deploy.cause().printStackTrace();
+                test.fail(deploy.cause());
             }
 
             this.port = settings.getListenPorts().iterator().next();

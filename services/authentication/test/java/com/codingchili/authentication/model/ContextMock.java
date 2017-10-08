@@ -15,8 +15,8 @@ public class ContextMock extends AuthenticationContext {
     private AuthenticationSettings settings = new AuthenticationSettings();
     private AsyncAccountStore accounts;
 
-    public ContextMock(Vertx vertx) {
-        super(new SystemContext(vertx));
+    public ContextMock() {
+        super(new SystemContext());
         settings.setClientSecret("client-secret".getBytes());
 
         accounts = new AccountDB(new PrivateMap<>(new StorageContext<>(this)), this);

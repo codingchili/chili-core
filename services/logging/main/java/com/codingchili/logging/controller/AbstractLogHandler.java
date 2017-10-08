@@ -28,8 +28,8 @@ abstract class AbstractLogHandler implements CoreHandler {
         this.context = context;
         this.address = address;
 
-        console = new ConsoleLogger(context);
-        store = new StorageLogger(context);
+        console = new ConsoleLogger(getClass());
+        store = new StorageLogger(context, getClass());
 
         protocol.setRole(PUBLIC)
                 .use(PROTOCOL_LOGGING, this::log)
@@ -39,7 +39,7 @@ abstract class AbstractLogHandler implements CoreHandler {
     @Override
     public void handle(Request request) {
         try {
-            protocol.get(request.route()).handle(request);
+            protocol.get(request.route()).accept(request);
         } catch (HandlerMissingException e) {
             console.onHandlerMissing(request.route());
             store.onHandlerMissing(request.route());

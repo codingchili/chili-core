@@ -1,6 +1,7 @@
 package com.codingchili.core.logging;
 
-import com.codingchili.core.context.ServiceContext;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.files.Configurations;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
 
@@ -12,18 +13,19 @@ import static com.codingchili.core.configuration.CoreStrings.NODE_LOGGING;
  * A logger that logs to a remote host.
  */
 public class RemoteLogger extends DefaultLogger {
-    private final DeliveryOptions options;
-    private ConsoleLogger console = new ConsoleLogger();
+    private DeliveryOptions options = new DeliveryOptions().setSendTimeout(8000);
+    private ConsoleLogger console = new ConsoleLogger(aClass);
 
-    public RemoteLogger(ServiceContext context) {
-        super(context);
+    public RemoteLogger(CoreContext context, Class aClass) {
+        super(context, aClass);
         this.context = context;
-        this.options = new DeliveryOptions().setSendTimeout(8000);
     }
 
     @Override
     public Logger log(JsonObject data) {
-        console.log(data);
+        if (Configurations.system().isConsoleLogging()) {
+            console.log(data);
+        }
         context.bus().send(NODE_LOGGING, data, options);
         return this;
     }

@@ -22,6 +22,7 @@ import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
  * HTTP/REST transport listener.
  */
 public class RestListener implements CoreListener {
+    private RequestProcessor processor;
     private CoreContext core;
     private CoreHandler handler;
     private Supplier<ListenerSettings> settings;
@@ -51,6 +52,8 @@ public class RestListener implements CoreListener {
 
     @Override
     public void start(Future<Void> start) {
+        this.processor = new RequestProcessor(core, handler);
+
         core.vertx().createHttpServer(settings.get().getHttpOptions())
                 .requestHandler(router::accept)
                 .listen(settings.get().getPort(), getBindAddress(), listen -> {
@@ -69,7 +72,7 @@ public class RestListener implements CoreListener {
     }
 
     private void packet(RoutingContext context) {
-        RequestProcessor.accept(core, handler, new RestRequest(context, settings.get(), context.request()));
+        processor.accept(new RestRequest(context, settings.get(), context.request()));
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.codingchili.core.logging;
 
+import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.testing.ContextMock;
 import io.vertx.core.Vertx;
@@ -20,23 +21,22 @@ import static com.codingchili.core.configuration.CoreStrings.NODE_LOGGING;
  */
 @RunWith(VertxUnitRunner.class)
 public class RemoteLoggerTest {
-    private ServiceContext context;
+    private CoreContext context;
 
     @Before
     public void setUp() {
-        context = new ContextMock(Vertx.vertx());
+        context = new ContextMock();
     }
 
     @After
     public void tearDown(TestContext test) {
-        context.vertx().close(test.asyncAssertSuccess());
+        context.close(test.asyncAssertSuccess());
     }
 
     @Test
     public void testLogRemote(TestContext test) {
         mockNode(test.async());
-
-        new RemoteLogger(context).log("text");
+        new RemoteLogger(context, getClass()).log("text");
     }
 
     private void mockNode(Async async) {

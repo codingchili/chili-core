@@ -43,7 +43,7 @@ public class EntryWatcherTest {
     @Before
     public void setUp(TestContext test) {
         Async async = test.async();
-        context = new StorageContext(Vertx.vertx());
+        context = new StorageContext();
 
         createStorage(result -> {
             if (result.succeeded()) {
@@ -84,7 +84,7 @@ public class EntryWatcherTest {
 
     @After
     public void tearDown(TestContext test) {
-        context.vertx().close(test.asyncAssertSuccess());
+        context.close(test.asyncAssertSuccess());
     }
 
     private void setPersist() {

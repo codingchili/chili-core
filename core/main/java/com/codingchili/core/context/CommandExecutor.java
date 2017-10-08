@@ -26,7 +26,7 @@ public class CommandExecutor {
     protected LauncherSettings settings = Configurations.launcher();
     protected Map<String, Command> commands = new HashMap<>();
     protected Map<String, String> properties = new HashMap<>();
-    protected Logger logger = new ConsoleLogger();
+    protected Logger logger = new ConsoleLogger(getClass());
     private String command;
 
     /**

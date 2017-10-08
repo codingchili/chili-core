@@ -23,13 +23,13 @@ public class ConsoleLoggerTest {
 
     @Before
     public void setUp() {
-        context = new ContextMock(Vertx.vertx());
-        logger = new ConsoleLogger(context);
+        context = new ContextMock();
+        logger = new ConsoleLogger(context, getClass());
     }
 
     @After
     public void tearDown(TestContext test) {
-        context.vertx().close(test.asyncAssertSuccess());
+        context.close(test.asyncAssertSuccess());
     }
 
     @Test
@@ -41,6 +41,6 @@ public class ConsoleLoggerTest {
 
     @Test
     public void testLogNotInitialized() {
-        new ConsoleLogger().log("");
+        new ConsoleLogger(getClass()).log("");
     }
 }

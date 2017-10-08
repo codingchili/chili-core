@@ -4,6 +4,7 @@ import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.logging.Level;
+import com.codingchili.core.logging.Logger;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -17,8 +18,9 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  */
 public class StorageLoader<Value extends Storable> {
     private CoreContext context;
+    private Logger logger;
     private String DB = DEFAULT_DB;
-    private Class clazz;
+    private Class<Value> aClass;
     private String collection;
     private String plugin;
 
@@ -27,6 +29,7 @@ public class StorageLoader<Value extends Storable> {
 
     public StorageLoader(CoreContext context) {
         this.context = context;
+        this.logger = context.logger(getClass());
     }
 
     private void load(Handler<AsyncResult<AsyncStorage<Value>>> handler) {
@@ -35,9 +38,9 @@ public class StorageLoader<Value extends Storable> {
             future.setHandler(handler);
 
             StorageContext<Value> storage = new StorageContext<Value>(context)
-                    .setDB(DB)
+                    .setDatabase(DB)
                     .setCollection(collection)
-                    .setClass(clazz)
+                    .setClass(aClass)
                     .setPlugin(plugin);
 
             Class.forName(plugin)
@@ -45,7 +48,7 @@ public class StorageLoader<Value extends Storable> {
                     .<Value>newInstance(future, storage);
 
         } catch (ReflectiveOperationException e) {
-            context.logger().log(CoreStrings.getStorageLoaderError(plugin, DB, collection), Level.SEVERE);
+            logger.log(CoreStrings.getStorageLoaderError(plugin, DB, collection), Level.SEVERE);
             e.printStackTrace();
             System.exit(0);
         }
@@ -68,7 +71,7 @@ public class StorageLoader<Value extends Storable> {
     }
 
     public StorageLoader<Value> withClass(Class clazz) {
-        this.clazz = clazz;
+        this.aClass = clazz;
         return this;
     }
 
@@ -90,7 +93,7 @@ public class StorageLoader<Value extends Storable> {
     public void build(Handler<AsyncResult<AsyncStorage<Value>>> future) {
         checkIsSet(context, ID_CONTEXT);
         checkIsSet(DB, ID_DB);
-        checkIsSet(clazz, ID_CLASS);
+        checkIsSet(aClass, ID_CLASS);
         checkIsSet(plugin, ID_PLUGIN);
         checkIsSet(collection, ID_COLLECTION);
 

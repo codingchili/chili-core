@@ -5,9 +5,9 @@ import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.*;
 import com.codingchili.core.listener.transport.ClusterListener;
-import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
 import com.codingchili.core.logging.Logger;
+import com.codingchili.core.logging.RemoteLogger;
 import io.vertx.core.*;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
@@ -18,7 +18,6 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Supplier;
 
-import static com.codingchili.core.configuration.CoreStrings.ID_SYSTEM;
 import static com.codingchili.core.configuration.CoreStrings.getUnsupportedDeployment;
 
 
@@ -31,7 +30,7 @@ public class SystemContext implements CoreContext {
     protected Vertx vertx;
     private Map<String, List<String>> deployments = new HashMap<>();
     private WorkerExecutor executor;
-    private ConsoleLogger console;
+    private RemoteLogger logger;
 
     /**
      * Creates a new system context that shares vertx instance with the given context.
@@ -46,26 +45,34 @@ public class SystemContext implements CoreContext {
      * Creates a new vertx instance to be used for this context.
      */
     public SystemContext() {
-        this(Vertx.vertx());
+        this(Vertx.vertx(Configurations.system().getOptions()));
+    }
+
+
+    private SystemContext(Vertx vertx) {
+        this.vertx = vertx;
+        this.logger = new RemoteLogger(this, SystemContext.class);
+        initialize();
     }
 
     /**
-     * Uses the given vertx context.
-     *
-     * @param vertx instance to use for this context.
+     * Creates a clustered instance of a context.
+     * @param handler called with the context on creation.
      */
-    public SystemContext(Vertx vertx) {
-        this.vertx = vertx;
-        this.console = new ConsoleLogger(this);
-        initialize();
+    public static void clustered(Handler<AsyncResult<CoreContext>> handler) {
+        Vertx.clusteredVertx(Configurations.system().getOptions(), cluster -> {
+            if (cluster.succeeded()) {
+                handler.handle(Future.succeededFuture(new SystemContext(cluster.result())));
+            } else {
+                handler.handle(Future.failedFuture(cluster.cause()));
+            }
+        });
     }
 
     private void initialize() {
         executor = vertx.createSharedWorkerExecutor("systemcontext", system().getWorkerPoolSize());
 
-        vertx.exceptionHandler(throwable -> {
-            logger().onError(throwable);
-        });
+        vertx.exceptionHandler(throwable -> logger.onError(throwable));
 
         MetricsService metrics = MetricsService.create(vertx);
         periodic(this::getMetricTimer, CoreStrings.LOG_METRICS, handler -> {
@@ -82,7 +89,7 @@ public class SystemContext implements CoreContext {
 
     protected void onMetricsSnapshot(JsonObject json) {
         if (json != null) {
-            console.log(json);
+            logger.onMetricsSnapshot(json);
         }
     }
 
@@ -107,7 +114,7 @@ public class SystemContext implements CoreContext {
                 if (timeout.getMS() > 0) {
                     periodic(timeout, name, handler);
                 }
-                logger().onTimerSourceChanged(name, initial, timeout.getMS());
+                logger.onTimerSourceChanged(name, initial, timeout.getMS());
             }
             handler.handle(event);
         });
@@ -239,17 +246,18 @@ public class SystemContext implements CoreContext {
     }
 
     @Override
-    public String name() {
-        return getClass().getSimpleName();
+    public Logger logger(Class aClass) {
+        return new RemoteLogger(this, aClass);
     }
 
     @Override
-    public Logger logger() {
-        if (system().isConsoleLogging()) {
-            return console.setEnabled(true);
-        } else {
-            return console.setEnabled(false);
-        }
+    public void close() {
+        vertx.close();
+    }
+
+    @Override
+    public void close(Handler<AsyncResult<Void>> handler) {
+        vertx.close(handler);
     }
 
     @Override
@@ -257,16 +265,11 @@ public class SystemContext implements CoreContext {
         return vertx;
     }
 
-    @Override
-    public String node() {
-        return ID_SYSTEM;
-    }
-
     protected JsonObject event(String event) {
         return event(event, Level.INFO);
     }
 
     protected JsonObject event(String event, Level level) {
-        return logger().event(event, level);
+        return logger.event(event, level);
     }
 }

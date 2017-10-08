@@ -125,6 +125,7 @@ public abstract class CoreStrings {
     public static final String LOG_APPLICATION = "application";
     public static final String LOG_AT = "@";
     public static final String LOG_EVENT = "event";
+    public static final String LOG_SOURCE = "source";
     public static final String LOG_VERSION = "version";
     public static final String LOG_USER_AGENT = "USER-Agent";
     public static final String LOG_AGENT = "agent";
@@ -355,7 +356,7 @@ public abstract class CoreStrings {
 
     public static String testDirectory(String name) {
         if (!Paths.get(DIR_TEST + name).toFile().exists()) {
-            new ConsoleLogger().log("Test directory not found at path '" +
+            new ConsoleLogger(CoreStrings.class).log("Test directory not found at path '" +
                     Paths.get(DIR_TEST + name).toAbsolutePath() + "'", Level.WARNING);
         }
         return DIR_TEST + name;

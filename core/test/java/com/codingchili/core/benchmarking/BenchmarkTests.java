@@ -31,7 +31,7 @@ public class BenchmarkTests {
 
     @Before
     public void setUp() {
-        context = new SystemContext(Vertx.vertx());
+        context = new SystemContext();
         groups.add(new MockGroup(context, "mock-group-1", ITERATIONS));
         groups.add(new MockGroup(context, "mock-group-2", ITERATIONS));
         executor = new BenchmarkExecutor(context);
@@ -39,7 +39,7 @@ public class BenchmarkTests {
 
     @After
     public void tearDown() {
-        context.vertx().close();
+        context.close();
     }
 
     @Test

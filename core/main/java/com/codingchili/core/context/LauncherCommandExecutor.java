@@ -23,7 +23,7 @@ public class LauncherCommandExecutor extends CommandExecutor {
      * constructs an instance with the default logger
      */
     public LauncherCommandExecutor() {
-        this(new ConsoleLogger());
+        this(new ConsoleLogger(LauncherCommandExecutor.class));
     }
 
     /**

@@ -2,6 +2,7 @@ package com.codingchili.core.files;
 
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.TimerSource;
+import com.codingchili.core.logging.Logger;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -19,12 +20,14 @@ import static java.nio.file.StandardWatchEventKinds.*;
 class FileWatcher {
     private final HashMap<Path, WatchKey> keys = new HashMap<>();
     private final CoreContext context;
+    private Logger logger;
     FileStoreListener listener;
     String directory;
     TimerSource rate;
 
     FileWatcher(CoreContext context) {
         this.context = context;
+        this.logger = context.logger(getClass());
     }
 
     void initialize() {
@@ -43,7 +46,7 @@ class FileWatcher {
                 this.start();
             }
         } catch (IOException e) {
-            context.logger().onError(e);
+            logger.onError(e);
         }
     }
 

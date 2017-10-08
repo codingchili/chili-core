@@ -2,10 +2,7 @@ package com.codingchili.core;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.LauncherSettings;
-import com.codingchili.core.context.Delay;
-import com.codingchili.core.context.LaunchContext;
-import com.codingchili.core.context.LauncherCommandExecutor;
-import com.codingchili.core.context.SystemContext;
+import com.codingchili.core.context.*;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.CoreListener;
@@ -14,7 +11,6 @@ import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
-import io.vertx.core.Vertx;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +24,9 @@ import static com.codingchili.core.files.Configurations.system;
  * Launches all the components of the system on a single host.
  */
 public class Launcher implements CoreService {
-    private static final ConsoleLogger logger = new ConsoleLogger();
+    private static final ConsoleLogger logger = new ConsoleLogger(Launcher.class);
     private static List<String> nodes = new ArrayList<>();
-    private SystemContext core;
+    private CoreContext core;
 
     public Launcher(LaunchContext context) {
         Future<Void> future = Future.future();
@@ -80,7 +76,7 @@ public class Launcher implements CoreService {
 
     private void clusterIfEnabled(LauncherSettings settings) {
         if (settings.isClustered()) {
-            Vertx.clusteredVertx(system().getOptions(), (clustered) -> {
+            SystemContext.clustered(clustered -> {
                 if (clustered.succeeded()) {
                     start(clustered.result());
                 } else {
@@ -89,12 +85,13 @@ public class Launcher implements CoreService {
                 }
             });
         } else {
-            start(Vertx.vertx(system().getOptions()));
+            start(new SystemContext());
         }
     }
 
-    private void start(Vertx vertx) {
-        core = new SystemContext(vertx);
+    private void start(CoreContext core) {
+        this.core = core;
+
         Configurations.initialize(core);
         Delay.initialize(core);
 

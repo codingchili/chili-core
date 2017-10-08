@@ -1,5 +1,6 @@
 package com.codingchili.realmregistry;
 
+import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.security.Token;
@@ -11,15 +12,18 @@ import com.codingchili.realmregistry.configuration.RegistryContext;
 import com.codingchili.realmregistry.model.AsyncRealmStore;
 import com.codingchili.realmregistry.model.RealmDB;
 import io.vertx.core.Future;
-import io.vertx.core.Vertx;
 
 /**
  * @author Robin Duda
  */
 public class ContextMock extends RegistryContext {
 
-    public ContextMock(Vertx vertx) {
-        super(new SystemContext(vertx));
+    public ContextMock() {
+        this(new SystemContext());
+    }
+
+    public ContextMock(CoreContext context) {
+        super(null, context);
 
         this.realmFactory = new TokenFactory(new RealmRegistrySettings().getRealmSecret());
 

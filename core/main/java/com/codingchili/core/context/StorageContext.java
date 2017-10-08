@@ -4,6 +4,7 @@ import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.RemoteStorage;
 import com.codingchili.core.configuration.system.StorageSettings;
 import com.codingchili.core.files.Configurations;
+import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Validator;
 import io.vertx.core.AsyncResult;
@@ -22,18 +23,26 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  * context used by storage plugins.
  */
 public class StorageContext<Value> extends SystemContext {
+    private Logger logger = logger(getClass());
     private String identifier = "storage-" + UUID.randomUUID();
-    private String DB = "";
+    private String database = "";
     private String collection = "";
-    private Class<Value> clazz;
+    private Class<Value> aClass;
     private String plugin;
+
+    public StorageContext() {
+        super();
+    }
 
     public StorageContext(CoreContext context) {
         super(context);
     }
 
-    public StorageContext(Vertx vertx) {
-        super(vertx);
+    @Override
+    public Logger logger(Class aClass) {
+        return super.logger(aClass)
+                .setMetadata(ID_COLLECTION, () -> collection)
+                .setMetadata(ID_DB, () -> database);
     }
 
     /**
@@ -54,7 +63,7 @@ public class StorageContext<Value> extends SystemContext {
      * @return the class to be stored in the storage.
      */
     public Class<Value> clazz() {
-        return this.clazz;
+        return this.aClass;
     }
 
     /**
@@ -72,7 +81,7 @@ public class StorageContext<Value> extends SystemContext {
      */
     @SuppressWarnings("unchecked")
     public Value toValue(JsonObject json) {
-        return Serializer.unpack(json, clazz);
+        return Serializer.unpack(json, aClass);
     }
 
     /**
@@ -82,7 +91,7 @@ public class StorageContext<Value> extends SystemContext {
      * @return generic Value inflated using the bytes and template class.
      */
     public Value toValue(byte[] bytes) {
-        return Serializer.unpack(new String(bytes), clazz);
+        return Serializer.unpack(new String(bytes), aClass);
     }
 
     /**
@@ -121,7 +130,7 @@ public class StorageContext<Value> extends SystemContext {
      * @return the name of the database as a string
      */
     public String DB() {
-        return DB;
+        return database;
     }
 
     /**
@@ -218,18 +227,19 @@ public class StorageContext<Value> extends SystemContext {
     }
 
     private void log(JsonObject json) {
-        logger().log(json.put(LOG_STORAGE_DB, DB).put(LOG_STORAGE_COLLECTION, collection));
+        logger.log(json.put(LOG_STORAGE_DB, database).put(LOG_STORAGE_COLLECTION, collection));
     }
 
     /**
      * sets the class that is used for deserialization. This should be the same
      * or a supertype of the object type in the storage.
      *
-     * @param clazz the class template to inflate
+     * @param aClass the class template to inflate
      * @return fluent
      */
-    public StorageContext<Value> setClass(Class clazz) {
-        this.clazz = clazz;
+    public StorageContext<Value> setClass(Class<Value> aClass) {
+        this.aClass = aClass;
+        this.logger = logger(aClass);
         return this;
     }
 
@@ -248,11 +258,11 @@ public class StorageContext<Value> extends SystemContext {
     /**
      * sets the database name to be used
      *
-     * @param DB name as string
+     * @param database name as string
      * @return fluent
      */
-    public StorageContext<Value> setDB(String DB) {
-        this.DB = DB;
+    public StorageContext<Value> setDatabase(String database) {
+        this.database = database;
         updateIdentifier();
         return this;
     }
@@ -264,6 +274,7 @@ public class StorageContext<Value> extends SystemContext {
      * @param plugin fully qualified class name as String.
      * @return fluent
      */
+    @SuppressWarnings("unchecked")
     public StorageContext<Value> setPlugin(String plugin) {
         this.plugin = plugin;
         updateIdentifier();
@@ -271,7 +282,8 @@ public class StorageContext<Value> extends SystemContext {
     }
 
     private void updateIdentifier() {
-        this.identifier = CoreStrings.getDBIdentifier(DB, collection, plugin);
+        this.logger = logger(getClass());
+        this.identifier = CoreStrings.getDBIdentifier(database, collection, plugin);
     }
 
     /**

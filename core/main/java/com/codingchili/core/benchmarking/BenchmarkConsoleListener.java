@@ -11,7 +11,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  * Captures events from the logging executor and logs to console.
  */
 public class BenchmarkConsoleListener implements BenchmarkListener {
-    private ConsoleLogger logger = new ConsoleLogger();
+    private ConsoleLogger logger = new ConsoleLogger(getClass());
 
     @Override
     public void onGroupStarted(BenchmarkGroup group) {

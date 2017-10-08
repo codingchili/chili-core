@@ -33,7 +33,7 @@ public class BusRouter implements CoreHandler {
     @Override
     public void init(CoreContext core) {
         this.core = core;
-        this.logger = core.logger();
+        this.logger = core.logger(getClass());
         exceptionHandlers.put(TIMEOUT, this::onNodeTimeout);
         exceptionHandlers.put(NO_HANDLERS, this::onNodeNotReachable);
         exceptionHandlers.put(RECIPIENT_FAILURE, this::onRecipientFailure);

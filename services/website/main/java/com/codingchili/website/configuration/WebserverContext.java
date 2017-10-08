@@ -2,8 +2,10 @@ package com.codingchili.website.configuration;
 
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.ServiceContext;
+import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.Request;
+import com.codingchili.core.logging.Logger;
 
 import java.nio.file.Paths;
 
@@ -15,10 +17,12 @@ import static com.codingchili.website.configuration.WebserverSettings.PATH_WEBSE
  * <p>
  * Context for the web server.
  */
-public class WebserverContext extends ServiceContext {
+public class WebserverContext extends SystemContext implements ServiceContext {
+    private Logger logger;
 
     public WebserverContext(CoreContext core) {
         super(core);
+        this.logger = logger(getClass());
     }
 
     public WebserverSettings service() {
@@ -42,6 +46,6 @@ public class WebserverContext extends ServiceContext {
     }
 
     public void onPageLoaded(Request request) {
-        log(event(LOG_PAGE_LOAD).put(LOG_AGENT, request.data().getString(LOG_USER_AGENT)));
+        logger.log(event(LOG_PAGE_LOAD).put(LOG_AGENT, request.data().getString(LOG_USER_AGENT)));
     }
 }

@@ -32,7 +32,7 @@ public class SystemContextTest {
         settings.setMetricRate(100);
         settings.setMetrics(true);
 
-        this.context = new ContextMock(Vertx.vertx()) {
+        this.context = new ContextMock() {
             @Override
             protected void onMetricsSnapshot(JsonObject json) {
                 if (listener != null) {
@@ -50,7 +50,7 @@ public class SystemContextTest {
 
     @After
     public void tearDown(TestContext test) {
-        context.vertx.close(test.asyncAssertSuccess());
+        context.close(test.asyncAssertSuccess());
     }
 
     @Test

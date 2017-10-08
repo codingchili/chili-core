@@ -5,8 +5,10 @@ import com.codingchili.authentication.model.AccountMapping;
 import com.codingchili.authentication.model.AsyncAccountStore;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.ServiceContext;
+import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.Level;
+import com.codingchili.core.logging.Logger;
 import com.codingchili.core.security.Account;
 import com.codingchili.core.security.Token;
 import com.codingchili.core.security.TokenFactory;
@@ -21,11 +23,13 @@ import static com.codingchili.common.Strings.*;
  * <p>
  * Authentication service context.
  */
-public class AuthenticationContext extends ServiceContext {
+public class AuthenticationContext extends SystemContext implements ServiceContext {
     private AsyncAccountStore accounts;
+    private Logger logger;
 
     public AuthenticationContext(CoreContext core) {
         super(core);
+        this.logger = core.logger(getClass());
     }
 
     public static void create(Future<AuthenticationContext> future, CoreContext core) {
@@ -57,19 +61,19 @@ public class AuthenticationContext extends ServiceContext {
     }
 
     public void onAuthenticationFailure(Account account, String host) {
-        log(event(LOG_ACCOUNT_UNAUTHORIZED, Level.WARNING)
+        logger.log(event(LOG_ACCOUNT_UNAUTHORIZED, Level.WARNING)
                 .put(LOG_USER, account.getUsername())
                 .put(LOG_REMOTE, host));
     }
 
     public void onAuthenticated(String username, String host) {
-        log(event(LOG_ACCOUNT_AUTHENTICATED)
+        logger.log(event(LOG_ACCOUNT_AUTHENTICATED)
                 .put(LOG_USER, username)
                 .put(LOG_REMOTE, host));
     }
 
     public void onRegistered(String username, String host) {
-        log(event(LOG_ACCOUNT_REGISTERED)
+        logger.log(event(LOG_ACCOUNT_REGISTERED)
                 .put(LOG_USER, username)
                 .put(LOG_REMOTE, host));
     }

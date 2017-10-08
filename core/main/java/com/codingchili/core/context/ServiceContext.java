@@ -1,49 +1,13 @@
 package com.codingchili.core.context;
 
 import com.codingchili.core.configuration.ServiceConfigurable;
-import com.codingchili.core.logging.Logger;
-import com.codingchili.core.logging.RemoteLogger;
-import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
 
 /**
- * @author Robin Duda
- * <p>
- * Provides basic context requirements for all service-contexts.
+ * May be implemented by service specific contexts.
  */
-public abstract class ServiceContext extends SystemContext {
-    protected Logger logger;
-
-    protected ServiceContext(CoreContext context) {
-        this(context.vertx());
-    }
-
-    protected ServiceContext(Vertx vertx) {
-        super(vertx);
-        this.logger = new RemoteLogger(this);
-    }
-
+public interface ServiceContext {
     /**
-     * @return the configuration associated with the current context.
+     * @return configuration for the service.
      */
-    public abstract ServiceConfigurable service();
-
-    @Override
-    public String node() {
-        return service().node();
-    }
-
-    @Override
-    public Logger logger() {
-        return logger;
-    }
-
-    @Override
-    protected void onMetricsSnapshot(JsonObject json) {
-        logger.onMetricsSnapshot(json);
-    }
-
-    protected void log(JsonObject json) {
-        logger.log(json);
-    }
+    ServiceConfigurable service();
 }

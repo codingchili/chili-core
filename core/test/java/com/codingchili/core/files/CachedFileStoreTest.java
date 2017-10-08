@@ -2,13 +2,11 @@ package com.codingchili.core.files;
 
 import com.codingchili.core.configuration.CachedFileStoreSettings;
 import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.files.exception.FileMissingException;
 import com.codingchili.core.protocol.Serializer;
-import com.codingchili.core.testing.ContextMock;
-import com.codingchili.core.testing.FileSystemMock;
-import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.file.FileSystem;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.After;
@@ -37,18 +35,18 @@ public class CachedFileStoreTest {
     private static final String FILE_TRAVERSAL = "../TraversalTestFile.txt";
     private AtomicBoolean removeCalled = new AtomicBoolean(false);
     private AtomicBoolean modifyCalled = new AtomicBoolean(false);
-    private Vertx vertx;
+    private CoreContext context;
 
     @Before
     public void setUp() {
         Configurations.system().setCachedFilePoll(20);
         CachedFileStore.reset();
-        vertx = Vertx.vertx();
+        context = new SystemContext();
     }
 
     @After
     public void tearDown(TestContext test) {
-        vertx.close(test.asyncAssertSuccess());
+        context.close(test.asyncAssertSuccess());
     }
 
     @Test
@@ -96,13 +94,9 @@ public class CachedFileStoreTest {
     }
 
     private CachedFileStore getStore(String directory, boolean isGzip) {
-        return new CachedFileStore(new ContextMock(vertx) {
-            @Override
-            public FileSystem fileSystem() {
-                return new FileSystemMock(vertx);
-            }
-        }, new CachedFileStoreSettings()
+        return new CachedFileStore(context, new CachedFileStoreSettings()
                 .setDirectory(directory)
+                .setAsynchronous(false)
                 .setGzip(isGzip))
                 .addListener(new FileStoreListener() {
                     @Override

@@ -36,7 +36,7 @@ public class ClientHandler implements CoreHandler {
     @Override
     public void handle(Request request) {
         Role role = (context.verifyClientToken(request.token())) ? USER : PUBLIC;
-        protocol.get(request.route(), role).handle(new ClientRequest(request));
+        protocol.get(request.route(), role).accept(new ClientRequest(request));
     }
 
     private void register(ClientRequest request) {

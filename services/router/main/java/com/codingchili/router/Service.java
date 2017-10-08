@@ -9,6 +9,7 @@ import com.codingchili.core.listener.transport.RestListener;
 import com.codingchili.core.listener.transport.TcpListener;
 import com.codingchili.core.listener.transport.UdpListener;
 import com.codingchili.core.listener.transport.WebsocketListener;
+import com.codingchili.core.logging.Logger;
 import com.codingchili.router.configuration.RouterContext;
 import com.codingchili.router.controller.RouterHandler;
 import io.vertx.core.Future;
@@ -65,8 +66,9 @@ public class Service implements CoreService {
                     break;
             }
         }
+        Logger logger = context.logger(getClass());
         all(deployments).setHandler(done -> {
-            context.logger().onServiceStarted(this);
+            logger.onServiceStarted(this);
             start.complete();
         });
     }

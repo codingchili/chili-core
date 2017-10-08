@@ -31,7 +31,7 @@ public class RouterHandler extends BusRouter {
         if (context.isRouteHidden(request.target())) {
             request.error(new AuthorizationRequiredException());
         } else {
-            protocol.get(request.target(), Role.USER).handle(request);
+            protocol.get(request.target(), Role.USER).accept(request);
         }
     }
 

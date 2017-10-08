@@ -40,7 +40,7 @@ public class RealmHandlerTest {
 
     @Before
     public void setUp() {
-        mock = new ContextMock(Vertx.vertx());
+        mock = new ContextMock();
         handler = new RealmHandler(mock);
 
         realmconfig.setAuthentication(new Token(mock.getRealmFactory(), REALM_NAME));
@@ -49,7 +49,7 @@ public class RealmHandlerTest {
 
     @After
     public void tearDown(TestContext test) {
-        mock.vertx().close(test.asyncAssertSuccess());
+        mock.close(test.asyncAssertSuccess());
     }
 
     @Test(expected = AuthorizationRequiredException.class)

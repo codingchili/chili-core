@@ -128,17 +128,18 @@ public interface CoreContext {
     <T> void blocking(Handler<Future<T>> blocking, boolean ordered, Handler<AsyncResult<T>> result);
 
     /**
-     * @return the identity of the context. The root context should return 'system' or 'local'.
+     * @param aClass added as metadata to all logged events.
+     * @return get a new instance of a logger.
      */
-    String node();
+    Logger logger(Class aClass);
 
     /**
-     * @return returns the name of the context scope.
+     * Shuts down the context and underlying pools and connections.
      */
-    String name();
+    void close();
 
     /**
-     * @return get the logger logger which writes to std out.
+     * @param handler called when the context has closed or failed closing.
      */
-    Logger logger();
+    void close(Handler<AsyncResult<Void>> handler);
 }

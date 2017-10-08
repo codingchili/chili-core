@@ -22,7 +22,7 @@ public class ServiceLogHandlerTest extends SharedLogHandlerTest {
 
     @Before
     public void setUp() {
-        context = new LogContext(new SystemContext(Vertx.vertx()));
+        context = new LogContext(new SystemContext());
         context.storage().clear(clear -> {
         });
         handler = new ServiceLogHandler(context);

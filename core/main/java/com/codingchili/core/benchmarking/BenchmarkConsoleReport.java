@@ -19,7 +19,7 @@ public class BenchmarkConsoleReport implements BenchmarkReport {
     private static final int PARAM_COUNT = 5;
     private static final char TOKEN = '%';
     private List<BenchmarkGroup> groups = new ArrayList<>();
-    private ConsoleLogger logger = new ConsoleLogger();
+    private ConsoleLogger logger = new ConsoleLogger(BenchmarkConsoleReport.class);
     private String template = "%-16s%-18s%-23s%-12s%-14s";
 
     public BenchmarkConsoleReport(List<BenchmarkGroup> groups) {

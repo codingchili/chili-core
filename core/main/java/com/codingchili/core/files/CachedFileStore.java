@@ -41,7 +41,7 @@ public final class CachedFileStore implements FileStoreListener {
      */
     public CachedFileStore(CoreContext context, CachedFileStoreSettings settings) {
         this.context = context;
-        this.logger = context.logger();
+        this.logger = context.logger(getClass());
         this.settings = settings;
 
         synchronized (this) {
@@ -110,15 +110,19 @@ public final class CachedFileStore implements FileStoreListener {
     }
 
     private void loadFile(Path path, boolean startup) {
-        context.fileSystem().readFile(path.toAbsolutePath().toString(), done -> {
-            if (done.succeeded()) {
-                addFile(path, done.result());
-                if (!startup)
-                    logger.onFileLoaded(path.toString());
-            } else {
-                logger.onFileLoadError(path.toString());
-            }
-        });
+        if (settings.isAsynchronous()) {
+            context.fileSystem().readFile(path.toAbsolutePath().toString(), done -> {
+                if (done.succeeded()) {
+                    addFile(path, done.result());
+                    if (!startup)
+                        logger.onFileLoaded(path.toString());
+                } else {
+                    logger.onFileLoadError(path.toString());
+                }
+            });
+        } else {
+            addFile(path, context.fileSystem().readFileBlocking(path.toAbsolutePath().toString()));
+        }
     }
 
     private void addFile(Path path, Buffer buffer) {

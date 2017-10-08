@@ -18,12 +18,10 @@ import io.vertx.core.buffer.Buffer;
 public class PatchKeeper implements FileStoreListener {
     private CachedFileStore store;
     private PatchContext context;
-    private Logger logger;
 
     public PatchKeeper(PatchContext context) {
         store = new CachedFileStore(context, context.fileStoreSettings());
         this.context = context;
-        this.logger = context.logger();
         context.onPatchLoaded(getName(), getVersion());
     }
 

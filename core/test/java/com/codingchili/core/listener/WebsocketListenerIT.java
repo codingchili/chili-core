@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
  * Test cases for HTTP/REST transport.
  */
 @RunWith(VertxUnitRunner.class)
-public class WebsocketListenerIT extends TransportTestCases {
+public class WebsocketListenerIT extends ListenerTestCases {
 
     public WebsocketListenerIT() {
         super(WireType.WEBSOCKET, WebsocketListener::new);
@@ -21,7 +21,7 @@ public class WebsocketListenerIT extends TransportTestCases {
 
     @Override
     void sendRequest(ResponseListener listener, JsonObject data) {
-        vertx.createHttpClient().websocket(port, HOST, CoreStrings.DIR_SEPARATOR, handler -> {
+        context.vertx().createHttpClient().websocket(port, HOST, CoreStrings.DIR_SEPARATOR, handler -> {
             handler.handler(body -> handleBody(listener, body));
             handler.write(Buffer.buffer(data.encode()));
         });

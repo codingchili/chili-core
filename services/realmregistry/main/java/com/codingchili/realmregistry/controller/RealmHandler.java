@@ -44,7 +44,7 @@ public class RealmHandler implements CoreHandler {
 
     @Override
     public void handle(Request request) throws AuthorizationRequiredException, HandlerMissingException {
-        protocol.get(request.route(), authenticate(request)).handle(new RealmRequest(request));
+        protocol.get(request.route(), authenticate(request)).accept(new RealmRequest(request));
     }
 
     private void update(RealmRequest request) {

@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
  * Test cases for UDP transport.
  */
 @RunWith(VertxUnitRunner.class)
-public class TcpListenerIT extends TransportTestCases {
+public class TcpListenerIT extends ListenerTestCases {
 
     public TcpListenerIT() {
         super(WireType.TCP, TcpListener::new);
@@ -20,7 +20,7 @@ public class TcpListenerIT extends TransportTestCases {
 
     @Override
     void sendRequest(ResponseListener listener, JsonObject data) {
-        vertx.createNetClient().connect(port, HOST, connect -> {
+        context.vertx().createNetClient().connect(port, HOST, connect -> {
             if (connect.succeeded()) {
                 NetSocket socket = connect.result();
                 socket.handler(buffer -> handleBody(listener, buffer));

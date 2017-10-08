@@ -9,6 +9,9 @@ import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
@@ -21,15 +24,19 @@ import static com.codingchili.core.files.Configurations.launcher;
  * Default logging implementation.
  */
 public abstract class DefaultLogger extends Handler implements Logger {
-    CoreContext context;
-    JsonLogger logger;
+    protected Map<String, Supplier<String>> metadata = new HashMap<>();
+    protected CoreContext context;
+    protected JsonLogger logger;
+    protected Class aClass;
     private Level level = Level.INFO;
 
-    protected DefaultLogger() {
+    public DefaultLogger(CoreContext context, Class aClass) {
+        this.context = context;
+        this.aClass = aClass;
     }
 
-    DefaultLogger(CoreContext context) {
-        this.context = context;
+    public DefaultLogger(Class aClass) {
+        this.aClass = aClass;
     }
 
     @Override
@@ -37,6 +44,12 @@ public abstract class DefaultLogger extends Handler implements Logger {
         logger.log(json
                 .put(PROTOCOL_ROUTE, PROTOCOL_LOGGING)
                 .put(LOG_TIME, Instant.now().toEpochMilli()));
+        return this;
+    }
+
+    @Override
+    public Logger setMetadata(String key, Supplier<String> value) {
+        metadata.put(key, value);
         return this;
     }
 
@@ -63,10 +76,10 @@ public abstract class DefaultLogger extends Handler implements Logger {
     protected void addMetadata(JsonObject event) {
         if (context != null) {
             event.put(LOG_HOST, Environment.hostname().orElse(ID_UNDEFINED))
-                    .put(LOG_NODE, context.node())
-                    .put(LOG_APPLICATION, launcher().getApplication())
-                    .put(LOG_CONTEXT, context.name());
+                    .put(LOG_SOURCE, aClass.getName())
+                    .put(LOG_APPLICATION, launcher().getApplication());
         }
+        metadata.forEach((key, value) -> event.put(key, value.get()));
     }
 
     @Override

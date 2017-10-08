@@ -21,6 +21,7 @@ import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
  * Websocket transport listener.
  */
 public class WebsocketListener implements CoreListener {
+    private RequestProcessor processor;
     private CoreContext core;
     private CoreHandler handler;
     private Supplier<ListenerSettings> settings;
@@ -45,6 +46,8 @@ public class WebsocketListener implements CoreListener {
 
     @Override
     public void start(Future<Void> start) {
+        this.processor = new RequestProcessor(core, handler);
+
         core.vertx().createHttpServer().websocketHandler(socket -> {
             socket.handler(data -> handle(socket, data));
         }).requestHandler(rest -> {
@@ -65,7 +68,7 @@ public class WebsocketListener implements CoreListener {
     }
 
     private void handle(ServerWebSocket socket, Buffer buffer) {
-        RequestProcessor.accept(core, handler, new WebsocketRequest(socket, buffer, settings.get()));
+        processor.accept(new WebsocketRequest(socket, buffer, settings.get()));
     }
 
     @Override

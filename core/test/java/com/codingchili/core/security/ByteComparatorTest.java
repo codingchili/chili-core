@@ -1,5 +1,6 @@
 package com.codingchili.core.security;
 
+import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.SystemContext;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Async;
@@ -21,17 +22,17 @@ public class ByteComparatorTest {
     private static final String password = "pass";
     private static final String wrong = "wrong";
     private HashHelper hasher;
-    private Vertx vertx;
+    private CoreContext context;
 
     @Before
     public void setUp() {
-        vertx = Vertx.vertx();
-        hasher = new HashHelper(new SystemContext(vertx));
+        context = new SystemContext();
+        hasher = new HashHelper(new SystemContext());
     }
 
     @After
-    public void tearDown() {
-        vertx.close();
+    public void tearDown(TestContext test) {
+        context.close(test.asyncAssertSuccess());
     }
 
     @Test

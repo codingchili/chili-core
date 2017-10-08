@@ -36,13 +36,13 @@ public class FileWatcherIT {
 
     @Before
     public void setUp() {
-        this.context = new ContextMock(Vertx.vertx());
+        this.context = new ContextMock();
         Delay.initialize(context);
     }
 
     @After
     public void tearDown(TestContext test) {
-        context.vertx().close(test.asyncAssertSuccess());
+        context.close(test.asyncAssertSuccess());
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.codingchili.logging.controller;
 
 import com.codingchili.common.Strings;
+import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.DefaultLogger;
@@ -44,7 +45,7 @@ public class SharedLogHandlerTest {
     public SharedLogHandlerTest() {
         LogServerSettings settings = new LogServerSettings();
         Configurations.put(settings);
-        SystemContext system = new SystemContext(Vertx.vertx());
+        SystemContext system = new SystemContext();
         settings.setSecret(new byte[]{0x0});
         context = new LogContext(system);
         factory = new TokenFactory(settings.getSecret());
@@ -58,7 +59,7 @@ public class SharedLogHandlerTest {
 
     @After
     public void tearDown(TestContext test) {
-        context.vertx().close(test.asyncAssertSuccess());
+        context.close(test.asyncAssertSuccess());
     }
 
     @Test
@@ -89,10 +90,13 @@ public class SharedLogHandlerTest {
     }
 
     JsonObject getLogMessage() {
-        return new ClientLogHandlerTest.LogMessageGenerator()
+        return new ClientLogHandlerTest.LogMessageGenerator(null, getClass())
                 .event("test-event", Level.WARNING).put("unique", UUID.randomUUID().toString());
     }
 
     class LogMessageGenerator extends DefaultLogger {
+        public LogMessageGenerator(CoreContext context, Class aClass) {
+            super(context, aClass);
+        }
     }
 }

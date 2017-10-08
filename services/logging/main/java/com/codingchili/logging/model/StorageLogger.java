@@ -15,7 +15,8 @@ import io.vertx.core.json.JsonObject;
 public class StorageLogger extends DefaultLogger implements JsonLogger {
     private final LogContext context;
 
-    public StorageLogger(LogContext context) {
+    public StorageLogger(LogContext context, Class aClass) {
+        super(context, aClass);
         this.context = context;
     }
 

@@ -2,8 +2,6 @@ package com.codingchili.social.controller;
 
 import com.codingchili.common.Strings;
 import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.ServiceContext;
-import com.codingchili.core.context.SimpleServiceContext;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.Protocol;
@@ -18,17 +16,17 @@ import static com.codingchili.common.Strings.SOCIAL_NODE;
  */
 public class SocialHandler implements CoreHandler {
     private final Protocol<Request> protocol = new Protocol<>();
-    private ServiceContext context;
+    private CoreContext context;
 
     @Override
     public void init(CoreContext context) {
-        this.context = new SimpleServiceContext(context, SOCIAL_NODE);
+        this.context = context;
         protocol.use(Strings.ID_PING, Request::accept, Role.PUBLIC);
     }
 
     @Override
     public void handle(Request request) {
-        protocol.get(request.route()).handle(request);
+        protocol.get(request.route()).accept(request);
     }
 
     @Override

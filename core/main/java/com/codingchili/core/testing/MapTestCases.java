@@ -1,32 +1,32 @@
 package com.codingchili.core.testing;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.junit.*;
-import org.junit.runner.RunWith;
-
+import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
 import com.codingchili.core.protocol.Serializer;
-import com.codingchili.core.storage.*;
+import com.codingchili.core.storage.AsyncStorage;
+import com.codingchili.core.storage.QueryBuilder;
+import com.codingchili.core.storage.SortOrder;
+import com.codingchili.core.storage.StorageLoader;
 import com.codingchili.core.storage.exception.NothingToRemoveException;
 import com.codingchili.core.storage.exception.NothingToReplaceException;
 import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
 import com.codingchili.core.storage.exception.ValueMissingException;
-
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.*;
+import org.junit.runner.RunWith;
 
-import static com.codingchili.core.configuration.CoreStrings.DB_DIR;
+import java.util.Collection;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static com.codingchili.core.configuration.CoreStrings.ID_NAME;
 
 
@@ -63,16 +63,16 @@ public class MapTestCases {
     protected AsyncStorage<StorageObject> store;
 
     protected void setUp(TestContext test, Class plugin) {
-        setUp(test.async(), plugin, Vertx.vertx());
+        setUp(test.async(), plugin, new SystemContext());
     }
 
     @After
     public void tearDown(TestContext test) {
-        context.vertx().close(test.asyncAssertSuccess());
+        context.close(test.asyncAssertSuccess());
     }
 
-    protected void setUp(Async async, Class plugin, Vertx vertx) {
-        this.context = new StorageContext<>(vertx);
+    protected void setUp(Async async, Class plugin, CoreContext context) {
+        this.context = new StorageContext<>(context);
         this.plugin = plugin;
 
         new StorageLoader<StorageObject>(context)
@@ -414,7 +414,7 @@ public class MapTestCases {
         for (StorageObject item : items) {
             if (item.getLevel() < lastLevel && order.equals(SortOrder.ASCENDING) ||
                     item.getLevel() > lastLevel && order.equals(SortOrder.DESCENDING)) {
-                new ConsoleLogger()
+                new ConsoleLogger(getClass())
                         .level(Level.WARNING)
                         .log("Sort verification error!")
                         .log("Last level was " + lastLevel + " using sortmode " + order.name())

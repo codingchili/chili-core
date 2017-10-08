@@ -22,7 +22,7 @@ import static com.codingchili.core.configuration.CoreStrings.ID_DEFAULT;
 public class LaunchContext {
     private static final String BLOCK_DEFAULT = "default";
     private String[] args = new String[]{};
-    private Logger console = new ConsoleLogger();
+    private Logger console = new ConsoleLogger(getClass());
 
     /**
      * @param args process arguments to create a launcher for.

@@ -1,5 +1,7 @@
 package com.codingchili.core.storage;
 
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.testing.MapTestCases;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -20,21 +22,22 @@ import org.junit.runner.RunWith;
  */
 @RunWith(VertxUnitRunner.class)
 public class HazelMapIT extends MapTestCases {
-    private static Vertx vertx;
+    private static CoreContext context;
 
     @BeforeClass
     public static void beforeClass(TestContext test) {
         Async async = test.async();
 
-        Vertx.clusteredVertx(new VertxOptions(), cluster -> {
-            vertx = cluster.result();
+        SystemContext.clustered(clustering -> {
+            test.assertTrue(clustering.succeeded());
+            context = clustering.result();
             async.complete();
         });
     }
 
     @AfterClass
     public static void afterClass(TestContext test) {
-        vertx.close(test.asyncAssertSuccess());
+        context.close(test.asyncAssertSuccess());
     }
 
     @After
@@ -45,6 +48,6 @@ public class HazelMapIT extends MapTestCases {
 
     @Before
     public void setUp(TestContext test) {
-        super.setUp(test.async(), HazelMap.class, vertx);
+        super.setUp(test.async(), HazelMap.class, context);
     }
 }

@@ -8,6 +8,7 @@ package com.codingchili.core.configuration;
 public class CachedFileStoreSettings {
     private String directory;
     private boolean gzip;
+    private boolean isAsynchronous;
 
     @Override
     public boolean equals(Object object) {
@@ -51,5 +52,18 @@ public class CachedFileStoreSettings {
     public CachedFileStoreSettings setGzip(boolean gzip) {
         this.gzip = gzip;
         return this;
+    }
+
+    /**
+     * @param is true if store is asynchronous, default is true.
+     * @return fluent
+     */
+    public CachedFileStoreSettings setAsynchronous(boolean is) {
+        this.isAsynchronous = is;
+        return this;
+    }
+
+    public boolean isAsynchronous() {
+        return isAsynchronous;
     }
 }

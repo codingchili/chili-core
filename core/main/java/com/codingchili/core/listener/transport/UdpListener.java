@@ -20,6 +20,7 @@ import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
  * UDP transport listener.
  */
 public class UdpListener implements CoreListener, DeploymentAware {
+    private RequestProcessor processor;
     private CoreHandler handler;
     private CoreContext core;
     private Supplier<ListenerSettings> settings;
@@ -44,6 +45,8 @@ public class UdpListener implements CoreListener, DeploymentAware {
 
     @Override
     public void start(Future<Void> start) {
+        this.processor = new RequestProcessor(core, handler);
+
         core.vertx().createDatagramSocket().listen(settings.get().getPort(), getBindAddress(), listen -> {
             if (listen.succeeded()) {
                 settings.get().addListenPort(listen.result().localAddress().port());
@@ -61,7 +64,7 @@ public class UdpListener implements CoreListener, DeploymentAware {
     }
 
     private void handle(DatagramPacket connection) {
-        RequestProcessor.accept(core, handler, new UdpRequest(core, settings.get(), connection));
+        processor.accept(new UdpRequest(core, settings.get(), connection));
     }
 
     @Override

@@ -43,13 +43,13 @@ public class ClientHandlerTest {
 
     @Before
     public void setUp() throws IOException {
-        context = new ContextMock(Vertx.vertx());
+        context = new ContextMock();
         handler = new ClientHandler(context);
     }
 
     @After
     public void tearDown(TestContext test) {
-        context.vertx().close(test.asyncAssertSuccess());
+        context.close(test.asyncAssertSuccess());
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.codingchili.core.listener;
 
+import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.CoreException;
 import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.listener.transport.ClusterListener;
@@ -40,7 +41,7 @@ public class ClusterListenerTest {
     @Before
     public void setUp(TestContext test) {
         Async async = test.async();
-        this.context = new ContextMock(Vertx.vertx());
+        this.context = new ContextMock();
         this.handler = new TestHandler(context, REPLY_ADDRESS);
         this.cluster = new ClusterListener().handler(handler).settings(ListenerSettings::new);
 
@@ -56,7 +57,7 @@ public class ClusterListenerTest {
 
     @After
     public void tearDown(TestContext test) {
-        context.vertx().close(test.asyncAssertSuccess());
+        context.close(test.asyncAssertSuccess());
     }
 
     @Test
@@ -79,11 +80,11 @@ public class ClusterListenerTest {
 
     private class TestHandler implements CoreHandler {
         private boolean startCalled = false;
-        private ServiceContext context;
+        private CoreContext context;
         private String address;
         private Async stop;
 
-        TestHandler(ServiceContext context, String address) {
+        TestHandler(CoreContext context, String address) {
             this.context = context;
             this.address = address;
         }

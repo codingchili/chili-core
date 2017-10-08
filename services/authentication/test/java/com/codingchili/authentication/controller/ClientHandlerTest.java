@@ -59,14 +59,14 @@ public class ClientHandlerTest {
 
     @Before
     public void setUp(TestContext test) throws IOException {
-        context = new ContextMock(Vertx.vertx());
+        context = new ContextMock();
         handler = new ClientHandler(context);
         addAccount(test);
     }
 
     @After
     public void tearDown(TestContext test) {
-        context.vertx().close(test.asyncAssertSuccess());
+        context.close(test.asyncAssertSuccess());
     }
 
     @Test

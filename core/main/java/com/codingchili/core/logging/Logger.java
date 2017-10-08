@@ -5,6 +5,8 @@ import com.codingchili.core.listener.CoreService;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 
+import java.util.function.Supplier;
+
 
 /**
  * @author Robin Duda
@@ -158,4 +160,12 @@ public interface Logger extends JsonLogger, StringLogger {
      * @param listener the listener that was stopped
      */
     void onListenerStopped(CoreListener listener);
+
+    /**
+     * Sets a metadata value on the logger.
+     * @param key the values key
+     * @param value a supplier invoked when an event is created
+     * @return fluent.
+     */
+    Logger setMetadata(String key, Supplier<String> value);
 }

@@ -1,11 +1,9 @@
 package com.codingchili.realm.configuration;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.Delay;
-import com.codingchili.core.context.ServiceContext;
-import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.context.*;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.Level;
+import com.codingchili.core.logging.Logger;
 import com.codingchili.core.security.Token;
 import com.codingchili.core.security.TokenFactory;
 import com.codingchili.core.storage.StorageLoader;
@@ -26,12 +24,14 @@ import static com.codingchili.realm.configuration.RealmServerSettings.PATH_REALM
  * <p>
  * Context for realms.
  */
-public class RealmContext extends ServiceContext {
+public class RealmContext extends SystemContext implements ServiceContext {
     private AsyncCharacterStore characters;
+    private Logger logger;
     private String settings;
 
     public RealmContext(CoreContext core) {
         super(core);
+        this.logger = core.logger(getClass());
     }
 
     public static void create(Future<RealmContext> future, RealmSettings realm, CoreContext core) {
@@ -89,35 +89,35 @@ public class RealmContext extends ServiceContext {
     }
 
     public void onRealmStarted(String realm) {
-        log(event(LOG_REALM_START, Level.STARTUP)
+        logger.log(event(LOG_REALM_START, Level.STARTUP)
                 .put(ID_REALM, realm));
     }
 
     public void onRealmRejected(String realm, String message) {
-        log(event(LOG_REALM_REJECTED, Level.WARNING)
+        logger.log(event(LOG_REALM_REJECTED, Level.WARNING)
                 .put(ID_REALM, realm)
                 .put(ID_MESSAGE, message));
     }
 
     public void onRealmStopped(Future<Void> future, String realm) {
-        log(event(LOG_REALM_STOP, Level.SEVERE)
+        logger.log(event(LOG_REALM_STOP, Level.SEVERE)
                 .put(ID_REALM, realm));
 
         Delay.forShutdown(future);
     }
 
     public void onRealmRegistered(String realm) {
-        log(event(LOG_REALM_REGISTERED)
+        logger.log(event(LOG_REALM_REGISTERED)
                 .put(ID_REALM, realm));
     }
 
     public void onDeployRealmFailure(String realm) {
-        log(event(LOG_REALM_DEPLOY_ERROR, Level.SEVERE)
+        logger.log(event(LOG_REALM_DEPLOY_ERROR, Level.SEVERE)
                 .put(LOG_MESSAGE, getDeployFailError(realm)));
     }
 
     public void onInstanceFailed(String instance, Throwable cause) {
-        log(event(LOG_INSTANCE_DEPLOY_ERROR, Level.SEVERE)
+        logger.log(event(LOG_INSTANCE_DEPLOY_ERROR, Level.SEVERE)
                 .put(LOG_MESSAGE, getdeployInstanceError(instance, cause)));
     }
 }

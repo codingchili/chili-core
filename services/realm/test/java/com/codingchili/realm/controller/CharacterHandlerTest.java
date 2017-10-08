@@ -13,7 +13,6 @@ import com.codingchili.realm.instance.model.PlayerCharacter;
 import com.codingchili.realm.model.AsyncCharacterStore;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
-import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
@@ -51,7 +50,7 @@ public class CharacterHandlerTest {
     @Before
     public void setUp(TestContext test) {
         Async async = test.async();
-        context = new ContextMock(Vertx.vertx());
+        context = new ContextMock();
         handler = new CharacterHandler(context);
         clientToken = context.getClientFactory();
         characters = context.getCharacterStore();
@@ -60,7 +59,7 @@ public class CharacterHandlerTest {
 
     @After
     public void tearDown(TestContext test) {
-        context.vertx().close(test.asyncAssertSuccess());
+        context.close(test.asyncAssertSuccess());
     }
 
     private void createCharacters(Async async) {

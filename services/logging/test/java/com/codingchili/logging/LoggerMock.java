@@ -13,6 +13,10 @@ import io.vertx.core.json.JsonObject;
  */
 public class LoggerMock extends DefaultLogger {
 
+    public LoggerMock() {
+        super(LoggerMock.class);
+    }
+
     @Override
     public void onAlreadyInitialized() {
     }

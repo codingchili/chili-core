@@ -37,7 +37,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 public abstract class Configurations {
     private static final ConcurrentHashMap<String, ConfigEntry> configs = new ConcurrentHashMap<>();
     private static final AtomicBoolean initialized = new AtomicBoolean(false);
-    private static Logger logger = new ConsoleLogger();
+    private static Logger logger = new ConsoleLogger(Configurations.class);
 
     /*
       When uninitialized default in-memory configuration is used, this configuration is
@@ -64,10 +64,9 @@ public abstract class Configurations {
      */
     public static void initialize(CoreContext context) {
         if (initialized.get()) {
-            context.logger().onAlreadyInitialized();
+            logger.onAlreadyInitialized();
         } else {
-            logger = context.logger();
-
+            logger = context.logger(Configurations.class);
             new FileWatcherBuilder(context)
                     .rate(Configurations::getConfigurationPoll)
                     .onDirectory(CoreStrings.DIR_CONFIG)

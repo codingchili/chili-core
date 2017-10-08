@@ -30,15 +30,16 @@ public class StorageLoaderIT {
     public static void setUp(TestContext test) {
         Async async = test.async();
 
-        Vertx.clusteredVertx(new VertxOptions(), vertx -> {
-            context = new SystemContext(vertx.result());
+        SystemContext.clustered(clustering -> {
+            test.assertTrue(clustering.succeeded());
+            context = clustering.result();
             async.complete();
         });
     }
 
     @AfterClass
     public static void tearDown(TestContext test) {
-        context.vertx().close(test.asyncAssertSuccess());
+        context.close(test.asyncAssertSuccess());
     }
 
     @Test

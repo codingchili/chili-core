@@ -8,5 +8,5 @@ package com.codingchili.core.protocol;
 
 @FunctionalInterface
 public interface RequestHandler<Request> {
-    void handle(Request request);
+    void accept(Request request);
 }

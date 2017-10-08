@@ -4,6 +4,7 @@ import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.files.JsonFileStore;
 import com.codingchili.core.files.exception.NoSuchResourceException;
+import com.codingchili.core.logging.Logger;
 import com.codingchili.core.storage.exception.NothingToRemoveException;
 import com.codingchili.core.storage.exception.NothingToReplaceException;
 import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
@@ -47,13 +48,15 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @SuppressWarnings("unchecked")
     public JsonMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
+        Logger logger = context.logger(getClass());
+
         if (maps.containsKey(context.identifier())) {
             this.db = maps.get(context.identifier());
         } else {
             try {
                 this.db = JsonFileStore.readObject(context.dbPath());
             } catch (NoSuchResourceException e) {
-                context.logger().log(getFileReadError(context.dbPath()));
+                logger.log(getFileReadError(context.dbPath()));
             }
         }
         this.context = context;

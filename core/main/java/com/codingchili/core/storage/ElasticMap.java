@@ -1,6 +1,7 @@
 package com.codingchili.core.storage;
 
 import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.logging.Logger;
 import com.codingchili.core.security.Validator;
 import com.codingchili.core.storage.exception.*;
 import io.vertx.core.AsyncResult;
@@ -52,10 +53,12 @@ import static com.codingchili.core.context.FutureHelper.result;
 @Ignore("Requires running elasticsearch server.")
 public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     private StorageContext<Value> context;
+    private Logger logger;
     private TransportClient client;
 
     public ElasticMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) throws IOException {
         this.context = context;
+        this.logger = context.logger(getClass());
         try {
             this.client = new PreBuiltTransportClient(Settings.builder()
                     .put("client.transport.sniff", true)
@@ -65,7 +68,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
             client.admin().indices().create(new CreateIndexRequest(context.DB())).get();
         } catch (UnknownHostException | InterruptedException | ExecutionException e) {
-            context.logger().onError(e);
+            logger.onError(e);
         }
         future.complete(this);
     }
