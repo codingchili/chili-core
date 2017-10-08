@@ -37,7 +37,7 @@ public class InstanceHandler implements CoreHandler, DeploymentAware {
 
     @Override
     public void handle(Request request) {
-        protocol.get(request.route(), authenticator(request)).accept(new InstanceRequest(request));
+        protocol.get(request.route(), authenticator(request)).submit(new InstanceRequest(request));
     }
 
     @Override

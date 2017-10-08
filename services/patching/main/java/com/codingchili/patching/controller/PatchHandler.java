@@ -37,7 +37,7 @@ public class PatchHandler implements CoreHandler {
 
     @Override
     public void handle(Request request) {
-        protocol.get(request.route()).accept(new PatchRequest(request));
+        protocol.get(request.route()).submit(new PatchRequest(request));
     }
 
     @Override

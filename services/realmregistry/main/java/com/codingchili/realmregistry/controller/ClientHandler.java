@@ -37,7 +37,7 @@ public class ClientHandler implements CoreHandler {
 
     @Override
     public void handle(Request request) {
-        protocol.get(request.route(), authenticate(request)).accept(new ClientRequest(request));
+        protocol.get(request.route(), authenticate(request)).submit(new ClientRequest(request));
     }
 
     @Override

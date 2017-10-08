@@ -50,7 +50,7 @@ public class WebHandler implements CoreHandler {
 
     @Override
     public void handle(Request request) {
-        protocol.get(request.route(), Role.PUBLIC).accept(request);
+        protocol.get(request.route(), Role.PUBLIC).submit(request);
     }
 
     @Override

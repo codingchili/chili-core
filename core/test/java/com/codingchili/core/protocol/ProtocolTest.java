@@ -86,7 +86,7 @@ public abstract class ProtocolTest {
     public void testPrivateRouteNoAccess(TestContext test) throws Exception {
         Async async = test.async();
         try {
-            protocol.get(userRoleRoute, PUBLIC).accept(new EmptyRequest());
+            protocol.get(userRoleRoute, PUBLIC).submit(new EmptyRequest());
             test.fail("Should throw authorization exception.");
         } catch (AuthorizationRequiredException e) {
             async.complete();
@@ -95,17 +95,17 @@ public abstract class ProtocolTest {
 
     @Test
     public void testPublicRouteWithAccess(TestContext test) throws Exception {
-        protocol.get(defaultRolePublic, USER).accept(onWrite(test.async(), defaultRolePublic));
+        protocol.get(defaultRolePublic, USER).submit(onWrite(test.async(), defaultRolePublic));
     }
 
     @Test
     public void testUserRoute(TestContext test) throws Exception {
-        protocol.get(userRoleRoute, USER).accept(onWrite(test.async(), userRoleRoute));
+        protocol.get(userRoleRoute, USER).submit(onWrite(test.async(), userRoleRoute));
     }
 
     @Test
     public void testPublicRoute(TestContext test) throws Exception {
-        protocol.get(defaultRolePublic).accept(onWrite(test.async(), defaultRolePublic));
+        protocol.get(defaultRolePublic).submit(onWrite(test.async(), defaultRolePublic));
     }
 
     /**
@@ -128,18 +128,18 @@ public abstract class ProtocolTest {
 
     @Test
     public void testAdminAccessUserRole(TestContext test) {
-        protocol.get(userRoleRoute, ADMIN).accept(onWrite(test.async(), userRoleRoute));
+        protocol.get(userRoleRoute, ADMIN).submit(onWrite(test.async(), userRoleRoute));
     }
 
     @Test
     public void testCustomRouteName(TestContext test) {
-        protocol.get(specialRoute, PUBLIC).accept(onWrite(test.async(), specialRoute));
+        protocol.get(specialRoute, PUBLIC).submit(onWrite(test.async(), specialRoute));
     }
 
     @Test
     public void testMultipleUsersHasAccess(TestContext test) {
-        protocol.get(multipleUserRoute, USER).accept(onWrite(test.async(), multipleUserRoute));
-        protocol.get(multipleUserRoute, ADMIN).accept(onWrite(test.async(), multipleUserRoute));
+        protocol.get(multipleUserRoute, USER).submit(onWrite(test.async(), multipleUserRoute));
+        protocol.get(multipleUserRoute, ADMIN).submit(onWrite(test.async(), multipleUserRoute));
         try {
             protocol.get(multipleUserRoute, PUBLIC);
             test.fail("Role access should throw when multiple users and no permission.");
@@ -150,11 +150,11 @@ public abstract class ProtocolTest {
     @Test
     public void testCustomRole(TestContext test) {
         protocol.get(customRoleOnRoute, RoleMap.get(CUSTOM_ROLE))
-                .accept(onWrite(test.async(), customRoleOnRoute));
+                .submit(onWrite(test.async(), customRoleOnRoute));
 
         try {
             protocol.get(customRoleOnRoute, ADMIN)
-                    .accept(onWrite(test.async(), customRoleOnRoute));
+                    .submit(onWrite(test.async(), customRoleOnRoute));
             test.fail("Admin role must not have access to custom role.");
         } catch (AuthorizationRequiredException ignored) {
         }

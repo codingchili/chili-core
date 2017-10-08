@@ -49,7 +49,7 @@ public class ClusterListener implements CoreListener, DeploymentAware {
     @Override
     public void start(Future<Void> start) {
         RequestProcessor processor = new RequestProcessor(core, handler);
-        core.bus().consumer(handler.address()).handler(message -> processor.accept(new ClusterRequest(message)));
+        core.bus().consumer(handler.address()).handler(message -> processor.submit(new ClusterRequest(message)));
         handler.start(start);
     }
 

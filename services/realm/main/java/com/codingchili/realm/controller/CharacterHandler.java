@@ -133,7 +133,7 @@ public class CharacterHandler implements CoreHandler {
 
     @Override
     public void handle(Request request) {
-        protocol.get(request.route(), authenticator(request)).accept(new RealmRequest(request));
+        protocol.get(request.route(), authenticator(request)).submit(new RealmRequest(request));
     }
 
     @Override

@@ -39,7 +39,7 @@ abstract class AbstractLogHandler implements CoreHandler {
     @Override
     public void handle(Request request) {
         try {
-            protocol.get(request.route()).accept(request);
+            protocol.get(request.route()).submit(request);
         } catch (HandlerMissingException e) {
             console.onHandlerMissing(request.route());
             store.onHandlerMissing(request.route());

@@ -34,7 +34,7 @@ public class RequestProcessor implements RequestHandler<Request> {
      * @param request the request to be handled by the handler
      */
     @Override
-    public void accept(final Request request) {
+    public void submit(final Request request) {
         if (request.size() > request.maxSize()) {
             request.error(new RequestPayloadSizeException(request.maxSize()));
         } else {

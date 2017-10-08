@@ -72,7 +72,7 @@ public class RestListener implements CoreListener {
     }
 
     private void packet(RoutingContext context) {
-        processor.accept(new RestRequest(context, settings.get(), context.request()));
+        processor.submit(new RestRequest(context, settings.get(), context.request()));
     }
 
     @Override

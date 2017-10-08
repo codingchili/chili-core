@@ -26,7 +26,7 @@ public class SocialHandler implements CoreHandler {
 
     @Override
     public void handle(Request request) {
-        protocol.get(request.route()).accept(request);
+        protocol.get(request.route()).submit(request);
     }
 
     @Override
