@@ -76,7 +76,7 @@ public abstract class DefaultLogger extends Handler implements Logger {
     protected void addMetadata(JsonObject event) {
         if (context != null) {
             event.put(LOG_HOST, Environment.hostname().orElse(ID_UNDEFINED))
-                    .put(LOG_SOURCE, aClass.getName())
+                    .put(LOG_SOURCE, aClass.getSimpleName())
                     .put(LOG_APPLICATION, launcher().getApplication());
         }
         metadata.forEach((key, value) -> event.put(key, value.get()));
