@@ -2,7 +2,6 @@ package com.codingchili.core.testing;
 
 import com.codingchili.core.listener.transport.ClusterRequest;
 import com.codingchili.core.protocol.ResponseStatus;
-
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;

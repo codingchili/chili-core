@@ -5,7 +5,6 @@ import com.codingchili.authentication.configuration.AuthenticationSettings;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.storage.PrivateMap;
-import io.vertx.core.Vertx;
 
 
 /**

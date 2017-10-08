@@ -3,7 +3,6 @@ package com.codingchili.core.files;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.Delay;
 import com.codingchili.core.testing.ContextMock;
-import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;

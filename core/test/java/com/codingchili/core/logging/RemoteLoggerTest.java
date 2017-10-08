@@ -1,9 +1,7 @@
 package com.codingchili.core.logging;
 
 import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.testing.ContextMock;
-import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;

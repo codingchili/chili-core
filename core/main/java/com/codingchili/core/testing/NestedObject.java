@@ -1,9 +1,9 @@
 package com.codingchili.core.testing;
 
+import com.codingchili.core.storage.NestedStorable;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.codingchili.core.storage.NestedStorable;
 
 /**
  * @author Robin Duda

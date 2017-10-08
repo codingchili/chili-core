@@ -10,7 +10,6 @@ import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.exception.SecurityMissingDependencyException;
 import com.codingchili.core.testing.ContextMock;
-import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;

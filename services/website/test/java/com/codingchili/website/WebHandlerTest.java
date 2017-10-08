@@ -11,7 +11,6 @@ import com.codingchili.core.testing.ResponseListener;
 import com.codingchili.website.configuration.WebserverContext;
 import com.codingchili.website.configuration.WebserverSettings;
 import com.codingchili.website.controller.WebHandler;
-import io.vertx.core.Vertx;
 import io.vertx.core.file.FileSystem;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;

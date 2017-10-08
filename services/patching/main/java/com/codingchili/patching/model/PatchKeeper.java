@@ -4,7 +4,6 @@ import com.codingchili.core.files.CachedFile;
 import com.codingchili.core.files.CachedFileStore;
 import com.codingchili.core.files.FileStoreListener;
 import com.codingchili.core.files.exception.FileMissingException;
-import com.codingchili.core.logging.Logger;
 import com.codingchili.patching.configuration.PatchContext;
 import com.codingchili.patching.configuration.PatchNotes;
 import io.vertx.core.buffer.Buffer;

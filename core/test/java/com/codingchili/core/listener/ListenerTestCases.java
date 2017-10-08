@@ -3,7 +3,6 @@ package com.codingchili.core.listener;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.testing.ContextMock;
-import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonObject;

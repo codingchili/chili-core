@@ -2,7 +2,6 @@ package com.codingchili.core.benchmarking;
 
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.SystemContext;
-import io.vertx.core.Vertx;
 import io.vertx.ext.unit.TestContext;
 import org.junit.After;
 import org.junit.Before;

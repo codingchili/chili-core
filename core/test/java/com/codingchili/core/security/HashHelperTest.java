@@ -2,7 +2,6 @@ package com.codingchili.core.security;
 
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.SystemContext;
-import io.vertx.core.Vertx;
 import io.vertx.core.WorkerExecutor;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;

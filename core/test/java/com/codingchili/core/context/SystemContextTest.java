@@ -2,7 +2,6 @@ package com.codingchili.core.context;
 
 import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.testing.ContextMock;
-import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;

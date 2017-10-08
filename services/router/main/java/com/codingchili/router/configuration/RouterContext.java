@@ -6,7 +6,6 @@ import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.ListenerSettings;
 import com.codingchili.core.listener.WireType;
-import io.vertx.core.Vertx;
 
 import java.util.List;
 

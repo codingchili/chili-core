@@ -2,12 +2,10 @@ package com.codingchili.core.listener;
 
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.CoreException;
-import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.listener.transport.ClusterListener;
 import com.codingchili.core.testing.ContextMock;
 import com.codingchili.core.testing.EmptyRequest;
 import io.vertx.core.Future;
-import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
