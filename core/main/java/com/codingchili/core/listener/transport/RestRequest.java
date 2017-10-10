@@ -1,9 +1,9 @@
 package com.codingchili.core.listener.transport;
 
 import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.listener.BaseRequest;
 import com.codingchili.core.listener.Endpoint;
 import com.codingchili.core.listener.ListenerSettings;
+import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.Protocol;
 import com.codingchili.core.protocol.ResponseStatus;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -19,7 +19,7 @@ import java.util.Map;
  * <p>
  * HTTP/REST request object.
  */
-class RestRequest extends BaseRequest {
+class RestRequest implements Request{
     private RoutingContext context;
     private HttpServerRequest request;
     private JsonObject data = new JsonObject();

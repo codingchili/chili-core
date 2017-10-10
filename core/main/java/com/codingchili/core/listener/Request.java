@@ -1,8 +1,21 @@
 package com.codingchili.core.listener;
 
+import com.codingchili.core.context.CoreException;
+import com.codingchili.core.context.CoreRuntimeException;
+import com.codingchili.core.context.exception.CoreExceptionFormat;
+import com.codingchili.core.protocol.Protocol;
+import com.codingchili.core.protocol.ResponseStatus;
+import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.protocol.exception.UnmappedException;
 import com.codingchili.core.security.Token;
 import io.vertx.core.AsyncResult;
+import io.vertx.core.json.DecodeException;
 import io.vertx.core.json.JsonObject;
+
+import static com.codingchili.core.configuration.CoreStrings.*;
+import static com.codingchili.core.listener.ListenerSettings.DEFAULT_MAX_REQUEST_BYTES;
+import static com.codingchili.core.listener.ListenerSettings.DEFAULT_TIMEOUT;
+import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
 
 /**
  * @author Robin Duda
@@ -10,6 +23,7 @@ import io.vertx.core.json.JsonObject;
  * Base request class.
  */
 public interface Request {
+    String TARGET_UNDEFINED = ID_UNDEFINED;
 
     /**
      * Called after construction of the request and before processing begins.
@@ -19,7 +33,7 @@ public interface Request {
      * All initial processing of data must be done in this method to allow
      * proper error handling.
      */
-    void init();
+    default void init() {};
 
     /**
      * Writes an object to the connection that backs the current request.
@@ -32,7 +46,9 @@ public interface Request {
      * Accepts the request indicating that it was processed successfully
      * but that there is no response.
      */
-    void accept();
+    default void accept() {
+        write(Protocol.response(ACCEPTED));
+    }
 
     /**
      * Convenience method that converts the request to a future.
@@ -58,7 +74,15 @@ public interface Request {
      *
      * @param exception the exception that caused the error.
      */
-    void error(Throwable exception);
+    default void error(Throwable exception) {
+        if (exception instanceof CoreException || exception instanceof CoreRuntimeException) {
+            write(Protocol.response(((CoreExceptionFormat) exception).status(), exception));
+        } else if (exception instanceof DecodeException) {
+            write(Protocol.response(ResponseStatus.ERROR, exception));
+        } else {
+            write(Protocol.response(ResponseStatus.ERROR, new UnmappedException(exception)));
+        }
+    }
 
     /**
      * Get the route from the request, the route specifies with method that should
@@ -66,7 +90,14 @@ public interface Request {
      *
      * @return the requested route
      */
-    String route();
+    default String route() {
+        String route = data().getString(PROTOCOL_ROUTE);
+
+        if (route == null) {
+            route = DIR_SEPARATOR;
+        }
+        return route;
+    }
 
     /**
      * The target node of the request. The target specifies which service or which
@@ -74,14 +105,27 @@ public interface Request {
      *
      * @return the target node
      */
-    String target();
+    default String target() {
+        String target = data().getString(PROTOCOL_TARGET);
+
+        if (target == null) {
+            target = TARGET_UNDEFINED;
+        }
+        return target;
+    }
 
     /**
      * Get the request token sent with the request.
      *
      * @return the requests token
      */
-    Token token();
+    default Token token() {
+        if (data().containsKey(ID_TOKEN)) {
+            return Serializer.unpack(data().getJsonObject(ID_TOKEN), Token.class);
+        } else {
+            return new Token();
+        }
+    }
 
     /**
      * Get the raw data of the request as a json object
@@ -94,9 +138,13 @@ public interface Request {
      * Get the request timeout which indicates how long the sender is waiting until
      * the request is considered to have timed out.
      *
+     * defaults to #{@link ListenerSettings#DEFAULT_TIMEOUT}
+     *
      * @return milliseconds specifying the timeout of the request
      */
-    int timeout();
+    default int timeout() {
+        return DEFAULT_TIMEOUT;
+    }
 
     /**
      * @return the size of the request in bytes.
@@ -104,7 +152,11 @@ public interface Request {
     int size();
 
     /**
+     * defaults to #{@link ListenerSettings#DEFAULT_MAX_REQUEST_BYTES}
+     *
      * @return the maximum number of bytes allowed in a single request.
      */
-    int maxSize();
+    default int maxSize() {
+        return DEFAULT_MAX_REQUEST_BYTES;
+    }
 }

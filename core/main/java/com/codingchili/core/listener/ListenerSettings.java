@@ -14,14 +14,16 @@ import java.util.Set;
  * Settings for transport listeners.
  */
 public class ListenerSettings {
+    public static final int DEFAULT_TIMEOUT = 3000;
+    public static final int DEFAULT_MAX_REQUEST_BYTES = 1024;
     private HttpServerOptions httpOptions = new HttpServerOptions();
     private Map<String, Endpoint> api = new HashMap<>();
     private WireType type = WireType.REST;
     private Set<Integer> actualPorts = new HashSet<>();
     private String defaultTarget = "default";
     private int port = 8080;
-    private int timeout = 3000;
-    private int maxRequestBytes = 256;
+    private int timeout = DEFAULT_TIMEOUT;
+    private int maxRequestBytes = DEFAULT_MAX_REQUEST_BYTES;
 
     /**
      * @return timeout in MS after the router times out the request.

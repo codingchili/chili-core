@@ -1,7 +1,7 @@
 package com.codingchili.core.listener.transport;
 
-import com.codingchili.core.listener.BaseRequest;
 import com.codingchili.core.listener.ListenerSettings;
+import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.Serializer;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.ServerWebSocket;
@@ -12,7 +12,7 @@ import io.vertx.core.json.JsonObject;
  * <p>
  * Websocket request object.
  */
-class WebsocketRequest extends BaseRequest {
+class WebsocketRequest implements Request {
     private int size;
     private ServerWebSocket socket;
     private ListenerSettings settings;

@@ -42,10 +42,6 @@ public class ClusterListener implements CoreListener, DeploymentAware {
         return this;
     }
 
-    public CoreHandler handler() {
-        return handler;
-    }
-
     @Override
     public void start(Future<Void> start) {
         RequestProcessor processor = new RequestProcessor(core, handler);

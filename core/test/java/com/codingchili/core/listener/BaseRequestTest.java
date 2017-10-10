@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
-import static com.codingchili.core.listener.BaseRequest.TARGET_UNDEFINED;
+import static com.codingchili.core.listener.Request.TARGET_UNDEFINED;
 import static com.codingchili.core.protocol.ResponseStatus.*;
 
 /**
@@ -123,7 +123,7 @@ public class BaseRequestTest {
         test.assertEquals(TIMEOUT, request.timeout());
     }
 
-    private class RequestTest extends BaseRequest {
+    private class RequestTest implements Request {
         @Override
         public void write(Object object) {
             if (object instanceof Exception && !(object instanceof CoreException)) {

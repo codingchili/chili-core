@@ -1,7 +1,6 @@
 package com.codingchili.core.listener.transport;
 
 import com.codingchili.core.files.Configurations;
-import com.codingchili.core.listener.BaseRequest;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.Protocol;
 import com.codingchili.core.protocol.ResponseStatus;
@@ -19,7 +18,7 @@ import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_STATUS;
  * <p>
  * Size does not apply to these requests.
  */
-public class ClusterRequest extends BaseRequest {
+public class ClusterRequest implements Request{
     private final Message message;
     private int timeout = Configurations.system().getClusterTimeout();
     private Buffer buffer;
@@ -74,12 +73,10 @@ public class ClusterRequest extends BaseRequest {
         }
     }
 
-    @Override
     protected void send(ResponseStatus status, Throwable exception) {
         write(Protocol.response(status, exception));
     }
 
-    @Override
     protected void send(ResponseStatus status) {
         write(Protocol.response(status));
     }
@@ -108,6 +105,7 @@ public class ClusterRequest extends BaseRequest {
 
     @Override
     public int maxSize() {
+        // override the default max value for clustered requests.
         return Integer.MAX_VALUE;
     }
 

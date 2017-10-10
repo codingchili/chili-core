@@ -1,7 +1,7 @@
 package com.codingchili.core.listener.transport;
 
-import com.codingchili.core.listener.BaseRequest;
 import com.codingchili.core.listener.ListenerSettings;
+import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.Serializer;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
@@ -12,7 +12,7 @@ import io.vertx.core.net.NetSocket;
  * <p>
  * TCP request implementation.
  */
-class TcpRequest extends BaseRequest {
+class TcpRequest implements Request {
     private int size;
     private Buffer buffer;
     private JsonObject data;
