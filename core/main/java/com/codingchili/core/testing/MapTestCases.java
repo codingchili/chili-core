@@ -91,7 +91,6 @@ public class MapTestCases {
             AtomicInteger inserted = new AtomicInteger(0);
 
             context.periodic(() -> 50, "startup timer", handler -> {
-                System.out.println("exxing " + inserted.get());
                 if (inserted.get() == TEST_ITEM_COUNT) {
                     context.timer(STARTUP_DELAY, event -> {
                         async.complete();

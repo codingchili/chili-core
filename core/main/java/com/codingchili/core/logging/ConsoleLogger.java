@@ -27,6 +27,10 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
     private final AtomicBoolean enabled = new AtomicBoolean(true);
     private Level level = Level.INFO;
 
+    public ConsoleLogger() {
+        super(ConsoleLogger.class);
+    }
+
     public ConsoleLogger(Class aClass) {
         this(null, aClass);
     }

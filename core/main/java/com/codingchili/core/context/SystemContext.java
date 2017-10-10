@@ -16,6 +16,7 @@ import io.vertx.ext.dropwizard.MetricsService;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 import static com.codingchili.core.configuration.CoreStrings.getUnsupportedDeployment;
@@ -27,6 +28,7 @@ import static com.codingchili.core.configuration.CoreStrings.getUnsupportedDeplo
  * Implementation of the CoreContext, each context gets its own worker pool.
  */
 public class SystemContext implements CoreContext {
+    private static AtomicBoolean initialized = new AtomicBoolean(false);
     protected Vertx vertx;
     private Map<String, List<String>> deployments = new HashMap<>();
     private WorkerExecutor executor;
@@ -71,16 +73,19 @@ public class SystemContext implements CoreContext {
 
     private void initialize() {
         executor = vertx.createSharedWorkerExecutor("systemcontext", system().getWorkerPoolSize());
-
         vertx.exceptionHandler(throwable -> logger.onError(throwable));
 
-        MetricsService metrics = MetricsService.create(vertx);
-        periodic(this::getMetricTimer, CoreStrings.LOG_METRICS, handler -> {
-            if (system().isMetrics()) {
-                JsonObject json = metrics.getMetricsSnapshot(vertx);
-                this.onMetricsSnapshot(json);
-            }
-        });
+        if (!initialized.get()) {
+            MetricsService metrics = MetricsService.create(vertx);
+
+            periodic(this::getMetricTimer, CoreStrings.LOG_METRICS, handler -> {
+                if (system().isMetrics()) {
+                    JsonObject json = metrics.getMetricsSnapshot(vertx);
+                    this.onMetricsSnapshot(json);
+                }
+            });
+            initialized.set(true);
+        }
     }
 
     private int getMetricTimer() {
@@ -253,10 +258,12 @@ public class SystemContext implements CoreContext {
     @Override
     public void close() {
         vertx.close();
+        initialized.set(false);
     }
 
     @Override
     public void close(Handler<AsyncResult<Void>> handler) {
+        initialized.set(false);
         vertx.close(handler);
     }
 
