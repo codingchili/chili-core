@@ -22,10 +22,10 @@ import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
  * HTTP/REST transport listener.
  */
 public class RestListener implements CoreListener {
+    private Supplier<ListenerSettings> settings = ListenerSettings::getDefaultSettings;
     private RequestProcessor processor;
     private CoreContext core;
     private CoreHandler handler;
-    private Supplier<ListenerSettings> settings;
     private Router router;
 
     @Override

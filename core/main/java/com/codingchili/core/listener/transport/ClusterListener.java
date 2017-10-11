@@ -20,7 +20,7 @@ import static com.codingchili.core.configuration.CoreStrings.LOG_AT;
  * the requests to it.
  */
 public class ClusterListener implements CoreListener, DeploymentAware {
-    private Supplier<ListenerSettings> settings;
+    private Supplier<ListenerSettings> settings = ListenerSettings::getDefaultSettings;
     private CoreHandler handler;
     private CoreContext core;
 

@@ -20,10 +20,10 @@ import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
  * UDP transport listener.
  */
 public class UdpListener implements CoreListener, DeploymentAware {
+    private Supplier<ListenerSettings> settings = ListenerSettings::getDefaultSettings;
     private RequestProcessor processor;
     private CoreHandler handler;
     private CoreContext core;
-    private Supplier<ListenerSettings> settings;
 
     @Override
     public void init(CoreContext core) {

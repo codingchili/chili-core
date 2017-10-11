@@ -41,8 +41,8 @@ abstract class AbstractLogHandler implements CoreHandler {
         try {
             protocol.get(request.route()).submit(request);
         } catch (HandlerMissingException e) {
-            console.onHandlerMissing(request.route());
-            store.onHandlerMissing(request.route());
+            console.onHandlerMissing(request.target(), request.route());
+            store.onHandlerMissing(request.target(), request.route());
         }
     }
 

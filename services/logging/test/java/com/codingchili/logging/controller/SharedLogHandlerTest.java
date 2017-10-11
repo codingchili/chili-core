@@ -24,7 +24,7 @@ import org.junit.runner.RunWith;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static com.codingchili.core.configuration.CoreStrings.ID_TOKEN;
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
@@ -36,7 +36,7 @@ import static com.codingchili.core.configuration.CoreStrings.ID_TOKEN;
 public class SharedLogHandlerTest {
     private static final int MESSAGE_COUNT = 50;
     @Rule
-    public Timeout timeout = new Timeout(50, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
     AbstractLogHandler handler;
     LogContext context;
     private TokenFactory factory;
@@ -85,12 +85,15 @@ public class SharedLogHandlerTest {
     }
 
     private JsonObject messageWithToken() {
-        return getLogMessage().put(ID_TOKEN, Serializer.json(new Token(factory, "domain")));
+        return new JsonObject()
+                .put(PROTOCOL_ROUTE, PROTOCOL_LOGGING)
+                .put(ID_MESSAGE, getLogMessage().put(ID_TOKEN,
+                Serializer.json(new Token(factory, "domain"))));
     }
 
     JsonObject getLogMessage() {
-        return new ClientLogHandlerTest.LogMessageGenerator(null, getClass())
-                .event("test-event", Level.WARNING).put("unique", UUID.randomUUID().toString());
+        return new JsonObject().put(ID_MESSAGE, new ClientLogHandlerTest.LogMessageGenerator(null, getClass())
+                .event("test-event", Level.WARNING).put("unique", UUID.randomUUID().toString()));
     }
 
     class LogMessageGenerator extends DefaultLogger {

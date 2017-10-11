@@ -47,7 +47,6 @@ public class BenchmarkIT {
         context.close(test.asyncAssertSuccess());
     }
 
-    @Test
     /* simple test case that runs all map benchmarks using mock implementations
      * that handles the verification of the executor.
      *
@@ -55,6 +54,7 @@ public class BenchmarkIT {
      * - benchmarks are executed one at a time in order
      * - all events are triggered and in order for the given listener
      */
+    @Test
     public void testRunBenchmarkSuites(TestContext test) {
         Async async = test.async();
         MockListener listener = new MockListener(test);
@@ -68,10 +68,10 @@ public class BenchmarkIT {
                 });
     }
 
-    @Test
     /*
      * Executes the benchmark suite as if it were executed from the commandline.
      */
+    @Test
     public void testExecuteSuiteAsCommand(TestContext test) {
         CommandExecutor executor = new CommandExecutor();
         Async async = test.async();

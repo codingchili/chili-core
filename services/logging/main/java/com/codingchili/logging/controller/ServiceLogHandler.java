@@ -20,10 +20,8 @@ public class ServiceLogHandler extends AbstractLogHandler {
 
     @Override
     protected void log(Request request) {
-        JsonObject logdata = request.data();
+        JsonObject logdata = request.data().getJsonObject(ID_MESSAGE);
         String node = logdata.getString(LOG_NODE);
-
-        logdata.remove(PROTOCOL_ROUTE);
 
         if (!NODE_LOGGING.equals(node) && context.consoleEnabled()) {
             console.log(logdata);

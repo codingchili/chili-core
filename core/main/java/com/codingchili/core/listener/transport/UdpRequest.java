@@ -17,13 +17,13 @@ class UdpRequest implements Request {
     private int size;
     private DatagramPacket packet;
     private CoreContext context;
-    private ListenerSettings listener;
+    private ListenerSettings settings;
     private JsonObject data;
 
-    UdpRequest(CoreContext context, ListenerSettings listener, DatagramPacket packet) {
+    UdpRequest(CoreContext context, ListenerSettings settings, DatagramPacket packet) {
         this.size = packet.data().length();
         this.context = context;
-        this.listener = listener;
+        this.settings = settings;
         this.packet = packet;
     }
 
@@ -44,12 +44,12 @@ class UdpRequest implements Request {
 
     @Override
     public int timeout() {
-        return listener.getTimeout();
+        return settings.getTimeout();
     }
 
     @Override
     public int maxSize() {
-        return listener.getMaxRequestBytes();
+        return settings.getMaxRequestBytes();
     }
 
     @Override

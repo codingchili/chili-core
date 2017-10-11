@@ -60,7 +60,6 @@ public abstract class DefaultLogger extends Handler implements Logger {
     @Override
     public JsonObject event(String name, Level level) {
         JsonObject event = new JsonObject()
-                .put(PROTOCOL_ROUTE, PROTOCOL_LOGGING)
                 .put(LOG_EVENT, name)
                 .put(LOG_LEVEL, level)
                 .put(LOG_TIME, Instant.now().toEpochMilli());
@@ -73,12 +72,12 @@ public abstract class DefaultLogger extends Handler implements Logger {
      *
      * @param event the log event to add metadata to.
      */
-    protected void addMetadata(JsonObject event) {
-        if (context != null) {
-            event.put(LOG_HOST, Environment.hostname().orElse(ID_UNDEFINED))
-                    .put(LOG_SOURCE, aClass.getSimpleName())
-                    .put(LOG_APPLICATION, launcher().getApplication());
-        }
+    private void addMetadata(JsonObject event) {
+        event.put(LOG_HOST, Environment.hostname().orElse(ID_UNDEFINED))
+                .put(LOG_APPLICATION, launcher().getApplication())
+                .put(LOG_SOURCE, aClass.getSimpleName())
+                .put(LOG_VERSION, launcher().getVersion());
+
         metadata.forEach((key, value) -> event.put(key, value.get()));
     }
 
@@ -104,7 +103,6 @@ public abstract class DefaultLogger extends Handler implements Logger {
     @Override
     public void onListenerStarted(CoreListener listener) {
         log(event(LOG_LISTENER_START, Level.STARTUP)
-                .put(ID_TYPE, listener.getClass().getSimpleName())
                 .put(ID_HANDLER, listener.toString())
         );
     }
@@ -112,7 +110,6 @@ public abstract class DefaultLogger extends Handler implements Logger {
     @Override
     public void onListenerStopped(CoreListener listener) {
         log(event(LOG_LISTENER_STOP, Level.SEVERE)
-                .put(ID_TYPE, listener.getClass().getSimpleName())
                 .put(ID_HANDLER, listener.toString()));
     }
 
@@ -129,9 +126,11 @@ public abstract class DefaultLogger extends Handler implements Logger {
     }
 
     @Override
-    public void onHandlerMissing(String route) {
+    public void onHandlerMissing(String target, String route) {
         log(event(LOG_HANDLER_MISSING, Level.WARNING)
-                .put(LOG_MESSAGE, quote(route)));
+                .put(PROTOCOL_TARGET, target)
+                .put(PROTOCOL_ROUTE, route)
+                .put(LOG_MESSAGE, getHandlerMissing(target)));
     }
 
     @Override

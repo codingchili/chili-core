@@ -20,10 +20,10 @@ import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
  * TCP listener implementation.
  */
 public class TcpListener implements CoreListener {
+    private Supplier<ListenerSettings> settings = ListenerSettings::getDefaultSettings;
     private RequestProcessor processor;
     private CoreContext core;
     private CoreHandler handler;
-    private Supplier<ListenerSettings> settings;
 
     @Override
     public void init(CoreContext core) {

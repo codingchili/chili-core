@@ -43,7 +43,7 @@ public class RequestProcessor implements RequestHandler<Request> {
                 handler.handle(request);
             } catch (HandlerMissingException missing) {
                 request.error(missing);
-                logger.onHandlerMissing(request.route());
+                logger.onHandlerMissing(request.target(), request.route());
             } catch (Throwable e) {
                 request.error(e);
                 logger.onError(e);

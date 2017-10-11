@@ -5,14 +5,16 @@ import io.vertx.core.json.JsonObject;
 import org.fusesource.jansi.AnsiConsole;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
  * <p>
- * Implementation of a console logger.
+ * Implementation of a console logger, filters some key/value combinations to better display the messages.
  */
 public class ConsoleLogger extends DefaultLogger implements StringLogger {
     private static final String RESET = "\u001B[0m";
@@ -41,7 +43,7 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
         AnsiConsole.systemInstall();
     }
 
-    private String getColor(Level level) {
+    private static String getColor(Level level) {
         switch (level) {
             case SEVERE:
                 return SEVERE;
@@ -63,22 +65,8 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
     }
 
     @Override
-    public Logger log(String line) {
-        log(line, Level.INFO);
-        return this;
-    }
-
-    @Override
     public Logger level(Level level) {
         this.level = level;
-        return this;
-    }
-
-    @Override
-    public Logger log(String line, Level level) {
-        if (enabled.get()) {
-            write(getColor(level), line);
-        }
         return this;
     }
 
@@ -86,34 +74,37 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
     public Logger log(JsonObject data) {
         if (enabled.get()) {
             JsonObject event = eventFromLog(data);
-            write(getColor(event), parseJsonLog(event, consumeEvent(data)));
+            write(parseJsonLog(event, consumeEvent(data)));
         }
         return this;
     }
 
-    private void write(String color, String text) {
-        text = replaceTags(text, LOG_HIDDEN_TAGS);
-        AnsiConsole.out.print(String.format("%s%s\n", color, text));
+    private void write(String line) {
+        line = replaceTags(line, LOG_HIDDEN_TAGS);
+        synchronized (ConsoleLogger.class) {
+            AnsiConsole.out.println(line);
+        }
         AnsiConsole.out.flush();
     }
 
     private JsonObject eventFromLog(JsonObject data) {
         JsonObject json = data.copy();
-        json.remove(PROTOCOL_ROUTE);
         json.remove(ID_TOKEN);
-        json.remove(LOG_TIME);
         json.remove(LOG_EVENT);
         json.remove(LOG_APPLICATION);
         json.remove(LOG_CONTEXT);
+        json.remove(LOG_HOST);
+        json.remove(LOG_VERSION);
         return json;
     }
 
-    private String time() {
-        return timestamp(Instant.now().toEpochMilli());
-    }
-
-    private String consumeLevel(JsonObject data) {
-        return (String) data.remove(LOG_LEVEL);
+    private Level consumeLevel(JsonObject data) {
+        String level = (String) data.remove(LOG_LEVEL);
+        if (level == null) {
+            return this.level;
+        } else {
+            return Level.valueOf(level);
+        }
     }
 
     private String consumeEvent(JsonObject data) {
@@ -121,18 +112,48 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
     }
 
     private String parseJsonLog(JsonObject data, String event) {
-        String level = consumeLevel(data);
-        StringBuilder text = new StringBuilder(String.format("%-12s %-7s [%s]\t", time(),
-                (level == null) ? "" : level,
-                (event == null) ? "" : event.toUpperCase()));
+        Level level = consumeLevel(data);
+        StringBuilder text = new StringBuilder(String.format("%s\t%s %s",
+                (level == null) ? formatLevel(this.level) : formatLevel(level),
+                "[" + PURPLE + consumeTimestamp(data) + RESET + "]",
+                (hasValue(event)) ? pad(event, 18) : ""));
 
         for (String key : data.fieldNames()) {
             Object object = data.getValue(key);
             if (object != null) {
-                text.append(String.format("%-1s=%s ", key, object.toString()));
+                if (!key.equals(LOG_HOST) && !key.equals(LOG_MESSAGE) && !key.equals(LOG_SOURCE)) {
+                    text.append(String.format("%-1s=%s ", key, object.toString()));
+                } else {
+                    text.append(String.format(" %s ", object.toString()));
+                }
             }
         }
         return text.toString();
+    }
+
+    private String consumeTimestamp(JsonObject data) {
+        if (data.containsKey(LOG_TIME)) {
+            return data.remove(LOG_TIME).toString();
+        } else {
+            return Instant.now().toEpochMilli() + "";
+        }
+    }
+
+    private String pad(String text, int spaces) {
+        int padding = spaces - text.length();
+        if (padding > 0) {
+            return text + Collections.nCopies(padding, " ").stream().collect(Collectors.joining());
+        } else {
+            return text;
+        }
+    }
+
+    private static boolean hasValue(String text) {
+        return (text != null && !text.equals(""));
+    }
+
+    private static String formatLevel(Level level) {
+        return getColor(level) + level.name() + RESET;
     }
 
     private String compactPath(String path) {
@@ -158,20 +179,8 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
         return text.toString();
     }
 
-    private String getColor(JsonObject json) {
-        if (json.containsKey(LOG_LEVEL)) {
-            return getColor(Level.valueOf(json.getString(LOG_LEVEL)));
-        } else {
-            return getColor(level);
-        }
-    }
-
     public Logger setEnabled(boolean enabled) {
         this.enabled.set(enabled);
         return this;
-    }
-
-    public void reset() {
-        AnsiConsole.out.print(RESET);
     }
 }

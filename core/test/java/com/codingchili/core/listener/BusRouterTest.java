@@ -39,6 +39,7 @@ public class BusRouterTest {
     private static final String NODE_1 = "first.node";
     private static final String NODE_2 = "second.node";
     private static final String API_ROOT = "/web";
+    public static final String TEST_ROUTE = "test_route";
     @Rule
     public Timeout timeout = new Timeout(3, TimeUnit.SECONDS);
     private AtomicBoolean nodeTimeout = new AtomicBoolean(false);
@@ -135,7 +136,7 @@ public class BusRouterTest {
 
         handle(NODE_1, ((response, status) -> {
             test.assertEquals(ResponseStatus.ERROR, status);
-            test.assertEquals(response.getString(PROTOCOL_MESSAGE), getNodeNotReachable(NODE_1));
+            test.assertEquals(response.getString(PROTOCOL_MESSAGE), getNodeNotReachable(NODE_1, TEST_ROUTE));
             async.complete();
         }));
     }
@@ -206,7 +207,7 @@ public class BusRouterTest {
         }
 
         payload.put(PROTOCOL_TARGET, target);
-        router.handle(RequestMock.get(target, listener, payload));
+        router.handle(RequestMock.get(TEST_ROUTE, listener, payload));
     }
 
     private void mockNode(String target, Handler<Message<Object>> consumer) {

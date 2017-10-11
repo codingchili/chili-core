@@ -46,9 +46,10 @@ public interface Logger extends JsonLogger, StringLogger {
     /**
      * Throw when a requested handler was not found.
      *
-     * @param route the handler of the missing handler.
+     * @param target the target handler
+     * @param route  the route of the handler
      */
-    void onHandlerMissing(String route);
+    void onHandlerMissing(String target, String route);
 
     /**
      * Emit when a file has been loaded from the file-system.
@@ -130,6 +131,7 @@ public interface Logger extends JsonLogger, StringLogger {
 
     /**
      * Emit when a new server has started.
+     *
      * @param service the service that was started
      */
     void onServiceStarted(CoreService service);
@@ -137,7 +139,7 @@ public interface Logger extends JsonLogger, StringLogger {
     /**
      * Emit when a server has stopped.
      *
-     * @param future callback is called when the event is written.
+     * @param future  callback is called when the event is written.
      * @param service the service that was stopped
      */
     void onServiceStopped(Future<Void> future, CoreService service);
@@ -163,7 +165,8 @@ public interface Logger extends JsonLogger, StringLogger {
 
     /**
      * Sets a metadata value on the logger.
-     * @param key the values key
+     *
+     * @param key   the values key
      * @param value a supplier invoked when an event is created
      * @return fluent.
      */

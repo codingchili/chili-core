@@ -12,6 +12,6 @@ import static com.codingchili.core.configuration.CoreStrings.getNodeNotReachable
  */
 public class NodeNotReachableException extends CoreException {
     public NodeNotReachableException(Request request) {
-        super(getNodeNotReachable(request.target()));
+        super(getNodeNotReachable(request.target(), request.route()));
     }
 }

@@ -31,7 +31,7 @@ public class Launcher implements CoreService {
     public Launcher(LaunchContext context) {
         Future<Void> future = Future.future();
 
-        logger.log(CoreStrings.getStartupText(context.settings().getVersion()), Level.STARTUP);
+        logger.log(CoreStrings.getStartupText(), Level.STARTUP);
 
         new LauncherCommandExecutor().execute(future, context.args());
         future.setHandler(done -> {
@@ -71,7 +71,7 @@ public class Launcher implements CoreService {
     }
 
     void exit() {
-        logger.reset();
+        // empty for now: used in tests.
     }
 
     private void clusterIfEnabled(LauncherSettings settings) {
@@ -155,7 +155,6 @@ public class Launcher implements CoreService {
                 e.printStackTrace();
             }
             logger.log(ERRROR_LAUNCHER_SHUTDOWN, Level.SEVERE);
-            logger.reset();
         }));
     }
 }

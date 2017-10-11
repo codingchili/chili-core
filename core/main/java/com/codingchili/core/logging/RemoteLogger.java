@@ -5,7 +5,7 @@ import com.codingchili.core.files.Configurations;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
 
-import static com.codingchili.core.configuration.CoreStrings.NODE_LOGGING;
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
@@ -26,7 +26,10 @@ public class RemoteLogger extends DefaultLogger {
         if (Configurations.system().isConsoleLogging()) {
             console.log(data);
         }
-        context.bus().send(NODE_LOGGING, data, options);
+        context.bus().send(NODE_LOGGING, new JsonObject()
+                .put(PROTOCOL_ROUTE, PROTOCOL_LOGGING)
+                .put(PROTOCOL_TARGET, NODE_LOGGING)
+                .put(PROTOCOL_MESSAGE, data), options);
         return this;
     }
 }

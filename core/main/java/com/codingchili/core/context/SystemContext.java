@@ -172,9 +172,10 @@ public class SystemContext implements CoreContext {
 
     @Override
     public Future<String> handler(Supplier<CoreHandler> handler) {
+        ListenerSettings settings = new ListenerSettings();
         Future<String> future = Future.future();
         deployN(() -> new ClusterListener()
-                .settings(ListenerSettings::new)
+                .settings(() -> settings)
                 .handler(handler.get()), future);
         return future;
     }

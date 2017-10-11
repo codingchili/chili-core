@@ -21,10 +21,10 @@ import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
  * Websocket transport listener.
  */
 public class WebsocketListener implements CoreListener {
+    private Supplier<ListenerSettings> settings = ListenerSettings::getDefaultSettings;
     private RequestProcessor processor;
     private CoreContext core;
     private CoreHandler handler;
-    private Supplier<ListenerSettings> settings;
 
     @Override
     public void init(CoreContext core) {

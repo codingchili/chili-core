@@ -29,7 +29,6 @@ public class DefaultLoggerTest {
     public void testGenerateLogEvent(TestContext context) {
         JsonObject event = logger.event(LOG_MESSAGE, Level.SEVERE);
 
-        context.assertEquals(PROTOCOL_LOGGING, event.getString(PROTOCOL_ROUTE));
         context.assertEquals(LOG_MESSAGE, event.getString(LOG_EVENT));
         context.assertEquals(Level.SEVERE.toString(), event.getString(LOG_LEVEL));
         context.assertTrue(event.containsKey(LOG_TIME));

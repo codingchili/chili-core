@@ -16,8 +16,9 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  * Contains the settings for the launcher.
  */
 public class LauncherSettings extends BaseConfigurable {
-    private String application = "";
-    private String version = "CORE-1.0.5-PR";
+    private String application = "launcher";
+    private String version = "CORE-1.0.6-SNAPSHOT";
+    private String author = "Robin Duda \u00a9 2017";
     private boolean clustered;
     private HashMap<String, List<String>> blocks = defaultBlockConfiguration();
     private HashMap<String, String> hosts = defaultHostConfiguration();
@@ -36,8 +37,9 @@ public class LauncherSettings extends BaseConfigurable {
     /**
      * @param version sets the launcher version.
      */
-    public void setVersion(String version) {
+    public LauncherSettings setVersion(String version) {
         this.version = version;
+        return this;
     }
 
     /**
@@ -50,8 +52,9 @@ public class LauncherSettings extends BaseConfigurable {
     /**
      * @param blocks set the configured deployment blocks.
      */
-    public void setBlocks(HashMap<String, List<String>> blocks) {
+    public LauncherSettings setBlocks(HashMap<String, List<String>> blocks) {
         this.blocks = blocks;
+        return this;
     }
 
     /**
@@ -87,20 +90,22 @@ public class LauncherSettings extends BaseConfigurable {
     /**
      * @param hosts sets the host to block mapping.
      */
-    public void setHosts(HashMap<String, String> hosts) {
+    public LauncherSettings setHosts(HashMap<String, String> hosts) {
         this.hosts = hosts;
+        return this;
     }
 
     /**
      * @param host  the host that should be mapped to a service block
      * @param block the block that the host should be mapped to
      */
-    public void addHost(String host, String block) {
+    public LauncherSettings addHost(String host, String block) {
         if (blocks.containsKey(block)) {
             this.hosts.put(block, host);
         } else {
             throw new IllegalArgumentException(getBlockNotConfigured(block));
         }
+        return this;
     }
 
     /**
@@ -113,8 +118,9 @@ public class LauncherSettings extends BaseConfigurable {
     /**
      * @param application set the name of the application.
      */
-    public void setApplication(String application) {
+    public LauncherSettings setApplication(String application) {
         this.application = application;
+        return this;
     }
 
     /**
@@ -176,6 +182,22 @@ public class LauncherSettings extends BaseConfigurable {
      */
     public LauncherSettings setClustered(boolean clustering) {
         this.clustered = clustering;
+        return this;
+    }
+
+    /**
+     * @return author string used in startup text.
+     */
+    public String getAuthor() {
+        return author;
+    }
+
+    /**
+     * @param author set the author string visible in the startup text.
+     * @return the author of the application
+     */
+    public LauncherSettings setAuthor(String author) {
+        this.author = author;
         return this;
     }
 }

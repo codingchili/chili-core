@@ -23,11 +23,10 @@ public class ClientLogHandler extends AbstractLogHandler {
 
     @Override
     protected void log(Request request) {
-        JsonObject logdata = request.data();
+        JsonObject logdata = request.data().getJsonObject(ID_MESSAGE);
 
         if (verifyToken(logdata)) {
             logdata.remove(ID_TOKEN);
-            logdata.remove(PROTOCOL_ROUTE);
             console.log(logdata);
             store.log(logdata);
         } else {

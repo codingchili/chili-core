@@ -21,6 +21,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.codingchili.core.files.Configurations.launcher;
+
 /**
  * @author Robin Duda
  * <p>
@@ -332,10 +334,10 @@ public abstract class CoreStrings {
         return format(path, "");
     }
 
-    public static String getStartupText(String version) {
+    public static String getStartupText() {
         return String.format("\n%56s\n%42s\n%38s %s %s %s\n",
-                "system: Starting launcher [" + version + "] ..",
-                "Robin Duda © 2017",
+                "system: Starting "+ launcher().getApplication() +" [" + launcher().getVersion() + "] ..",
+                launcher().getAuthor(),
                 System.getProperty("java.vm.name"),
                 System.getProperty("java.version"),
                 System.getProperty("os.name"),
@@ -392,7 +394,7 @@ public abstract class CoreStrings {
     }
 
     public static String getFileLoadDefaults(String path, Class<?> clazz) {
-        return "configuration '" + path + "' not found, using defaults from '" + clazz.getSimpleName() + "'.";
+        return "'" + path + "' not found: using '" + clazz.getSimpleName() + "'.";
     }
 
     public static String getNoSuchResource(String name) {
@@ -515,7 +517,7 @@ public abstract class CoreStrings {
                 "' in service configuration for '" + target + "'.";
     }
 
-    public static String timestamp(long ms) {
+    public static String consumeTimestamp(long ms) {
         return LocalDateTime.ofInstant(Instant.ofEpochMilli(ms), ZoneOffset.UTC).toString().split("T")[1];
     }
 
@@ -562,8 +564,8 @@ public abstract class CoreStrings {
         return "Timed out after waiting for  " + timeout + "(ms) for address: " + target;
     }
 
-    public static String getNodeNotReachable(String target) {
-        return "The remote node '" + target + "' is currently not available.";
+    public static String getNodeNotReachable(String target, String route) {
+        return "The remote node '" + target + "' not available, requested handler '" + route + "'.";
     }
 
     public static String getNodeFailedToAcknowledge(String target, String route) {

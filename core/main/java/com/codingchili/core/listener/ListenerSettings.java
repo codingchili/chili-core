@@ -177,4 +177,15 @@ public class ListenerSettings {
         this.defaultTarget = defaultTarget;
         return this;
     }
+
+    private static ListenerSettings defaultSettings = new ListenerSettings();
+
+    /**
+     * @return static supplier of the default settings; used to avoid instantiating
+     * a new settings object on every read of setting properties in listeners
+     * where no settings has been configured.
+     */
+    public static ListenerSettings getDefaultSettings() {
+        return defaultSettings;
+    }
 }
