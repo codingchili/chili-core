@@ -37,6 +37,7 @@ public class LauncherSettings implements Configurable {
 
     /**
      * @param version sets the launcher version.
+     * @return fluent
      */
     public LauncherSettings setVersion(String version) {
         this.version = version;
@@ -52,6 +53,7 @@ public class LauncherSettings implements Configurable {
 
     /**
      * @param blocks set the configured deployment blocks.
+     * @return fluent
      */
     public LauncherSettings setBlocks(HashMap<String, List<String>> blocks) {
         this.blocks = blocks;
@@ -90,6 +92,7 @@ public class LauncherSettings implements Configurable {
 
     /**
      * @param hosts sets the host to block mapping.
+     * @return fluent
      */
     public LauncherSettings setHosts(HashMap<String, String> hosts) {
         this.hosts = hosts;
@@ -99,6 +102,7 @@ public class LauncherSettings implements Configurable {
     /**
      * @param host  the host that should be mapped to a service block
      * @param block the block that the host should be mapped to
+     * @return fluent
      */
     public LauncherSettings addHost(String host, String block) {
         if (blocks.containsKey(block)) {
@@ -118,6 +122,7 @@ public class LauncherSettings implements Configurable {
 
     /**
      * @param application set the name of the application.
+     * @return fluent
      */
     public LauncherSettings setApplication(String application) {
         this.application = application;

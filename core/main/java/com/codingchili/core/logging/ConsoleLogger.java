@@ -74,7 +74,7 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
     public Logger log(JsonObject data) {
         if (enabled.get()) {
             JsonObject event = eventFromLog(data);
-            write(parseJsonLog(event, consumeEvent(data)));
+            write(parseJsonLog(event, consume(data, LOG_EVENT)));
         }
         return this;
     }
@@ -98,6 +98,38 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
         return json;
     }
 
+    private String parseJsonLog(JsonObject data, String event) {
+        Level level = consumeLevel(data);
+        String message = consume(data, LOG_MESSAGE);
+        StringBuilder text = new StringBuilder()
+                .append((level == null) ? formatLevel(this.level) : formatLevel(level))
+                .append("\t")
+                .append("[")
+                .append(PURPLE)
+                .append(consumeTimestamp(data))
+                .append(RESET)
+                .append("] ")
+                .append((hasValue(event)) ? pad(event, 15) : "")
+                .append(" [")
+                .append(BLUE)
+                .append(pad(consume(data, LOG_SOURCE), 15))
+                .append(RESET)
+                .append("] ")
+                .append((hasValue(message) ? message + " " : ""));
+
+        for (String key : data.fieldNames()) {
+            Object object = data.getValue(key);
+            if (object != null) {
+                text.append(String.format("%s%-1s%s=%s ", getColor(level), key, RESET, object.toString()));
+            }
+        }
+        return text.toString();
+    }
+
+    private static boolean hasValue(String text) {
+        return (text != null && !text.equals(""));
+    }
+
     private Level consumeLevel(JsonObject data) {
         String level = (String) data.remove(LOG_LEVEL);
         if (level == null) {
@@ -107,28 +139,12 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
         }
     }
 
-    private String consumeEvent(JsonObject data) {
-        return (String) data.remove(LOG_EVENT);
-    }
-
-    private String parseJsonLog(JsonObject data, String event) {
-        Level level = consumeLevel(data);
-        StringBuilder text = new StringBuilder(String.format("%s\t%s %s",
-                (level == null) ? formatLevel(this.level) : formatLevel(level),
-                "[" + PURPLE + consumeTimestamp(data) + RESET + "]",
-                (hasValue(event)) ? pad(event, 18) : ""));
-
-        for (String key : data.fieldNames()) {
-            Object object = data.getValue(key);
-            if (object != null) {
-                if (!key.equals(LOG_HOST) && !key.equals(LOG_MESSAGE) && !key.equals(LOG_SOURCE)) {
-                    text.append(String.format("%-1s=%s ", key, object.toString()));
-                } else {
-                    text.append(String.format(" %s ", object.toString()));
-                }
-            }
+    private String consume(JsonObject data, String key) {
+        if (data.containsKey(key)) {
+            return (String) data.remove(key);
+        } else {
+            return "";
         }
-        return text.toString();
     }
 
     private String consumeTimestamp(JsonObject data) {
@@ -146,10 +162,6 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
         } else {
             return text;
         }
-    }
-
-    private static boolean hasValue(String text) {
-        return (text != null && !text.equals(""));
     }
 
     private static String formatLevel(Level level) {
