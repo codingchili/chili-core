@@ -1,6 +1,6 @@
 package com.codingchili.core.configuration.system;
 
-import com.codingchili.core.configuration.BaseConfigurable;
+import com.codingchili.core.configuration.Configurable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  * <p>
  * Contains the settings for the launcher.
  */
-public class LauncherSettings extends BaseConfigurable {
+public class LauncherSettings implements Configurable {
     private String application = "launcher";
     private String version = "CORE-1.0.6-SNAPSHOT";
     private String author = "Robin Duda \u00a9 2017";
@@ -23,8 +23,9 @@ public class LauncherSettings extends BaseConfigurable {
     private HashMap<String, List<String>> blocks = defaultBlockConfiguration();
     private HashMap<String, String> hosts = defaultHostConfiguration();
 
-    public LauncherSettings() {
-        super(PATH_LAUNCHER);
+    @Override
+    public String getPath() {
+        return PATH_LAUNCHER;
     }
 
     /**

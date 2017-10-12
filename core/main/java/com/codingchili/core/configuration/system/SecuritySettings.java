@@ -1,11 +1,12 @@
 package com.codingchili.core.configuration.system;
 
 
-import com.codingchili.core.configuration.BaseConfigurable;
-import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.configuration.Configurable;
 
 import java.util.HashMap;
 import java.util.Optional;
+
+import static com.codingchili.core.configuration.CoreStrings.PATH_SECURITY;
 
 /**
  * @author Robin Duda
@@ -20,13 +21,14 @@ import java.util.Optional;
  * {@link AuthenticationDependency} class contains the type of
  * configuration that is requested, for example a token or shared secret.
  */
-public class SecuritySettings extends BaseConfigurable {
+public class SecuritySettings implements Configurable {
     private HashMap<String, AuthenticationDependency> dependencies = new HashMap<>();
     private int secretBytes = 64;
     private int tokenttl = 3600 * 24 * 7;
 
-    public SecuritySettings() {
-        super(CoreStrings.PATH_SECURITY);
+    @Override
+    public String getPath() {
+        return PATH_SECURITY;
     }
 
     /**

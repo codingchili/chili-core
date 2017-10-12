@@ -1,18 +1,19 @@
 package com.codingchili.core.configuration.system;
 
-import com.codingchili.core.configuration.BaseConfigurable;
-import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.storage.ElasticMap;
 import com.codingchili.core.storage.MongoDBMap;
 
 import java.util.HashMap;
+
+import static com.codingchili.core.configuration.CoreStrings.PATH_STORAGE;
 
 /**
  * @author Robin Duda
  * <p>
  * configuration used by storages.
  */
-public class StorageSettings extends BaseConfigurable {
+public class StorageSettings implements Configurable{
     private static final String LOCALHOST = "localhost";
     private static final String CHILI = "chili";
     private HashMap<String, RemoteStorage> storage = new HashMap<>();
@@ -20,12 +21,15 @@ public class StorageSettings extends BaseConfigurable {
     private Integer minFeedbackChars = 3;
 
     public StorageSettings() {
-        super(CoreStrings.PATH_STORAGE);
-
         storage.put(MongoDBMap.class.getCanonicalName(),
                 new RemoteStorage(LOCALHOST, 27017, CHILI));
         storage.put(ElasticMap.class.getCanonicalName(),
                 new RemoteStorage(LOCALHOST, 9300, CHILI));
+    }
+
+    @Override
+    public String getPath() {
+        return PATH_STORAGE;
     }
 
     /**

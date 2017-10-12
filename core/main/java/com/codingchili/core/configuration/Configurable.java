@@ -26,9 +26,8 @@ public interface Configurable extends Serializable {
      * it was loaded from.
      *
      * @param path the path to the configurable on disk for reloading and saving.
-     * @return the configurable itself for fluent use
      */
-    Configurable setPath(String path);
+    default void setPath(String path) {}
 
     /**
      * Serializes a configuration for permanent storage, allows the

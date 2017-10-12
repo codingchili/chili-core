@@ -35,6 +35,7 @@ public abstract class CoreStrings {
     public static final String PATH_SECURITY = "conf/system/security.json";
     public static final String PATH_SYSTEM = "conf/system/system.json";
     public static final String PATH_STORAGE = "conf/system/storage.json";
+    public static final String PATH_VALIDATOR = "conf/system/validator.json";
 
     // common directories.
     public static final String DIR_ROOT = "/";
@@ -517,7 +518,7 @@ public abstract class CoreStrings {
                 "' in service configuration for '" + target + "'.";
     }
 
-    public static String consumeTimestamp(long ms) {
+    public static String timestamp(long ms) {
         return LocalDateTime.ofInstant(Instant.ofEpochMilli(ms), ZoneOffset.UTC).toString().split("T")[1];
     }
 

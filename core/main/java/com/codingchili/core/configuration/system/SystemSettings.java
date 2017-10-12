@@ -1,17 +1,18 @@
 package com.codingchili.core.configuration.system;
 
-import com.codingchili.core.configuration.BaseConfigurable;
-import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.configuration.Configurable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.metrics.MetricsOptions;
+
+import static com.codingchili.core.configuration.CoreStrings.PATH_SYSTEM;
 
 /**
  * @author Robin Duda
  * <p>
  * Contains settings for the core system.
  */
-public class SystemSettings extends BaseConfigurable {
+public class SystemSettings implements Configurable {
     private int metricRate = 15000;
     private int services = 1;
     private int handlers = Runtime.getRuntime().availableProcessors();
@@ -26,8 +27,9 @@ public class SystemSettings extends BaseConfigurable {
     private int workerPoolSize = 32;
     private int clusterTimeout = 3000;
 
-    public SystemSettings() {
-        path = CoreStrings.PATH_SYSTEM;
+    @Override
+    public String getPath() {
+        return PATH_SYSTEM;
     }
 
     /**

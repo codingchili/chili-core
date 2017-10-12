@@ -1,6 +1,6 @@
 package com.codingchili.realm.instance.configuration;
 
-import com.codingchili.core.configuration.BaseConfigurable;
+import com.codingchili.core.configuration.Configurable;
 import com.codingchili.realm.instance.model.Node;
 import com.codingchili.realm.instance.model.Npc;
 import com.codingchili.realm.instance.model.Portal;
@@ -15,7 +15,7 @@ import static com.codingchili.common.Strings.PATH_INSTANCE;
  * @author Robin Duda
  * Contains settings for an instance in a realm.
  */
-public class InstanceSettings extends BaseConfigurable {
+public class InstanceSettings implements Configurable {
     private List<Portal> portals = new ArrayList<>();
     private List<Node> nodes = new ArrayList<>();
     private List<Npc> npc = new ArrayList<>();

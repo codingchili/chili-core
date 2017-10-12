@@ -29,7 +29,6 @@ import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
-import org.junit.Ignore;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -50,7 +49,6 @@ import static com.codingchili.core.context.FutureHelper.result;
  * Does not support case sensitivity for equals.
  * Does not support ordering nested fields without server configuration
  */
-@Ignore("Requires running elasticsearch server.")
 public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     private StorageContext<Value> context;
     private Logger logger;

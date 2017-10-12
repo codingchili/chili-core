@@ -133,9 +133,9 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
 
     private String consumeTimestamp(JsonObject data) {
         if (data.containsKey(LOG_TIME)) {
-            return data.remove(LOG_TIME).toString();
+            return timestamp(Long.parseLong(data.remove(LOG_TIME).toString()));
         } else {
-            return Instant.now().toEpochMilli() + "";
+            return timestamp(Instant.now().toEpochMilli()) + "";
         }
     }
 
