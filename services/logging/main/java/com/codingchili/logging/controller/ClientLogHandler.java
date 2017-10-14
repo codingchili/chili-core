@@ -25,7 +25,7 @@ public class ClientLogHandler extends AbstractLogHandler {
     protected void log(Request request) {
         JsonObject logdata = request.data().getJsonObject(ID_MESSAGE);
 
-        if (verifyToken(logdata)) {
+        if (verifyToken(request.data())) {
             logdata.remove(ID_TOKEN);
             console.log(logdata);
             store.log(logdata);

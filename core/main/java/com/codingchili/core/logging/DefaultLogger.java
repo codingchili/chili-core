@@ -17,6 +17,7 @@ import java.util.logging.LogRecord;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.files.Configurations.launcher;
+import static com.codingchili.core.logging.Level.INFO;
 
 /**
  * @author Robin Duda
@@ -28,7 +29,7 @@ public abstract class DefaultLogger extends Handler implements Logger {
     protected CoreContext context;
     protected JsonLogger logger;
     protected Class aClass;
-    private Level level = Level.INFO;
+    private Level level = INFO;
 
     public DefaultLogger(CoreContext context, Class aClass) {
         this.context = context;
@@ -53,18 +54,19 @@ public abstract class DefaultLogger extends Handler implements Logger {
         return this;
     }
 
-    private JsonObject event(String name) {
-        return event(name, Level.INFO);
+    @Override
+    public LogMessage event(String name) {
+        return event(name, level);
     }
 
     @Override
-    public JsonObject event(String name, Level level) {
+    public LogMessage event(String name, Level level) {
         JsonObject event = new JsonObject()
                 .put(LOG_EVENT, name)
                 .put(LOG_LEVEL, level)
                 .put(LOG_TIME, Instant.now().toEpochMilli());
         addMetadata(event);
-        return event;
+        return new LogMessage(this, event);
     }
 
     /**
@@ -83,66 +85,62 @@ public abstract class DefaultLogger extends Handler implements Logger {
 
     @Override
     public void onAlreadyInitialized() {
-        log(event(LOG_ERROR, Level.WARNING)
-                .put(PROTOCOL_MESSAGE, ERROR_ALREADY_INITIALIZED));
+        event(LOG_ERROR, Level.WARNING)
+                .put(PROTOCOL_MESSAGE, ERROR_ALREADY_INITIALIZED).send();
     }
 
     @Override
     public void onServiceStarted(CoreService service) {
-        log(event(LOG_SERVICE_START, Level.STARTUP)
-                .put(ID_NAME, service.name()));
+        event(LOG_SERVICE_START, Level.STARTUP)
+                .put(ID_NAME, service.name()).send();
     }
 
     @Override
     public void onServiceStopped(Future<Void> future, CoreService service) {
-        log(event(LOG_SERVICE_STOP, Level.SEVERE)
-                .put(ID_NAME, service.name()));
+        event(LOG_SERVICE_STOP, Level.SEVERE)
+                .put(ID_NAME, service.name()).send();
         Delay.forShutdown(future);
     }
 
     @Override
     public void onListenerStarted(CoreListener listener) {
-        log(event(LOG_LISTENER_START, Level.STARTUP)
-                .put(ID_HANDLER, listener.toString())
-        );
+        event(LOG_LISTENER_START, Level.STARTUP)
+                .put(ID_HANDLER, listener.toString()).send();
     }
 
     @Override
     public void onListenerStopped(CoreListener listener) {
-        log(event(LOG_LISTENER_STOP, Level.SEVERE)
-                .put(ID_HANDLER, listener.toString()));
+        event(LOG_LISTENER_STOP, Level.SEVERE)
+                .put(ID_HANDLER, listener.toString()).send();
     }
 
     @Override
     public void onServiceFailed(Throwable cause) {
-        log(event(LOG_SERVICE_FAIL, Level.SEVERE)
-                .put(ID_MESSAGE, cause.getMessage()));
+        event(LOG_SERVICE_FAIL, Level.SEVERE)
+                .put(ID_MESSAGE, cause.getMessage()).send();
     }
 
     @Override
     public void onMetricsSnapshot(JsonObject metrics) {
-        log(event(LOG_METRICS)
-                .put(ID_DATA, metrics));
+        event(LOG_METRICS).put(ID_DATA, metrics).send();
     }
 
     @Override
     public void onHandlerMissing(String target, String route) {
-        log(event(LOG_HANDLER_MISSING, Level.WARNING)
+        event(LOG_HANDLER_MISSING, Level.WARNING)
                 .put(PROTOCOL_TARGET, target)
                 .put(PROTOCOL_ROUTE, route)
-                .put(LOG_MESSAGE, getHandlerMissing(target)));
+                .put(LOG_MESSAGE, getHandlerMissing(target)).send();
     }
 
     @Override
     public void onFileLoaded(String path) {
-        log(event(LOG_FILE_LOADED, Level.INFO)
-                .put(LOG_MESSAGE, path));
+        event(LOG_FILE_LOADED, INFO).put(LOG_MESSAGE, path).send();
     }
 
     @Override
     public void onError(Throwable cause) {
-        log(event(LOG_ERROR, Level.SEVERE)
-                .put(LOG_MESSAGE, cause.getMessage()));
+        event(LOG_ERROR, Level.SEVERE).put(LOG_MESSAGE, cause.getMessage()).send();
     }
 
     @Override
@@ -153,83 +151,81 @@ public abstract class DefaultLogger extends Handler implements Logger {
 
     @Override
     public void publish(LogRecord record) {
-        log(addTrace(event(LOG_VERTX, Level.valueOf(record.getLevel().getName())), record)
-                .put(LOG_MESSAGE, record.getMessage()));
+        addTrace(event(LOG_VERTX, Level.valueOf(record.getLevel().getName())), record)
+                .put(LOG_MESSAGE, record.getMessage()).send();
     }
 
     @Override
     public void onFileLoadError(String fileName) {
-        log(event(LOG_FILE_ERROR, Level.SEVERE)
-                .put(LOG_MESSAGE, fileName));
+        event(LOG_FILE_ERROR, Level.SEVERE).put(LOG_MESSAGE, fileName).send();
     }
 
     @Override
     public void onFileSaved(String saver, String path) {
-        log(event(LOG_FILE_SAVED, Level.INFO)
+        event(LOG_FILE_SAVED, INFO)
                 .put(LOG_AGENT, saver)
-                .put(LOG_MESSAGE, path));
+                .put(LOG_MESSAGE, path).send();
     }
 
     @Override
     public void onFileSaveError(String fileName) {
-        log(event(LOG_FILE_SAVED, Level.SEVERE)
-                .put(LOG_MESSAGE, fileName));
+        event(LOG_FILE_SAVED, Level.SEVERE)
+                .put(LOG_MESSAGE, fileName).send();
     }
 
     @Override
     public void onConfigurationDefaultsLoaded(String path, Class<?> clazz) {
-        log(event(LOG_CONFIG_DEFAULTED, Level.WARNING)
-                .put(LOG_MESSAGE, getFileLoadDefaults(path, clazz)));
+        event(LOG_CONFIG_DEFAULTED, Level.WARNING)
+                .put(LOG_MESSAGE, getFileLoadDefaults(path, clazz)).send();
     }
 
     @Override
     public void onInvalidConfigurable(Class<?> clazz) {
-        log(event(LOG_CONFIGURATION_INVALID, Level.SEVERE)
-                .put(LOG_MESSAGE, getErrorInvalidConfigurable(clazz)));
+        event(LOG_CONFIGURATION_INVALID, Level.SEVERE)
+                .put(LOG_MESSAGE, getErrorInvalidConfigurable(clazz)).send();
     }
 
     @Override
     public void onCacheCleared(String component) {
-        log(event(LOG_CACHE_CLEARED, Level.WARNING)
-                .put(LOG_AGENT, component));
+        event(LOG_CACHE_CLEARED, Level.WARNING)
+                .put(LOG_AGENT, component).send();
     }
 
     @Override
     public void onSecurityDependencyMissing(String target, String identifier) {
-        log(event(LOG_SECURITY, Level.SEVERE)
-                .put(LOG_MESSAGE, getSecurityDependencyMissing(target, identifier)));
+        event(LOG_SECURITY, Level.SEVERE)
+                .put(LOG_MESSAGE, getSecurityDependencyMissing(target, identifier)).send();
     }
 
     @Override
     public Logger log(String line) {
-        log(event(LOG_MESSAGE, level)
-                .put(PROTOCOL_MESSAGE, line));
+        event(LOG_MESSAGE, level).put(PROTOCOL_MESSAGE, line).send();
         return this;
     }
 
     @Override
     public Logger log(String line, Level level) {
-        log(event(LOG_MESSAGE, level)
-                .put(PROTOCOL_MESSAGE, line));
+        event(LOG_MESSAGE, level).put(PROTOCOL_MESSAGE, line).send();
         return this;
     }
 
     @Override
     public void onTimerSourceChanged(String name, int initialTimeout, int newTimeout) {
-        log(event(LOG_TIMER_CHANGE, Level.INFO)
+        event(LOG_TIMER_CHANGE, INFO)
                 .put(ID_NAME, name)
                 .put(LOG_PREVIOUS, initialTimeout)
-                .put(LOG_NEW, newTimeout));
+                .put(LOG_NEW, newTimeout)
+                .send();
     }
 
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-    private JsonObject addTrace(JsonObject log, LogRecord record) {
+    private LogMessage addTrace(LogMessage message, LogRecord record) {
 
         if (record.getThrown() != null) {
             StackTraceElement element = record.getThrown().getStackTrace()[0];
 
             if (element != null)
-                log.put(LOG_TRACE,
+                message.put(LOG_TRACE,
                         element.getClassName() + "." +
                                 element.getMethodName() + " (" +
                                 element.getLineNumber() + ")"
@@ -237,8 +233,7 @@ public abstract class DefaultLogger extends Handler implements Logger {
 
             record.getThrown().printStackTrace();
         }
-
-        return log;
+        return message;
     }
 
     @Override

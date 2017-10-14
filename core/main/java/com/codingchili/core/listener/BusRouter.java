@@ -69,25 +69,25 @@ public class BusRouter implements CoreHandler {
 
     protected void onRecipientFailure(Request request) {
         request.error(new NodeFailedToAcknowledge(request));
-        logger.log(logger.event(LOG_NODE_FAILURE, Level.WARNING)
+        logger.event(LOG_NODE_FAILURE, Level.WARNING)
                 .put(PROTOCOL_TARGET, request.target())
                 .put(PROTOCOL_ROUTE, request.route())
-                .put(ID_MESSAGE, getNodeFailedToAcknowledge(request.target(), request.route())));
+                .put(ID_MESSAGE, getNodeFailedToAcknowledge(request.target(), request.route())).send();
     }
 
     protected void onNodeNotReachable(Request request) {
         request.error(new NodeNotReachableException(request));
-        logger.log(logger.event(LOG_NODE_UNREACHABLE, Level.SEVERE)
+        logger.event(LOG_NODE_UNREACHABLE, Level.SEVERE)
                 .put(PROTOCOL_TARGET, request.target())
                 .put(PROTOCOL_ROUTE, request.route())
-                .put(ID_MESSAGE, getNodeNotReachable(request.target(), request.route())));
+                .put(ID_MESSAGE, getNodeNotReachable(request.target(), request.route())).send();
     }
 
     protected void onNodeTimeout(Request request) {
         request.error(new RequestTimedOutException(request));
-        logger.log(logger.event(LOG_NODE_TIMEOUT, Level.WARNING)
+        logger.event(LOG_NODE_TIMEOUT, Level.WARNING)
                 .put(PROTOCOL_TARGET, request.target())
                 .put(PROTOCOL_ROUTE, request.route())
-                .put(ID_MESSAGE, getServiceTimeout(request.target(), request.route(), request.timeout())));
+                .put(ID_MESSAGE, getServiceTimeout(request.target(), request.route(), request.timeout())).send();
     }
 }

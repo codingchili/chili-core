@@ -16,13 +16,21 @@ import java.util.function.Supplier;
 public interface Logger extends JsonLogger, StringLogger {
 
     /**
-     * Create a logging event.
+     * Creates a logging event using the loggers level.
      *
-     * @param event handler of the event to generate
-     * @param level the severity level of the event
-     * @return a JsonObject with a generated event, level, timestamp and context.
+     * @param name the name of the event.
+     * @return a LogMessage with a generated event, level, timestamp and context.
      */
-    JsonObject event(String event, Level level);
+    LogMessage event(String name);
+
+    /**
+     * Creates a logging event using a provided logger level.
+     *
+     * @param name the name of the event.
+     * @param level the level.
+     * @return a LogMessage with a generated event, level, timestamp and context.
+     */
+    LogMessage event(String name, Level level);
 
     /**
      * Emit when multiple attempts to initialize singleton.

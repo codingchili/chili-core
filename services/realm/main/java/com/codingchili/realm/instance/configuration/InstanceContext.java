@@ -50,15 +50,15 @@ public class InstanceContext extends SystemContext implements ServiceContext {
     }
 
     public void onInstanceStarted(String realm, String instance) {
-        logger.log(event(LOG_INSTANCE_START, Level.STARTUP)
+        event(LOG_INSTANCE_START, Level.STARTUP)
                 .put(LOG_INSTANCE, instance)
-                .put(ID_REALM, realm));
+                .put(ID_REALM, realm).send();
     }
 
     public void onInstanceStopped(Future<Void> future, String realm, String instance) {
-        logger.log(event(LOG_INSTANCE_STOP, Level.SEVERE)
+        event(LOG_INSTANCE_STOP, Level.SEVERE)
                 .put(LOG_INSTANCE, instance)
-                .put(ID_REALM, realm));
+                .put(ID_REALM, realm).send();
 
         Delay.forShutdown(future);
     }

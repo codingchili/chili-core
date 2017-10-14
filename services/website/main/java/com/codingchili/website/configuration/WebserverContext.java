@@ -46,6 +46,6 @@ public class WebserverContext extends SystemContext implements ServiceContext {
     }
 
     public void onPageLoaded(Request request) {
-        logger.log(event(LOG_PAGE_LOAD).put(LOG_AGENT, request.data().getString(LOG_USER_AGENT)));
+        event(LOG_PAGE_LOAD).put(LOG_AGENT, request.data().getString(LOG_USER_AGENT)).send();
     }
 }

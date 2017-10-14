@@ -58,7 +58,6 @@ public class BenchmarkConsoleListener implements BenchmarkListener {
     }
 
     private void log(String message) {
-        logger.log(logger.event(LOG_BENCHMARK, Level.INFO)
-                .put(ID_MESSAGE, message));
+        logger.event(LOG_BENCHMARK, Level.INFO).send(message);
     }
 }

@@ -111,7 +111,7 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
                 .append("] ")
                 .append((hasValue(event)) ? pad(event, 15) : "")
                 .append(" [")
-                .append(BLUE)
+                .append(getColor(level))
                 .append(pad(consume(data, LOG_SOURCE), 15))
                 .append(RESET)
                 .append("] ")

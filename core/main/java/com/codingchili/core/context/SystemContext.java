@@ -6,6 +6,7 @@ import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.*;
 import com.codingchili.core.listener.transport.ClusterListener;
 import com.codingchili.core.logging.Level;
+import com.codingchili.core.logging.LogMessage;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.logging.RemoteLogger;
 import io.vertx.core.*;
@@ -273,11 +274,11 @@ public class SystemContext implements CoreContext {
         return vertx;
     }
 
-    protected JsonObject event(String event) {
+    protected LogMessage event(String event) {
         return event(event, Level.INFO);
     }
 
-    protected JsonObject event(String event, Level level) {
+    protected LogMessage event(String event, Level level) {
         return logger.event(event, level);
     }
 }

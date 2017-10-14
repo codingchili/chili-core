@@ -1,7 +1,6 @@
 package com.codingchili.core.logging;
 
 import com.codingchili.core.testing.LoggerMock;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Before;
@@ -27,11 +26,11 @@ public class DefaultLoggerTest {
 
     @Test
     public void testGenerateLogEvent(TestContext context) {
-        JsonObject event = logger.event(LOG_MESSAGE, Level.SEVERE);
+        LogMessage event = logger.event(LOG_MESSAGE, Level.SEVERE);
 
-        context.assertEquals(LOG_MESSAGE, event.getString(LOG_EVENT));
-        context.assertEquals(Level.SEVERE.toString(), event.getString(LOG_LEVEL));
-        context.assertTrue(event.containsKey(LOG_TIME));
+        context.assertEquals(LOG_MESSAGE, event.toJson().getString(LOG_EVENT));
+        context.assertEquals(Level.SEVERE.toString(), event.toJson().getString(LOG_LEVEL));
+        context.assertTrue(event.toJson().containsKey(LOG_TIME));
     }
 
 }

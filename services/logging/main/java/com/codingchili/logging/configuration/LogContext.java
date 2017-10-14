@@ -18,6 +18,7 @@ import static com.codingchili.logging.configuration.LogServerSettings.PATH_LOGSE
  * Context used by logging handlers.
  */
 public class LogContext extends SystemContext implements ServiceContext {
+    private TokenFactory factory = new TokenFactory(service().getSecret());
     private AsyncStorage<JsonItem> storage;
 
     public LogContext(CoreContext context) {
@@ -44,6 +45,6 @@ public class LogContext extends SystemContext implements ServiceContext {
     }
 
     public boolean verifyToken(Token token) {
-        return new TokenFactory(service().getSecret()).verifyToken(token);
+        return factory.verifyToken(token);
     }
 }

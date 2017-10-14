@@ -67,14 +67,13 @@ public class RegistryContext extends SystemContext implements ServiceContext {
     }
 
     public void onRealmDisconnect(String realm) {
-        logger.log(event(LOG_REALM_DISCONNECT, Level.SEVERE)
-                .put(ID_REALM, realm));
+        event(LOG_REALM_DISCONNECT, Level.SEVERE).put(ID_REALM, realm).send();
     }
 
     public void onRealmUpdated(String realm, int players) {
-        logger.log(event(LOG_REALM_UPDATE, Level.INFO)
+        event(LOG_REALM_UPDATE, Level.INFO)
                 .put(ID_REALM, realm)
-                .put(ID_PLAYERS, players));
+                .put(ID_PLAYERS, players).send();
     }
 
     public void onStaleClearError(Throwable cause) {

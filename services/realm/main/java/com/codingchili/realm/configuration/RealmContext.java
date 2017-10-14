@@ -17,6 +17,7 @@ import io.vertx.core.Future;
 import java.util.List;
 
 import static com.codingchili.common.Strings.*;
+import static com.codingchili.core.logging.Level.SEVERE;
 import static com.codingchili.realm.configuration.RealmServerSettings.PATH_REALMSERVER;
 
 /**
@@ -89,35 +90,32 @@ public class RealmContext extends SystemContext implements ServiceContext {
     }
 
     public void onRealmStarted(String realm) {
-        logger.log(event(LOG_REALM_START, Level.STARTUP)
-                .put(ID_REALM, realm));
+        event(LOG_REALM_START, Level.STARTUP)
+                .put(ID_REALM, realm).send();
     }
 
     public void onRealmRejected(String realm, String message) {
-        logger.log(event(LOG_REALM_REJECTED, Level.WARNING)
+        event(LOG_REALM_REJECTED, Level.WARNING)
                 .put(ID_REALM, realm)
-                .put(ID_MESSAGE, message));
+                .put(ID_MESSAGE, message).send();
     }
 
     public void onRealmStopped(Future<Void> future, String realm) {
-        logger.log(event(LOG_REALM_STOP, Level.SEVERE)
-                .put(ID_REALM, realm));
+        event(LOG_REALM_STOP, SEVERE)
+                .put(ID_REALM, realm).send();
 
         Delay.forShutdown(future);
     }
 
     public void onRealmRegistered(String realm) {
-        logger.log(event(LOG_REALM_REGISTERED)
-                .put(ID_REALM, realm));
+        event(LOG_REALM_REGISTERED).put(ID_REALM, realm).send();
     }
 
     public void onDeployRealmFailure(String realm) {
-        logger.log(event(LOG_REALM_DEPLOY_ERROR, Level.SEVERE)
-                .put(LOG_MESSAGE, getDeployFailError(realm)));
+        event(LOG_REALM_DEPLOY_ERROR, SEVERE).put(LOG_MESSAGE, getDeployFailError(realm)).send();
     }
 
     public void onInstanceFailed(String instance, Throwable cause) {
-        logger.log(event(LOG_INSTANCE_DEPLOY_ERROR, Level.SEVERE)
-                .put(LOG_MESSAGE, getdeployInstanceError(instance, cause)));
+        event(LOG_INSTANCE_DEPLOY_ERROR, SEVERE).put(LOG_MESSAGE, getdeployInstanceError(instance, cause)).send();
     }
 }

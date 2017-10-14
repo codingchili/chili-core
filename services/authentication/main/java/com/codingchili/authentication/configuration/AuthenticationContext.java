@@ -17,6 +17,7 @@ import io.vertx.core.Future;
 
 import static com.codingchili.authentication.configuration.AuthenticationSettings.PATH_AUTHSERVER;
 import static com.codingchili.common.Strings.*;
+import static com.codingchili.core.logging.Level.WARNING;
 
 /**
  * @author Robin Duda
@@ -61,20 +62,20 @@ public class AuthenticationContext extends SystemContext implements ServiceConte
     }
 
     public void onAuthenticationFailure(Account account, String host) {
-        logger.log(event(LOG_ACCOUNT_UNAUTHORIZED, Level.WARNING)
+        event(LOG_ACCOUNT_UNAUTHORIZED, WARNING)
                 .put(LOG_USER, account.getUsername())
-                .put(LOG_REMOTE, host));
+                .put(LOG_REMOTE, host).send();
     }
 
     public void onAuthenticated(String username, String host) {
-        logger.log(event(LOG_ACCOUNT_AUTHENTICATED)
+        event(LOG_ACCOUNT_AUTHENTICATED)
                 .put(LOG_USER, username)
-                .put(LOG_REMOTE, host));
+                .put(LOG_REMOTE, host).send();
     }
 
     public void onRegistered(String username, String host) {
-        logger.log(event(LOG_ACCOUNT_REGISTERED)
+        event(LOG_ACCOUNT_REGISTERED)
                 .put(LOG_USER, username)
-                .put(LOG_REMOTE, host));
+                .put(LOG_REMOTE, host).send();
     }
 }
