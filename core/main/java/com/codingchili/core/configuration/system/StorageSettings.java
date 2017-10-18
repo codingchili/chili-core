@@ -21,9 +21,9 @@ public class StorageSettings implements Configurable{
     private Integer minFeedbackChars = 3;
 
     public StorageSettings() {
-        storage.put(MongoDBMap.class.getCanonicalName(),
+        storage.put(MongoDBMap.class.getName(),
                 new RemoteStorage(LOCALHOST, 27017, CHILI));
-        storage.put(ElasticMap.class.getCanonicalName(),
+        storage.put(ElasticMap.class.getName(),
                 new RemoteStorage(LOCALHOST, 9300, CHILI));
     }
 
@@ -66,8 +66,8 @@ public class StorageSettings implements Configurable{
      * @param plugin the plugin as a string that the configuration applies to
      * @return fluent
      */
-    public StorageSettings add(RemoteStorage config, String plugin) {
-        storage.put(plugin, config);
+    public StorageSettings add(RemoteStorage config, Class plugin) {
+        storage.put(plugin.getName(), config);
         return this;
     }
 

@@ -19,7 +19,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 public class ConsoleLogger extends DefaultLogger implements StringLogger {
     private static final String RESET = "\u001B[0m";
     private static final String BLACK = "\u001B[30m";
-    private static final String SEVERE = "\u001B[31m";
+    private static final String ERROR = "\u001B[31m";
     private static final String STARTUP = "\u001B[32m";
     private static final String WARNING = "\u001B[33m";
     private static final String BLUE = "\u001B[34m";
@@ -27,7 +27,6 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
     private static final String INFO = "\u001B[36m";
     private static final String WHITE = "\u001B[37m";
     private final AtomicBoolean enabled = new AtomicBoolean(true);
-    private Level level = Level.INFO;
 
     public ConsoleLogger() {
         super(ConsoleLogger.class);
@@ -45,8 +44,10 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
 
     private static String getColor(Level level) {
         switch (level) {
+            case ERROR:
+                return ERROR;
             case SEVERE:
-                return SEVERE;
+                return ERROR;
             case WARNING:
                 return WARNING;
             case INFO:
@@ -62,12 +63,6 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
             default:
                 return INFO;
         }
-    }
-
-    @Override
-    public Logger level(Level level) {
-        this.level = level;
-        return this;
     }
 
     @Override
@@ -102,7 +97,7 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
         Level level = consumeLevel(data);
         String message = consume(data, LOG_MESSAGE);
         StringBuilder text = new StringBuilder()
-                .append((level == null) ? formatLevel(this.level) : formatLevel(level))
+                .append((level == null) ? formatLevel(Level.INFO) : formatLevel(level))
                 .append("\t")
                 .append("[")
                 .append(PURPLE)
@@ -133,7 +128,7 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
     private Level consumeLevel(JsonObject data) {
         String level = (String) data.remove(LOG_LEVEL);
         if (level == null) {
-            return this.level;
+            return Level.INFO;
         } else {
             return Level.valueOf(level);
         }

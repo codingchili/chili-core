@@ -77,7 +77,7 @@ public class BusRouter implements CoreHandler {
 
     protected void onNodeNotReachable(Request request) {
         request.error(new NodeNotReachableException(request));
-        logger.event(LOG_NODE_UNREACHABLE, Level.SEVERE)
+        logger.event(LOG_NODE_UNREACHABLE, Level.ERROR)
                 .put(PROTOCOL_TARGET, request.target())
                 .put(PROTOCOL_ROUTE, request.route())
                 .put(ID_MESSAGE, getNodeNotReachable(request.target(), request.route())).send();

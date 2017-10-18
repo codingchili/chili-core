@@ -17,7 +17,7 @@ import io.vertx.core.Future;
 import java.util.List;
 
 import static com.codingchili.common.Strings.*;
-import static com.codingchili.core.logging.Level.SEVERE;
+import static com.codingchili.core.logging.Level.ERROR;
 import static com.codingchili.realm.configuration.RealmServerSettings.PATH_REALMSERVER;
 
 /**
@@ -101,7 +101,7 @@ public class RealmContext extends SystemContext implements ServiceContext {
     }
 
     public void onRealmStopped(Future<Void> future, String realm) {
-        event(LOG_REALM_STOP, SEVERE)
+        event(LOG_REALM_STOP, ERROR)
                 .put(ID_REALM, realm).send();
 
         Delay.forShutdown(future);
@@ -112,10 +112,10 @@ public class RealmContext extends SystemContext implements ServiceContext {
     }
 
     public void onDeployRealmFailure(String realm) {
-        event(LOG_REALM_DEPLOY_ERROR, SEVERE).put(LOG_MESSAGE, getDeployFailError(realm)).send();
+        event(LOG_REALM_DEPLOY_ERROR, ERROR).put(LOG_MESSAGE, getDeployFailError(realm)).send();
     }
 
     public void onInstanceFailed(String instance, Throwable cause) {
-        event(LOG_INSTANCE_DEPLOY_ERROR, SEVERE).put(LOG_MESSAGE, getdeployInstanceError(instance, cause)).send();
+        event(LOG_INSTANCE_DEPLOY_ERROR, ERROR).put(LOG_MESSAGE, getdeployInstanceError(instance, cause)).send();
     }
 }

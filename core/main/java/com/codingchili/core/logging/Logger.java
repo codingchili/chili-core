@@ -7,6 +7,8 @@ import io.vertx.core.json.JsonObject;
 
 import java.util.function.Supplier;
 
+import static com.codingchili.core.logging.Level.*;
+
 
 /**
  * @author Robin Duda
@@ -112,13 +114,6 @@ public interface Logger extends JsonLogger, StringLogger {
      */
     void onError(Throwable cause);
 
-    /**
-     * Set logging level for raw logging calls.
-     *
-     * @param level sets the logging level of the logger
-     * @return fluent
-     */
-    Logger level(Level level);
 
     /**
      * Emit when the interval of a periodic timer has changed.

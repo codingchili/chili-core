@@ -29,7 +29,6 @@ public abstract class DefaultLogger extends Handler implements Logger {
     protected CoreContext context;
     protected JsonLogger logger;
     protected Class aClass;
-    private Level level = INFO;
 
     public DefaultLogger(CoreContext context, Class aClass) {
         this.context = context;
@@ -56,7 +55,7 @@ public abstract class DefaultLogger extends Handler implements Logger {
 
     @Override
     public LogMessage event(String name) {
-        return event(name, level);
+        return event(name, INFO);
     }
 
     @Override
@@ -97,7 +96,7 @@ public abstract class DefaultLogger extends Handler implements Logger {
 
     @Override
     public void onServiceStopped(Future<Void> future, CoreService service) {
-        event(LOG_SERVICE_STOP, Level.SEVERE)
+        event(LOG_SERVICE_STOP, Level.ERROR)
                 .put(ID_NAME, service.name()).send();
         Delay.forShutdown(future);
     }
@@ -110,13 +109,13 @@ public abstract class DefaultLogger extends Handler implements Logger {
 
     @Override
     public void onListenerStopped(CoreListener listener) {
-        event(LOG_LISTENER_STOP, Level.SEVERE)
+        event(LOG_LISTENER_STOP, Level.ERROR)
                 .put(ID_HANDLER, listener.toString()).send();
     }
 
     @Override
     public void onServiceFailed(Throwable cause) {
-        event(LOG_SERVICE_FAIL, Level.SEVERE)
+        event(LOG_SERVICE_FAIL, Level.ERROR)
                 .put(ID_MESSAGE, cause.getMessage()).send();
     }
 
@@ -140,13 +139,7 @@ public abstract class DefaultLogger extends Handler implements Logger {
 
     @Override
     public void onError(Throwable cause) {
-        event(LOG_ERROR, Level.SEVERE).put(LOG_MESSAGE, cause.getMessage()).send();
-    }
-
-    @Override
-    public Logger level(Level level) {
-        this.level = level;
-        return this;
+        event(LOG_ERROR, Level.ERROR).put(LOG_MESSAGE, cause.getMessage()).send();
     }
 
     @Override
@@ -157,7 +150,7 @@ public abstract class DefaultLogger extends Handler implements Logger {
 
     @Override
     public void onFileLoadError(String fileName) {
-        event(LOG_FILE_ERROR, Level.SEVERE).put(LOG_MESSAGE, fileName).send();
+        event(LOG_FILE_ERROR, Level.ERROR).put(LOG_MESSAGE, fileName).send();
     }
 
     @Override
@@ -169,7 +162,7 @@ public abstract class DefaultLogger extends Handler implements Logger {
 
     @Override
     public void onFileSaveError(String fileName) {
-        event(LOG_FILE_SAVED, Level.SEVERE)
+        event(LOG_FILE_SAVED, Level.ERROR)
                 .put(LOG_MESSAGE, fileName).send();
     }
 
@@ -181,7 +174,7 @@ public abstract class DefaultLogger extends Handler implements Logger {
 
     @Override
     public void onInvalidConfigurable(Class<?> clazz) {
-        event(LOG_CONFIGURATION_INVALID, Level.SEVERE)
+        event(LOG_CONFIGURATION_INVALID, Level.ERROR)
                 .put(LOG_MESSAGE, getErrorInvalidConfigurable(clazz)).send();
     }
 
@@ -193,13 +186,13 @@ public abstract class DefaultLogger extends Handler implements Logger {
 
     @Override
     public void onSecurityDependencyMissing(String target, String identifier) {
-        event(LOG_SECURITY, Level.SEVERE)
+        event(LOG_SECURITY, Level.ERROR)
                 .put(LOG_MESSAGE, getSecurityDependencyMissing(target, identifier)).send();
     }
 
     @Override
     public Logger log(String line) {
-        event(LOG_MESSAGE, level).put(PROTOCOL_MESSAGE, line).send();
+        event(LOG_MESSAGE, INFO).put(PROTOCOL_MESSAGE, line).send();
         return this;
     }
 
@@ -218,20 +211,9 @@ public abstract class DefaultLogger extends Handler implements Logger {
                 .send();
     }
 
-    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     private LogMessage addTrace(LogMessage message, LogRecord record) {
-
         if (record.getThrown() != null) {
-            StackTraceElement element = record.getThrown().getStackTrace()[0];
-
-            if (element != null)
-                message.put(LOG_TRACE,
-                        element.getClassName() + "." +
-                                element.getMethodName() + " (" +
-                                element.getLineNumber() + ")"
-                );
-
-            record.getThrown().printStackTrace();
+            message.put(LOG_STACKTRACE, throwableToString(record.getThrown()));
         }
         return message;
     }

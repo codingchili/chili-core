@@ -10,6 +10,8 @@ import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
 import io.vertx.core.Verticle;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -133,7 +135,7 @@ public abstract class CoreStrings {
     public static final String LOG_USER_AGENT = "USER-Agent";
     public static final String LOG_AGENT = "agent";
     public static final String LOG_CONTEXT = "context";
-    public static final String LOG_TIME = "time";
+    public static final String LOG_TIME = "timestamp";
     public static final String LOG_NODE = "node";
     public static final String LOG_HOST = "host";
     public static final String LOG_SECURITY = "security";
@@ -146,7 +148,7 @@ public abstract class CoreStrings {
     public static final String LOG_LEVEL = "level";
     public static final String LOG_VERTX = "vertx";
     public static final String LOG_METRICS = "metrics";
-    public static final String LOG_TRACE = "trace";
+    public static final String LOG_STACKTRACE = "stacktrace";
     public static final String LOG_HANDLER_MISSING = "handler.missing";
     public static final String LOG_FILE_LOADED = "file.load";
     public static final String LOG_FILE_SAVED = "file.save";
@@ -218,6 +220,19 @@ public abstract class CoreStrings {
 
     public static String getHandlerMissing(String name) {
         return String.format("The requested handler '%s' was not found.", name);
+    }
+
+    /**
+     * Converts a throwables stack trace element into text.
+     *
+     * @param e the throwable to convert.
+     * @return a string of the throwables stack elements.
+     */
+    public static String throwableToString(Throwable e) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        return sw.toString();
     }
 
     /**
@@ -337,7 +352,7 @@ public abstract class CoreStrings {
 
     public static String getStartupText() {
         return String.format("\n%56s\n%42s\n%38s %s %s %s\n",
-                "system: Starting "+ launcher().getApplication() +" [" + launcher().getVersion() + "] ..",
+                "system: Starting " + launcher().getApplication() + " [" + launcher().getVersion() + "] ..",
                 launcher().getAuthor(),
                 System.getProperty("java.vm.name"),
                 System.getProperty("java.version"),

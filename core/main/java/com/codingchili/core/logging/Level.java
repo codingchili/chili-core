@@ -6,5 +6,5 @@ package com.codingchili.core.logging;
  * logging level definitions.
  */
 public enum Level {
-    INFO, WARNING, STARTUP, SEVERE, PURPLE, BLUE, WHITE
+    INFO, WARNING, STARTUP, ERROR, PURPLE, BLUE, WHITE, SEVERE
 }

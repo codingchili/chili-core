@@ -26,10 +26,10 @@ public class DefaultLoggerTest {
 
     @Test
     public void testGenerateLogEvent(TestContext context) {
-        LogMessage event = logger.event(LOG_MESSAGE, Level.SEVERE);
+        LogMessage event = logger.event(LOG_MESSAGE, Level.ERROR);
 
         context.assertEquals(LOG_MESSAGE, event.toJson().getString(LOG_EVENT));
-        context.assertEquals(Level.SEVERE.toString(), event.toJson().getString(LOG_LEVEL));
+        context.assertEquals(Level.ERROR.toString(), event.toJson().getString(LOG_LEVEL));
         context.assertTrue(event.toJson().containsKey(LOG_TIME));
     }
 

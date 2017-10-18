@@ -45,7 +45,7 @@ public class Launcher implements CoreService {
                     exit();
                 }
             } catch (Throwable e) {
-                logger.log(e.getMessage(), Level.SEVERE);
+                logger.log(e.getMessage(), Level.ERROR);
                 logger.log(getCommandError(context.command()), Level.INFO);
                 exit();
             }
@@ -80,7 +80,7 @@ public class Launcher implements CoreService {
                 if (clustered.succeeded()) {
                     start(clustered.result());
                 } else {
-                    logger.log(ERROR_LAUNCHER_STARTUP, Level.SEVERE);
+                    logger.log(ERROR_LAUNCHER_STARTUP, Level.ERROR);
                     exit();
                 }
             });
@@ -136,12 +136,12 @@ public class Launcher implements CoreService {
                     CoreListener.class.isAssignableFrom(clazz);
 
             if (!isDeployable) {
-                logger.log(getUnsupportedDeployment(node), Level.SEVERE);
+                logger.log(getUnsupportedDeployment(node), Level.ERROR);
                 exit();
             }
             return isDeployable;
         } catch (ClassNotFoundException e) {
-            logger.log(getNodeNotFound(node), Level.SEVERE);
+            logger.log(getNodeNotFound(node), Level.ERROR);
             exit();
             return false;
         }
@@ -154,7 +154,7 @@ public class Launcher implements CoreService {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            logger.log(ERRROR_LAUNCHER_SHUTDOWN, Level.SEVERE);
+            logger.log(ERRROR_LAUNCHER_SHUTDOWN, Level.ERROR);
         }));
     }
 }

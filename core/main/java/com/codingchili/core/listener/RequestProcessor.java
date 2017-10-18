@@ -23,6 +23,8 @@ public class RequestProcessor implements RequestHandler<Request> {
     public RequestProcessor(final CoreContext context, final CoreHandler handler) {
         this.context = context;
         this.handler = handler;
+
+
         this.logger = context.logger(getClass());
     }
 

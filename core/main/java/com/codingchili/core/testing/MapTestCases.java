@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.codingchili.core.configuration.CoreStrings.ID_NAME;
+import static com.codingchili.core.logging.Level.WARNING;
 
 
 /**
@@ -414,10 +415,9 @@ public class MapTestCases {
             if (item.getLevel() < lastLevel && order.equals(SortOrder.ASCENDING) ||
                     item.getLevel() > lastLevel && order.equals(SortOrder.DESCENDING)) {
                 new ConsoleLogger(getClass())
-                        .level(Level.WARNING)
-                        .log("Sort verification error!")
-                        .log("Last level was " + lastLevel + " using sortmode " + order.name())
-                        .log(Serializer.json(item).encodePrettily());
+                        .log("Sort verification error!", WARNING)
+                        .log("Last level was " + lastLevel + " using sortmode " + order.name(), WARNING)
+                        .log(Serializer.json(item).encodePrettily(), WARNING);
                 return false;
             }
             lastLevel = item.getLevel();
