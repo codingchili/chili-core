@@ -59,12 +59,6 @@ public class LoggerMock extends DefaultLogger {
     }
 
     @Override
-    public Logger level(Level startup) {
-        return this;
-    }
-
-
-    @Override
     public Logger log(JsonObject data) {
         return this;
     }
