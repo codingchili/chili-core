@@ -17,7 +17,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  * <p>
  * Command executor that registers launch commands to a CommandExecutor.
  */
-public class LauncherCommandExecutor extends CommandExecutor {
+public class LauncherCommandExecutor extends DefaultCommandExecutor {
 
     /**
      * constructs an instance with the default logger
@@ -51,6 +51,7 @@ public class LauncherCommandExecutor extends CommandExecutor {
     private void add(Runnable runnable, String name, String description) {
         super.add((executor) -> {
             runnable.run();
+            return true; // abort startup.
         }, name, description);
     }
 

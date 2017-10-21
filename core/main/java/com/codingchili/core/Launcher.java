@@ -29,15 +29,15 @@ public class Launcher implements CoreService {
     private CoreContext core;
 
     public Launcher(LaunchContext context) {
-        Future<Void> future = Future.future();
+        Future<Boolean> future = Future.future();
 
         logger.log(CoreStrings.getStartupText(), Level.STARTUP);
 
-        new LauncherCommandExecutor().execute(future, context.args());
+        context.getExecutor().execute(future, context.args());
         future.setHandler(done -> {
             try {
-                // the CommandExecutor has failed to execute the command.
-                if (done.failed()) {
+                // the command was executed and returned false = no abort.
+                if (done.failed() || !done.result()) {
                     nodes = context.block(context.args());
                     nodes = new ArrayList<>(nodes);
                     clusterIfEnabled(context.settings());
@@ -46,7 +46,7 @@ public class Launcher implements CoreService {
                 }
             } catch (Throwable e) {
                 logger.log(e.getMessage(), Level.ERROR);
-                logger.log(getCommandError(context.command()), Level.INFO);
+                logger.log(getCommandError(context.addCommand()), Level.INFO);
                 exit();
             }
         });

@@ -4,6 +4,7 @@ import io.vertx.core.Future;
 
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * @author Robin Duda
@@ -11,7 +12,7 @@ import java.util.function.Consumer;
  * A basic
  */
 public class BaseCommand implements Command {
-    private BiFunction<Future<Void>, CommandExecutor, Void> command;
+    private BiFunction<Future<Boolean>, CommandExecutor, Void> command;
     private boolean visible = true;
     private String name;
     private String description;
@@ -23,7 +24,7 @@ public class BaseCommand implements Command {
      * @param name        the handler of the command
      * @param description the command description
      */
-    public BaseCommand(BiFunction<Future<Void>, CommandExecutor, Void> consumer, String name, String description) {
+    public BaseCommand(BiFunction<Future<Boolean>, CommandExecutor, Void> consumer, String name, String description) {
         this.command = consumer;
         this.name = name;
         this.description = description;
@@ -36,10 +37,9 @@ public class BaseCommand implements Command {
      * @param name        the handler of the command
      * @param description the command description
      */
-    public BaseCommand(Consumer<CommandExecutor> runnable, String name, String description) {
+    public BaseCommand(Function<CommandExecutor, Boolean> runnable, String name, String description) {
         this((future, executor) -> {
-            runnable.accept(executor);
-            future.complete();
+            future.complete(runnable.apply(executor));
             return null;
         }, name, description);
     }
@@ -55,7 +55,7 @@ public class BaseCommand implements Command {
     }
 
     @Override
-    public void execute(Future<Void> future, CommandExecutor executor) {
+    public void execute(Future<Boolean> future, CommandExecutor executor) {
         command.apply(future, executor);
     }
 

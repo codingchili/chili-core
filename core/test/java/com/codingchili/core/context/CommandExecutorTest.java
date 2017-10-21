@@ -30,7 +30,7 @@ public class CommandExecutorTest {
     private static final String VALUE = "VALUE";
     private static final String VALUE_2 = "VALUE2";
     private static String MISSING_COMMAND = "command-missing";
-    private CommandExecutor executor = new CommandExecutor();
+    private CommandExecutor executor = new DefaultCommandExecutor();
     private boolean executed = false;
 
     @Before
@@ -53,8 +53,8 @@ public class CommandExecutorTest {
         executor.execute(getCompleter(test.async()), HELP_ASYNC);
     }
 
-    private Future<Void> getCompleter(Async async) {
-        return Future.<Void>future().setHandler(done -> async.complete());
+    private Future<Boolean> getCompleter(Async async) {
+        return Future.<Boolean>future().setHandler(done -> async.complete());
     }
 
     @Test
@@ -68,7 +68,7 @@ public class CommandExecutorTest {
 
     @Test
     public void testErrorWhenCommandMissingAsync(TestContext test) {
-        Future<Void> future = Future.future();
+        Future<Boolean> future = Future.future();
         Async async = test.async();
 
         future.setHandler(done -> {
@@ -86,7 +86,7 @@ public class CommandExecutorTest {
     public void testCommandIsUndefined(TestContext test) {
         try {
             executor.execute();
-            fail("Test did not fail for missing command.");
+            fail("Test did not fail for missing undefined command.");
         } catch (CoreRuntimeException e) {
             test.assertFalse(executor.getCommand().isPresent());
         }
@@ -129,14 +129,14 @@ public class CommandExecutorTest {
             test.assertTrue(executor.getProperty(PROPERTY).isPresent());
             test.assertEquals(VALUE, executor.getProperty(PROPERTY).get());
             async.complete();
+            return true;
         }, TEST_COMMAND, "").execute(TEST_COMMANDLINE_WITH_PARAM.split(" "));
     }
 
     @Test
     public void testThrowsErrorIfAlreadyExists(TestContext test) {
         try {
-            executor.add((executor) -> {
-            }, HELP, "");
+            executor.add((executor) -> true, HELP, "");
             test.fail("Test did not fail when adding an existing command.");
         } catch (CommandAlreadyExistsException ignored) {
         }
@@ -154,7 +154,10 @@ public class CommandExecutorTest {
     @Test
     public void testCommandExecuted(TestContext test) {
         Async async = test.async();
-        executor.add((executor) -> async.complete(), COMMAND, "");
+        executor.add((executor) -> {
+            async.complete();
+            return true;
+        }, COMMAND, "");
         executor.execute(COMMAND);
     }
 }

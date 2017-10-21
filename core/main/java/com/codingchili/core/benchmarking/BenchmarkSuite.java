@@ -27,7 +27,7 @@ public class BenchmarkSuite {
      * @param future   callback on completion
      * @param executor executor to invoke this as a command.
      */
-    public Void execute(Future<Void> future, CommandExecutor executor) {
+    public Void execute(Future<Boolean> future, CommandExecutor executor) {
         executor.getProperty(PARAM_ITERATIONS).ifPresent(iterations ->
                 this.iterations = Integer.parseInt(iterations));
 
@@ -44,7 +44,7 @@ public class BenchmarkSuite {
         return null;
     }
 
-    private void createReport(Future<Void> future, List<BenchmarkGroup> result, CommandExecutor executor) {
+    private void createReport(Future<Boolean> future, List<BenchmarkGroup> result, CommandExecutor executor) {
         Optional<String> template = executor.getProperty(PARAM_TEMPLATE);
         BenchmarkReport report;
 
@@ -55,7 +55,7 @@ public class BenchmarkSuite {
         }
         template.ifPresent(report::template);
         report.display();
-        future.complete();
+        future.complete(true);
     }
 
     /**

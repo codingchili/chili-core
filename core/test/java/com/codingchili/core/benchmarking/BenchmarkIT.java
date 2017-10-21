@@ -2,6 +2,7 @@ package com.codingchili.core.benchmarking;
 
 import com.codingchili.core.context.CommandExecutor;
 import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.DefaultCommandExecutor;
 import com.codingchili.core.context.SystemContext;
 import io.vertx.core.Future;
 import io.vertx.ext.unit.Async;
@@ -25,8 +26,8 @@ import static com.codingchili.core.configuration.CoreStrings.PARAM_ITERATIONS;
  */
 @RunWith(VertxUnitRunner.class)
 public class BenchmarkIT {
-    private static final String STRING_ITERATIONS = "5";
-    private static final int ITERATIONS = 4;
+    private static final String STRING_ITERATIONS = "2";
+    private static final int ITERATIONS = 2;
     private static CoreContext context;
 
     @Rule
@@ -73,9 +74,9 @@ public class BenchmarkIT {
      */
     @Test
     public void testExecuteSuiteAsCommand(TestContext test) {
-        CommandExecutor executor = new CommandExecutor();
+        CommandExecutor executor = new DefaultCommandExecutor();
         Async async = test.async();
-        Future<Void> future = Future.<Void>future().setHandler(done -> {
+        Future<Boolean> future = Future.<Boolean>future().setHandler(done -> {
             test.assertTrue(done.succeeded());
             async.complete();
         });

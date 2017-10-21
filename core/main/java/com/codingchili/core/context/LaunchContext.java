@@ -1,5 +1,6 @@
 package com.codingchili.core.context;
 
+import com.codingchili.core.Launcher;
 import com.codingchili.core.configuration.Environment;
 import com.codingchili.core.configuration.exception.BlockNotConfiguredException;
 import com.codingchili.core.configuration.exception.NoServicesConfiguredForBlock;
@@ -8,6 +9,7 @@ import com.codingchili.core.configuration.system.LauncherSettings;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
+import io.vertx.core.Future;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +23,7 @@ import static com.codingchili.core.configuration.CoreStrings.ID_DEFAULT;
  */
 public class LaunchContext {
     private static final String BLOCK_DEFAULT = "default";
+    private CommandExecutor executor = new LauncherCommandExecutor();
     private String[] args = new String[]{};
     private Logger console = new ConsoleLogger(getClass());
 
@@ -124,7 +127,7 @@ public class LaunchContext {
     /**
      * @return the command that was passed to the launcher if existing.
      */
-    public String command() {
+    public String addCommand() {
         if (args.length > 0) {
             return args[0];
         } else {
@@ -134,5 +137,41 @@ public class LaunchContext {
 
     public Logger logger() {
         return console;
+    }
+
+    /**
+     * adds a new command to the command executor, is used to handle command line arguments.
+     *
+     * @param command the command to add.
+     * @return fluent.
+     */
+    public LaunchContext addCommand(Command command) {
+        executor.add(command);
+        return this;
+    }
+
+    /**
+     * Set the command handler used to parse and execute command line arguments.
+     *
+     * @param executor the executor to execute commands with.
+     * @return fluent.
+     */
+    public LaunchContext setCommandExecutor(CommandExecutor executor) {
+        this.executor = executor;
+        return this;
+    }
+
+    /**
+     * Get the CommandExecutor attached to the launch context.
+     */
+    public CommandExecutor getExecutor() {
+        return executor;
+    }
+
+    /**
+     * Starts the launcher using this context.
+     */
+    public void start() {
+        Launcher.start(this);
     }
 }

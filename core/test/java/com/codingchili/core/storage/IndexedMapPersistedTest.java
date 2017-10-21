@@ -5,6 +5,7 @@ import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 
 /**
@@ -12,6 +13,7 @@ import org.junit.runner.RunWith;
  * <p>
  * Tests for the CQEngine indexed storage.
  */
+@Ignore("Slow to execute.")
 @RunWith(VertxUnitRunner.class)
 public class IndexedMapPersistedTest extends MapTestCases {
 

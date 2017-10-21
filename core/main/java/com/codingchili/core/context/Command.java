@@ -15,15 +15,17 @@ public interface Command {
      *
      * @return true if the command should be listed in the help menu.
      */
-    boolean isVisible();
+    default boolean isVisible() {
+        return true;
+    }
 
     /**
      * Executes a command.
      *
-     * @param future   callback
+     * @param future   callback: complete with true to abort startup.
      * @param executor the executor executing the command, can be used to get properties.
      */
-    void execute(Future<Void> future, CommandExecutor executor);
+    void execute(Future<Boolean> future, CommandExecutor executor);
 
     /**
      * @return the command description.
