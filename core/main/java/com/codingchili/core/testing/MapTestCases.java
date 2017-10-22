@@ -59,11 +59,11 @@ public class MapTestCases {
     protected static Integer STARTUP_DELAY = 1;
     @Rule
     public Timeout timeout = Timeout.seconds(10);
-    protected Class plugin;
+    protected Class<? extends AsyncStorage> plugin;
     protected StorageContext<StorageObject> context;
     protected AsyncStorage<StorageObject> store;
 
-    protected void setUp(TestContext test, Class plugin) {
+    protected void setUp(TestContext test, Class<? extends AsyncStorage> plugin) {
         setUp(test.async(), plugin, new SystemContext());
     }
 
@@ -72,7 +72,7 @@ public class MapTestCases {
         context.close(test.asyncAssertSuccess());
     }
 
-    protected void setUp(Async async, Class plugin, CoreContext context) {
+    protected void setUp(Async async, Class<? extends AsyncStorage> plugin, CoreContext context) {
         this.context = new StorageContext<>(context);
         this.plugin = plugin;
 

@@ -9,6 +9,7 @@ import com.codingchili.core.security.TokenFactory;
 import com.codingchili.core.storage.AsyncStorage;
 import com.codingchili.core.storage.JsonItem;
 import com.codingchili.core.storage.StorageLoader;
+import io.vertx.core.Future;
 
 import static com.codingchili.logging.configuration.LogServerSettings.PATH_LOGSERVER;
 
@@ -21,7 +22,7 @@ public class LogContext extends SystemContext implements ServiceContext {
     private TokenFactory factory = new TokenFactory(service().getSecret());
     private AsyncStorage<JsonItem> storage;
 
-    public LogContext(CoreContext context) {
+    public LogContext(CoreContext context, Future<Void> future) {
         super(context);
 
         new StorageLoader<JsonItem>(context)
@@ -29,7 +30,10 @@ public class LogContext extends SystemContext implements ServiceContext {
                 .withClass(JsonItem.class)
                 .withDB(service().getDb())
                 .withCollection(service().getCollection())
-                .build(result -> storage = result.result());
+                .build(result -> {
+                    storage = result.result();
+                    future.complete();
+                });
     }
 
     public AsyncStorage<JsonItem> storage() {

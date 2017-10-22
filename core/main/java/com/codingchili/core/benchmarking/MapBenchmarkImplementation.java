@@ -24,9 +24,9 @@ public class MapBenchmarkImplementation extends BaseBenchmarkImplementation {
     private static final String DB = "db";
     private AtomicInteger counter = new AtomicInteger(0);
     private AsyncStorage<Storable> storage;
-    private Class plugin;
+    private Class<? extends AsyncStorage> plugin;
 
-    public MapBenchmarkImplementation(BenchmarkGroup group, Class plugin, String implementation) {
+    public MapBenchmarkImplementation(BenchmarkGroup group, Class<? extends AsyncStorage> plugin, String implementation) {
         super(group, implementation);
         this.plugin = plugin;
 

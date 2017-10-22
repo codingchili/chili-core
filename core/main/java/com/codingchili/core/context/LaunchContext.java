@@ -9,10 +9,11 @@ import com.codingchili.core.configuration.system.LauncherSettings;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
-import io.vertx.core.Future;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import static com.codingchili.core.configuration.CoreStrings.ID_DEFAULT;
 
@@ -26,6 +27,8 @@ public class LaunchContext {
     private CommandExecutor executor = new LauncherCommandExecutor();
     private String[] args = new String[]{};
     private Logger console = new ConsoleLogger(getClass());
+    private List<Consumer<CoreContext>> listeners = new ArrayList<>();
+    private CoreContext core;
 
     /**
      * @param args process arguments to create a launcher for.
@@ -60,14 +63,12 @@ public class LaunchContext {
     private List<String> getBlock(String block) throws BlockNotConfiguredException {
         if (isBlockConfigured(block)) {
             return settings().getBlocks().get(block);
-        } else if (block == null) {
+        } else {
             if (isBlockConfigured(ID_DEFAULT)) {
                 return settings().getBlocks().get(ID_DEFAULT);
             } else {
                 throw new BlockNotConfiguredException(ID_DEFAULT);
             }
-        } else {
-            throw new BlockNotConfiguredException(block);
         }
     }
 
@@ -163,6 +164,7 @@ public class LaunchContext {
 
     /**
      * Get the CommandExecutor attached to the launch context.
+     * @return fluent
      */
     public CommandExecutor getExecutor() {
         return executor;
@@ -173,5 +175,29 @@ public class LaunchContext {
      */
     public void start() {
         Launcher.start(this);
+    }
+
+    /**
+     * Add a listener that will be called when the core context is loaded but
+     * before any services are deployed.
+     * @param listener a listener to be called.
+     * @return fluent.
+     */
+    public LaunchContext onLoaded(Consumer<CoreContext> listener) {
+        if (core != null) {
+            listener.accept(core);
+        } else {
+            listeners.add(listener);
+        }
+        return this;
+    }
+
+    /**
+     * notifies all listeners that the core context is loaded.
+     * @param core the core context that was loaded.
+     */
+    public void loaded(CoreContext core) {
+        this.core = core;
+        listeners.forEach(listener -> listener.accept(core));
     }
 }

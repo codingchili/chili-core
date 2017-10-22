@@ -17,17 +17,20 @@ import static com.codingchili.core.context.FutureHelper.generic;
  */
 public class Service implements CoreService {
     private LogContext context;
+    private Future<Void> future = Future.future();
 
     @Override
     public void init(CoreContext core) {
-        this.context = new LogContext(core);
+        this.context = new LogContext(core, future);
     }
 
     @Override
     public void start(Future<Void> start) {
-        CompositeFuture.all(
-                context.handler(() -> new ServiceLogHandler(context)),
-                context.handler(() -> new ClientLogHandler(context))
-        ).setHandler(generic(start));
+        future.setHandler(done -> {
+            CompositeFuture.all(
+                    context.handler(() -> new ServiceLogHandler(context)),
+                    context.handler(() -> new ClientLogHandler(context))
+            ).setHandler(generic(start));
+        });
     }
 }

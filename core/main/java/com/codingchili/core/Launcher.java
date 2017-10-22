@@ -1,7 +1,6 @@
 package com.codingchili.core;
 
 import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.configuration.system.LauncherSettings;
 import com.codingchili.core.context.*;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.CoreHandler;
@@ -40,7 +39,7 @@ public class Launcher implements CoreService {
                 if (done.failed() || !done.result()) {
                     nodes = context.block(context.args());
                     nodes = new ArrayList<>(nodes);
-                    clusterIfEnabled(context.settings());
+                    clusterIfEnabled(context);
                 } else {
                     exit();
                 }
@@ -74,8 +73,8 @@ public class Launcher implements CoreService {
         // empty for now: used in tests.
     }
 
-    private void clusterIfEnabled(LauncherSettings settings) {
-        if (settings.isClustered()) {
+    private void clusterIfEnabled(LaunchContext launcher) {
+        if (launcher.settings().isClustered()) {
             SystemContext.clustered(clustered -> {
                 if (clustered.succeeded()) {
                     start(clustered.result());

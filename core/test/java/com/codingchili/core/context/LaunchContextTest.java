@@ -44,7 +44,7 @@ public class LaunchContextTest {
     public void testGetMissingBlock() throws CoreException {
         try {
             Assert.assertTrue(context.block(BLOCK_NULL).isEmpty());
-        } catch (BlockNotConfiguredException e) {
+        } catch (NoServicesConfiguredForBlock e) {
             Assert.assertTrue(e.getMessage().contains(BLOCK_NULL));
         }
     }

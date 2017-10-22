@@ -68,6 +68,7 @@ public class ConfigurationsTest {
     public void testLoadDefaultsFromConfigurable(TestContext test) {
         Async async = test.async();
 
+        Configurations.setWarnOnDefaultsLoaded(true);
         Configurations.initialize(new ContextMock(context) {
             @Override
             public Logger logger(Class aClass) {

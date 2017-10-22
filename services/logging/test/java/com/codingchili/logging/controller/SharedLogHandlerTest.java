@@ -13,6 +13,7 @@ import com.codingchili.core.testing.RequestMock;
 import com.codingchili.core.testing.ResponseListener;
 import com.codingchili.logging.configuration.LogContext;
 import com.codingchili.logging.configuration.LogServerSettings;
+import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -40,20 +41,24 @@ public class SharedLogHandlerTest {
     AbstractLogHandler handler;
     LogContext context;
     private TokenFactory factory;
+    private Future<Void> future = Future.future();
 
     public SharedLogHandlerTest() {
         LogServerSettings settings = new LogServerSettings();
         Configurations.put(settings);
         SystemContext system = new SystemContext();
         settings.setSecret(new byte[]{0x0});
-        context = new LogContext(system);
+        context = new LogContext(system, future);
         factory = new TokenFactory(settings.getSecret());
     }
 
     @Before
-    public void setUp() {
-        context.storage().clear(done -> {
-        });
+    public void setUp(TestContext test) {
+        Async async = test.async();
+
+        future.setHandler(done -> context.storage().clear(cleared -> {
+            async.complete();
+        }));
     }
 
     @After

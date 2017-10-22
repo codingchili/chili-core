@@ -2,6 +2,7 @@ package com.codingchili.logging.controller;
 
 import com.codingchili.common.Strings;
 import com.codingchili.core.protocol.ResponseStatus;
+import io.vertx.core.Future;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;

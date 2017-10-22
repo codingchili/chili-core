@@ -85,6 +85,7 @@ public class SystemContext implements CoreContext {
                     this.onMetricsSnapshot(json);
                 }
             });
+            StartupListener.publish(this);
             initialized.set(true);
         }
     }
@@ -260,6 +261,7 @@ public class SystemContext implements CoreContext {
     @Override
     public void close() {
         vertx.close();
+        StartupListener.publish(null);
         initialized.set(false);
     }
 

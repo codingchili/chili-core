@@ -2,6 +2,7 @@ package com.codingchili.core.storage;
 
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.SystemContext;
+import io.vertx.core.Future;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
@@ -22,17 +23,11 @@ public class StorageLoaderIT {
     private static final String TEST_COLLECTION = "collection";
     private static CoreContext context;
     @Rule
-    public Timeout timeout = new Timeout(8, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
 
     @BeforeClass
-    public static void setUp(TestContext test) {
-        Async async = test.async();
-
-        SystemContext.clustered(clustering -> {
-            test.assertTrue(clustering.succeeded());
-            context = clustering.result();
-            async.complete();
-        });
+    public static void setUp() {
+        context = new SystemContext();
     }
 
     @AfterClass
@@ -41,54 +36,79 @@ public class StorageLoaderIT {
     }
 
     @Test
+    public void testLoadWithFail(TestContext test) {
+        Async async = test.async();
+        new StorageLoader<>(context)
+                .withDB("", "")
+                .withClass(String.class)
+                .withPlugin("null").build(done -> {
+            if (done.failed()) {
+                async.complete();
+            } else {
+                test.fail("Expected future to fail.");
+            }
+        });
+    }
+
+    @Test
     public void testLoadLocalAsyncMap(TestContext test) {
-        loadStoragePlugin(test.async(), PrivateMap.class);
+        loadStoragePlugin(test, PrivateMap.class);
     }
 
     @Test
     public void testLoadJsonMap(TestContext test) {
-        loadStoragePlugin(test.async(), JsonMap.class);
+        loadStoragePlugin(test, JsonMap.class);
     }
 
     @Test
     public void testLoadIndexedMapV(TestContext test) {
-        loadStoragePlugin(test.async(), IndexedMapVolatile.class);
+        loadStoragePlugin(test, IndexedMapVolatile.class);
     }
 
     @Test
     public void testLoadIndexedMapP(TestContext test) {
-        loadStoragePlugin(test.async(), IndexedMapPersisted.class);
+        loadStoragePlugin(test, IndexedMapPersisted.class);
     }
 
     @Test
     public void testLoadSharedMap(TestContext test) {
-        loadStoragePlugin(test.async(), SharedMap.class);
+        loadStoragePlugin(test, SharedMap.class);
     }
 
+    @Ignore("Requires clustering - not interesting in this test case.")
     @Test
     public void testLoadHazelAsyncMap(TestContext test) {
-        loadStoragePlugin(test.async(), HazelMap.class);
+        loadStoragePlugin(test, HazelMap.class);
     }
 
     @Ignore("Requires an available ElasticSearch database.")
     @Test
     public void testLoadElasticMap(TestContext test) {
-        loadStoragePlugin(test.async(), ElasticMap.class);
+        loadStoragePlugin(test, ElasticMap.class);
     }
 
     @Ignore("Requires an available MongoDB database.")
     @Test
     public void testLoadMongoMap(TestContext test) {
-        loadStoragePlugin(test.async(), MongoDBMap.class);
+        loadStoragePlugin(test, MongoDBMap.class);
 
     }
 
-    private void loadStoragePlugin(Async async, Class plugin) {
+    private void loadStoragePlugin(TestContext test, Class plugin) {
+        Future<AsyncStorage<StorableString>> future = Future.future();
+        Async async = test.async();
+
         new StorageLoader<StorableString>(context)
                 .withPlugin(plugin)
                 .withDB(TEST_MAP, TEST_COLLECTION)
                 .withClass(StorableString.class)
-                .build(storage -> async.complete());
+                .build(future);
+
+        future.setHandler(done -> {
+            if (done.succeeded()) {
+                async.complete();
+            }
+        });
     }
 
     private class StorableString implements Storable {
