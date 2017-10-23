@@ -8,7 +8,9 @@ import com.codingchili.core.testing.RequestMock;
 import com.codingchili.core.testing.ResponseListener;
 import com.codingchili.realmregistry.ContextMock;
 import com.codingchili.realmregistry.configuration.RegisteredRealm;
+import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -38,12 +40,16 @@ public class RealmHandlerTest {
     private ContextMock mock;
 
     @Before
-    public void setUp() {
+    public void setUp(TestContext test) {
+        Async async = test.async();
         mock = new ContextMock();
         handler = new RealmHandler(mock);
-
         realmconfig.setAuthentication(new Token(mock.getRealmFactory(), REALM_NAME));
         realmconfig.setName(REALM_NAME);
+
+        Future<Void> future = Future.future();
+        handler.start(future);
+        future.setHandler(done -> async.complete());
     }
 
     @After

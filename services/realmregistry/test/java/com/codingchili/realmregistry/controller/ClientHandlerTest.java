@@ -10,6 +10,7 @@ import com.codingchili.core.testing.RequestMock;
 import com.codingchili.core.testing.ResponseListener;
 import com.codingchili.realmregistry.ContextMock;
 import com.codingchili.realmregistry.model.RealmList;
+import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -41,9 +42,13 @@ public class ClientHandlerTest {
     private ContextMock context;
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp(TestContext test) throws IOException {
+        Async async = test.async();
         context = new ContextMock();
         handler = new ClientHandler(context);
+        Future<Void> future = Future.future();
+        handler.start(future);
+        future.setHandler(done -> async.complete());
     }
 
     @After

@@ -8,6 +8,7 @@ import com.codingchili.realmregistry.configuration.RegistryContext;
 import com.codingchili.realmregistry.model.AsyncRealmStore;
 import com.codingchili.realmregistry.model.RealmList;
 import com.codingchili.realmregistry.model.RealmMissingException;
+import io.vertx.core.Future;
 
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.core.protocol.Role.PUBLIC;
@@ -18,16 +19,27 @@ import static com.codingchili.core.protocol.Role.PUBLIC;
  */
 public class ClientHandler implements CoreHandler {
     private final Protocol<ClientRequest> protocol = new Protocol<>();
-    private final AsyncRealmStore realms;
+    private AsyncRealmStore realms;
     private RegistryContext context;
 
     public ClientHandler(RegistryContext context) {
         this.context = context;
-        realms = context.getRealmStore();
 
         protocol.use(CLIENT_REALM_LIST, this::realmlist, PUBLIC)
                 .use(CLIENT_REALM_TOKEN, this::realmToken)
                 .use(ID_PING, Request::accept, PUBLIC);
+    }
+
+    @Override
+    public void start(Future<Void> start) {
+        context.getRealmStore(done -> {
+            if (done.succeeded()) {
+                realms = done.result();
+                start.complete();
+            } else {
+                start.fail(done.cause());
+            }
+        });
     }
 
     private Role authenticate(Request request) {

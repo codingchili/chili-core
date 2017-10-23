@@ -26,20 +26,11 @@ public class Service implements CoreService {
 
     @Override
     public void start(Future<Void> start) {
-        Future<RegistryContext> providerFuture = Future.future();
+        context = new RegistryContext(core);
 
-        providerFuture.setHandler(future -> {
-            if (future.succeeded()) {
-                context = future.result();
-
-                CompositeFuture.all(
-                        context.handler(() -> new RealmHandler(context)),
-                        context.handler(() -> new ClientHandler(context))
-                ).setHandler(generic(start));
-            } else {
-                start.fail(future.cause());
-            }
-        });
-        RegistryContext.create(providerFuture, core);
+        CompositeFuture.all(
+                context.handler(() -> new RealmHandler(context)),
+                context.handler(() -> new ClientHandler(context))
+        ).setHandler(generic(start));
     }
 }

@@ -73,24 +73,18 @@ public class Service implements CoreService {
 
             if (response.failed()) {
                 // If no response then the id is not already in use.
-                Future<RealmContext> providerFuture = Future.future();
-
-                providerFuture.setHandler(provider -> {
-                    RealmContext realmContext = provider.result();
+                    RealmContext realmContext = new RealmContext(context);
                     CoreListener listener = new ClusterListener()
                             .handler(new CharacterHandler(realmContext));
 
                     realmContext.listener(() -> listener).setHandler(deploy -> {
                         if (deploy.failed()) {
-                            provider.result().onDeployRealmFailure(realm.getName());
+                            realmContext.onDeployRealmFailure(realm.getName());
                             throw new RuntimeException(deploy.cause());
                         } else {
                             startInstances(future, realmContext);
                         }
                     });
-                });
-
-                RealmContext.create(providerFuture, realm, context);
             } else {
                 future.fail(new RealmNotUniqueException());
             }

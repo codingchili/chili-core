@@ -22,13 +22,12 @@ import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
  */
 public class CharacterHandler implements CoreHandler {
     private final Protocol<RealmRequest> protocol = new Protocol<>();
-    private final AsyncCharacterStore characters;
+    private AsyncCharacterStore characters;
     private boolean registered = false;
     private RealmContext context;
 
     public CharacterHandler(RealmContext context) {
         this.context = context;
-        this.characters = context.getCharacterStore();
 
         context.periodic(context::updateRate, getClass().getSimpleName(), this::registerRealm);
 
@@ -41,8 +40,15 @@ public class CharacterHandler implements CoreHandler {
 
     @Override
     public void start(Future<Void> future) {
-        context.onRealmStarted(context.realm().getName());
-        future.complete();
+        context.getCharacterStore(context.realm()).setHandler(done -> {
+           if (done.succeeded()) {
+               characters = done.result();
+               context.onRealmStarted(context.realm().getName());
+               future.complete();
+           } else {
+                future.fail(done.cause());
+           }
+        });
     }
 
     private void instanceHandler(Request request) {

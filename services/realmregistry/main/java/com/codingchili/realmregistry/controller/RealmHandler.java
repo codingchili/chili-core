@@ -13,6 +13,7 @@ import com.codingchili.realmregistry.configuration.RegistryContext;
 import com.codingchili.realmregistry.model.AsyncRealmStore;
 import com.codingchili.realmregistry.model.RealmDisconnectException;
 import com.codingchili.realmregistry.model.RealmUpdateException;
+import io.vertx.core.Future;
 
 import java.time.Instant;
 
@@ -30,11 +31,21 @@ public class RealmHandler implements CoreHandler {
     public RealmHandler(RegistryContext context) {
         this.context = context;
 
-        realms = context.getRealmStore();
-
         protocol.use(Strings.REALM_UPDATE, this::update)
                 .use(Strings.CLIENT_CLOSE, this::disconnected)
                 .use(CoreStrings.ID_PING, Request::accept, Role.PUBLIC);
+    }
+
+    @Override
+    public void start(Future<Void> start) {
+        context.getRealmStore(done -> {
+           if (done.succeeded()) {
+                this.realms = done.result();
+                start.complete();
+           } else {
+               start.fail(done.cause());
+           }
+        });
     }
 
     private Role authenticate(Request request) {

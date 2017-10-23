@@ -11,7 +11,9 @@ import com.codingchili.core.security.TokenFactory;
 import com.codingchili.core.storage.StorageLoader;
 import com.codingchili.realmregistry.model.AsyncRealmStore;
 import com.codingchili.realmregistry.model.RealmDB;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
+import io.vertx.core.Handler;
 
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.realmregistry.configuration.RealmRegistrySettings.PATH_REALMREGISTRY;
@@ -24,26 +26,20 @@ public class RegistryContext extends SystemContext implements ServiceContext {
     protected TokenFactory realmFactory;
     private Logger logger;
 
-    protected RegistryContext(AsyncRealmStore realms, CoreContext core) {
+    public RegistryContext(CoreContext core) {
         super(core);
 
         this.realmFactory = new TokenFactory(service().getRealmSecret());
-        this.realms = realms;
         this.logger = core.logger(getClass());
     }
 
-    public static void create(Future<RegistryContext> future, CoreContext core) {
-        new StorageLoader<RegisteredRealm>().diskIndex(core)
+    public void getRealmStore(Handler<AsyncResult<AsyncRealmStore>> handler) {
+        new StorageLoader<RegisteredRealm>().diskIndex(this)
                 .withCollection(COLLECTION_REALMS)
                 .withClass(RegisteredRealm.class)
                 .build(prepare -> {
-                    AsyncRealmStore realms = new RealmDB(prepare.result());
-                    future.complete(new RegistryContext(realms, core));
+                    handler.handle(Future.succeededFuture(new RealmDB(prepare.result())));
                 });
-    }
-
-    public AsyncRealmStore getRealmStore() {
-        return realms;
     }
 
     public boolean verifyRealmToken(Token token) {

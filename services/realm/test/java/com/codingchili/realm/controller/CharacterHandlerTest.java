@@ -9,6 +9,7 @@ import com.codingchili.core.security.TokenFactory;
 import com.codingchili.core.testing.RequestMock;
 import com.codingchili.core.testing.ResponseListener;
 import com.codingchili.realm.ContextMock;
+import com.codingchili.realm.configuration.RealmSettings;
 import com.codingchili.realm.instance.model.PlayerCharacter;
 import com.codingchili.realm.model.AsyncCharacterStore;
 import io.vertx.core.CompositeFuture;
@@ -53,8 +54,14 @@ public class CharacterHandlerTest {
         context = new ContextMock();
         handler = new CharacterHandler(context);
         clientToken = context.getClientFactory();
-        characters = context.getCharacterStore();
-        createCharacters(async);
+
+        Future<Void> future = Future.<Void>future().setHandler(done -> {
+            context.getCharacterStore(new RealmSettings()).setHandler(characters -> {
+                this.characters = characters.result();
+                createCharacters(async);
+            });
+        });
+        handler.start(future);
     }
 
     @After
@@ -68,9 +75,7 @@ public class CharacterHandlerTest {
         Future<Void> addFuture = Future.future();
         Future<Void> removeFuture = Future.future();
 
-        CompositeFuture.all(addFuture, removeFuture).setHandler(done -> {
-            async.complete();
-        });
+        CompositeFuture.all(addFuture, removeFuture).setHandler(done -> async.complete());
 
         characters.create(addFuture, USERNAME, add);
         characters.create(removeFuture, USERNAME, delete);

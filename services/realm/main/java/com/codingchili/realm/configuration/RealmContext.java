@@ -12,6 +12,7 @@ import com.codingchili.realm.instance.model.PlayerCharacter;
 import com.codingchili.realm.instance.model.PlayerClass;
 import com.codingchili.realm.model.AsyncCharacterStore;
 import com.codingchili.realm.model.CharacterDB;
+import com.mongodb.connection.AsyncCompletionHandler;
 import io.vertx.core.Future;
 
 import java.util.List;
@@ -26,7 +27,6 @@ import static com.codingchili.realm.configuration.RealmServerSettings.PATH_REALM
  * Context for realms.
  */
 public class RealmContext extends SystemContext implements ServiceContext {
-    private AsyncCharacterStore characters;
     private Logger logger;
     private String settings;
 
@@ -35,26 +35,23 @@ public class RealmContext extends SystemContext implements ServiceContext {
         this.logger = core.logger(getClass());
     }
 
-    public static void create(Future<RealmContext> future, RealmSettings realm, CoreContext core) {
-        RealmContext context = new RealmContext(core);
+    public Future<AsyncCharacterStore> getCharacterStore(RealmSettings realm) {
+        Future<AsyncCharacterStore> future = Future.future();
 
-        new StorageLoader<PlayerCharacter>(new StorageContext<>(core))
-                .withPlugin(context.service().getStorage())
+        new StorageLoader<PlayerCharacter>(new StorageContext<>(this))
+                .withPlugin(service().getStorage())
                 .withClass(PlayerCharacter.class)
                 .withCollection(COLLECTION_CHARACTERS)
-                .build(prepare -> {
-                    context.characters = new CharacterDB(prepare.result());
-                    context.settings = realm.getPath();
-                    future.complete(context);
+                .build(storage -> {
+                    if (storage.succeeded()) {
+                        settings = realm.getPath();
+                        future.complete(new CharacterDB(storage.result()));
+                    } else {
+                        future.fail(storage.cause());
+                    }
                 });
-    }
 
-    public List<EnabledRealm> getEnabled() {
-        return service().getEnabled();
-    }
-
-    public AsyncCharacterStore getCharacterStore() {
-        return characters;
+        return future;
     }
 
     public RealmSettings realm() {

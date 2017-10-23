@@ -11,7 +11,9 @@ import com.codingchili.realmregistry.configuration.RegisteredRealm;
 import com.codingchili.realmregistry.configuration.RegistryContext;
 import com.codingchili.realmregistry.model.AsyncRealmStore;
 import com.codingchili.realmregistry.model.RealmDB;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
+import io.vertx.core.Handler;
 
 /**
  * @author Robin Duda
@@ -23,28 +25,25 @@ public class ContextMock extends RegistryContext {
     }
 
     public ContextMock(CoreContext context) {
-        super(null, context);
-
+        super(context);
         this.realmFactory = new TokenFactory(new RealmRegistrySettings().getRealmSecret());
+    }
 
+    @Override
+    public void getRealmStore(Handler<AsyncResult<AsyncRealmStore>> handler) {
         new StorageLoader<RegisteredRealm>().privatemap(new StorageContext<>(this))
                 .withClass(RegisteredRealm.class)
                 .withDB("", "")
                 .build(result -> {
                     this.realms = new RealmDB(result.result());
+
+                    RegisteredRealm realm = new RegisteredRealm()
+                            .setName("realmName")
+                            .setAuthentication(new Token(new TokenFactory("s".getBytes()), "realmName"));
+
+                    realms.put(Future.future(), realm);
+                    handler.handle(Future.succeededFuture(realms));
                 });
-
-        RegisteredRealm realm = new RegisteredRealm()
-                .setName("realmName")
-                .setAuthentication(new Token(new TokenFactory("s".getBytes()), "realmName"));
-
-
-        realms.put(Future.future(), realm);
-    }
-
-    @Override
-    public AsyncRealmStore getRealmStore() {
-        return realms;
     }
 
     public TokenFactory getClientFactory() {
