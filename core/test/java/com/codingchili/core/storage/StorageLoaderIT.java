@@ -94,7 +94,7 @@ public class StorageLoaderIT {
 
     }
 
-    private void loadStoragePlugin(TestContext test, Class plugin) {
+    private void loadStoragePlugin(TestContext test, Class<? extends AsyncStorage> plugin) {
         Future<AsyncStorage<StorableString>> future = Future.future();
         Async async = test.async();
 
