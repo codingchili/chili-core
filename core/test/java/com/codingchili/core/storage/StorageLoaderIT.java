@@ -23,7 +23,7 @@ public class StorageLoaderIT {
     private static final String TEST_COLLECTION = "collection";
     private static CoreContext context;
     @Rule
-    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
 
     @BeforeClass
     public static void setUp() {
