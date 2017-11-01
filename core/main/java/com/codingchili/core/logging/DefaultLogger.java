@@ -139,13 +139,19 @@ public abstract class DefaultLogger extends Handler implements Logger {
 
     @Override
     public void onError(Throwable cause) {
-        event(LOG_ERROR, Level.ERROR).put(LOG_MESSAGE, cause.getMessage()).send();
+        event(LOG_ERROR, Level.ERROR)
+                .put(LOG_STACKTRACE, throwableToString(cause))
+                .send(cause.getMessage());
     }
 
     @Override
     public void publish(LogRecord record) {
-        addTrace(event(LOG_VERTX, Level.valueOf(record.getLevel().getName())), record)
-                .put(LOG_MESSAGE, record.getMessage()).send();
+        LogMessage message = event(LOG_VERTX, Level.valueOf(record.getLevel().getName()));
+
+        if (record.getThrown() != null) {
+            message.put(LOG_STACKTRACE, throwableToString(record.getThrown()));
+        }
+        message.send(record.getMessage());
     }
 
     @Override
@@ -209,13 +215,6 @@ public abstract class DefaultLogger extends Handler implements Logger {
                 .put(LOG_PREVIOUS, initialTimeout)
                 .put(LOG_NEW, newTimeout)
                 .send();
-    }
-
-    private LogMessage addTrace(LogMessage message, LogRecord record) {
-        if (record.getThrown() != null) {
-            message.put(LOG_STACKTRACE, throwableToString(record.getThrown()));
-        }
-        return message;
     }
 
     @Override
