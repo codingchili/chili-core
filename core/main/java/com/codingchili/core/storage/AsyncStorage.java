@@ -1,10 +1,14 @@
 package com.codingchili.core.storage;
 
 import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.storage.exception.ValueMissingException;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
 import java.util.Collection;
+
+import static com.codingchili.core.context.FutureHelper.error;
+import static com.codingchili.core.context.FutureHelper.result;
 
 /**
  * @author Robin Duda
@@ -17,12 +21,33 @@ import java.util.Collection;
  */
 public interface AsyncStorage<Value extends Storable> {
     /**
-     * get an entry with the given key
+     * get an entry with the given key, if the key does not match a value fails with
+     * #{@link ValueMissingException}
      *
      * @param key     a unique key identifying an entry
      * @param handler callback
      */
     void get(String key, Handler<AsyncResult<Value>> handler);
+
+    /**
+     * checks if an entry exists for the given key
+     *
+     * @param key     the key to check if set
+     * @param handler callback
+     */
+    default void contains(String key, Handler<AsyncResult<Boolean>> handler) {
+        get(key, done -> {
+            if (done.succeeded()) {
+                handler.handle(result(true));
+            } else {
+                if (done.cause() instanceof ValueMissingException) {
+                    handler.handle(result(false));
+                } else {
+                    handler.handle(error(done.cause()));
+                }
+            }
+        });
+    }
 
     /**
      * set the entry identified by the given key to the given value
@@ -34,7 +59,9 @@ public interface AsyncStorage<Value extends Storable> {
 
 
     /**
-     * set the entry if it does not already exists
+     * set the entry if it does not already exists. fails with
+     * #{@link com.codingchili.core.storage.exception.ValueAlreadyPresentException}
+     * if the key already has a value.
      *
      * @param value   the value to be set if the entry does not exist.
      * @param handler callback

@@ -87,6 +87,11 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
+    public void contains(String key, Handler<AsyncResult<Boolean>> handler) {
+        handler.handle(result(db.containsKey(key)));
+    }
+
+    @Override
     public void put(Value value, Handler<AsyncResult<Void>> handler) {
         put(value);
         handler.handle(FutureHelper.result());

@@ -25,6 +25,7 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.util.Collection;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.codingchili.core.configuration.CoreStrings.ID_NAME;
@@ -167,6 +168,20 @@ public class MapTestCases {
                     test.assertTrue(get.succeeded());
                     async.complete();
                 });
+            });
+        });
+    }
+
+    @Test
+    public void testContainsKey(TestContext test) {
+        Async async = test.async();
+
+        store.contains(TWO, contains -> {
+            test.assertTrue(contains.result());
+
+            store.contains(UUID.randomUUID().toString(), done -> {
+                test.assertFalse(done.result());
+                async.complete();
             });
         });
     }

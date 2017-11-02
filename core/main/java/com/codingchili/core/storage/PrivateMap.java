@@ -53,6 +53,11 @@ public class PrivateMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
+    public void contains(String key, Handler<AsyncResult<Boolean>> handler) {
+        handler.handle(result(map.containsKey(key)));
+    }
+
+    @Override
     public void put(Value value, Handler<AsyncResult<Void>> handler) {
         map.put(value.id(), value);
         handler.handle(FutureHelper.result());
