@@ -271,7 +271,7 @@ public abstract class CoreStrings {
     }
 
     public static String getDBIdentifier(String DB, String collection, String plugin) {
-        return DB + "-" + collection + "-" + plugin.substring(plugin.lastIndexOf("."), plugin.length());
+        return DB + "-" + collection + "-" + plugin;
     }
 
     public static String getFileMissingError(String filename) {

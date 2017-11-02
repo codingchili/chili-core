@@ -282,7 +282,10 @@ public class StorageContext<Value> extends SystemContext {
 
     private void updateIdentifier() {
         this.logger = logger(getClass());
-        this.identifier = CoreStrings.getDBIdentifier(database, collection, plugin);
+        this.identifier = CoreStrings.getDBIdentifier(
+                database,
+                collection,
+                (plugin != null) ? plugin.substring(plugin.lastIndexOf(".", plugin.length())) : "");
     }
 
     /**
