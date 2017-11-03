@@ -53,13 +53,13 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
         executor = context.vertx().createSharedWorkerExecutor("IndexedMap", 1);
         FIELD_ID = attribute(context.clazz(), String.class, Storable.idField, Storable::id);
         fields.put(Storable.idField, FIELD_ID);
-        this.db = getImplementation(context, FIELD_ID);
 
         // share collections that share the same identifier.
         synchronized (maps) {
             if (maps.containsKey(context.identifier())) {
                 db = maps.get(context.identifier());
             } else {
+                db = getImplementation(context, FIELD_ID);
                 db.addIndex(UniqueIndex.onAttribute(FIELD_ID));
                 maps.put(context.identifier(), db);
             }

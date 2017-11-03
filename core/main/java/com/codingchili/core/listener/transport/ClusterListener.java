@@ -57,7 +57,7 @@ public class ClusterListener implements CoreListener, DeploymentAware {
     @Override
     public int instances() {
         return (handler instanceof DeploymentAware) ?
-                ((DeploymentAware) handler).instances() : Configurations.system().getListeners();
+                ((DeploymentAware) handler).instances() : Configurations.system().getHandlers();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.codingchili.core.storage;
 
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.StorageContext;
 import com.googlecode.cqengine.ConcurrentIndexedCollection;
 import com.googlecode.cqengine.attribute.SimpleAttribute;
@@ -34,7 +35,7 @@ public class SharedIndexCollection<Value> extends ConcurrentIndexedCollection<Va
     public static <Value extends Storable> SharedIndexCollection<Value> onDisk(
             StorageContext<Value> ctx, SimpleAttribute<Value, String> attribute) {
         synchronized (SharedIndexCollection.class) {
-            File file = new File(ctx.dbPath()).getParentFile();
+            File file = new File(CoreStrings.DB_DIR);
             if (!file.exists() && !file.mkdirs()) {
                 throw new RuntimeException("Failed to create dirs for DB " + file.toPath().toAbsolutePath());
             }
