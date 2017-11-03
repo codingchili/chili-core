@@ -85,6 +85,8 @@ class RestRequest implements Request{
     public void write(Object object) {
         if (object instanceof Buffer) {
             send((Buffer) object);
+        } else if (object instanceof JsonObject) {
+            send(Buffer.buffer(((JsonObject) object).encodePrettily()));
         } else {
             send(object);
         }

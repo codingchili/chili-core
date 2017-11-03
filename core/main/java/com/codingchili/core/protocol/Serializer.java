@@ -46,7 +46,7 @@ public class Serializer {
     public static String pack(Object object) {
         try {
             if (object instanceof JsonObject) {
-                return ((JsonObject) object).encode();
+                return ((JsonObject) object).encodePrettily();
             } else {
                 return mapper.writeValueAsString(object);
             }
@@ -104,7 +104,7 @@ public class Serializer {
             return (JsonObject) object;
         } else if (object instanceof Collection) {
             JsonArray array = new JsonArray();
-            ((Collection<Object>) object).stream()
+            ((Collection<?>) object).stream()
                     .map(Serializer::json)
                     .forEach(array::add);
             return new JsonObject().put(ID_COLLECTION, array);
