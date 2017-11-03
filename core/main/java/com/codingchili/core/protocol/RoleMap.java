@@ -23,22 +23,41 @@ public class RoleMap {
         put(PUBLIC, Role.PUBLIC);
     }
 
-    public static void put(String role, RoleType type) {
-        roleMap.put(role, type);
+    /**
+     * Adds a role mapping.
+     *
+     * @param name the name of the role.
+     * @param role the role implementation.
+     */
+    public static void put(String name, RoleType role) {
+        roleMap.put(name, role);
     }
 
-    public static RoleType get(String role) {
-        if (!roleMap.containsKey(role)) {
-            throw new RuntimeException(CoreStrings.getMissingRole(role));
+    /**
+     * retrieves a role by its name.
+     *
+     * @param name the name of the role to retrieve.
+     * @return a registered role that matches the given name, throws an
+     * exception if the role is not registered.
+     */
+    public static RoleType get(String name) {
+        if (!roleMap.containsKey(name)) {
+            throw new RuntimeException(CoreStrings.getMissingRole(name));
         } else {
-            return roleMap.get(role);
+            return roleMap.get(name);
         }
     }
 
-    public static RoleType[] get(String[] roles) {
-        RoleType[] list = new RoleType[roles.length];
-        for (int i = 0; i < roles.length; i++) {
-            list[i] = get(roles[i]);
+    /**
+     * @param names multiple names to retrieve the roles for.
+     * @return a list of roles that matches the given list.
+     * Throws an exception if any of the roles in the given names
+     * is not registered.
+     */
+    public static RoleType[] get(String... names) {
+        RoleType[] list = new RoleType[names.length];
+        for (int i = 0; i < names.length; i++) {
+            list[i] = get(names[i]);
         }
         return list;
     }
