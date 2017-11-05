@@ -56,6 +56,7 @@ public class KeyStore {
 
     /**
      * @param shortName sets the name the keystore is identified by.
+     * @return fluent.
      */
     @JsonIgnore
     public KeyStore setShortName(String shortName) {

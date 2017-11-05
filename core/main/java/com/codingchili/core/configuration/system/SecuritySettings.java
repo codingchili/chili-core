@@ -61,6 +61,7 @@ public class SecuritySettings implements Configurable {
 
     /**
      * @param storeId name of the keystore to retrieve: the mapped shortname of the filename with extension.
+     * @param core core context used when loading.
      * @return a keystore if it is loaded, if no keystore is added with the given shortname uses a
      * self signed certificate. If it fails to load a keystore then the application shuts down.
      */

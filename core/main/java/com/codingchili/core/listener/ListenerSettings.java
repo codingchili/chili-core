@@ -60,8 +60,9 @@ public class ListenerSettings {
 
     /**
      * @param keystore the name of the keystore to use, sets secure to true when called.
-     *                 The certificate must be added to #{@link SecuritySettings#addKeystore(KeyStore)}
+     *                 The certificate must be added using #{@link SecuritySettings#addKeystore()}
      *                 before it is available. if not added will throw an exception.
+     * @return fluent.
      */
     public ListenerSettings setKeystore(String keystore) {
         this.keystore = keystore;
@@ -80,6 +81,7 @@ public class ListenerSettings {
     /**
      * @param secure if set to false disables transport security for the
      *               listeners that supports it.
+     * @return fluent
      */
     public ListenerSettings setSecure(boolean secure) {
         this.secure = secure;
@@ -161,6 +163,7 @@ public class ListenerSettings {
     }
 
     /**
+     * @param context core context.
      * @return HttpOptions created from the listeners settings.
      */
     @JsonIgnore
