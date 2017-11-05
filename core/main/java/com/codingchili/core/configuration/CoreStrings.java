@@ -3,6 +3,7 @@ package com.codingchili.core.configuration;
 import com.codingchili.core.benchmarking.Benchmark;
 import com.codingchili.core.benchmarking.BenchmarkGroup;
 import com.codingchili.core.benchmarking.BenchmarkImplementation;
+import com.codingchili.core.security.KeyStore;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.CoreListener;
 import com.codingchili.core.listener.CoreService;
@@ -32,6 +33,19 @@ import static com.codingchili.core.files.Configurations.launcher;
  * Extend this class in service implementations to add more constants.
  */
 public abstract class CoreStrings {
+    // Author.
+    public static String VERSION;
+    public static final String GITHUB = "https://github.com/codingchili";
+    public static final String AUTHOR = "Robin Duda \u00a9 2017";
+
+    static {
+        VERSION = CoreStrings.class.getPackage().getImplementationVersion();
+        if (VERSION == null) {
+            // not in jar - no manifest available.
+            VERSION = "n/a";
+        }
+    }
+
     // paths to configuration files.
     public static final String PATH_LAUNCHER = "conf/system/launcher.json";
     public static final String PATH_SECURITY = "conf/system/security.json";
@@ -47,6 +61,7 @@ public abstract class CoreStrings {
     public static final String DIR_SERVICES = "conf/service/";
     public static final String EMPTY = "";
     public static final String DIR_UP = "../";
+
     // storage constants.
     public static final String STORAGE_ARRAY = "[]";
     public static final String DB_DIR = "db";
@@ -59,6 +74,8 @@ public abstract class CoreStrings {
     public static final String EXT_TXT = ".txt";
     public static final String ANY = "*";
     public static final String NODE_LOGGING = "syslog.node";
+    public static final String LOCALHOST = "localhost";
+
     // protocol constants.
     public static final String PROTOCOL_REAL_IP = "X-Real-IP";
     public static final String PROTOCOL_CONNECTION = "connection";
@@ -68,6 +85,8 @@ public abstract class CoreStrings {
     public static final String PROTOCOL_TARGET = "target";
     public static final String PROTOCOL_LOGGING = "logging";
     public static final String PROTOCOL_DOCUMENTATION = "documentation";
+    public static final String DEFAULT_KEYSTORE = "keystore.jks";
+
     // launcher commands.
     public static final String COMMAND_PREFIX = "--";
     public static final String GENERATE_SECRETS = getCommand("generate-secrets");
@@ -80,6 +99,7 @@ public abstract class CoreStrings {
     public static final String PARAM_ITERATIONS = getCommand("iterations");
     public static final String PARAM_HTML = getCommand("html");
     public static final String PARAM_TEMPLATE = getCommand("template");
+
     // keys used in json objects.
     public static final String ID_TOKEN = "token";
     public static final String ID_NAME = "name";
@@ -121,11 +141,10 @@ public abstract class CoreStrings {
     public static final String ID_OPTIONS = "options";
     public static final String ID_HANDLER = "handler";
     public static final String ID_UNDEFINED = "undefined";
-    // Node names.
-    public static final String NODE_LOCAL = "local";
-    public static final String NODE_EXT = ".node";
+
     // Storage constants
     public static final String DEFAULT_DB = "chili";
+
     // logging constants
     public static final String LOG_APPLICATION = "application";
     public static final String LOG_AT = "@";
@@ -175,7 +194,8 @@ public abstract class CoreStrings {
     public static final String ERROR_NOT_CLUSTERED = "Running in non-clustered mode.";
     public static final String ERROR_NOT_AUTHORIZED = "Failed to authorize request.";
     public static final String ERROR_LAUNCHER_STARTUP = "Failed to start the launcher with clustering.";
-    public static final String ERRROR_LAUNCHER_SHUTDOWN = "system has been shut down..";
+    public static final String LAUNCHER_SHUTDOWN_STARTED = "system shutdown initiated..";
+    public static final String LAUNCHER_SHUTDOWN_COMPLETED = "system has been shut down.";
     public static final String ERROR_VALIDATION_FAILURE = "Provided data did not pass validation.";
     public static final String ERROR_CONFIGURATION_MISMATCH = "configuration mismatches with currently loaded.";
     public static final String ERROR_ALREADY_INITIALIZED = "Error already initialized.";
@@ -185,6 +205,7 @@ public abstract class CoreStrings {
     public static final String[] BENCHMARK_CONSOLE_REPORT_COLUMNS =
             {"\n[GROUP]", " [IMPLEMENTATION]", " [BENCHMARK]", " [OP/s]", " [TIME]"};
     private static final String DIR_TEST = "test/resources/";
+
     // network constants
     private static final String IP6_HOST = "::";
     private static final String IP4_HOST = "0.0.0.0";
@@ -528,6 +549,10 @@ public abstract class CoreStrings {
         return "Error: could not get '" + key + "' in storage.";
     }
 
+    public static String getMissingKeyStore() {
+        return "Keystore not configured: generating self signed certificate.";
+    }
+
     public static String getSecurityDependencyMissing(String target, String identifier) {
         return "Error: missing security identifier '" + identifier +
                 "' in service configuration for '" + target + "'.";
@@ -592,6 +617,10 @@ public abstract class CoreStrings {
     public static String getServiceTimeout(String target, String route, int timeout) {
         return String.format("Timed out waiting for '%s' to handle '%s' after %s ms.",
                 target, route, timeout);
+    }
+
+    public static String getKeystorePrompt(KeyStore store) {
+        return "Enter password for '" + store.getPath() + "': ";
     }
 
     private enum IPVersion {IP4, IP6;}

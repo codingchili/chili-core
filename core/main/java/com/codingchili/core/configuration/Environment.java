@@ -46,4 +46,11 @@ public class Environment {
         }
         return addresses;
     }
+
+    /**
+     * @return true if running on Java 9.
+     */
+    public static boolean isJava9() {
+        return System.getProperty("java.version").equals("9");
+    }
 }

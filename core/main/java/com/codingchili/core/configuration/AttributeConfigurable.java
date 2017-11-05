@@ -14,7 +14,8 @@ public class AttributeConfigurable extends Attributes implements Configurable {
     }
 
     @Override
-    public void setPath(String path) {
+    public AttributeConfigurable setPath(String path) {
         this.path = path;
+        return this;
     }
 }

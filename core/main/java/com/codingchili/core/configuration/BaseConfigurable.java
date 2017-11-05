@@ -21,7 +21,8 @@ public class BaseConfigurable implements Configurable {
     }
 
     @Override
-    public void setPath(String path) {
+    public BaseConfigurable setPath(String path) {
         this.path = path;
+        return this;
     }
 }

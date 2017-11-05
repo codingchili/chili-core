@@ -98,8 +98,9 @@ public class StorageLoader<Value extends Storable> {
      * @param clazz the class to be stored.
      * @return fluent.
      */
-    public StorageLoader<Value> withClass(Class clazz) {
-        this.aClass = clazz;
+    @SuppressWarnings("unchecked")
+    public StorageLoader<Value> withClass(Class<? extends Value> clazz) {
+        this.aClass = (Class<Value>) clazz;
         return this;
     }
 

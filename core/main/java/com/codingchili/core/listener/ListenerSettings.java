@@ -1,5 +1,10 @@
 package com.codingchili.core.listener;
 
+import com.codingchili.core.configuration.Environment;
+import com.codingchili.core.security.KeyStore;
+import com.codingchili.core.configuration.system.SecuritySettings;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.security.TrustAndKeyProvider;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.vertx.core.http.HttpServerOptions;
 
@@ -7,6 +12,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import static com.codingchili.core.configuration.CoreStrings.DEFAULT_KEYSTORE;
+import static com.codingchili.core.files.Configurations.security;
 
 /**
  * @author Robin Duda
@@ -16,11 +24,13 @@ import java.util.Set;
 public class ListenerSettings {
     public static final int DEFAULT_TIMEOUT = 3000;
     public static final int DEFAULT_MAX_REQUEST_BYTES = 1024;
-    private HttpServerOptions httpOptions = new HttpServerOptions();
+    private HttpServerOptions httpOptions = null;
     private Map<String, Endpoint> api = new HashMap<>();
     private WireType type = WireType.REST;
     private Set<Integer> actualPorts = new HashSet<>();
     private String defaultTarget = "default";
+    private String keystore = DEFAULT_KEYSTORE;
+    private boolean secure = true;
     private int port = 8080;
     private int timeout = DEFAULT_TIMEOUT;
     private int maxRequestBytes = DEFAULT_MAX_REQUEST_BYTES;
@@ -38,6 +48,41 @@ public class ListenerSettings {
      */
     public ListenerSettings setTimeout(int timeout) {
         this.timeout = timeout;
+        return this;
+    }
+
+    /**
+     * @return the name of the keystore to use if security is enabled.
+     */
+    public String getKeystore() {
+        return keystore;
+    }
+
+    /**
+     * @param keystore the name of the keystore to use, sets secure to true when called.
+     *                 The certificate must be added to #{@link SecuritySettings#addKeystore(KeyStore)}
+     *                 before it is available. if not added will throw an exception.
+     */
+    public ListenerSettings setKeystore(String keystore) {
+        this.keystore = keystore;
+        this.secure = true;
+        return this;
+    }
+
+    /**
+     * @return true if TLS security is enabled on listeners that supports it.
+     * Security options are set on the default httpClientOptions.
+     */
+    public boolean isSecure() {
+        return secure;
+    }
+
+    /**
+     * @param secure if set to false disables transport security for the
+     *               listeners that supports it.
+     */
+    public ListenerSettings setSecure(boolean secure) {
+        this.secure = secure;
         return this;
     }
 
@@ -119,7 +164,20 @@ public class ListenerSettings {
      * @return HttpOptions created from the listeners settings.
      */
     @JsonIgnore
-    public HttpServerOptions getHttpOptions() {
+    public HttpServerOptions getHttpOptions(CoreContext context) {
+
+        if (httpOptions == null) {
+            httpOptions = new HttpServerOptions()
+                    .setMaxWebsocketFrameSize(maxRequestBytes)
+                    .setUseAlpn(Environment.isJava9())
+                    .setSsl(secure);
+
+            if (secure) {
+                TrustAndKeyProvider provider = security().getKeystore(context, keystore);
+                httpOptions.setTrustOptions(provider.trustOptions())
+                        .setKeyCertOptions(provider.keyCertOptions());
+            }
+        }
         return httpOptions;
     }
 

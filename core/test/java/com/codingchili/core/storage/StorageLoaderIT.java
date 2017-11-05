@@ -40,7 +40,7 @@ public class StorageLoaderIT {
         Async async = test.async();
         new StorageLoader<>(context)
                 .withDB("", "")
-                .withClass(String.class)
+                .withClass(Storable.class)
                 .withPlugin("null").build(done -> {
             if (done.failed()) {
                 async.complete();

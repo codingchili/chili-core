@@ -1,6 +1,7 @@
 package com.codingchili.core.listener;
 
 import com.codingchili.core.listener.transport.TcpListener;
+import com.codingchili.core.testing.ListenerTestCases;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetSocket;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -19,7 +20,7 @@ public class TcpListenerIT extends ListenerTestCases {
     }
 
     @Override
-    void sendRequest(ResponseListener listener, JsonObject data) {
+    public void sendRequest(ResponseListener listener, JsonObject data) {
         context.vertx().createNetClient().connect(port, HOST, connect -> {
             if (connect.succeeded()) {
                 NetSocket socket = connect.result();

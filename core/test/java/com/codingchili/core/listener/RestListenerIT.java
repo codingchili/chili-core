@@ -2,6 +2,7 @@ package com.codingchili.core.listener;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.listener.transport.RestListener;
+import com.codingchili.core.testing.ListenerTestCases;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -42,7 +43,7 @@ public class RestListenerIT extends ListenerTestCases {
     }
 
     @Override
-    void sendRequest(ResponseListener listener, JsonObject data) {
+    public void sendRequest(ResponseListener listener, JsonObject data) {
         String target = data.getString(PROTOCOL_ROUTE);
 
         if (target == null) {

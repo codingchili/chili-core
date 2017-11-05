@@ -69,7 +69,7 @@ public class BenchmarkSuite {
         BenchmarkGroup group = new BaseBenchmarkGroup(MAP_BENCHMARKS, iterations);
         Future<List<BenchmarkGroup>> future = Future.future();
 
-        Consumer<Class> add = (clazz) -> group.add(
+        Consumer<Class<? extends AsyncStorage>> add = (clazz) -> group.add(
                 new MapBenchmarkImplementation(group, clazz, clazz.getSimpleName()));
 
         add.accept(JsonMap.class);

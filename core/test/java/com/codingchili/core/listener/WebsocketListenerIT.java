@@ -2,6 +2,7 @@ package com.codingchili.core.listener;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.listener.transport.WebsocketListener;
+import com.codingchili.core.testing.ListenerTestCases;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -20,7 +21,7 @@ public class WebsocketListenerIT extends ListenerTestCases {
     }
 
     @Override
-    void sendRequest(ResponseListener listener, JsonObject data) {
+    public void sendRequest(ResponseListener listener, JsonObject data) {
         context.vertx().createHttpClient().websocket(port, HOST, CoreStrings.DIR_SEPARATOR, handler -> {
             handler.handler(body -> handleBody(listener, body));
             handler.write(Buffer.buffer(data.encode()));

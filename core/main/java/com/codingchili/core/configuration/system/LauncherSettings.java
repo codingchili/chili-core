@@ -1,6 +1,7 @@
 package com.codingchili.core.configuration.system;
 
 import com.codingchili.core.configuration.Configurable;
+import com.codingchili.core.configuration.CoreStrings;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
@@ -17,8 +18,8 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  */
 public class LauncherSettings implements Configurable {
     private String application = "launcher";
-    private String version = "CORE-1.0.10-SNAPSHOT";
-    private String author = "Robin Duda \u00a9 2017";
+    private String version = CoreStrings.VERSION;
+    private String author = CoreStrings.AUTHOR;
     private boolean clustered;
     private HashMap<String, List<String>> blocks = defaultBlockConfiguration();
     private HashMap<String, String> hosts = defaultHostConfiguration();

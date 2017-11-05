@@ -93,10 +93,9 @@ public class AuthenticationGenerator {
         configurations((settings, config, path) -> {
             andPathMatchesKeyRegex(settings, path).forEach(dependency -> {
 
-                dependency.getTokens().entrySet().forEach(entry -> {
-                    TokenIdentifier identifier = entry.getValue();
-                    logger.log(CoreStrings.getGeneratingToken(identifier.getService(), entry.getKey(), path));
-                    config.put(entry.getKey(), json(new Token(getFactory(identifier), getIdentity(config))));
+                dependency.getTokens().forEach((key, identifier) -> {
+                    logger.log(CoreStrings.getGeneratingToken(identifier.getService(), key, path));
+                    config.put(key, json(new Token(getFactory(identifier), getIdentity(config))));
                 });
             });
         });
@@ -135,7 +134,7 @@ public class AuthenticationGenerator {
         return identity;
     }
 
-    private List<AuthenticationDependency> andPathMatchesKeyRegex(HashMap<String, AuthenticationDependency> configured, String path) {
+    private List<AuthenticationDependency> andPathMatchesKeyRegex(Map<String, AuthenticationDependency> configured, String path) {
         return configured.entrySet().stream()
                 .filter(entry -> isKeyMatchingPath(entry.getKey(), path))
                 .map(Map.Entry::getValue)
@@ -149,7 +148,7 @@ public class AuthenticationGenerator {
     }
 
     private void configurations(TokenProcessor processor) {
-        HashMap<String, AuthenticationDependency> settings = security().getDependencies();
+        Map<String, AuthenticationDependency> settings = security().getDependencies();
 
         getConfigurationsReferencedBySecurity(settings).forEach(path -> {
             try {
@@ -162,7 +161,7 @@ public class AuthenticationGenerator {
         });
     }
 
-    private List<String> getConfigurationsReferencedBySecurity(HashMap<String, AuthenticationDependency> settings) {
+    private List<String> getConfigurationsReferencedBySecurity(Map<String, AuthenticationDependency> settings) {
         List<String> configured = new ArrayList<>();
 
         Configurations.available(directory).forEach(available -> {
@@ -180,6 +179,6 @@ public class AuthenticationGenerator {
 
     @FunctionalInterface
     private interface TokenProcessor {
-        void parse(HashMap<String, AuthenticationDependency> settings, JsonObject config, String key);
+        void parse(Map<String, AuthenticationDependency> settings, JsonObject config, String key);
     }
 }

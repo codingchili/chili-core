@@ -7,6 +7,7 @@ import com.codingchili.core.storage.exception.*;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import org.apache.lucene.util.BytesRef;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.DocWriteResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
@@ -16,6 +17,7 @@ import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -197,7 +199,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                 .setQuery(QueryBuilders.matchAllQuery())
                 .execute(new ElasticHandler<>(response -> {
                     if (response.status().equals(RestStatus.OK)) {
-                        handler.handle(result((int) response.getHits().totalHits()));
+                        handler.handle(result((int) response.getHits().getTotalHits()));
                     } else {
                         handler.handle(result(0));
                     }
@@ -316,7 +318,10 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
         List<Value> list = new ArrayList<>();
 
         for (SearchHit hit : hits) {
-            list.add(valueFrom(hit.source()));
+            BytesReference ref = hit.getSourceRef();
+            if (ref != null) {
+                list.add(valueFrom(BytesReference.toBytes(ref)));
+            }
         }
 
         return list;

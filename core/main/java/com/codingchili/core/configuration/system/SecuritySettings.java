@@ -2,11 +2,25 @@ package com.codingchili.core.configuration.system;
 
 
 import com.codingchili.core.configuration.Configurable;
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.logging.Level;
+import com.codingchili.core.security.KeyStore;
+import com.codingchili.core.security.KeyStoreBuilder;
+import com.codingchili.core.security.PasswordReader;
+import com.codingchili.core.security.TrustAndKeyProvider;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.net.JksOptions;
+import io.vertx.core.net.SelfSignedCertificate;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
-import static com.codingchili.core.configuration.CoreStrings.PATH_SECURITY;
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
@@ -22,13 +36,88 @@ import static com.codingchili.core.configuration.CoreStrings.PATH_SECURITY;
  * configuration that is requested, for example a token or shared secret.
  */
 public class SecuritySettings implements Configurable {
-    private HashMap<String, AuthenticationDependency> dependencies = new HashMap<>();
+    private Map<String, AuthenticationDependency> dependencies = new HashMap<>();
+    private Map<String, TrustAndKeyProvider> loadedKeyStores = new HashMap<>();
+    private Map<String, KeyStore> keystores = new HashMap<>();
     private int secretBytes = 64;
     private int tokenttl = 3600 * 24 * 7;
 
     @Override
     public String getPath() {
         return PATH_SECURITY;
+    }
+
+    /**
+     * Loads a certificate from disk and saves it with the given name.
+     * Requires manual input to enter the secret for the keystore.
+     *
+     * @return a keystore builder.
+     */
+    public KeyStoreBuilder<SecuritySettings> addKeystore() {
+        return new KeyStoreBuilder<>(this, store -> {
+            keystores.put(store.getShortName(), store);
+        });
+    }
+
+    /**
+     * @param storeId name of the keystore to retrieve: the mapped shortname of the filename with extension.
+     * @return a keystore if it is loaded, if no keystore is added with the given shortname uses a
+     * self signed certificate. If it fails to load a keystore then the application shuts down.
+     */
+    @JsonIgnore
+    public synchronized TrustAndKeyProvider getKeystore(CoreContext core, String storeId) {
+        if (!loadedKeyStores.containsKey(storeId)) {
+            if (keystores.containsKey(storeId)) {
+                // allow custom identifiers for keystores.
+                loadKeystore(core, keystores.get(storeId).setShortName(storeId));
+            } else {
+                loadedKeyStores.put(storeId, generateSelfSigned(core, storeId));
+            }
+        }
+        return loadedKeyStores.get(storeId);
+    }
+
+    private void loadKeystore(CoreContext core, KeyStore store) {
+        if (store.getPassword() == null) {
+            store.setPassword(PasswordReader.fromConsole(getKeystorePrompt(store)));
+        }
+        try {
+            loadedKeyStores.put(store.getShortName(),
+                    TrustAndKeyProvider.of(new JksOptions()
+                            .setValue(Buffer.buffer(Files.readAllBytes(Paths.get(store.getPath()))))
+                            .setPassword(store.getPassword())));
+        } catch (Throwable e) {
+            // failed to load keystore due to wrong password or missing file etc.
+            // cannot recover from this in a safe manner: shut down.
+            core.logger(getClass()).onError(e);
+            System.exit(0);
+        }
+    }
+
+    private TrustAndKeyProvider generateSelfSigned(CoreContext core, String storeId) {
+        core.logger(getClass())
+                .event(LOG_SECURITY, Level.WARNING)
+                .put(ID_NAME, storeId).send(getMissingKeyStore());
+
+        return TrustAndKeyProvider.of(SelfSignedCertificate.create(CoreStrings.GITHUB));
+    }
+
+    /**
+     * @return a list of configured keystores.
+     */
+    public Map<String, KeyStore> getKeystores() {
+        return keystores;
+    }
+
+    /**
+     * @param keystores keystores to  set
+     * @return fluent
+     */
+    public SecuritySettings setKeystores(Map<String, KeyStore> keystores) {
+        this.keystores = keystores;
+        // load all configured keystores on initialization.
+        keystores.forEach((key, value) -> keystores.put(key, value.setShortName(key)));
+        return this;
     }
 
     /**
@@ -49,14 +138,14 @@ public class SecuritySettings implements Configurable {
      * @return a map of dependencies, where the key is the regex that match other
      * configurations. The value contains the actual security configuration to be applied.
      */
-    public HashMap<String, AuthenticationDependency> getDependencies() {
+    public Map<String, AuthenticationDependency> getDependencies() {
         return dependencies;
     }
 
     /**
      * @param dependencies set the security configuration dependencies.
      */
-    public void setDependencies(HashMap<String, AuthenticationDependency> dependencies) {
+    public void setDependencies(Map<String, AuthenticationDependency> dependencies) {
         this.dependencies = dependencies;
     }
 

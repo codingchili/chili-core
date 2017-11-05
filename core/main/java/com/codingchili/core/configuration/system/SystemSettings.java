@@ -15,8 +15,8 @@ import static com.codingchili.core.configuration.CoreStrings.PATH_SYSTEM;
 public class SystemSettings implements Configurable {
     private int metricRate = 15000;
     private int services = 1;
-    private int handlers = Runtime.getRuntime().availableProcessors();
-    private int listeners = Runtime.getRuntime().availableProcessors();
+    private int handlers = 1;
+    private int listeners = 1;
     private boolean metrics = false;
     private int deployTimeout = 3000;
     private int shutdownLogTimeout = 3000;

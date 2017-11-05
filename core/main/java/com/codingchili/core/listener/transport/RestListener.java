@@ -31,9 +31,10 @@ public class RestListener implements CoreListener {
     @Override
     public void init(CoreContext core) {
         this.core = core;
+
         router = Router.router(core.vertx());
         router.route().handler(BodyHandler.create());
-        RestHelper.EnableCors(router);
+        RestHelper.addHeaders(router, settings.get().isSecure());
         router.route().handler(this::packet);
         handler.init(core);
     }
@@ -54,7 +55,7 @@ public class RestListener implements CoreListener {
     public void start(Future<Void> start) {
         this.processor = new RequestProcessor(core, handler);
 
-        core.vertx().createHttpServer(settings.get().getHttpOptions())
+        core.vertx().createHttpServer(settings.get().getHttpOptions(core))
                 .requestHandler(router::accept)
                 .listen(settings.get().getPort(), getBindAddress(), listen -> {
                     if (listen.succeeded()) {

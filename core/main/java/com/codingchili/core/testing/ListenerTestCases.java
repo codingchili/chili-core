@@ -1,6 +1,7 @@
-package com.codingchili.core.listener;
+package com.codingchili.core.testing;
 
 import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.listener.*;
 import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.testing.ContextMock;
 import io.vertx.core.buffer.Buffer;
@@ -24,14 +25,12 @@ import java.util.function.Supplier;
 @Ignore("Extend this class to run the tests.")
 @RunWith(VertxUnitRunner.class)
 public abstract class ListenerTestCases {
-    @Rule
-    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
 
     protected int port;
     protected static ContextMock context;
 
-    static final String NODE_ROUTER = "router.node";
-    static final String HOST = CoreStrings.getLoopbackAddress();
+    protected static final String NODE_ROUTER = "router.node";
+    protected static final String HOST = CoreStrings.getLoopbackAddress();
     private static final String NODE_PATCHING = "patching.node";
     private static final String NODE_WEBSERVER = "webserver.node";
     private static final String PATCHING_ROOT = "/patching";
@@ -41,14 +40,17 @@ public abstract class ListenerTestCases {
     private Supplier<CoreListener> listener;
     private WireType wireType;
 
-    ListenerTestCases(WireType wireType, Supplier<CoreListener> listener) {
+    @Rule
+    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
+
+    protected ListenerTestCases(WireType wireType, Supplier<CoreListener> listener) {
         this.wireType = wireType;
         this.listener = listener;
     }
 
     @BeforeClass
     public static void setUpClass() {
-         context = new ContextMock();
+        context = new ContextMock();
     }
 
     @AfterClass
@@ -63,6 +65,7 @@ public abstract class ListenerTestCases {
         ListenerSettings settings = new ListenerSettings()
                 .setMaxRequestBytes(MAX_REQUEST_BYTES)
                 .setPort(0)
+                .setSecure(false)
                 .setType(wireType)
                 .setTimeout(7000)
                 .setDefaultTarget(NODE_WEBSERVER)
@@ -105,25 +108,31 @@ public abstract class ListenerTestCases {
                 .put(CoreStrings.PROTOCOL_ROUTE, CoreStrings.ID_PING));
     }
 
+    @Test
+    public void testTLSEnabled(TestContext test) {
+        // todo: secure: true.
+        testAccepted(test);
+    }
+
     /**
      * Implementing class must provide transport specific implementation.
      *
      * @param listener invoked with the request response
      * @param data     the request data with route and target.
      */
-    abstract void sendRequest(ResponseListener listener, JsonObject data);
+    public abstract void sendRequest(ResponseListener listener, JsonObject data);
 
-    void handleBody(ResponseListener listener, Buffer body) {
+    protected void handleBody(ResponseListener listener, Buffer body) {
         ResponseStatus status = ResponseStatus.valueOf(body.toJsonObject().getString(CoreStrings.PROTOCOL_STATUS));
         listener.handle(body.toJsonObject(), status);
     }
 
     @FunctionalInterface
-    interface ResponseListener {
+    public interface ResponseListener {
         void handle(JsonObject result, ResponseStatus status);
     }
 
-    private class TestHandler implements CoreHandler {
+    public class TestHandler implements CoreHandler {
         private String address = "test.address.node";
 
         @Override

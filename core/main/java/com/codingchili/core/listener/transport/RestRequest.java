@@ -123,7 +123,7 @@ class RestRequest implements Request{
     }
 
     private void send(Buffer buffer) {
-        request.response().setStatusCode(HttpResponseStatus.PARTIAL_CONTENT.code()).end(buffer);
+        request.response().setStatusCode(HttpResponseStatus.OK.code()).end(buffer);
     }
 
     private void send(Object object) {

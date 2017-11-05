@@ -47,7 +47,7 @@ public class TcpListener implements CoreListener {
     public void start(Future<Void> start) {
         this.processor = new RequestProcessor(core, handler);
 
-        core.vertx().createNetServer().connectHandler(handler -> {
+        core.vertx().createNetServer(settings.get().getHttpOptions(core)).connectHandler(handler -> {
             handler.handler(data -> packet(handler, data));
         }).listen(settings.get().getPort(), getBindAddress(), listen -> {
             if (listen.succeeded()) {

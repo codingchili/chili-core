@@ -1,5 +1,7 @@
 package com.codingchili.core.configuration.system;
 
+import com.codingchili.core.configuration.CoreStrings;
+
 /**
  * @author Robin Duda
  * <p>
@@ -7,8 +9,8 @@ package com.codingchili.core.configuration.system;
  */
 public class RemoteStorage {
     private boolean persisted = false;
-    private String host = "localhost";
-    private String database = "CORE_DB";
+    private String host = CoreStrings.LOCALHOST;
+    private String database = CoreStrings.DEFAULT_DB;
     private Integer port = 27017;
     private int persistInterval = 250;
 
