@@ -167,7 +167,11 @@ public class Protocol<RequestType extends Request> {
             try {
                 handle.invoke(handler, request);
             } catch (Throwable e) {
-                throw new RuntimeException(e);
+                if (e instanceof RuntimeException) {
+                    throw (RuntimeException) e;
+                } else {
+                    throw new RuntimeException(e);
+                }
             }
         }, role);
     }
