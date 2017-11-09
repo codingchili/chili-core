@@ -41,7 +41,7 @@ public class ContextMock extends RealmContext {
 
         new StorageLoader<PlayerCharacter>().sharedmap(new StorageContext<PlayerCharacter>(this))
                 .withDB("", "")
-                .withClass(PlayerCharacter.class)
+                .withValue(PlayerCharacter.class)
                 .build(storage -> {
                     future.complete(new CharacterDB(storage.result()));
                 });

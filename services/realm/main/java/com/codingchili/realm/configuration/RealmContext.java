@@ -12,7 +12,6 @@ import com.codingchili.realm.instance.model.PlayerCharacter;
 import com.codingchili.realm.instance.model.PlayerClass;
 import com.codingchili.realm.model.AsyncCharacterStore;
 import com.codingchili.realm.model.CharacterDB;
-import com.mongodb.connection.AsyncCompletionHandler;
 import io.vertx.core.Future;
 
 import java.util.List;
@@ -40,7 +39,7 @@ public class RealmContext extends SystemContext implements ServiceContext {
 
         new StorageLoader<PlayerCharacter>(new StorageContext<>(this))
                 .withPlugin(service().getStorage())
-                .withClass(PlayerCharacter.class)
+                .withValue(PlayerCharacter.class)
                 .withCollection(COLLECTION_CHARACTERS)
                 .build(storage -> {
                     if (storage.succeeded()) {

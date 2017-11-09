@@ -32,7 +32,7 @@ public class ContextMock extends RegistryContext {
     @Override
     public void getRealmStore(Handler<AsyncResult<AsyncRealmStore>> handler) {
         new StorageLoader<RegisteredRealm>().privatemap(new StorageContext<>(this))
-                .withClass(RegisteredRealm.class)
+                .withValue(RegisteredRealm.class)
                 .withDB("", "")
                 .build(result -> {
                     this.realms = new RealmDB(result.result());

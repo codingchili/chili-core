@@ -75,9 +75,9 @@ public class StorageSettings implements Configurable{
      * @param plugin the plugin to get the configuration for
      * @return the configuration associated with the given plugin
      */
-    public RemoteStorage storage(String plugin) {
-        if (storage.containsKey(plugin)) {
-            return storage.get(plugin);
+    public RemoteStorage getSettingsForPlugin(Class<?> plugin) {
+        if (storage.containsKey(plugin.getName())) {
+            return storage.get(plugin.getName());
         } else {
             return new RemoteStorage();
         }

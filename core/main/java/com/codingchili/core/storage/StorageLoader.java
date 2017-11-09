@@ -3,14 +3,16 @@ package com.codingchili.core.storage;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.Level;
 import com.codingchili.core.logging.Logger;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 
+import java.util.Objects;
+
 import static com.codingchili.core.configuration.CoreStrings.*;
-import static com.codingchili.core.files.Configurations.launcher;
 
 /**
  * @author Robin Duda
@@ -18,44 +20,46 @@ import static com.codingchili.core.files.Configurations.launcher;
  * Builder to load storage plugins.
  */
 public class StorageLoader<Value extends Storable> {
+    private Class<? extends AsyncStorage> plugin;
+    private Class<Value> valueClass;
     private CoreContext context;
     private Logger logger;
-    private String DB = launcher().getApplication();
-    private Class<Value> aClass;
+    private String pluginString;
+    private String database;
     private String collection;
-    private String plugin;
 
     public StorageLoader() {
     }
 
     /**
      * Creates a new storage loader
+     *
      * @param context the context to use.
      */
     public StorageLoader(CoreContext context) {
         this.context = context;
-        this.logger = context.logger(getClass());
     }
 
     private void load(Handler<AsyncResult<AsyncStorage<Value>>> handler) {
+        Future<AsyncStorage<Value>> future = Future.future();
         context.blocking(blocking -> {
             try {
-                Future<AsyncStorage<Value>> future = Future.future();
                 future.setHandler(handler);
 
+                prepare();
                 StorageContext<Value> storage = new StorageContext<Value>(context)
-                        .setDatabase(DB)
+                        .setDatabase(database)
                         .setCollection(collection)
-                        .setClass(aClass)
+                        .setClass(valueClass)
                         .setPlugin(plugin);
 
-                Class.forName(plugin)
-                        .getConstructor(Future.class, StorageContext.class)
+                plugin.getConstructor(Future.class, StorageContext.class)
                         .<Value>newInstance(future, storage);
                 blocking.complete();
 
-            } catch (ReflectiveOperationException e) {
-                logger.log(CoreStrings.getStorageLoaderError(plugin, DB, collection), Level.ERROR);
+            } catch (Throwable e) {
+                logger.log(CoreStrings.getStorageLoaderError(plugin, database, collection), Level.ERROR);
+                logger.onError(e);
                 blocking.fail(e);
             }
         }, (done) -> {
@@ -65,13 +69,24 @@ public class StorageLoader<Value extends Storable> {
         });
     }
 
-    /**
-     * @param context the context to use
-     * @return fluent
-     */
-    public StorageLoader<Value> withContext(CoreContext context) {
-        this.context = context;
-        return this;
+    @SuppressWarnings("unchecked")
+    private void prepare() throws ClassNotFoundException {
+        checkIsSet(context, ID_CONTEXT);
+        checkIsSet(valueClass, ID_CLASS);
+
+        if (pluginString != null)
+            this.plugin = (Class<? extends AsyncStorage>) Class.forName(pluginString);
+
+
+        if (collection == null) {
+            this.collection = valueClass.getSimpleName();
+        }
+
+        if (database == null) {
+            database = Configurations.storage().getSettingsForPlugin(plugin).getDatabase();
+        }
+
+        checkIsSet(plugin, ID_PLUGIN);
     }
 
     /**
@@ -79,28 +94,27 @@ public class StorageLoader<Value extends Storable> {
      * @return fluent.
      */
     public StorageLoader<Value> withDB(String DB) {
-        this.DB = DB;
+        this.database = DB;
         return this;
     }
 
     /**
-     * @param DB database name to use, if unset uses application name.
+     * @param DB         database name to use, if unset uses application name.
      * @param collection collection name to use, if unset uses storable class name.
      * @return fluent.
      */
     public StorageLoader<Value> withDB(String DB, String collection) {
-        this.DB = DB;
+        this.database = DB;
         this.collection = collection;
         return this;
     }
 
     /**
-     * @param clazz the class to be stored.
+     * @param valueClass the class to be stored.
      * @return fluent.
      */
-    @SuppressWarnings("unchecked")
-    public StorageLoader<Value> withClass(Class<? extends Value> clazz) {
-        this.aClass = (Class<Value>) clazz;
+    public StorageLoader<Value> withValue(Class<Value> valueClass) {
+        this.valueClass = valueClass;
         return this;
     }
 
@@ -109,7 +123,7 @@ public class StorageLoader<Value extends Storable> {
      * @return fluent.
      */
     public StorageLoader<Value> withPlugin(Class<? extends AsyncStorage> plugin) {
-        this.plugin = plugin.getCanonicalName();
+        this.plugin = plugin;
         return this;
     }
 
@@ -127,32 +141,26 @@ public class StorageLoader<Value extends Storable> {
      *               #{@link AsyncStorage}
      * @return fluent.
      */
+    @SuppressWarnings("unchecked")
     public StorageLoader<Value> withPlugin(String plugin) {
-        this.plugin = plugin;
+        this.pluginString = plugin;
         return this;
     }
 
     /**
      * Loads the configured storage. Throws an exception if context,
      * class or plugin is unset.
-     * @param future completed when the storage is loaded.
+     *
+     * @param handler completed when the storage is loaded.
      */
-    public void build(Handler<AsyncResult<AsyncStorage<Value>>> future) {
-        checkIsSet(context, ID_CONTEXT);
-        checkIsSet(aClass, ID_CLASS);
-        checkIsSet(plugin, ID_PLUGIN);
-
-        if (collection == null) {
-            collection = aClass.getSimpleName();
-        }
-
-        this.load(future);
+    @SuppressWarnings("unchecked")
+    public void build(Handler<AsyncResult<AsyncStorage<Value>>> handler) {
+        this.logger = context.logger(getClass());
+        this.load(handler);
     }
 
     private void checkIsSet(Object object, String type) {
-        if (object == null) {
-            throw new RuntimeException(CoreStrings.getStorageLoaderMissingArgument(type));
-        }
+        Objects.requireNonNull(object, CoreStrings.getStorageLoaderMissingArgument(type));
     }
 
     public StorageLoader<Value> mongodb(CoreContext context) {
@@ -187,8 +195,8 @@ public class StorageLoader<Value extends Storable> {
         return makeWith(context, SharedMap.class);
     }
 
-    private StorageLoader<Value> makeWith(CoreContext context, Class plugin) {
-        this.plugin = plugin.getCanonicalName();
+    private StorageLoader<Value> makeWith(CoreContext context, Class<? extends AsyncStorage> plugin) {
+        this.plugin = plugin;
         this.context = context;
         return this;
     }

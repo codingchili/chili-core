@@ -51,7 +51,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
     public IndexedMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
         this.context = context;
         executor = context.vertx().createSharedWorkerExecutor("IndexedMap", 1);
-        FIELD_ID = attribute(context.clazz(), String.class, Storable.idField, Storable::id);
+        FIELD_ID = attribute(context.valueClass(), String.class, Storable.idField, Storable::id);
         fields.put(Storable.idField, FIELD_ID);
 
         // share collections that share the same identifier.

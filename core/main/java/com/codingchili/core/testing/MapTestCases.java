@@ -4,7 +4,6 @@ import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.logging.ConsoleLogger;
-import com.codingchili.core.logging.Level;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.storage.AsyncStorage;
 import com.codingchili.core.storage.QueryBuilder;
@@ -79,7 +78,7 @@ public class MapTestCases {
 
         new StorageLoader<StorageObject>(context)
                 .withDB(plugin.getSimpleName(), COLLECTION)
-                .withClass(StorageObject.class)
+                .withValue(StorageObject.class)
                 .withPlugin(plugin)
                 .build(result -> {
                     store = result.result();
@@ -768,7 +767,7 @@ public class MapTestCases {
         // creates a new storage using another context with the same DB/colletion
         new StorageLoader<StorageObject>(context2)
                 .withDB(plugin.getSimpleName(), COLLECTION)
-                .withClass(StorageObject.class)
+                .withValue(StorageObject.class)
                 .withPlugin(plugin)
                 .build(result -> {
                     AsyncStorage<StorageObject> newStorage = result.result();

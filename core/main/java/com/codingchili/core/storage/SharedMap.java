@@ -31,7 +31,7 @@ public class SharedMap<Value extends Storable> implements AsyncStorage<Value> {
 
     public SharedMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
         this.context = context;
-        this.map = context.vertx().sharedData().getLocalMap(context.DB() + "." + context.collection());
+        this.map = context.vertx().sharedData().getLocalMap(context.database() + "." + context.collection());
         future.complete(this);
     }
 

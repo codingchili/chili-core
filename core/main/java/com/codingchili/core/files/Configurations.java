@@ -3,10 +3,7 @@ package com.codingchili.core.files;
 import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.exception.InvalidConfigurableException;
-import com.codingchili.core.configuration.system.LauncherSettings;
-import com.codingchili.core.configuration.system.SecuritySettings;
-import com.codingchili.core.configuration.system.StorageSettings;
-import com.codingchili.core.configuration.system.SystemSettings;
+import com.codingchili.core.configuration.system.*;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.files.exception.FileReadException;
 import com.codingchili.core.files.exception.InvalidConfigurationPath;
@@ -298,6 +295,14 @@ public abstract class Configurations {
      */
     public static StorageSettings storage() {
         return get(PATH_STORAGE, StorageSettings.class);
+    }
+
+    /**
+     * @param plugin the plugin to get configurations for.
+     * @return storage settings for the given plugin
+     */
+    public static RemoteStorage storage(Class<?> plugin) {
+        return storage().getSettingsForPlugin(plugin);
     }
 
     private static class ConfigurationFileWatcher implements FileStoreListener {

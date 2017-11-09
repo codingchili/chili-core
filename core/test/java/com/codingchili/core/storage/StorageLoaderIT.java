@@ -10,6 +10,7 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -19,8 +20,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(VertxUnitRunner.class)
 public class StorageLoaderIT {
-    private static final String TEST_MAP = "test";
-    private static final String TEST_COLLECTION = "collection";
+    private static final String TEST_DB = "test";
     private static CoreContext context;
     @Rule
     public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
@@ -40,7 +40,7 @@ public class StorageLoaderIT {
         Async async = test.async();
         new StorageLoader<>(context)
                 .withDB("", "")
-                .withClass(Storable.class)
+                .withValue(Storable.class)
                 .withPlugin("null").build(done -> {
             if (done.failed()) {
                 async.complete();
@@ -100,8 +100,8 @@ public class StorageLoaderIT {
 
         new StorageLoader<StorableString>(context)
                 .withPlugin(plugin)
-                .withDB(TEST_MAP, TEST_COLLECTION)
-                .withClass(StorableString.class)
+                .withDB(TEST_DB, UUID.randomUUID().toString())
+                .withValue(StorableString.class)
                 .build(future);
 
         future.setHandler(done -> {

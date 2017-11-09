@@ -143,7 +143,7 @@ public abstract class CoreStrings {
     public static final String ID_UNDEFINED = "undefined";
 
     // Storage constants
-    public static final String DEFAULT_DB = "chili";
+    public static final String DEFAULT_DB = "db";
 
     // logging constants
     public static final String LOG_APPLICATION = "application";
@@ -418,8 +418,8 @@ public abstract class CoreStrings {
         return "[" + name + "] Error: Identity must be configured.";
     }
 
-    public static String getStorageLoaderError(String plugin, String mapName, String collection) {
-        return "Error: Failed to load storage plugin '" + plugin + "' for db '" + mapName + "." + collection + "'.";
+    public static String getStorageLoaderError(Class plugin, String database, String collection) {
+        return "Error: Failed to load storage plugin '" + plugin.getSimpleName() + "' for '" + database + DIR_SEPARATOR + collection + "'.";
     }
 
     public static String getErrorCreateDirectory(String target) {

@@ -47,7 +47,7 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
     public HazelMap(Future<AsyncStorage> future, StorageContext<Value> context) {
         this.context = context;
 
-        context.vertx().sharedData().<String, Value>getClusterWideMap(context.DB(), cluster -> {
+        context.vertx().sharedData().<String, Value>getClusterWideMap(context.database(), cluster -> {
             if (cluster.succeeded()) {
                 this.map = cluster.result();
 
@@ -55,7 +55,7 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
 
                 if (hazel.isPresent()) {
                     HazelcastInstance instance = hazel.get();
-                    imap = instance.getMap(context.DB());
+                    imap = instance.getMap(context.database());
                     addIndex(Storable.idField);
                     future.complete(this);
                 } else {

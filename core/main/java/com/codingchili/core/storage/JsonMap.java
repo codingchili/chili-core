@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.codingchili.core.configuration.CoreStrings.EXT_JSON;
 import static com.codingchili.core.configuration.CoreStrings.getFileReadError;
 import static com.codingchili.core.context.FutureHelper.error;
 import static com.codingchili.core.context.FutureHelper.result;
@@ -48,21 +49,25 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @SuppressWarnings("unchecked")
     public JsonMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
+        this.context = context;
         Logger logger = context.logger(getClass());
 
         if (maps.containsKey(context.identifier())) {
             this.db = maps.get(context.identifier());
         } else {
             try {
-                this.db = JsonFileStore.readObject(context.dbPath());
+                this.db = JsonFileStore.readObject(dbPath());
             } catch (NoSuchResourceException e) {
-                logger.log(getFileReadError(context.dbPath()));
+                logger.log(getFileReadError(dbPath()));
             }
         }
-        this.context = context;
         this.fileWriter = context.vertx().createSharedWorkerExecutor(JSONMAP_WORKERS);
         this.enableSave();
         future.complete(this);
+    }
+
+    private String dbPath() {
+        return String.format("%s/%s", context.database(), context.collection() + EXT_JSON);
     }
 
     private void enableSave() {
@@ -191,7 +196,7 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     private void save() {
         if (context.storage().isPersisted()) {
             fileWriter.executeBlocking(execute -> {
-                JsonFileStore.writeObject(db, context.dbPath());
+                JsonFileStore.writeObject(db, dbPath());
             }, true, result -> {
             });
         }

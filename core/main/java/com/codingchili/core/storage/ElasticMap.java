@@ -7,7 +7,6 @@ import com.codingchili.core.storage.exception.*;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
-import org.apache.lucene.util.BytesRef;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.DocWriteResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
@@ -66,7 +65,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                     .addTransportAddress(
                             new InetSocketTransportAddress(InetAddress.getByName(context.host()), context.port()));
 
-            client.admin().indices().create(new CreateIndexRequest(context.DB())).get();
+            client.admin().indices().create(new CreateIndexRequest(context.database())).get();
         } catch (UnknownHostException | InterruptedException | ExecutionException e) {
             logger.onError(e);
         }
@@ -75,7 +74,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void get(String key, Handler<AsyncResult<Value>> handler) {
-        client.prepareGet(context.DB(), context.collection(), key)
+        client.prepareGet(context.database(), context.collection(), key)
                 .execute(new ElasticHandler<>(response -> {
 
                     if (response.isExists() && !response.isSourceEmpty()) {
@@ -94,7 +93,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void put(Value value, Handler<AsyncResult<Void>> handler) {
-        client.prepareIndex(context.DB(), context.collection(), value.id())
+        client.prepareIndex(context.database(), context.collection(), value.id())
                 .setSource(context.toJson(value).encode(), XContentType.JSON)
                 .execute(new ElasticHandler<>(response -> {
                     handler.handle(result());
@@ -103,7 +102,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
-        client.prepareIndex(context.DB(), context.collection(), value.id())
+        client.prepareIndex(context.database(), context.collection(), value.id())
                 .setSource(context.toJson(value).encode(), XContentType.JSON)
                 .setOpType(IndexRequest.OpType.CREATE)
                 .execute(new ElasticHandler<>(response -> {
@@ -128,7 +127,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void remove(String key, Handler<AsyncResult<Void>> handler) {
-        client.prepareDelete(context.DB(), context.collection(), key)
+        client.prepareDelete(context.database(), context.collection(), key)
                 .execute(new ElasticHandler<>(response -> {
 
                     if (response.getResult().equals(DocWriteResponse.Result.NOT_FOUND)) {
@@ -141,7 +140,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void update(Value value, Handler<AsyncResult<Void>> handler) {
-        client.prepareUpdate(context.DB(), context.collection(), value.id())
+        client.prepareUpdate(context.database(), context.collection(), value.id())
                 .setDoc(context.toPacked(value), XContentType.JSON)
                 .execute(new ElasticHandler<>(response -> {
 
@@ -161,7 +160,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void values(Handler<AsyncResult<Collection<Value>>> handler) {
-        client.prepareSearch(context.DB()).setTypes(context.collection())
+        client.prepareSearch(context.database()).setTypes(context.collection())
                 .setFetchSource(true)
                 .setSize(Integer.MAX_VALUE)
                 .setQuery(QueryBuilders.matchAllQuery())
@@ -179,11 +178,11 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     public void clear(Handler<AsyncResult<Void>> handler) {
         DeleteIndexResponse response = client.admin()
                 .indices()
-                .delete(new DeleteIndexRequest(context.DB()))
+                .delete(new DeleteIndexRequest(context.database()))
                 .actionGet();
 
         if (response.isAcknowledged()) {
-            client.admin().indices().refresh(new RefreshRequest(context.DB()));
+            client.admin().indices().refresh(new RefreshRequest(context.database()));
             handler.handle(result());
             context.onCollectionDropped();
         } else {
@@ -193,7 +192,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void size(Handler<AsyncResult<Integer>> handler) {
-        client.prepareSearch(context.DB()).setTypes(context.collection())
+        client.prepareSearch(context.database()).setTypes(context.collection())
                 .setFetchSource(false)
                 .setSize(0)
                 .setQuery(QueryBuilders.matchAllQuery())
@@ -288,7 +287,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
             }
 
             private SearchRequestBuilder getRequestWithOptions() {
-                SearchRequestBuilder request = client.prepareSearch(context.DB()).setTypes(context.collection());
+                SearchRequestBuilder request = client.prepareSearch(context.database()).setTypes(context.collection());
                 if (isOrdered) {
                     switch (sortOrder) {
                         case ASCENDING:

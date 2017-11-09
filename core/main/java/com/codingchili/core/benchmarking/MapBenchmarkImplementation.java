@@ -23,7 +23,7 @@ public class MapBenchmarkImplementation extends BaseBenchmarkImplementation {
     private static final String COLLECTION = "collection";
     private static final String DB = "db";
     private AtomicInteger counter = new AtomicInteger(0);
-    private AsyncStorage<Storable> storage;
+    private AsyncStorage<StorageObject> storage;
     private Class<? extends AsyncStorage> plugin;
 
     public MapBenchmarkImplementation(BenchmarkGroup group, Class<? extends AsyncStorage> plugin, String implementation) {
@@ -42,9 +42,9 @@ public class MapBenchmarkImplementation extends BaseBenchmarkImplementation {
 
     @Override
     public void initialize(CoreContext core, Handler<AsyncResult<Void>> handler) {
-        new StorageLoader<>(new StorageContext<>(core))
+        new StorageLoader<StorageObject>(new StorageContext<>(core))
                 .withPlugin(plugin)
-                .withClass(StorageObject.class)
+                .withValue(StorageObject.class)
                 .withDB(DB, COLLECTION).build(store -> {
             this.storage = store.result();
             handler.handle(Future.succeededFuture());

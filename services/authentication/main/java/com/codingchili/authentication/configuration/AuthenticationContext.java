@@ -7,7 +7,6 @@ import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.files.Configurations;
-import com.codingchili.core.logging.Level;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.security.Account;
 import com.codingchili.core.security.Token;
@@ -38,7 +37,7 @@ public class AuthenticationContext extends SystemContext implements ServiceConte
         new StorageLoader<AccountMapping>(context)
                 .withPlugin(context.service().getStorage())
                 .withCollection(COLLECTION_ACCOUNTS)
-                .withClass(AccountMapping.class)
+                .withValue(AccountMapping.class)
                 .build(prepare -> {
                     context.accounts = new AccountDB(prepare.result(), context);
                     future.complete(context);

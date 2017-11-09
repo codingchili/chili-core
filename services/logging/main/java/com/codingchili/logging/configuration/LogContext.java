@@ -27,7 +27,7 @@ public class LogContext extends SystemContext implements ServiceContext {
 
         new StorageLoader<JsonItem>(context)
                 .withPlugin(service().getPlugin())
-                .withClass(JsonItem.class)
+                .withValue(JsonItem.class)
                 .withDB(service().getDb())
                 .withCollection(service().getCollection())
                 .build(result -> {

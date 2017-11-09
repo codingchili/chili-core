@@ -36,7 +36,7 @@ public class RegistryContext extends SystemContext implements ServiceContext {
     public void getRealmStore(Handler<AsyncResult<AsyncRealmStore>> handler) {
         new StorageLoader<RegisteredRealm>().diskIndex(this)
                 .withCollection(COLLECTION_REALMS)
-                .withClass(RegisteredRealm.class)
+                .withValue(RegisteredRealm.class)
                 .build(prepare -> {
                     handler.handle(Future.succeededFuture(new RealmDB(prepare.result())));
                 });

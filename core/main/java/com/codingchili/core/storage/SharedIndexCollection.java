@@ -16,7 +16,7 @@ import java.util.Set;
  * <p>
  * Keeps track of which fields are already indexed on shared instances of maps.
  */
-public class SharedIndexCollection<Value> extends ConcurrentIndexedCollection<Value> {
+public class SharedIndexCollection<Value extends Storable> extends ConcurrentIndexedCollection<Value> {
     private Set<String> indexed = new ConcurrentHashSet<>();
 
     private SharedIndexCollection(SimpleAttribute<Value, String> attribute) {
@@ -24,7 +24,7 @@ public class SharedIndexCollection<Value> extends ConcurrentIndexedCollection<Va
     }
 
     private SharedIndexCollection(StorageContext<Value> ctx, SimpleAttribute<Value, String> attribute) {
-        super(DiskPersistence.onPrimaryKeyInFile(attribute, new File(ctx.dbPath())));
+        super(DiskPersistence.onPrimaryKeyInFile(attribute, new File(dbPath(ctx))));
     }
 
     public static <Value extends Storable> SharedIndexCollection<Value> onHeap(
@@ -35,12 +35,16 @@ public class SharedIndexCollection<Value> extends ConcurrentIndexedCollection<Va
     public static <Value extends Storable> SharedIndexCollection<Value> onDisk(
             StorageContext<Value> ctx, SimpleAttribute<Value, String> attribute) {
         synchronized (SharedIndexCollection.class) {
-            File file = new File(CoreStrings.DB_DIR);
+            File file = new File(ctx.database());
             if (!file.exists() && !file.mkdirs()) {
                 throw new RuntimeException("Failed to create dirs for DB " + file.toPath().toAbsolutePath());
             }
         }
         return new SharedIndexCollection<>(ctx, attribute);
+    }
+
+    private static String dbPath(StorageContext ctx) {
+        return String.format("%s/%s.sqlite", ctx.database(), ctx.collection());
     }
 
     public boolean isIndexed(String field) {

@@ -7,12 +7,11 @@ import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Validator;
+import com.codingchili.core.storage.AsyncStorage;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
-
-import java.util.UUID;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
@@ -22,12 +21,11 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  * context used by storage plugins.
  */
 public class StorageContext<Value> extends SystemContext {
+    private Class<? extends AsyncStorage> plugin;
+    private Class<Value> valueClass;
     private Logger logger = logger(getClass());
-    private String identifier = "storage-" + UUID.randomUUID();
     private String database = "";
     private String collection = "";
-    private Class<Value> aClass;
-    private String plugin;
 
     public StorageContext() {
         super();
@@ -55,20 +53,20 @@ public class StorageContext<Value> extends SystemContext {
      * @return get the storage settings for the current plugin.
      */
     public RemoteStorage storage() {
-        return settings().storage(plugin);
+        return settings().getSettingsForPlugin(plugin);
     }
 
     /**
      * @return the class to be stored in the storage.
      */
-    public Class<Value> clazz() {
-        return this.aClass;
+    public Class<Value> valueClass() {
+        return this.valueClass;
     }
 
     /**
      * @return the plugin identifier to us as storage.
      */
-    public String plugin() {
+    public Class<? extends AsyncStorage> plugin() {
         return this.plugin;
     }
 
@@ -80,7 +78,7 @@ public class StorageContext<Value> extends SystemContext {
      */
     @SuppressWarnings("unchecked")
     public Value toValue(JsonObject json) {
-        return Serializer.unpack(json, aClass);
+        return Serializer.unpack(json, valueClass);
     }
 
     /**
@@ -90,7 +88,7 @@ public class StorageContext<Value> extends SystemContext {
      * @return generic Value inflated using the bytes and template class.
      */
     public Value toValue(byte[] bytes) {
-        return Serializer.unpack(new String(bytes), aClass);
+        return Serializer.unpack(new String(bytes), valueClass);
     }
 
     /**
@@ -128,7 +126,7 @@ public class StorageContext<Value> extends SystemContext {
      *
      * @return the name of the database as a string
      */
-    public String DB() {
+    public String database() {
         return database;
     }
 
@@ -145,18 +143,14 @@ public class StorageContext<Value> extends SystemContext {
      * @return the port of a remote database if configured.
      */
     public Integer port() {
-        return settings().getStorage().get(plugin).getPort();
+        return settings().getSettingsForPlugin(plugin).getPort();
     }
 
     /**
      * @return the hostname of a remote database if configured.
      */
     public String host() {
-        return settings().getStorage().get(plugin).getHost();
-    }
-
-    public String dbPath() {
-        return CoreStrings.getDBPath(identifier());
+        return settings().getSettingsForPlugin(plugin).getHost();
     }
 
     /**
@@ -237,7 +231,7 @@ public class StorageContext<Value> extends SystemContext {
      * @return fluent
      */
     public StorageContext<Value> setClass(Class<Value> aClass) {
-        this.aClass = aClass;
+        this.valueClass = aClass;
         this.logger = logger(aClass);
         return this;
     }
@@ -250,7 +244,6 @@ public class StorageContext<Value> extends SystemContext {
      */
     public StorageContext<Value> setCollection(String collection) {
         this.collection = collection;
-        updateIdentifier();
         return this;
     }
 
@@ -262,7 +255,6 @@ public class StorageContext<Value> extends SystemContext {
      */
     public StorageContext<Value> setDatabase(String database) {
         this.database = database;
-        updateIdentifier();
         return this;
     }
 
@@ -274,27 +266,17 @@ public class StorageContext<Value> extends SystemContext {
      * @return fluent
      */
     @SuppressWarnings("unchecked")
-    public StorageContext<Value> setPlugin(String plugin) {
+    public StorageContext<Value> setPlugin(Class<? extends AsyncStorage> plugin) {
         this.plugin = plugin;
-        updateIdentifier();
         return this;
     }
 
-    private void updateIdentifier() {
-        this.logger = logger(getClass());
-        this.identifier = CoreStrings.getDBIdentifier(
-                database,
-                collection,
-                (plugin != null) ? plugin.substring(plugin.lastIndexOf(".", plugin.length())) : "");
-    }
-
     /**
-     * Creates an identifier based on the plugin class name, the database name
-     * and the collection that this context is operating on.
      *
-     * @return a somewhat unique string for this context.
+     * @return
      */
     public String identifier() {
-        return identifier;
+       return String.format("%s in %s/%s using %s.",
+               valueClass.getSimpleName(), database, collection, plugin.getSimpleName());
     }
 }

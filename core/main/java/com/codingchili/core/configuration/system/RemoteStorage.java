@@ -12,7 +12,7 @@ public class RemoteStorage {
     private String host = CoreStrings.LOCALHOST;
     private String database = CoreStrings.DEFAULT_DB;
     private Integer port = 27017;
-    private int persistInterval = 250;
+    private int persistInterval = 3000;
 
     /**
      * @param host     the hostname of the remote storage
