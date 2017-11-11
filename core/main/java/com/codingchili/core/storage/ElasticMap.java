@@ -147,11 +147,11 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                     if (response.getResult().ordinal() != 0) {
                         handler.handle(result());
                     } else {
-                        handler.handle(error(new NothingToReplaceException(value.id())));
+                        handler.handle(error(new NothingToUpdateException(value.id())));
                     }
                 }, exception -> {
                     if (nested(exception) instanceof DocumentMissingException) {
-                        handler.handle(error(new NothingToReplaceException(value.id())));
+                        handler.handle(error(new NothingToUpdateException(value.id())));
                     } else {
                         handler.handle(error(exception));
                     }

@@ -4,7 +4,7 @@ import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.storage.exception.NothingToRemoveException;
-import com.codingchili.core.storage.exception.NothingToReplaceException;
+import com.codingchili.core.storage.exception.NothingToUpdateException;
 import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
 import com.codingchili.core.storage.exception.ValueMissingException;
 import com.hazelcast.core.Hazelcast;
@@ -123,7 +123,7 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
         map.replace(value.id(), value, replace -> {
             if (replace.succeeded()) {
                 if (replace.result() == null) {
-                    handler.handle(error(new NothingToReplaceException(value.id())));
+                    handler.handle(error(new NothingToUpdateException(value.id())));
                 } else {
                     handler.handle(FutureHelper.result());
                 }

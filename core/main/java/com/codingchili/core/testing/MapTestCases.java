@@ -10,7 +10,7 @@ import com.codingchili.core.storage.QueryBuilder;
 import com.codingchili.core.storage.SortOrder;
 import com.codingchili.core.storage.StorageLoader;
 import com.codingchili.core.storage.exception.NothingToRemoveException;
-import com.codingchili.core.storage.exception.NothingToReplaceException;
+import com.codingchili.core.storage.exception.NothingToUpdateException;
 import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
 import com.codingchili.core.storage.exception.ValueMissingException;
 import io.vertx.core.AsyncResult;
@@ -237,30 +237,30 @@ public class MapTestCases {
     }
 
     @Test
-    public void testReplace(TestContext test) {
+    public void testUpdate(TestContext test) {
         Async async = test.async();
         int level = 50;
-        StorageObject replacement = new StorageObject(OBJECT_TWO.id(), level);
+        StorageObject updated = new StorageObject(OBJECT_TWO.id(), level);
 
-        store.update(replacement, replace -> {
+        store.update(updated, replace -> {
             test.assertTrue(replace.succeeded(), errorText(replace));
 
             store.get(TWO, get -> {
                 test.assertTrue(get.succeeded(), errorText(get));
-                test.assertEquals(replacement.getLevel(), get.result().getLevel());
+                test.assertEquals(updated.getLevel(), get.result().getLevel());
                 async.complete();
             });
         });
     }
 
     @Test
-    public void testReplaceIfNotPresent(TestContext test) {
+    public void testUpdateIfNotePresent(TestContext test) {
         Async async = test.async();
         StorageObject object = new StorageObject(NAME_MISSING, 0);
 
         store.update(object, replace -> {
             test.assertTrue(replace.failed());
-            test.assertEquals(NothingToReplaceException.class, replace.cause().getClass());
+            test.assertEquals(NothingToUpdateException.class, replace.cause().getClass());
             async.complete();
         });
     }

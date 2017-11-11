@@ -443,7 +443,7 @@ public abstract class CoreStrings {
         return "storage loader is missing argument for attribute '" + type + "'.";
     }
 
-    public static String getNothingToReplaceException(String key) {
+    public static String getNothingToUpdateException(String key) {
         return "Error: nothing to replace for given key '" + key + "'.";
     }
 

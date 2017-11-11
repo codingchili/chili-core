@@ -6,7 +6,7 @@ import com.codingchili.core.files.JsonFileStore;
 import com.codingchili.core.files.exception.NoSuchResourceException;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.storage.exception.NothingToRemoveException;
-import com.codingchili.core.storage.exception.NothingToReplaceException;
+import com.codingchili.core.storage.exception.NothingToUpdateException;
 import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
 import com.codingchili.core.storage.exception.ValueMissingException;
 import io.vertx.core.AsyncResult;
@@ -135,7 +135,7 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
             put(value);
             handler.handle(FutureHelper.result());
         } else {
-            handler.handle(error(new NothingToReplaceException(value.id())));
+            handler.handle(error(new NothingToUpdateException(value.id())));
         }
     }
 

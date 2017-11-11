@@ -3,7 +3,7 @@ package com.codingchili.core.storage;
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.storage.exception.NothingToRemoveException;
-import com.codingchili.core.storage.exception.NothingToReplaceException;
+import com.codingchili.core.storage.exception.NothingToUpdateException;
 import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
 import com.codingchili.core.storage.exception.ValueMissingException;
 import io.vertx.core.AsyncResult;
@@ -82,7 +82,7 @@ public class SharedMap<Value extends Storable> implements AsyncStorage<Value> {
         if (map.replace(value.id(), value) != null) {
             handler.handle(FutureHelper.result());
         } else {
-            handler.handle(error(new NothingToReplaceException(value.id())));
+            handler.handle(error(new NothingToUpdateException(value.id())));
         }
     }
 

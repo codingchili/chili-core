@@ -3,7 +3,7 @@ package com.codingchili.core.storage;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.storage.exception.NothingToRemoveException;
-import com.codingchili.core.storage.exception.NothingToReplaceException;
+import com.codingchili.core.storage.exception.NothingToUpdateException;
 import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
 import com.codingchili.core.storage.exception.ValueMissingException;
 import com.googlecode.cqengine.attribute.Attribute;
@@ -121,11 +121,11 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
 
     @Override
     public void update(Value value, Handler<AsyncResult<Void>> handler) {
-        remove(value.id(), removed -> {
-            if (removed.succeeded()) {
-                put(value, handler);
+        get(value.id(), get -> {
+            if (get.succeeded() && db.update(Collections.singleton(get.result()), Collections.singleton(value))) {
+                handler.handle(succeededFuture());
             } else {
-                handler.handle(failedFuture(new NothingToReplaceException(value.id())));
+                handler.handle(failedFuture(new NothingToUpdateException(value.id())));
             }
         });
     }
