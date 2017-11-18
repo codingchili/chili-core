@@ -27,6 +27,12 @@ public class FileSystemMock implements FileSystem {
     }
 
     @Override
+    public FileSystem copy(String from, String to, CopyOptions options, Handler<AsyncResult<Void>> handler) {
+        fs.copy(from, to, options, handler);
+        return this;
+    }
+
+    @Override
     public FileSystem copyBlocking(String from, String to) {
         fs.copyBlocking(from, to);
         return this;
@@ -47,6 +53,12 @@ public class FileSystemMock implements FileSystem {
     @Override
     public FileSystem move(String from, String to, Handler<AsyncResult<Void>> handler) {
         fs.move(from, to, handler);
+        return this;
+    }
+
+    @Override
+    public FileSystem move(String from, String to, CopyOptions options, Handler<AsyncResult<Void>> handler) {
+        fs.move(from, to, options, handler);
         return this;
     }
 

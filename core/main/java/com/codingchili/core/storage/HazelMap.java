@@ -177,8 +177,8 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
         addIndex(field);
 
         return new AbstractQueryBuilder<Value>(this, field, HAZEL_ARRAY) {
-            private List<Predicate> predicates = new ArrayList<>();
-            private Predicate predicate;
+            private List<Predicate<String, Value>> predicates = new ArrayList<>();
+            private Predicate<String, Value> predicate;
             private BooleanOperator operator = BooleanOperator.AND;
 
             @Override
@@ -195,8 +195,9 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
                 return this;
             }
 
+            @SuppressWarnings("unchecked")
             private void apply(BooleanOperator operator, String attribute) {
-                Predicate current = Predicates.and(predicates.toArray(new Predicate[predicates.size()]));
+                Predicate<String, Value> current = Predicates.and(predicates.toArray(new Predicate[predicates.size()]));
 
                 if (predicate == null) {
                     predicate = current;
@@ -216,36 +217,42 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             public QueryBuilder<Value> between(Long minimum, Long maximum) {
                 predicates.add(Predicates.between(attribute(), minimum, maximum));
                 return this;
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             public QueryBuilder<Value> like(String text) {
                 predicates.add(Predicates.ilike(attribute(), "%" + text + "%"));
                 return this;
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             public QueryBuilder<Value> startsWith(String text) {
                 predicates.add(Predicates.ilike(attribute(), text + "%"));
                 return this;
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             public QueryBuilder<Value> in(Comparable... list) {
                 predicates.add(Predicates.in(attribute(), list));
                 return this;
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             public QueryBuilder<Value> equalTo(Comparable match) {
                 predicates.add(Predicates.equal(attribute(), match));
                 return this;
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             public QueryBuilder<Value> matches(String regex) {
                 predicates.add(Predicates.regex(attribute(), regex));
                 return this;
@@ -267,16 +274,15 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
             }
 
             private Predicate getPredicateWithPager() {
-                PagingPredicate paging;
+                PagingPredicate<String, Value> paging;
 
                 if (isOrdered) {
                     String orderBy = getOrderByAttribute();
-                    paging = new PagingPredicate(predicate, (Serializable & Comparator<Map.Entry>) (first, second) -> {
-                        return ((Storable) first.getValue())
-                                .compareToAttribute((Storable) second.getValue(), orderBy);
+                    paging = new PagingPredicate<>(predicate, (Serializable & Comparator<Map.Entry<String, Value>>) (first, second) -> {
+                        return first.getValue().compareToAttribute(second.getValue(), orderBy);
                     }, pageSize);
                 } else {
-                    paging = new PagingPredicate(predicate, pageSize);
+                    paging = new PagingPredicate<>(predicate, pageSize);
                 }
                 paging.setPage(page);
                 return paging;

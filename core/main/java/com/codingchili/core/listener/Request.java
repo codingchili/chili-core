@@ -9,6 +9,7 @@ import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.protocol.exception.UnmappedException;
 import com.codingchili.core.security.Token;
 import io.vertx.core.AsyncResult;
+import io.vertx.core.impl.NoStackTraceThrowable;
 import io.vertx.core.json.DecodeException;
 import io.vertx.core.json.JsonObject;
 
@@ -77,7 +78,7 @@ public interface Request {
     default void error(Throwable exception) {
         if (exception instanceof CoreException || exception instanceof CoreRuntimeException) {
             write(Protocol.response(((CoreExceptionFormat) exception).status(), exception));
-        } else if (exception instanceof DecodeException) {
+        } else if (exception instanceof DecodeException || exception instanceof NoStackTraceThrowable) {
             write(Protocol.response(ResponseStatus.ERROR, exception));
         } else {
             write(Protocol.response(ResponseStatus.ERROR, new UnmappedException(exception)));

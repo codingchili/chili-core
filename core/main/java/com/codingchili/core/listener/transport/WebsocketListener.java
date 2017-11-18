@@ -48,9 +48,10 @@ public class WebsocketListener implements CoreListener {
     public void start(Future<Void> start) {
         this.processor = new RequestProcessor(core, handler);
 
-        core.vertx().createHttpServer(settings.get().getHttpOptions(core)).websocketHandler(socket -> {
-            socket.handler(data -> handle(socket, data));
-        }).requestHandler(rest -> {
+        core.vertx().createHttpServer(settings.get().getHttpOptions(core))
+                .websocketHandler(socket -> {
+                    socket.handler(data -> handle(socket, data));
+                }).requestHandler(rest -> {
             rest.response().setStatusCode(HttpResponseStatus.NOT_IMPLEMENTED.code()).end();
         }).listen(settings.get().getPort(), getBindAddress(), listen -> {
             if (listen.succeeded()) {

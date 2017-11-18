@@ -146,6 +146,11 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
                     throw new NoSuchResourceException(name);
                 }
             }
+
+            @Override
+            public String getExtension() {
+                return "jade";
+            }
         });
         try {
             return config.getTemplate(template);

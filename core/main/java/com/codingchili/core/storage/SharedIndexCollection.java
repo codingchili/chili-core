@@ -1,6 +1,5 @@
 package com.codingchili.core.storage;
 
-import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.StorageContext;
 import com.googlecode.cqengine.ConcurrentIndexedCollection;
 import com.googlecode.cqengine.attribute.SimpleAttribute;
@@ -54,4 +53,6 @@ public class SharedIndexCollection<Value extends Storable> extends ConcurrentInd
     public void setIndexed(String field) {
         this.indexed.add(field);
     }
+
+
 }

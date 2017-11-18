@@ -16,7 +16,7 @@ import static com.codingchili.core.configuration.CoreStrings.ERROR_TOKEN_FACTORY
  * <p>
  * Verifies and generates tokens for access.
  */
-public class TokenFactory {
+public class    TokenFactory {
     private static final String ALGORITHM = "HmacSHA512";
     private final byte[] secret;
 

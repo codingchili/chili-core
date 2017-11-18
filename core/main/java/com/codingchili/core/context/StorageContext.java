@@ -273,7 +273,7 @@ public class StorageContext<Value> extends SystemContext {
 
     /**
      *
-     * @return
+     * @return storage identifier.
      */
     public String identifier() {
        return String.format("%s in %s/%s using %s.",
