@@ -194,10 +194,12 @@ public class StorageContext<Value> extends SystemContext {
      * @param affected the number of items affected by the query.
      */
     public void onWatcherCompleted(String name, int affected) {
-        event(LOG_STORAGE_WATCHER)
-                .put(ID_NAME, name)
-                .put(ID_COUNT, affected)
-                .put(ID_MESSAGE, CoreStrings.WATCHER_COMPLETED).send();
+        if (affected > 0) {
+            event(LOG_STORAGE_WATCHER)
+                    .put(ID_NAME, name)
+                    .put(ID_COUNT, affected)
+                    .put(ID_MESSAGE, CoreStrings.WATCHER_COMPLETED).send();
+        }
     }
 
     public void onWatcherPaused(String name) {

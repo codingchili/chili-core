@@ -6,6 +6,8 @@ import org.fusesource.jansi.AnsiConsole;
 
 import java.time.Instant;
 import java.util.Collections;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -17,6 +19,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  * Implementation of a console logger, filters some key/value combinations to better display the messages.
  */
 public class ConsoleLogger extends DefaultLogger implements StringLogger {
+    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
     private static final String RESET = "\u001B[0m";
     private static final String BLACK = "\u001B[30m";
     private static final String ERROR = "\u001B[31m";
@@ -68,17 +71,17 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
     @Override
     public Logger log(JsonObject data) {
         if (enabled.get()) {
-            JsonObject event = eventFromLog(data);
-            write(parseJsonLog(event, consume(data, LOG_EVENT)));
+            executor.submit(() -> {
+                JsonObject event = eventFromLog(data);
+                write(parseJsonLog(event, consume(data, LOG_EVENT)));
+            });
         }
         return this;
     }
 
     private void write(String line) {
         line = replaceTags(line, LOG_HIDDEN_TAGS);
-        synchronized (ConsoleLogger.class) {
-            AnsiConsole.out.println(line);
-        }
+        AnsiConsole.out.println(line);
         AnsiConsole.out.flush();
     }
 

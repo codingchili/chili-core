@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
@@ -100,13 +101,25 @@ public abstract class Configurations {
      */
     @SuppressWarnings("unchecked")
     public static <T extends Configurable> T get(String path, Class<T> clazz) {
+        Supplier<Boolean> loaded = () -> configs.containsKey(path) && configs.get(path).clazz.equals(clazz);
+
         if (path == null) {
             throw new InvalidConfigurationPath(clazz);
         }
-        if (configs.containsKey(path) && configs.get(path).clazz.equals(clazz)) {
+
+        if (loaded.get()) {
             return (T) configs.get(path).configurable;
         } else {
-            return load(path, clazz);
+            // if not loaded: synchronization is required to avoid multiple loads of a single file.
+            synchronized (Configurations.class) {
+                // synchronized check if loaded: for second and later threads waiting.
+                if (loaded.get()) {
+                    return (T) configs.get(path).configurable;
+                } else {
+                    // load synchronized for first thread.
+                    return load(path, clazz);
+                }
+            }
         }
     }
 
