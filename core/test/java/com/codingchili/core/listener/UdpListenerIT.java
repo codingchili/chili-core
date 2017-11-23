@@ -21,11 +21,6 @@ public class UdpListenerIT extends ListenerTestCases {
         super(WireType.UDP, UdpListener::new);
     }
 
-    @Ignore("DTLS not enabled yet.")
-    public void testTLSEnabled(TestContext test) {
-        //
-    }
-
     @Override
     public void sendRequest(ResponseListener listener, JsonObject data) {
         context.vertx().createDatagramSocket().send(data.encode(), port, HOST, handler -> {

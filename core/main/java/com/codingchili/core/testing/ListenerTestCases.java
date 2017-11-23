@@ -108,12 +108,6 @@ public abstract class ListenerTestCases {
                 .put(CoreStrings.PROTOCOL_ROUTE, CoreStrings.ID_PING));
     }
 
-    @Test
-    public void testTLSEnabled(TestContext test) {
-        // todo: secure: true.
-        testAccepted(test);
-    }
-
     /**
      * Implementing class must provide transport specific implementation.
      *
