@@ -14,7 +14,9 @@ public interface SessionFactory {
      *  @param source     the listener that created the session, the listener must
      *                   also be able to route asynchronous messages back to the connection
      *                   using the eventbus for example.
-     * @param connection a unique identification of the sessions connection.*/
+     * @param connection a unique identification of the sessions connection.
+     * @return callback
+     */
     Future<Session> create(String source, String connection);
 
     /**

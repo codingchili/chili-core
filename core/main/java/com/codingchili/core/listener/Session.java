@@ -19,6 +19,7 @@ public interface Session extends MessageOperations, Storable {
 
     /**
      * Destroys the session.
+     * @return callback
      */
     Future<Void> destroy();
 
@@ -39,6 +40,7 @@ public interface Session extends MessageOperations, Storable {
 
     /**
      * Call this to update the session data after modification.
+     * @return callback
      */
     Future<Void> update();
 }
