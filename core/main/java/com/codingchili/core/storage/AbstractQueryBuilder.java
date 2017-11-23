@@ -21,7 +21,7 @@ import static com.codingchili.core.protocol.Serializer.getValueByPath;
  * If an arrayNotation is supplied in the constructor, it will instead be replaced
  * with the specified notation.
  */
-abstract class AbstractQueryBuilder<Value extends Storable> implements QueryBuilder<Value> {
+public abstract class AbstractQueryBuilder<Value extends Storable> implements QueryBuilder<Value> {
     boolean isOrdered = false;
     SortOrder sortOrder = SortOrder.ASCENDING;
     int pageSize = Configurations.storage().getMaxResults();

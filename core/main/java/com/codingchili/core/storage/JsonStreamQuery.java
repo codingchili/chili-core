@@ -18,7 +18,7 @@ import java.util.stream.Stream;
  * Use an indexed collection if performance is needed.
  * This implementation is mostly for testing.
  */
-class JsonStreamQuery<Value extends Storable> {
+public class JsonStreamQuery<Value extends Storable> {
     private StreamSource<JsonObject> source;
     private AsyncStorage<Value> storage;
     private StorageContext<Value> context;

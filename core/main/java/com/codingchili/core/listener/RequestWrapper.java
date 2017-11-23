@@ -15,11 +15,6 @@ public class RequestWrapper implements Request {
     }
 
     @Override
-    public void init() {
-        request.init();
-    }
-
-    @Override
     public void write(Object object) {
         request.write(object);
     }

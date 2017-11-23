@@ -1,15 +1,15 @@
 package com.codingchili.core.listener.transport;
 
 import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.listener.CoreHandler;
-import com.codingchili.core.listener.CoreListener;
-import com.codingchili.core.listener.ListenerSettings;
-import com.codingchili.core.listener.RequestProcessor;
+import com.codingchili.core.listener.*;
+import com.codingchili.core.listener.ClusteredSessionFactory;
+import com.codingchili.core.listener.SessionFactory;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.ServerWebSocket;
 
+import java.util.UUID;
 import java.util.function.Supplier;
 
 import static com.codingchili.core.configuration.CoreStrings.LOG_AT;
@@ -22,6 +22,7 @@ import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
  */
 public class WebsocketListener implements CoreListener {
     private Supplier<ListenerSettings> settings = ListenerSettings::getDefaultSettings;
+    private String id = UUID.randomUUID().toString();
     private RequestProcessor processor;
     private CoreContext core;
     private CoreHandler handler;
@@ -48,9 +49,33 @@ public class WebsocketListener implements CoreListener {
     public void start(Future<Void> start) {
         this.processor = new RequestProcessor(core, handler);
 
+        ClusteredSessionFactory.get(core).setHandler(sessions -> {
+            listen(start, sessions.result());
+        });
+    }
+
+    private void listen(Future<Void> start, SessionFactory sessions) {
+
+        core.bus().consumer(id, message -> {
+            String connection = message.headers().get(Session.CONNECTION);
+            core.bus().send(connection, message.body());
+        });
+
         core.vertx().createHttpServer(settings.get().getHttpOptions(core))
                 .websocketHandler(socket -> {
-                    socket.handler(data -> handle(socket, data));
+
+                    // create a new clustered session.
+                    sessions.create(id, socket.textHandlerID()).setHandler(created -> {
+                        Session session = created.result();
+
+                        // write data to the connection.
+                        socket.handler(data -> handle(socket, data));
+
+                        // destroy the session on disconnect.
+                        socket.closeHandler(closed -> session.destroy());
+
+                    });
+
                 }).requestHandler(rest -> {
             rest.response().setStatusCode(HttpResponseStatus.NOT_IMPLEMENTED.code()).end();
         }).listen(settings.get().getPort(), getBindAddress(), listen -> {

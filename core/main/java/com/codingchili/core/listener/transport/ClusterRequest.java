@@ -4,12 +4,10 @@ import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.Protocol;
 import com.codingchili.core.protocol.ResponseStatus;
-import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.listener.ClusterHelper;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
-
-import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_STATUS;
 
 /**
  * @author Robin Duda
@@ -50,21 +48,7 @@ public class ClusterRequest implements Request {
     @Override
     public void write(Object object) {
         if (object != null) {
-            if (object instanceof Buffer) {
-                message.reply(object);
-            } else {
-                JsonObject reply;
-
-                if (object instanceof JsonObject) {
-                    reply = (JsonObject) object;
-                } else {
-                    reply = Serializer.json(object);
-                }
-                if (!reply.containsKey(PROTOCOL_STATUS)) {
-                    reply.put(PROTOCOL_STATUS, ResponseStatus.ACCEPTED);
-                }
-                message.reply(reply);
-            }
+            ClusterHelper.reply(message, object);
         } else {
             accept();
         }
