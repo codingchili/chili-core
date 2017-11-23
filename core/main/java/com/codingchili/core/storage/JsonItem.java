@@ -12,10 +12,6 @@ public class JsonItem extends JsonObject implements Storable {
     public JsonItem() {
     }
 
-    public JsonItem(JsonObject object) {
-        this.mergeIn(object);
-    }
-
     @Override
     public String id() {
         return (this.containsKey(idField)) ?

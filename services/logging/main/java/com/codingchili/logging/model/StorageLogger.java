@@ -21,7 +21,10 @@ public class StorageLogger extends DefaultLogger implements JsonLogger {
     }
 
     public Logger log(JsonObject data) {
-        context.storage().put(new JsonItem(data), result -> {
+        JsonItem item = new JsonItem();
+        item.mergeIn(data);
+
+        context.storage().put(item, result -> {
             if (result.failed()) {
                 throw new RuntimeException(result.cause());
             }
