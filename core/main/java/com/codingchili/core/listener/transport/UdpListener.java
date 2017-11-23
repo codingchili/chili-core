@@ -64,7 +64,7 @@ public class UdpListener implements CoreListener, DeploymentAware {
     }
 
     private void handle(DatagramPacket connection) {
-        processor.submit(new UdpRequest(core, settings.get(), connection));
+        processor.submit(() -> new UdpRequest(core, settings.get(), connection));
     }
 
     @Override

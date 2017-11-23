@@ -15,13 +15,11 @@ import org.junit.runner.RunWith;
 import java.util.function.Consumer;
 
 import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_STATUS;
-import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
-import static com.codingchili.core.protocol.ResponseStatus.BAD;
-import static com.codingchili.core.protocol.ResponseStatus.ERROR;
+import static com.codingchili.core.protocol.ResponseStatus.*;
 
 @RunWith(VertxUnitRunner.class)
 public class RequestProcessorTest {
-    public static final String TEST_HANDLER = "test-handler";
+    private static final String TEST_HANDLER = "test-handler";
     private ContextMock mock;
 
     @Before
@@ -53,14 +51,14 @@ public class RequestProcessorTest {
             }
         };
        processor((toHandler) -> test.fail("handler should not be called if pre-validation fails."))
-               .submit(request);
+               .submit(() -> request);
     }
 
     @Test
     public void requestHandlerNotFound(TestContext test) {
         processor((request) -> {
             throw new HandlerMissingException(TEST_HANDLER);
-        }).submit(request((response, status) -> {
+        }).submit(() -> request((response, status) -> {
             test.assertEquals(ERROR, status);
             test.assertTrue(response.encode().contains(TEST_HANDLER));
         }));
@@ -70,7 +68,7 @@ public class RequestProcessorTest {
     public void handlerThrowsAnException(TestContext test) {
         processor((request) -> {
             throw new RuntimeException(TEST_HANDLER);
-        }).submit(request((response, status) -> {
+        }).submit(() -> request((response, status) -> {
             test.assertEquals(ERROR, status);
         }));
     }
@@ -78,8 +76,18 @@ public class RequestProcessorTest {
     @Test
     public void handlerCompletesWithSuccess(TestContext test) {
         processor(Request::accept)
-                .submit(request((response, status) ->
+                .submit(() -> request((response, status) ->
                         test.assertEquals(ACCEPTED, status)));
+    }
+
+    @Test
+    public void errorHandledInSupplier(TestContext test) {
+        processor(Request::accept)
+                .submit(() -> {
+                    // this error is not thrown, its only logged.
+                    // since the supplier fails, there is no request to write the error to.
+                    throw new RuntimeException("handle me.");
+                });
     }
 
     private Request request(ResponseListener listener) {

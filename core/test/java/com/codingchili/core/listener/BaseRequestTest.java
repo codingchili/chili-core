@@ -90,7 +90,6 @@ public class BaseRequestTest {
     public void testNonCoreErrorConvertedToUnmappedException(TestContext test) {
         Exception e = new Exception("cannot write this");
         request.error(e);
-        System.out.println(response.encodePrettily());
         test.assertEquals(ERROR.toString(), response.getString(PROTOCOL_STATUS));
         test.assertEquals(new UnmappedException(e).getMessage(), response.getString(PROTOCOL_MESSAGE));
     }
@@ -139,10 +138,6 @@ public class BaseRequestTest {
             if (!response.containsKey(PROTOCOL_STATUS)) {
                 response.put(PROTOCOL_STATUS, ACCEPTED);
             }
-        }
-
-        @Override
-        public void init() {
         }
 
         @Override

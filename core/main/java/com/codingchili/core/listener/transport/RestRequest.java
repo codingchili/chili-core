@@ -20,7 +20,6 @@ import java.util.Map;
  * HTTP/REST request object.
  */
 class RestRequest implements Request{
-    private RoutingContext context;
     private HttpServerRequest request;
     private JsonObject data = new JsonObject();
     private ListenerSettings settings;
@@ -28,18 +27,14 @@ class RestRequest implements Request{
 
     RestRequest(RoutingContext context, ListenerSettings settings, HttpServerRequest request) {
         this.size = context.getBody().length();
-        this.context = context;
         this.request = request;
         this.settings = settings;
+
+        parseData(context);
+        parseHeaders(context);
     }
 
-    @Override
-    public void init() {
-        parseData();
-        parseHeaders();
-    }
-
-    private void parseData() {
+    private void parseData(RoutingContext context) {
         String body = context.getBodyAsString();
         if (body == null || body.length() == 0) {
             request.params().forEach(entry -> {
@@ -49,7 +44,7 @@ class RestRequest implements Request{
             data = new JsonObject(body);
         }
 
-        parseApi();
+        parseApi(context);
 
         if (!data.containsKey(CoreStrings.PROTOCOL_ROUTE)) {
             data.put(CoreStrings.PROTOCOL_ROUTE, context.request().path().replaceFirst("/", ""));
@@ -60,7 +55,7 @@ class RestRequest implements Request{
         }
     }
 
-    private void parseApi() {
+    private void parseApi(RoutingContext context) {
         Map<String, Endpoint> api = settings.getApi();
 
         api.keySet().stream()
@@ -76,7 +71,7 @@ class RestRequest implements Request{
                 });
     }
 
-    private void parseHeaders() {
+    private void parseHeaders(RoutingContext context) {
         context.request().headers().entries().forEach(entry ->
                 data.put(entry.getKey(), entry.getValue()));
     }

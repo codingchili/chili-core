@@ -20,7 +20,6 @@ import static com.codingchili.core.configuration.CoreStrings.LOG_AT;
  * the requests to it.
  */
 public class ClusterListener implements CoreListener, DeploymentAware {
-    private Supplier<ListenerSettings> settings = ListenerSettings::getDefaultSettings;
     private CoreHandler handler;
     private CoreContext core;
 
@@ -32,7 +31,6 @@ public class ClusterListener implements CoreListener, DeploymentAware {
 
     @Override
     public CoreListener settings(Supplier<ListenerSettings> settings) {
-        this.settings = settings;
         return this;
     }
 
@@ -45,7 +43,7 @@ public class ClusterListener implements CoreListener, DeploymentAware {
     @Override
     public void start(Future<Void> start) {
         RequestProcessor processor = new RequestProcessor(core, handler);
-        core.bus().consumer(handler.address()).handler(message -> processor.submit(new ClusterRequest(message)));
+        core.bus().consumer(handler.address()).handler(message -> processor.submit(() -> new ClusterRequest(message)));
         handler.start(start);
     }
 

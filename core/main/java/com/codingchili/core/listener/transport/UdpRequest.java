@@ -28,17 +28,15 @@ class UdpRequest implements Request {
     }
 
     @Override
-    public void init() {
-        this.data = packet.data().toJsonObject();
-    }
-
-    @Override
     public void write(Object object) {
         send(object);
     }
 
     @Override
     public JsonObject data() {
+        if (data == null) {
+            data = packet.data().toJsonObject();
+        }
         return data;
     }
 

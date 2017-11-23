@@ -18,7 +18,7 @@ import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_STATUS;
  * <p>
  * Size does not apply to these requests.
  */
-public class ClusterRequest implements Request{
+public class ClusterRequest implements Request {
     private final Message message;
     private int timeout = Configurations.system().getClusterTimeout();
     private Buffer buffer;
@@ -36,10 +36,7 @@ public class ClusterRequest implements Request{
      */
     public ClusterRequest(Message message) {
         this.message = message;
-    }
 
-    @Override
-    public void init() {
         if (message.body() instanceof Buffer) {
             this.buffer = (Buffer) message.body();
         }

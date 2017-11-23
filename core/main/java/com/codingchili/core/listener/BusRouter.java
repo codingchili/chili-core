@@ -72,7 +72,7 @@ public class BusRouter implements CoreHandler {
         logger.event(LOG_NODE_FAILURE, Level.WARNING)
                 .put(PROTOCOL_TARGET, request.target())
                 .put(PROTOCOL_ROUTE, request.route())
-                .put(ID_MESSAGE, getNodeFailedToAcknowledge(request.target(), request.route())).send();
+                .send(getNodeFailedToAcknowledge(request.target(), request.route()));
     }
 
     protected void onNodeNotReachable(Request request) {
@@ -80,7 +80,7 @@ public class BusRouter implements CoreHandler {
         logger.event(LOG_NODE_UNREACHABLE, Level.ERROR)
                 .put(PROTOCOL_TARGET, request.target())
                 .put(PROTOCOL_ROUTE, request.route())
-                .put(ID_MESSAGE, getNodeNotReachable(request.target(), request.route())).send();
+                .send(getNodeNotReachable(request.target(), request.route()));
     }
 
     protected void onNodeTimeout(Request request) {
@@ -88,6 +88,6 @@ public class BusRouter implements CoreHandler {
         logger.event(LOG_NODE_TIMEOUT, Level.WARNING)
                 .put(PROTOCOL_TARGET, request.target())
                 .put(PROTOCOL_ROUTE, request.route())
-                .put(ID_MESSAGE, getServiceTimeout(request.target(), request.route(), request.timeout())).send();
+                .send(getServiceTimeout(request.target(), request.route(), request.timeout()));
     }
 }

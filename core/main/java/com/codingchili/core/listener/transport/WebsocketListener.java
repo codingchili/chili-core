@@ -69,7 +69,7 @@ public class WebsocketListener implements CoreListener {
     }
 
     private void handle(ServerWebSocket socket, Buffer buffer) {
-        processor.submit(new WebsocketRequest(socket, buffer, settings.get()));
+        processor.submit(() -> new WebsocketRequest(socket, buffer, settings.get()));
     }
 
     @Override

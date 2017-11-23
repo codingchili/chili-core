@@ -17,18 +17,11 @@ class WebsocketRequest implements Request {
     private ServerWebSocket socket;
     private ListenerSettings settings;
     private JsonObject data;
-    private Buffer buffer;
-
 
     WebsocketRequest(ServerWebSocket socket, Buffer buffer, ListenerSettings settings) {
         this.size = buffer.length();
         this.socket = socket;
         this.settings = settings;
-        this.buffer = buffer;
-    }
-
-    @Override
-    public void init() {
         this.data = buffer.toJsonObject();
     }
 

@@ -65,7 +65,7 @@ public class TcpListener implements CoreListener {
     }
 
     private void packet(NetSocket socket, Buffer data) {
-        processor.submit(new TcpRequest(socket, data, settings.get()));
+        processor.submit(() -> new TcpRequest(socket, data, settings.get()));
     }
 
     @Override

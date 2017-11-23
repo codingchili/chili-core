@@ -14,20 +14,14 @@ import io.vertx.core.net.NetSocket;
  */
 class TcpRequest implements Request {
     private int size;
-    private Buffer buffer;
     private JsonObject data;
     private NetSocket socket;
     private ListenerSettings settings;
 
     TcpRequest(NetSocket socket, Buffer buffer, ListenerSettings settings) {
         this.size = buffer.length();
-        this.buffer = buffer;
         this.socket = socket;
         this.settings = settings;
-    }
-
-    @Override
-    public void init() {
         this.data = buffer.toJsonObject();
     }
 
