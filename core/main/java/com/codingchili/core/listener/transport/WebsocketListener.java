@@ -54,7 +54,7 @@ public class WebsocketListener implements CoreListener {
         });
     }
 
-    private void listen(Future<Void> start, SessionFactory sessions) {
+    private void listen(Future<Void> start, SessionFactory<?> sessions) {
 
         core.bus().consumer(id, message -> {
             String connection = message.headers().get(Session.CONNECTION);

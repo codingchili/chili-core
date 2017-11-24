@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * Mock implementation of a session store.
  */
-public class SessionFactoryMock implements SessionFactory {
+public class SessionFactoryMock implements SessionFactory<ClusteredSession> {
     public static Map<String, Session> sessions = new HashMap<>();
     private CoreContext core;
 
@@ -19,9 +19,9 @@ public class SessionFactoryMock implements SessionFactory {
     }
 
     @Override
-    public Future<Session> create(String source, String connection) {
-        Future<Session> future = Future.future();
-        Session session = new ClusteredSession(this, source, connection);
+    public Future<ClusteredSession> create(String source, String connection) {
+        Future<ClusteredSession> future = Future.future();
+        ClusteredSession session = new ClusteredSession(this, source, connection);
         sessions.put(session.id(), session);
         future.complete(session);
         return future;
@@ -35,14 +35,14 @@ public class SessionFactoryMock implements SessionFactory {
     }
 
     @Override
-    public Future<Void> destroy(Session session) {
+    public Future<Void> destroy(ClusteredSession session) {
         Future<Void> future = Future.future();
         sessions.remove(session.id());
         return future;
     }
 
     @Override
-    public Future<Boolean> isActive(Session session) {
+    public Future<Boolean> isActive(ClusteredSession session) {
         Future<Boolean> future = Future.future();
         future.complete(sessions.containsKey(session.id()));
         return future;

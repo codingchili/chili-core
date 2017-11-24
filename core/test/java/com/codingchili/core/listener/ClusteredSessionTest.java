@@ -20,8 +20,8 @@ public class ClusteredSessionTest {
     private static String source = "source";
     private static String connection = "connection";
     private CoreContext core;
-    private Session session;
-    private SessionFactory sessionFactory;
+    private ClusteredSession session;
+    private SessionFactory<ClusteredSession> sessionFactory;
 
     @Before
     public void setUp(TestContext test) {

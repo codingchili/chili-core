@@ -7,7 +7,7 @@ import io.vertx.core.Future;
 /**
  * An interface which defines the functionality of a session provider.
  */
-public interface SessionFactory {
+public interface SessionFactory<T extends Session> {
 
     /**
      * Creates a new session.
@@ -17,7 +17,7 @@ public interface SessionFactory {
      * @param connection a unique identification of the sessions connection.
      * @return callback
      */
-    Future<Session> create(String source, String connection);
+    Future<T> create(String source, String connection);
 
     /**
      * Updates the data stored in a session.
@@ -25,7 +25,7 @@ public interface SessionFactory {
      * @param session the session to be updated.
      * @return callback
      */
-    Future<Void> update(ClusteredSession session);
+    Future<Void> update(T session);
 
     /**
      * Destroys a session.
@@ -33,7 +33,7 @@ public interface SessionFactory {
      * @param session the session to be destroyed.
      * @return callback
      */
-    Future<Void> destroy(Session session);
+    Future<Void> destroy(T session);
 
     /**
      * Checks if a session is active.
@@ -41,7 +41,7 @@ public interface SessionFactory {
      * @param session the session to check if active.
      * @return callback.
      */
-    Future<Boolean> isActive(Session session);
+    Future<Boolean> isActive(T session);
 
     /**
      * Constructs a query that can be used to search for existing sessions.
@@ -49,7 +49,7 @@ public interface SessionFactory {
      * @param attribute the name of the attribute to query on.
      * @return a fluent query builder.
      */
-    QueryBuilder<ClusteredSession> query(String attribute);
+    QueryBuilder<T> query(String attribute);
 
     /**
      * @return the context of the session factory.

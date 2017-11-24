@@ -18,7 +18,7 @@ public class ClusteredSessionFactoryTest {
     private String source = "source";
     private String connection = "connection";
     private CoreContext core = new SystemContext();
-    private SessionFactory factory;
+    private SessionFactory<ClusteredSession> factory;
 
     @Before
     public void setUp(TestContext test) {
@@ -54,7 +54,7 @@ public class ClusteredSessionFactoryTest {
         Async async = test.async();
 
         factory.create(source, connection).setHandler(done -> {
-            Session session = done.result();
+            ClusteredSession session = done.result();
             test.assertTrue(done.succeeded());
 
             factory.destroy(session).setHandler(destroyed -> {

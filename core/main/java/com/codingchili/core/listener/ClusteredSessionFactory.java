@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Creates new sessions and manages existing.
  */
-public class ClusteredSessionFactory implements SessionFactory {
+public class ClusteredSessionFactory implements SessionFactory<ClusteredSession> {
     private static AtomicBoolean loading = new AtomicBoolean();
     private static Future<Void> loader = Future.future();
     private static Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
@@ -45,7 +45,7 @@ public class ClusteredSessionFactory implements SessionFactory {
     }
 
     @Override
-    public Future<Boolean> isActive(Session session) {
+    public Future<Boolean> isActive(ClusteredSession session) {
         Future<Boolean> future = Future.future();
         sessions.contains(session.id(), future);
         return future;
@@ -57,7 +57,7 @@ public class ClusteredSessionFactory implements SessionFactory {
     }
 
     @Override
-    public Future<Void> destroy(Session session) {
+    public Future<Void> destroy(ClusteredSession session) {
         Future<Void> future = Future.future();
         sessions.remove(session.id(), future);
         return future;
@@ -76,8 +76,8 @@ public class ClusteredSessionFactory implements SessionFactory {
     }
 
     @Override
-    public Future<Session> create(String source, String connection) {
-        Future<Session> future = Future.future();
+    public Future<ClusteredSession> create(String source, String connection) {
+        Future<ClusteredSession> future = Future.future();
         ClusteredSession session = new ClusteredSession(this, source, connection);
 
         update(session).setHandler(update -> {
