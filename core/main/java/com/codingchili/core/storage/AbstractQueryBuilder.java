@@ -83,23 +83,19 @@ public abstract class AbstractQueryBuilder<Value extends Storable> implements Qu
         return attribute.replace(STORAGE_ARRAY, arrayNotation);
     }
 
-    @Override
     public String attribute() {
         return attribute;
     }
 
-    @Override
     public void setAttribute(String attribute) {
         isAttributeArray = attribute.contains(STORAGE_ARRAY);
         this.attribute = setArrayNotation(attribute);
     }
 
-    @Override
     public boolean isAttributeArray() {
         return isAttributeArray;
     }
 
-    @Override
     public String getOrderByAttribute() {
         if (orderByAttribute == null) {
             return attribute;

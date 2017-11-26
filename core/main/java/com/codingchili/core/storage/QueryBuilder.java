@@ -151,35 +151,6 @@ public interface QueryBuilder<Value extends Storable> {
     QueryBuilder<Value> order(SortOrder order);
 
     /**
-     * get the name of the attribute that is currently being queried.
-     *
-     * @return attribute as string using dot notation
-     */
-    String attribute();
-
-    /**
-     * set the attribute of the currently queried attribute, also processes any
-     * array notations.
-     *
-     * @param attribute new attribute that is being queried
-     */
-    void setAttribute(String attribute);
-
-    /**
-     * check if the current attribute is multivalued
-     *
-     * @return true if the current attribute is multivalued
-     */
-    boolean isAttributeArray();
-
-    /**
-     * get the name of the attribute that is used for sorting in dot notation
-     *
-     * @return the name of the attribute that the results are sorted on.
-     */
-    String getOrderByAttribute();
-
-    /**
      * Executes the constructed query asynchronously.
      *
      * @param handler the handler to be invoked when the result is completed.

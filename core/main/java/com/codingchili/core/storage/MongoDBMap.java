@@ -183,7 +183,7 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
     private void addIndex(String field, Handler<AsyncResult<Void>> handler) {
         if (!indexed.contains(field)) {
             indexed.add(field);
-            client.createIndex(context.collection(), new JsonObject().put(field, ""), handler::handle);
+            client.createIndex(context.collection(), new JsonObject().put(field, ""), handler);
         }
     }
 

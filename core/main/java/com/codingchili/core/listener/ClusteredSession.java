@@ -1,6 +1,5 @@
 package com.codingchili.core.listener;
 
-import com.codingchili.core.context.StartupListener;
 import com.codingchili.core.protocol.Serializer;
 import io.vertx.core.Future;
 import io.vertx.core.eventbus.DeliveryOptions;
@@ -16,18 +15,6 @@ class ClusteredSession implements Session {
     private JsonObject data = new JsonObject();
     private DeliveryOptions delivery = new DeliveryOptions();
     private SessionFactory<ClusteredSession> sessionFactory;
-
-    public ClusteredSession() {
-        StartupListener.subscibe(core -> {
-            ClusteredSessionFactory.get(core).setHandler(get -> {
-                // this is synchronous; we can never get a session without first loading up the factory.
-                // (unless someone calls the constructor... )
-                // its a hack but it works right now. needs to be persisted and retrieved
-                // which does not work for the stateful factory. need to redesign this dependency.
-                sessionFactory = get.result();
-            });
-        });
-    }
 
     public ClusteredSession(SessionFactory<ClusteredSession> factory, String source, String connection) {
         this.sessionFactory = factory;
