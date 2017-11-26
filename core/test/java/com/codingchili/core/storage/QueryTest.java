@@ -14,12 +14,15 @@ public class QueryTest {
 
     @Test
     public void testGenerateQueryString(TestContext test) {
-        String query = Query.on("cats")
+        String query = Query.on("cat.type")
                 .in("siamese", "perser", "ragdoll")
-                .and("color").equalTo("white")
-                .or("frogs").in("amphibians", "wateranimal").matches("[water].*")
-                .or("persons.age").between(0L, 100L).and("persons.name").startsWith("robin")
-                .orderBy("cats.name").order(SortOrder.ASCENDING).toString();
+                .and("cat.color").equalTo("white")
+                .or("cat.lifestyle").in("amphibians", "wateranimal").matches("[water].*")
+                .or("cat.age").between(0L, 100L).and("cat.name").startsWith("fl")
+                .orderBy("cat.name").order(SortOrder.ASCENDING)
+                .page(3).pageSize(24)
+                .setName("findCatsQ")
+                .toString();
         System.out.println(query);
     }
 
