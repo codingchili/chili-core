@@ -30,7 +30,7 @@ class TcpRequest implements Request {
         if (object instanceof Buffer) {
             socket.write((Buffer) object);
         } else {
-            socket.write(Buffer.buffer(Serializer.pack(object)));
+            socket.write(Serializer.buffer(object));
         }
     }
 

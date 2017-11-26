@@ -9,6 +9,7 @@ import com.codingchili.core.storage.exception.ValueMissingException;
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.attribute.MultiValueAttribute;
 import com.googlecode.cqengine.attribute.SimpleAttribute;
+import com.googlecode.cqengine.index.hash.HashIndex;
 import com.googlecode.cqengine.index.navigable.NavigableIndex;
 import com.googlecode.cqengine.index.radix.RadixTreeIndex;
 import com.googlecode.cqengine.index.suffix.SuffixTreeIndex;
@@ -176,7 +177,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
                 if (!db.isIndexed(fieldName)) {
                     db.setIndexed(fieldName);
                     db.addIndex(NavigableIndex.onAttribute(attribute));
-                    db.addIndex(SuffixTreeIndex.onAttribute(attribute));
+                    //db.addIndex(SuffixTreeIndex.onAttribute(attribute));
                     db.addIndex(RadixTreeIndex.onAttribute(attribute));
                 }
             }

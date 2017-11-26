@@ -108,7 +108,7 @@ public class StorageContext<Value> extends SystemContext {
      * @return a byte array created from the serialized objects json text
      */
     public byte[] toPacked(Value value) {
-        return Serializer.pack(value).getBytes();
+        return Serializer.buffer(value).getBytes();
     }
 
     /**

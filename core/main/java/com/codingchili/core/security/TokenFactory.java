@@ -59,7 +59,7 @@ public class    TokenFactory {
         mac.init(spec);
 
         // encoding to json object here to avoid byte differing byte representations.
-        mac.update(Serializer.pack(token.getProperties()).getBytes());
+        mac.update(Serializer.buffer(token.getProperties()).getBytes());
         mac.update(token.getDomain().getBytes());
         mac.update((token.getExpiry() + "").getBytes());
 

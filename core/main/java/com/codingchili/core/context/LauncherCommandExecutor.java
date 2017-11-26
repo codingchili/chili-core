@@ -23,7 +23,7 @@ public class LauncherCommandExecutor extends DefaultCommandExecutor {
      * constructs an instance with the default logger
      */
     public LauncherCommandExecutor() {
-        this(new ConsoleLogger(LauncherCommandExecutor.class));
+        this(new StringLogger(LauncherCommandExecutor.class));
     }
 
     /**
@@ -92,7 +92,7 @@ public class LauncherCommandExecutor extends DefaultCommandExecutor {
                             .forEach(row.remotes::add);
                     blocks.add(row);
                 });
-        blocks.forEach(block -> logger.log(block.toString(), Level.PURPLE));
+        blocks.forEach(block -> logger.log(block.toString(), Level.SPECIAL));
     }
 
     private class BlockRow {

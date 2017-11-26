@@ -150,11 +150,12 @@ public class Launcher implements CoreService {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             logger.log(LAUNCHER_SHUTDOWN_STARTED, Level.ERROR);
             try {
+                ShutdownListener.publish(core);
                 Thread.sleep(system().getShutdownHookTimeout());
+                logger.log(LAUNCHER_SHUTDOWN_COMPLETED, Level.ERROR);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            logger.log(LAUNCHER_SHUTDOWN_COMPLETED, Level.ERROR);
         }));
     }
 }

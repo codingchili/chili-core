@@ -59,7 +59,7 @@ class UdpRequest implements Request {
         if (object instanceof Buffer) {
             send((Buffer) object);
         } else {
-            send(Buffer.buffer(Serializer.pack(object)));
+            send(Serializer.buffer(object));
         }
     }
 

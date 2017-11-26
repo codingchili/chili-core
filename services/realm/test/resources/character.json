@@ -11,7 +11,7 @@
   },
   "inventory": {
     "equipped": {
-      "head": null,
+      "head": {},
       "weapon": null,
       "chest": null,
       "ring": null,

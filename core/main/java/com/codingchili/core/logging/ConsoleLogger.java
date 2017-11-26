@@ -1,6 +1,7 @@
 package com.codingchili.core.logging;
 
 import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.ShutdownListener;
 import io.vertx.core.json.JsonObject;
 import org.fusesource.jansi.AnsiConsole;
 
@@ -9,6 +10,7 @@ import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
@@ -20,16 +22,12 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  */
 public class ConsoleLogger extends DefaultLogger implements StringLogger {
     private static final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private static final String RESET = "\u001B[0m";
-    private static final String BLACK = "\u001B[30m";
-    private static final String ERROR = "\u001B[31m";
-    private static final String STARTUP = "\u001B[32m";
-    private static final String WARNING = "\u001B[33m";
-    private static final String BLUE = "\u001B[34m";
-    private static final String PURPLE = "\u001B[35m";
-    private static final String INFO = "\u001B[36m";
-    private static final String WHITE = "\u001B[37m";
+    public static final String RESET = "\u001B[0m";
     private final AtomicBoolean enabled = new AtomicBoolean(true);
+
+    static {
+        ShutdownListener.subscribe(executor::shutdown);
+    }
 
     public ConsoleLogger() {
         super(ConsoleLogger.class);
@@ -45,36 +43,19 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
         AnsiConsole.systemInstall();
     }
 
-    private static String getColor(Level level) {
-        switch (level) {
-            case ERROR:
-                return ERROR;
-            case SEVERE:
-                return ERROR;
-            case WARNING:
-                return WARNING;
-            case INFO:
-                return INFO;
-            case STARTUP:
-                return STARTUP;
-            case PURPLE:
-                return PURPLE;
-            case WHITE:
-                return WHITE;
-            case BLUE:
-                return BLUE;
-            default:
-                return INFO;
-        }
-    }
+    private Consumer<JsonObject> log = (json) -> {
+        JsonObject event = eventFromLog(json);
+        write(parseJsonLog(event, consume(json, LOG_EVENT)));
+    };
 
     @Override
     public Logger log(JsonObject data) {
         if (enabled.get()) {
-            executor.submit(() -> {
-                JsonObject event = eventFromLog(data);
-                write(parseJsonLog(event, consume(data, LOG_EVENT)));
-            });
+            if (executor.isShutdown()) {
+                log.accept(data);
+            } else {
+                executor.submit(() -> log.accept(data));
+            }
         }
         return this;
     }
@@ -96,20 +77,20 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
         return json;
     }
 
-    private String parseJsonLog(JsonObject data, String event) {
+    protected String parseJsonLog(JsonObject data, String event) {
         Level level = consumeLevel(data);
         String message = consume(data, LOG_MESSAGE);
         StringBuilder text = new StringBuilder()
-                .append((level == null) ? formatLevel(Level.INFO) : formatLevel(level))
+                .append(formatLevel(level))
                 .append("\t")
                 .append("[")
-                .append(PURPLE)
+                .append(Level.SPECIAL.color)
                 .append(consumeTimestamp(data))
                 .append(RESET)
                 .append("] ")
                 .append((hasValue(event)) ? pad(event, 15) : "")
                 .append(" [")
-                .append(getColor(level))
+                .append(level.color)
                 .append(pad(consume(data, LOG_SOURCE), 15))
                 .append(RESET)
                 .append("] ")
@@ -118,7 +99,7 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
         for (String key : data.fieldNames()) {
             Object object = data.getValue(key);
             if (object != null) {
-                text.append(String.format("%s%-1s%s=%s ", getColor(level), key, RESET, object.toString()));
+                text.append(String.format("%s%-1s%s=%s ", level.color, key, RESET, object.toString()));
             }
         }
         return text.toString();
@@ -163,7 +144,7 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
     }
 
     private static String formatLevel(Level level) {
-        return getColor(level) + level.name() + RESET;
+        return level.color + level.name() + RESET;
     }
 
     private String compactPath(String path) {

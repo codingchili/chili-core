@@ -27,7 +27,7 @@ public class DefaultCommandExecutor implements CommandExecutor {
     protected LauncherSettings settings = Configurations.launcher();
     protected Map<String, Command> commands = new HashMap<>();
     protected Map<String, String> properties = new HashMap<>();
-    protected Logger logger = new ConsoleLogger(getClass());
+    protected Logger logger = new StringLogger(getClass());
     private String command;
 
     /**

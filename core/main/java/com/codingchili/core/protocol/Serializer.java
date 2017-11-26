@@ -1,12 +1,16 @@
 package com.codingchili.core.protocol;
 
 
+import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.protocol.exception.SerializerPayloadException;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -29,12 +33,14 @@ import static com.codingchili.core.configuration.CoreStrings.STORAGE_ARRAY;
  * serializes objects to JSON and back.
  */
 public class Serializer {
-    private static ObjectMapper mapper = new ObjectMapper();
+    // use vertx's objectmapper, it comes with custom serializer modules.
+    private static ObjectMapper mapper = Json.mapper;
 
     static {
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        Json.mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        Json.mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        Json.mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        Json.mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
     }
 
     /**
@@ -44,14 +50,28 @@ public class Serializer {
      * @return a JSON string representing the object.
      */
     public static String pack(Object object) {
-        try {
-            if (object instanceof JsonObject) {
-                return ((JsonObject) object).encodePrettily();
-            } else {
+        if (object instanceof JsonObject) {
+            return ((JsonObject) object).encodePrettily();
+        } else {
+            try {
                 return mapper.writeValueAsString(object);
+            } catch (JsonProcessingException e) {
+                throw new CoreRuntimeException(e.getMessage());
             }
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Converts any object into a buffer in json format.
+     *
+     * @param object the object to serialize.
+     * @return a Buffer of the json encoded object.
+     */
+    public static Buffer buffer(Object object) {
+        if (object instanceof JsonObject) {
+            return ((JsonObject) object).toBuffer();
+        } else {
+            return Json.encodeToBuffer(object);
         }
     }
 
@@ -63,10 +83,9 @@ public class Serializer {
      * @param <T>   must be bound to the clazz parameter
      * @return an object specified by the type parameter.
      */
-    @SuppressWarnings("unchecked")
-    public static <T> T unpack(String data, Class clazz) {
+    public static <T> T unpack(String data, Class<T> clazz) {
         try {
-            return (T) mapper.readValue(data, clazz);
+            return mapper.readValue(data, clazz);
         } catch (IOException e) {
             throw new SerializerPayloadException(e.getMessage(), clazz);
         }
@@ -81,14 +100,14 @@ public class Serializer {
      * @return an object specified by the type parameter.
      */
     @SuppressWarnings("unchecked")
-    public static <T> T unpack(JsonObject json, Class clazz) {
+    public static <T> T unpack(JsonObject json, Class<T> clazz) {
         if (clazz.isInstance(json)) {
             return (T) json;
         } else {
             if (json == null) {
                 throw new SerializerPayloadException("null", clazz);
             } else {
-                return unpack(json.encode(), clazz);
+                return json.mapTo(clazz);
             }
         }
     }
@@ -109,7 +128,7 @@ public class Serializer {
                     .forEach(array::add);
             return new JsonObject().put(ID_COLLECTION, array);
         } else {
-            return new JsonObject(pack(object));
+            return JsonObject.mapFrom(object);
         }
     }
 
@@ -196,7 +215,7 @@ public class Serializer {
      *
      * @param template the class of which members should be described.
      * @return a map that can be serialized to json with field name
-     *      mapped to type.
+     * mapped to type.
      */
     public static Map<String, String> describe(Class<?> template) {
         Map<String, String> model = new HashMap<>();

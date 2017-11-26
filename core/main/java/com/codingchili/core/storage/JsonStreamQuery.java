@@ -123,21 +123,25 @@ public class JsonStreamQuery<Value extends Storable> {
             }
 
             private Set<JsonObject> results() {
-                Set<JsonObject> hits = new HashSet<>();
-
-                for (List<StatementPredicate> clause : statements) {
-                    Stream<JsonObject> stream = source.stream();
-
-                    for (StatementPredicate statement : clause) {
-                        stream = stream.filter(entry -> {
-                            return anyMatch(entry, statement);
-                        });
+                return source.stream().parallel().filter(entry -> {
+                    // if an entry matches any of the classes it is a hit
+                    for (List<StatementPredicate> clause : statements) {
+                        boolean match = true;
+                        // check if the entry matches all statements in the clause
+                        for (StatementPredicate statement : clause) {
+                            if (!anyMatch(entry, statement)) {
+                                match = false;
+                            }
+                        }
+                        if (match) {
+                            return true;
+                        }
                     }
-                    hits.addAll(stream.collect(Collectors.toList()));
-                }
-                return hits;
+                    return false;
+                }).collect(Collectors.toSet());
             }
 
+            // match function that tests all elements in an array if statement.attribute points to one.
             private boolean anyMatch(JsonObject entry, StatementPredicate statement) {
                 for (Comparable comparable : Serializer.<Comparable>getValueByPath(entry, statement.attribute)) {
                     if (statement.predicate.test(comparable))

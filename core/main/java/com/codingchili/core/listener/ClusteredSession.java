@@ -15,7 +15,7 @@ import java.util.Map;
 class ClusteredSession implements Session {
     private JsonObject data = new JsonObject();
     private DeliveryOptions delivery = new DeliveryOptions();
-    private SessionFactory sessionFactory;
+    private SessionFactory<ClusteredSession> sessionFactory;
 
     public ClusteredSession() {
         StartupListener.subscibe(core -> {
@@ -29,7 +29,7 @@ class ClusteredSession implements Session {
         });
     }
 
-    public ClusteredSession(SessionFactory factory, String source, String connection) {
+    public ClusteredSession(SessionFactory<ClusteredSession> factory, String source, String connection) {
         this.sessionFactory = factory;
 
         setData(new JsonObject()
@@ -98,7 +98,7 @@ class ClusteredSession implements Session {
                 .addHeader(CONNECTION, connection());
     }
 
-    public void setSessionFactory(SessionFactory factory) {
+    public void setSessionFactory(SessionFactory<ClusteredSession> factory) {
         this.sessionFactory = factory;
     }
 

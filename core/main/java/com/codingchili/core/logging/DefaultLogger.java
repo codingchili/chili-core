@@ -198,13 +198,13 @@ public abstract class DefaultLogger extends Handler implements Logger {
 
     @Override
     public Logger log(String line) {
-        event(LOG_MESSAGE, INFO).put(PROTOCOL_MESSAGE, line).send();
+        event(LOG_MESSAGE, INFO).put(LOG_MESSAGE, line).send();
         return this;
     }
 
     @Override
     public Logger log(String line, Level level) {
-        event(LOG_MESSAGE, level).put(PROTOCOL_MESSAGE, line).send();
+        event(LOG_MESSAGE, level).put(LOG_MESSAGE, line).send();
         return this;
     }
 

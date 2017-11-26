@@ -260,15 +260,17 @@ public class SystemContext implements CoreContext {
 
     @Override
     public void close() {
-        vertx.close();
-        StartupListener.publish(null);
-        initialized.set(false);
+        close(closed -> { });
     }
 
     @Override
     public void close(Handler<AsyncResult<Void>> handler) {
         initialized.set(false);
-        vertx.close(handler);
+        vertx.close((close) -> {
+            StartupListener.publish(null);
+            ShutdownListener.publish(this);
+            handler.handle(Future.succeededFuture());
+        });
     }
 
     @Override
