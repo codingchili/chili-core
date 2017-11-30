@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
  * <p>
  * Tests for the CQEngine indexed storage.
  */
-@Ignore("Slow to execute.")
+//@Ignore("Slow to execute.")
 @RunWith(VertxUnitRunner.class)
 public class IndexedMapPersistedTest extends MapTestCases {
 
