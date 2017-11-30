@@ -6,8 +6,7 @@ import com.codingchili.core.protocol.Protocol;
 import com.codingchili.core.protocol.Role;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.realm.configuration.RealmContext;
-import com.codingchili.realm.instance.model.PlayerCharacter;
-import com.codingchili.realm.instance.model.PlayerClass;
+import com.codingchili.realm.instance.model.*;
 import com.codingchili.realm.model.*;
 import io.vertx.core.Future;
 
@@ -52,7 +51,7 @@ public class CharacterHandler implements CoreHandler {
     }
 
     private void instanceHandler(Request request) {
-        // forward on bus?
+        // todo forward to instance
     }
 
     private void registerRealm(Long handler) {

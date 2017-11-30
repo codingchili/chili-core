@@ -136,7 +136,7 @@ public class Query<Value extends Storable> implements QueryBuilder<Value> {
     }
 
     private void option(String format, Comparable... values) {
-        options.append(String.format("%s ", String.format(format, values)));
+        options.append(String.format("%s ", String.format(format, (Object[]) values)));
     }
 
     /**

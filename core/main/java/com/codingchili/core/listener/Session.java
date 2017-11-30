@@ -8,7 +8,7 @@ import io.vertx.core.json.JsonObject;
  * Indicates that a request is part of a persistent connection. This means
  * that services can write to the session without using request-reply messaging.
  */
-public interface Session extends MessageOperations, Storable {
+public interface Session extends Messageable, Storable {
     String CONNECTION = "connection";
     String SOURCE = "source";
 

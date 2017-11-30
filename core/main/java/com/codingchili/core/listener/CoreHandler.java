@@ -6,6 +6,8 @@ import com.codingchili.core.protocol.Address;
  * @author Robin Duda
  * <p>
  * A simplified handler that may be deployed directly.
+ *
+ * Supports DeploymentAware and ListenerAware.
  */
 public interface CoreHandler extends CoreDeployment {
 

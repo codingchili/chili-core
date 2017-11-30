@@ -1,30 +1,19 @@
 package com.codingchili.realm.instance.model;
 
-import com.codingchili.core.configuration.Attributes;
-
-import java.io.Serializable;
-
 /**
  * @author Robin Duda
- * Contains item data.
  */
-class Item extends Attributes implements Serializable {
-    private String name;
-    private String description;
+public interface Item {
 
-    public String getName() {
-        return name;
-    }
+    String getDescription();
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    String getName();
 
-    public String getDescription() {
-        return description;
-    }
+    boolean isEquippable();
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    default void equip(Entity entity) {};
+
+    boolean isUsable();
+
+    default void use(Entity entity) {};
 }

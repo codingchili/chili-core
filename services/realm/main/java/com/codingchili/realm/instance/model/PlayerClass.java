@@ -1,58 +1,18 @@
 package com.codingchili.realm.instance.model;
 
-import com.codingchili.core.configuration.AttributeConfigurable;
-
-import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * @author Robin Duda
- * model for player classes.
  */
-public class PlayerClass extends AttributeConfigurable {
-    private String name;
-    private String description;
-    private ArrayList<Spell> spells;
-    private ArrayList<String> keywords;
-    private ArrayList<String> weapons;
+public interface PlayerClass {
+    String getName();
 
-    public String getName() {
-        return name;
-    }
+    String getDescription();
 
-    public PlayerClass setName(String name) {
-        this.name = name;
-        return this;
-    }
+    Collection<Spell> getSpells();
 
-    public String getDescription() {
-        return description;
-    }
+    Collection<String> getKeywords();
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public ArrayList<Spell> getSpells() {
-        return spells;
-    }
-
-    public void setSpells(ArrayList<Spell> spells) {
-        this.spells = spells;
-    }
-
-    public ArrayList<String> getKeywords() {
-        return keywords;
-    }
-
-    public void setKeywords(ArrayList<String> keywords) {
-        this.keywords = keywords;
-    }
-
-    public ArrayList<String> getWeapons() {
-        return weapons;
-    }
-
-    public void setWeapons(ArrayList<String> weapons) {
-        this.weapons = weapons;
-    }
+    Collection<String> getWeapons();
 }

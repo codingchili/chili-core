@@ -5,9 +5,7 @@ import com.codingchili.core.files.JsonFileStore;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Token;
 import com.codingchili.realm.instance.configuration.InstanceSettings;
-import com.codingchili.realm.instance.model.Affliction;
-import com.codingchili.realm.instance.model.PlayerCharacter;
-import com.codingchili.realm.instance.model.PlayerClass;
+import com.codingchili.realm.instance.model.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.vertx.core.json.JsonArray;
@@ -118,7 +116,7 @@ public class RealmSettings extends AttributeConfigurable {
                 .map(JsonFileStore::readList)
                 .flatMap(JsonArray::stream)
                 .map(json -> (JsonObject) json)
-                .forEach(affliction -> afflictions.add(Serializer.unpack(affliction, Affliction.class)));
+                .forEach(affliction -> afflictions.add(Serializer.unpack(affliction, AfflictionImpl.class)));
     }
 
     private void readTemplate() {
@@ -288,14 +286,14 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     /**
-     * @return get the realm description.
+     * @return get the realm getDescription.
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * @param description set the realm description.
+     * @param description set the realm getDescription.
      * @return fluent
      */
     private RealmSettings setDescription(String description) {
@@ -352,7 +350,7 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     /**
-     * @return get the lifetime of the realm as a description.
+     * @return get the lifetime of the realm as a getDescription.
      */
     public String getLifetime() {
         return lifetime;

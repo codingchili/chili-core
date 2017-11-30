@@ -12,7 +12,7 @@ import static com.codingchili.common.Strings.ID_PING;
 
 /**
  * @author Robin Duda
- * Handles players in a get.
+ * Handles players in an instance.
  */
 public class InstanceHandler implements CoreHandler, DeploymentAware {
     private final Protocol<InstanceRequest> protocol = new Protocol<>();
@@ -52,6 +52,9 @@ public class InstanceHandler implements CoreHandler, DeploymentAware {
 
     @Override
     public void start(Future<Void> future) {
+        // todo: set up the game loop
+        // todo: set up session handling
+
         context.onInstanceStarted(context.realm().getName(), context.instance().getName());
         future.complete();
     }

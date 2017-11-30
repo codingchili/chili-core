@@ -9,7 +9,6 @@ import com.codingchili.core.storage.StorageLoader;
 import com.codingchili.realm.configuration.RealmContext;
 import com.codingchili.realm.configuration.RealmSettings;
 import com.codingchili.realm.instance.model.PlayerCharacter;
-import com.codingchili.realm.instance.model.PlayerClass;
 import com.codingchili.realm.model.AsyncCharacterStore;
 import com.codingchili.realm.model.CharacterDB;
 import io.vertx.core.Future;
