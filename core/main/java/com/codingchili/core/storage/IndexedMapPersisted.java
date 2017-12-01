@@ -1,121 +1,51 @@
 package com.codingchili.core.storage;
 
-import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.storage.exception.NothingToRemoveException;
-import com.codingchili.core.storage.exception.NothingToUpdateException;
-import com.googlecode.cqengine.TransactionalIndexedCollection;
-import com.googlecode.cqengine.attribute.Attribute;
-import com.googlecode.cqengine.attribute.SimpleAttribute;
-import com.googlecode.cqengine.codegen.AttributeBytecodeGenerator;
+import com.googlecode.cqengine.IndexedCollection;
+import com.googlecode.cqengine.ObjectLockingIndexedCollection;
+import com.googlecode.cqengine.index.hash.HashIndex;
 import com.googlecode.cqengine.persistence.disk.DiskPersistence;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
-import io.vertx.core.Handler;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
 
-import static com.googlecode.cqengine.query.QueryFactory.attribute;
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.protocol.Serializer;
 
 /**
  * @author Robin Duda
- * <p>
- * Adds disk persistence to IndexedMap.
- * <p>
- * Overrides some methods where the underlying implementation differs between
- * on heap and on disk indexes.
- * <p>
- * The update method for disk persistence cannot be trusted.
- * It only replaces an existing version by using the objects serialized form as its
- * composite PK.
+ *         <p>
+ *         Adds disk persistence to IndexedMap.
+ *         <p>
+ *         Overrides some methods where the underlying implementation differs between
+ *         on heap and on disk indexes.
+ *         <p>
+ *         The update method for disk persistence cannot be trusted.
+ *         It only replaces an existing version by using the objects serialized form as its
+ *         composite PK.
  */
-public class IndexedMapPersisted<Value extends Storable> implements IndexedMap<Value> {
-    private final SimpleAttribute<Value, String> FIELD_ID;
-    private TransactionalIndexedCollection<Value> db;
-    private Map<String, ? extends Attribute<Value, ?>> attributes;
-    private StorageContext<Value> context;
+public class IndexedMapPersisted<Value extends Storable> extends IndexedMap<Value> {
 
     public IndexedMapPersisted(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
-        this.context = context;
-        FIELD_ID = attribute(context.valueClass(), String.class, Storable.idField, Storable::id);
+        super((idField) -> {
+            synchronized (IndexedMapPersisted.class) {
 
-        db = new TransactionalIndexedCollection<>(context.valueClass(), DiskPersistence.onPrimaryKeyInFile(
-                FIELD_ID, new File(dbPath(context))
-        ));
+                File file = new File(dbPath(context));
+                if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
+                    throw new RuntimeException("Failed to create dirs for DB " + file.toPath().toAbsolutePath());
+                }
+                IndexedCollection<Value> db = new ObjectLockingIndexedCollection<>(
+                        DiskPersistence.onPrimaryKeyInFile(idField, file));
 
-        attributes = AttributeBytecodeGenerator.createAttributes(context.valueClass());
+                db.addIndex(HashIndex.onSemiUniqueAttribute(idField));
+                return db;
+            }
+        }, context);
 
-        // todo implement sharing, todo synchronize file creation as done in SharedIndexCollection prev.
-
+        super.setMapper((value) -> Serializer.kryo((kryo) -> kryo.copy(value)));
         future.complete(this);
     }
 
     private static String dbPath(StorageContext ctx) {
         return String.format("%s/%s.sqlite", ctx.database(), ctx.collection());
-    }
-
-
-    @Override
-    public void get(String key, Handler<AsyncResult<Value>> handler) {
-
-    }
-
-    @Override
-    public void put(Value value, Handler<AsyncResult<Void>> handler) {
-
-    }
-
-    @Override
-    public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
-
-    }
-
-    @Override
-    public void remove(String key, Handler<AsyncResult<Void>> handler) {
-
-    }
-
-    @Override
-    public void update(Value value, Handler<AsyncResult<Void>> handler) {
-        context.blocking(blocking -> {
-            get(value.id(), get -> {
-                if (get.succeeded()) {
-                    db.update(Collections.singleton(get.result()), Collections.singleton(value));
-                    blocking.complete();
-                } else {
-                    blocking.fail(new NothingToUpdateException(value.id()));
-                }
-            });
-        }, handler);
-    }
-
-    @Override
-    public void values(Handler<AsyncResult<Collection<Value>>> handler) {
-        handler.handle(Future.succeededFuture(db));
-    }
-
-    @Override
-    public void clear(Handler<AsyncResult<Void>> handler) {
-        context.blocking(blocking -> {
-            db.clear();
-            blocking.complete();
-        }, handler);
-    }
-
-    @Override
-    public void size(Handler<AsyncResult<Integer>> handler) {
-
-    }
-
-    @Override
-    public QueryBuilder<Value> query(String attribute) {
-        return new IndexedMapQuery<>(this, attribute);
-    }
-
-    @Override
-    public StorageContext<Value> context() {
-        return context;
     }
 }

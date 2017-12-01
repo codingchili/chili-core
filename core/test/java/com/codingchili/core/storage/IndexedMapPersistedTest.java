@@ -1,24 +1,24 @@
 package com.codingchili.core.storage;
 
-import com.codingchili.core.testing.MapTestCases;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.*;
 import org.junit.runner.RunWith;
+
+import com.codingchili.core.testing.MapTestCases;
 
 /**
  * @author Robin Duda
  * <p>
  * Tests for the CQEngine indexed storage.
  */
-//@Ignore("Slow to execute.")
+@Ignore("Slow to execute.")
 @RunWith(VertxUnitRunner.class)
 public class IndexedMapPersistedTest extends MapTestCases {
 
     @Before
     public void setUp(TestContext test) {
+        TEST_ITEM_COUNT = 200L;
         super.setUp(test, IndexedMapPersisted.class);
     }
 

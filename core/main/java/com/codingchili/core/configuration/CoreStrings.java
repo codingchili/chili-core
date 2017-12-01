@@ -21,8 +21,9 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static com.codingchili.core.files.Configurations.launcher;
 
@@ -621,6 +622,15 @@ public abstract class CoreStrings {
 
     public static String getKeystorePrompt(KeyStore store) {
         return "Enter password for '" + store.getPath() + "': ";
+    }
+
+    public static String getValueByPathContainsNull(String field, String[] fields) {
+        return String.format("Value at '%s' in path '%s' is null.", field, Arrays.stream(fields)
+                .collect(Collectors.joining()));
+    }
+
+    public static String getReflectionErrorInSerializer(String path) {
+        return String.format("Reflection failed to retrieve value at '%s'.", path);
     }
 
     private enum IPVersion {IP4, IP6;}

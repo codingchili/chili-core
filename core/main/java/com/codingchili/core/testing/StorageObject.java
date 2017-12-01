@@ -13,10 +13,10 @@ import java.util.List;
 public class StorageObject implements Storable {
     public static final String NESTED_PREFIX = "nested.";
     public static String levelField = "level";
-    private String name;
-    private Integer level;
-    private NestedObject nested;
-    private List<String> keywords = new ArrayList<>();
+    public String name;
+    public Integer level;
+    public NestedObject nested;
+    public List<String> keywords = new ArrayList<>();
 
     public StorageObject() {
         keywords.add("Z");

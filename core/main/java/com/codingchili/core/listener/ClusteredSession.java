@@ -16,6 +16,9 @@ class ClusteredSession implements Session {
     private DeliveryOptions delivery = new DeliveryOptions();
     private SessionFactory<ClusteredSession> sessionFactory;
 
+    public ClusteredSession() {
+    }
+
     public ClusteredSession(SessionFactory<ClusteredSession> factory, String source, String connection) {
         this.sessionFactory = factory;
 

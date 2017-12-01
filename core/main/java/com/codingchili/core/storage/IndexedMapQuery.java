@@ -9,23 +9,26 @@ import com.googlecode.cqengine.resultset.ResultSet;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.*;
 
 import static com.googlecode.cqengine.query.QueryFactory.*;
-import static com.googlecode.cqengine.query.option.DeduplicationStrategy.LOGICAL_ELIMINATION;
 
+/**
+ * Common query class used for disk persisted storage and in-memory indexed.
+ *
+ * @param <Value> the value that is being queried.
+ */
 public class IndexedMapQuery<Value extends Storable> extends AbstractQueryBuilder<Value> {
-    private Attribute<Value, String> field = fields.get(attribute);
+    private Attribute<Value, String> field;
     private List<Query<Value>> statements = new ArrayList<>();
+    private IndexedMap<Value> storage;
     private Query<Value> builder;
 
     public IndexedMapQuery(IndexedMap<Value> storage, String attribute) {
         super(storage, attribute);
+        this.storage = storage;
         prepareField(attribute);
     }
 
@@ -42,10 +45,10 @@ public class IndexedMapQuery<Value extends Storable> extends AbstractQueryBuilde
         return this;
     }
 
-    private QueryBuilder<Value> prepareField(String attribute) {
+    private void prepareField(String attribute) {
         setAttribute(attribute);
-        field = createIndex(attribute(), isAttributeArray());
-        return this;
+        field = storage.getAttribute(attribute, isAttributeArray());
+        storage.createIndex(attribute, isAttributeArray());
     }
 
     private void next() {
@@ -106,35 +109,45 @@ public class IndexedMapQuery<Value extends Storable> extends AbstractQueryBuilde
         return this;
     }
 
+    private Function<Value, Value> mapper = (value) -> value;
+
     @Override
     public void execute(Handler<AsyncResult<Collection<Value>>> handler) {
         next();
 
-        context.blocking(blocking -> {
-            ResultSet<Value> values = db.retrieve(builder, getQueryOptions());
-            blocking.complete(StreamSupport.stream(values.spliterator(), false)
-                    .skip(pageSize * page)
-                    .limit(pageSize)
-                    .collect(Collectors.toList()));
-            values.close();
+        storage.context.blocking(blocking -> {
+            try (ResultSet<Value> values = storage.db.retrieve(builder, getQueryOptions())) {
+                blocking.complete(StreamSupport.stream(values.spliterator(), false)
+                        .skip(pageSize * page)
+                        .limit(pageSize)
+                        .map(mapper).collect(Collectors.toList()));
+            } catch (Exception e) {
+                blocking.fail(e);
+            }
         }, handler);
     }
 
+    public IndexedMapQuery<Value> setMapper(Function<Value, Value> mapper) {
+        this.mapper = mapper;
+        return this;
+    }
+
+
     private QueryOptions getQueryOptions() {
         if (isOrdered) {
-            createIndex(getOrderByAttribute(), false);
+            storage.createIndex(getOrderByAttribute(), isAttributeArray());
             AttributeOrder<Value> order;
 
+            // no need to support sorting on multivalued fields.
             if (sortOrder.equals(SortOrder.ASCENDING)) {
-                order = ascending(missingLast(fields.get(getOrderByAttribute())));
+                order = ascending(missingLast(storage.getAttribute(getOrderByAttribute(), false)));
             } else {
-                order = descending(missingLast(fields.get(getOrderByAttribute())));
+                order = descending(missingLast(storage.getAttribute(getOrderByAttribute(), false)));
             }
             return queryOptions(
-                    QueryFactory.orderBy(order),
-                    deduplicate(LOGICAL_ELIMINATION));
+                    QueryFactory.orderBy(order));
         } else {
-            return queryOptions(QueryFactory.deduplicate(LOGICAL_ELIMINATION));
+            return queryOptions();
         }
     }
 }
