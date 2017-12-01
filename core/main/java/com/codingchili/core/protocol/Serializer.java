@@ -57,7 +57,11 @@ public class Serializer {
     private static KryoPool pool = new KryoPool.Builder(factory).softReferences().build();
 
     /**
-     * Execute with a kryo instance from a pool.
+     * Execute with a pooled kryo instance.
+     *
+     * @param kryo a pooled kryo instance.
+     * @param <T>  the type of value that is returned by the given kryo operation.
+     * @return the value that is returned by the kryo invocation.
      */
     public static <T> T kryo(Function<Kryo, T> kryo) {
         return pool.run(kryo::apply);
@@ -188,9 +192,10 @@ public class Serializer {
 
     /**
      * Gets a value by the given path for an object.
+     *
      * @param object the object to get the path value of.
-     * @param path the path to the field to retrieve the value of, may be an object or collection.
-     * @param <T> the type of the field to retrieve.
+     * @param path   the path to the field to retrieve the value of, may be an object or collection.
+     * @param <T>    the type of the field to retrieve.
      * @return a list of values matching the path.
      */
     @SuppressWarnings("unchecked")
@@ -203,21 +208,21 @@ public class Serializer {
 
         for (String field : fields) {
             Objects.requireNonNull(object, CoreStrings.getValueByPathContainsNull(field, fields));
-                if (object instanceof Storable && field.equals(Storable.idField)) {
-                    return Collections.singleton((T) ((Storable) object).id());
-                } else if (object instanceof Map) {
-                    object = ((Map) object).get(field);
-                } else if (object instanceof JsonObject) {
-                    object = ((JsonObject) object).getValue(field);
-                } else {
-                    try {
-                        Field fx = object.getClass().getDeclaredField(field);
-                        fx.setAccessible(true);
-                        object = fx.get(object);
-                    } catch (NoSuchFieldException | IllegalAccessException e) {
-                        throw new CoreRuntimeException(CoreStrings.getReflectionErrorInSerializer(path));
-                    }
+            if (object instanceof Storable && field.equals(Storable.idField)) {
+                return Collections.singleton((T) ((Storable) object).id());
+            } else if (object instanceof Map) {
+                object = ((Map) object).get(field);
+            } else if (object instanceof JsonObject) {
+                object = ((JsonObject) object).getValue(field);
+            } else {
+                try {
+                    Field fx = object.getClass().getDeclaredField(field);
+                    fx.setAccessible(true);
+                    object = fx.get(object);
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    throw new CoreRuntimeException(CoreStrings.getReflectionErrorInSerializer(path));
                 }
+            }
         }
 
         if (object instanceof Collection) {
