@@ -18,7 +18,6 @@ public class IndexedMapPersistedTest extends MapTestCases {
 
     @Before
     public void setUp(TestContext test) {
-        TEST_ITEM_COUNT = 200L;
         super.setUp(test, IndexedMapPersisted.class);
     }
 

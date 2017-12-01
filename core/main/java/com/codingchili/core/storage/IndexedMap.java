@@ -128,25 +128,27 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
     @Override
     public void put(Value value, Handler<AsyncResult<Void>> handler) {
         context.blocking(blocking -> get(value.id(), get -> {
-            if (get.succeeded()) {
-                db.remove(get.result());
+            if (get.result() != null) {
+                db.update(Collections.singleton(get.result()), Collections.singleton(mapper.apply(value)));
+            } else {
+                db.add(mapper.apply(value));
             }
-            db.add(mapper.apply(value));
             blocking.complete();
         }), handler);
     }
 
     @Override
     public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
-        context.<Boolean>blocking(blocking -> {
-            blocking.complete(db.contains(value));
-        }, done -> {
-            if (done.result()) {
-                handler.handle(failedFuture(new ValueAlreadyPresentException(value.id())));
+        context.blocking(blocking -> {
+            Iterator<Value> result = db.retrieve(equal(FIELD_ID, value.id())).iterator();
+
+            if (result.hasNext()) {
+                blocking.fail(new ValueAlreadyPresentException(value.id()));
             } else {
-                put(value, handler);
+                db.add(mapper.apply(value));
+                blocking.complete();
             }
-        });
+        }, handler);
     }
 
     @Override
@@ -167,8 +169,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
         get(value.id(), get -> {
             context.blocking(blocking -> {
                 if (get.succeeded()) {
-                    db.remove(get.result());
-                    db.add(value);
+                    db.update(Collections.singleton(get.result()), Collections.singleton(mapper.apply(value)));
                     blocking.complete();
                 } else {
                     blocking.fail(new NothingToUpdateException(value.id()));
@@ -193,9 +194,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
 
     @Override
     public void size(Handler<AsyncResult<Integer>> handler) {
-        context.blocking(blocking -> {
-            blocking.complete(db.size());
-        }, handler);
+        context.blocking(blocking -> blocking.complete(db.size()), handler);
     }
 
     @Override
