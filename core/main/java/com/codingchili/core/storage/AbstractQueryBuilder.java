@@ -122,15 +122,15 @@ public abstract class AbstractQueryBuilder<Value extends Storable> implements Qu
         return this;
     }
 
-    int sortByAttribute(JsonObject first, JsonObject second) {
+    int sortByAttribute(Object first, Object second) {
         if (isOrdered) {
             return getSortValue(first).compareTo(getSortValue(second)) * getSortDirection();
         } else
             return 0;
     }
 
-    private String getSortValue(JsonObject object) {
-        return getValueByPath(object, getOrderByAttribute())[0].toString();
+    private String getSortValue(Object object) {
+        return getValueByPath(object, getOrderByAttribute()).iterator().next().toString();
     }
 
     int getSortDirection() {

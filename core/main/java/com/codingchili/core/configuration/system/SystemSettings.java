@@ -24,7 +24,7 @@ public class SystemSettings implements Configurable {
     private int configurationPoll = 1500;
     private int cachedFilePoll = 1500;
     private boolean consoleLogging = true;
-    private int workerPoolSize = 32;
+    private int workerPoolSize = 16;
     private int clusterTimeout = 3000;
 
     @Override
