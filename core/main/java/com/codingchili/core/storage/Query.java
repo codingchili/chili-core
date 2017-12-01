@@ -18,17 +18,19 @@ import java.util.function.Consumer;
  * If the query is to be executed the #{@link #storage must be set or an exception will be thrown.}
  */
 public class Query<Value extends Storable> implements QueryBuilder<Value> {
+    private static final String NO_NAME = "unnamed";
     private LinkedList<Runnable> proxy = new LinkedList<>();
     private StringBuilder query = new StringBuilder();
+    private StringBuilder options = new StringBuilder();
     private QueryBuilder<Value> builder;
     private AsyncStorage<Value> storage;
     private Consumer<Value> mapper;
-    private String name = "UnnamedStandaloneQuery";
+    private String name = NO_NAME;
     private String initial;
 
     private Query(String attribute) {
         this.initial = attribute;
-        append("%s %s", "QUERY", attribute);
+        append("%s %s", "QUERY ON", attribute);
     }
 
     private void append(String format, Object... params) {
@@ -43,7 +45,7 @@ public class Query<Value extends Storable> implements QueryBuilder<Value> {
     @Override
     public Query<Value> and(String attribute) {
         proxy.add(() -> builder.and(attribute));
-        append("\n\t%s %s", "AND", attribute);
+        append("%s %s", "AND", attribute);
         return this;
     }
 
@@ -57,14 +59,14 @@ public class Query<Value extends Storable> implements QueryBuilder<Value> {
     @Override
     public Query<Value> page(int page) {
         proxy.add(() -> builder.page(page));
-        append("\n  %s %d", "PAGE", page);
+        option("%s %d", "PAGE", page);
         return this;
     }
 
     @Override
     public Query<Value> pageSize(int pageSize) {
         proxy.add(() -> builder.pageSize(pageSize));
-        append("\n  %s %d", "PAGESIZE", pageSize);
+        option("%s %d", "PAGESIZE", pageSize);
         return this;
     }
 
@@ -122,15 +124,19 @@ public class Query<Value extends Storable> implements QueryBuilder<Value> {
     @Override
     public Query<Value> orderBy(String orderByAttribute) {
         proxy.add(() -> builder.orderBy(orderByAttribute));
-        append("\n  %s %s", "ORDERBY", orderByAttribute);
+        option("%s %s", "ORDERBY", orderByAttribute);
         return this;
     }
 
     @Override
     public Query<Value> order(SortOrder order) {
         proxy.add(() -> builder.order(order));
-        append("\n  %s", order.name());
+        option("%s", order.name());
         return this;
+    }
+
+    private void option(String format, Comparable... values) {
+        options.append(String.format("%s ", String.format(format, values)));
     }
 
     /**
@@ -203,6 +209,13 @@ public class Query<Value extends Storable> implements QueryBuilder<Value> {
 
     @Override
     public String toString() {
-        return query.toString();
+        String result = query.append("\n").append(options.toString()).toString();
+
+        // set a name on the query if it has been set.
+        if (!name.equals(NO_NAME)) {
+            result = result.replace("QUERY ON", String.format("NAMED QUERY '%s' ON\n   ", name));
+        }
+
+        return result;
     }
 }
