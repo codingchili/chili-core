@@ -3,8 +3,7 @@ package com.codingchili.core.storage;
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.query.Query;
 import com.googlecode.cqengine.query.QueryFactory;
-import com.googlecode.cqengine.query.option.AttributeOrder;
-import com.googlecode.cqengine.query.option.QueryOptions;
+import com.googlecode.cqengine.query.option.*;
 import com.googlecode.cqengine.resultset.ResultSet;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -145,9 +144,9 @@ public class IndexedMapQuery<Value extends Storable> extends AbstractQueryBuilde
                 order = descending(missingLast(storage.getAttribute(getOrderByAttribute(), false)));
             }
             return queryOptions(
-                    QueryFactory.orderBy(order));
+                    QueryFactory.orderBy(order), deduplicate(DeduplicationStrategy.LOGICAL_ELIMINATION));
         } else {
-            return queryOptions();
+            return queryOptions(deduplicate(DeduplicationStrategy.LOGICAL_ELIMINATION));
         }
     }
 }
