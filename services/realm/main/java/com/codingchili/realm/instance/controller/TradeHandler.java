@@ -11,7 +11,7 @@ import com.codingchili.core.listener.Request;
 /**
  * @author Robin Duda
  */
-public class TradeHandler implements CoreHandler {
+public class TradeHandler implements CoreHandler<Request> {
     private Entity initiator;
     private Entity other;
     private Collection<Item> initiatorItems;

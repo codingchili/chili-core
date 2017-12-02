@@ -30,7 +30,7 @@ public class InstanceContext extends SystemContext implements ServiceContext {
     }
 
     public String address() {
-        return settings().getName() + "." + context.address();
+        return settings().getName();
     }
 
     public InstanceSettings settings() {

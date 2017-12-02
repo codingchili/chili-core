@@ -17,7 +17,7 @@ public class SpellEvent implements Event {
     }
 
     @Override
-    public Type getType() {
-        return Type.SPELL;
+    public EventType getType() {
+        return EventType.SPELL;
     }
 }

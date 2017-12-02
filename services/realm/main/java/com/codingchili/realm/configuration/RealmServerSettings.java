@@ -20,7 +20,7 @@ public class RealmServerSettings extends ServiceConfigurable {
     private String storage = IndexedMapPersisted.class.getName();
 
     /**
-     * @return near a list of enabled realms.
+     * @return get a list of enabled realms.
      */
     public List<EnabledRealm> getEnabled() {
         return enabled;
@@ -42,7 +42,7 @@ public class RealmServerSettings extends ServiceConfigurable {
     }
 
     /**
-     * @return near the time in MS which the realm must report to the registry.
+     * @return get the time in MS which the realm must report to the registry.
      */
     public int getRealmUpdates() {
         return realmUpdates;
@@ -56,7 +56,7 @@ public class RealmServerSettings extends ServiceConfigurable {
     }
 
     /**
-     * @return near the configured storage for the realm.
+     * @return get the configured storage for the realm.
      */
     public String getStorage() {
         return storage;

@@ -2,8 +2,6 @@ package com.codingchili.realm.instance.model;
 
 import com.codingchili.realm.instance.model.events.Event;
 
-import java.io.Serializable;
-
 /**
  * @author Robin Duda
  * Contains questgiver details, dialog and AI.
@@ -16,12 +14,12 @@ public class Npc implements Entity {
     }
 
     @Override
-    public void notify(Event event) {
-
+    public Vector getVector() {
+        return null;
     }
 
     @Override
-    public Vector getVector() {
-        return null;
+    public void handle(Event request) {
+
     }
 }

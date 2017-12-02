@@ -10,7 +10,9 @@ import io.vertx.core.json.JsonObject;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.protocol.RoleMap.UNSET;
@@ -27,7 +29,7 @@ import static com.codingchili.core.protocol.RoleMap.USER;
  * is documented using either #{@link #document(String)}, #{@link #setDescription(String)}
  * or by adding the #{@link Description} annotation to the class or handler method.
  */
-public class Protocol<RequestType extends Request> {
+public class Protocol<RequestType> {
     private AuthorizationHandler<RequestType> authorizer = new SimpleAuthorizationHandler<>();
     private String description = CoreStrings.getDescriptionMissing();
     private RoleType[] defaultRoles = new RoleType[]{RoleMap.get(USER)};
@@ -230,20 +232,24 @@ public class Protocol<RequestType extends Request> {
      * Returns the route handler for the given target route and its access level.
      *
      * @param route the handler route to find
-     * @param roles list of roles that are allowed to map to a route
+     * @param role list of roles that are allowed to map to a route
      * @return the handler that is mapped to the route and access level.
      * @throws AuthorizationRequiredException when authorization level is not fulfilled for given route.
      * @throws HandlerMissingException        when the requested route handler is not registered.
      */
-    public RequestHandler<RequestType> get(String route, RoleType... roles) throws AuthorizationRequiredException, HandlerMissingException {
+    public RequestHandler<RequestType> get(String route, RoleType role) throws AuthorizationRequiredException, HandlerMissingException {
         if (authorizer.contains(route)) {
-            return authorizer.get(route, roles);
+            return authorizer.get(route, role);
         } else if (authorizer.contains(ANY)) {
-            return authorizer.get(ANY, roles);   // fallback to any route.
+            return authorizer.get(ANY, role);   // fallback to any route.
         } else {
-            // no route registered, check if protocol is emitDocumentation.
+            // no route registered, check if protocol emits documentation.
             if (emitDocumentation && route.equals(CoreStrings.PROTOCOL_DOCUMENTATION)) {
-                return request -> request.write(getDescription());
+                return request -> {
+                    if (request instanceof Request) {
+                        ((Request) request).write(getDescription());
+                    }
+                };
             } else {
                 throw new HandlerMissingException(route);
             }
@@ -295,6 +301,13 @@ public class Protocol<RequestType extends Request> {
         this.description = description;
         this.emitDocumentation = true;
         return this;
+    }
+
+    /**
+     * @return a list of all registered routes in the protocol.
+     */
+    public Collection<String> available() {
+        return authorizer.list().stream().map(Route::getName).collect(Collectors.toList());
     }
 }
 

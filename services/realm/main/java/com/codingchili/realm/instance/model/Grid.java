@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
  * @author Robin Duda
  */
 public class Grid {
-    private Map<Integer, List<Entity>> cells = new ConcurrentHashMap<>();
+    private Map<Integer, List<Entity>> cells = new HashMap<>();
     private int cellSize;
     private int gridWidth;
 
@@ -21,7 +21,7 @@ public class Grid {
     public Grid update(Collection<Entity> entities) {
         cells.clear();
         entities.forEach(entity -> {
-            entity.getVector().buckets(cellSize, gridWidth).forEach(id -> {
+            entity.getVector().cells(cellSize, gridWidth).forEach(id -> {
                 List<Entity> list = cells.computeIfAbsent(id, key -> new ArrayList<>());
                 list.add(entity);
             });
@@ -37,6 +37,12 @@ public class Grid {
         return cells.getOrDefault(x / cellSize + (y / cellSize) * gridWidth, Collections.emptyList());
     }
 
+    // todo returns entities in the same network partition.
+    public Collection<Entity> partition(Vector vector) {
+        return Collections.emptyList();
+    }
+
+    // todo: network culling - less granular grid.
     // todo: cone selector
     // todo: map spell selector types to selectors in the grid
 
@@ -58,7 +64,7 @@ public class Grid {
     public Collection<Entity> adjacent(Vector vector) {
         Set<Entity> set = new HashSet<>();
 
-        vector.buckets(cellSize, gridWidth).forEach(bucket ->
+        vector.cells(cellSize, gridWidth).forEach(bucket ->
                 set.addAll(cells.getOrDefault(bucket, Collections.emptyList())));
 
         return set;

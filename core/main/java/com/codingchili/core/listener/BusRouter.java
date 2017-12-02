@@ -25,7 +25,7 @@ import static io.vertx.core.eventbus.ReplyFailure.*;
  * passes eventbus errors back to sender.
  */
 @Address("dynamic")
-public class BusRouter implements CoreHandler {
+public class BusRouter implements CoreHandler<Request> {
     private Map<ReplyFailure, Consumer<Request>> exceptionHandlers = new HashMap<>();
     private Logger logger;
     private CoreContext core;

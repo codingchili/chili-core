@@ -126,7 +126,7 @@ public abstract class ListenerTestCases {
         void handle(JsonObject result, ResponseStatus status);
     }
 
-    public class TestHandler implements CoreHandler {
+    public class TestHandler implements CoreHandler<Request> {
         private String address = "test.address.node";
 
         @Override

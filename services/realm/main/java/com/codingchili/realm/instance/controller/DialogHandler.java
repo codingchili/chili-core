@@ -8,7 +8,7 @@ import com.codingchili.core.listener.*;
 /**
  * @author Robin Duda
  */
-public class DialogHandler implements CoreHandler {
+public class DialogHandler implements CoreHandler<Request> {
     private GameContext game;
 
     public DialogHandler(GameContext game) {

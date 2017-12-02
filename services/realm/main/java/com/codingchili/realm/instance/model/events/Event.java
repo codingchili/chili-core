@@ -1,5 +1,10 @@
 package com.codingchili.realm.instance.model.events;
 
+import com.codingchili.realm.instance.model.Broadcast;
+import com.codingchili.realm.instance.model.Entity;
+
+import java.util.Optional;
+
 /**
  * @author Robin Duda
  * <p>
@@ -7,7 +12,17 @@ package com.codingchili.realm.instance.model.events;
  */
 public interface Event {
 
-    Type getType();
+    default Broadcast getBroadcast() {
+        if (getSource().isPresent()) {
+            return Broadcast.PARTITION;
+        } else {
+            return Broadcast.GLOBAL;
+        }
+    }
 
-    enum Type {SPELL, MOVEMENT, DEATH, AFFLICTION, SPAWN, CHAT}
+    default Optional<Entity> getSource() {
+        return Optional.empty();
+    }
+
+    EventType getType();
 }

@@ -23,7 +23,7 @@ public class DeathEvent implements Event {
     }
 
     @Override
-    public Type getType() {
-        return Type.DEATH;
+    public EventType getType() {
+        return EventType.DEATH;
     }
 }

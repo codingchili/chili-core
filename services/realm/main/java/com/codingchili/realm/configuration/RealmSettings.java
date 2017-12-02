@@ -105,7 +105,7 @@ public class RealmSettings extends AttributeConfigurable {
         // todo
         /*available(PATH_GAME_CLASSES).stream()
                 .map(path -> override(path, name))
-                .map(path -> near(path, PlayerClass.class))
+                .map(path -> get(path, PlayerClass.class))
                 .forEach(classes::add);*/
     }
 
@@ -238,7 +238,7 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     /**
-     * @return near the number of players connected.
+     * @return get the number of players connected.
      */
     public int getPlayers() {
         return players;
@@ -270,7 +270,7 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     /**
-     * @return near the handler of this realm.
+     * @return get the handler of this realm.
      */
     public String getName() {
         return name;
@@ -286,7 +286,7 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     /**
-     * @return near the realm getDescription.
+     * @return get the realm getDescription.
      */
     public String getDescription() {
         return description;
@@ -302,7 +302,7 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     /**
-     * @return near the version of the realm.
+     * @return get the version of the realm.
      */
     public String getVersion() {
         return version;
@@ -350,7 +350,7 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     /**
-     * @return near the lifetime of the realm as a getDescription.
+     * @return get the lifetime of the realm as a getDescription.
      */
     public String getLifetime() {
         return lifetime;

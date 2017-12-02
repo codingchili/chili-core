@@ -64,12 +64,14 @@ public class Vector {
         return String.format("x=%f y=%f, dir=%f velocity=%f", x, y, direction, velocity);
     }
 
-    public Set<Integer> buckets(final int cellSize, final int gridWidth) {
-        Set<Integer> buckets = new TreeSet<>();
+    public Set<Integer> cells(final int cellSize, final int gridWidth) {
+        Set<Integer> buckets = new HashSet<>();
         buckets.add(Math.round(((x + radius) / cellSize) + ((y / cellSize) * gridWidth)));
         buckets.add(Math.round(((x - radius) / cellSize) + ((y / cellSize) * gridWidth)));
         buckets.add(Math.round((x / cellSize) + (((y + radius) / cellSize) * gridWidth)));
         buckets.add(Math.round((x / cellSize) + (((y - radius) / cellSize) * gridWidth)));
         return buckets;
     }
+
+    // todo add copy with kryo after merging.
 }

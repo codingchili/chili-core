@@ -10,7 +10,7 @@ import com.codingchili.core.listener.Request;
 /**
  * @author Robin Duda
  */
-public class SpellHandler implements CoreHandler {
+public class SpellHandler implements CoreHandler<Request> {
     private GameContext game;
 
     public SpellHandler(GameContext game) {
@@ -24,6 +24,7 @@ public class SpellHandler implements CoreHandler {
 
     @Override
     public void handle(Request request) {
-
+        // shared SpellManager?
+        // needs to cancel on movement etc.
     }
 }

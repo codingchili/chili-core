@@ -13,7 +13,7 @@ import static com.codingchili.common.Strings.PATH_INSTANCE;
 
 /**
  * @author Robin Duda
- * Contains settings for an settings in a realm.
+ * Contains settings for an instance in a realm.
  */
 public class InstanceSettings implements Configurable {
     private List<Portal> portals = new ArrayList<>();
@@ -41,14 +41,14 @@ public class InstanceSettings implements Configurable {
     }
 
     /**
-     * @return the maximum number of players that may enter the settings.
+     * @return the maximum number of players that may enter the instance.
      */
     public int getLimit() {
         return limit;
     }
 
     /**
-     * @param limit the maximum number of player that may enter the settings.
+     * @param limit the maximum number of player that may enter the instance.
      * @return fluent
      */
     protected InstanceSettings setLimit(int limit) {

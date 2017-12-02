@@ -1,32 +1,27 @@
 package com.codingchili.realm.instance.model.npc;
 
-import com.codingchili.realm.instance.model.Entity;
-import com.codingchili.realm.instance.model.Vector;
+import com.codingchili.realm.instance.context.GameContext;
+import com.codingchili.realm.instance.model.SimpleEntity;
 import com.codingchili.realm.instance.model.events.ChatEvent;
 import com.codingchili.realm.instance.model.events.Event;
 
-import java.util.UUID;
+import com.codingchili.core.protocol.Api;
 
 /**
  * @author Robin Duda
  */
-public class ListeningPerson implements Entity {
-    private Integer id = UUID.randomUUID().hashCode();
+public class ListeningPerson extends SimpleEntity {
+    public static int called = 0;
 
-    @Override
-    public Integer getId() {
-        return id;
+    public ListeningPerson(GameContext context) {
+        super(context);
     }
 
-    @Override
-    public void notify(Event event) {
-        if (event.getType() == Event.Type.CHAT) {
-            System.out.println(id + " received event " + ((ChatEvent) event).getText());
-        }
-    }
+    @Api(route = "CHAT")
+    public void chatevent(Event event) {
+     //   ChatEvent chat = ChatEvent.class.cast(event);
 
-    @Override
-    public Vector getVector() {
-        return new Vector().setX(100).setY(100);
+   //     System.out.println(chat.getText());
+        called += 1;
     }
 }

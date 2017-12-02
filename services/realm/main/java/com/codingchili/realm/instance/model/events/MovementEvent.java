@@ -5,7 +5,7 @@ package com.codingchili.realm.instance.model.events;
  */
 public class MovementEvent implements Event {
     @Override
-    public Type getType() {
-        return Type.MOVEMENT;
+    public EventType getType() {
+        return EventType.MOVEMENT;
     }
 }
