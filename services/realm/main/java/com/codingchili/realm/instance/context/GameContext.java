@@ -167,7 +167,8 @@ public class GameContext {
         for (int i = 0; i < 100000; i++) {
             game.tick(0L);
 
-            System.out.println(i);
+            if (i % 100 == 0)
+                System.out.println(i);
         }
         System.out.println("END: " + (System.currentTimeMillis() - time) + "ms.");
         System.out.println(ListeningPerson.called);

@@ -308,21 +308,6 @@ public class MapTestCases {
     }
 
     @Test
-<<<<<<< HEAD
-    public void testQueryExact(TestContext test) {
-        Async async = test.async();
-
-        store.query(NAME).equalTo(TWO).execute(query -> {
-            test.assertTrue(query.succeeded(), errorText(query));
-            test.assertEquals(1, query.result().size());
-            test.assertEquals(TWO, query.result().iterator().next().getId());
-            async.complete();
-        });
-    }
-
-    @Test
-=======
->>>>>>> origin/master
     public void testQueryMatchNone(TestContext test) {
         Async async = test.async();
 

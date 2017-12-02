@@ -209,7 +209,7 @@ public class Serializer {
         for (String field : fields) {
             Objects.requireNonNull(object, CoreStrings.getValueByPathContainsNull(field, fields));
             if (object instanceof Storable && field.equals(Storable.idField)) {
-                return Collections.singleton((T) ((Storable) object).id());
+                return Collections.singleton((T) ((Storable) object).getId());
             } else if (object instanceof Map) {
                 object = ((Map) object).get(field);
             } else if (object instanceof JsonObject) {

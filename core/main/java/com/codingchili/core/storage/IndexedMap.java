@@ -41,7 +41,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
                       StorageContext<Value> context) {
 
         this.context = context;
-        FIELD_ID = attribute(context.valueClass(), String.class, Storable.idField, Storable::id);
+        FIELD_ID = attribute(context.valueClass(), String.class, Storable.idField, Storable::getId);
 
         // share collections that share the same identifier.
         synchronized (maps) {
@@ -127,7 +127,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
 
     @Override
     public void put(Value value, Handler<AsyncResult<Void>> handler) {
-        context.blocking(blocking -> get(value.id(), get -> {
+        context.blocking(blocking -> get(value.getId(), get -> {
             if (get.result() != null) {
                 db.update(Collections.singleton(get.result()), Collections.singleton(mapper.apply(value)));
             } else {
@@ -140,10 +140,10 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
     @Override
     public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
         context.blocking(blocking -> {
-            Iterator<Value> result = db.retrieve(equal(FIELD_ID, value.id())).iterator();
+            Iterator<Value> result = db.retrieve(equal(FIELD_ID, value.getId())).iterator();
 
             if (result.hasNext()) {
-                blocking.fail(new ValueAlreadyPresentException(value.id()));
+                blocking.fail(new ValueAlreadyPresentException(value.getId()));
             } else {
                 db.add(mapper.apply(value));
                 blocking.complete();
@@ -166,13 +166,13 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
 
     @Override
     public void update(Value value, Handler<AsyncResult<Void>> handler) {
-        get(value.id(), get -> {
+        get(value.getId(), get -> {
             context.blocking(blocking -> {
                 if (get.succeeded()) {
                     db.update(Collections.singleton(get.result()), Collections.singleton(mapper.apply(value)));
                     blocking.complete();
                 } else {
-                    blocking.fail(new NothingToUpdateException(value.id()));
+                    blocking.fail(new NothingToUpdateException(value.getId()));
                 }
             }, handler);
         });
