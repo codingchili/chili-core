@@ -13,6 +13,7 @@ import com.codingchili.core.storage.exception.NothingToRemoveException;
 import com.codingchili.core.storage.exception.NothingToUpdateException;
 import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
 import com.codingchili.core.storage.exception.ValueMissingException;
+
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -33,18 +34,18 @@ import static com.codingchili.core.logging.Level.WARNING;
 
 /**
  * @author Robin Duda
- * <p>
- * Common test cases for the map implementations.
+ *         <p>
+ *         Common test cases for the map implementations.
  */
 @Ignore("Extend this class to run the tests.")
 @RunWith(VertxUnitRunner.class)
 public class MapTestCases {
     protected static final String COLLECTION = "MapTestCases";
-    private static final Long TEST_ITEM_COUNT = 200L;
+    protected Long TEST_ITEM_COUNT = 200L;
     private static final Long SNOWFLAKE_INTERVAL = 10L;
-    private static final Long SNOWFLAKE_COUNT = TEST_ITEM_COUNT / SNOWFLAKE_INTERVAL;
+    private final Long SNOWFLAKE_COUNT = TEST_ITEM_COUNT / SNOWFLAKE_INTERVAL;
     private static final Long SNOWFLAKE_BASE_LEVEL = 9000L;
-    private static final Long SNOWFLAKE_MAX_LEVEL = SNOWFLAKE_BASE_LEVEL + SNOWFLAKE_COUNT;
+    private final Long SNOWFLAKE_MAX_LEVEL = SNOWFLAKE_BASE_LEVEL + SNOWFLAKE_COUNT;
     private static final String LEVEL = "level";
     private static final String NAME = "name";
     private static final String ONE = "id.1";
@@ -57,8 +58,10 @@ public class MapTestCases {
     private static final String SNOW_KEYWORD = "SNOW";
     private static final int LEVEL_BUCKET_SIZE = 10;
     protected static Integer STARTUP_DELAY = 1;
+
     @Rule
-    public Timeout timeout = Timeout.seconds(10);
+    public Timeout timeout = Timeout.seconds(15);
+
     protected Class<? extends AsyncStorage> plugin;
     protected StorageContext<StorageObject> context;
     protected AsyncStorage<StorageObject> store;
@@ -81,8 +84,12 @@ public class MapTestCases {
                 .withValue(StorageObject.class)
                 .withPlugin(plugin)
                 .build(result -> {
-                    store = result.result();
-                    prepareStore(async);
+                    if (result.succeeded()) {
+                        store = result.result();
+                        prepareStore(async);
+                    } else {
+                        throw new RuntimeException(result.cause());
+                    }
                 });
     }
 
@@ -239,16 +246,25 @@ public class MapTestCases {
     @Test
     public void testUpdate(TestContext test) {
         Async async = test.async();
-        int level = 50;
-        StorageObject updated = new StorageObject(OBJECT_TWO.getId(), level);
 
-        store.update(updated, replace -> {
-            test.assertTrue(replace.succeeded(), errorText(replace));
+        store.get(TWO, get -> {
+            test.assertTrue(get.succeeded());
+            StorageObject object = get.result();
+            object.setLevel(1000);
 
-            store.get(TWO, get -> {
-                test.assertTrue(get.succeeded(), errorText(get));
-                test.assertEquals(updated.getLevel(), get.result().getLevel());
-                async.complete();
+            store.update(object, done -> {
+                test.assertTrue(done.succeeded());
+
+                store.get(TWO, updated -> {
+                    test.assertTrue(updated.succeeded());
+                    test.assertEquals(updated.result().getLevel(), 1000);
+
+                    store.size(size -> {
+                        test.assertEquals(TEST_ITEM_COUNT.intValue(), size.result());
+                        async.complete();
+                    });
+                });
+
             });
         });
     }
@@ -292,6 +308,7 @@ public class MapTestCases {
     }
 
     @Test
+<<<<<<< HEAD
     public void testQueryExact(TestContext test) {
         Async async = test.async();
 
@@ -304,6 +321,8 @@ public class MapTestCases {
     }
 
     @Test
+=======
+>>>>>>> origin/master
     public void testQueryMatchNone(TestContext test) {
         Async async = test.async();
 

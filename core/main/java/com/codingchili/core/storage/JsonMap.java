@@ -9,6 +9,7 @@ import com.codingchili.core.storage.exception.NothingToRemoveException;
 import com.codingchili.core.storage.exception.NothingToUpdateException;
 import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
 import com.codingchili.core.storage.exception.ValueMissingException;
+
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -30,14 +31,14 @@ import static com.codingchili.core.context.FutureHelper.result;
 
 /**
  * @author Robin Duda
- * <p>
- * Map backed by a json-file.
- * <p>
- * Do not use for data that is changing frequently, as this is extremely inefficient.
- * The dirty-state of the map will be checked to determine when the map should be
- * persisted. This is done in intervals specified in plugin configuration.
- * <p>
- * this map flushes its contents to disk every now and then.
+ *         <p>
+ *         Map backed by a json-file.
+ *         <p>
+ *         Do not use for data that is changing frequently, as this is extremely inefficient.
+ *         The dirty-state of the map will be checked to determine when the map should be
+ *         persisted. This is done in intervals specified in plugin configuration.
+ *         <p>
+ *         this map flushes its contents to disk every now and then.
  */
 public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     private static final String JSONMAP_WORKERS = "asyncjsonmap.workers";
@@ -159,16 +160,15 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public QueryBuilder<Value> query(String field) {
-        return new JsonStreamQuery<>(this, this::streamSource).query(field);
+        return new StreamQuery<>(this, () -> db.stream().map(Map.Entry::getValue))
+                // set the mapper to only pay serialization costs for matching results.
+                .setMapper(value -> context.toValue((JsonObject) value))
+                .query(field);
     }
 
     @Override
     public StorageContext<Value> context() {
         return context;
-    }
-
-    private Stream<JsonObject> streamSource() {
-        return db.stream().map(entry -> (JsonObject) entry.getValue());
     }
 
     @Override

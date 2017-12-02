@@ -1,8 +1,18 @@
 package com.codingchili.core.protocol;
 
 
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.protocol.exception.SerializerPayloadException;
+import com.codingchili.core.security.Account;
+import com.codingchili.core.storage.Storable;
+import com.codingchili.core.testing.NestedObject;
+import com.codingchili.core.testing.StorageObject;
+
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.pool.KryoFactory;
+import com.esotericsoftware.kryo.pool.KryoPool;
+import com.esotericsoftware.reflectasm.FieldAccess;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,9 +29,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -30,7 +40,7 @@ import static com.codingchili.core.configuration.CoreStrings.STORAGE_ARRAY;
 
 /**
  * @author Robin Duda
- * serializes objects to JSON and back.
+ *         serializes objects to JSON and back.
  */
 public class Serializer {
     // use vertx's objectmapper, it comes with custom serializer modules.
@@ -41,6 +51,20 @@ public class Serializer {
         Json.mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         Json.mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         Json.mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+    }
+
+    private static KryoFactory factory = Kryo::new;
+    private static KryoPool pool = new KryoPool.Builder(factory).softReferences().build();
+
+    /**
+     * Execute with a pooled kryo instance.
+     *
+     * @param kryo a pooled kryo instance.
+     * @param <T>  the type of value that is returned by the given kryo operation.
+     * @return the value that is returned by the kryo invocation.
+     */
+    public static <T> T kryo(Function<Kryo, T> kryo) {
+        return pool.run(kryo::apply);
     }
 
     /**
@@ -144,7 +168,7 @@ public class Serializer {
      * @return the extracted value type casted to the type parameter.
      */
     @SuppressWarnings("unchecked")
-    public static <T> T[] getValueByPath(JsonObject json, String path) {
+    public static <T> Collection<T> getValueByPath(JsonObject json, String path) {
         String[] fields = path.replace(STORAGE_ARRAY, "").split("\\.");
         String targetField = fields[fields.length - 1];
 
@@ -159,9 +183,52 @@ public class Serializer {
             for (int i = 0; i < objects.length; i++) {
                 objects[i] = (Comparable) ((JsonArray) targetValue).getValue(i);
             }
-            return (T[]) objects;
+            return Arrays.asList((T[]) objects);
         } else {
-            return (T[]) new Comparable[]{(Comparable) targetValue};
+            return Collections.singleton((T) targetValue);
+        }
+    }
+
+
+    /**
+     * Gets a value by the given path for an object.
+     *
+     * @param object the object to get the path value of.
+     * @param path   the path to the field to retrieve the value of, may be an object or collection.
+     * @param <T>    the type of the field to retrieve.
+     * @return a list of values matching the path.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Collection<T> getValueByPath(Object object, String path) {
+        String[] fields = path.replace(STORAGE_ARRAY, "").split("\\.");
+
+        if (object instanceof JsonObject) {
+            return getValueByPath((JsonObject) object, path);
+        }
+
+        for (String field : fields) {
+            Objects.requireNonNull(object, CoreStrings.getValueByPathContainsNull(field, fields));
+            if (object instanceof Storable && field.equals(Storable.idField)) {
+                return Collections.singleton((T) ((Storable) object).id());
+            } else if (object instanceof Map) {
+                object = ((Map) object).get(field);
+            } else if (object instanceof JsonObject) {
+                object = ((JsonObject) object).getValue(field);
+            } else {
+                try {
+                    Field fx = object.getClass().getDeclaredField(field);
+                    fx.setAccessible(true);
+                    object = fx.get(object);
+                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    throw new CoreRuntimeException(CoreStrings.getReflectionErrorInSerializer(path));
+                }
+            }
+        }
+
+        if (object instanceof Collection) {
+            return (Collection<T>) object;
+        } else {
+            return Collections.singleton((T) object);
         }
     }
 

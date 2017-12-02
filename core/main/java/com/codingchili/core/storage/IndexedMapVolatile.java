@@ -1,23 +1,29 @@
 package com.codingchili.core.storage;
 
-import com.codingchili.core.context.StorageContext;
-import com.googlecode.cqengine.attribute.SimpleAttribute;
+import com.googlecode.cqengine.ConcurrentIndexedCollection;
+import com.googlecode.cqengine.IndexedCollection;
+import com.googlecode.cqengine.index.unique.UniqueIndex;
+import com.googlecode.cqengine.persistence.onheap.OnHeapPersistence;
 import io.vertx.core.Future;
+
+import com.codingchili.core.context.StorageContext;
 
 /**
  * @author Robin Duda
- * <p>
- * Indexed map configured with on-heap storage.
+ *         <p>
+ *         A storage implementation that is local and indexed. Always use this when using queries.
+ *         The indexing is fully based on CQEngine. see http://github.com/npgall/cqengine
+ *         The db/collection is shared over multiple instances.
  */
 public class IndexedMapVolatile<Value extends Storable> extends IndexedMap<Value> {
 
+    @SuppressWarnings("unchecked")
     public IndexedMapVolatile(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
-        super(future, context);
-    }
-
-    @Override
-    protected SharedIndexCollection<Value> getImplementation(
-            StorageContext<Value> ctx, SimpleAttribute<Value, String> attribute) {
-        return SharedIndexCollection.onHeap(attribute);
+        super((idField) -> {
+            IndexedCollection<Value> db = new ConcurrentIndexedCollection<>(OnHeapPersistence.onPrimaryKey(idField));
+            db.addIndex(UniqueIndex.onAttribute(idField));
+            return db;
+        }, context);
+        future.complete(this);
     }
 }

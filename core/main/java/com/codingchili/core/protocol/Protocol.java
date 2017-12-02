@@ -5,10 +5,10 @@ import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
+
+import com.esotericsoftware.reflectasm.MethodAccess;
 import io.vertx.core.json.JsonObject;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Objects;
@@ -164,10 +164,12 @@ public class Protocol<RequestType> {
     }
 
     private void wrap(String route, CoreHandler handler, Method method, RoleType[] role) {
-        MethodHandle handle = methodToHandle(method);
+        MethodAccess access = MethodAccess.get(handler.getClass());
+
+        int index = access.getIndex(method.getName());
         use(route, request -> {
             try {
-                handle.invoke(handler, request);
+                access.invoke(handler, index, request);
             } catch (Throwable e) {
                 if (e instanceof RuntimeException) {
                     throw (RuntimeException) e;
@@ -176,14 +178,6 @@ public class Protocol<RequestType> {
                 }
             }
         }, role);
-    }
-
-    private MethodHandle methodToHandle(Method method) {
-        try {
-            return MethodHandles.lookup().unreflect(method);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**

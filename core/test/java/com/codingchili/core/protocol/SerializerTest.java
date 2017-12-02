@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Robin Duda
@@ -22,12 +23,15 @@ import java.util.Map;
 public class SerializerTest {
     private static final String TEST = "test";
     private static final String SECRET = "secret";
+    private static final String OWNER = "owner";
+    private static final String PROPERTIES_OWNER = "properties.owner";
     private Token token;
 
     @Before
     public void setUp() {
         TokenFactory factory = new TokenFactory(SECRET.getBytes());
         token = new Token(factory, TEST);
+        token = token.addProperty(OWNER, getClass().getSimpleName());
     }
 
     @Test
@@ -82,5 +86,19 @@ public class SerializerTest {
         test.assertEquals(Integer.class.getName(), model.get("level"));
         test.assertEquals("java.util.List<java.lang.String>", model.get("keywords"));
         test.assertEquals(4, model.values().size());
+    }
+
+    @Test
+    public void testGetJsonValueByPath(TestContext test) {
+        Optional<String> value = Serializer.<String>getValueByPath(Serializer.json(token), PROPERTIES_OWNER).stream().findFirst();
+        test.assertTrue(value.isPresent());
+        test.assertEquals(getClass().getSimpleName(), value.get());
+    }
+
+    @Test
+    public void testGetObjectValueByPath(TestContext test) {
+        Optional<String> value = Serializer.<String>getValueByPath(token, PROPERTIES_OWNER).stream().findFirst();
+        test.assertTrue(value.isPresent());
+        test.assertEquals(getClass().getSimpleName(), value.get());
     }
 }
