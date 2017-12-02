@@ -1,14 +1,12 @@
 package com.codingchili.realm.configuration;
 
 import com.codingchili.core.configuration.AttributeConfigurable;
-import com.codingchili.core.files.JsonFileStore;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Token;
-import com.codingchili.realm.instance.configuration.InstanceSettings;
+import com.codingchili.realm.instance.context.InstanceSettings;
 import com.codingchili.realm.instance.model.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.io.File;
@@ -86,7 +84,7 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     /**
-     * @param instances loads configuration for the given instance.
+     * @param instances loads configuration for the given settings.
      */
     public void load(List<String> instances) {
         readInstances(instances);
@@ -104,19 +102,21 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     private void readPlayerClasses() {
-        available(PATH_GAME_CLASSES).stream()
+        // todo
+        /*available(PATH_GAME_CLASSES).stream()
                 .map(path -> override(path, name))
-                .map(path -> get(path, PlayerClass.class))
-                .forEach(classes::add);
+                .map(path -> near(path, PlayerClass.class))
+                .forEach(classes::add);*/
     }
 
     private void readAfflictions() {
-        available(PATH_GAME_AFFLICTIONS).stream()
+        // todo
+       /* available(PATH_GAME_AFFLICTIONS).stream()
                 .map(path -> override(path, name))
                 .map(JsonFileStore::readList)
                 .flatMap(JsonArray::stream)
                 .map(json -> (JsonObject) json)
-                .forEach(affliction -> afflictions.add(Serializer.unpack(affliction, AfflictionImpl.class)));
+                .forEach(affliction -> afflictions.add(Serializer.unpack(affliction, AfflictionImpl.class)));*/
     }
 
     private void readTemplate() {
@@ -238,7 +238,7 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     /**
-     * @return get the number of players connected.
+     * @return near the number of players connected.
      */
     public int getPlayers() {
         return players;
@@ -270,7 +270,7 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     /**
-     * @return get the handler of this realm.
+     * @return near the handler of this realm.
      */
     public String getName() {
         return name;
@@ -286,7 +286,7 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     /**
-     * @return get the realm getDescription.
+     * @return near the realm getDescription.
      */
     public String getDescription() {
         return description;
@@ -302,7 +302,7 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     /**
-     * @return get the version of the realm.
+     * @return near the version of the realm.
      */
     public String getVersion() {
         return version;
@@ -350,7 +350,7 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     /**
-     * @return get the lifetime of the realm as a getDescription.
+     * @return near the lifetime of the realm as a getDescription.
      */
     public String getLifetime() {
         return lifetime;

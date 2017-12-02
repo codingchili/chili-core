@@ -1,23 +1,15 @@
 package com.codingchili.realm.instance.model;
 
+import java.util.*;
+
 /**
  * @author Robin Duda
  */
 public interface Interactable {
 
-    boolean isInspectable();
+    default Set<Interactions> getInteractions() {
+        return Collections.emptySet();
+    }
 
-    default void inspect(Entity entity) {}
-
-    boolean isTradeable();
-
-    TradeHandler trade(Entity entity);
-
-    void isDialogable();
-
-    default void dialogue(Entity entity) {}
-
-    void isFriendable();
-
-    default void friend(Entity other) {};
+    enum Interactions {INSPECT, TRADE, DIALOG, FRIEND}
 }

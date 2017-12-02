@@ -85,7 +85,6 @@ public abstract class CoreStrings {
     public static final String PROTOCOL_TARGET = "target";
     public static final String PROTOCOL_LOGGING = "logging";
     public static final String PROTOCOL_DOCUMENTATION = "documentation";
-    public static final String DEFAULT_KEYSTORE = "keystore.jks";
 
     // launcher commands.
     public static final String COMMAND_PREFIX = "--";

@@ -1,22 +1,25 @@
-package com.codingchili.realm.instance.model;
+package com.codingchili.realm.instance.controller;
+
+import com.codingchili.realm.instance.context.GameContext;
+import com.codingchili.realm.instance.model.*;
 
 import java.util.Collection;
+
+import com.codingchili.core.listener.CoreHandler;
+import com.codingchili.core.listener.Request;
 
 /**
  * @author Robin Duda
  */
-public class TradeHandler {
+public class TradeHandler implements CoreHandler {
     private Entity initiator;
     private Entity other;
     private Collection<Item> initiatorItems;
     private Collection<Item> otherItems;
+    private GameContext game;
 
-    public static TradeHandler request(Entity initiator, Entity other) {
-        // todo: make sure only one trade is open per Entity: reject the trade if not.
-        // todo: notify the request.
-        // todo: make this into a future somehow.
-        // todo: notify entities if trades are opened.
-        return new TradeHandler();
+    public TradeHandler(GameContext game) {
+        this.game = game;
     }
 
     public void offer(Entity entity, Item item) {
@@ -34,5 +37,10 @@ public class TradeHandler {
 
     public void complete(Entity entity) {
         // both entities completes the trade.
+    }
+
+    @Override
+    public void handle(Request request) {
+        // todo check event type.
     }
 }

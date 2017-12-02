@@ -1,17 +1,15 @@
 package com.codingchili.realm.instance.model;
 
+import com.codingchili.realm.instance.model.events.Event;
+
 /**
  * @author Robin Duda
  */
-public interface Entity {
+public interface Entity extends Interactable {
 
-    void onEffect(Entity source, Affliction event);
+    Integer getId();
 
-    void onDeath(Entity source);
+    void notify(Event event);
 
-    void equip(Item item);
-
-    void notify(Object object);
-
-    Position getPosition();
+    Vector getVector();
 }

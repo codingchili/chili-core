@@ -1,8 +1,9 @@
 package com.codingchili.core.listener;
 
+import io.vertx.core.Future;
+
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.storage.QueryBuilder;
-import io.vertx.core.Future;
 
 /**
  * An interface which defines the functionality of a session provider.
@@ -11,13 +12,20 @@ public interface SessionFactory<T extends Session> {
 
     /**
      * Creates a new session.
-     *  @param source     the listener that created the session, the listener must
-     *                   also be able to route asynchronous messages back to the connection
-     *                   using the eventbus for example.
-     * @param connection a unique identification of the sessions connection.
+     *
+     * @param home event bus messages will be sent to this address.
      * @return callback
      */
-    Future<T> create(String source, String connection);
+    Future<T> create(String home);
+
+    /**
+     * Creates a new session.
+     *
+     * @param home event bus messages will be sent to this address.
+     * @param id   the id of the session, for identification.
+     * @return callback
+     */
+    Future<T> create(String home, String id);
 
     /**
      * Updates the data stored in a session.

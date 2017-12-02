@@ -51,7 +51,7 @@ public class CharacterHandler implements CoreHandler {
     }
 
     private void instanceHandler(Request request) {
-        // todo forward to instance
+        // todo forward to settings
     }
 
     private void registerRealm(Long handler) {

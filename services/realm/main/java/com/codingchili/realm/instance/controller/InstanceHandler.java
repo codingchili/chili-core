@@ -5,14 +5,15 @@ import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.Protocol;
 import com.codingchili.core.protocol.Role;
-import com.codingchili.realm.instance.configuration.InstanceContext;
+import com.codingchili.realm.instance.context.InstanceContext;
+import com.codingchili.realm.instance.context.GameContext;
 import io.vertx.core.Future;
 
 import static com.codingchili.common.Strings.ID_PING;
 
 /**
  * @author Robin Duda
- * Handles players in an instance.
+ * Handles players in an settings.
  */
 public class InstanceHandler implements CoreHandler, DeploymentAware {
     private final Protocol<InstanceRequest> protocol = new Protocol<>();
@@ -21,6 +22,13 @@ public class InstanceHandler implements CoreHandler, DeploymentAware {
     public InstanceHandler(InstanceContext context) {
         this.context = context;
         protocol.use(ID_PING, this::ping, Role.PUBLIC);
+
+        GameContext game = new GameContext(context);
+
+        protocol.annotated(new MovementHandler(game));
+        protocol.annotated(new TradeHandler(game));
+        protocol.annotated(new SpellHandler(game));
+        protocol.annotated(new DialogHandler(game));
     }
 
     private void ping(InstanceRequest request) {
@@ -47,7 +55,7 @@ public class InstanceHandler implements CoreHandler, DeploymentAware {
 
     @Override
     public void stop(Future<Void> future) {
-        context.onInstanceStopped(future, context.realm().getName(), context.instance().getName());
+        context.onInstanceStopped(future, context.realm().getName(), context.settings().getName());
     }
 
     @Override
@@ -55,7 +63,7 @@ public class InstanceHandler implements CoreHandler, DeploymentAware {
         // todo: set up the game loop
         // todo: set up session handling
 
-        context.onInstanceStarted(context.realm().getName(), context.instance().getName());
+        context.onInstanceStarted(context.realm().getName(), context.settings().getName());
         future.complete();
     }
 

@@ -7,7 +7,7 @@ import com.codingchili.core.logging.Logger;
 import com.codingchili.core.security.Token;
 import com.codingchili.core.security.TokenFactory;
 import com.codingchili.core.storage.StorageLoader;
-import com.codingchili.realm.instance.configuration.InstanceSettings;
+import com.codingchili.realm.instance.context.InstanceSettings;
 import com.codingchili.realm.instance.model.*;
 import com.codingchili.realm.model.AsyncCharacterStore;
 import com.codingchili.realm.model.CharacterDB;

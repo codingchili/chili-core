@@ -1,19 +1,15 @@
 package com.codingchili.core.listener;
 
-import com.codingchili.core.configuration.Environment;
-import com.codingchili.core.security.KeyStore;
-import com.codingchili.core.configuration.system.SecuritySettings;
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.security.TrustAndKeyProvider;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.vertx.core.http.HttpServerOptions;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import static com.codingchili.core.configuration.CoreStrings.DEFAULT_KEYSTORE;
+import com.codingchili.core.configuration.Environment;
+import com.codingchili.core.configuration.system.SecuritySettings;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.security.TrustAndKeyProvider;
+
 import static com.codingchili.core.files.Configurations.security;
 
 /**
@@ -29,7 +25,7 @@ public class ListenerSettings {
     private WireType type = WireType.REST;
     private Set<Integer> actualPorts = new HashSet<>();
     private String defaultTarget = "default";
-    private String keystore = DEFAULT_KEYSTORE;
+    private String keystore = SecuritySettings.KEYSTORE_JKS;
     private boolean secure = true;
     private int port = 8080;
     private int timeout = DEFAULT_TIMEOUT;

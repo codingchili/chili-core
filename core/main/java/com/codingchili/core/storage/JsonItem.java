@@ -17,7 +17,7 @@ public class JsonItem extends JsonObject implements Storable {
     }
 
     @Override
-    public String id() {
+    public String getId() {
         return (this.containsKey(idField)) ?
                 this.getString(Storable.idField) : this.hashCode() + "";
     }

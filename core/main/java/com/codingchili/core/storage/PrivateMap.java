@@ -59,16 +59,16 @@ public class PrivateMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void put(Value value, Handler<AsyncResult<Void>> handler) {
-        map.put(value.id(), value);
+        map.put(value.getId(), value);
         handler.handle(FutureHelper.result());
     }
 
     @Override
     public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
-        if (map.containsKey(value.id())) {
-            handler.handle(error(new ValueAlreadyPresentException(value.id())));
+        if (map.containsKey(value.getId())) {
+            handler.handle(error(new ValueAlreadyPresentException(value.getId())));
         } else {
-            map.put(value.id(), value);
+            map.put(value.getId(), value);
             handler.handle(FutureHelper.result());
         }
     }
@@ -85,13 +85,13 @@ public class PrivateMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void update(Value value, Handler<AsyncResult<Void>> handler) {
-        Value previous = map.get(value.id());
+        Value previous = map.get(value.getId());
 
         if (previous != null) {
-            map.put(value.id(), value);
+            map.put(value.getId(), value);
             handler.handle(FutureHelper.result());
         } else {
-            handler.handle(error(new NothingToUpdateException(value.id())));
+            handler.handle(error(new NothingToUpdateException(value.getId())));
         }
     }
 

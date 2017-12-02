@@ -9,10 +9,8 @@ import com.codingchili.core.storage.exception.ValueMissingException;
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.attribute.MultiValueAttribute;
 import com.googlecode.cqengine.attribute.SimpleAttribute;
-import com.googlecode.cqengine.index.hash.HashIndex;
 import com.googlecode.cqengine.index.navigable.NavigableIndex;
 import com.googlecode.cqengine.index.radix.RadixTreeIndex;
-import com.googlecode.cqengine.index.suffix.SuffixTreeIndex;
 import com.googlecode.cqengine.index.unique.UniqueIndex;
 import com.googlecode.cqengine.query.Query;
 import com.googlecode.cqengine.query.QueryFactory;
@@ -52,7 +50,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
     public IndexedMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
         this.context = context;
         executor = context.vertx().createSharedWorkerExecutor("IndexedMap", 1);
-        FIELD_ID = attribute(context.valueClass(), String.class, Storable.idField, Storable::id);
+        FIELD_ID = attribute(context.valueClass(), String.class, Storable.idField, Storable::getId);
         fields.put(Storable.idField, FIELD_ID);
 
         // share collections that share the same identifier.
@@ -91,7 +89,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
 
     @Override
     public void put(Value value, Handler<AsyncResult<Void>> handler) {
-        executor.executeBlocking(blocking -> get(value.id(), get -> {
+        executor.executeBlocking(blocking -> get(value.getId(), get -> {
             db.update((get.result() != null) ?
                             Collections.singleton(get.result()) : Collections.emptyList(), Collections.singleton(value));
 
@@ -104,7 +102,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
         if (!db.contains(value)) {
             put(value, handler);
         } else {
-            handler.handle(failedFuture(new ValueAlreadyPresentException(value.id())));
+            handler.handle(failedFuture(new ValueAlreadyPresentException(value.getId())));
         }
     }
 
@@ -121,11 +119,11 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
 
     @Override
     public void update(Value value, Handler<AsyncResult<Void>> handler) {
-        get(value.id(), get -> {
+        get(value.getId(), get -> {
             if (get.succeeded() && db.update(Collections.singleton(get.result()), Collections.singleton(value))) {
                 handler.handle(succeededFuture());
             } else {
-                handler.handle(failedFuture(new NothingToUpdateException(value.id())));
+                handler.handle(failedFuture(new NothingToUpdateException(value.getId())));
             }
         });
     }

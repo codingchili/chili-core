@@ -59,7 +59,7 @@ public class PlayerCharacter extends AttributeConfigurable implements Storable {
     }
 
     @Override
-    public String id() {
+    public String getId() {
         return name;
     }
 }

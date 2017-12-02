@@ -1,5 +1,9 @@
 package com.codingchili.realm.instance.model;
 
+import com.codingchili.realm.instance.model.events.Event;
+
+import java.util.*;
+
 /**
  * @author Robin Duda
  * Contains a lootable object.
@@ -7,17 +11,22 @@ package com.codingchili.realm.instance.model;
 public class Node implements Entity, Interactable {
 
     @Override
-    public void interact(Entity entity) {
-        // do something.
+    public Integer getId() {
+        return null;
     }
 
     @Override
-    public void onEffect(Entity source, EffectEvent event) {
-        // only affected by physical damage, if player has the right tool equipped etc.
+    public void notify(Event event) {
+
     }
 
     @Override
-    public void onDeath(Entity source) {
-        // give player resource
+    public Vector getVector() {
+        return null;
+    }
+
+    @Override
+    public Set<Interactions> getInteractions() {
+        return Collections.emptySet();
     }
 }
