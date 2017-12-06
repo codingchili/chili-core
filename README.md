@@ -96,12 +96,12 @@ The core uses some great software, such as
 
 Applications currently using chili-core
 
-* [flashcards](https://flashcardsalligator.com/) - Online study cards
+* [flashcards](https://flashcardsalligator.com/) - Progressive web app for studying  with flashcards.
+* [etethereum-ingest](https://github.com/codingchili/ethereum-ingest) - Ethereum block/transaction import utility.
 
 ## Contributing
 Issues and PR's are welcome with :blue_heart:.
 
-* [mongodb/mongo](https://github.com/mongodb/mongo) - document database
 ## License
 The MIT License (MIT)
 Copyright (c) 2017 Robin Duda
