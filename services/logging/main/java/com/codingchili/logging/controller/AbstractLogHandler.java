@@ -17,7 +17,7 @@ import static com.codingchili.core.protocol.Role.PUBLIC;
  * <p>
  * Base log handler to receive remote logging events.
  */
-abstract class AbstractLogHandler implements CoreHandler {
+abstract class AbstractLogHandler implements CoreHandler<Request> {
     final ConsoleLogger console;
     final StorageLogger store;
     private final Protocol<Request> protocol = new Protocol<>();

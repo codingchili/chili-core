@@ -16,7 +16,7 @@ import static com.codingchili.common.Strings.*;
  * <p>
  * Handles patching requests.
  */
-public class PatchHandler implements CoreHandler {
+public class PatchHandler implements CoreHandler<Request> {
     private final Protocol<PatchRequest> protocol = new Protocol<>();
     private final PatchKeeper patcher;
     private PatchContext context;

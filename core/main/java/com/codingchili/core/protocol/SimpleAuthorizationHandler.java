@@ -37,7 +37,7 @@ public class SimpleAuthorizationHandler<T> implements AuthorizationHandler<T> {
 
     @Override
     public RequestHandler<T> get(String route, RoleType role) throws AuthorizationRequiredException, HandlerMissingException {
-        if (contains(route)) {
+        if (routes.contains(route)) {
             if (handlers.containsKey(role)) {
                 Route<T> api = handlers.get(role).get(route);
                 if (api != null) {

@@ -88,11 +88,16 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
         if (!holder.indexed.contains(fieldName)) {
             synchronized (holder.indexed) {
                 if (!holder.indexed.contains(fieldName)) {
-                    Attribute<Value, String> attribute = getAttribute(fieldName, multiValued);
-                    holder.attributes.put(fieldName, attribute);
-                    holder.db.addIndex(NavigableIndex.onAttribute(attribute));
-                    holder.db.addIndex(RadixTreeIndex.onAttribute(attribute));
-                    holder.indexed.add(fieldName);
+                    try {
+                        Attribute<Value, String> attribute = getAttribute(fieldName, multiValued);
+                        holder.attributes.put(fieldName, attribute);
+                        holder.db.addIndex(NavigableIndex.onAttribute(attribute));
+                        holder.db.addIndex(RadixTreeIndex.onAttribute(attribute));
+                    } catch (Throwable e) {
+                        context.logger(getClass()).onError(e);
+                    } finally {
+                        holder.indexed.add(fieldName);
+                    }
                 }
             }
         }

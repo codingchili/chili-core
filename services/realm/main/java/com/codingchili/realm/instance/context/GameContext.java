@@ -5,26 +5,34 @@ import com.codingchili.realm.instance.model.*;
 import com.codingchili.realm.instance.model.events.*;
 import com.codingchili.realm.instance.model.npc.ListeningPerson;
 import com.codingchili.realm.instance.model.npc.TalkingPerson;
+import io.vertx.core.Future;
+import io.vertx.core.impl.ConcurrentHashSet;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.*;
 import java.util.function.Consumer;
 
 import com.codingchili.core.context.SystemContext;
 
+import static com.codingchili.realm.instance.context.LoopFactory.readLocked;
+import static com.codingchili.realm.instance.context.LoopFactory.writeLocked;
 import static com.codingchili.realm.instance.model.events.SpawnEvent.SpawnType.DESPAWN;
 
 /**
  * @author Robin Duda
  */
 public class GameContext {
-    private Map<EventType, Map<Integer, EventProtocol<Event>>> listeners = new HashMap<>();
-    private Map<Integer, Entity> entities = new HashMap<>();
+    private Map<EventType, Map<Integer, EventProtocol<Event>>> listeners = new ConcurrentHashMap<>();
+    private Map<Integer, Entity> entities = new ConcurrentHashMap<>();
     private Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
     private AtomicBoolean closed = new AtomicBoolean(false);
-    private Set<Ticker> tickers = new HashSet<>();
+    private Set<Ticker> tickers = new ConcurrentHashSet<>();
+    private ReadWriteLock loop = new ReentrantReadWriteLock();
     private InstanceContext instance;
+
     private Long currentTick = 0L;
     private Grid grid;
 
@@ -32,11 +40,13 @@ public class GameContext {
         this.instance = instance;
         this.grid = new Grid(256, instance.settings().getWidth());
 
-        //instance.periodic(() -> 20, instance.address(), this::tick);
+        instance.periodic(() -> 20, instance.address(), this::tick);
     }
 
     private void tick(Long timer) {
         // instance.blocking(block -> {
+
+        // todo: if the last tick is not completed yet skip this tick, and log it.
 
         Runnable runnable;
         while ((runnable = queue.poll()) != null) {
@@ -45,11 +55,13 @@ public class GameContext {
 
         grid.update(entities.values());
 
+        // todo call ticks with delta
         tickers.forEach(ticker -> {
             if (currentTick % ticker.getTick() == 0) {
                 ticker.run();
             }
         });
+
         //         block.complete();
         //    }, (done) -> {
         if (closed.get()) {
@@ -61,11 +73,6 @@ public class GameContext {
             }
         }
         //      });
-    }
-
-    public GameContext runLater(Runnable runnable) {
-        queue.add(runnable);
-        return this;
     }
 
     public Grid getGrid() {
@@ -82,29 +89,23 @@ public class GameContext {
     }
 
     public void setTicker(Ticker ticker) {
-        queue.add(() -> {
-            if (ticker.getTick() > 0) {
-                tickers.add(ticker);
-            } else {
-                tickers.remove(ticker);
-            }
-        });
+        if (ticker.getTick() > 0) {
+            tickers.add(ticker);
+        } else {
+            tickers.remove(ticker);
+        }
     }
 
     public void addEntity(Entity entity) {
-        queue.add(() -> {
-            System.out.println("spawned entity " + entity.getId() + " at " + entity.getVector());
-            entities.put(entity.getId(), entity);
-            publishEvent(new SpawnEvent().setEntity(entity));
-        });
+        entities.put(entity.getId(), entity);
+        publishEvent(new SpawnEvent().setEntity(entity));
+        System.out.println("spawned entity " + entity.getId() + " at " + entity.getVector());
     }
 
     public void removeEntity(Entity entity) {
-        queue.add(() -> {
-            entities.remove(entity.getId());
-            publishEvent(new SpawnEvent().setEntity(entity).setType(DESPAWN));
-            unsubscribe(entity);
-        });
+        entities.remove(entity.getId());
+        publishEvent(new SpawnEvent().setEntity(entity).setType(DESPAWN));
+        unsubscribe(entity);
     }
 
     public void unsubscribe(Entity entity) {
@@ -114,38 +115,34 @@ public class GameContext {
     public EventProtocol<Event> subscribe(Entity entity) {
         EventProtocol<Event> protocol = new EventProtocol<>(entity);
 
-        queue.add(() -> {
-            protocol.available().stream()
-                    .map(EventType::valueOf)
-                    .forEach(event -> {
-                        listeners.computeIfAbsent(event, (key) -> new HashMap<>());
-                        listeners.get(event).put(protocol.getId(), protocol);
-                    });
-        });
+        protocol.available().stream()
+                .map(EventType::valueOf)
+                .forEach(event -> {
+                    listeners.computeIfAbsent(event, (key) -> new ConcurrentHashMap<>());
+                    listeners.get(event).put(protocol.getId(), protocol);
+                });
 
         return protocol;
     }
 
     public void publishEvent(Event event) {
-        queue.add(() -> {
-            Map<Integer, EventProtocol<Event>> scoped = listeners.computeIfAbsent(event.getType(), (key) -> new HashMap<>());
-            String type = event.getType().toString();
+        Map<Integer, EventProtocol<Event>> scoped = listeners.computeIfAbsent(event.getType(), (key) -> new ConcurrentHashMap<>());
+        String type = event.getType().toString();
 
-            switch (event.getBroadcast()) {
-                case PARTITION:
-                    // todo implement network partitions.
-                case GLOBAL:
-                    scoped.values().forEach(listener -> listener.get(type).submit(event));
-                    break;
-                case ADJACENT:
-                    event.getSource().ifPresent(source -> {
-                        grid.adjacent(source.getVector()).forEach(entity -> {
-                            scoped.get(entity.getId()).get(type).submit(event);
-                        });
+        switch (event.getBroadcast()) {
+            case PARTITION:
+                // todo implement network partitions.
+            case GLOBAL:
+                scoped.values().forEach(listener -> listener.get(type).submit(event));
+                break;
+            case ADJACENT:
+                event.getSource().ifPresent(source -> {
+                    grid.adjacent(source.getVector()).forEach(entity -> {
+                        scoped.get(entity.getId()).get(type).submit(event);
                     });
-                    break;
-            }
-        });
+                });
+                break;
+        }
     }
 
     public Optional<Entity> getEntity(Integer id) {
@@ -164,12 +161,12 @@ public class GameContext {
 
         System.out.println("BEGIN");
         long time = System.currentTimeMillis();
-        for (int i = 0; i < 100000; i++) {
+       /* for (int i = 0; i < 100000; i++) {
             game.tick(0L);
 
             if (i % 100 == 0)
                 System.out.println(i);
-        }
+        }*/
         System.out.println("END: " + (System.currentTimeMillis() - time) + "ms.");
         System.out.println(ListeningPerson.called);
 
