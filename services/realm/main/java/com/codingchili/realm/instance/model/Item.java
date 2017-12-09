@@ -1,16 +1,29 @@
 package com.codingchili.realm.instance.model;
 
-import com.codingchili.core.configuration.Attributes;
-
-import java.io.Serializable;
-
 /**
  * @author Robin Duda
- * Contains item data.
  */
-class Item extends Attributes implements Serializable {
-    private String name;
-    private String description;
+public class Item {
+    protected Slot slot = Slot.none;
+    protected boolean usable = false;
+    protected String description;
+    protected String name;
+
+    public boolean isUsable() {
+        return usable;
+    }
+
+    public void setUsable(boolean usable) {
+        this.usable = usable;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public String getName() {
         return name;
@@ -20,11 +33,11 @@ class Item extends Attributes implements Serializable {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
+    public Slot getSlot() {
+        return slot;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setSlot(Slot slot) {
+        this.slot = slot;
     }
 }

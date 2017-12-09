@@ -1,18 +1,18 @@
 package com.codingchili.core.security;
 
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.configuration.system.SecuritySettings;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.File;
+
+import com.codingchili.core.configuration.system.SecuritySettings;
 
 /**
  * Used in #{@link SecuritySettings} to contain references to keystores.
  */
 public class KeyStore {
     private String password = "password";
-    private String path = CoreStrings.DEFAULT_KEYSTORE;
-    private String shortName = CoreStrings.DEFAULT_KEYSTORE;
+    private String path = SecuritySettings.KEYSTORE_JKS;
+    private String shortName = SecuritySettings.KEYSTORE_JKS;
 
     /**
      * @return keystore password

@@ -78,13 +78,13 @@ public class Account implements Storable {
     }
 
     @Override
-    public String id() {
+    public String getId() {
         return username;
     }
 
     @Override
     public int hashCode() {
-        return id().hashCode();
+        return getId().hashCode();
     }
 
     @Override

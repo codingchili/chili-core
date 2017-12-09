@@ -1,10 +1,15 @@
 package com.codingchili.realm.instance.model;
 
-import java.io.Serializable;
+import com.codingchili.realm.instance.context.GameContext;
 
 /**
  * @author Robin Duda
  * Contains a lootable object.
  */
-public class Node implements Serializable {
+public class Node extends SimpleEntity{
+
+    public Node(GameContext context) {
+        super(context);
+    }
+
 }

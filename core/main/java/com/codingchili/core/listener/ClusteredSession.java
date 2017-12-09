@@ -1,11 +1,13 @@
 package com.codingchili.core.listener;
 
 import com.codingchili.core.protocol.Serializer;
+
 import io.vertx.core.Future;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
 
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * A clustered session that can be used to write directly to a listener at the
@@ -13,18 +15,18 @@ import java.util.Map;
  */
 class ClusteredSession implements Session {
     private JsonObject data = new JsonObject();
-    private DeliveryOptions delivery = new DeliveryOptions();
+    private String id = UUID.randomUUID().toString();
+    private String home;
     private SessionFactory<ClusteredSession> sessionFactory;
 
-    public ClusteredSession() {}
+    public ClusteredSession() {
+    }
 
-    public ClusteredSession(SessionFactory<ClusteredSession> factory, String source, String connection) {
+    public ClusteredSession(SessionFactory<ClusteredSession> factory, String home, String id) {
         this.sessionFactory = factory;
-
-        setData(new JsonObject()
-                .put(SOURCE, source)
-                .put(CONNECTION, connection).getMap());
-        update();
+        this.home = home;
+        this.id = id;
+        this.update();
     }
 
     @Override
@@ -33,23 +35,24 @@ class ClusteredSession implements Session {
     }
 
     @Override
+    public String getHome() {
+        return home;
+    }
+
+    public void setHome(String home) {
+        this.home = home;
+    }
+
+    @Override
     public Future<Void> destroy() {
         return sessionFactory.destroy(this);
     }
 
     @Override
-    public String source() {
-        return data.getString(SOURCE);
-    }
-
-    @Override
-    public String connection() {
-        return data.getString(CONNECTION);
-    }
-
-    @Override
-    public JsonObject data() {
-        return data;
+    public JsonObject asJson() {
+        return data
+                .put(Session.ID, id)
+                .put(Session.HOME, home);
     }
 
     @Override
@@ -59,16 +62,25 @@ class ClusteredSession implements Session {
 
     @Override
     public void write(Object object) {
-        sessionFactory.context().bus().send(source(), Serializer.json(object), delivery);
+        DeliveryOptions delivery = new DeliveryOptions()
+                .addHeader(Session.ID, id)
+                .addHeader(Session.HOME, home);
+
+        sessionFactory.context().bus().send(home, Serializer.json(object), delivery);
     }
 
     @Override
-    public String id() {
-        return connection() + "@" + source();
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     /**
      * Getter to support serialization.
+     *
      * @return json object as map.
      */
     public Map<String, Object> getData() {
@@ -76,15 +88,12 @@ class ClusteredSession implements Session {
     }
 
     /**
-     * setter to support serialiation.
+     * setter to support serialization.
      *
      * @param data the data to set for the session.
      */
     public void setData(Map<String, Object> data) {
         this.data = new JsonObject(data);
-        delivery = new DeliveryOptions()
-                .addHeader(SOURCE, source())
-                .addHeader(CONNECTION, connection());
     }
 
     public void setSessionFactory(SessionFactory<ClusteredSession> factory) {
@@ -93,7 +102,7 @@ class ClusteredSession implements Session {
 
     @Override
     public int hashCode() {
-        return id().hashCode();
+        return this.getId().hashCode();
     }
 
     @Override

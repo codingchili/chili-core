@@ -5,10 +5,12 @@ import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.logging.Level;
+import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.KeyStore;
 import com.codingchili.core.security.KeyStoreBuilder;
 import com.codingchili.core.security.PasswordReader;
 import com.codingchili.core.security.TrustAndKeyProvider;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.JksOptions;
@@ -25,18 +27,19 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
- * <p>
- * Contains mappings of security dependencies between services.
- * <p>
- * For example: service A may depend on a shared secret with service B,
- * or depend on service B generating a token of its secret.
- * <p>
- * To establish such dependencies, a dependency is added to service A
- * with a path or a regex to match the path of service B. The
- * {@link AuthenticationDependency} class contains the type of
- * configuration that is requested, for example a token or shared secret.
+ *         <p>
+ *         Contains mappings of security dependencies between services.
+ *         <p>
+ *         For example: service A may depend on a shared secret with service B,
+ *         or depend on service B generating a token of its secret.
+ *         <p>
+ *         To establish such dependencies, a dependency is added to service A
+ *         with a path or a regex to match the path of service B. The
+ *         {@link AuthenticationDependency} class contains the type of
+ *         configuration that is requested, for example a token or shared secret.
  */
 public class SecuritySettings implements Configurable {
+    public static final String KEYSTORE_JKS = "keystore.jks";
     private Map<String, AuthenticationDependency> dependencies = new HashMap<>();
     private Map<String, TrustAndKeyProvider> loadedKeyStores = new HashMap<>();
     private Map<String, KeyStore> keystores = new HashMap<>();
@@ -46,6 +49,12 @@ public class SecuritySettings implements Configurable {
     @Override
     public String getPath() {
         return PATH_SECURITY;
+    }
+
+    public SecuritySettings() {
+        if (new File(KEYSTORE_JKS).exists()) {
+            addKeystore().setPath(KEYSTORE_JKS).build();
+        }
     }
 
     /**
@@ -62,7 +71,7 @@ public class SecuritySettings implements Configurable {
 
     /**
      * @param storeId name of the keystore to retrieve: the mapped shortname of the filename with extension.
-     * @param core core context used when loading.
+     * @param core    core context used when loading.
      * @return a keystore if it is loaded, if no keystore is added with the given shortname uses a
      * self signed certificate. If it fails to load a keystore then the application shuts down.
      */

@@ -8,9 +8,9 @@ import io.vertx.core.json.JsonObject;
  * Indicates that a request is part of a persistent connection. This means
  * that services can write to the session without using request-reply messaging.
  */
-public interface Session extends MessageOperations, Storable {
-    String CONNECTION = "connection";
-    String SOURCE = "source";
+public interface Session extends Messageable, Storable {
+    String ID = "id";
+    String HOME = "home";
 
     /**
      * @return true if the session is still active.
@@ -18,25 +18,20 @@ public interface Session extends MessageOperations, Storable {
     Future<Boolean> isActive();
 
     /**
-     * Destroys the session.
-     * @return callback
+     * @return the session owner identified by a string.
      */
-    Future<Void> destroy();
-
-    /**
-     * @return an id identifying the listener that is the session owner.
-     */
-    String source();
-
-    /**
-     * @return the id of the connection that the #{@link #source } owner manages.
-     */
-    String connection();
+    String getHome();
 
     /**
      * @return returns data associated with a session.
      */
-    JsonObject data();
+    JsonObject asJson();
+
+    /**
+     * Destroys the session.
+     * @return callback
+     */
+    Future<Void> destroy();
 
     /**
      * Call this to update the session data after modification.

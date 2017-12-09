@@ -13,7 +13,7 @@ import static com.codingchili.core.listener.ListenerSettings.DEFAULT_TIMEOUT;
  * <p>
  * Base request class.
  */
-public interface Request extends MessageOperations {
+public interface Request extends Messageable {
     String TARGET_UNDEFINED = ID_UNDEFINED;
 
     /**

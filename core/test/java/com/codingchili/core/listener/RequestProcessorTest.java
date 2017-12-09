@@ -50,8 +50,8 @@ public class RequestProcessorTest {
                 return Integer.MAX_VALUE;
             }
         };
-       processor((toHandler) -> test.fail("handler should not be called if pre-validation fails."))
-               .submit(() -> request);
+        processor((toHandler) -> test.fail("handler should not be called if pre-validation fails."))
+                .submit(() -> request);
     }
 
     @Test

@@ -32,7 +32,6 @@ public abstract class Strings extends CoreStrings {
     public static final String CLIENT_CLOSE = "close";
 
     public static final String REALM_UPDATE = "realm.update";
-    public static final String ANY = "*";
 
     public static final String ID_CHARACTER = "character";
     public static final String ID_CHARACTERS = "characters";

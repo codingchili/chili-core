@@ -25,8 +25,7 @@ public interface Storable extends Serializable, Cloneable, Comparable, Shareable
      *
      * @return an id that is unique to this storable item.
      */
-    @JsonIgnore
-    default String id() {
+    default String getId() {
         return this.hashCode() + "";
     }
 
@@ -39,7 +38,7 @@ public interface Storable extends Serializable, Cloneable, Comparable, Shareable
     @Override
     default int compareTo(Object other) {
         if (other instanceof Storable) {
-            return id().compareTo(((Storable) other).id());
+            return getId().compareTo(((Storable) other).getId());
         } else {
             return -1;
         }

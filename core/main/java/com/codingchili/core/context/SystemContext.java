@@ -10,6 +10,7 @@ import com.codingchili.core.logging.LogMessage;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.logging.RemoteLogger;
 import io.vertx.core.*;
+import io.vertx.core.Handler;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.dropwizard.MetricsService;

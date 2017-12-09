@@ -93,7 +93,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void put(Value value, Handler<AsyncResult<Void>> handler) {
-        client.prepareIndex(context.database(), context.collection(), value.id())
+        client.prepareIndex(context.database(), context.collection(), value.getId())
                 .setSource(context.toJson(value).encode(), XContentType.JSON)
                 .execute(new ElasticHandler<>(response -> {
                     handler.handle(result());
@@ -102,7 +102,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
-        client.prepareIndex(context.database(), context.collection(), value.id())
+        client.prepareIndex(context.database(), context.collection(), value.getId())
                 .setSource(context.toJson(value).encode(), XContentType.JSON)
                 .setOpType(IndexRequest.OpType.CREATE)
                 .execute(new ElasticHandler<>(response -> {
@@ -110,11 +110,11 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                     if (response.getResult().equals(DocWriteResponse.Result.CREATED)) {
                         handler.handle(result());
                     } else {
-                        handler.handle(error(new ValueAlreadyPresentException(value.id())));
+                        handler.handle(error(new ValueAlreadyPresentException(value.getId())));
                     }
                 }, exception -> {
                     if (nested(exception) instanceof VersionConflictEngineException) {
-                        handler.handle(error(new ValueAlreadyPresentException(value.id())));
+                        handler.handle(error(new ValueAlreadyPresentException(value.getId())));
                     } else {
                         handler.handle(error(exception));
                     }
@@ -140,18 +140,18 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void update(Value value, Handler<AsyncResult<Void>> handler) {
-        client.prepareUpdate(context.database(), context.collection(), value.id())
+        client.prepareUpdate(context.database(), context.collection(), value.getId())
                 .setDoc(context.toPacked(value), XContentType.JSON)
                 .execute(new ElasticHandler<>(response -> {
 
                     if (response.getResult().ordinal() != 0) {
                         handler.handle(result());
                     } else {
-                        handler.handle(error(new NothingToUpdateException(value.id())));
+                        handler.handle(error(new NothingToUpdateException(value.getId())));
                     }
                 }, exception -> {
                     if (nested(exception) instanceof DocumentMissingException) {
-                        handler.handle(error(new NothingToUpdateException(value.id())));
+                        handler.handle(error(new NothingToUpdateException(value.getId())));
                     } else {
                         handler.handle(error(exception));
                     }

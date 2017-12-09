@@ -24,13 +24,13 @@ public interface AuthorizationHandler<T> {
      * route id and that any of the given roles have permission to.
      *
      * @param route the id of the route to retrieve
-     * @param roles a list of rules used in the auothorization check
+     * @param role the role used in the authorization check
      * @return a request handler used for the route.
      * @throws AuthorizationRequiredException when a route exists but none
      *                                        of the given roles has permission to execute it.
      * @throws HandlerMissingException        when the requested route is missing.
      */
-    RequestHandler<T> get(String route, RoleType... roles) throws AuthorizationRequiredException, HandlerMissingException;
+    RequestHandler<T> get(String route, RoleType role) throws AuthorizationRequiredException, HandlerMissingException;
 
     /**
      * @param route id of the route to check if it is contained in the handler.

@@ -1,12 +1,9 @@
 package com.codingchili.core.protocol;
 
+import java.util.*;
+
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
-import io.vertx.core.impl.ConcurrentHashSet;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * @author Robin Duda
@@ -23,9 +20,9 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class SimpleAuthorizationHandler<T> implements AuthorizationHandler<T> {
     // holds all handlers grouped on roles => routes => route::handler.
-    private final ConcurrentMap<RoleType, HashMap<String, Route<T>>> handlers = new ConcurrentHashMap<>();
+    private final Map<RoleType, HashMap<String, Route<T>>> handlers = new HashMap<>();
     // holds all existing routes, to allow checking for missing routes vs unauthorized.
-    private final Set<String> routes = new ConcurrentHashSet<>();
+    private final Set<String> routes = new HashSet<>();
 
     @Override
     public void use(Route<T> route) {
@@ -39,24 +36,20 @@ public class SimpleAuthorizationHandler<T> implements AuthorizationHandler<T> {
     }
 
     @Override
-    public RequestHandler<T> get(String route, RoleType... roles) throws AuthorizationRequiredException, HandlerMissingException {
-        if (contains(route)) {
-            for (RoleType role : roles) {
-                if (handlers.containsKey(role)) {
-                    Route<T> api = handlers.get(role).get(route);
-                    if (api != null) {
-                        return api.getHandler();
-                    }
+    public RequestHandler<T> get(String route, RoleType role) throws AuthorizationRequiredException, HandlerMissingException {
+        if (routes.contains(route)) {
+            if (handlers.containsKey(role)) {
+                Route<T> api = handlers.get(role).get(route);
+                if (api != null) {
+                    return api.getHandler();
                 }
             }
             // no exact role match on ID, do a full 2nd level scan to check access level.
-            for (RoleType role : roles) {
-                for (RoleType required : handlers.keySet()) {
-                    if (required.getLevel() < role.getLevel()) {
-                        Route<T> api = handlers.get(required).get(route);
-                        if (api != null) {
-                            return api.getHandler();
-                        }
+            for (RoleType required : handlers.keySet()) {
+                if (required.getLevel() < role.getLevel()) {
+                    Route<T> api = handlers.get(required).get(route);
+                    if (api != null) {
+                        return api.getHandler();
                     }
                 }
             }

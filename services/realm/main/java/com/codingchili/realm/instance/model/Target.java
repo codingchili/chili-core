@@ -5,5 +5,5 @@ package com.codingchili.realm.instance.model;
  * Required for spellcasting.
  */
 enum Target {
-    caster, area, ray, cone, selected, missile, trap, host, target
+    caster, area, ray, cone, selected, missile, trap
 }

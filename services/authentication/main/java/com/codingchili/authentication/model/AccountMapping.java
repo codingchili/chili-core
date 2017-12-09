@@ -1,5 +1,6 @@
 package com.codingchili.authentication.model;
 
+
 import com.codingchili.core.security.Account;
 import com.codingchili.core.storage.Storable;
 
@@ -47,13 +48,13 @@ public class AccountMapping implements Storable {
     }
 
     @Override
-    public String id() {
+    public String getId() {
         return username;
     }
 
     @Override
     public int hashCode() {
-        return id().hashCode();
+        return username.hashCode();
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.codingchili.core.storage.*;
 import io.vertx.core.Future;
 
 import java.util.Queue;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -47,7 +48,7 @@ public class ClusteredSessionFactory implements SessionFactory<ClusteredSession>
     @Override
     public Future<Boolean> isActive(ClusteredSession session) {
         Future<Boolean> future = Future.future();
-        sessions.contains(session.id(), future);
+        sessions.contains(session.getId(), future);
         return future;
     }
 
@@ -62,7 +63,7 @@ public class ClusteredSessionFactory implements SessionFactory<ClusteredSession>
     @Override
     public Future<Void> destroy(ClusteredSession session) {
         Future<Void> future = Future.future();
-        sessions.remove(session.id(), future);
+        sessions.remove(session.getId(), future);
         return future;
     }
 
@@ -79,17 +80,23 @@ public class ClusteredSessionFactory implements SessionFactory<ClusteredSession>
     }
 
     @Override
-    public Future<ClusteredSession> create(String source, String connection) {
+    public Future<ClusteredSession> create(String home) {
+        return create(home, UUID.randomUUID().toString());
+    }
+
+    @Override
+    public Future<ClusteredSession> create(String home, String id) {
         Future<ClusteredSession> future = Future.future();
-        ClusteredSession session = new ClusteredSession(this, source, connection);
+        ClusteredSession session = new ClusteredSession(this, home, id);
 
         update(session).setHandler(update -> {
             if (update.failed()) {
-                logger.onError(update.cause());
+                future.fail(update.cause());
+            } else {
+                future.complete(session);
             }
         });
 
-        future.complete(session);
         return future;
     }
 
