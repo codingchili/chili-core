@@ -58,8 +58,8 @@ public class SecuritySettingsTest {
     }
 
     private void verifyKeyStore(SecuritySettings settings, TestContext test) {
-        test.assertTrue(security().getKeystores().containsKey(IDENTIFIER));
-        KeyStore store = settings.getKeystores().get(IDENTIFIER);
+        test.assertTrue(security().getByName(IDENTIFIER).isPresent());
+        KeyStore store = settings.getByName(IDENTIFIER).get();
         test.assertEquals(KEYSTORE_JKS, store.getPath());
         test.assertEquals(IDENTIFIER, store.getShortName());
         test.assertEquals(PWD, store.getPassword());

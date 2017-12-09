@@ -5,6 +5,7 @@ import io.vertx.core.http.HttpServerOptions;
 
 import java.util.*;
 
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.Environment;
 import com.codingchili.core.configuration.system.SecuritySettings;
 import com.codingchili.core.context.CoreContext;
@@ -25,7 +26,7 @@ public class ListenerSettings {
     private WireType type = WireType.REST;
     private Set<Integer> actualPorts = new HashSet<>();
     private String defaultTarget = "default";
-    private String keystore = SecuritySettings.KEYSTORE_JKS;
+    private String keystore = CoreStrings.DEFAULT_KEYSTORE;
     private boolean secure = true;
     private int port = 8080;
     private int timeout = DEFAULT_TIMEOUT;

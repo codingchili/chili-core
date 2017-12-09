@@ -1,7 +1,5 @@
 package com.codingchili.core.security;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.io.File;
 
 import com.codingchili.core.configuration.system.SecuritySettings;
@@ -10,9 +8,9 @@ import com.codingchili.core.configuration.system.SecuritySettings;
  * Used in #{@link SecuritySettings} to contain references to keystores.
  */
 public class KeyStore {
-    private String password = "password";
-    private String path = SecuritySettings.KEYSTORE_JKS;
-    private String shortName = SecuritySettings.KEYSTORE_JKS;
+    private String password = "changeit";
+    private String path;
+    private String shortName;
 
     /**
      * @return keystore password
@@ -54,11 +52,15 @@ public class KeyStore {
         return path.hashCode();
     }
 
+    @Override
+    public boolean equals(Object other) {
+        return ((KeyStore) other).getPath().equals(path);
+    }
+
     /**
      * @param shortName sets the name the keystore is identified by.
      * @return fluent.
      */
-    @JsonIgnore
     public KeyStore setShortName(String shortName) {
         this.shortName = shortName;
         return this;
@@ -67,7 +69,6 @@ public class KeyStore {
     /**
      * @return the name by which this keystore is identified.
      */
-    @JsonIgnore
     public String getShortName() {
         return shortName;
     }
