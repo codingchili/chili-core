@@ -4,13 +4,12 @@ import com.codingchili.core.configuration.AttributeConfigurable;
 import com.codingchili.core.files.ConfigurationFactory;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Token;
-import com.codingchili.realm.instance.configuration.InstanceSettings;
+import com.codingchili.realm.instance.context.InstanceSettings;
 import com.codingchili.realm.instance.model.Affliction;
 import com.codingchili.realm.instance.model.PlayerCharacter;
 import com.codingchili.realm.instance.model.PlayerClass;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.io.File;
@@ -108,7 +107,8 @@ public class RealmSettings extends AttributeConfigurable {
     private void readPlayerClasses() {
         available(PATH_GAME_CLASSES).stream()
                 .map(path -> override(path, name))
-                .map(path -> get(path, PlayerClass.class))
+                .map(ConfigurationFactory::readObject)
+                .map(json -> Serializer.unpack(json, PlayerClass.class))
                 .forEach(classes::add);
     }
 
@@ -120,7 +120,8 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     private void readTemplate() {
-        this.template = get(override(PATH_GAME_PLAYERTEMPLATE, name), PlayerCharacter.class);
+        JsonObject json = ConfigurationFactory.readObject(override(PATH_GAME_PLAYERTEMPLATE, name));
+        this.template = Serializer.unpack(json, PlayerCharacter.class);
     }
 
     /**
