@@ -1,6 +1,6 @@
 package com.codingchili.core.storage;
 
-import com.codingchili.core.files.JsonFileStore;
+import com.codingchili.core.files.ConfigurationFactory;
 import com.codingchili.core.files.exception.NoSuchResourceException;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.testing.MapTestCases;
@@ -46,7 +46,7 @@ public class JsonMapTest extends MapTestCases {
 
         store.put(storable, result -> context.timer(500, event -> {
             try {
-                JsonObject db = JsonFileStore.readObject(
+                JsonObject db = ConfigurationFactory.readObject(
                         Paths.get(getDBPath(getDBIdentifier(plugin.getSimpleName(), COLLECTION, ""))).toString());
 
                 StorageObject second = Serializer.unpack(

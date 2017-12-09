@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -86,9 +87,9 @@ public class Resource {
         if (stream == null) {
             return Optional.empty();
         } else {
-            return Optional.of(Buffer.buffer(
-                    new BufferedReader(
-                            new InputStreamReader(stream)).lines().collect(Collectors.joining("\n"))));
+            return Optional.of(Buffer.buffer(new BufferedReader(
+                            new InputStreamReader(stream)).lines().collect(Collectors.joining("\n")),
+                    StandardCharsets.UTF_8.displayName()));
         }
     }
 

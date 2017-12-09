@@ -4,21 +4,17 @@ package com.codingchili.core.protocol;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.protocol.exception.SerializerPayloadException;
-import com.codingchili.core.security.Account;
 import com.codingchili.core.storage.Storable;
-import com.codingchili.core.testing.NestedObject;
-import com.codingchili.core.testing.StorageObject;
-
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.pool.KryoFactory;
 import com.esotericsoftware.kryo.pool.KryoPool;
-import com.esotericsoftware.reflectasm.FieldAccess;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
@@ -30,7 +26,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -40,17 +35,18 @@ import static com.codingchili.core.configuration.CoreStrings.STORAGE_ARRAY;
 
 /**
  * @author Robin Duda
- *         serializes objects to JSON and back.
+ * serializes objects to JSON and back.
  */
 public class Serializer {
     // use vertx's objectmapper, it comes with custom serializer modules.
-    private static ObjectMapper mapper = Json.mapper;
+    private static ObjectMapper json = Json.mapper;
+    private static ObjectMapper yaml = new ObjectMapper(new YAMLFactory());
 
     static {
-        Json.mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        Json.mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        Json.mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        Json.mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+        json.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        json.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        json.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        json.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
     }
 
     private static KryoFactory factory = Kryo::new;
@@ -78,10 +74,28 @@ public class Serializer {
             return ((JsonObject) object).encodePrettily();
         } else {
             try {
-                return mapper.writeValueAsString(object);
+                return json.writeValueAsString(object);
             } catch (JsonProcessingException e) {
                 throw new CoreRuntimeException(e.getMessage());
             }
+        }
+    }
+
+    /**
+     * Serializes an object as YAML.
+     *
+     * @param object the object to serialize
+     * @return a YAML string representing the object.
+     */
+    public static String yaml(Object object) {
+        try {
+            if (object instanceof JsonObject) {
+                return yaml.writeValueAsString(((JsonObject) object).getMap());
+            } else {
+                return yaml.writeValueAsString(object);
+            }
+        } catch (JsonProcessingException e) {
+            throw new CoreRuntimeException(e.getMessage());
         }
     }
 
@@ -107,9 +121,25 @@ public class Serializer {
      * @param <T>   must be bound to the clazz parameter
      * @return an object specified by the type parameter.
      */
-    public static <T> T unpack(String data, Class<T> clazz) {
+    public static <T> T unpack(byte[] data, Class<T> clazz) {
         try {
-            return mapper.readValue(data, clazz);
+            return json.readValue(data, clazz);
+        } catch (IOException e) {
+            throw new SerializerPayloadException(e.getMessage(), clazz);
+        }
+    }
+
+    /**
+     * Dematerializes a yaml-string into a typed object.
+     *
+     * @param data  the yaml-encoded string.
+     * @param clazz the class to instantiate.
+     * @param <T>   must be bound to the class parameter.
+     * @return an object specified by the type parameters.
+     */
+    public static <T> T unyaml(byte[] data, Class<T> clazz) {
+        try {
+            return yaml.readValue(data, clazz);
         } catch (IOException e) {
             throw new SerializerPayloadException(e.getMessage(), clazz);
         }

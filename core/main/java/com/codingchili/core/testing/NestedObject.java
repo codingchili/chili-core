@@ -29,16 +29,18 @@ public class NestedObject implements NestedStorable {
         return name;
     }
 
-    public void setName(String name) {
+    public NestedObject setName(String name) {
         this.name = name;
+        return this;
     }
 
     public List<Integer> getNumbers() {
         return numbers;
     }
 
-    public void setNumbers(List<Integer> numbers) {
+    public NestedObject setNumbers(List<Integer> numbers) {
         this.numbers = numbers;
+        return this;
     }
 
     @Override
