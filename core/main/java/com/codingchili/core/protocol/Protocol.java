@@ -1,8 +1,7 @@
 package com.codingchili.core.protocol;
 
 import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.listener.CoreHandler;
-import com.codingchili.core.listener.Request;
+import com.codingchili.core.listener.*;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
 
@@ -45,7 +44,7 @@ public class Protocol<RequestType> {
      *
      * @param handler contains methods to be mapped.
      */
-    public Protocol(CoreHandler handler) {
+    public Protocol(Handler<RequestType> handler) {
         annotated(handler);
     }
 
@@ -79,7 +78,7 @@ public class Protocol<RequestType> {
      * @param handler the handler that is annotated
      * @return fluent
      */
-    public Protocol<RequestType> annotated(CoreHandler handler) {
+    public Protocol<RequestType> annotated(Handler<RequestType> handler) {
         setHandlerProperties(handler.getClass());
         setHandlerRoutes(handler);
         return this;
@@ -114,7 +113,7 @@ public class Protocol<RequestType> {
         }
     }
 
-    private void setHandlerRoutes(CoreHandler handler) {
+    private void setHandlerRoutes(Handler<RequestType> handler) {
         for (Method method : handler.getClass().getDeclaredMethods()) {
             Api api = method.getAnnotation(Api.class);
             Description description = method.getAnnotation(Description.class);
@@ -140,7 +139,7 @@ public class Protocol<RequestType> {
 
     /**
      * Sets the data model used for requests for documentation purposes.
-     * Set automatically when using #{@link #annotated(CoreHandler)}
+     * Set automatically when using #{@link #annotated(Handler)}
      *
      * @param model the data transfer object.
      * @return fluent
@@ -163,7 +162,7 @@ public class Protocol<RequestType> {
         return this;
     }
 
-    private void wrap(String route, CoreHandler handler, Method method, RoleType[] role) {
+    private void wrap(String route, Handler<RequestType> handler, Method method, RoleType[] role) {
         MethodAccess access = MethodAccess.get(handler.getClass());
 
         int index = access.getIndex(method.getName());
