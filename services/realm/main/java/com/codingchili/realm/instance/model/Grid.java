@@ -2,14 +2,13 @@ package com.codingchili.realm.instance.model;
 
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
  * @author Robin Duda
  */
 public class Grid {
-    private Map<Integer, List<Entity>> cells = new HashMap<>();
+    private volatile Map<Integer, List<Entity>> cells = new HashMap<>();
     private int cellSize;
     private int gridWidth;
 
@@ -19,13 +18,16 @@ public class Grid {
     }
 
     public Grid update(Collection<Entity> entities) {
-        cells.clear();
+        Map<Integer, List<Entity>> buffer = new HashMap<>();
         entities.forEach(entity -> {
             entity.getVector().cells(cellSize, gridWidth).forEach(id -> {
-                List<Entity> list = cells.computeIfAbsent(id, key -> new ArrayList<>());
+                List<Entity> list = buffer.computeIfAbsent(id, key -> new ArrayList<>());
                 list.add(entity);
             });
         });
+        Map<Integer, List<Entity>> tmp = cells;
+        cells = buffer;
+        tmp.clear();
         return this;
     }
 

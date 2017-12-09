@@ -17,7 +17,7 @@ import static com.codingchili.core.protocol.Role.PUBLIC;
  * @author Robin Duda
  * Routing used to authenticate users and create/delete characters.
  */
-public class ClientHandler implements CoreHandler {
+public class ClientHandler implements CoreHandler<Request> {
     private final Protocol<ClientRequest> protocol = new Protocol<>();
     private AsyncRealmStore realms;
     private RegistryContext context;

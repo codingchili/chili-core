@@ -7,13 +7,13 @@ public interface ConnectionAware {
 
     /**
      *
-     * @param client
+     * @param client client
      */
     void onConnect(Client client);
 
     /**
      *
-     * @param client
+     * @param client client
      */
     void onDisconnect(Client client);
 

@@ -24,7 +24,7 @@ public class RegisteredRealm implements Storable {
     private String name;
 
     @Override
-    public String id() {
+    public String getId() {
         return name.toLowerCase();
     }
 
@@ -220,7 +220,7 @@ public class RegisteredRealm implements Storable {
 
     @Override
     public int hashCode() {
-        return id().hashCode();
+        return getId().hashCode();
     }
 
     @Override

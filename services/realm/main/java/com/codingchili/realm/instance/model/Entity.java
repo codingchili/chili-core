@@ -1,14 +1,15 @@
 package com.codingchili.realm.instance.model;
 
-import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.realm.instance.model.events.Event;
 
 import java.util.Set;
 
+import com.codingchili.core.listener.Handler;
+
 /**
  * @author Robin Duda
  */
-public interface Entity extends CoreHandler<Event> {
+public interface Entity extends Handler<Event> {
 
     Integer getId();
 

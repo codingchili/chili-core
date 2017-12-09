@@ -12,24 +12,34 @@ import com.codingchili.realm.instance.model.events.ShutdownEvent;
 import com.codingchili.realm.instance.model.events.SpawnEvent;
 import com.codingchili.realm.instance.model.npc.ListeningPerson;
 import com.codingchili.realm.instance.model.npc.TalkingPerson;
+import io.vertx.core.Future;
+import io.vertx.core.impl.ConcurrentHashSet;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.*;
 import java.util.function.Consumer;
 
+import com.codingchili.core.context.SystemContext;
+
+import static com.codingchili.realm.instance.context.LoopFactory.readLocked;
+import static com.codingchili.realm.instance.context.LoopFactory.writeLocked;
 import static com.codingchili.realm.instance.model.events.SpawnEvent.SpawnType.DESPAWN;
 
 /**
  * @author Robin Duda
  */
 public class GameContext {
-    private Map<EventType, Map<Integer, EventProtocol<Event>>> listeners = new HashMap<>();
-    private Map<Integer, Entity> entities = new HashMap<>();
+    private Map<EventType, Map<Integer, EventProtocol>> listeners = new ConcurrentHashMap<>();
+    private Map<Integer, Entity> entities = new ConcurrentHashMap<>();
     private Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
     private AtomicBoolean closed = new AtomicBoolean(false);
-    private Set<Ticker> tickers = new HashSet<>();
+    private Set<Ticker> tickers = new ConcurrentHashSet<>();
+    private ReadWriteLock loop = new ReentrantReadWriteLock();
     private InstanceContext instance;
+
     private Long currentTick = 0L;
     private Grid grid;
 
@@ -41,31 +51,35 @@ public class GameContext {
     }
 
     private void tick(Long timer) {
-        instance.blocking(block -> {
+        // instance.blocking(block -> {
 
-            Runnable runnable;
-            while ((runnable = queue.poll()) != null) {
-                runnable.run();
-            }
+        // todo: if the last tick is not completed yet skip this tick, and log it.
 
-            grid.update(entities.values());
+        Runnable runnable;
+        while ((runnable = queue.poll()) != null) {
+            runnable.run();
+        }
 
-            tickers.forEach(ticker -> {
-                if (currentTick % ticker.getTick() == 0) {
-                    ticker.run();
-                }
-            });
-            block.complete();
-        }, (done) -> {
-            if (closed.get()) {
-                instance.cancel(timer);
-            } else {
-                currentTick++;
-                if (currentTick == Long.MAX_VALUE) {
-                    currentTick = 0L;
-                }
+        grid.update(entities.values());
+
+        // todo call ticks with delta
+        tickers.forEach(ticker -> {
+            if (currentTick % ticker.getTick() == 0) {
+                ticker.run();
             }
         });
+
+        //         block.complete();
+        //    }, (done) -> {
+        if (closed.get()) {
+            instance.cancel(timer);
+        } else {
+            currentTick++;
+            if (currentTick == Long.MAX_VALUE) {
+                currentTick = 0L;
+            }
+        }
+        //      });
     }
 
     public GameContext runLater(Runnable runnable) {
@@ -87,52 +101,44 @@ public class GameContext {
     }
 
     public void setTicker(Ticker ticker) {
-        queue.add(() -> {
-            if (ticker.getTick() > 0) {
-                tickers.add(ticker);
-            } else {
-                tickers.remove(ticker);
-            }
-        });
+        if (ticker.getTick() > 0) {
+            tickers.add(ticker);
+        } else {
+            tickers.remove(ticker);
+        }
     }
 
     public void addEntity(Entity entity) {
-        queue.add(() -> {
-            System.out.println("spawned entity " + entity.getId() + " at " + entity.getVector());
-            entities.put(entity.getId(), entity);
-            publishEvent(new SpawnEvent().setEntity(entity));
-        });
+        entities.put(entity.getId(), entity);
+        publishEvent(new SpawnEvent().setEntity(entity));
+        System.out.println("spawned entity " + entity.getId() + " at " + entity.getVector());
     }
 
     public void removeEntity(Entity entity) {
-        queue.add(() -> {
-            entities.remove(entity.getId());
-            publishEvent(new SpawnEvent().setEntity(entity).setType(DESPAWN));
-            unsubscribe(entity);
-        });
+        entities.remove(entity.getId());
+        publishEvent(new SpawnEvent().setEntity(entity).setType(DESPAWN));
+        unsubscribe(entity);
     }
 
     public void unsubscribe(Entity entity) {
         listeners.forEach((key, value) -> value.remove(entity.getId()));
     }
 
-    public EventProtocol<Event> subscribe(Entity entity) {
-        EventProtocol<Event> protocol = new EventProtocol<>(entity);
+    public EventProtocol subscribe(Entity entity) {
+        EventProtocol protocol = new EventProtocol(entity);
 
-        queue.add(() -> {
-            protocol.available().stream()
-                    .map(EventType::valueOf)
-                    .forEach(event -> {
-                        listeners.computeIfAbsent(event, (key) -> new HashMap<>());
-                        listeners.get(event).put(protocol.getId(), protocol);
-                    });
-        });
+        protocol.available().stream()
+                .map(EventType::valueOf)
+                .forEach(event -> {
+                    listeners.computeIfAbsent(event, (key) -> new ConcurrentHashMap<>());
+                    listeners.get(event).put(protocol.getId(), protocol);
+                });
 
         return protocol;
     }
 
     public void publishEvent(Event event) {
-        Map<Integer, EventProtocol<Event>> scoped = listeners.computeIfAbsent(event.getType(), (key) -> new HashMap<>());
+        Map<Integer, EventProtocol> scoped = listeners.computeIfAbsent(event.getType(), (key) -> new ConcurrentHashMap<>());
         String type = event.getType().toString();
 
         switch (event.getBroadcast()) {
@@ -165,16 +171,16 @@ public class GameContext {
             game.addEntity(new ListeningPerson(game));
         }
 
-       /* System.out.println("BEGIN");
+        System.out.println("BEGIN");
         long time = System.currentTimeMillis();
-        for (int i = 0; i < 100000; i++) {
+       /* for (int i = 0; i < 100000; i++) {
             game.tick(0L);
 
             if (i % 100 == 0)
                 System.out.println(i);
-        }
+        }*/
         System.out.println("END: " + (System.currentTimeMillis() - time) + "ms.");
-        System.out.println(ListeningPerson.called);*/
+        System.out.println(ListeningPerson.called);
 
         //  System.exit(0);
 
