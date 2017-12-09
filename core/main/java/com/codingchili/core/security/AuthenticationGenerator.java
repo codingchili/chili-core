@@ -5,7 +5,7 @@ import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.AuthenticationDependency;
 import com.codingchili.core.configuration.system.SecuritySettings;
 import com.codingchili.core.files.Configurations;
-import com.codingchili.core.files.JsonFileStore;
+import com.codingchili.core.files.ConfigurationFactory;
 import com.codingchili.core.files.exception.NoSuchResourceException;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.security.exception.SecurityMissingDependencyException;
@@ -102,7 +102,7 @@ public class AuthenticationGenerator {
     }
 
     private TokenFactory getFactory(TokenIdentifier identifier) {
-        JsonObject issuer = JsonFileStore.readObject(getService(identifier.getService()));
+        JsonObject issuer = ConfigurationFactory.readObject(getService(identifier.getService()));
 
         if (issuer.containsKey(identifier.getSecret())) {
             byte[] secret = Base64.getDecoder().decode(issuer.getString(identifier.getSecret()));
@@ -152,9 +152,9 @@ public class AuthenticationGenerator {
 
         getConfigurationsReferencedBySecurity(settings).forEach(path -> {
             try {
-                JsonObject config = JsonFileStore.readObject(path);
+                JsonObject config = ConfigurationFactory.readObject(path);
                 processor.parse(settings, config, path);
-                JsonFileStore.writeObject(config, path);
+                ConfigurationFactory.writeObject(config, path);
             } catch (NoSuchResourceException e) {
                 logger.onFileLoadError(path);
             }

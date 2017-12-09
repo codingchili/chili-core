@@ -14,6 +14,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.JksOptions;
 import io.vertx.core.net.SelfSignedCertificate;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -72,7 +73,11 @@ public class SecuritySettings implements Configurable {
                 // allow custom identifiers for keystores.
                 loadKeystore(core, keystores.get(storeId).setShortName(storeId));
             } else {
-                loadedKeyStores.put(storeId, generateSelfSigned(core, storeId));
+                if (new File(CoreStrings.DEFAULT_KEYSTORE).exists()) {
+                    addKeystore().setPath(DEFAULT_KEYSTORE).readPasswordFromConsole().build();
+                } else {
+                    loadedKeyStores.put(storeId, generateSelfSigned(core, storeId));
+                }
             }
         }
         return loadedKeyStores.get(storeId);

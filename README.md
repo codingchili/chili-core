@@ -86,11 +86,18 @@ All configuration files are loaded by their respective service with support for 
 ## Makes use of
 The core uses some great software, such as
 
-* [hazelcast/hazelcast](https://github.com/hazelcast/hazelcast) - clustermanager and imap
 * [eclipse/vert.x](https://github.com/eclipse/vert.x) - reactive: eventbus, clustering and networking
+* [hazelcast/hazelcast](https://github.com/hazelcast/hazelcast) - cluster management, data store
 * [npgall/cqengine](https://github.com/npgall/cqengine) - in-vm indexed collections with query support
 * [elastic/elasticsearch](https://github.com/elastic/elasticsearch) - distributed data indexing
 * [mongodb/mongo](https://github.com/mongodb/mongo) - document database
+* [EsotericSoftware/kryo](https://github.com/EsotericSoftware/kryo) - serialization library
+* [EsotericSoftware/reflectasm](https://github.com/EsotericSoftware/reflectasm) - fast reflections library
+
+Applications currently using chili-core
+
+* [flashcards](https://flashcardsalligator.com/) - Progressive web app for studying  with flashcards.
+* [etethereum-ingest](https://github.com/codingchili/ethereum-ingest) - Ethereum block/transaction import utility.
 
 ## Contributing
 Issues and PR's are welcome with :blue_heart:.

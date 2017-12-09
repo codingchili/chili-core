@@ -1,0 +1,9 @@
+{
+  "item": "object",
+  "nested": {
+    "name": "test",
+    "testing": true,
+    "value": 1,
+    "properties": ["red", "green", "blue"]
+  }
+}
