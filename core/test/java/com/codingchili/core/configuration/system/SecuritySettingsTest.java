@@ -1,7 +1,7 @@
 package com.codingchili.core.configuration.system;
 
 import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.files.JsonFileStore;
+import com.codingchili.core.files.ConfigurationFactory;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.KeyStore;
 import com.codingchili.core.security.KeyStoreBuilder;
@@ -28,7 +28,7 @@ public class SecuritySettingsTest {
     @Test
     public void readKeyStoreSettingsFromJsonFile(TestContext test) {
         getKeystoreBuilder().build().save();
-        JsonObject json = JsonFileStore.readObject(PATH_SECURITY);
+        JsonObject json = ConfigurationFactory.readObject(PATH_SECURITY);
         verifyKeyStore(Serializer.unpack(json, SecuritySettings.class), test);
     }
 

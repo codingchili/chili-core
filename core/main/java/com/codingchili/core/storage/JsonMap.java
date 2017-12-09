@@ -2,7 +2,7 @@ package com.codingchili.core.storage;
 
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.files.JsonFileStore;
+import com.codingchili.core.files.ConfigurationFactory;
 import com.codingchili.core.files.exception.NoSuchResourceException;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.storage.exception.NothingToRemoveException;
@@ -22,7 +22,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.codingchili.core.configuration.CoreStrings.EXT_JSON;
 import static com.codingchili.core.configuration.CoreStrings.getFileReadError;
@@ -57,7 +56,7 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
             this.db = maps.get(context.identifier());
         } else {
             try {
-                this.db = JsonFileStore.readObject(dbPath());
+                this.db = ConfigurationFactory.readObject(dbPath());
             } catch (NoSuchResourceException e) {
                 logger.log(getFileReadError(dbPath()));
             }
@@ -199,7 +198,7 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     private void save() {
         if (context.storage().isPersisted()) {
             fileWriter.executeBlocking(execute -> {
-                JsonFileStore.writeObject(db, dbPath());
+                ConfigurationFactory.writeObject(db, dbPath());
             }, true, result -> {
             });
         }

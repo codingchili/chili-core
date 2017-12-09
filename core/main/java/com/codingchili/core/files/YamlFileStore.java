@@ -2,31 +2,33 @@ package com.codingchili.core.files;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreRuntimeException;
+import com.codingchili.core.protocol.Serializer;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
- * @author Robin Duda
- * <p>
- * Handles the loading/writing of json objects and lists to/from disk.
+ * Parses YAML configuration files into JsonObjects.
  */
-public class JsonFileStore implements FileStore {
+public class YamlFileStore implements FileStore {
 
     @Override
+    @SuppressWarnings("unchecked")
     public JsonObject readObject(Buffer buffer) {
-        return buffer.toJsonObject();
+        return new JsonObject(Serializer.unyaml(buffer.getBytes(), Map.class));
     }
 
     @Override
-    public void writeObject(JsonObject json, Path path) {
+    public void writeObject(JsonObject object, Path path) {
         try {
-            Files.write(path, json.encodePrettily().getBytes());
+            Files.write(path, Serializer.yaml(object.getMap()).getBytes());
         } catch (IOException e) {
             throw new CoreRuntimeException(e.getMessage());
         }
@@ -34,6 +36,6 @@ public class JsonFileStore implements FileStore {
 
     @Override
     public List<String> getExtension() {
-        return Collections.singletonList(CoreStrings.EXT_JSON);
+        return Arrays.asList(CoreStrings.EXT_YAML, CoreStrings.EXT_YML);
     }
 }

@@ -1,6 +1,6 @@
 package com.codingchili.core.configuration;
 
-import com.codingchili.core.files.JsonFileStore;
+import com.codingchili.core.files.ConfigurationFactory;
 import com.codingchili.core.protocol.Serializer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.vertx.core.json.JsonObject;
@@ -48,6 +48,6 @@ public interface Configurable extends Serializable {
      * Saves the configurable back to disk.
      */
     default void save() {
-        JsonFileStore.writeObject(serialize(), getPath());
+        ConfigurationFactory.writeObject(serialize(), getPath());
     }
 }

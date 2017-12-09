@@ -157,9 +157,9 @@ public abstract class Configurations {
         boolean defaultsLoaded = false;
         T config;
 
-        if (JsonFileStore.exists(path)) {
+        if (ConfigurationFactory.exists(path)) {
             try {
-                JsonObject json = JsonFileStore.readObject(path);
+                JsonObject json = ConfigurationFactory.readObject(path);
                 config = Serializer.unpack(json, clazz);
             } catch (NoSuchResourceException e) {
                 logger.onFileLoadError(CoreStrings.getFileReadError(path));
@@ -231,7 +231,7 @@ public abstract class Configurations {
      * @param configurable the configurable to be written.
      */
     static void save(Configurable configurable) {
-        JsonFileStore.writeObject(configurable.serialize(), configurable.getPath());
+        ConfigurationFactory.writeObject(configurable.serialize(), configurable.getPath());
         logger.onFileSaved(ID_CONFIGURATION, configurable.getPath());
     }
 

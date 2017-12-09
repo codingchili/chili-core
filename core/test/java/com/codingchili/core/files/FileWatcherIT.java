@@ -48,7 +48,7 @@ public class FileWatcherIT {
     public void getNotifiedOnModify(TestContext test) {
         Async async = test.async();
 
-        JsonFileStore.writeObject(new JsonObject(), TOUCH_JSON);
+        ConfigurationFactory.writeObject(new JsonObject(), TOUCH_JSON);
 
         listenFiles(new FileStoreListener() {
             @Override
@@ -57,7 +57,7 @@ public class FileWatcherIT {
             }
         });
 
-        JsonFileStore.writeObject(new JsonObject(), TOUCH_JSON);
+        ConfigurationFactory.writeObject(new JsonObject(), TOUCH_JSON);
     }
 
     @Test
@@ -71,10 +71,10 @@ public class FileWatcherIT {
             }
         });
 
-        JsonFileStore.writeObject(new JsonObject(), TOUCH_JSON);
+        ConfigurationFactory.writeObject(new JsonObject(), TOUCH_JSON);
 
         context.timer(400, event -> {
-            test.assertTrue(JsonFileStore.deleteObject(TOUCH_JSON));
+            test.assertTrue(ConfigurationFactory.deleteObject(TOUCH_JSON));
         });
     }
 
@@ -82,7 +82,7 @@ public class FileWatcherIT {
     public void getNotifiedOnCreate(TestContext test) {
         Async async = test.async();
 
-        JsonFileStore.writeObject(new JsonObject(), TOUCH_JSON);
+        ConfigurationFactory.writeObject(new JsonObject(), TOUCH_JSON);
 
         listenFiles(new FileStoreListener() {
             @Override
@@ -91,7 +91,7 @@ public class FileWatcherIT {
             }
         });
 
-        JsonFileStore.writeObject(new JsonObject(), TOUCH_JSON);
+        ConfigurationFactory.writeObject(new JsonObject(), TOUCH_JSON);
     }
 
     @Test
@@ -110,8 +110,8 @@ public class FileWatcherIT {
             }
         });
 
-        JsonFileStore.writeObject(new JsonObject(), NOT_WATCHED_FILE);
-        test.assertTrue(JsonFileStore.deleteObject(NOT_WATCHED_FILE));
+        ConfigurationFactory.writeObject(new JsonObject(), NOT_WATCHED_FILE);
+        test.assertTrue(ConfigurationFactory.deleteObject(NOT_WATCHED_FILE));
 
         Delay.forMS(async, 400);
     }

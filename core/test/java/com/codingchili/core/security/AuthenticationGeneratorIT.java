@@ -5,7 +5,7 @@ import com.codingchili.core.configuration.system.AuthenticationDependency;
 import com.codingchili.core.configuration.system.SecuritySettings;
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.files.Configurations;
-import com.codingchili.core.files.JsonFileStore;
+import com.codingchili.core.files.ConfigurationFactory;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.exception.SecurityMissingDependencyException;
@@ -88,8 +88,8 @@ public class AuthenticationGeneratorIT {
 
     @After
     public void tearDown() {
-        JsonFileStore.writeObject(new JsonObject(), testFile(AUTHENTICATION_GENERATOR, SERVICE1_JSON));
-        JsonFileStore.writeObject(new JsonObject(), testFile(AUTHENTICATION_GENERATOR, SERVICE2_JSON));
+        ConfigurationFactory.writeObject(new JsonObject(), testFile(AUTHENTICATION_GENERATOR, SERVICE1_JSON));
+        ConfigurationFactory.writeObject(new JsonObject(), testFile(AUTHENTICATION_GENERATOR, SERVICE2_JSON));
     }
 
     @Test
@@ -146,10 +146,10 @@ public class AuthenticationGeneratorIT {
     }
 
     private JsonObject getService1() throws IOException {
-        return JsonFileStore.readObject(testFile(AUTHENTICATION_GENERATOR, SERVICE1_JSON));
+        return ConfigurationFactory.readObject(testFile(AUTHENTICATION_GENERATOR, SERVICE1_JSON));
     }
 
     private JsonObject getService2() throws IOException {
-        return JsonFileStore.readObject(testFile(AUTHENTICATION_GENERATOR, SERVICE2_JSON));
+        return ConfigurationFactory.readObject(testFile(AUTHENTICATION_GENERATOR, SERVICE2_JSON));
     }
 }

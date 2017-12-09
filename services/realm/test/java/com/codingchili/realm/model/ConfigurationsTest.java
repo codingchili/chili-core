@@ -1,12 +1,9 @@
 package com.codingchili.realm.model;
 
-import com.codingchili.core.files.JsonFileStore;
+import com.codingchili.core.files.ConfigurationFactory;
 import com.codingchili.core.files.exception.NoSuchResourceException;
 import com.codingchili.core.protocol.Serializer;
-import com.codingchili.realm.instance.model.Affliction;
-import com.codingchili.realm.instance.model.Inventory;
-import com.codingchili.realm.instance.model.PlayerCharacter;
-import com.codingchili.realm.instance.model.PlayerClass;
+import com.codingchili.realm.instance.model.*;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
@@ -18,7 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 import static com.codingchili.core.configuration.CoreStrings.testDirectory;
@@ -35,14 +32,9 @@ public class ConfigurationsTest {
     public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
 
     @Test
-    public void testReadList() throws IOException {
-        JsonFileStore.readList(testFile("affliction.json"));
-    }
-
-    @Test
     public void readMissingFile(TestContext test) {
         try {
-            JsonFileStore.readObject("missing/file.json");
+            ConfigurationFactory.readObject("missing/file.json");
             test.fail("No exception on missing file.");
         } catch (NoSuchResourceException ignored) {
         }
@@ -50,23 +42,19 @@ public class ConfigurationsTest {
 
     @Test
     public void readDirectoryObjects() throws IOException {
-        JsonFileStore.readDirectoryObjects(testDirectory("class"));
+        ConfigurationFactory.readDirectoryObjects(testDirectory("class"));
     }
 
     @Test
-    public void testReadAfflictions() throws IOException {
-        JsonArray afflictions = JsonFileStore.readList(testFile("affliction.json"));
-
-        for (int i = 0; i < afflictions.size(); i++) {
-            Serializer.unpack(afflictions.getJsonObject(i), Affliction.class);
-        }
-
-        Assert.assertFalse(afflictions.isEmpty());
+    public void testReadAfflictions(TestContext test) throws IOException {
+        AfflictionList afflictions = ConfigurationFactory.readObject(testFile("affliction.json")).mapTo(AfflictionList.class);
+        test.assertNotNull(afflictions);
+        test.assertNotEquals(0, afflictions.getList().size());
     }
 
     @Test
     public void testReadPlayerClasses() throws IOException {
-        List<JsonObject> classes = JsonFileStore.readDirectoryObjects(testDirectory("class"));
+        Collection<JsonObject> classes = ConfigurationFactory.readDirectoryObjects(testDirectory("class"));
 
         for (JsonObject player : classes) {
             Serializer.unpack(player, PlayerClass.class);
@@ -77,7 +65,7 @@ public class ConfigurationsTest {
 
     @Test
     public void testReadPlayerTemplate() throws IOException {
-        JsonObject template = JsonFileStore.readObject(testFile("character.json"));
+        JsonObject template = ConfigurationFactory.readObject(testFile("character.json"));
         PlayerCharacter player = Serializer.unpack(template, PlayerCharacter.class);
 
         Assert.assertNotNull(player);

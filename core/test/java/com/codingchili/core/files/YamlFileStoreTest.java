@@ -4,12 +4,12 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.runner.RunWith;
 
 /**
- * Tests for the json file store.
+ * Tests for the yaml file store.
  */
 @RunWith(VertxUnitRunner.class)
-public class JsonFileStoreTest extends ConfigurationFactoryTestCases {
+public class YamlFileStoreTest extends ConfigurationFactoryTestCases {
 
-    public JsonFileStoreTest() {
-        super(new JsonFileStore());
+    public YamlFileStoreTest() {
+        super(new YamlFileStore());
     }
 }
