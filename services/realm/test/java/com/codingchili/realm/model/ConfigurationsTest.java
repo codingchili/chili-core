@@ -4,7 +4,6 @@ import com.codingchili.core.files.ConfigurationFactory;
 import com.codingchili.core.files.exception.NoSuchResourceException;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.realm.instance.model.*;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
@@ -47,9 +46,9 @@ public class ConfigurationsTest {
 
     @Test
     public void testReadAfflictions(TestContext test) throws IOException {
-        AfflictionList afflictions = ConfigurationFactory.readObject(testFile("affliction.json")).mapTo(AfflictionList.class);
+        AfflictionList afflictions = Serializer.unpack(ConfigurationFactory.readObject(testFile("affliction.json")), AfflictionList.class);
         test.assertNotNull(afflictions);
-        test.assertNotEquals(0, afflictions.getList().size());
+        test.assertNotEquals(0, afflictions.getAfflictions().size());
     }
 
     @Test

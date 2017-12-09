@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class AfflictionList {
-    private Collection<Affliction> list = new ArrayList<>();
+    private Collection<Affliction> afflictions = new ArrayList<>();
 
-    public Collection<Affliction> getList() {
-        return list;
+    public Collection<Affliction> getAfflictions() {
+        return afflictions;
     }
 
-    public void setList(Collection<Affliction> list) {
-        this.list = list;
+    public void setAfflictions(Collection<Affliction> afflictions) {
+        this.afflictions = afflictions;
     }
 }

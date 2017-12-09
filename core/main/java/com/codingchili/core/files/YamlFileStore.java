@@ -7,6 +7,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -27,7 +28,7 @@ public class YamlFileStore implements FileStore {
     @Override
     public void writeObject(JsonObject object, Path path) {
         try {
-            Files.write(path, Serializer.yaml(object.getMap()).getBytes());
+            Files.write(path, Serializer.yaml(object.getMap()).getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new CoreRuntimeException(e.getMessage());
         }

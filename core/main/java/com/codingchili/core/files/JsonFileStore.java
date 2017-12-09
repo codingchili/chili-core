@@ -6,6 +6,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -26,7 +27,7 @@ public class JsonFileStore implements FileStore {
     @Override
     public void writeObject(JsonObject json, Path path) {
         try {
-            Files.write(path, json.encodePrettily().getBytes());
+            Files.write(path, json.encodePrettily().getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new CoreRuntimeException(e.getMessage());
         }
