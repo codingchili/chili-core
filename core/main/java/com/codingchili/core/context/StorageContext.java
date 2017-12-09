@@ -88,7 +88,7 @@ public class StorageContext<Value> extends SystemContext {
      * @return generic Value inflated using the bytes and template class.
      */
     public Value toValue(byte[] bytes) {
-        return Serializer.unpack(new String(bytes), valueClass);
+        return Serializer.unpack(bytes, valueClass);
     }
 
     /**

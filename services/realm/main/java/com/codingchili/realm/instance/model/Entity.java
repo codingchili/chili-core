@@ -1,9 +1,7 @@
 package com.codingchili.realm.instance.model;
 
 import com.codingchili.realm.instance.model.events.Event;
-import com.codingchili.realm.instance.model.events.EventType;
 
-import java.util.Collections;
 import java.util.Set;
 
 import com.codingchili.core.listener.Handler;
@@ -17,10 +15,13 @@ public interface Entity extends Handler<Event> {
 
     Vector getVector();
 
-    // todo refactor into list available events by proto.
-    default Set<EventType> getInteractions() {
-        return Collections.emptySet();
-    }
+    // the player stats - todo: include inventory stats? or add a Stats.apply?
+    // todo: the spell manager can keep track of afflictions and reduce stats when calcing.
+    Stats getStats();
 
-    enum Interactions {INSPECT, TRADE, DIALOG, FRIEND}
+    // todo: can be used by the spell manager to apply on hit effects
+    // todo: can be used to calculate the stats
+    Inventory getInventory();
+
+    Set<String> getInteractions();
 }

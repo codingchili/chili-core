@@ -1,8 +1,15 @@
 package com.codingchili.realm.instance.context;
 
+import com.codingchili.core.context.SystemContext;
 import com.codingchili.realm.configuration.RealmContext;
-import com.codingchili.realm.instance.model.*;
-import com.codingchili.realm.instance.model.events.*;
+import com.codingchili.realm.instance.model.Entity;
+import com.codingchili.realm.instance.model.EventProtocol;
+import com.codingchili.realm.instance.model.Grid;
+import com.codingchili.realm.instance.model.Ticker;
+import com.codingchili.realm.instance.model.events.Event;
+import com.codingchili.realm.instance.model.events.EventType;
+import com.codingchili.realm.instance.model.events.ShutdownEvent;
+import com.codingchili.realm.instance.model.events.SpawnEvent;
 import com.codingchili.realm.instance.model.npc.ListeningPerson;
 import com.codingchili.realm.instance.model.npc.TalkingPerson;
 import io.vertx.core.Future;
@@ -25,7 +32,7 @@ import static com.codingchili.realm.instance.model.events.SpawnEvent.SpawnType.D
  * @author Robin Duda
  */
 public class GameContext {
-    private Map<EventType, Map<Integer, EventProtocol<Event>>> listeners = new ConcurrentHashMap<>();
+    private Map<EventType, Map<Integer, EventProtocol>> listeners = new ConcurrentHashMap<>();
     private Map<Integer, Entity> entities = new ConcurrentHashMap<>();
     private Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
     private AtomicBoolean closed = new AtomicBoolean(false);
@@ -75,6 +82,11 @@ public class GameContext {
         //      });
     }
 
+    public GameContext runLater(Runnable runnable) {
+        queue.add(runnable);
+        return this;
+    }
+
     public Grid getGrid() {
         return grid;
     }
@@ -112,8 +124,8 @@ public class GameContext {
         listeners.forEach((key, value) -> value.remove(entity.getId()));
     }
 
-    public EventProtocol<Event> subscribe(Entity entity) {
-        EventProtocol<Event> protocol = new EventProtocol<>(entity);
+    public EventProtocol subscribe(Entity entity) {
+        EventProtocol protocol = new EventProtocol(entity);
 
         protocol.available().stream()
                 .map(EventType::valueOf)
@@ -126,7 +138,7 @@ public class GameContext {
     }
 
     public void publishEvent(Event event) {
-        Map<Integer, EventProtocol<Event>> scoped = listeners.computeIfAbsent(event.getType(), (key) -> new ConcurrentHashMap<>());
+        Map<Integer, EventProtocol> scoped = listeners.computeIfAbsent(event.getType(), (key) -> new ConcurrentHashMap<>());
         String type = event.getType().toString();
 
         switch (event.getBroadcast()) {
@@ -153,7 +165,7 @@ public class GameContext {
         InstanceContext ins = new InstanceContext(new RealmContext(new SystemContext()), new InstanceSettings());
         GameContext game = new GameContext(ins);
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 500; i++) {
             game.addEntity(new TalkingPerson(game));
             game.addEntity(new TalkingPerson(game));
             game.addEntity(new ListeningPerson(game));

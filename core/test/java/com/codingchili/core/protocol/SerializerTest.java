@@ -3,6 +3,7 @@ package com.codingchili.core.protocol;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.security.Token;
 import com.codingchili.core.security.TokenFactory;
+import com.codingchili.core.testing.NestedObject;
 import com.codingchili.core.testing.StorageObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
@@ -11,8 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author Robin Duda
@@ -45,7 +45,7 @@ public class SerializerTest {
     @Test
     public void testUnpackString(TestContext test) {
         String packed = Serializer.pack(token);
-        token = Serializer.unpack(packed, Token.class);
+        token = Serializer.unpack(packed.getBytes(), Token.class);
 
         test.assertEquals(TEST, token.getDomain());
     }
@@ -100,5 +100,19 @@ public class SerializerTest {
         Optional<String> value = Serializer.<String>getValueByPath(token, PROPERTIES_OWNER).stream().findFirst();
         test.assertTrue(value.isPresent());
         test.assertEquals(getClass().getSimpleName(), value.get());
+    }
+
+    @Test
+    public void testSerializeYaml(TestContext test) {
+        StorageObject storable = new StorageObject();
+        NestedObject nested = new NestedObject().setName("anjah");
+        List<Integer> numbers = Collections.singletonList(1);
+        nested.setNumbers(numbers);
+        storable.setLevel(2).setName("robin").setNested(nested);
+
+        String yaml = Serializer.yaml(storable);
+        StorageObject yamlStorable = Serializer.unyaml(yaml.getBytes(), StorageObject.class);
+
+        test.assertEquals(Serializer.pack(storable), Serializer.pack(yamlStorable));
     }
 }

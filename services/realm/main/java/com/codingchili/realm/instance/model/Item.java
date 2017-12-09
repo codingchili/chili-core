@@ -9,11 +9,11 @@ public interface Item {
 
     String getName();
 
-    boolean isEquippable();
+    default boolean isEquippable() {
+        return this instanceof Equippable;
+    }
 
-    default void equip(Entity entity) {};
-
-    boolean isUsable();
-
-    default void use(Entity entity) {};
+    default boolean isUsable() {
+        return this instanceof Usable;
+    }
 }

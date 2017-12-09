@@ -76,7 +76,7 @@ public class ClusterListenerTest {
         context.stop(deployment);
     }
 
-    private class TestHandler implements CoreHandler {
+    private class TestHandler implements CoreHandler<Request> {
         private boolean startCalled = false;
         private CoreContext context;
         private String address;

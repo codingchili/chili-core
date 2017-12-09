@@ -11,6 +11,7 @@ import io.vertx.core.json.JsonObject;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
@@ -299,8 +300,8 @@ public class Protocol<RequestType> {
     /**
      * @return a list of all registered routes in the protocol.
      */
-    public Collection<String> available() {
-        return authorizer.list().stream().map(Route::getName).collect(Collectors.toList());
+    public Set<String> available() {
+        return authorizer.list().stream().map(Route::getName).collect(Collectors.toSet());
     }
 }
 

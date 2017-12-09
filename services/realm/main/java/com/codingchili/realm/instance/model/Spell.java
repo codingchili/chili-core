@@ -1,25 +1,20 @@
 package com.codingchili.realm.instance.model;
 
-import java.util.List;
-
 /**
  * @author Robin Duda
  */
-public interface Spell {
+public interface Spell<T> {
 
-    String getName();
+    /**
+     * @return information about the spell.
+     */
+    SpellMetadata metadata();
 
-    String getDescription();
-
-    Target getTarget();
-
-    Float getCooldown();
-
-    Float getCasttime();
-
-    Boolean isPassive();
-
-    String getCost();
-
-    List<Affliction> getAfflictions();
+    /**
+     * Invokes the spell.
+     *
+     * @param caster the caster
+     * @param target the target
+     */
+    void cast(Entity caster, SpellTarget target);
 }

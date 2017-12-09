@@ -10,7 +10,7 @@ public interface PlayerClass {
 
     String getDescription();
 
-    Collection<Spell> getSpells();
+    Collection<SpellMetadata> getSpells();
 
     Collection<String> getKeywords();
 

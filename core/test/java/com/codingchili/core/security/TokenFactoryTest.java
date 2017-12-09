@@ -101,7 +101,7 @@ public class TokenFactoryTest {
         Token token = getTokenWithProperties();
         token.addProperty("account", new Account().setUsername("robba"));
         tokenFactory.sign(token);
-        Serializer.pack(Serializer.unpack(Serializer.pack(token), Token.class));
+        Serializer.pack(Serializer.unpack(Serializer.pack(token).getBytes(), Token.class));
     }
 
     private Token getTokenWithProperties() {

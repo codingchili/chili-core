@@ -1,12 +1,16 @@
 package com.codingchili.realm.configuration;
 
 import com.codingchili.core.configuration.AttributeConfigurable;
+import com.codingchili.core.files.ConfigurationFactory;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Token;
-import com.codingchili.realm.instance.context.InstanceSettings;
-import com.codingchili.realm.instance.model.*;
+import com.codingchili.realm.instance.configuration.InstanceSettings;
+import com.codingchili.realm.instance.model.Affliction;
+import com.codingchili.realm.instance.model.PlayerCharacter;
+import com.codingchili.realm.instance.model.PlayerClass;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 import java.io.File;
@@ -84,7 +88,7 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     /**
-     * @param instances loads configuration for the given settings.
+     * @param instances loads configuration for the given instance.
      */
     public void load(List<String> instances) {
         readInstances(instances);
@@ -102,21 +106,17 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     private void readPlayerClasses() {
-        // todo
-        /*available(PATH_GAME_CLASSES).stream()
+        available(PATH_GAME_CLASSES).stream()
                 .map(path -> override(path, name))
                 .map(path -> get(path, PlayerClass.class))
-                .forEach(classes::add);*/
+                .forEach(classes::add);
     }
 
     private void readAfflictions() {
-        // todo
-       /* available(PATH_GAME_AFFLICTIONS).stream()
+        available(PATH_GAME_AFFLICTIONS).stream()
                 .map(path -> override(path, name))
-                .map(JsonFileStore::readList)
-                .flatMap(JsonArray::stream)
-                .map(json -> (JsonObject) json)
-                .forEach(affliction -> afflictions.add(Serializer.unpack(affliction, AfflictionImpl.class)));*/
+                .map(ConfigurationFactory::readObject)
+                .forEach(affliction -> afflictions.add(Serializer.unpack(affliction, Affliction.class)));
     }
 
     private void readTemplate() {
@@ -286,14 +286,14 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     /**
-     * @return get the realm getDescription.
+     * @return get the realm description.
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * @param description set the realm getDescription.
+     * @param description set the realm description.
      * @return fluent
      */
     private RealmSettings setDescription(String description) {
@@ -350,7 +350,7 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     /**
-     * @return get the lifetime of the realm as a getDescription.
+     * @return get the lifetime of the realm as a description.
      */
     public String getLifetime() {
         return lifetime;

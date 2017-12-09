@@ -48,10 +48,10 @@ public abstract class CoreStrings {
     }
 
     // paths to configuration files.
-    public static final String PATH_LAUNCHER = "conf/system/launcher.json";
-    public static final String PATH_SECURITY = "conf/system/security.json";
-    public static final String PATH_SYSTEM = "conf/system/system.json";
-    public static final String PATH_STORAGE = "conf/system/storage.json";
+    public static final String PATH_LAUNCHER = "conf/system/launcher.yaml";
+    public static final String PATH_SECURITY = "conf/system/security.yaml";
+    public static final String PATH_SYSTEM = "conf/system/system.yaml";
+    public static final String PATH_STORAGE = "conf/system/storage.yaml";
     public static final String PATH_VALIDATOR = "conf/system/validator.json";
 
     // common directories.
@@ -70,6 +70,9 @@ public abstract class CoreStrings {
     public static final String WATCHER_PAUSED = "paused";
     public static final String WATCHER_RESUMED = "resumed";
     public static final String EXT_JSON = ".json";
+    public static final String EXT_YAML = ".yaml";
+    public static final String EXT_YML = ".yml";
+    public static final String EXT_KRYO = ".kryo";
     public static final String EXT_HTML = ".html";
     public static final String EXT_DB = ".db";
     public static final String EXT_TXT = ".txt";
