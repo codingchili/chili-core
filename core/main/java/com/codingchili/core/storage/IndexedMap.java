@@ -86,7 +86,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
     public void createIndex(String fieldName, boolean multiValued) {
 
         if (!holder.indexed.contains(fieldName)) {
-            synchronized (holder.indexed) {
+            synchronized (maps) {
                 if (!holder.indexed.contains(fieldName)) {
                     try {
                         Attribute<Value, String> attribute = getAttribute(fieldName, multiValued);
