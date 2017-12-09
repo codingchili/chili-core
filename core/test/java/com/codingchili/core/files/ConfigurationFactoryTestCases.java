@@ -50,6 +50,7 @@ public abstract class ConfigurationFactoryTestCases {
     @Test
     public void testWriteObject() {
         ConfigurationFactory.writeObject(new JsonObject(), testFile(DIR, getFile("tmp")));
+        ConfigurationFactory.deleteObject(testFile(DIR, getFile("tmp")));
     }
 
     @Test
