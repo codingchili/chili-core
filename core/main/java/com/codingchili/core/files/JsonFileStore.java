@@ -34,7 +34,7 @@ public abstract class JsonFileStore {
     public static JsonObject readObject(String path) {
         Optional<Buffer> buffer = new Resource(path).read();
         if (buffer.isPresent()) {
-            return new JsonObject(buffer.get().toString());
+            return buffer.get().toJsonObject();
         } else {
             throw new NoSuchResourceException(path);
         }
@@ -49,7 +49,7 @@ public abstract class JsonFileStore {
     public static JsonArray readList(String path) {
         Optional<Buffer> buffer = new Resource(path).read();
         if (buffer.isPresent()) {
-            return new JsonArray(buffer.get().toString());
+            return buffer.get().toJsonArray();
         } else {
             throw new NoSuchResourceException(path);
         }
@@ -63,7 +63,7 @@ public abstract class JsonFileStore {
      * returns nothing when more than zero files fails to load.
      */
     public static List<JsonObject> readDirectoryObjects(String path) {
-        return readMultiple(path, buffer -> new JsonObject(buffer.toString()));
+        return readMultiple(path, Buffer::toJsonObject);
     }
 
     /**
@@ -127,6 +127,10 @@ public abstract class JsonFileStore {
         return file.delete();
     }
 
+    /**
+     * @param path the path to a file to check if it exists.
+     * @return true if the file exists.
+     */
     static boolean exists(String path) {
         return Paths.get(path).toFile().exists();
     }
