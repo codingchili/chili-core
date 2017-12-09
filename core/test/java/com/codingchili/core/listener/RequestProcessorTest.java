@@ -50,8 +50,8 @@ public class RequestProcessorTest {
                 return Integer.MAX_VALUE;
             }
         };
-       processor((toHandler) -> test.fail("handler should not be called if pre-validation fails."))
-               .submit(() -> request);
+        processor((toHandler) -> test.fail("handler should not be called if pre-validation fails."))
+                .submit(() -> request);
     }
 
     @Test
@@ -98,7 +98,7 @@ public class RequestProcessorTest {
         return new RequestProcessor(new ContextMock(), new TestHandler(request));
     }
 
-    private class TestHandler implements CoreHandler {
+    private class TestHandler implements CoreHandler<Request> {
         private Consumer<Request> handler;
 
         public TestHandler(Consumer<Request> handler) {

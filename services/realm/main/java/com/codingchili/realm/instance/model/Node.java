@@ -1,25 +1,15 @@
 package com.codingchili.realm.instance.model;
 
-import com.codingchili.realm.instance.model.events.Event;
+import com.codingchili.realm.instance.context.GameContext;
 
 /**
  * @author Robin Duda
  * Contains a lootable object.
  */
-public class Node implements Entity, Interactable {
+public class Node extends SimpleEntity{
 
-    @Override
-    public Integer getId() {
-        return null;
+    public Node(GameContext context) {
+        super(context);
     }
 
-    @Override
-    public Vector getVector() {
-        return null;
-    }
-
-    @Override
-    public void handle(Event request) {
-
-    }
 }

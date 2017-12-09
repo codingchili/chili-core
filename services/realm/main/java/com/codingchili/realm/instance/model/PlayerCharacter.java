@@ -1,13 +1,13 @@
 package com.codingchili.realm.instance.model;
 
-import com.codingchili.core.configuration.AttributeConfigurable;
+import com.codingchili.core.configuration.Attributes;
 import com.codingchili.core.storage.Storable;
 
 /**
  * @author Robin Duda
  * model for player characters.
  */
-public class PlayerCharacter extends AttributeConfigurable implements Storable {
+public class PlayerCharacter extends Attributes implements Storable {
     private String account;
     private String name;
     private String className;

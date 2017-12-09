@@ -8,7 +8,7 @@ import static com.codingchili.core.protocol.ProtocolTest.*;
 import static com.codingchili.core.protocol.Role.ADMIN;
 import static com.codingchili.core.protocol.Role.USER;
 
-public class SimpleBuilderRouter implements CoreHandler {
+public class SimpleBuilderRouter implements CoreHandler<Request> {
     private Protocol<Request> protocol = new Protocol<>();
 
     public SimpleBuilderRouter() {

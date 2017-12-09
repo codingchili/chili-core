@@ -1,8 +1,15 @@
 package com.codingchili.realm.instance.context;
 
+import com.codingchili.core.context.SystemContext;
 import com.codingchili.realm.configuration.RealmContext;
-import com.codingchili.realm.instance.model.*;
-import com.codingchili.realm.instance.model.events.*;
+import com.codingchili.realm.instance.model.Entity;
+import com.codingchili.realm.instance.model.EventProtocol;
+import com.codingchili.realm.instance.model.Grid;
+import com.codingchili.realm.instance.model.Ticker;
+import com.codingchili.realm.instance.model.events.Event;
+import com.codingchili.realm.instance.model.events.EventType;
+import com.codingchili.realm.instance.model.events.ShutdownEvent;
+import com.codingchili.realm.instance.model.events.SpawnEvent;
 import com.codingchili.realm.instance.model.npc.ListeningPerson;
 import com.codingchili.realm.instance.model.npc.TalkingPerson;
 
@@ -10,8 +17,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-
-import com.codingchili.core.context.SystemContext;
 
 import static com.codingchili.realm.instance.model.events.SpawnEvent.SpawnType.DESPAWN;
 
@@ -32,35 +37,35 @@ public class GameContext {
         this.instance = instance;
         this.grid = new Grid(256, instance.settings().getWidth());
 
-        //instance.periodic(() -> 20, instance.address(), this::tick);
+        instance.periodic(() -> 20, instance.address(), this::tick);
     }
 
     private void tick(Long timer) {
-        // instance.blocking(block -> {
+        instance.blocking(block -> {
 
-        Runnable runnable;
-        while ((runnable = queue.poll()) != null) {
-            runnable.run();
-        }
+            Runnable runnable;
+            while ((runnable = queue.poll()) != null) {
+                runnable.run();
+            }
 
-        grid.update(entities.values());
+            grid.update(entities.values());
 
-        tickers.forEach(ticker -> {
-            if (currentTick % ticker.getTick() == 0) {
-                ticker.run();
+            tickers.forEach(ticker -> {
+                if (currentTick % ticker.getTick() == 0) {
+                    ticker.run();
+                }
+            });
+            block.complete();
+        }, (done) -> {
+            if (closed.get()) {
+                instance.cancel(timer);
+            } else {
+                currentTick++;
+                if (currentTick == Long.MAX_VALUE) {
+                    currentTick = 0L;
+                }
             }
         });
-        //         block.complete();
-        //    }, (done) -> {
-        if (closed.get()) {
-            instance.cancel(timer);
-        } else {
-            currentTick++;
-            if (currentTick == Long.MAX_VALUE) {
-                currentTick = 0L;
-            }
-        }
-        //      });
     }
 
     public GameContext runLater(Runnable runnable) {
@@ -127,25 +132,23 @@ public class GameContext {
     }
 
     public void publishEvent(Event event) {
-        queue.add(() -> {
-            Map<Integer, EventProtocol<Event>> scoped = listeners.computeIfAbsent(event.getType(), (key) -> new HashMap<>());
-            String type = event.getType().toString();
+        Map<Integer, EventProtocol<Event>> scoped = listeners.computeIfAbsent(event.getType(), (key) -> new HashMap<>());
+        String type = event.getType().toString();
 
-            switch (event.getBroadcast()) {
-                case PARTITION:
-                    // todo implement network partitions.
-                case GLOBAL:
-                    scoped.values().forEach(listener -> listener.get(type).submit(event));
-                    break;
-                case ADJACENT:
-                    event.getSource().ifPresent(source -> {
-                        grid.adjacent(source.getVector()).forEach(entity -> {
-                            scoped.get(entity.getId()).get(type).submit(event);
-                        });
+        switch (event.getBroadcast()) {
+            case PARTITION:
+                // todo implement network partitions.
+            case GLOBAL:
+                scoped.values().forEach(listener -> listener.get(type).submit(event));
+                break;
+            case ADJACENT:
+                event.getSource().ifPresent(source -> {
+                    grid.adjacent(source.getVector()).forEach(entity -> {
+                        scoped.get(entity.getId()).get(type).submit(event);
                     });
-                    break;
-            }
-        });
+                });
+                break;
+        }
     }
 
     public Optional<Entity> getEntity(Integer id) {
@@ -156,13 +159,13 @@ public class GameContext {
         InstanceContext ins = new InstanceContext(new RealmContext(new SystemContext()), new InstanceSettings());
         GameContext game = new GameContext(ins);
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 500; i++) {
             game.addEntity(new TalkingPerson(game));
             game.addEntity(new TalkingPerson(game));
             game.addEntity(new ListeningPerson(game));
         }
 
-        System.out.println("BEGIN");
+       /* System.out.println("BEGIN");
         long time = System.currentTimeMillis();
         for (int i = 0; i < 100000; i++) {
             game.tick(0L);
@@ -171,7 +174,7 @@ public class GameContext {
                 System.out.println(i);
         }
         System.out.println("END: " + (System.currentTimeMillis() - time) + "ms.");
-        System.out.println(ListeningPerson.called);
+        System.out.println(ListeningPerson.called);*/
 
         //  System.exit(0);
 

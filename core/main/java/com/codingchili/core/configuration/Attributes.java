@@ -1,6 +1,7 @@
 package com.codingchili.core.configuration;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -9,13 +10,13 @@ import java.util.Optional;
  * Extended by classes with dynamic attributes.
  */
 public abstract class Attributes {
-    protected HashMap<String, Object> attributes = new HashMap<>();
+    protected Map<String, Object> attributes = new HashMap<>();
 
-    public HashMap<String, Object> getAttributes() {
+    public Map<String, Object> getAttributes() {
         return attributes;
     }
 
-    public void setAttributes(HashMap<String, Object> attributes) {
+    public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
     }
 

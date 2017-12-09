@@ -1,6 +1,7 @@
 package com.codingchili.realm.configuration;
 
 import com.codingchili.core.configuration.AttributeConfigurable;
+import com.codingchili.core.files.JsonFileStore;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Token;
 import com.codingchili.realm.instance.context.InstanceSettings;
@@ -120,7 +121,7 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     private void readTemplate() {
-        this.template = get(override(PATH_GAME_PLAYERTEMPLATE, name), PlayerCharacter.class);
+        this.template = JsonFileStore.readObject(override(PATH_GAME_PLAYERTEMPLATE, name)).mapTo(PlayerCharacter.class);
     }
 
     /**

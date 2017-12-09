@@ -5,9 +5,9 @@ import java.util.Map;
 /**
  * @author Robin Duda
  */
-public interface Equippable {
+public interface Equippable extends Item {
 
-    String slot();
+    Slot slot();
 
-    Map<String, Integer> stats();
+    void apply(Stats stats);
 }

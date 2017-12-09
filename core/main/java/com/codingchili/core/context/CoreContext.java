@@ -4,6 +4,7 @@ import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.CoreListener;
 import com.codingchili.core.listener.CoreService;
+import com.codingchili.core.listener.Request;
 import com.codingchili.core.logging.Logger;
 import io.vertx.core.*;
 import io.vertx.core.eventbus.EventBus;
@@ -81,7 +82,7 @@ public interface CoreContext {
      * @param handler the handler to be used to handle incoming requests.
      * @return a future to be completed on deployment completion.
      */
-    Future<String> handler(Supplier<CoreHandler> handler);
+    Future<String> handler(Supplier<CoreHandler<Request>> handler);
 
     /**
      * Deploys the given verticle with a completion handler.

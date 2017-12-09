@@ -6,6 +6,7 @@ import com.codingchili.core.protocol.Serializer;
 
 import com.codingchili.realm.instance.model.Inventory;
 import com.codingchili.realm.instance.model.PlayerCharacter;
+import com.codingchili.realm.instance.model.PlayerClass;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
@@ -57,7 +58,7 @@ public class ConfigurationsTest {
         JsonArray afflictions = JsonFileStore.readList(testFile("affliction.json"));
 
         for (int i = 0; i < afflictions.size(); i++) {
-            Serializer.unpack(afflictions.getJsonObject(i), AfflictionImpl.class);
+            Serializer.unpack(afflictions.getJsonObject(i), Void.class);
         }
 
         Assert.assertFalse(afflictions.isEmpty());
