@@ -1,7 +1,7 @@
 package com.codingchili.realm.configuration;
 
 import com.codingchili.core.configuration.AttributeConfigurable;
-import com.codingchili.core.files.JsonFileStore;
+import com.codingchili.core.files.ConfigurationFactory;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Token;
 import com.codingchili.realm.instance.configuration.InstanceSettings;
@@ -115,9 +115,7 @@ public class RealmSettings extends AttributeConfigurable {
     private void readAfflictions() {
         available(PATH_GAME_AFFLICTIONS).stream()
                 .map(path -> override(path, name))
-                .map(JsonFileStore::readList)
-                .flatMap(JsonArray::stream)
-                .map(json -> (JsonObject) json)
+                .map(ConfigurationFactory::readObject)
                 .forEach(affliction -> afflictions.add(Serializer.unpack(affliction, Affliction.class)));
     }
 

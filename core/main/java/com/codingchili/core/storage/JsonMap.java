@@ -67,7 +67,11 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     private String dbPath() {
-        return String.format("%s/%s", context.database(), context.collection() + EXT_JSON);
+        if (!context.collection().contains(".")) {
+            context.setCollection(context.collection() + EXT_JSON);
+        }
+
+        return String.format("%s/%s", context.database(), context.collection());
     }
 
     private void enableSave() {
