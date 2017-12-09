@@ -1,18 +1,10 @@
 package com.codingchili.realm.instance.model.items;
 
-import com.codingchili.realm.instance.model.Equippable;
-import com.codingchili.realm.instance.model.Slot;
-import com.codingchili.realm.instance.model.Stats;
+import com.codingchili.realm.instance.model.*;
 
-public class WoodenSword implements Equippable {
-    @Override
-    public Slot slot() {
-        return Slot.WEAPON;
-    }
-
-    @Override
-    public void apply(Stats stats) {
-        // todo apply this items stats
+public class WoodenSword extends Item {
+    {
+        slot = Slot.weapon;
     }
 
     @Override

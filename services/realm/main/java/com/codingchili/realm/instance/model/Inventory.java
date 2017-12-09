@@ -13,7 +13,7 @@ import java.util.Map;
 public class Inventory implements Serializable {
     public static Inventory EMPTY = new Inventory();
 
-    private Map<Slot, Equippable> equipped = new HashMap<>();
+    private Map<Slot, Item> equipped = new HashMap<>();
     private List<Item> items = new ArrayList<>();
     private Integer space;
     private Integer currency = 1;
@@ -22,10 +22,9 @@ public class Inventory implements Serializable {
         if (items.size() < index) {
             Item item = items.get(index);
 
-            if (item.isEquippable()) {
-                Equippable eq = ((Equippable) item);
-                items.add(equipped.replace(eq.slot(), eq));
-                items.remove(eq);
+            if (!item.getSlot().equals(Slot.none)) {
+                items.add(equipped.replace(item.getSlot(), item));
+                items.remove(item);
             }
         }
     }
@@ -38,11 +37,11 @@ public class Inventory implements Serializable {
         this.currency = currency;
     }
 
-    public Map<Slot, Equippable> getEquipped() {
+    public Map<Slot, Item> getEquipped() {
         return equipped;
     }
 
-    public void setEquipped(HashMap<Slot, Equippable> equipped) {
+    public void setEquipped(HashMap<Slot, Item> equipped) {
         this.equipped = equipped;
     }
 

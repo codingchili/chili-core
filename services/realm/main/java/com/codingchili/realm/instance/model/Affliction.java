@@ -1,21 +1,52 @@
 package com.codingchili.realm.instance.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-
 /**
  * @author Robin Duda
  */
-public interface Affliction extends Serializable {
+public class Affliction {
+    private String name;
+    private String description;
+    private Double duration;
+    private Double rage;
+    private Double chance;
 
-    String getName();
+    public String getName() {
+        return name;
+    }
 
-    String getDescription();
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    Double getDuration();
+    public String getDescription() {
+        return description;
+    }
 
-    Double getRate();
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    Double getChance();
+    public Double getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Double duration) {
+        this.duration = duration;
+    }
+
+    public Double getRage() {
+        return rage;
+    }
+
+    public void setRage(Double rage) {
+        this.rage = rage;
+    }
+
+    public Double getChance() {
+        return chance;
+    }
+
+    public void setChance(Double chance) {
+        this.chance = chance;
+    }
 }

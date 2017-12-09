@@ -32,7 +32,7 @@ public class ContextMock extends RealmContext {
         realm = new RealmSettings()
                 .setName("realmName")
                 .setAuthentication(new Token(new TokenFactory("s".getBytes()), "realmName"));
-        realm.getClasses().add(null);
+        realm.getClasses().add(new PlayerClass().setName("class.name"));
     }
 
     @Override
