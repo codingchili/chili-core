@@ -9,7 +9,7 @@ import com.codingchili.core.protocol.Address;
  *
  * Supports DeploymentAware and ListenerAware.
  */
-public interface CoreHandler extends Handler<Request>, CoreDeployment {
+public interface CoreHandler extends Receiver<Request>, CoreDeployment {
 
     /**
      * @return the address of the handler. If not implemented the @Address

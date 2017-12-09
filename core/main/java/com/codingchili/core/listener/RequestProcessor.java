@@ -13,14 +13,14 @@ import java.util.function.Supplier;
  * Handles incoming requests with error processing and logging.
  */
 public class RequestProcessor {
-    private CoreHandler<Request> handler;
+    private CoreHandler handler;
     private Logger logger;
 
     /**
      * @param context the context on which the processor runs on.
      * @param handler the handler that is used to handle requests.
      */
-    public RequestProcessor(final CoreContext context, final CoreHandler<Request> handler) {
+    public RequestProcessor(final CoreContext context, final CoreHandler handler) {
         this.handler = handler;
         this.logger = context.logger(getClass());
     }

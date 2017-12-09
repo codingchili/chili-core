@@ -3,13 +3,12 @@ package com.codingchili.realm.instance.controller;
 import com.codingchili.realm.instance.context.GameContext;
 import com.codingchili.realm.instance.model.Ticker;
 
-import com.codingchili.core.listener.CoreHandler;
-import com.codingchili.core.listener.Request;
+import com.codingchili.core.listener.*;
 
 /**
  * @author Robin Duda
  */
-public class MovementHandler implements CoreHandler<Request> {
+public class MovementHandler implements Receiver<InstanceRequest> {
     private GameContext game;
 
     public MovementHandler(GameContext game) {
@@ -25,7 +24,7 @@ public class MovementHandler implements CoreHandler<Request> {
     }
 
     @Override
-    public void handle(Request request) {
+    public void handle(InstanceRequest request) {
         // todo handle player input
     }
 

@@ -8,7 +8,7 @@ import com.codingchili.core.listener.*;
 /**
  * @author Robin Duda
  */
-public class DialogHandler implements CoreHandler<Request> {
+public class DialogHandler implements Receiver<InstanceRequest> {
     private GameContext game;
 
     public DialogHandler(GameContext game) {
@@ -16,7 +16,7 @@ public class DialogHandler implements CoreHandler<Request> {
     }
 
     @Override
-    public void handle(Request request) {
+    public void handle(InstanceRequest request) {
 
     }
 }

@@ -82,7 +82,7 @@ public interface CoreContext {
      * @param handler the handler to be used to handle incoming requests.
      * @return a future to be completed on deployment completion.
      */
-    Future<String> handler(Supplier<CoreHandler<Request>> handler);
+    Future<String> handler(Supplier<CoreHandler> handler);
 
     /**
      * Deploys the given verticle with a completion handler.

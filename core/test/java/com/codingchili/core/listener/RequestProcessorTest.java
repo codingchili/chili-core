@@ -98,7 +98,7 @@ public class RequestProcessorTest {
         return new RequestProcessor(new ContextMock(), new TestHandler(request));
     }
 
-    private class TestHandler implements CoreHandler<Request> {
+    private class TestHandler implements CoreHandler {
         private Consumer<Request> handler;
 
         public TestHandler(Consumer<Request> handler) {

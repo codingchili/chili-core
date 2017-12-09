@@ -5,13 +5,12 @@ import com.codingchili.realm.instance.model.*;
 
 import java.util.Collection;
 
-import com.codingchili.core.listener.CoreHandler;
-import com.codingchili.core.listener.Request;
+import com.codingchili.core.listener.*;
 
 /**
  * @author Robin Duda
  */
-public class TradeHandler implements CoreHandler<Request> {
+public class TradeHandler implements Receiver<InstanceRequest> {
     private Entity initiator;
     private Entity other;
     private Collection<Item> initiatorItems;
@@ -40,7 +39,7 @@ public class TradeHandler implements CoreHandler<Request> {
     }
 
     @Override
-    public void handle(Request request) {
+    public void handle(InstanceRequest request) {
         // todo check event type.
     }
 }

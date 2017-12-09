@@ -10,6 +10,7 @@ import com.codingchili.core.logging.LogMessage;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.logging.RemoteLogger;
 import io.vertx.core.*;
+import io.vertx.core.Handler;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.dropwizard.MetricsService;
@@ -173,7 +174,7 @@ public class SystemContext implements CoreContext {
     }
 
     @Override
-    public Future<String> handler(Supplier<CoreHandler<Request>> handler) {
+    public Future<String> handler(Supplier<CoreHandler> handler) {
         ListenerSettings settings = new ListenerSettings();
         Future<String> future = Future.future();
         deployN(() -> new ClusterListener()

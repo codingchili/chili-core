@@ -14,7 +14,7 @@ import static com.codingchili.common.Strings.SOCIAL_NODE;
  * <p>
  * Social handler to handle friendlists and xr-messaging.
  */
-public class SocialHandler implements CoreHandler<Request> {
+public class SocialHandler implements CoreHandler {
     private final Protocol<Request> protocol = new Protocol<>();
     private CoreContext context;
 

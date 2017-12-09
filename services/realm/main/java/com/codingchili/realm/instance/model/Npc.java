@@ -1,25 +1,14 @@
 package com.codingchili.realm.instance.model;
 
-import com.codingchili.realm.instance.model.events.Event;
+import com.codingchili.realm.instance.context.GameContext;
 
 /**
  * @author Robin Duda
  * Contains questgiver details, dialog and AI.
  */
-public class Npc implements Entity {
+public class Npc extends SimpleEntity {
 
-    @Override
-    public Integer getId() {
-        return null;
-    }
-
-    @Override
-    public Vector getVector() {
-        return null;
-    }
-
-    @Override
-    public void handle(Event request) {
-
+    public Npc(GameContext context) {
+        super(context);
     }
 }

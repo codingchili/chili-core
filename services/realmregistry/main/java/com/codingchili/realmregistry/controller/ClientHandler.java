@@ -1,14 +1,13 @@
 package com.codingchili.realmregistry.controller;
 
+import com.codingchili.realmregistry.configuration.RegistryContext;
+import com.codingchili.realmregistry.model.*;
+import io.vertx.core.Future;
+
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.Protocol;
 import com.codingchili.core.protocol.Role;
-import com.codingchili.realmregistry.configuration.RegistryContext;
-import com.codingchili.realmregistry.model.AsyncRealmStore;
-import com.codingchili.realmregistry.model.RealmList;
-import com.codingchili.realmregistry.model.RealmMissingException;
-import io.vertx.core.Future;
 
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.core.protocol.Role.PUBLIC;
@@ -17,7 +16,7 @@ import static com.codingchili.core.protocol.Role.PUBLIC;
  * @author Robin Duda
  * Routing used to authenticate users and create/delete characters.
  */
-public class ClientHandler implements CoreHandler<Request> {
+public class ClientHandler implements CoreHandler {
     private final Protocol<ClientRequest> protocol = new Protocol<>();
     private AsyncRealmStore realms;
     private RegistryContext context;

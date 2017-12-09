@@ -162,7 +162,7 @@ public class LauncherIT {
         }
     }
 
-    public static class TestHandler implements CoreHandler<Request> {
+    public static class TestHandler implements CoreHandler {
 
         public TestHandler() {
             async.countDown();

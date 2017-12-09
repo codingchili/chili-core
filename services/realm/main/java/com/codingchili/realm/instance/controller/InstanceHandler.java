@@ -15,7 +15,7 @@ import static com.codingchili.common.Strings.ID_PING;
  * @author Robin Duda
  * Handles players in an settings.
  */
-public class InstanceHandler implements CoreHandler<Request>, DeploymentAware {
+public class InstanceHandler implements CoreHandler, DeploymentAware {
     private final Protocol<InstanceRequest> protocol = new Protocol<>();
     private InstanceContext context;
 

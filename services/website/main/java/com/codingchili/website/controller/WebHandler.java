@@ -17,7 +17,7 @@ import static com.codingchili.common.Strings.*;
  * <p>
  * Handles incoming requests for files. (website files)
  */
-public class WebHandler implements CoreHandler<Request> {
+public class WebHandler implements CoreHandler {
     private final Protocol<Request> protocol = new Protocol<>();
     private final CachedFileStore files;
     private WebserverContext context;

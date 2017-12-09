@@ -18,7 +18,7 @@ import static com.codingchili.core.protocol.Role.USER;
  * @author Robin Duda
  * Routing used to register/authenticate accounts.
  */
-public class ClientHandler implements CoreHandler<Request> {
+public class ClientHandler implements CoreHandler {
     private final Protocol<ClientRequest> protocol = new Protocol<>();
     private final AsyncAccountStore accounts;
     private AuthenticationContext context;

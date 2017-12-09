@@ -19,7 +19,7 @@ import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
  * @author Robin Duda
  * Handles traveling between instances.
  */
-public class CharacterHandler implements CoreHandler<Request> {
+public class CharacterHandler implements CoreHandler {
     private final Protocol<RealmRequest> protocol = new Protocol<>();
     private AsyncCharacterStore characters;
     private boolean registered = false;

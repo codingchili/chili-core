@@ -4,12 +4,12 @@ import com.codingchili.realm.instance.model.events.Event;
 
 import java.util.Set;
 
-import com.codingchili.core.listener.Handler;
+import com.codingchili.core.listener.Receiver;
 
 /**
  * @author Robin Duda
  */
-public interface Entity extends Handler<Event> {
+public interface Entity extends Receiver<Event> {
 
     Integer getId();
 

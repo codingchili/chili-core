@@ -5,7 +5,7 @@ package com.codingchili.core.listener;
  *
  * A handler to handle things.
  */
-public interface Handler<T> {
+public interface Receiver<T> {
 
     /**
      * Handles an incoming request without exception handling.

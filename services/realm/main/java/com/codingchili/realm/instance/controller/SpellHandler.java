@@ -1,15 +1,15 @@
 package com.codingchili.realm.instance.controller;
 
-import com.codingchili.core.listener.CoreHandler;
-import com.codingchili.core.listener.Request;
 import com.codingchili.realm.instance.context.GameContext;
 import com.codingchili.realm.instance.model.Grid;
 import com.codingchili.realm.instance.model.Ticker;
 
+import com.codingchili.core.listener.*;
+
 /**
  * @author Robin Duda
  */
-public class SpellHandler implements CoreHandler<Request> {
+public class SpellHandler implements Receiver<InstanceRequest> {
     private GameContext game;
 
     public SpellHandler(GameContext game) {
@@ -27,7 +27,7 @@ public class SpellHandler implements CoreHandler<Request> {
     // todo: some entities are not living?
 
     @Override
-    public void handle(Request request) {
+    public void handle(InstanceRequest request) {
         // shared SpellManager?
         // needs to cancel on movement etc.
     }
