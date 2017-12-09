@@ -17,8 +17,8 @@ import org.junit.runner.RunWith;
  */
 @RunWith(VertxUnitRunner.class)
 public class ClusteredSessionTest {
-    private static String source = "source";
-    private static String connection = "connection";
+    private static String home = "[home uid]";
+    private static String connectionId = "[connection uid]";
     private CoreContext core;
     private ClusteredSession session;
     private SessionFactory<ClusteredSession> sessionFactory;
@@ -29,7 +29,7 @@ public class ClusteredSessionTest {
         core = new SystemContext();
         sessionFactory = new SessionFactoryMock(core);
 
-        sessionFactory.create(source, connection).setHandler(created -> {
+        sessionFactory.create(home, connectionId).setHandler(created -> {
             session = created.result();
             async.complete();
         });
@@ -42,8 +42,8 @@ public class ClusteredSessionTest {
 
     @Test
     public void testCreate(TestContext test) {
-        test.assertEquals(source, session.source());
-        test.assertEquals(connection, session.connection());
+        test.assertEquals(home, session.getHome());
+        test.assertEquals(connectionId, session.getId());
 
         sessionFactory.isActive(session).setHandler(active -> {
             test.assertTrue(active.result());
@@ -52,10 +52,10 @@ public class ClusteredSessionTest {
 
     @Test
     public void testUpdate(TestContext test) {
-        session.data().put("pass", true);
+        session.asJson().put("pass", true);
         session.update().setHandler(updated -> {
             test.assertTrue(updated.succeeded());
-            test.assertTrue(SessionFactoryMock.sessions.get(session.id()).data().containsKey("pass"));
+            test.assertTrue(SessionFactoryMock.sessions.get(session.getId()).asJson().containsKey("pass"));
         });
     }
 
@@ -63,9 +63,9 @@ public class ClusteredSessionTest {
     public void testWriteToSource(TestContext test) {
         Async async = test.async(2);
 
-        core.bus().consumer(source, msg -> {
-            test.assertEquals(source, msg.headers().get(source));
-            test.assertEquals(connection, msg.headers().get(connection));
+        core.bus().consumer(home, msg -> {
+            test.assertEquals(home, msg.headers().get(Session.HOME));
+            test.assertEquals(connectionId, msg.headers().get(Session.ID));
             async.countDown();
         });
 
@@ -86,13 +86,13 @@ public class ClusteredSessionTest {
     public void testSerialization(TestContext test) {
         String text = "test";
 
-        session.data().put(text, text);
+        session.asJson().put(text, text);
         JsonObject json = Serializer.json(session);
         Session session2 = Serializer.unpack(json, ClusteredSession.class);
-        test.assertEquals(session, session2);
-        test.assertEquals(text, session2.data().getString(text));
-        test.assertNotNull(session2.source());
-        test.assertNotNull(session2.connection());
+        test.assertEquals(session.asJson().encode(), session2.asJson().encode());
+        test.assertEquals(text, session2.asJson().getString(text));
+        test.assertNotNull(session2.getHome());
+        test.assertNotNull(session2.getId());
     }
 
     private class TestMessage {

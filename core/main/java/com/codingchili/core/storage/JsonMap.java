@@ -108,10 +108,10 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
-        Optional<Value> current = get(value.id());
+        Optional<Value> current = get(value.getId());
 
         if (current.isPresent()) {
-            handler.handle(error(new ValueAlreadyPresentException(value.id())));
+            handler.handle(error(new ValueAlreadyPresentException(value.getId())));
         } else {
             put(value);
             handler.handle(FutureHelper.result());
@@ -133,13 +133,13 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void update(Value value, Handler<AsyncResult<Void>> handler) {
-        Optional<Value> current = get(value.id());
+        Optional<Value> current = get(value.getId());
 
         if (current.isPresent()) {
             put(value);
             handler.handle(FutureHelper.result());
         } else {
-            handler.handle(error(new NothingToUpdateException(value.id())));
+            handler.handle(error(new NothingToUpdateException(value.getId())));
         }
     }
 
@@ -190,7 +190,7 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     private void put(Value value) {
-        db.put(value.id(), context.toJson(value));
+        db.put(value.getId(), context.toJson(value));
         dirty();
     }
 

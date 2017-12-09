@@ -15,7 +15,7 @@ import org.junit.runner.RunWith;
  */
 @RunWith(VertxUnitRunner.class)
 public class ClusteredSessionFactoryTest {
-    private String source = "source";
+    private String home = "home";
     private String connection = "connection";
     private CoreContext core = new SystemContext();
     private SessionFactory<ClusteredSession> factory;
@@ -39,7 +39,7 @@ public class ClusteredSessionFactoryTest {
     public void testCreateSession(TestContext test) {
         Async async = test.async();
 
-        factory.create(source, connection).setHandler(done -> {
+        factory.create(home, connection).setHandler(done -> {
             test.assertTrue(done.succeeded());
 
             factory.isActive(done.result()).setHandler(active -> {
@@ -53,7 +53,7 @@ public class ClusteredSessionFactoryTest {
     public void testDestroySession(TestContext test) {
         Async async = test.async();
 
-        factory.create(source, connection).setHandler(done -> {
+        factory.create(home, connection).setHandler(done -> {
             ClusteredSession session = done.result();
             test.assertTrue(done.succeeded());
 
@@ -72,11 +72,11 @@ public class ClusteredSessionFactoryTest {
     public void testUpdateSession(TestContext test) {
         Async async = test.async();
 
-        factory.create(source, connection).setHandler(done -> {
+        factory.create(home, connection).setHandler(done -> {
             Session session = done.result();
             test.assertTrue(done.succeeded());
 
-            session.data().put("meow", true);
+            session.asJson().put("meow", true);
             session.update().setHandler(updated -> {
                 test.assertTrue(updated.succeeded());
 

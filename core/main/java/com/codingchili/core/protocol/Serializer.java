@@ -47,6 +47,9 @@ public class Serializer {
         json.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         json.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         json.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+        yaml.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        yaml.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        yaml.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     private static KryoFactory factory = Kryo::new;
@@ -239,7 +242,7 @@ public class Serializer {
         for (String field : fields) {
             Objects.requireNonNull(object, CoreStrings.getValueByPathContainsNull(field, fields));
             if (object instanceof Storable && field.equals(Storable.idField)) {
-                return Collections.singleton((T) ((Storable) object).id());
+                return Collections.singleton((T) ((Storable) object).getId());
             } else if (object instanceof Map) {
                 object = ((Map) object).get(field);
             } else if (object instanceof JsonObject) {

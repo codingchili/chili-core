@@ -1,10 +1,14 @@
 package com.codingchili.realm.instance.model;
 
-import java.io.Serializable;
+import com.codingchili.realm.instance.context.GameContext;
 
 /**
  * @author Robin Duda
  * Contains questgiver details, dialog and AI.
  */
-public class Npc implements Serializable {
+public class Npc extends SimpleEntity {
+
+    public Npc(GameContext context) {
+        super(context);
+    }
 }

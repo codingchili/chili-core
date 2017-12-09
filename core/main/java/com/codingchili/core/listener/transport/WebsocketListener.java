@@ -8,12 +8,12 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.ServerWebSocket;
+import io.vertx.core.json.JsonObject;
 
 import java.util.UUID;
 import java.util.function.Supplier;
 
-import static com.codingchili.core.configuration.CoreStrings.LOG_AT;
-import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
@@ -57,8 +57,18 @@ public class WebsocketListener implements CoreListener {
     private void listen(Future<Void> start, SessionFactory<?> sessions) {
 
         core.bus().consumer(id, message -> {
-            String connection = message.headers().get(Session.CONNECTION);
+            String connection = message.headers().get(Session.ID);
             core.bus().send(connection, message.body());
+        });
+
+        core.periodic(() -> 5000, "getSession", (l) -> {
+            sessions.query(Session.ID).execute(sess -> {
+                if (sess.succeeded()) {
+                    sess.result().forEach(s -> {
+                        s.write(new JsonObject().put("hello-client", System.currentTimeMillis() + ""));
+                    });
+                }
+            });
         });
 
         core.vertx().createHttpServer(settings.get().getHttpOptions(core))

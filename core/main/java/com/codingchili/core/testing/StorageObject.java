@@ -39,7 +39,7 @@ public class StorageObject implements Storable {
     }
 
     @Override
-    public String id() {
+    public String getId() {
         return name;
     }
 

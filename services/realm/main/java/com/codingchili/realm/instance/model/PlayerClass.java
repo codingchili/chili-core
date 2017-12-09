@@ -1,19 +1,17 @@
 package com.codingchili.realm.instance.model;
 
-import com.codingchili.core.configuration.AttributeConfigurable;
-
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * @author Robin Duda
- * model for player classes.
  */
-public class PlayerClass extends AttributeConfigurable {
-    private String name;
-    private String description;
-    private ArrayList<Spell> spells;
-    private ArrayList<String> keywords;
-    private ArrayList<String> weapons;
+public class PlayerClass {
+    private String name = "default";
+    private String description = "description";
+    private Collection<SpellMetadata> spells = new ArrayList<>();
+    private Collection<String> keywords = new ArrayList<>();
+    private Collection<String> weapons = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -28,31 +26,35 @@ public class PlayerClass extends AttributeConfigurable {
         return description;
     }
 
-    public void setDescription(String description) {
+    public PlayerClass setDescription(String description) {
         this.description = description;
+        return this;
     }
 
-    public ArrayList<Spell> getSpells() {
+    public Collection<SpellMetadata> getSpells() {
         return spells;
     }
 
-    public void setSpells(ArrayList<Spell> spells) {
+    public PlayerClass setSpells(Collection<SpellMetadata> spells) {
         this.spells = spells;
+        return this;
     }
 
-    public ArrayList<String> getKeywords() {
+    public Collection<String> getKeywords() {
         return keywords;
     }
 
-    public void setKeywords(ArrayList<String> keywords) {
+    public PlayerClass setKeywords(Collection<String> keywords) {
         this.keywords = keywords;
+        return this;
     }
 
-    public ArrayList<String> getWeapons() {
+    public Collection<String> getWeapons() {
         return weapons;
     }
 
-    public void setWeapons(ArrayList<String> weapons) {
+    public PlayerClass setWeapons(Collection<String> weapons) {
         this.weapons = weapons;
+        return this;
     }
 }

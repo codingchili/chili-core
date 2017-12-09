@@ -78,7 +78,7 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void put(Value value, Handler<AsyncResult<Void>> handler) {
-        client.replaceDocumentsWithOptions(collection, id(value.id()), document(value),
+        client.replaceDocumentsWithOptions(collection, id(value.getId()), document(value),
                 new UpdateOptions().setUpsert(true),
                 update -> {
                     if (update.succeeded()) {
@@ -90,7 +90,7 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     private JsonObject document(Value value) {
-        return context.toJson(value).put(ID, value.id());
+        return context.toJson(value).put(ID, value.getId());
     }
 
     @Override
@@ -99,7 +99,7 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
             if (put.succeeded()) {
                 handler.handle(FutureHelper.result());
             } else {
-                handler.handle(error(new ValueAlreadyPresentException(value.id())));
+                handler.handle(error(new ValueAlreadyPresentException(value.getId())));
             }
         });
     }
@@ -124,7 +124,7 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     private JsonObject id(Value value) {
-        return id(value.id());
+        return id(value.getId());
     }
 
     @Override
@@ -134,7 +134,7 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
                 if (replace.result().getDocModified() > 0) {
                     handler.handle(FutureHelper.result());
                 } else {
-                    handler.handle(error(new NothingToUpdateException(value.id())));
+                    handler.handle(error(new NothingToUpdateException(value.getId())));
                 }
             } else {
                 handler.handle(error(replace.cause()));

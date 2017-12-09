@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public interface NestedStorable extends Storable {
 
     @JsonIgnore
-    default String id() {
+    default String getId() {
         return "";
     }
 

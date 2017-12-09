@@ -21,7 +21,7 @@ import static com.codingchili.core.files.Configurations.security;
  */
 @RunWith(VertxUnitRunner.class)
 public class SecuritySettingsTest {
-    private static final String KEYSTORE_JKS = CoreStrings.testFile("keystore.jks");
+    private static final String KEYSTORE_JKS = CoreStrings.testFile("testkeystore.jks");
     private static final String IDENTIFIER = "defaultjks";
     private static final String PWD = "password";
 

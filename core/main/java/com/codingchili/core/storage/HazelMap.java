@@ -85,17 +85,17 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void put(Value value, Handler<AsyncResult<Void>> handler) {
-        map.put(value.id(), value, handler);
+        map.put(value.getId(), value, handler);
     }
 
     @Override
     public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
-        map.putIfAbsent(value.id(), value, put -> {
+        map.putIfAbsent(value.getId(), value, put -> {
             if (put.succeeded()) {
                 if (put.result() == null) {
                     handler.handle(FutureHelper.result());
                 } else {
-                    handler.handle(error(new ValueAlreadyPresentException(value.id())));
+                    handler.handle(error(new ValueAlreadyPresentException(value.getId())));
                 }
             } else {
                 handler.handle(error(put.cause()));
@@ -120,10 +120,10 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void update(Value value, Handler<AsyncResult<Void>> handler) {
-        map.replace(value.id(), value, replace -> {
+        map.replace(value.getId(), value, replace -> {
             if (replace.succeeded()) {
                 if (replace.result() == null) {
-                    handler.handle(error(new NothingToUpdateException(value.id())));
+                    handler.handle(error(new NothingToUpdateException(value.getId())));
                 } else {
                     handler.handle(FutureHelper.result());
                 }

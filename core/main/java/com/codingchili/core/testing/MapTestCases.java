@@ -341,7 +341,7 @@ public class MapTestCases {
         store.query(NAME).matches(".*flake[0]").execute(query -> {
             test.assertTrue(query.succeeded(), errorText(query));
             test.assertEquals(1, query.result().size());
-            test.assertTrue(query.result().iterator().next().id().contains("flake0"));
+            test.assertTrue(query.result().iterator().next().getId().contains("flake0"));
             async.complete();
         });
     }
@@ -506,7 +506,7 @@ public class MapTestCases {
                     test.assertEquals(SNOWFLAKE_COUNT.intValue(), query.result().size());
 
                     for (StorageObject item : query.result()) {
-                        test.assertTrue(item.id().startsWith(SNOWFLAKE_NAME_PREFIX));
+                        test.assertTrue(item.getId().startsWith(SNOWFLAKE_NAME_PREFIX));
                     }
                     async.complete();
                 });
@@ -525,7 +525,7 @@ public class MapTestCases {
                     test.assertNotEquals(0, query.result().size());
 
                     for (StorageObject item : query.result()) {
-                        test.assertTrue(item.id().matches(SNOWFLAKE_NAME_PREFIX + ".*[0-9]"));
+                        test.assertTrue(item.getId().matches(SNOWFLAKE_NAME_PREFIX + ".*[0-9]"));
                     }
                     async.complete();
                 });
@@ -542,7 +542,7 @@ public class MapTestCases {
                     test.assertEquals(2, query.result().size());
 
                     for (StorageObject item : query.result()) {
-                        test.assertTrue(item.id().equals(ONE) || item.id().equals(TWO));
+                        test.assertTrue(item.getId().equals(ONE) || item.getId().equals(TWO));
                     }
                     async.complete();
                 });
@@ -668,7 +668,7 @@ public class MapTestCases {
             store.query(ID_NAME).equalTo(upper).execute(query -> {
                 test.assertTrue(query.succeeded(), errorText(query));
                 test.assertEquals(1, query.result().size());
-                test.assertEquals(upper, query.result().iterator().next().id());
+                test.assertEquals(upper, query.result().iterator().next().getId());
                 async.complete();
             });
         });

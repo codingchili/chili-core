@@ -49,7 +49,7 @@ public class EntryWatcherTest {
                 this.storage = result.result();
 
                 getQuery().poll(entry -> entry.forEach(item -> {
-                    storage.remove(item.id(), removed -> {
+                    storage.remove(item.getId(), removed -> {
                     });
                 }), () -> REMOVE_INTERVAL);
 

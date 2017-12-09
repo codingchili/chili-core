@@ -1,14 +1,13 @@
 package com.codingchili.realmregistry.controller;
 
+import com.codingchili.realmregistry.configuration.RegistryContext;
+import com.codingchili.realmregistry.model.*;
+import io.vertx.core.Future;
+
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.Protocol;
 import com.codingchili.core.protocol.Role;
-import com.codingchili.realmregistry.configuration.RegistryContext;
-import com.codingchili.realmregistry.model.AsyncRealmStore;
-import com.codingchili.realmregistry.model.RealmList;
-import com.codingchili.realmregistry.model.RealmMissingException;
-import io.vertx.core.Future;
 
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.core.protocol.Role.PUBLIC;

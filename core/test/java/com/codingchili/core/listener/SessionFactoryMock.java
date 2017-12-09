@@ -4,8 +4,7 @@ import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.storage.QueryBuilder;
 import io.vertx.core.Future;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Mock implementation of a session store.
@@ -19,10 +18,15 @@ public class SessionFactoryMock implements SessionFactory<ClusteredSession> {
     }
 
     @Override
-    public Future<ClusteredSession> create(String source, String connection) {
+    public Future<ClusteredSession> create(String home) {
+        return create(home, UUID.randomUUID().toString());
+    }
+
+    @Override
+    public Future<ClusteredSession> create(String home, String connectionId) {
         Future<ClusteredSession> future = Future.future();
-        ClusteredSession session = new ClusteredSession(this, source, connection);
-        sessions.put(session.id(), session);
+        ClusteredSession session = new ClusteredSession(this, home, connectionId);
+        sessions.put(session.getId(), session);
         future.complete(session);
         return future;
     }
@@ -30,21 +34,21 @@ public class SessionFactoryMock implements SessionFactory<ClusteredSession> {
     @Override
     public Future<Void> update(ClusteredSession session) {
         Future<Void> future = Future.future();
-        sessions.put(session.id(), session);
+        sessions.put(session.getId(), session);
         return future;
     }
 
     @Override
     public Future<Void> destroy(ClusteredSession session) {
         Future<Void> future = Future.future();
-        sessions.remove(session.id());
+        sessions.remove(session.getId());
         return future;
     }
 
     @Override
     public Future<Boolean> isActive(ClusteredSession session) {
         Future<Boolean> future = Future.future();
-        future.complete(sessions.containsKey(session.id()));
+        future.complete(sessions.containsKey(session.getId()));
         return future;
     }
 

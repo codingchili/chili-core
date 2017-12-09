@@ -113,7 +113,7 @@ public class StorageLoaderIT {
 
     private class StorableString implements Storable {
         @Override
-        public String id() {
+        public String getId() {
             return "";
         }
     }
