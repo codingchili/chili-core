@@ -5,8 +5,6 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.testing.MapTestCases;
-
 /**
  * @author Robin Duda
  * <p>

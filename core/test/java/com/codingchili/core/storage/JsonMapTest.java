@@ -3,7 +3,6 @@ package com.codingchili.core.storage;
 import com.codingchili.core.files.ConfigurationFactory;
 import com.codingchili.core.files.exception.NoSuchResourceException;
 import com.codingchili.core.protocol.Serializer;
-import com.codingchili.core.testing.MapTestCases;
 import com.codingchili.core.testing.StorageObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;

@@ -68,7 +68,7 @@ public class SystemContextTest {
         settings.setMetrics(false);
         this.listener = metrics -> test.fail("Metrics was not disabled.");
 
-        Delay.forMS(async, settings.getMetricRate() * 2);
+        delayMS(async, settings.getMetricRate() * 2);
     }
 
     @Test
@@ -81,7 +81,11 @@ public class SystemContextTest {
 
         context.cancel(id);
 
-        Delay.forMS(async, settings.getMetricRate() * 2);
+        delayMS(async, settings.getMetricRate() * 2);
+    }
+
+    private void delayMS(Async async, int ms) {
+        context.timer(ms, handler -> async.complete());
     }
 
     @Test

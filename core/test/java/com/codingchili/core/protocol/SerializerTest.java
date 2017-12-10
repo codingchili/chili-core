@@ -45,7 +45,7 @@ public class SerializerTest {
     @Test
     public void testUnpackString(TestContext test) {
         String packed = Serializer.pack(token);
-        token = Serializer.unpack(packed.getBytes(), Token.class);
+        token = Serializer.unpack(packed, Token.class);
 
         test.assertEquals(TEST, token.getDomain());
     }
@@ -111,7 +111,7 @@ public class SerializerTest {
         storable.setLevel(2).setName("robin").setNested(nested);
 
         String yaml = Serializer.yaml(storable);
-        StorageObject yamlStorable = Serializer.unyaml(yaml.getBytes(), StorageObject.class);
+        StorageObject yamlStorable = Serializer.unyaml(yaml, StorageObject.class);
 
         test.assertEquals(Serializer.pack(storable), Serializer.pack(yamlStorable));
     }

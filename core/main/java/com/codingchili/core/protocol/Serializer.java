@@ -20,9 +20,7 @@ import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -124,7 +122,7 @@ public class Serializer {
      * @param <T>   must be bound to the clazz parameter
      * @return an object specified by the type parameter.
      */
-    public static <T> T unpack(byte[] data, Class<T> clazz) {
+    public static <T> T unpack(String data, Class<T> clazz) {
         try {
             return json.readValue(data, clazz);
         } catch (IOException e) {
@@ -140,7 +138,7 @@ public class Serializer {
      * @param <T>   must be bound to the class parameter.
      * @return an object specified by the type parameters.
      */
-    public static <T> T unyaml(byte[] data, Class<T> clazz) {
+    public static <T> T unyaml(String data, Class<T> clazz) {
         try {
             return yaml.readValue(data, clazz);
         } catch (IOException e) {

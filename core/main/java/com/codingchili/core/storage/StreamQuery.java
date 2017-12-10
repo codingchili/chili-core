@@ -1,16 +1,15 @@
 package com.codingchili.core.storage;
 
-import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.protocol.Serializer;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
-import io.vertx.core.json.JsonObject;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.protocol.Serializer;
 
 /**
  * @author Robin Duda
@@ -139,7 +138,7 @@ public class StreamQuery<Value extends Storable, Streaming> {
             }
 
             private Set<Streaming> results() {
-                return source.stream().parallel().filter(entry -> {
+                return source.stream().filter(entry -> {
                     // if an entry matches any of the classes it is a hit
                     for (List<StatementPredicate> clause : statements) {
                         boolean match = true;

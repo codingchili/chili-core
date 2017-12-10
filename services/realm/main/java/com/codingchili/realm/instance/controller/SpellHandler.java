@@ -1,8 +1,8 @@
 package com.codingchili.realm.instance.controller;
 
 import com.codingchili.realm.instance.context.GameContext;
-import com.codingchili.realm.instance.model.Grid;
-import com.codingchili.realm.instance.model.Ticker;
+import com.codingchili.realm.instance.model.entity.Grid;
+import com.codingchili.realm.instance.context.Ticker;
 
 import com.codingchili.core.listener.*;
 

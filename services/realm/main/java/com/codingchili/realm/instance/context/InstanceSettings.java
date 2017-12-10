@@ -1,9 +1,9 @@
 package com.codingchili.realm.instance.context;
 
 import com.codingchili.core.configuration.Configurable;
-import com.codingchili.realm.instance.model.Node;
-import com.codingchili.realm.instance.model.Npc;
-import com.codingchili.realm.instance.model.Portal;
+import com.codingchili.realm.instance.model.entity.Node;
+import com.codingchili.realm.instance.model.npc.Npc;
+import com.codingchili.realm.instance.model.entity.Portal;
 
 import java.util.ArrayList;
 import java.util.List;

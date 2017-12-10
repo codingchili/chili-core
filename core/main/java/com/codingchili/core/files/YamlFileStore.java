@@ -22,7 +22,7 @@ public class YamlFileStore implements FileStore {
     @Override
     @SuppressWarnings("unchecked")
     public JsonObject readObject(Buffer buffer) {
-        return new JsonObject(Serializer.unyaml(buffer.getBytes(), Map.class));
+        return new JsonObject(Serializer.unyaml(buffer.toString(StandardCharsets.UTF_8), Map.class));
     }
 
     @Override

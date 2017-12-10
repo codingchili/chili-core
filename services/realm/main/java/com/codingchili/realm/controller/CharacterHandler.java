@@ -6,7 +6,8 @@ import com.codingchili.core.protocol.Protocol;
 import com.codingchili.core.protocol.Role;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.realm.configuration.RealmContext;
-import com.codingchili.realm.instance.model.*;
+import com.codingchili.realm.instance.model.entity.PlayerCharacter;
+import com.codingchili.realm.instance.model.entity.PlayerClass;
 import com.codingchili.realm.model.*;
 import io.vertx.core.Future;
 

@@ -1,7 +1,7 @@
 package com.codingchili.realm.model;
 
 import com.codingchili.realm.configuration.RealmSettings;
-import com.codingchili.realm.instance.model.PlayerCharacter;
+import com.codingchili.realm.instance.model.entity.PlayerCharacter;
 
 import java.util.Collection;
 

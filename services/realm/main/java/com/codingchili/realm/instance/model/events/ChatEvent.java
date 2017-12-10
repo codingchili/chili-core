@@ -1,6 +1,6 @@
 package com.codingchili.realm.instance.model.events;
 
-import com.codingchili.realm.instance.model.Entity;
+import com.codingchili.realm.instance.model.entity.Entity;
 
 import java.util.Optional;
 

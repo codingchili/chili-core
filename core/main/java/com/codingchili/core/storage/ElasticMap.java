@@ -78,7 +78,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                 .execute(new ElasticHandler<>(response -> {
 
                     if (response.isExists() && !response.isSourceEmpty()) {
-                        handler.handle(result(valueFrom(response.getSourceAsBytes())));
+                        handler.handle(result(context.toValue(response.getSourceAsString())));
                     } else {
                         handler.handle(error(new ValueMissingException(key)));
                     }
@@ -309,17 +309,13 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
         return context;
     }
 
-    private Value valueFrom(byte[] value) {
-        return context.toValue(value);
-    }
-
     private List<Value> listFrom(SearchHit[] hits) {
         List<Value> list = new ArrayList<>();
 
         for (SearchHit hit : hits) {
             BytesReference ref = hit.getSourceRef();
             if (ref != null) {
-                list.add(valueFrom(BytesReference.toBytes(ref)));
+                list.add(context.toValue(ref.utf8ToString()));
             }
         }
 

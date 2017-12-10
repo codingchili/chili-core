@@ -2,7 +2,7 @@ package com.codingchili.core.listener;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.listener.transport.RestListener;
-import com.codingchili.core.testing.ListenerTestCases;
+
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;

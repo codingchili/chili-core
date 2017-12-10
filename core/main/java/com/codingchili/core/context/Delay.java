@@ -2,7 +2,6 @@ package com.codingchili.core.context;
 
 import com.codingchili.core.context.exception.SystemNotInitializedException;
 import io.vertx.core.Future;
-import io.vertx.ext.unit.Async;
 
 /**
  * @author Robin Duda
@@ -31,16 +30,6 @@ public abstract class Delay {
 
     private static void future(Future future, long ms) {
         context().timer(ms, handler -> future.complete());
-    }
-
-    /**
-     * Delays the given async for the specified ms.
-     *
-     * @param async the async to be delayed.
-     * @param ms    milliseconds to wait before completing the async.
-     */
-    public static void forMS(Async async, long ms) {
-        context().timer(ms, handler -> async.complete());
     }
 
     /**

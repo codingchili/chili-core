@@ -1,7 +1,8 @@
 package com.codingchili.realm.instance.controller;
 
 import com.codingchili.realm.instance.context.GameContext;
-import com.codingchili.realm.instance.model.*;
+import com.codingchili.realm.instance.model.entity.Entity;
+import com.codingchili.realm.instance.model.items.Item;
 
 import java.util.Collection;
 

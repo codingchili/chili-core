@@ -10,7 +10,7 @@ import com.codingchili.core.testing.RequestMock;
 import com.codingchili.core.testing.ResponseListener;
 import com.codingchili.realm.ContextMock;
 import com.codingchili.realm.configuration.RealmSettings;
-import com.codingchili.realm.instance.model.PlayerCharacter;
+import com.codingchili.realm.instance.model.entity.PlayerCharacter;
 import com.codingchili.realm.model.AsyncCharacterStore;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;

@@ -1,6 +1,6 @@
 package com.codingchili.realm.instance.model.events;
 
-import com.codingchili.realm.instance.model.Spell;
+import com.codingchili.realm.instance.model.spells.Spell;
 
 /**
  * @author Robin Duda

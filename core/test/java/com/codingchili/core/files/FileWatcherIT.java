@@ -113,7 +113,11 @@ public class FileWatcherIT {
         ConfigurationFactory.writeObject(new JsonObject(), NOT_WATCHED_FILE);
         test.assertTrue(ConfigurationFactory.deleteObject(NOT_WATCHED_FILE));
 
-        Delay.forMS(async, 400);
+        delayMS(async, 400);
+    }
+
+    private void delayMS(Async async, int ms) {
+        context.timer(ms, handler -> async.complete());
     }
 
     private void listenFiles(FileStoreListener listener) {

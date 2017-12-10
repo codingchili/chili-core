@@ -2,6 +2,8 @@ subprojects {
     dependencies {
         compile project(':core')
         compile project(':common')
+        testCompile 'io.vertx:vertx-unit:3.5.0'
+        testCompile 'junit:junit:4.12'
     }
     project.group = 'com.codingchili.service'
 }

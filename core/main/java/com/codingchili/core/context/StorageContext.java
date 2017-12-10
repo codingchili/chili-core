@@ -84,11 +84,11 @@ public class StorageContext<Value> extends SystemContext {
     /**
      * converts a byte array to a value using the deserialization template class
      *
-     * @param bytes bytes from a json-formatted string
+     * @param string  a json-formatted string
      * @return generic Value inflated using the bytes and template class.
      */
-    public Value toValue(byte[] bytes) {
-        return Serializer.unpack(bytes, valueClass);
+    public Value toValue(String string) {
+        return Serializer.unpack(string, valueClass);
     }
 
     /**

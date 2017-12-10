@@ -38,13 +38,6 @@ public class DelayTest {
     public void tearDown(TestContext test) {
         context.close(test.asyncAssertSuccess());
     }
-
-    @Test
-    public void testDelayAsync(TestContext test) {
-        Async async = test.async();
-        Delay.forMS(async, 1);
-    }
-
     @Test
     public void testDelayFuture(TestContext test) {
         Async async = test.async();

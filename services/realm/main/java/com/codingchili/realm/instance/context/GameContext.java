@@ -1,31 +1,21 @@
 package com.codingchili.realm.instance.context;
 
-import com.codingchili.core.context.SystemContext;
 import com.codingchili.realm.configuration.RealmContext;
-import com.codingchili.realm.instance.model.Entity;
-import com.codingchili.realm.instance.model.EventProtocol;
-import com.codingchili.realm.instance.model.Grid;
-import com.codingchili.realm.instance.model.Ticker;
-import com.codingchili.realm.instance.model.events.Event;
-import com.codingchili.realm.instance.model.events.EventType;
-import com.codingchili.realm.instance.model.events.ShutdownEvent;
-import com.codingchili.realm.instance.model.events.SpawnEvent;
+import com.codingchili.realm.instance.model.entity.*;
+import com.codingchili.realm.instance.model.events.*;
 import com.codingchili.realm.instance.model.npc.ListeningPerson;
 import com.codingchili.realm.instance.model.npc.TalkingPerson;
-import io.vertx.core.Future;
+import com.codingchili.realm.instance.model.spells.SpellEngine;
 import io.vertx.core.impl.ConcurrentHashSet;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.*;
 import java.util.function.Consumer;
 
 import com.codingchili.core.context.SystemContext;
 
-import static com.codingchili.realm.instance.context.LoopFactory.readLocked;
-import static com.codingchili.realm.instance.context.LoopFactory.writeLocked;
 import static com.codingchili.realm.instance.model.events.SpawnEvent.SpawnType.DESPAWN;
 
 /**
@@ -37,7 +27,7 @@ public class GameContext {
     private Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
     private AtomicBoolean closed = new AtomicBoolean(false);
     private Set<Ticker> tickers = new ConcurrentHashSet<>();
-    private ReadWriteLock loop = new ReentrantReadWriteLock();
+    private SpellEngine spells = new SpellEngine(this);
     private InstanceContext instance;
 
     private Long currentTick = 0L;
@@ -89,6 +79,10 @@ public class GameContext {
 
     public Grid getGrid() {
         return grid;
+    }
+
+    public SpellEngine getSpellEngine() {
+        return spells;
     }
 
     public void close() {
@@ -155,6 +149,10 @@ public class GameContext {
                 });
                 break;
         }
+    }
+
+    public Collection<Entity> getEntities() {
+        return entities.values();
     }
 
     public Optional<Entity> getEntity(Integer id) {
