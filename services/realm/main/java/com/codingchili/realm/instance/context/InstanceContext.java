@@ -18,6 +18,8 @@ import static com.codingchili.common.Strings.*;
  * @author Robin Duda
  */
 public class InstanceContext extends SystemContext implements ServiceContext {
+    private static final String LOG_INSTANCE_SKIPTICKS = "skippedTicks";
+    private static final String COUNT = "count";
     private Logger logger;
     private final String settings;
     private final RealmContext context;
@@ -25,7 +27,8 @@ public class InstanceContext extends SystemContext implements ServiceContext {
     public InstanceContext(RealmContext context, InstanceSettings instance) {
         super(context);
         this.context = context;
-        this.logger = context.logger(getClass());
+        this.logger = context.logger(getClass())
+            .setMetadata("instance", instance::getName);
         this.settings = instance.getPath();
     }
 
@@ -45,6 +48,11 @@ public class InstanceContext extends SystemContext implements ServiceContext {
         return context.service();
     }
 
+    @Override
+    public Logger logger(Class aClass) {
+        return logger;
+    }
+
     public boolean verifyToken(Token token) {
         return context.verifyToken(token);
     }
@@ -61,5 +69,10 @@ public class InstanceContext extends SystemContext implements ServiceContext {
                 .put(ID_REALM, realm).send();
 
         Delay.forShutdown(future);
+    }
+
+    public void skippedTicks(int ticks) {
+        logger.event(LOG_INSTANCE_SKIPTICKS, Level.WARNING)
+                .put(COUNT, ticks);
     }
 }

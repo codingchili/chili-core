@@ -1,12 +1,5 @@
 package com.codingchili.realm.configuration;
 
-import com.codingchili.core.context.*;
-import com.codingchili.core.files.Configurations;
-import com.codingchili.core.logging.Level;
-import com.codingchili.core.logging.Logger;
-import com.codingchili.core.security.Token;
-import com.codingchili.core.security.TokenFactory;
-import com.codingchili.core.storage.StorageLoader;
 import com.codingchili.realm.instance.context.InstanceSettings;
 import com.codingchili.realm.instance.model.entity.PlayerCharacter;
 import com.codingchili.realm.instance.model.entity.PlayerClass;
@@ -15,6 +8,14 @@ import com.codingchili.realm.model.CharacterDB;
 import io.vertx.core.Future;
 
 import java.util.List;
+
+import com.codingchili.core.context.*;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.logging.Level;
+import com.codingchili.core.logging.Logger;
+import com.codingchili.core.security.Token;
+import com.codingchili.core.security.TokenFactory;
+import com.codingchili.core.storage.StorageLoader;
 
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.core.logging.Level.ERROR;
@@ -26,15 +27,17 @@ import static com.codingchili.realm.configuration.RealmServerSettings.PATH_REALM
  * Context for realms.
  */
 public class RealmContext extends SystemContext implements ServiceContext {
+    private RealmSettings settings;
     private Logger logger;
-    private String settings;
 
-    public RealmContext(CoreContext core) {
+    public RealmContext(CoreContext core, RealmSettings settings) {
         super(core);
-        this.logger = core.logger(getClass());
+        this.settings = settings;
+        this.logger = core.logger(getClass())
+                .setMetadata("realm", realm()::getName);
     }
 
-    public Future<AsyncCharacterStore> getCharacterStore(RealmSettings realm) {
+    public Future<AsyncCharacterStore> getCharacterStore() {
         Future<AsyncCharacterStore> future = Future.future();
 
         new StorageLoader<PlayerCharacter>(new StorageContext<>(this))
@@ -43,7 +46,6 @@ public class RealmContext extends SystemContext implements ServiceContext {
                 .withCollection(COLLECTION_CHARACTERS)
                 .build(storage -> {
                     if (storage.succeeded()) {
-                        settings = realm.getPath();
                         future.complete(new CharacterDB(storage.result()));
                     } else {
                         future.fail(storage.cause());
@@ -53,8 +55,13 @@ public class RealmContext extends SystemContext implements ServiceContext {
         return future;
     }
 
+    @Override
+    public Logger logger(Class aClass) {
+        return logger;
+    }
+
     public RealmSettings realm() {
-        return Configurations.get(settings, RealmSettings.class);
+        return settings;
     }
 
     public RealmServerSettings service() {

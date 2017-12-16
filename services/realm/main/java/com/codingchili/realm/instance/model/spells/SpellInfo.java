@@ -1,7 +1,5 @@
 package com.codingchili.realm.instance.model.spells;
 
-import java.util.Map;
-
 public class SpellInfo {
     private String name;
     private String description;
@@ -12,8 +10,8 @@ public class SpellInfo {
     private boolean mobile = false;
     private Scripted casted;
 
-    public void apply(Map<String, ?> bindings) {
-        casted.eval(bindings);
+    public void apply(Bindings bindings) {
+        casted.apply(bindings);
     }
 
     public boolean isMobile() {
@@ -83,7 +81,7 @@ public class SpellInfo {
         return casted;
     }
 
-    public void setCasted(Scripted casted) {
+    public void Scripted(Scripted casted) {
         this.casted = casted;
     }
 }

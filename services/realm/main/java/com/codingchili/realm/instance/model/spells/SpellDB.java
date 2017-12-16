@@ -7,7 +7,7 @@ import java.util.*;
  *
  * Container of all registered spells.
  */
-public class SpellBase {
+public class SpellDB {
     private Map<String, Spell> spells = new HashMap<>();
     // todo: load spells from yaml.
 

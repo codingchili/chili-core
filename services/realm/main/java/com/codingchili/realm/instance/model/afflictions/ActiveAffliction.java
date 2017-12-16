@@ -1,23 +1,24 @@
-package com.codingchili.realm.instance.model.spells;
+package com.codingchili.realm.instance.model.afflictions;
 
 import com.codingchili.realm.instance.context.GameContext;
 import com.codingchili.realm.instance.model.entity.Entity;
+import com.codingchili.realm.instance.model.spells.Bindings;
 import com.codingchili.realm.instance.model.stats.Attribute;
 import com.codingchili.realm.instance.model.stats.Stats;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @author Robin Duda
  * <p>
  * Maps an active affliction onto an entity.
  */
-public class ActiveAffliction {
+public class ActiveAffliction extends Affliction {
+    private Stats stats = new Stats();
     private Affliction affliction;
     private Entity source;
     private Entity target;
     private Integer ticks;
+    private Long start = System.currentTimeMillis();
 
     public ActiveAffliction(Entity source, Entity target, Affliction affliction) {
         this.source = source;
@@ -27,11 +28,14 @@ public class ActiveAffliction {
     }
 
     public Stats modify(GameContext context) {
-        Stats stats = new Stats();
-        Map<String, Object> bindings = getBindings(context);
-        bindings.put("stats", stats);
-        affliction.apply(bindings);
+        stats.clear();
+        affliction.apply(getBindings(context).setStats(stats));
         return stats;
+    }
+
+    @JsonIgnore
+    public Long getStart() {
+        return start;
     }
 
     /**
@@ -39,19 +43,16 @@ public class ActiveAffliction {
      * @return true if still active.
      */
     public boolean tick(GameContext context) {
-        System.out.println(affliction.tick(getBindings(context)));
+        affliction.tick(getBindings(context));
+
         return (--ticks > 0);
     }
 
-    private Map<String, Object> getBindings(GameContext context) {
-        Map<String, Object> bindings = new HashMap<>();
-        bindings.put("source", source);
-        bindings.put("target", target);
-        bindings.put("context", context);
-        bindings.put("attribute", Attribute.class);
-        bindings.put("spell", context.getSpellEngine());
-        bindings.put("grid", context.getGrid());
-        return bindings;
+    private Bindings getBindings(GameContext context) {
+        return new Bindings()
+                .setContext(context)
+                .setAffliction(affliction)
+                .setAttribute(Attribute.class);
     }
 
     public Affliction getAffliction() {

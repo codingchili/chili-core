@@ -1,4 +1,4 @@
-package com.codingchili.realm.instance.model.spells;
+package com.codingchili.realm.instance.model.afflictions;
 
 import java.util.ArrayList;
 import java.util.Collection;

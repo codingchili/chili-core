@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Robin Duda
@@ -13,7 +14,7 @@ import java.util.*;
 public class Inventory implements Serializable {
     public static Inventory EMPTY = new Inventory();
 
-    private Map<Slot, Item> equipped = new HashMap<>();
+    private Map<Slot, Item> equipped = new ConcurrentHashMap<>();
     private List<Item> items = new ArrayList<>();
     private Stats stats = new Stats();
     private Integer space;
@@ -39,6 +40,10 @@ public class Inventory implements Serializable {
         }
         stats.clear();
         equipped.forEach((slot, item) -> stats = stats.apply(item.getStats()));
+    }
+
+    public void add(Item item) {
+        items.add(item);
     }
 
     public Integer getCurrency() {

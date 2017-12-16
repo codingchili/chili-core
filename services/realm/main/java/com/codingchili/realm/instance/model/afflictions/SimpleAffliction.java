@@ -1,12 +1,9 @@
-package com.codingchili.realm.instance.model.items;
+package com.codingchili.realm.instance.model.afflictions;
 
-import com.codingchili.realm.instance.model.spells.Affliction;
-
-import java.util.HashMap;
+import com.codingchili.realm.instance.model.spells.Bindings;
+import com.codingchili.realm.instance.model.spells.JexlScript;
 
 import com.codingchili.core.protocol.Serializer;
-
-import static com.codingchili.realm.instance.model.spells.ScriptEngine.script;
 
 /**
  * @author Robin Duda
@@ -16,8 +13,8 @@ public class SimpleAffliction extends Affliction {
         name = "Bleeding";
         description = "you are injured.";
         duration = 30;
-        tick = script("return 1;");
-        modifier = script("return 2;");
+        tick = new JexlScript("return 1;");
+        modifier = new JexlScript("return 2;");
     }
 
     public static void main(String[] args) {
@@ -27,6 +24,6 @@ public class SimpleAffliction extends Affliction {
 
         Affliction affYaml = Serializer.unyaml(yaml, Affliction.class);
 
-        System.out.println(affYaml.apply(new HashMap<>()));
+        System.out.println((String) affYaml.apply(new Bindings()));
     }
 }

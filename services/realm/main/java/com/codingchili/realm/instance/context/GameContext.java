@@ -1,6 +1,7 @@
 package com.codingchili.realm.instance.context;
 
 import com.codingchili.realm.configuration.RealmContext;
+import com.codingchili.realm.configuration.RealmSettings;
 import com.codingchili.realm.instance.model.entity.*;
 import com.codingchili.realm.instance.model.events.*;
 import com.codingchili.realm.instance.model.npc.ListeningPerson;
@@ -11,10 +12,12 @@ import io.vertx.core.impl.ConcurrentHashSet;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.*;
 import java.util.function.Consumer;
 
 import com.codingchili.core.context.SystemContext;
+import com.codingchili.core.logging.Level;
+import com.codingchili.core.logging.Logger;
 
 import static com.codingchili.realm.instance.model.events.SpawnEvent.SpawnType.DESPAWN;
 
@@ -22,54 +25,73 @@ import static com.codingchili.realm.instance.model.events.SpawnEvent.SpawnType.D
  * @author Robin Duda
  */
 public class GameContext {
+    public static final int TICK_RATE = 20;
     private Map<EventType, Map<Integer, EventProtocol>> listeners = new ConcurrentHashMap<>();
     private Map<Integer, Entity> entities = new ConcurrentHashMap<>();
     private Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
-    private AtomicBoolean closed = new AtomicBoolean(false);
     private Set<Ticker> tickers = new ConcurrentHashSet<>();
     private SpellEngine spells = new SpellEngine(this);
+    private AtomicBoolean processing = new AtomicBoolean(false);
+    private AtomicBoolean closed = new AtomicBoolean(false);
     private InstanceContext instance;
+    private Logger logger;
 
     private Long currentTick = 0L;
     private Grid grid;
 
     public GameContext(InstanceContext instance) {
+        this.logger = instance.logger(getClass());
         this.instance = instance;
         this.grid = new Grid(256, instance.settings().getWidth());
 
-        instance.periodic(() -> 20, instance.address(), this::tick);
+        instance.periodic(() -> TICK_RATE, instance.address(), this::tick);
     }
 
+    private AtomicInteger skippedTicks = new AtomicInteger(0);
+
     private void tick(Long timer) {
-        // instance.blocking(block -> {
 
-        // todo: if the last tick is not completed yet skip this tick, and log it.
-
-        Runnable runnable;
-        while ((runnable = queue.poll()) != null) {
-            runnable.run();
-        }
-
-        grid.update(entities.values());
-
-        // todo call ticks with delta
-        tickers.forEach(ticker -> {
-            if (currentTick % ticker.getTick() == 0) {
-                ticker.run();
-            }
-        });
-
-        //         block.complete();
-        //    }, (done) -> {
-        if (closed.get()) {
-            instance.cancel(timer);
+        if (processing.getAndSet(true)) {
+            skippedTicks.incrementAndGet();
         } else {
-            currentTick++;
-            if (currentTick == Long.MAX_VALUE) {
-                currentTick = 0L;
+
+            if (skippedTicks.get() > 0) {
+                instance.skippedTicks(skippedTicks.getAndSet(0));
             }
+
+            instance.blocking(block -> {
+                Runnable runnable;
+                while ((runnable = queue.poll()) != null) {
+                    runnable.run();
+                }
+
+                grid.update(entities.values());
+
+                tickers.forEach(ticker -> {
+                    if (currentTick % ticker.getTick() == 0) {
+                        ticker.run();
+                    }
+                });
+
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                block.complete();
+            }, (done) -> {
+                if (closed.get()) {
+                    instance.cancel(timer);
+                } else {
+                    currentTick++;
+                    if (currentTick == Long.MAX_VALUE) {
+                        currentTick = 0L;
+                    }
+                }
+                processing.set(false);
+            });
         }
-        //      });
     }
 
     public GameContext runLater(Runnable runnable) {
@@ -81,13 +103,13 @@ public class GameContext {
         return grid;
     }
 
-    public SpellEngine getSpellEngine() {
+    public SpellEngine getSpells() {
         return spells;
     }
 
     public void close() {
         closed.set(true);
-        publishEvent(new ShutdownEvent());
+        publish(new ShutdownEvent());
     }
 
     public Ticker ticker(Consumer<Ticker> runnable, Integer interval) {
@@ -104,13 +126,13 @@ public class GameContext {
 
     public void addEntity(Entity entity) {
         entities.put(entity.getId(), entity);
-        publishEvent(new SpawnEvent().setEntity(entity));
+        publish(new SpawnEvent().setEntity(entity));
         System.out.println("spawned entity " + entity.getId() + " at " + entity.getVector());
     }
 
     public void removeEntity(Entity entity) {
         entities.remove(entity.getId());
-        publishEvent(new SpawnEvent().setEntity(entity).setType(DESPAWN));
+        publish(new SpawnEvent().setEntity(entity).setType(DESPAWN));
         unsubscribe(entity);
     }
 
@@ -131,7 +153,7 @@ public class GameContext {
         return protocol;
     }
 
-    public void publishEvent(Event event) {
+    public void publish(Event event) {
         Map<Integer, EventProtocol> scoped = listeners.computeIfAbsent(event.getType(), (key) -> new ConcurrentHashMap<>());
         String type = event.getType().toString();
 
@@ -151,6 +173,10 @@ public class GameContext {
         }
     }
 
+    public Logger getLogger() {
+        return instance.logger(getClass());
+    }
+
     public Collection<Entity> getEntities() {
         return entities.values();
     }
@@ -160,10 +186,13 @@ public class GameContext {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        InstanceContext ins = new InstanceContext(new RealmContext(new SystemContext()), new InstanceSettings());
+        RealmSettings settings = new RealmSettings().setName("testing");
+        RealmContext realm = new RealmContext(new SystemContext(), settings);
+        InstanceContext ins = new InstanceContext(realm, new InstanceSettings());
+
         GameContext game = new GameContext(ins);
 
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < 200; i++) {
             game.addEntity(new TalkingPerson(game));
             game.addEntity(new TalkingPerson(game));
             game.addEntity(new ListeningPerson(game));
@@ -179,6 +208,8 @@ public class GameContext {
         }*/
         System.out.println("END: " + (System.currentTimeMillis() - time) + "ms.");
         System.out.println(ListeningPerson.called);
+
+        //game.ticker((ticker) -> System.out.println(ticker.delta()), 1);
 
         //  System.exit(0);
 

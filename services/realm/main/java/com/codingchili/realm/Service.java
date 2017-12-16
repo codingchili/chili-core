@@ -73,7 +73,7 @@ public class Service implements CoreService {
 
             if (response.failed()) {
                 // If no response then the id is not already in use.
-                    RealmContext realmContext = new RealmContext(context);
+                    RealmContext realmContext = new RealmContext(context, realm);
                     CoreListener listener = new ClusterListener()
                             .handler(new CharacterHandler(realmContext));
 

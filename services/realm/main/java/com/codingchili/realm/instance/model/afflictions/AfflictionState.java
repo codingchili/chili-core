@@ -1,12 +1,11 @@
-package com.codingchili.realm.instance.model.spells;
+package com.codingchili.realm.instance.model.afflictions;
 
 import com.codingchili.realm.instance.context.GameContext;
-import com.codingchili.realm.instance.model.stats.Attribute;
 import com.codingchili.realm.instance.model.stats.Stats;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
@@ -15,7 +14,7 @@ import java.util.function.Predicate;
  */
 public class AfflictionState {
     private Stats stats = new Stats();
-    private List<ActiveAffliction> list = new ArrayList<>();
+    private Queue<ActiveAffliction> list = new ConcurrentLinkedQueue<>();
 
     @JsonIgnore
     public Stats getStats() {
@@ -27,11 +26,11 @@ public class AfflictionState {
         this.stats = modifiers;
     }
 
-    public List<ActiveAffliction> getList() {
+    public Queue<ActiveAffliction> getList() {
         return list;
     }
 
-    public void setList(List<ActiveAffliction> list) {
+    public void setList(Queue<ActiveAffliction> list) {
         this.list = list;
     }
 
@@ -53,7 +52,7 @@ public class AfflictionState {
 
         if (removed.get()) {
             update(game);
-            System.out.println("post remove str is " + stats.get(Attribute.strength));
+            //System.out.println("post remove str is " + stats.get(Attribute.strength));
         }
     }
 
@@ -62,6 +61,6 @@ public class AfflictionState {
         list.forEach(active ->
                 stats = stats.apply(active.modify(game)));
 
-        System.out.println("post update str is " + stats.get(Attribute.strength));
+        //System.out.println("post update str is " + stats.get(Attribute.strength));
     }
 }

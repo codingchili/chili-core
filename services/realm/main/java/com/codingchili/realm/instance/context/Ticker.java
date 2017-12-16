@@ -6,11 +6,14 @@ import java.util.function.Consumer;
 
 /**
  * @author Robin Duda
+ *
+ * Ticker executes periodically on the game loop.
  */
 public class Ticker {
     private int id = UUID.randomUUID().hashCode();
     private GameContext context;
     private AtomicInteger tick;
+    private Long lastTick = System.currentTimeMillis();
     private Consumer<Ticker> exec;
 
     public Ticker(GameContext context, Consumer<Ticker> exec, Integer tick) {
@@ -21,13 +24,26 @@ public class Ticker {
     }
 
     public void run() {
+        Long currentTick = System.currentTimeMillis();
+
+        if (lastTick > currentTick) {
+            // prevent overflow caused by low accuracy.
+            lastTick = currentTick;
+        } else {
+            lastTick = currentTick - lastTick;
+        }
         exec.accept(this);
+        lastTick = System.currentTimeMillis();
     }
 
     public Ticker interval(Integer tick) {
         this.tick.set(tick);
         context.setTicker(this);
         return this;
+    }
+
+    public Long delta() {
+        return lastTick;
     }
 
     public Ticker disable() {

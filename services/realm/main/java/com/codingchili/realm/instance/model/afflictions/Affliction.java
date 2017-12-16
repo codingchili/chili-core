@@ -1,8 +1,7 @@
-package com.codingchili.realm.instance.model.spells;
+package com.codingchili.realm.instance.model.afflictions;
 
 import com.codingchili.realm.instance.model.entity.Entity;
-
-import java.util.Map;
+import com.codingchili.realm.instance.model.spells.*;
 
 /**
  * @author Robin Duda
@@ -11,8 +10,9 @@ public class Affliction {
     protected String name = "missing name";
     protected String description = "missing description";
     protected Integer duration = 30;
-    protected Integer interval = 10;
+    protected Integer interval = 50;
     protected Float chance = 1.0f;
+    protected DamageType type = DamageType.magical;
     protected Scripted modifier;
     protected Scripted tick;
 
@@ -28,16 +28,16 @@ public class Affliction {
         this.name = name;
     }
 
-    public Object tick(Map<String, ?> bindings) {
-        if (tick != null) {
-            return tick.eval(bindings);
+    public <T> T tick(Bindings bindings) {
+        if (tick != null && interval > 0) {
+            return tick.apply(bindings);
         }
         return null;
     }
 
-    public Object apply(Map<String, ?> bindings) {
+    public <T> T apply(Bindings bindings) {
         if (modifier != null) {
-            return modifier.eval(bindings);
+            return modifier.apply(bindings);
         }
         return null;
     }
@@ -66,20 +66,20 @@ public class Affliction {
         this.chance = chance;
     }
 
-    public String getModifier() {
-        return modifier.getSource();
+    public Scripted getModifier() {
+        return modifier;
     }
 
-    public void setModifier(String modifier) {
-        this.modifier = ScriptEngine.script(modifier);
+    public void setModifier(Scripted modifier) {
+        this.modifier = modifier;
     }
 
-    public String getTick() {
-        return tick.getSource();
+    public Scripted getTick() {
+        return tick;
     }
 
-    public void setTick(String tick) {
-        this.tick = ScriptEngine.script(tick);
+    public void setTick(Scripted tick) {
+        this.tick = tick;
     }
 
     public Integer getInterval() {
@@ -88,5 +88,13 @@ public class Affliction {
 
     public void setInterval(Integer interval) {
         this.interval = interval;
+    }
+
+    public DamageType getType() {
+        return type;
+    }
+
+    public void setType(DamageType type) {
+        this.type = type;
     }
 }

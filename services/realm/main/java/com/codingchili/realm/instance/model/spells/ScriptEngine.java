@@ -1,7 +1,10 @@
 package com.codingchili.realm.instance.model.spells;
 
-import org.apache.commons.jexl2.JexlEngine;
-import org.apache.commons.jexl2.Script;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
+import com.codingchili.core.context.CoreRuntimeException;
 
 /**
  * @author Robin Duda
@@ -9,15 +12,11 @@ import org.apache.commons.jexl2.Script;
  * Encapsulates the scripting implementation.
  */
 public class ScriptEngine {
-    private static JexlEngine engine = new JexlEngine();
+    private static Map<String, Function<String, Scripted>> engines = new HashMap<>();
 
-    /**
-     * Creates a new jexl script.
-     * @param source the jexl source to create a script from.
-     * @return an instance of a jexl script.
-     */
-    static Script jexl(String source) {
-        return engine.createScript(source);
+    static {
+        engines.put(JexlScript.NAME, JexlScript::new);
+        engines.put(NativeScript.NAME, NativeScript::new);
     }
 
     /**
@@ -26,7 +25,14 @@ public class ScriptEngine {
      * @param source the source to create the script from.
      * @return an executable script.
      */
-    public static Scripted script(String source) {
-        return new JexlScript().setSource(source);
+    public static Scripted script(String source, String engine) {
+        Function<String, Scripted> provider = engines.get(engine);
+
+        if (provider != null) {
+            return provider.apply(source);
+        } else {
+            throw new CoreRuntimeException(
+                    String.format("No script engine registered with name '%s'.", engine));
+        }
     }
 }

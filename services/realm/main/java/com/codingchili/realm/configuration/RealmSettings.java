@@ -5,7 +5,7 @@ import com.codingchili.core.files.ConfigurationFactory;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Token;
 import com.codingchili.realm.instance.context.InstanceSettings;
-import com.codingchili.realm.instance.model.spells.Affliction;
+import com.codingchili.realm.instance.model.afflictions.Affliction;
 import com.codingchili.realm.instance.model.entity.PlayerCharacter;
 import com.codingchili.realm.instance.model.entity.PlayerClass;
 import com.fasterxml.jackson.annotation.JsonIgnore;

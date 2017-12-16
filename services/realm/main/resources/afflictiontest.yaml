@@ -1,12 +1,17 @@
 ---
 name: "Berserk"
 description: "Becomes enraged and gain massive strength."
-duration: 15.0
+duration: 120.0
 chance: 1.0
-modifier: |
-  stats[attribute.intelligence] = -5.0;
-  stats[attribute.strength] = 8.0;
-  return stats[attribute.strength];
-tick: |
-  damage = source.stats[attribute.strength] * -1.0;
-  spell.damage(source, target, damage, 'physical');
+type: "physical"
+modifier:
+  jexl: |
+    stats[attribute.intelligence] = -5.0;
+    stats[attribute.strength] = 8.0;
+    return stats[attribute.strength];
+tick:
+  jexl: |
+    damage = affliction.source.stats[attribute.strength] * -1.0;
+
+    // affliction.damage ?
+    context.spells.damage(affliction, damage);

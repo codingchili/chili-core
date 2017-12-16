@@ -40,7 +40,7 @@ public class CharacterHandler implements CoreHandler {
 
     @Override
     public void start(Future<Void> future) {
-        context.getCharacterStore(context.realm()).setHandler(done -> {
+        context.getCharacterStore().setHandler(done -> {
            if (done.succeeded()) {
                characters = done.result();
                context.onRealmStarted(context.realm().getName());
@@ -52,7 +52,7 @@ public class CharacterHandler implements CoreHandler {
     }
 
     private void instanceHandler(Request request) {
-        // todo forward to settings
+        // todo forward to instance handlers.
     }
 
     private void registerRealm(Long handler) {

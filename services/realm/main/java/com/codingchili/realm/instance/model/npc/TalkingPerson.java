@@ -15,12 +15,12 @@ public class TalkingPerson extends SimpleEntity {
     public TalkingPerson(GameContext game) {
         super(game);
         this.game = game;
-        game.ticker(this::tick, 80);
+        game.ticker(this::tick, 20);
     }
 
     public void tick(Ticker ticker) {
         Event event = new ChatEvent(this, "HELLO GUYS!" + id);
  //       System.out.println("published EVENT");
-        game.publishEvent(event);
+        game.publish(event);
     }
 }

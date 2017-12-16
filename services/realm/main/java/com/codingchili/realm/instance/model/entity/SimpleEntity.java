@@ -3,7 +3,8 @@ package com.codingchili.realm.instance.model.entity;
 import com.codingchili.realm.instance.context.GameContext;
 import com.codingchili.realm.instance.model.events.Event;
 import com.codingchili.realm.instance.model.items.Inventory;
-import com.codingchili.realm.instance.model.spells.AfflictionState;
+import com.codingchili.realm.instance.model.afflictions.AfflictionState;
+import com.codingchili.realm.instance.model.spells.SpellState;
 import com.codingchili.realm.instance.model.stats.Attribute;
 import com.codingchili.realm.instance.model.stats.Stats;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -18,6 +19,7 @@ public abstract class SimpleEntity implements Entity {
     protected Integer id = UUID.randomUUID().hashCode();
     protected Inventory inventory = Inventory.EMPTY;
     protected AfflictionState afflictions = new AfflictionState();
+    protected SpellState spells = new SpellState();
     protected Stats stats = new Stats().add(Attribute.strength, 3).add(Attribute.health, 300);
     protected EventProtocol protocol;
     protected GameContext context;
@@ -66,6 +68,10 @@ public abstract class SimpleEntity implements Entity {
         return stats;
     }
 
+    @Override
+    public SpellState getSpells() {
+        return spells;
+    }
 
     @JsonIgnore
     public Stats getStats() {

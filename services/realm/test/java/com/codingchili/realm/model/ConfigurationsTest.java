@@ -7,7 +7,7 @@ import com.codingchili.core.protocol.Serializer;
 import com.codingchili.realm.instance.model.entity.PlayerCharacter;
 import com.codingchili.realm.instance.model.entity.PlayerClass;
 import com.codingchili.realm.instance.model.items.Inventory;
-import com.codingchili.realm.instance.model.spells.AfflictionList;
+import com.codingchili.realm.instance.model.afflictions.AfflictionList;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
