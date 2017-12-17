@@ -1,7 +1,7 @@
 {
   "attributes" : { },
   "name" : "Assassin",
-  "description" : "Sneaking in the shadows the short blade of their dagger stabs their victims, often to death.",
+  "description" : "",
   "spells" : [ {
     "name" : "backstabber",
     "description" : "Deals 3x attack when attacking from stealth & stuns the target.",

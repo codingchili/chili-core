@@ -1,0 +1,28 @@
+---
+name: "Slayer"
+description: "A ferocious murderer feeding on the fear and blood of their victims, melee fighting with health-based damage."
+weapons:
+  - "axe"
+armors:
+  - "mail"
+  - "plate"
+spells:
+  - "bloodlust"
+  - "bleeding strike"
+  - "murder"
+  - "berserk"
+  - "blood strike"
+  - "maiming strike"
+  - "break armor"
+  - "blood rage"
+  - "axe swing"
+stats:
+  strength: 20
+  intelligence: 5
+  wisdom: 5
+  constitution: 10
+  magicResist: 0
+  armorClass: 0
+  dexterity: 5
+  experience: 0
+  level: 1

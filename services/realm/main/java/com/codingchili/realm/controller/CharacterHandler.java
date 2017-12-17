@@ -1,17 +1,16 @@
 package com.codingchili.realm.controller;
 
-import com.codingchili.core.listener.CoreHandler;
-import com.codingchili.core.listener.Request;
-import com.codingchili.core.protocol.Protocol;
-import com.codingchili.core.protocol.Role;
-import com.codingchili.core.protocol.Serializer;
 import com.codingchili.realm.configuration.RealmContext;
-import com.codingchili.realm.instance.model.entity.PlayerCharacter;
-import com.codingchili.realm.instance.model.entity.PlayerClass;
+import com.codingchili.realm.instance.model.entity.PlayableClass;
+import com.codingchili.realm.instance.model.entity.PlayerEntity;
 import com.codingchili.realm.model.*;
 import io.vertx.core.Future;
 
 import java.util.Collection;
+
+import com.codingchili.core.listener.CoreHandler;
+import com.codingchili.core.listener.Request;
+import com.codingchili.core.protocol.*;
 
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
@@ -41,18 +40,18 @@ public class CharacterHandler implements CoreHandler {
     @Override
     public void start(Future<Void> future) {
         context.getCharacterStore().setHandler(done -> {
-           if (done.succeeded()) {
-               characters = done.result();
-               context.onRealmStarted(context.realm().getName());
-               future.complete();
-           } else {
+            if (done.succeeded()) {
+                characters = done.result();
+                context.onRealmStarted(context.realm().getName());
+                future.complete();
+            } else {
                 future.fail(done.cause());
-           }
+            }
         });
     }
 
     private void instanceHandler(Request request) {
-        // todo forward to instance handlers.
+        // todo forward to instance
     }
 
     private void registerRealm(Long handler) {
@@ -88,7 +87,7 @@ public class CharacterHandler implements CoreHandler {
     private void characterList(RealmRequest request) {
         characters.findByUsername(characters -> {
             if (characters.succeeded()) {
-                Collection<PlayerCharacter> result = characters.result();
+                Collection<PlayerEntity> result = characters.result();
 
                 if (result != null) {
                     request.write(new CharacterList(context.realm(), result));
@@ -102,31 +101,25 @@ public class CharacterHandler implements CoreHandler {
     }
 
     private void characterCreate(RealmRequest request) {
-        try {
-            characters.create(creation -> {
-                if (creation.succeeded()) {
-                    request.accept();
-                } else {
-                    request.error(new CharacterExistsException(request.character()));
-                }
-            }, request.account(), readTemplate(request.character(), request.className()));
-        } catch (PlayerClassDisabledException e) {
-            request.error(e);
-        }
+        characters.create(creation -> {
+            if (creation.succeeded()) {
+                request.accept();
+            } else {
+                request.error(new CharacterExistsException(request.character()));
+            }
+
+            // todo: create a PlayerEntity from the template.
+            // playerentity is the serializable entity.
+        }, request.account(), new PlayerEntity(null));
     }
 
-    private PlayerCharacter readTemplate(String characterName, String className) throws PlayerClassDisabledException {
-        boolean enabled = false;
+    private PlayableClass readTemplate(String characterName, String className) throws PlayerClassDisabledException {
 
-        for (PlayerClass pc : context.getClasses()) {
+        for (PlayableClass pc : context.getClasses()) {
             if (pc.getName().equals(className))
-                enabled = true;
+                return pc;
         }
-
-        if (enabled) {
-            return new PlayerCharacter(context.getTemplate(), characterName, className);
-        } else
-            throw new PlayerClassDisabledException();
+        throw new PlayerClassDisabledException();
     }
 
     private Role authenticator(Request request) {

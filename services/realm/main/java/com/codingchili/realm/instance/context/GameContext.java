@@ -12,11 +12,11 @@ import io.vertx.core.impl.ConcurrentHashSet;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import com.codingchili.core.context.SystemContext;
-import com.codingchili.core.logging.Level;
 import com.codingchili.core.logging.Logger;
 
 import static com.codingchili.realm.instance.model.events.SpawnEvent.SpawnType.DESPAWN;
@@ -27,7 +27,7 @@ import static com.codingchili.realm.instance.model.events.SpawnEvent.SpawnType.D
 public class GameContext {
     public static final int TICK_RATE = 20;
     private Map<EventType, Map<Integer, EventProtocol>> listeners = new ConcurrentHashMap<>();
-    private Map<Integer, Entity> entities = new ConcurrentHashMap<>();
+    private Map<String, Entity> entities = new ConcurrentHashMap<>();
     private Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
     private Set<Ticker> tickers = new ConcurrentHashSet<>();
     private SpellEngine spells = new SpellEngine(this);

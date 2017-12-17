@@ -12,7 +12,6 @@ public class Affliction {
     protected Integer duration = 30;
     protected Integer interval = 50;
     protected Float chance = 1.0f;
-    protected DamageType type = DamageType.magical;
     protected Scripted modifier;
     protected Scripted tick;
 
@@ -88,13 +87,5 @@ public class Affliction {
 
     public void setInterval(Integer interval) {
         this.interval = interval;
-    }
-
-    public DamageType getType() {
-        return type;
-    }
-
-    public void setType(DamageType type) {
-        this.type = type;
     }
 }

@@ -1,0 +1,6 @@
+---
+name: "haste"
+description: "Casting time and cooldowns reduced by 20%."
+modifier:
+  jexl: |
+    stats[attribute.haste] = target.stats[attribute.haste] * 1.20;

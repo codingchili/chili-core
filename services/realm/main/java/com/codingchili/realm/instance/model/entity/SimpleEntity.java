@@ -16,7 +16,8 @@ import java.util.UUID;
  * @author Robin Duda
  */
 public abstract class SimpleEntity implements Entity {
-    protected Integer id = UUID.randomUUID().hashCode();
+    private Stats calculated = new Stats();
+    protected String id = UUID.randomUUID().toString();
     protected Inventory inventory = Inventory.EMPTY;
     protected AfflictionState afflictions = new AfflictionState();
     protected SpellState spells = new SpellState();
@@ -59,13 +60,17 @@ public abstract class SimpleEntity implements Entity {
     }
 
     @Override
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
     @Override
     public Stats getBaseStats() {
         return stats;
+    }
+
+    public void setBaseStats(Stats stats) {
+        this.stats = stats;
     }
 
     @Override
@@ -75,11 +80,32 @@ public abstract class SimpleEntity implements Entity {
 
     @JsonIgnore
     public Stats getStats() {
-        return new Stats().apply(inventory.getStats()).apply(afflictions.getStats()).apply(stats);
+        calculated.clear();
+        return calculated.apply(inventory.getStats()).apply(afflictions.getStats()).apply(stats);
     }
 
     @Override
     public String getName() {
         return "<no name>";
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setInventory(Inventory inventory) {
+        this.inventory = inventory;
+    }
+
+    public void setAfflictions(AfflictionState afflictions) {
+        this.afflictions = afflictions;
+    }
+
+    public void setSpells(SpellState spells) {
+        this.spells = spells;
+    }
+
+    public void setVector(Vector vector) {
+        this.vector = vector;
     }
 }

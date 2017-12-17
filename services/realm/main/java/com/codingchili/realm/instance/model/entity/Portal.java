@@ -15,7 +15,7 @@ public class Portal extends SimpleEntity {
     }
 
     @Override
-    public Integer getId() {
+    public String getId() {
         return null;
     }
 

@@ -1,0 +1,28 @@
+---
+name: "Druid"
+description: "Restores the balance of all things nature with their staff, aids their allies with magic buffs."
+weapons:
+  - "staff"
+armors:
+  - "cloth"
+  - "leather"
+spells:
+  - "natures blessing"
+  - "divine sight"
+  - "empower"
+  - "regeneration"
+  - "banish"
+  - "ensnare"
+  - "restoration"
+  - "curse"
+  - "staff whack"
+stats:
+  strength: 5
+  intelligence: 5
+  wisdom: 10
+  constitution: 10
+  dexterity: 5
+  magicResist: 10
+  armorClass: 0
+  experience: 0
+  level: 1

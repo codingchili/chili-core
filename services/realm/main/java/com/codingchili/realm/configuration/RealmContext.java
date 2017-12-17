@@ -1,8 +1,8 @@
 package com.codingchili.realm.configuration;
 
 import com.codingchili.realm.instance.context.InstanceSettings;
-import com.codingchili.realm.instance.model.entity.PlayerCharacter;
-import com.codingchili.realm.instance.model.entity.PlayerClass;
+import com.codingchili.realm.instance.model.entity.PlayerEntity;
+import com.codingchili.realm.instance.model.entity.PlayableClass;
 import com.codingchili.realm.model.AsyncCharacterStore;
 import com.codingchili.realm.model.CharacterDB;
 import io.vertx.core.Future;
@@ -40,9 +40,9 @@ public class RealmContext extends SystemContext implements ServiceContext {
     public Future<AsyncCharacterStore> getCharacterStore() {
         Future<AsyncCharacterStore> future = Future.future();
 
-        new StorageLoader<PlayerCharacter>(new StorageContext<>(this))
+        new StorageLoader<PlayerEntity>(new StorageContext<>(this))
                 .withPlugin(service().getStorage())
-                .withValue(PlayerCharacter.class)
+                .withValue(PlayerEntity.class)
                 .withCollection(COLLECTION_CHARACTERS)
                 .build(storage -> {
                     if (storage.succeeded()) {
@@ -76,12 +76,12 @@ public class RealmContext extends SystemContext implements ServiceContext {
         return realm().getInstances();
     }
 
-    public List<PlayerClass> getClasses() {
+    public List<PlayableClass> getClasses() {
         return realm().getClasses();
     }
 
-    public PlayerCharacter getTemplate() {
-        return realm().getTemplate();
+    public List<PlayableClass> getTemplate() {
+        return realm().getClasses();
     }
 
     public boolean verifyToken(Token token) {

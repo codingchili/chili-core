@@ -9,6 +9,7 @@ import com.codingchili.realm.instance.model.stats.Stats;
 import java.util.Set;
 
 import com.codingchili.core.listener.Receiver;
+import com.codingchili.core.storage.Storable;
 
 /**
  * @author Robin Duda
@@ -20,7 +21,7 @@ import com.codingchili.core.listener.Receiver;
  * Entities can travel between worlds/instances, therefore their state must be
  * attached to the entity and not the instances context.
  */
-public interface Entity extends Receiver<Event> {
+public interface Entity extends Storable, Receiver<Event> {
 
     /**
      * @return the display name of the entity.
@@ -30,7 +31,7 @@ public interface Entity extends Receiver<Event> {
     /**
      * @return the unique identifier of the entity.
      */
-    Integer getId();
+    String getId();
 
     /**
      * @return the position of the entity in the game world.

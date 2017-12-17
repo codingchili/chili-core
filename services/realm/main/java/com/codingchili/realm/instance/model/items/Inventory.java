@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Robin Duda
+ * <p>
  * Represents a characters inventory.
  */
 public class Inventory implements Serializable {
@@ -26,6 +27,9 @@ public class Inventory implements Serializable {
     }
 
     public void equip(int index) {
+
+        // todo: must check if allowed to equip.
+
         if (index <= items.size()) {
             Item item = items.get(index);
 

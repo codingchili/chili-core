@@ -1,24 +1,22 @@
 package com.codingchili.realm.configuration;
 
-import com.codingchili.core.configuration.AttributeConfigurable;
-import com.codingchili.core.files.ConfigurationFactory;
-import com.codingchili.core.protocol.Serializer;
-import com.codingchili.core.security.Token;
 import com.codingchili.realm.instance.context.InstanceSettings;
 import com.codingchili.realm.instance.model.afflictions.Affliction;
-import com.codingchili.realm.instance.model.entity.PlayerCharacter;
-import com.codingchili.realm.instance.model.entity.PlayerClass;
+import com.codingchili.realm.instance.model.entity.PlayableClass;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.vertx.core.json.JsonObject;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
+import com.codingchili.core.configuration.AttributeConfigurable;
+import com.codingchili.core.files.ConfigurationFactory;
+import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.security.Token;
 
 import static com.codingchili.common.Strings.*;
-import static com.codingchili.core.files.Configurations.available;
-import static com.codingchili.core.files.Configurations.get;
+import static com.codingchili.core.files.Configurations.*;
 
 /**
  * @author Robin Duda
@@ -28,9 +26,8 @@ import static com.codingchili.core.files.Configurations.get;
 @JsonIgnoreProperties({"instances"})
 public class RealmSettings extends AttributeConfigurable {
     private final List<InstanceSettings> instances = new ArrayList<>();
-    private List<PlayerClass> classes = new ArrayList<>();
+    private List<PlayableClass> classes = new ArrayList<>();
     private List<Affliction> afflictions = new ArrayList<>();
-    private PlayerCharacter template = new PlayerCharacter();
     private Token authentication;
     private String description;
     private String resources;
@@ -68,7 +65,6 @@ public class RealmSettings extends AttributeConfigurable {
         RealmSettings copy = new RealmSettings()
                 .setClasses(classes)
                 .setAfflictions(afflictions)
-                .setTemplate(template)
                 .setDescription(description)
                 .setResources(resources)
                 .setVersion(version)
@@ -93,7 +89,6 @@ public class RealmSettings extends AttributeConfigurable {
         readInstances(instances);
         readPlayerClasses();
         readAfflictions();
-        readTemplate();
     }
 
     private void readInstances(List<String> enabled) {
@@ -108,7 +103,7 @@ public class RealmSettings extends AttributeConfigurable {
         available(PATH_GAME_CLASSES).stream()
                 .map(path -> override(path, name))
                 .map(ConfigurationFactory::readObject)
-                .map(json -> Serializer.unpack(json, PlayerClass.class))
+                .map(json -> Serializer.unpack(json, PlayableClass.class))
                 .forEach(classes::add);
     }
 
@@ -117,11 +112,6 @@ public class RealmSettings extends AttributeConfigurable {
                 .map(path -> override(path, name))
                 .map(ConfigurationFactory::readObject)
                 .forEach(affliction -> afflictions.add(Serializer.unpack(affliction, Affliction.class)));
-    }
-
-    private void readTemplate() {
-        JsonObject json = ConfigurationFactory.readObject(override(PATH_GAME_PLAYERTEMPLATE, name));
-        this.template = Serializer.unpack(json, PlayerCharacter.class);
     }
 
     /**
@@ -157,22 +147,6 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     /**
-     * @return the template to use for creating new characters.
-     */
-    public PlayerCharacter getTemplate() {
-        return template;
-    }
-
-    /**
-     * @param template the template to use when creating new characters.
-     * @return fluent
-     */
-    public RealmSettings setTemplate(PlayerCharacter template) {
-        this.template = template;
-        return this;
-    }
-
-    /**
      * @return a list of all afflictions configured.
      */
     public List<Affliction> getAfflictions() {
@@ -200,7 +174,7 @@ public class RealmSettings extends AttributeConfigurable {
     /**
      * @return return all available player classes.
      */
-    public List<PlayerClass> getClasses() {
+    public List<PlayableClass> getClasses() {
         return classes;
     }
 
@@ -208,7 +182,7 @@ public class RealmSettings extends AttributeConfigurable {
      * @param classes sets a list of available player classes.
      * @return fluent
      */
-    public RealmSettings setClasses(List<PlayerClass> classes) {
+    public RealmSettings setClasses(List<PlayableClass> classes) {
         this.classes = classes;
         return this;
     }
@@ -217,7 +191,7 @@ public class RealmSettings extends AttributeConfigurable {
      * @param klass the playerclass to add to available.
      * @return fluent
      */
-    public RealmSettings addClass(PlayerClass klass) {
+    public RealmSettings addClass(PlayableClass klass) {
         this.classes.add(klass);
         return this;
     }

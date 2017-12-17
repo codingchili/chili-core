@@ -1,7 +1,7 @@
 package com.codingchili.realm.model;
 
 import com.codingchili.core.storage.AsyncStorage;
-import com.codingchili.realm.instance.model.entity.PlayerCharacter;
+import com.codingchili.realm.instance.model.entity.PlayerEntity;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -18,24 +18,24 @@ import static io.vertx.core.Future.failedFuture;
  * Storage for characters.
  */
 public class CharacterDB implements AsyncCharacterStore {
-    private final AsyncStorage<PlayerCharacter> characters;
+    private final AsyncStorage<PlayerEntity> characters;
 
-    public CharacterDB(AsyncStorage<PlayerCharacter> map) {
+    public CharacterDB(AsyncStorage<PlayerEntity> map) {
         this.characters = map;
     }
 
     @Override
-    public void create(Handler<AsyncResult<Void>> future, String username, PlayerCharacter character) {
+    public void create(Handler<AsyncResult<Void>> future, String username, PlayerEntity character) {
         characters.putIfAbsent(character, future);
     }
 
     @Override
-    public void findByUsername(Handler<AsyncResult<Collection<PlayerCharacter>>> future, String username) {
+    public void findByUsername(Handler<AsyncResult<Collection<PlayerEntity>>> future, String username) {
         characters.query(ID_ACCOUNT).equalTo(username).execute(future);
     }
 
     @Override
-    public void findOne(Handler<AsyncResult<PlayerCharacter>> future, String username, String character) {
+    public void findOne(Handler<AsyncResult<PlayerEntity>> future, String username, String character) {
         characters.query(ID_ACCOUNT).equalTo(username)
                 .and(ID_NAME).equalTo(character).execute(get -> {
 

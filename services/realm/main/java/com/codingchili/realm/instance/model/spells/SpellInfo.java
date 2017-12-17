@@ -1,18 +1,20 @@
 package com.codingchili.realm.instance.model.spells;
 
+/**
+ * @author Robin Duda
+ *
+ * Info about a spell, this is the information that is sent to clients.
+ */
 public class SpellInfo {
     private String name;
     private String description;
     private Target target = Target.caster;
-    private Float cooldown = 1.0f;
-    private Float casttime = 1.0f;
-    private Float range = 100f;
+    private Integer cooldown = 1;
+    private Integer casttime = 1;
+    private Integer range = 100;
+    private Integer charges = 1;
+    private Integer recharge = 500;
     private boolean mobile = false;
-    private Scripted casted;
-
-    public void apply(Bindings bindings) {
-        casted.apply(bindings);
-    }
 
     public boolean isMobile() {
         return mobile;
@@ -32,29 +34,29 @@ public class SpellInfo {
         return this;
     }
 
-    public Float getCooldown() {
+    public Integer getCooldown() {
         return cooldown;
     }
 
-    public SpellInfo setCooldown(Float cooldown) {
+    public SpellInfo setCooldown(Integer cooldown) {
         this.cooldown = cooldown;
         return this;
     }
 
-    public Float getCasttime() {
+    public Integer getCasttime() {
         return casttime;
     }
 
-    public SpellInfo setCasttime(Float casttime) {
+    public SpellInfo setCasttime(Integer casttime) {
         this.casttime = casttime;
         return this;
     }
 
-    public Float getRange() {
+    public Integer getRange() {
         return range;
     }
 
-    public SpellInfo setRange(Float range) {
+    public SpellInfo setRange(Integer range) {
         this.range = range;
         return this;
     }
@@ -75,13 +77,5 @@ public class SpellInfo {
     public SpellInfo setName(String name) {
         this.name = name;
         return this;
-    }
-
-    public Scripted getCasted() {
-        return casted;
-    }
-
-    public void Scripted(Scripted casted) {
-        this.casted = casted;
     }
 }

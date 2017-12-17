@@ -12,7 +12,7 @@ public class EventProtocol extends Protocol<Event> {
     private Integer id;
 
     public EventProtocol(Entity entity) {
-        this.id = entity.getId();
+        this.id = entity.getId().hashCode();
         setRole(RoleMap.get(RoleMap.PUBLIC));
         annotated(entity);
     }

@@ -1,0 +1,19 @@
+---
+name: "poison"
+description: "Poison coursing through veins."
+type: "poison"
+duration: 5
+tick:
+  jexl: |
+    // damage is based on the sources dexterity and 1% of targets max health.
+    damage = source.stats[attribute.maxhealth] * 0.02 + source.stats[attribute.dexterity] * 1;
+
+    // constitution can reduce the damage by up to 50%.
+    minDamage = damage / 2;
+    damage -= target.stats[attribute.constitution];
+
+    if (damage < minDamage) {
+      damage = minDamage;
+    }
+
+    context.spell.damage(target, damage, "poison");

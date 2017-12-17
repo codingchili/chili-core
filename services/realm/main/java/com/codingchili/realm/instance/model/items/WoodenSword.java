@@ -8,13 +8,14 @@ import com.codingchili.core.protocol.Serializer;
 public class WoodenSword extends Item {
     {
         slot = Slot.weapon;
+        weapon = WeaponType.sword2h;
         name = "wooden DAGGr";
         description = "watch out for splinters.";
-        usable = true;
 
         stats.add(Attribute.strength, 4);
         stats.add(Attribute.attackpower, 15);
         stats.add(Attribute.attackspeed, 2);
+        stats.set(Attribute.health, 1.1f);
 
         recipe.add("wood", 5);
         recipe.add("iron dagger", 1);
@@ -23,7 +24,6 @@ public class WoodenSword extends Item {
         /*onHit = "afflictions.add(source, 'haste')";
         onDamaged = "afflictions.add(target, 'poison')";*/
 
-        modifiers.set(Attribute.health, 1.1f);
     }
 
     public static void main(String[] args) {

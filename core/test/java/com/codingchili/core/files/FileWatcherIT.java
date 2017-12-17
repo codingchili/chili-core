@@ -74,7 +74,7 @@ public class FileWatcherIT {
         ConfigurationFactory.writeObject(new JsonObject(), TOUCH_JSON);
 
         context.timer(400, event -> {
-            test.assertTrue(ConfigurationFactory.deleteObject(TOUCH_JSON));
+            test.assertTrue(ConfigurationFactory.delete(TOUCH_JSON));
         });
     }
 
@@ -111,7 +111,7 @@ public class FileWatcherIT {
         });
 
         ConfigurationFactory.writeObject(new JsonObject(), NOT_WATCHED_FILE);
-        test.assertTrue(ConfigurationFactory.deleteObject(NOT_WATCHED_FILE));
+        test.assertTrue(ConfigurationFactory.delete(NOT_WATCHED_FILE));
 
         delayMS(async, 400);
     }

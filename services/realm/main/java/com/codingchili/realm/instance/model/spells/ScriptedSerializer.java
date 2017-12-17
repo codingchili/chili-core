@@ -26,7 +26,7 @@ public class ScriptedSerializer extends StdDeserializer<Scripted> {
         JsonNode node = p.getCodec().readTree(p);
         String engine = node.fieldNames().next();
         String source = node.get(engine).textValue();
-        return ScriptEngine.script(source, engine);
+        return ScriptEngines.script(source, engine);
     }
 
 }

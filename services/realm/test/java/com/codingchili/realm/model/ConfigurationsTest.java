@@ -4,8 +4,8 @@ import com.codingchili.core.files.ConfigurationFactory;
 import com.codingchili.core.files.exception.NoSuchResourceException;
 import com.codingchili.core.protocol.Serializer;
 
-import com.codingchili.realm.instance.model.entity.PlayerCharacter;
-import com.codingchili.realm.instance.model.entity.PlayerClass;
+import com.codingchili.realm.instance.model.entity.PlayerEntity;
+import com.codingchili.realm.instance.model.entity.PlayableClass;
 import com.codingchili.realm.instance.model.items.Inventory;
 import com.codingchili.realm.instance.model.afflictions.AfflictionList;
 import io.vertx.core.json.JsonObject;
@@ -43,7 +43,7 @@ public class ConfigurationsTest {
 
     @Test
     public void readDirectoryObjects() throws IOException {
-        ConfigurationFactory.readDirectoryObjects(testDirectory("class"));
+        ConfigurationFactory.readDirectory(testDirectory("class"));
     }
 
     @Test
@@ -56,10 +56,10 @@ public class ConfigurationsTest {
 
     @Test
     public void testReadPlayerClasses() throws IOException {
-        Collection<JsonObject> classes = ConfigurationFactory.readDirectoryObjects(testDirectory("class"));
+        Collection<JsonObject> classes = ConfigurationFactory.readDirectory(testDirectory("class"));
 
         for (JsonObject player : classes) {
-            Serializer.unpack(player, PlayerClass.class);
+            Serializer.unpack(player, PlayableClass.class);
         }
 
         Assert.assertFalse(classes.isEmpty());
@@ -68,7 +68,7 @@ public class ConfigurationsTest {
     @Test
     public void testReadPlayerTemplate() throws IOException {
         JsonObject template = ConfigurationFactory.readObject(testFile("character.json"));
-        PlayerCharacter player = Serializer.unpack(template, PlayerCharacter.class);
+        PlayerEntity player = Serializer.unpack(template, PlayerEntity.class);
 
         Assert.assertNotNull(player);
         Assert.assertFalse(player.getAttributes().isEmpty());

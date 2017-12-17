@@ -86,7 +86,7 @@ public class ConfigurationFactory {
      * @return a list of jsonobjects where each object corresponds to a file.
      * returns nothing when more than zero files fails to load.
      */
-    public static Collection<JsonObject> readDirectoryObjects(String path) {
+    public static Collection<JsonObject> readDirectory(String path) {
         List<JsonObject> list = new ArrayList<>();
 
         for (String file : enumerate(path)) {
@@ -125,7 +125,7 @@ public class ConfigurationFactory {
      * @param path to the file to be deleted.
      * @return true if the file was deleted successfully.
      */
-    public static boolean deleteObject(String path) {
+    public static boolean delete(String path) {
         File file = new File(path);
         return file.delete();
     }

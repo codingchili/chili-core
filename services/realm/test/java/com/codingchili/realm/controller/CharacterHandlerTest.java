@@ -10,7 +10,7 @@ import com.codingchili.core.testing.RequestMock;
 import com.codingchili.core.testing.ResponseListener;
 import com.codingchili.realm.ContextMock;
 import com.codingchili.realm.configuration.RealmSettings;
-import com.codingchili.realm.instance.model.entity.PlayerCharacter;
+import com.codingchili.realm.instance.model.entity.PlayerEntity;
 import com.codingchili.realm.model.AsyncCharacterStore;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
@@ -70,8 +70,8 @@ public class CharacterHandlerTest {
     }
 
     private void createCharacters(Async async) {
-        PlayerCharacter add = new PlayerCharacter().setName(CHARACTER_NAME).setAccount(USERNAME);
-        PlayerCharacter delete = new PlayerCharacter().setName(CHARACTER_NAME_DELETED).setAccount(USERNAME);
+        PlayerEntity add = new PlayerEntity().setName(CHARACTER_NAME).setAccount(USERNAME);
+        PlayerEntity delete = new PlayerEntity().setName(CHARACTER_NAME_DELETED).setAccount(USERNAME);
         Future<Void> addFuture = Future.future();
         Future<Void> removeFuture = Future.future();
 

@@ -1,0 +1,30 @@
+---
+name: "Hunter"
+description: "Knowing of their environment and the creatures lurking in it, none shall escape their true aim."
+weapons:
+  - "bow"
+armors:
+  - "cloth"
+  - "leather"
+  - "mail"
+spells:
+  - "fire bow"
+  - "archery"
+  - "hunting"
+  - "quick draw"
+  - "precise aim"
+  - "trap"
+  - "wilderness"
+  - "deadly aim"
+  - "untrapped"
+stats:
+  strength: 5
+  intelligence: 5
+  wisdom: 5
+  constitution: 5
+  magicResist: 0
+  armorClass: 5
+  dexterity: 15
+  movement: 8
+  experience: 0
+  level: 1

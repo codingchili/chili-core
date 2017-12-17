@@ -1,0 +1,6 @@
+---
+name: "sprint"
+description: "Movement speed increased by 20%."
+modifier:
+  jexl: |
+    stats[attribute.movement] = target.stats[attribute.movement] * 1.20;

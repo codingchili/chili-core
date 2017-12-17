@@ -63,8 +63,8 @@ public class SpellEngine {
         // todo: add affliction
     }
 
-    public void damage(ActiveAffliction active, double value) {
-        damage(active.getSource(), active.getTarget(), value, active.getAffliction().getType());
+    public void damage(ActiveAffliction active, double value, String type) {
+        damage(active.getSource(), active.getTarget(), value, DamageType.valueOf(type));
     }
 
     public void damage(Entity source, Entity target, double value, DamageType type) {

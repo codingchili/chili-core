@@ -8,8 +8,8 @@ import com.codingchili.core.security.TokenFactory;
 import com.codingchili.core.storage.StorageLoader;
 import com.codingchili.realm.configuration.RealmContext;
 import com.codingchili.realm.configuration.RealmSettings;
-import com.codingchili.realm.instance.model.entity.PlayerCharacter;
-import com.codingchili.realm.instance.model.entity.PlayerClass;
+import com.codingchili.realm.instance.model.entity.PlayerEntity;
+import com.codingchili.realm.instance.model.entity.PlayableClass;
 import com.codingchili.realm.model.AsyncCharacterStore;
 import com.codingchili.realm.model.CharacterDB;
 import io.vertx.core.Future;
@@ -32,16 +32,16 @@ public class ContextMock extends RealmContext {
         realm = new RealmSettings()
                 .setName("realmName")
                 .setAuthentication(new Token(new TokenFactory("s".getBytes()), "realmName"));
-        realm.getClasses().add(new PlayerClass().setName("class.name"));
+        realm.getClasses().add(new PlayableClass().setName("class.name"));
     }
 
     @Override
     public Future<AsyncCharacterStore> getCharacterStore(RealmSettings settings) {
         Future<AsyncCharacterStore> future = Future.future();
 
-        new StorageLoader<PlayerCharacter>().sharedmap(new StorageContext<PlayerCharacter>(this))
+        new StorageLoader<PlayerEntity>().sharedmap(new StorageContext<PlayerEntity>(this))
                 .withDB("", "")
-                .withValue(PlayerCharacter.class)
+                .withValue(PlayerEntity.class)
                 .build(storage -> {
                     future.complete(new CharacterDB(storage.result()));
                 });

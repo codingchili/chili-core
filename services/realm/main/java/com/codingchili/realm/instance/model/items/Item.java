@@ -1,6 +1,6 @@
 package com.codingchili.realm.instance.model.items;
 
-import com.codingchili.realm.instance.model.stats.Modifiers;
+import com.codingchili.realm.instance.model.spells.Scripted;
 import com.codingchili.realm.instance.model.stats.Stats;
 
 /**
@@ -10,19 +10,21 @@ public class Item {
     protected String name = "no name";
     protected String description = "no description.";
     protected Slot slot = Slot.none;
-    protected Boolean usable = null;
+    protected WeaponType weapon = WeaponType.none;
+    protected ArmorType armor = ArmorType.none;
     protected Stats stats = new Stats();
-    protected Modifiers modifiers = new Modifiers();
-    protected String onHit = null; // jexl script or reference to affliction?
-    protected String onDamaged = null; // jexl script or reference to affliction?
+
+    // todo: convert to references to hit effects/ item use scripts.
+    // this will be better for serialization, storage and balance changes.
+    protected Scripted onHit = null; // jexl script or reference to affliction?
+    protected Scripted onDamaged = null; // jexl script or reference to affliction?
+    protected Scripted onUse = null; // jexl script consume item etc.
+
+
     protected Recipe recipe = new Recipe();
 
     public Boolean isUsable() {
-        return usable;
-    }
-
-    public void setUsable(boolean usable) {
-        this.usable = usable;
+        return (onUse != null);
     }
 
     public String getDescription() {
@@ -57,14 +59,6 @@ public class Item {
         this.stats = stats;
     }
 
-    public Modifiers getModifiers() {
-        return modifiers;
-    }
-
-    public void setModifiers(Modifiers modifiers) {
-        this.modifiers = modifiers;
-    }
-
     public Recipe getRecipe() {
         return recipe;
     }
@@ -73,19 +67,35 @@ public class Item {
         this.recipe = recipe;
     }
 
-    public String getOnHit() {
+    public Scripted getOnHit() {
         return onHit;
     }
 
-    public void setOnHit(String onHit) {
+    public void setOnHit(Scripted onHit) {
         this.onHit = onHit;
     }
 
-    public String getOnDamaged() {
+    public Scripted getOnDamaged() {
         return onDamaged;
     }
 
-    public void setOnDamaged(String onDamaged) {
+    public void setOnDamaged(Scripted onDamaged) {
         this.onDamaged = onDamaged;
+    }
+
+    public WeaponType getWeapon() {
+        return weapon;
+    }
+
+    public void setWeapon(WeaponType weapon) {
+        this.weapon = weapon;
+    }
+
+    public ArmorType getArmor() {
+        return armor;
+    }
+
+    public void setArmor(ArmorType armor) {
+        this.armor = armor;
     }
 }

@@ -43,14 +43,14 @@ public abstract class ConfigurationFactoryTestCases {
 
     @Test
     public void testReadDirectoryObjects(TestContext test) throws IOException {
-        Collection<JsonObject> json = ConfigurationFactory.readDirectoryObjects(testDirectory(DIR + "/Objects"));
+        Collection<JsonObject> json = ConfigurationFactory.readDirectory(testDirectory(DIR + "/Objects"));
         test.assertEquals(2, json.size());
     }
 
     @Test
     public void testWriteObject() {
         ConfigurationFactory.writeObject(new JsonObject(), testFile(DIR, getFile("tmp")));
-        ConfigurationFactory.deleteObject(testFile(DIR, getFile("tmp")));
+        ConfigurationFactory.delete(testFile(DIR, getFile("tmp")));
     }
 
     @Test
@@ -65,7 +65,7 @@ public abstract class ConfigurationFactoryTestCases {
     @Test
     public void testDeleteObject(TestContext test) {
         ConfigurationFactory.writeObject(new JsonObject(), testFile(DIR, getFile("tmp")));
-        test.assertTrue(ConfigurationFactory.deleteObject(testFile(DIR, getFile("tmp"))));
+        test.assertTrue(ConfigurationFactory.delete(testFile(DIR, getFile("tmp"))));
     }
 
     private String getFile(String name) {
