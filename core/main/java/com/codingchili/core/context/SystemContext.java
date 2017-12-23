@@ -1,25 +1,21 @@
 package com.codingchili.core.context;
 
+import io.vertx.core.*;
+import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.dropwizard.MetricsService;
+
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
+
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.*;
 import com.codingchili.core.listener.transport.ClusterListener;
-import com.codingchili.core.logging.Level;
-import com.codingchili.core.logging.LogMessage;
-import com.codingchili.core.logging.Logger;
-import com.codingchili.core.logging.RemoteLogger;
-import io.vertx.core.*;
-import io.vertx.core.Handler;
-import io.vertx.core.eventbus.EventBus;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.dropwizard.MetricsService;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Supplier;
+import com.codingchili.core.logging.*;
 
 import static com.codingchili.core.configuration.CoreStrings.getUnsupportedDeployment;
 
@@ -61,6 +57,7 @@ public class SystemContext implements CoreContext {
 
     /**
      * Creates a clustered instance of a context.
+     *
      * @param handler called with the context on creation.
      */
     public static void clustered(Handler<AsyncResult<CoreContext>> handler) {
@@ -140,30 +137,35 @@ public class SystemContext implements CoreContext {
 
     @Override
     public Future<String> deploy(String target) {
-        Supplier<Object> deployment = () -> {
-            try {
-                return Class.forName(target).getConstructor().newInstance();
-            } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
-                    IllegalAccessException | ClassNotFoundException e) {
-                throw new CoreRuntimeException(e.getMessage());
-            }
-        };
+        try {
+            Class<?> theClass = Class.forName(target);
 
-        if (deployment.get() instanceof CoreHandler) {
-            return handler(() -> (CoreHandler) deployment.get());
-        } else if (deployment.get() instanceof CoreListener) {
-            return listener(() -> {
-                CoreListener listener = (CoreListener) deployment.get();
-                listener.handler(new BusRouter());
-                listener.settings(ListenerSettings::new);
-                return listener;
-            });
-        } else if (deployment.get() instanceof CoreService) {
-            return service(() -> (CoreService) deployment.get());
-        } else if (deployment.get() instanceof Verticle) {
-            return deployN(target);
-        } else {
-            return Future.failedFuture(getUnsupportedDeployment(target));
+            Supplier<Object> deployment = () -> {
+                try {
+                    return theClass.getConstructor().newInstance();
+                } catch (Exception e) {
+                    throw new CoreRuntimeException(e.getMessage());
+                }
+            };
+
+            if (CoreHandler.class.isAssignableFrom(theClass)) {
+                return handler(() -> (CoreHandler) deployment.get());
+            } else if (CoreListener.class.isAssignableFrom(theClass)) {
+                return listener(() -> {
+                    CoreListener listener = (CoreListener) deployment.get();
+                    listener.handler(new BusRouter());
+                    listener.settings(ListenerSettings::new);
+                    return listener;
+                });
+            } else if (CoreService.class.isAssignableFrom(theClass)) {
+                return service(() -> (CoreService) deployment.get());
+            } else if (Verticle.class.isAssignableFrom(theClass)) {
+                return deployN(target);
+            } else {
+                return Future.failedFuture(getUnsupportedDeployment(target));
+            }
+        } catch (ClassNotFoundException e) {
+            throw new CoreRuntimeException(e.getMessage());
         }
     }
 

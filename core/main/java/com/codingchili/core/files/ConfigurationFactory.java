@@ -1,9 +1,5 @@
 package com.codingchili.core.files;
 
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.context.CoreRuntimeException;
-import com.codingchili.core.files.exception.NoFileStoreRegisteredException;
-import com.codingchili.core.files.exception.NoSuchResourceException;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
@@ -12,6 +8,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.context.CoreRuntimeException;
+import com.codingchili.core.files.exception.NoFileStoreRegisteredException;
+import com.codingchili.core.files.exception.NoSuchResourceException;
 
 /**
  * Supports reading/writing to multiple configuration formats.
@@ -31,6 +32,11 @@ public class ConfigurationFactory {
         store.getExtension().forEach(ext -> implementations.put(ext, store));
     }
 
+    /**
+     * @param path contains the file extension that is mapped to a filestore implementation
+     * @return a filestore that is capable of handling the file extension, throws an
+     * exception if none is registered.
+     */
     public static FileStore get(String path) {
         int index = path.lastIndexOf(".");
 

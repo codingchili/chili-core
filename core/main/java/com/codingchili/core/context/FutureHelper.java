@@ -45,7 +45,7 @@ public abstract class FutureHelper {
 
         future.setHandler(done -> {
             if (done.succeeded()) {
-                typed.succeeded();
+                typed.complete();
             } else {
                 typed.fail(done.cause());
             }

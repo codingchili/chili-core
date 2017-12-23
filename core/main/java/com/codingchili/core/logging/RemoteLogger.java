@@ -23,13 +23,14 @@ public class RemoteLogger extends DefaultLogger {
 
     @Override
     public Logger log(JsonObject data) {
-        if (Configurations.system().isConsoleLogging()) {
-            console.log(data);
-        }
         context.bus().send(NODE_LOGGING, new JsonObject()
                 .put(PROTOCOL_ROUTE, PROTOCOL_LOGGING)
                 .put(PROTOCOL_TARGET, NODE_LOGGING)
                 .put(PROTOCOL_MESSAGE, data), options);
+
+        if (Configurations.system().isConsoleLogging()) {
+            console.log(data);
+        }
         return this;
     }
 }

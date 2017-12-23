@@ -60,7 +60,7 @@ public abstract class RestHelper {
     private static void addSecurityHeaders(RoutingContext context) {
         context.response()
                 .putHeader("Cache-Control", "no-store, no-cache")
-                .putHeader("X-Content-Type-Options", "nosniff")
+                //.putHeader("X-Content-Type-Options", "nosniff")
                 .putHeader("Strict-Transport-Security", "max-age=" + 15768000)
                 .putHeader("X-Download-Options", "noopen")
                 .putHeader("X-XSS-Protection", "1; mode=block")
