@@ -6,7 +6,7 @@ import com.codingchili.realm.instance.model.entity.Vector;
 import java.util.Optional;
 
 /**
- *
+ * A spelltarget.
  */
 public class SpellTarget {
     private Vector vector;

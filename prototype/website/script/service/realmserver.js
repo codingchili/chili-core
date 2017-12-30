@@ -1,3 +1,6 @@
+/**
+ * Realmserver api.
+ */
 class RealmServer {
 
     constructor (realm) {

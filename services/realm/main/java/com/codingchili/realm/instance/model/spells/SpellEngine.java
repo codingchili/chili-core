@@ -3,64 +3,108 @@ package com.codingchili.realm.instance.model.spells;
 import com.codingchili.realm.configuration.RealmContext;
 import com.codingchili.realm.configuration.RealmSettings;
 import com.codingchili.realm.instance.context.*;
-import com.codingchili.realm.instance.model.afflictions.ActiveAffliction;
-import com.codingchili.realm.instance.model.afflictions.Affliction;
-import com.codingchili.realm.instance.model.entity.Creature;
-import com.codingchili.realm.instance.model.entity.SimpleCreature;
+import com.codingchili.realm.instance.model.afflictions.*;
+import com.codingchili.realm.instance.model.entity.*;
+import com.codingchili.realm.instance.model.events.*;
 import com.codingchili.realm.instance.model.npc.ListeningPerson;
 import com.codingchili.realm.instance.model.stats.Attribute;
+import com.codingchili.realm.instance.scripting.Bindings;
 import io.vertx.core.json.JsonObject;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.files.ConfigurationFactory;
 import com.codingchili.core.protocol.Serializer;
 
-// todo: is the affliction list shared between contexts? players can move between contexts.
+/**
+ * Manages spell casting, afflictions and damaging.
+ */
 public class SpellEngine {
-    // todo: add a spellbase: spellbase should be shared to save memory.
-    private Map<Creature, Spell> casting = new ConcurrentHashMap<>();
+    private Map<Creature, ActiveSpell> casting = new ConcurrentHashMap<>();
+    private Collection<ActiveSpell> passive = new ConcurrentLinkedQueue<>();
+    private Collection<Projectile> projectiles = new ConcurrentLinkedQueue<>();
+    private Grid<Creature> creatures;
+    private AfflictionDB afflictions;
+    private SpellDB spells;
     private GameContext game;
-    private Long tick = 0L;
+    private Integer tick = 0;
 
     public SpellEngine(GameContext game) {
         this.game = game;
+        this.creatures = game.creatures();
+        this.spells = new SpellDB(game);
+        this.afflictions = new AfflictionDB(game);
 
-        // ticker can run slow as it only affects active afflictions.
         game.ticker(this::tick, 1);
     }
 
-    public boolean cast(Creature caster, Spell spell) {
-        // todo: check if entity knows the spell in the spellbook.
-        // todo: cast spell with casttime
-        // todo: emit event
-        // todo: check if the entity is allowed to cast the spell
-        // todo: cancel spell if already is casting
-        return true;
+    public boolean cast(Creature caster, SpellTarget target, String spellName) {
+        Spell spell = spells.getByName(spellName);
+
+        if (caster.getSpells().learned(spellName)) {
+            if (caster.getSpells().cooldown(spell)) {
+                return false;
+            } else {
+                if (spell.onCastBegin.apply(getCastBindings())) {
+                    cancel(caster);
+
+                    ActiveSpell active = new ActiveSpell()
+                            .setCaster(caster)
+                            .setSpell(spell)
+                            .setTarget(target);
+
+                    game.publish(new SpellCastEvent(active));
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
     }
 
-    private void casted() {
-        // todo: emit event.
-        // todo: remove casting event
-        // todo: apply cooldown.
-        // todo: apply gcd
+    private Bindings getCastBindings() {
+        return new Bindings();
     }
 
-    public void cancel() {
-
-        // todo: apply gcd
-        // todo: emit event
+    public void cancel(Creature caster) {
+        ActiveSpell spell = casting.get(caster);
+        if (spell != null) {
+            game.publish(new SpellCastEvent(spell.setCycle(SpellCycle.CANCELLED)));
+        }
     }
 
-    public void afflict(Creature source, Creature target, Affliction affliction) {
-        //System.out.println("Afflicted !");
-        //System.out.println("Afflicted entity has str = " + target.getBaseStats().get(Attribute.strength));
+    public void afflict(Creature source, String affliction) {
+        afflict(source, source, affliction);
+    }
 
-        source.getAfflictions().add(affliction.apply(source, target), game);
-        // todo: emit event.
-        // todo: add affliction
+    public void afflict(Creature source, Creature target, String name) {
+        ActiveAffliction affliction = afflictions.getByName(name).apply(source, target);
+        source.getAfflictions().add(affliction, game);
+        game.publish(new AfflictionEvent(affliction));
+    }
+
+    public void energy(Creature target, int amount) {
+        target.getStats().update(Attribute.energy, amount);
+    }
+
+    public void heal(Creature target, double value) {
+        float max = target.getBaseStats().get(Attribute.maxhealth);
+        float current = target.getBaseStats().get(Attribute.health);
+        float next = (float) Math.min(max, current + value);
+
+        target.getBaseStats().set(Attribute.health, next);
+
+        game.publish(new DamageEvent(target, value, DamageType.heal));
+    }
+
+    public void projectile(ActiveSpell spell, Map<String, Float> properties) {
+        projectiles.add(new Projectile(game, spell, properties));
     }
 
     public void damage(ActiveAffliction active, double value, String type) {
@@ -68,35 +112,73 @@ public class SpellEngine {
     }
 
     public void damage(Creature source, Creature target, double value, DamageType type) {
-        //System.out.println("damaging entity " + target.getName() + " for " + value + " of type " + type.name());
+        target.getBaseStats().update(Attribute.health, (int) value);
 
-        target.getBaseStats().add(Attribute.health, (int) value);
-       /* System.out.println("current health " + target.getStats().get(Attribute.health));
-        System.out.println("current strength " + target.getStats().get(Attribute.strength));
-        System.out.println("current strength " + source.getStats().get(Attribute.strength));*/
-        // todo: damage entity
-        // todo: check if dead
-        // todo: damage type is enum?
+        game.publish(new DamageEvent(target, value, type));
+
+        if (target.getStats().get(Attribute.health) < 0) {
+            game.publish(new DeathEvent(target, source));
+        }
     }
 
     private void tick(Ticker ticker) {
-        game.getCreatures().forEach(entity -> {
-            entity.getAfflictions().removeIf(affliction -> {
-                if ((affliction.getStart() + tick) % affliction.getInterval() == 0) {
-                    return !(affliction.tick(game));
-                }
-                return false;
-            }, game);
-        });
+        updateCreatureSpellState();
+        updateCastingProgress();
+        updateActiveSpells();
+        updateProjectiles();
 
-        // todo: remove states where the lists are empty.
-        // todo: tick: perform spell ticks, countdown casttime etc.
-        // todo: check spell cooldowns and global cooldowns.
-
-        tick++;
-        if (tick == Long.MAX_VALUE) {
-            tick = 0L;
+        if (tick == Integer.MAX_VALUE) {
+            tick = 0;
         }
+    }
+
+    // update affliction state and spell cooldowns.
+    private void updateCreatureSpellState() {
+        creatures.all().forEach(entity -> {
+            entity.getAfflictions().removeIf(affliction ->
+                    (affliction.getStart() + tick) % affliction.getInterval() == 0 && !(affliction.tick(game)), game);
+
+            entity.getSpells().tick();
+        });
+    }
+
+    // update progress for spells currently being casted.
+    private void updateCastingProgress() {
+        casting.values().removeIf((casting) -> {
+            if (casting.completed()) {
+                game.publish(new SpellCastEvent(casting.setCycle(SpellCycle.CASTED)));
+                casting.onCastCompleted(game);
+
+                // the spell is casted: stay active until the spell expires.
+                passive.add(casting);
+                return true;
+            } else {
+                if (tick % casting.getSpell().getTick() == 0) {
+                    casting.onCastProgress(game, tick);
+                }
+            }
+            return false;
+        });
+    }
+
+    // execute spell effects for spells that have been casted successfully.
+    private void updateActiveSpells() {
+        passive.removeIf(spell -> {
+            if (spell.active()) {
+
+                if (tick % spell.getSpell().getTick() == 0) {
+                    spell.onSpellEffects(game, tick);
+                }
+
+                return false;
+            } else {
+                return true;
+            }
+        });
+    }
+
+    private void updateProjectiles() {
+        projectiles.removeIf(Projectile::tick);
     }
 
     public static void main(String[] args) {
@@ -113,11 +195,11 @@ public class SpellEngine {
         SimpleCreature target = new ListeningPerson();
         SimpleCreature source = new ListeningPerson();
 
-        game.addCreature(target);
-        game.addCreature(source);
+        game.add(target);
+        game.add(source);
 
-        for (int i = 0; i < 500; i ++) {
-            engine.afflict(source, target, affliction);
+        for (int i = 0; i < 500; i++) {
+            engine.afflict(source, target, affliction.getName());
         }
     }
 }

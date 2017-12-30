@@ -42,12 +42,4 @@ public interface Entity extends Storable, Receiver<Event> {
      * @param context the game context.
      */
     void setContext(GameContext context);
-
-    /**
-     * @return true if the entity is a creature.
-     * todo: remove this?
-     */
-    default Optional<Creature> creature() {
-        return Optional.ofNullable((this instanceof Creature) ? (Creature) this : null);
-    }
 }

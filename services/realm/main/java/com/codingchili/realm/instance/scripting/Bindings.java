@@ -1,8 +1,8 @@
-package com.codingchili.realm.instance.model.spells;
+package com.codingchili.realm.instance.scripting;
 
 import com.codingchili.realm.instance.context.GameContext;
 import com.codingchili.realm.instance.model.afflictions.Affliction;
-import com.codingchili.realm.instance.model.entity.Grid;
+import com.codingchili.realm.instance.model.entity.Creature;
 import com.codingchili.realm.instance.model.stats.Attribute;
 import com.codingchili.realm.instance.model.stats.Stats;
 
@@ -19,10 +19,11 @@ import java.util.Map;
  */
 public class Bindings extends HashMap<String, Object> {
     private static final String CONTEXT = "context";
-    private static final String GRID = "GRID";
-    private static final String ATTRIBUTE = "ATTRIBUTE";
-    private static final String AFFLICTION = "AFFLICTION";
-    public static final String STATS = "STATS";
+        private static final String ATTRIBUTE = "attribute";
+    private static final String AFFLICTION = "affliction";
+    private static final String STATS = "stats";
+    private static final String SOURCE = "source";
+    private static final String TARGET = "target";
 
     public Bindings() {}
 
@@ -37,11 +38,6 @@ public class Bindings extends HashMap<String, Object> {
 
     public Bindings setAttribute(Class<Attribute> attribute) {
         put(ATTRIBUTE, attribute);
-        return this;
-    }
-
-    public Bindings setGrid(Grid grid) {
-        put(GRID, grid);
         return this;
     }
 
@@ -63,12 +59,25 @@ public class Bindings extends HashMap<String, Object> {
         return (GameContext) get(CONTEXT);
     }
 
-
-    public Grid getGrid() {
-        return (Grid) get(GRID);
-    }
-
     public Affliction getAffliction() {
         return (Affliction) get(AFFLICTION);
+    }
+
+    public Bindings setSource(Creature source) {
+        put(SOURCE, source);
+        return this;
+    }
+
+    public Bindings setTarget(Creature target) {
+        put(TARGET, target);
+        return this;
+    }
+
+    public Creature getSource() {
+        return (Creature) get(SOURCE);
+    }
+
+    public Creature getTarget() {
+        return (Creature) get(TARGET);
     }
 }

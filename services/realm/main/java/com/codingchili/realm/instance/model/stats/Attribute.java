@@ -20,7 +20,9 @@ public enum Attribute {
     armorClass,  // base stat
     attackpower, // computed by STR
     spellpower,  // computed by INT
-    healing // affects the efficiency of heals.
+    healing, // affects the efficiency of heals.
+    energy,
+    maxenergy
 
     /*
     todo:

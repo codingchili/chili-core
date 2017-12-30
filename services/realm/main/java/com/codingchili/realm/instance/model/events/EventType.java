@@ -5,6 +5,6 @@ package com.codingchili.realm.instance.model.events;
  */
 public enum EventType {
 
-    SPELL, MOVEMENT, DEATH, AFFLICTION, SPAWN, UPDATE, CHAT, SHUTDOWN, ANY
+    SPELL, MOVEMENT, DEATH, AFFLICTION, SPAWN, UPDATE, CHAT, SHUTDOWN, DAMAGE, ANY
 
 }

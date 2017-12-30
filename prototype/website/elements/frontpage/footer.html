@@ -36,13 +36,19 @@
 
     </template>
     <script>
-        Polymer({
-            is: 'footer-template',
-            ready: function () {
-                application.onVersion((function (version) {
-                    this.set('version', version.name + ' ' + version.version);
-                }).bind(this));
+        class FooterTemplate {
+
+            static get is() {
+                return 'footer-template';
             }
-        });
+
+            ready() {
+                super.ready();
+                application.onVersion((version) => {
+                    this.set('version', version.name + ' ' + version.version);
+                });
+            }
+        }
+        window.customElements.define(FooterTemplate.is, FooterTemplate);
     </script>
 </dom-module>

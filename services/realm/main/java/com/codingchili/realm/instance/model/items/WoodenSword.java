@@ -12,9 +12,9 @@ public class WoodenSword extends Item {
         name = "wooden DAGGr";
         description = "watch out for splinters.";
 
-        stats.add(Attribute.strength, 4);
-        stats.add(Attribute.attackpower, 15);
-        stats.add(Attribute.attackspeed, 2);
+        stats.update(Attribute.strength, 4);
+        stats.update(Attribute.attackpower, 15);
+        stats.update(Attribute.attackspeed, 2);
         stats.set(Attribute.health, 1.1f);
 
         recipe.add("wood", 5);

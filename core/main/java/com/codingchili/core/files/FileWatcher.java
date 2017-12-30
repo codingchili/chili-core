@@ -1,13 +1,14 @@
 package com.codingchili.core.files;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.TimerSource;
-import com.codingchili.core.logging.Logger;
-
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.TimerSource;
+import com.codingchili.core.logging.Logger;
 
 import static com.codingchili.core.configuration.CoreStrings.DIR_SEPARATOR;
 import static java.nio.file.StandardWatchEventKinds.*;
@@ -17,17 +18,22 @@ import static java.nio.file.StandardWatchEventKinds.*;
  * <p>
  * Watches changes to files in a registered directory and all its subdirectories.
  */
-class FileWatcher {
+public class FileWatcher {
     private final HashMap<Path, WatchKey> keys = new HashMap<>();
     private final CoreContext context;
     private Logger logger;
-    FileStoreListener listener;
-    String directory;
-    TimerSource rate;
+    private AtomicBoolean running = new AtomicBoolean(true);
+    protected FileStoreListener listener;
+    protected String directory;
+    protected TimerSource rate;
 
     FileWatcher(CoreContext context) {
         this.context = context;
         this.logger = context.logger(getClass());
+    }
+
+    public static FileWatcherBuilder builder(CoreContext core) {
+        return new FileWatcherBuilder(core);
     }
 
     void initialize() {
@@ -51,7 +57,17 @@ class FileWatcher {
     }
 
     private void start() {
-        context.periodic(rate, this.getClass().getSimpleName(), event -> poll());
+        context.periodic(rate, this.getClass().getSimpleName(), event -> {
+            if (running.get()) {
+                poll();
+            } else {
+                context.cancel(event);
+            }
+        });
+    }
+
+    public void stop() {
+        running.set(false);
     }
 
     private void poll() {

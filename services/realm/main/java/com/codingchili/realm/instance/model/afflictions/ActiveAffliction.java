@@ -2,7 +2,7 @@ package com.codingchili.realm.instance.model.afflictions;
 
 import com.codingchili.realm.instance.context.GameContext;
 import com.codingchili.realm.instance.model.entity.Creature;
-import com.codingchili.realm.instance.model.spells.Bindings;
+import com.codingchili.realm.instance.scripting.Bindings;
 import com.codingchili.realm.instance.model.stats.Attribute;
 import com.codingchili.realm.instance.model.stats.Stats;
 import com.fasterxml.jackson.annotation.JsonIgnore;

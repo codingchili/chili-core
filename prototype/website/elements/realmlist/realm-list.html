@@ -22,7 +22,7 @@
     <template>
         <style>
             :host {
-                display: inline-block;
+                display: block;
             }
 
             paper-button {
@@ -32,6 +32,7 @@
             .container {
                 width: 80%;
                 max-width: 825px;
+                margin-top: 128px;
             }
 
             .realm-box {
@@ -243,260 +244,259 @@
 </dom-module>
 
 <script>
-        Polymer({
-            is: 'realm-list',
+    class RealmList extends Polymer.Element {
 
-            ready: function () {
-                this.page = 0;
-                this.trustedservers = true;
-                this.set("sort", this.favoriteSort.bind(this));
+        static get is() {
+            return 'realm-list';
+        }
 
-                application.onAuthentication((function (authentication) {
+        ready() {
+            super.ready();
+            this.page = 0;
+            this.trustedservers = true;
+            this.set("sort", this.favoriteSort.bind(this));
 
-                    //this.set("favourites", authentication.account.servers);
-                    this.update();
-                    this.timer = setInterval(this.update.bind(this), 6000);
+            application.onAuthentication((authentication) => {
 
-                    window.dispatchEvent(new Event('resize'));
-                }).bind(this));
+                //this.set("favourites", authentication.account.servers);
+                this.update();
+                this.timer = setInterval(this.update.bind(this), 6000);
 
-                application.onLogout((function () {
-                    clearInterval(this.timer);
-                }).bind(this));
-            },
+                window.dispatchEvent(new Event('resize'));
+            });
 
-            order: function (data) {
-                switch (data.target.dataset.args) {
-                    case "name":
-                        this.set("sort", this.nameSort);
-                        break;
-                    case "type":
-                        this.set("sort", this.typeSort);
-                        break;
-                    case "lifetime":
-                        this.set("sort", this.lifetimeSort);
-                        break;
-                    case "players":
-                        this.set("sort", this.playerSort);
-                        break;
-                    case "ping":
-                        this.set("sort", this.pingSort);
-                        break;
-                }
-            },
-
-            favourite: function (realm) {
-                return true;//this.favourites[realm];
-            },
-
-            favoriteSort: function (a, b) {
-                if (this.favourite(a.name) && !this.favourite(b.name))
-                    return -1;
-
-                if (!this.favourite(a.name) && this.favourite(b.name))
-                    return 1;
-
-                return this.nameSort(a, b);
-            },
-
-            nameSort: function (a, b) {
-                if (a.name === b.name)
-                    return 0;
-                return a.name < b.name ? -1 : 1;
-            },
-
-            typeSort: function (a, b) {
-                if (a.type === b.type)
-                    return 0;
-                return a.type < b.type ? -1 : 1;
-            },
-
-            lifetimeSort: function (a, b) {
-                if (a.lifetime === b.lifetime)
-                    return 0;
-                return a.lifetime < b.lifetime ? -1 : 1;
-            },
-
-            playerSort: function (a, b) {
-                if (a.players === b.players)
-                    return 0;
-                return a.players < b.players ? -1 : 1;
-            },
-
-            pingSort: function (a, b) {
-                if (a.ping === b.ping)
-                    return 0;
-                return a.ping < b.ping ? -1 : 1;
-            },
-
-            update: function () {
-                var self = this;
-                realmregistry.list({
-                    accepted: function (data) {
-                        self.load(data.realms);
-                    },
-                    failed: function (error) {
-                        clearInterval(this.timer);
-                        application.error("Failed to retrieve realm list from realm registry.");
-                    }
-                });
-            },
-
-            load: function (realmlist) {
-                if (!this.realms)
-                    this.realms = [];
-
-                this.refresh(realmlist);
-                this.purge(realmlist);
-                this.pingAll();
-
-                this.set("realms", this.realms);
-            },
-
-            refresh: function (realmlist) {
-
-                for (var i = 0; i < realmlist.length; i++) {
-                    var exists = false;
-
-                    for (var j = 0; j < this.realms.length; j++) {
-
-                        if (realmlist[i].name == this.realms[j].name) {
-                            realmlist[i].ping = this.realms[j].ping;
-                            realmlist[i].state = this.realms[j].state;
-                            this.set("realms." + j, realmlist[i]);
-                            this.apply(j);
-                            exists = true;
-                        }
-                    }
-
-                    if (!exists)
-                        this.push("realms", realmlist[i]);
-                }
-            },
-
-            purge: function (realmlist) {
-                for (var i = 0; i < this.realms.length - 1; i++) {
-                    var removed = true;
-
-                    for (var j = 0; j < realmlist.length; j++) {
-                        if (this.realms[i].name == realmlist[j].name)
-                            removed = false;
-                    }
-
-                    if (removed) {
-                        this.splice("realms", i, 1);
-                        i -= 1;
-                    }
-                }
-            },
-
-            trusted: function () {
-                this.trustedservers = true;
-                this.applyAll();
-            },
-
-            untrusted: function () {
-                this.trustedservers = false;
-                this.applyAll();
-            },
-
-            applyAll: function () {
-                if (this.realms && this.realms.hasOwnProperty('length')) {
-                    for (var i = 0; i < this.realms.length; i++) {
-                        this.apply(i);
-                    }
-                }
-            },
-
-            apply: function (i) {
-                if (!this.realms[i].ping)
-                    this.realms[i].ping = '-';
-
-                this.set("realms." + i + ".hidden", this.hidden(this.realms[i]));
-                this.set("realms." + i + ".populationColor", this.populationColor(this.realms[i]));
-                this.set("realms." + i + ".pingColor", this.pingColor(this.realms[i]));
-                var tmp = this.sort;
-                this.set("sort", null);
-                this.set("sort", tmp);
-            },
-
-            pingColor: function (realm) {
-                if (realm.ping < 50)
-                    return "green";
-                if (realm.ping < 100)
-                    return "yellow";
-                if (realm.ping < 150)
-                    return "orange";
-                if (realm.ping >= 150 || realm.ping == "?")
-                    return "red";
-
-                return "";
-            },
-
-            populationColor: function (realm) {
-                var index = realm.players / realm.size;
-
-                if (index > 0.9)
-                    return "red";
-                if (index > 0.8)
-                    return "orange";
-                if (index > 0.3)
-                    return "yellow";
-
-                return "green";
-            },
-
-            hidden: function (realm) {
-                return !(realm.trusted == this.trustedservers);
-            },
-
-            pingAll: function () {
-                for (var i = 0; this.realms && i < this.realms.length; i++) {
-
-                    setTimeout((function (index) {
-                        return (function () {
-                            this.ping(this.realms[index]);
-                        }).bind(this);
-                    }).bind(this)(i), i * 200);
-
-                }
-            },
-
-            ping: function (realm) {
-                var start = performance.now();
-                var self = this;
-
-                RealmServer.ping({
-                    accepted: function () {
-                        var ping = parseInt((performance.now() - start), 10);
-                        self.setPing(realm, ping)
-                    },
-                    failed: function () {
-                        self.setPing(realm, "?");
-                    }
-                }, realm);
-            },
-
-            setPing: function (realm, ping) {
-                for (var i = 0; i < this.realms.length; i++) {
-                    if (this.realms[i].name == realm.name) {
-                        this.set("realms." + i + ".ping", ping);
-                        this.apply(i);
-                    }
-                }
-            },
-
-            toggle: function (event) {
-                event.currentTarget.parentElement.parentElement.querySelector('iron-collapse').show();
-            },
-
-            untoggle: function (event) {
-                event.currentTarget.parentElement.parentElement.querySelector('iron-collapse').hide();
-            },
-
-            select: function (event) {
+            application.onLogout(() => {
                 clearInterval(this.timer);
-                application.selectRealm(event.model.realm);
+            });
+        }
+
+        order(data) {
+            switch (data.target.dataset.args) {
+                case "name":
+                    this.set("sort", this.nameSort);
+                    break;
+                case "type":
+                    this.set("sort", this.typeSort);
+                    break;
+                case "lifetime":
+                    this.set("sort", this.lifetimeSort);
+                    break;
+                case "players":
+                    this.set("sort", this.playerSort);
+                    break;
+                case "ping":
+                    this.set("sort", this.pingSort);
+                    break;
             }
-        });
-    </script>
+        }
+
+        favourite(realm) {
+            return true;//this.favourites[realm];
+        }
+
+        favoriteSort(a, b) {
+            if (this.favourite(a.name) && !this.favourite(b.name))
+                return -1;
+
+            if (!this.favourite(a.name) && this.favourite(b.name))
+                return 1;
+
+            return this.nameSort(a, b);
+        }
+
+        nameSort(a, b) {
+            if (a.name === b.name)
+                return 0;
+            return a.name < b.name ? -1 : 1;
+        }
+
+        typeSort(a, b) {
+            if (a.type === b.type)
+                return 0;
+            return a.type < b.type ? -1 : 1;
+        }
+
+        lifetimeSort(a, b) {
+            if (a.lifetime === b.lifetime)
+                return 0;
+            return a.lifetime < b.lifetime ? -1 : 1;
+        }
+
+        playerSort(a, b) {
+            if (a.players === b.players)
+                return 0;
+            return a.players < b.players ? -1 : 1;
+        }
+
+        pingSort(a, b) {
+            if (a.ping === b.ping)
+                return 0;
+            return a.ping < b.ping ? -1 : 1;
+        }
+
+        update() {
+            new RealmRegistry().list({
+                accepted: (data) => {
+                    this.load(data.realms);
+                },
+                failed: (error) => {
+                    clearInterval(this.timer);
+                    application.error("Failed to retrieve realm list from realm registry.");
+                }
+            });
+        }
+
+        load(realmlist) {
+            if (!this.realms)
+                this.realms = [];
+
+            this.refresh(realmlist);
+            this.purge(realmlist);
+            this.pingAll();
+
+            this.set("realms", this.realms);
+        }
+
+        refresh(realmlist) {
+
+            for (let i = 0; i < realmlist.length; i++) {
+                let exists = false;
+
+                for (let j = 0; j < this.realms.length; j++) {
+
+                    if (realmlist[i].name === this.realms[j].name) {
+                        realmlist[i].ping = this.realms[j].ping;
+                        realmlist[i].state = this.realms[j].state;
+                        this.set("realms." + j, realmlist[i]);
+                        this.apply(j);
+                        exists = true;
+                    }
+                }
+
+                if (!exists)
+                    this.push("realms", realmlist[i]);
+            }
+        }
+
+        purge(realmlist) {
+            for (let i = 0; i < this.realms.length - 1; i++) {
+                let removed = true;
+
+                for (let j = 0; j < realmlist.length; j++) {
+                    if (this.realms[i].name === realmlist[j].name)
+                        removed = false;
+                }
+
+                if (removed) {
+                    this.splice("realms", i, 1);
+                    i -= 1;
+                }
+            }
+        }
+
+        trusted() {
+            this.trustedservers = true;
+            this.applyAll();
+        }
+
+        untrusted() {
+            this.trustedservers = false;
+            this.applyAll();
+        }
+
+        applyAll() {
+            if (this.realms && this.realms.hasOwnProperty('length')) {
+                for (var i = 0; i < this.realms.length; i++) {
+                    this.apply(i);
+                }
+            }
+        }
+
+        apply(i) {
+            if (!this.realms[i].ping)
+                this.realms[i].ping = '-';
+
+            this.set("realms." + i + ".hidden", this.hidden(this.realms[i]));
+            this.set("realms." + i + ".populationColor", this.populationColor(this.realms[i]));
+            this.set("realms." + i + ".pingColor", this.pingColor(this.realms[i]));
+            const tmp = this.sort;
+            this.set("sort", null);
+            this.set("sort", tmp);
+        }
+
+        pingColor(realm) {
+            if (realm.ping < 50)
+                return "green";
+            if (realm.ping < 100)
+                return "yellow";
+            if (realm.ping < 150)
+                return "orange";
+            if (realm.ping >= 150 || realm.ping === "?")
+                return "red";
+            return "";
+        }
+
+        populationColor(realm) {
+            const index = realm.players / realm.size;
+
+            if (index > 0.9)
+                return "red";
+            if (index > 0.8)
+                return "orange";
+            if (index > 0.3)
+                return "yellow";
+
+            return "green";
+        }
+
+        hidden(realm) {
+            return !(realm.trusted === this.trustedservers);
+        }
+
+        pingAll() {
+            for (let i = 0; this.realms && i < this.realms.length; i++) {
+
+                setTimeout(() => {
+                    this.ping(this.realms[i]);
+                }, i * 200);
+            }
+        }
+
+        ping(realm) {
+            const start = performance.now();
+
+            RealmServer.ping({
+                accepted: () => {
+                    const ping = parseInt((performance.now() - start), 10);
+                    this.setPing(realm, ping)
+                },
+                failed: () => {
+                    this.setPing(realm, "?");
+                }
+            }, realm);
+        }
+
+        setPing(realm, ping) {
+            for (let i = 0; i < this.realms.length; i++) {
+                if (this.realms[i].name === realm.name) {
+                    this.set("realms." + i + ".ping", ping);
+                    this.apply(i);
+                }
+            }
+        }
+
+        toggle(event) {
+            event.currentTarget.parentElement.parentElement.querySelector('iron-collapse').show();
+        }
+
+        untoggle(event) {
+            event.currentTarget.parentElement.parentElement.querySelector('iron-collapse').hide();
+        }
+
+        select(event) {
+            clearInterval(this.timer);
+            application.selectRealm(event.model.realm);
+        }
+    }
+    window.customElements.define(RealmList.is, RealmList);
+</script>

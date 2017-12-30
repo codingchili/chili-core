@@ -1,23 +1,44 @@
 package com.codingchili.realm.instance.model.spells;
 
+import com.codingchili.realm.instance.context.GameContext;
+import com.codingchili.realm.instance.scripting.Scripted;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import com.codingchili.core.configuration.Configurable;
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.storage.Storable;
+
 /**
  * @author Robin Duda
  *
  * A spell item from the spell DB.
  */
-public class Spell {
+public class Spell implements Storable, Configurable {
     protected String name = "no name";
     protected String description = "no description";
-    protected Boolean mobile = false;
-    protected Target target;
+    protected Boolean mobile = true;
+    protected Target target = Target.caster;
     protected Integer charges = 1;
     protected Integer recharge = Integer.MAX_VALUE;
     protected Integer cooldown = 1;
     protected Integer casttime = 0;
     protected Integer range = 100;
+    protected Integer active = 0;
+    protected Integer tick = GameContext.secondsToTicks(0.5);
     protected Scripted onCastBegin;    // check pre-requisites - must check result.
     protected Scripted onCastProgress; // implement for channeled abilities.
     protected Scripted onCastComplete; // implement casted spell logic here.
+    protected Scripted onSpellEffect;    // for spells that are active longer than the casting period.
+
+    @Override
+    public String getPath() {
+        return "conf/game/classes/" + name + CoreStrings.EXT_YAML;
+    }
+
+    public String getId() {
+        return name;
+    }
 
     public String getName() {
         return name;
@@ -91,6 +112,24 @@ public class Spell {
         this.range = range;
     }
 
+    @JsonIgnore
+    public Integer getActive() {
+        return active;
+    }
+
+    public void setActive(Integer active) {
+        this.active = active;
+    }
+
+    @JsonIgnore
+    public Integer getTick() {
+        return tick;
+    }
+
+    public void setTick(Integer tick) {
+        this.tick = tick;
+    }
+
     public Scripted getOnCastBegin() {
         return onCastBegin;
     }
@@ -113,5 +152,17 @@ public class Spell {
 
     public void setOnCastComplete(Scripted onCastComplete) {
         this.onCastComplete = onCastComplete;
+    }
+
+    public Scripted getOnSpellEffect() {
+        return onSpellEffect;
+    }
+
+    public void setOnSpellEffect(Scripted onSpellEffect) {
+        this.onSpellEffect = onSpellEffect;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Serializer.yaml(new Spell()));
     }
 }

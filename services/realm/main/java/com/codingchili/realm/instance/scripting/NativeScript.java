@@ -1,4 +1,4 @@
-package com.codingchili.realm.instance.model.spells;
+package com.codingchili.realm.instance.scripting;
 
 import com.esotericsoftware.reflectasm.ConstructorAccess;
 
@@ -45,7 +45,7 @@ public class NativeScript implements Scripted {
         Function<Bindings, ?> script = scripts.get(className);
 
         if (script == null) {
-            bindings.getContext().getLogger().event("scriptFailure")
+            bindings.getContext().getLogger(getClass()).event("scriptFailure")
                     .level(Level.ERROR)
                     .send("Failed to load '" + className + "'.");
             return null;

@@ -1,4 +1,6 @@
-// handles network communication with backend api's.
+/**
+ * handles network communication with backend api's.
+ */
 class Network {
 
     constructor(service) {
@@ -61,7 +63,7 @@ class Network {
                 }
             },
             error: (code) => {
-                var error = {'message': 'Network error (' + JSON.stringify(code) + ')', 'status': ResponseStatus.ERROR};
+                const error = {'message': 'Network error (' + JSON.stringify(code) + ')', 'status': ResponseStatus.ERROR};
                 if (callback.failed) {
                     callback.failed(error);
                 } else {

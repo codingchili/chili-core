@@ -1,4 +1,4 @@
-package com.codingchili.realm.instance.model.spells;
+package com.codingchili.realm.instance.scripting;
 
 import org.apache.commons.jexl2.*;
 

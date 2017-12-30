@@ -24,11 +24,13 @@
     <template>
         <style>
             :host {
-                display: inline-block;
+                display: block;
             }
             .container {
                 width: 80%;
                 max-width: 825px;
+                margin: auto;
+                margin-top: 128px;
             }
         </style>
 
@@ -67,14 +69,21 @@
 
     </template>
     <script>
-        Polymer({
-            is: 'start-page',
-            ready: function () {
+        class StartPage extends Polymer.Element {
+
+            static get is() {
+                return 'start-page';
+            }
+
+            ready() {
+                super.ready();
                 this.page = 0;
-            },
-            start: function () {
+            }
+
+            start() {
                 application.showLogin();
             }
-        });
+        }
+        window.customElements.define(StartPage.is, StartPage);
     </script>
 </dom-module>

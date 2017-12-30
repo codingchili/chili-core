@@ -1,0 +1,8 @@
+---
+name: 'Holy aura.'
+description: 'Grants protection every 6s.'
+duration: 60000
+interval: 6000
+tick:
+  jexl:
+    spell.afflict(source, 'protection');

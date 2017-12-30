@@ -1,4 +1,6 @@
-// interface for communicating with the patch server.
+/**
+ * Handles the patching api.
+ */
 class PatchServer {
 
     constructor() {

@@ -18,7 +18,7 @@ public class SpellHandler implements Receiver<InstanceRequest> {
     }
 
     private void tick(Ticker ticker) {
-        Grid grid = game.getGrid();
+        Grid grid = game.creatures();
     }
 
     // todo; a SpellManager class.

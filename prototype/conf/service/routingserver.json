@@ -1,63 +1,55 @@
 {
-  "node": "routing.node",
-  "transport": [
-    {
-      "api": {},
-      "type": "UDP",
-      "port": 8009,
-      "timeout": 2000,
-      "maxRequestBytes": 512
-    },
-    {
-      "api": {},
-      "type": "TCP",
-      "port": 8010,
-      "timeout": 2000,
-      "maxRequestBytes": 512
-    },
-    {
-      "api": {},
-      "type": "WEBSOCKET",
-      "port": 8020,
-      "timeout": 4000,
-      "maxRequestBytes": 512
-    },
-    {
-      "api": {
-        "/webseed": {
-          "target": "patching.node",
-          "route": "webseed"
-        },
-        "/api/news": {
-          "target": "patching.node",
-          "route": "news"
-        },
-        "/api/gameinfo": {
-          "target": "patching.node",
-          "route": "gameinfo"
-        },
-        "/api/download": {
-          "target": "patching.node",
-          "route": "download"
-        }
+  "node" : "routing.node",
+  "transport" : [ {
+    "api" : { },
+    "type" : "UDP",
+    "port" : 8009,
+    "timeout" : 2000,
+    "maxRequestBytes" : 512
+  }, {
+    "api" : { },
+    "type" : "TCP",
+    "port" : 8010,
+    "timeout" : 2000,
+    "maxRequestBytes" : 512
+  }, {
+    "api" : { },
+    "type" : "WEBSOCKET",
+    "port" : 8020,
+    "timeout" : 4000,
+    "maxRequestBytes" : 512
+  }, {
+    "api" : {
+      "/api/realmlist" : {
+        "target" : "client.realmregistry.node",
+        "route" : "realmlist"
       },
-      "type": "REST",
-      "port": 1443,
-      "timeout": 3000,
-      "maxRequestBytes": 512,
-      "defaultTarget": "webserver.node"
-    }
-  ],
-  "external": {
-    "client.authentication.node": ".*",
-    "patching.node": ".*",
-    "realmserver.node": ".*"
+      "/api/news" : {
+        "target" : "patching.node",
+        "route" : "news"
+      },
+      "/api/gameinfo" : {
+        "target" : "patching.node",
+        "route" : "gameinfo"
+      }
+    },
+    "type" : "REST",
+    "port" : 1443,
+    "timeout" : 3000,
+    "maxRequestBytes" : 512,
+    "defaultTarget" : "webserver.node"
+  } ],
+  "external" : {
+    "client.authentication.node" : ".*",
+    "client.realmregistry.node": ".*",
+    "patching.node" : ".*",
+    "angel oak.realm.node": ".*"
   },
-  "global": "O+iw8Biw+SC3ZARlOovCtRf7egqKXMidr3pc+WbV86MFQtrqFMbyl4zRtB88l9fqckANHwQIfZEtgOfRXqSBxw==",
-  "logging": {
-    "properties": {},
-    "key": "6Q87uOticiwHI2m5S/gneq1zDXTFCDytyHj1nJXQJE1aPe6m5wyXlG3cml2+9scylrsjKOI9Fem3FME40y6rBA==",
-    "domain": "routing.node",
-    "expiry": 1514642437
+  "global" : "XQWBnrNDa+sJIvw01+e2dUVbcWIVqC7pbWqy3SYhPRwy7PgTgNPATCbj/WJACh5Uq4IYCNfHKuI5Cp/Nqgn6Sg==",
+  "logging" : {
+    "properties" : { },
+    "key" : "5tkj3V6syusAXs04q111VMg0D3cVyjx47XVmgovI1/xWIknYhQO+RtIBz9x44SIndSWGp4pOwJ5my+6iTdJBkg==",
+    "domain" : "routing.node",
+    "expiry" : 1515258206
   }
 }

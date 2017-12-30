@@ -1,15 +1,20 @@
-var realmregistry = {
-    network : new Network('client.realmregistry.node'),
-    
-    list: function(callback) {
-        this.network.send(callback, 'realmlist');
-    },
+/**
+ * Handles the connection to the realm registry.
+ */
+class RealmRegistry {
 
-    realmtoken: function(callback, realmName) {
-        this.network.send(callback, 'realmtoken',
-        {
-            'realm' : realmName,
+    constructor() {
+        this.network = new Network('client.realmregistry.node');
+    }
+
+    list(callback) {
+        this.network.send(callback, 'realmlist');
+    }
+
+    realmtoken(callback, realmName) {
+        this.network.send(callback, 'realmtoken', {
+           'realm': realmName,
             'token': application.authentication.token
         });
     }
-};
+}

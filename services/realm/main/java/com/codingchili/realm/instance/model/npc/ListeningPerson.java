@@ -14,7 +14,6 @@ public class ListeningPerson extends SimpleCreature {
     @Api(route = "CHAT")
     public void chatevent(Event event) {
         //   ChatEvent chat = ChatEvent.class.cast(event);
-
         //     System.out.println(chat.getText());
         called += 1;
     }

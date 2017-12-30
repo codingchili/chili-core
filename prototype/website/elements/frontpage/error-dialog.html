@@ -68,25 +68,29 @@
 
     </template>
     <script>
-        Polymer({
-            is: 'error-dialog',
+        class ErrorDialog extends Polymer.Element {
 
-            ready: function () {
-                this.set("text", "No error defined.");
+            static get is() {
+                return 'error-dialog';
+            }
 
-                application.onError((function (error) {
-                    this.set("text", error.text);
-                    this.set("callback", error.callback);
+            ready() {
+                this.set('text', 'No error defined.');
+
+                application.onError((error) => {
+                    this.set('text', error.text);
+                    this.set('callback', error.callback);
 
                     if (!this.$.dialog.opened)
                         this.$.dialog.open();
+                });
+            }
 
-                }).bind(this));
-            },
-
-            close: function () {
+            close() {
                 this.callback();
             }
-        });
+
+        }
+        window.customElements.define(ErrorDialog.is, ErrorDialog);
     </script>
 </dom-module>

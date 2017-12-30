@@ -136,11 +136,16 @@
 
     </template>
     <script>
-        Polymer({
-            is: 'patch-download',
+        class PatchDownload extends Polymer.Element {
 
-            ready: function () {
-                application.onUpdate((function (event) {
+            static get is() {
+                return 'patch-download';
+            }
+
+            ready() {
+                super.ready();
+
+                application.onUpdate((event) => {
                     this.downloading = false;
                     this.socket = event.socket;
                     this.realm = event.realm;
@@ -153,8 +158,8 @@
                         file: ""
                     });
 
-                    patcher.update({
-                        started: (function (name, version, size, files) {
+                    new Patcher().update({
+                        started: (name, version, size, files) => {
                             this.set("downloading", true);
                             this.set("patch", {
                                 name: name,
@@ -162,36 +167,35 @@
                                 size: size,
                                 files: files
                             });
-                        }).bind(this),
-
-                        completed: (function () {
+                        },
+                        completed: () => {
                             application.updateComplete({
                                 socket: this.socket,
                                 realm: this.realm,
                                 character: this.character
                             });
-                        }).bind(this),
-
-                        progress: (function (bandwidth, transferred, downloaded, current) {
+                        },
+                        progress: (bandwidth, transferred, downloaded, current) => {
                             this.set("patch.bandwidth", bandwidth);
                             this.set("patch.transferred", transferred);
                             this.set("patch.current", current);
                             this.set("patch.downloaded", downloaded);
                             this.set("patch.file", this.patch.files[current]);
-                        }).bind(this),
-
+                        },
                         resource: this.realm.resources
                     });
-                }).bind(this));
-            },
+                });
+            }
 
-            formatBytes: function (bits) {
+            formatBytes(bits) {
                 return parseFloat(bits / 1024 / 1024).toFixed(2) + " MB";
-            },
+            }
 
-            formatBitRate: function (bits) {
+            formatBitRate(bits) {
                 return parseFloat(bits / 1024 / 1024).toFixed(0) + " kbps";
             }
-        });
+
+        }
+        window.customElements.define(PatchDownload.is, PatchDownload);
     </script>
 </dom-module>

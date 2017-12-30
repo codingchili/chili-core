@@ -27,7 +27,7 @@
     "passive" : false
   }, {
     "name" : "blood strike",
-    "description" : "Consume 15% of current HP and deal 100% to target.",
+    "description" : "Consume 15% of current HP and deal 140% to nearby targets.",
     "target" : "selected",
     "cooldown" : 6.0,
     "cost" : {

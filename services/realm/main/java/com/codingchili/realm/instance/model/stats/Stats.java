@@ -8,7 +8,7 @@ public class Stats extends ConcurrentHashMap<Attribute, Float> {
         super();
     }
 
-    public Stats add(Attribute type, float points) {
+    public Stats update(Attribute type, float points) {
         float current = getOrDefault(type, 0f) + points;
         put(type, current);
         return this;
@@ -24,7 +24,7 @@ public class Stats extends ConcurrentHashMap<Attribute, Float> {
     }
 
     public Stats apply(Stats stats) {
-        stats.forEach(this::add);
+        stats.forEach(this::update);
         return this;
     }
 }

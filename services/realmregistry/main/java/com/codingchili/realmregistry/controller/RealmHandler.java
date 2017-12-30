@@ -21,7 +21,7 @@ import static com.codingchili.common.Strings.NODE_AUTHENTICATION_REALMS;
 
 /**
  * @author Robin Duda
- * Routing used to authenticate realms and generate realmName lists.
+ * Routing used to authenticate realms and generate realm lists.
  */
 public class RealmHandler implements CoreHandler {
     private final Protocol<RealmRequest> protocol = new Protocol<>();

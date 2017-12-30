@@ -1,7 +1,7 @@
 package com.codingchili.realm.instance.model.afflictions;
 
-import com.codingchili.realm.instance.model.spells.Bindings;
-import com.codingchili.realm.instance.model.spells.JexlScript;
+import com.codingchili.realm.instance.scripting.Bindings;
+import com.codingchili.realm.instance.scripting.JexlScript;
 
 import com.codingchili.core.protocol.Serializer;
 

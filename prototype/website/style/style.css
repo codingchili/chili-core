@@ -70,6 +70,13 @@ paper-toolbar {
 
 .center-box {
     position: relative;
-    margin-top: 128px;
     padding-bottom: 64px;
+    margin-top: 128px;
+    margin: auto;
+}
+
+[hidden] { display: none }
+
+paper-toast {
+    text-align: center;
 }

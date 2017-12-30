@@ -1,7 +1,8 @@
 package com.codingchili.realm.instance.model.afflictions;
 
 import com.codingchili.realm.instance.model.entity.Creature;
-import com.codingchili.realm.instance.model.spells.*;
+import com.codingchili.realm.instance.scripting.Bindings;
+import com.codingchili.realm.instance.scripting.Scripted;
 
 /**
  * @author Robin Duda

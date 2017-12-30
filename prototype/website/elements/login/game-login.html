@@ -22,29 +22,33 @@
             :host {
                 display: inline-block;
             }
+
             .title {
                 text-align: center;
                 padding-top: 16px;
             }
+
             .container {
                 margin: auto;
                 position: absolute;
-                top: 0; left: 0; bottom: 0; right: 0;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
                 width: 525px;
                 min-width: 326px;
                 height: 186px;
             }
-            @media(max-width: 525px) {
+
+            @media (max-width: 525px) {
                 .container {
                     width: 96%;
                     margin: auto;
                 }
             }
+
             .register {
                 margin-top: 32px;
-            }
-            #loginToast {
-                text-align: center;
             }
         </style>
 
@@ -84,108 +88,111 @@
 </dom-module>
 
 <script>
-        Polymer({
-            is: 'game-login',
-            ready: function () {
-                this.showLoginForm();
-            },
+    class GameLogin extends Polymer.Element {
 
-            authenticate: function (e) {
-                var self = this;
-                self.showToast('Authenticating..');
+        static get is() {
+            return 'game-login';
+        }
 
-                authentication.login({
-                    accepted: function (data) {
-                        self.showToast('Loading..');
-                        self.resetForm();
+        ready() {
+            super.ready();
+            this.authentication = new Authentication();
+            this.showLoginForm();
+        }
+
+        authenticate(e) {
+            this.showToast('Authenticating..');
+
+            this.authentication.login({
+                accepted: (data) => {
+                    this.showToast('Loading..');
+                    this.resetForm();
+                    application.authenticated(data);
+                },
+                unauthorized: (data) => {
+                    this.showToast('Invalid user credentials');
+                    this.password = "";
+                    this.$['password'].focus();
+                },
+                missing: (data) => {
+                    this.showToast('The specified username does not exist');
+                    this.showRegisterForm();
+                    this.$['password-repeat'].focus();
+                },
+                error: (e) => {
+                    this.showToast(e.message);
+                },
+                failed: () => {
+                    application.error('Failed to establish a connection to the authentication server.')
+                }
+            }, this.username, this.password);
+        }
+
+        register(e) {
+            if (this.password === this['password-repeat']) {
+                this.showToast('Registering..');
+                this.authentication.register({
+                    accepted: (data) => {
+                        this.showToast('Loading..');
+                        this.resetForm();
                         application.authenticated(data);
                     },
-                    unauthorized: function (data) {
-                        self.showToast('Invalid user credentials');
-                        self.password = "";
-                        self.$['password'].focus();
+                    bad: (data) => {
+                        this.$['loginToast'].open();
+                        this.showToast('Error: ' + e);
                     },
-                    missing: function(data) {
-                        self.showToast('The specified username does not exist');
-                        self.showRegisterForm();
-                        self.$['password-repeat'].focus();
+                    conflict: (data) => {
+                        this.showToast('The username is not available.')
+                        this.$['username'].focus();
                     },
-                    error: function (e) {
-                        self.showToast(e.message);
+                    error: (e) => {
+                        this.showToast(e.message);
                     },
-                    failed: function () {
-                        application.error('Failed to establish a connection to the authentication server.')
+                    failed: () => {
+                        application.error("Failed to establish a connection to the authentication server.")
                     }
-                }, this.username, this.password);
-            },
-
-            register: function (e) {
-                var self = this;
-
-                if (this.password === this['password-repeat']) {
-                    self.showToast('Registering..')
-                    authentication.register({
-                        accepted: function (data) {
-                            self.showToast('Loading..')
-                            self.resetForm();
-                            application.authenticated(data);
-                        },
-                        bad: function (data) {
-                            self.$['loginToast'].open();
-                            self.showToast('Error: ' + e);
-                        },
-                        conflict: function (data) {
-                            self.showToast('The username is not available.')
-                            self.$['username'].focus();
-                        },
-                        error: function (e) {
-                            self.showToast(e.message);
-                        },
-                        failed: function () {
-                            application.error("Failed to establish a connection to the authentication server.")
-                        }
-                    }, this.username, this.password, this.email);
-                } else {
-                    this.showToast('Password (repeat) does not match the password.');
-                    this.$['password-repeat'].focus();
-                }
-            },
-            resetForm: function () {
-                this.password = "";
-                this["password-repeat"] = "";
-                this.email = "";
-                this.showLoginForm();
-            },
-
-            showLoginForm: function () {
-                this.title = "Login";
-                this.hideregisterform = true;
-                this.hideloginform = false;
-                this.$['username'].focus();
-            },
-
-            showRegisterForm: function () {
-                this.title = "Register";
-                this.hideregisterform = false;
-                this.hideloginform = true;
-                this.$['username'].focus();
-            },
-
-            showToast: function (text) {
-                this.set('toasttext', text);
-                this.$['loginToast'].open();
-            },
-
-            submit: function (e) {
-                if (e.keyCode == 13) {
-                    if (!this.hideregisterform)
-                        this.register();
-
-                    if (!this.hideloginform)
-                        this.authenticate();
-                }
+                }, this.username, this.password, this.email);
+            } else {
+                this.showToast('Password (repeat) does not match the password.');
+                this.$['password-repeat'].focus();
             }
-        });
+        }
 
+        resetForm() {
+            this.password = "";
+            this["password-repeat"] = "";
+            this.email = "";
+            this.showLoginForm();
+        }
 
+        showLoginForm() {
+            this.title = "Login";
+            this.hideregisterform = true;
+            this.hideloginform = false;
+            this.$['username'].focus();
+        }
+
+        showRegisterForm() {
+            this.title = "Register";
+            this.hideregisterform = false;
+            this.hideloginform = true;
+            this.$['username'].focus();
+        }
+
+        showToast(text) {
+            this.set('toasttext', text);
+            this.$['loginToast'].open();
+        }
+
+        submit(e) {
+            if (e.keyCode === 13) {
+                if (!this.hideregisterform)
+                    this.register();
+
+                if (!this.hideloginform)
+                    this.authenticate();
+            }
+        }
+    }
+    window.customElements.define(GameLogin.is, GameLogin);
 </script>

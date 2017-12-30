@@ -1,6 +1,7 @@
 package com.codingchili.realm.instance.model.events;
 
 import com.codingchili.realm.instance.model.entity.Creature;
+import com.codingchili.realm.instance.model.entity.Entity;
 
 /**
  * @author Robin Duda
@@ -14,7 +15,7 @@ public class SpawnEvent implements Event {
         return this;
     }
 
-    public SpawnEvent setCreature(Creature creature) {
+    public SpawnEvent setEntity(Entity entity) {
         this.creature = creature;
         return this;
     }
@@ -29,6 +30,4 @@ public class SpawnEvent implements Event {
     }
 
     public enum SpawnType {SPAWN, DESPAWN}
-
-    ;
 }

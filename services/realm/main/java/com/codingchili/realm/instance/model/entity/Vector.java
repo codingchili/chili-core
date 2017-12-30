@@ -92,4 +92,12 @@ public class Vector {
         buckets.add(Math.round((x / cellSize) + (((y - size) / cellSize) * gridWidth)));
         return buckets;
     }
+
+    /**
+     * Moves the vector in its direction given its velocity.
+     */
+    public void forward() {
+        x += Math.sin(direction) * velocity;
+        y += Math.cos(direction) * velocity;
+    }
 }

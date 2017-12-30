@@ -1,6 +1,6 @@
 package com.codingchili.realm.instance.model.items;
 
-import com.codingchili.realm.instance.model.spells.Scripted;
+import com.codingchili.realm.instance.scripting.Scripted;
 import com.codingchili.realm.instance.model.stats.Stats;
 
 /**

@@ -24,6 +24,7 @@ public class PlayerCreature extends SimpleCreature {
     public void setContext(GameContext context) {
         protocol.annotated(this);
         context.subscribe(this);
+        super.setContext(context);
     }
 
     public String getAccount() {

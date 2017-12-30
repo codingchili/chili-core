@@ -58,25 +58,27 @@
                     </template>
                 </ul>
             </div>
-            <paper-input value="{{message}}" id="message" class="input" maxlength="40" placeholder="message" on-keydown="submit"
+            <paper-input value="{{message}}" id="message" class="input" maxlength="40" placeholder="message"
+                         on-keydown="submit"
                          autofocus></paper-input>
             <paper-button class="button" on-tap="send">SEND</paper-button>
         </paper-material>
-
-
     </template>
     <script>
-        Polymer({
-            is: 'chat-box',
-            history: 14,
+        class ChatBox extends Polymer.Element {
 
-            ready: function () {
+            static get is() {
+                return 'chat-box';
+            }
+
+            ready() {
+                super.ready();
                 this.set("messages", []);
                 this.set("message", "");
-            },
+            }
 
-            send: function () {
-                if (this.message.length != 0) {
+            send() {
+                if (this.message.length !== 0) {
                     this.push("messages", this.message);
                     this.set("message", "");
 
@@ -84,14 +86,13 @@
                         this.splice("messages", 0, 1);
                     }
                 }
-            },
-
-            submit: function (event) {
-                if (event.keyCode == 13)
-                    this.send();
             }
 
-
-        });
+            submit() {
+                if (event.keyCode === 13)
+                    this.send();
+            }
+        }
+        window.customElements.define(ChatBox.is, ChatBox);
     </script>
 </dom-module>

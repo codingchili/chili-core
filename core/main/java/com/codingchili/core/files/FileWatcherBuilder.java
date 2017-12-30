@@ -6,8 +6,10 @@ import com.hazelcast.util.Preconditions;
 
 /**
  * @author Robin Duda
+ *
+ * File watcher builder.
  */
-class FileWatcherBuilder {
+public class FileWatcherBuilder {
     private final FileWatcher watcher;
 
     FileWatcherBuilder(CoreContext context) {
@@ -19,7 +21,7 @@ class FileWatcherBuilder {
      *
      * @param listener the listener to be used.
      */
-    FileWatcherBuilder withListener(FileStoreListener listener) {
+    public FileWatcherBuilder withListener(FileStoreListener listener) {
         watcher.setListener(listener);
         return this;
     }
@@ -29,7 +31,7 @@ class FileWatcherBuilder {
      *
      * @param directory the directory to be watched, includes its subdirectories.
      */
-    FileWatcherBuilder onDirectory(String directory) {
+    public FileWatcherBuilder onDirectory(String directory) {
         watcher.setDirectory(directory);
         return this;
     }
@@ -39,7 +41,7 @@ class FileWatcherBuilder {
      *
      * @param rate a timersource in milliseconds.
      */
-    FileWatcherBuilder rate(TimerSource rate) {
+    public FileWatcherBuilder rate(TimerSource rate) {
         watcher.setRate(rate);
         return this;
     }
@@ -47,10 +49,11 @@ class FileWatcherBuilder {
     /**
      * Constructs the new FileWatcher.
      */
-    void build() {
+    public FileWatcher build() {
         Preconditions.checkNotNull(watcher.directory);
         Preconditions.checkNotNull(watcher.listener);
         Preconditions.checkNotNull(watcher.rate);
         watcher.initialize();
+        return watcher;
     }
 }

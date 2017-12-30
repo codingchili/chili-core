@@ -21,7 +21,7 @@ public class TalkingPerson extends SimpleCreature {
 
     public void tick(Ticker ticker) {
         Event event = new ChatEvent(this, "HELLO GUYS!" + id);
- //       System.out.println("published EVENT");
+        //System.out.println("published EVENT");
         game.publish(event);
     }
 }

@@ -1,7 +1,7 @@
 /**
  * @author Robin Duda
  *
- * Game.js0 20
+ * Game.js
  */
 
 var resources = {};
