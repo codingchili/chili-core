@@ -3,138 +3,143 @@
  *
  * Used to pass application-level events between components.
  */
-var application = {
-    views: ['realm-list', 'page', 'game-view', 'game-login', 'character-list', 'patch-download', 'error-dialog'],
-    authentication: null,
-    handlers: {},
+class Application {
+    
+    constructor() {
+        this.views = ['realm-list', 'page', 'game-view', 'game-login', 'character-list', 'patch-download', 'error-dialog'];
+        this.authentication = null
+        this.handlers = {};
+    }
 
-    authenticated: function (authentication) {
+    authenticated(authentication) {
         application.authentication = authentication;
         application.view('realm-list');
         application.publish('onAuthentication', authentication);
-    },
+    }
 
-    error: function (error) {
+    error(error) {
         application.publish('onLogout', {});
         application.view('error-dialog');
         application.publish('onError', {text: error, callback: application.showLogin});
-    },
+    }
 
-    selectRealm: function (realm) {
+    selectRealm(realm) {
         application.realm = realm;
         application.showCharacters();
-    },
+    }
 
-    logout: function () {
+    logout() {
         application.publish('onLogout', {});
         application.showLogin();
-    },
+    }
 
-    realmLoaded: function (event) {
+    realmLoaded(event) {
         application.publish('onRealmLoaded', event);
-    },
+    }
 
-    update: function (event) {
+    update(event) {
         application.publish('onBeginUpdate', event);
         application.showPatcher();
-    },
+    }
 
-    updateComplete: function (event) {
+    updateComplete(event) {
         application.publish('onCompleteUpdate', event);
         application.showGame();
-    },
+    }
 
-    loadedVersion: function (event) {
+    loadedVersion(event) {
         application.publish('onVersion', event);
         this.version = event;
-    },
+    }
 
-    onAuthentication: function (callback) {
+    onAuthentication(callback) {
         application.subscribe('onAuthentication', callback);
-    },
+    }
 
-    onRealmSelect: function (callback) {
+    onRealmSelect(callback) {
         application.subscribe('onRealmSelect', callback);
-    },
+    }
 
-    onError: function (callback) {
+    onError(callback) {
         application.subscribe('onError', callback);
-    },
+    }
 
-    onLogout: function (callback) {
+    onLogout(callback) {
         application.subscribe('onLogout', callback);
-    },
+    }
 
-    onRealmLoaded: function (callback) {
+    onRealmLoaded(callback) {
         application.subscribe('onRealmLoaded', callback);
-    },
+    }
 
-    onUpdate: function (callback) {
+    onUpdate(callback) {
         application.subscribe('onBeginUpdate', callback);
-    },
+    }
 
-    onGameStart: function (callback) {
+    onGameStart(callback) {
         application.subscribe('onGameStart', callback);
-    },
+    }
 
-    onVersion: function (callback) {
+    onVersion(callback) {
         application.subscribe('onVersion', callback);
 
         if (this.version) {
             callback(this.version)
         }
-    },
+    }
 
-    showLogin: function () {
+    showLogin() {
         application.view('game-login');
-    },
+    }
 
-    showRealms: function () {
+    showRealms() {
         application.view('realm-list');
         application.authenticated(application.authentication);
-    },
+    }
 
-    showCharacters: function () {
+    showCharacters() {
         application.publish('onRealmSelect', application.realm);
         application.view('character-list');
-    },
+    }
 
-    showPatcher: function () {
+    showPatcher() {
         application.view('patch-download');
-    },
+    }
 
-    showGame: function () {
+    showGame() {
         application.view('game-view');
         application.publish('onGameStart', {});
-    },
+    }
 
-    showStart: function () {
+    showStart() {
         application.view('page');
         application.publish('onViewStart', {});
-    },
+    }
 
-    view: function (view) {
+    view(view) {
         for (var i = 0; i < this.views.length; i++) {
-            if (this.views[i] == view)
+            if (this.views[i] === view)
                 $('#' + this.views[i]).show();
             else
                 $('#' + this.views[i]).hide();
         }
-    },
+    }
 
-    subscribe: function (event, callback) {
+    subscribe(event, callback) {
         if (this.handlers[event] == null)
             this.handlers[event] = [];
 
         this.handlers[event].push(callback);
-    },
+    }
 
-    publish: function (event, data) {
+    publish(event, data) {
         if (this.handlers[event])
-            for (var subscriber = 0; subscriber < this.handlers[event].length; subscriber++)
+            for (let subscriber = 0; subscriber < this.handlers[event].length; subscriber++)
                 this.handlers[event][subscriber](data);
     }
-};
+}
+
+var application = new Application();
 
 $(document).ready(function () {
     application.view('game-login');
