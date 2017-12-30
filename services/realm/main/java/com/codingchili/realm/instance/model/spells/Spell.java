@@ -19,6 +19,78 @@ public class Spell {
     protected Scripted onCastProgress; // implement for channeled abilities.
     protected Scripted onCastComplete; // implement casted spell logic here.
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Boolean getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(Boolean mobile) {
+        this.mobile = mobile;
+    }
+
+    public Target getTarget() {
+        return target;
+    }
+
+    public void setTarget(Target target) {
+        this.target = target;
+    }
+
+    public Integer getCharges() {
+        return charges;
+    }
+
+    public void setCharges(Integer charges) {
+        this.charges = charges;
+    }
+
+    public Integer getRecharge() {
+        return recharge;
+    }
+
+    public void setRecharge(Integer recharge) {
+        this.recharge = recharge;
+    }
+
+    public Integer getCooldown() {
+        return cooldown;
+    }
+
+    public void setCooldown(Integer cooldown) {
+        this.cooldown = cooldown;
+    }
+
+    public Integer getCasttime() {
+        return casttime;
+    }
+
+    public void setCasttime(Integer casttime) {
+        this.casttime = casttime;
+    }
+
+    public Integer getRange() {
+        return range;
+    }
+
+    public void setRange(Integer range) {
+        this.range = range;
+    }
+
     public Scripted getOnCastBegin() {
         return onCastBegin;
     }

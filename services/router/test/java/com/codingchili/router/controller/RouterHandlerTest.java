@@ -44,7 +44,7 @@ public class RouterHandlerTest {
         handler = new RouterHandler(new RouterContext(core) {
             @Override
             public RouterSettings service() {
-                return new RouterSettings().addHidden(NODE_LOGGING);
+                return new RouterSettings().addExternal(NODE_WEBSERVER, ".*");
             }
         });
         handler.init(core);

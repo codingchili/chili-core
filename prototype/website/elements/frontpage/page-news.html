@@ -48,39 +48,46 @@
 
         <div class="container">
 
-            <template id="t" is="dom-bind">
+            <template is="dom-repeat" items="{{data.list}}">
+                <paper-material elevation="1" class="item">
+                    <div class="title">
+                        <h4>{{item.title}}</h4>
+                    </div>
 
-                <iron-ajax url="/api/news" last-response="{{data}}" auto></iron-ajax>
+                    <div class="text">
+                        <p>
+                            {{item.content}}
+                        </p>
+                    </div>
 
-                <template is="dom-repeat" items="{{data.list}}">
-                    <paper-material elevation="1" class="item">
-                        <div class="title">
-                            <h4>{{item.title}}</h4>
-                        </div>
+                    <div class="date">
+                        {{item.date}}
+                    </div>
 
-                        <div class="text">
-                            <p>
-                                {{item.content}}
-                            </p>
-                        </div>
-
-                        <div class="date">
-                            {{item.date}}
-                        </div>
-
-                    </paper-material>
-                </template>
+                </paper-material>
             </template>
 
         </div>
 
     </template>
     <script>
-        Polymer({
-            is: 'page-news',
-            ready: function () {
+        class PageNews extends Polymer.Element {
 
+            constructor() {
+                super();
+                let patchserver = new PatchServer();
+
+                patchserver.news({
+                    accepted: (data) => {
+                        this.data = data;
+                    }
+                })
             }
-        });
+
+            static get is() {
+                return 'page-news';
+            }
+        }
+        window.customElements.define(PageNews.is, PageNews);
     </script>
 </dom-module>

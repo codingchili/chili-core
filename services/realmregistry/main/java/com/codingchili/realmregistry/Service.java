@@ -8,7 +8,7 @@ import com.codingchili.realmregistry.controller.RealmHandler;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 
-import static com.codingchili.core.context.FutureHelper.generic;
+import static com.codingchili.core.context.FutureHelper.untyped;
 
 
 /**
@@ -31,6 +31,6 @@ public class Service implements CoreService {
         CompositeFuture.all(
                 context.handler(() -> new RealmHandler(context)),
                 context.handler(() -> new ClientHandler(context))
-        ).setHandler(generic(start));
+        ).setHandler(untyped(start));
     }
 }

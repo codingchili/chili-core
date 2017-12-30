@@ -1,13 +1,12 @@
 package com.codingchili.patching.controller;
 
-import com.codingchili.core.files.exception.FileMissingException;
+import com.codingchili.patching.configuration.PatchContext;
+import com.codingchili.patching.model.PatchKeeper;
+
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.Protocol;
 import com.codingchili.core.protocol.Role;
-import com.codingchili.patching.configuration.PatchContext;
-import com.codingchili.patching.model.PatchKeeper;
-import com.codingchili.patching.model.PatchReloadedException;
 
 import static com.codingchili.common.Strings.*;
 
@@ -30,8 +29,6 @@ public class PatchHandler implements CoreHandler {
                 .use(PATCH_GAME_INFO, this::gameinfo)
                 .use(PATCH_NEWS, this::news)
                 .use(PATCH_DATA, this::patchdata)
-                .use(PATCH_DOWNLOAD, this::download)
-                .use(PATCH_WEBSEED, this::webseed)
                 .use(ID_PING, Request::accept);
     }
 
@@ -59,21 +56,5 @@ public class PatchHandler implements CoreHandler {
 
     private void patchdata(PatchRequest request) {
         request.write(patcher.getDetails());
-    }
-
-    private void webseed(PatchRequest request) {
-        try {
-            request.write(patcher.getBuffer(request.webseedFile(), request.start(), request.end()));
-        } catch (FileMissingException e) {
-            request.error(e);
-        }
-    }
-
-    private void download(PatchRequest request) {
-        try {
-            request.file(patcher.getFile(request.file(), request.version()));
-        } catch (PatchReloadedException | FileMissingException e) {
-            request.error(e);
-        }
     }
 }

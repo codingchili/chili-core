@@ -1,6 +1,6 @@
 package com.codingchili.realm.instance.model.afflictions;
 
-import com.codingchili.realm.instance.model.entity.Entity;
+import com.codingchili.realm.instance.model.entity.Creature;
 import com.codingchili.realm.instance.model.spells.*;
 
 /**
@@ -15,7 +15,7 @@ public class Affliction {
     protected Scripted modifier;
     protected Scripted tick;
 
-    public ActiveAffliction apply(Entity source, Entity target) {
+    public ActiveAffliction apply(Creature source, Creature target) {
         return new ActiveAffliction(source, target, this);
     }
 

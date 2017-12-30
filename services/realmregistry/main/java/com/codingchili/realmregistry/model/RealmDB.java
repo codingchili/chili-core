@@ -38,6 +38,11 @@ public class RealmDB implements AsyncRealmStore {
         this.watcher = new EntryWatcher<>(realms, this::getStaleQuery, this::getTimeout)
                 .start(items -> items.forEach(item ->
                         realms.remove(item.getId(), (removed) -> {
+                            System.out.print(removed.succeeded());
+
+                            if (removed.failed()) {
+                                System.out.println(removed.cause().getMessage());
+                            }
                         })));
     }
 

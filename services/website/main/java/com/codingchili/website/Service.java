@@ -1,12 +1,16 @@
 package com.codingchili.website;
 
+import com.codingchili.website.configuration.WebserverContext;
+import io.vertx.core.Future;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.ext.web.handler.StaticHandler;
+
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.listener.CoreService;
-import com.codingchili.website.configuration.WebserverContext;
-import com.codingchili.website.controller.WebHandler;
-import io.vertx.core.Future;
+import com.codingchili.core.listener.ListenerSettings;
 
-import static com.codingchili.core.context.FutureHelper.generic;
+import static com.codingchili.core.context.FutureHelper.untyped;
 
 /**
  * @author Robin Duda
@@ -14,24 +18,25 @@ import static com.codingchili.core.context.FutureHelper.generic;
  * Service for the webserver.
  */
 public class Service implements CoreService {
-    private WebserverContext context;
-
-    public Service() {
-    }
-
-    public Service(WebserverContext context) {
-        this.context = context;
-    }
+    private static final String POLYMER = "website/";
+    private WebserverContext core;
 
     @Override
     public void init(CoreContext core) {
-        if (this.context == null) {
-            this.context = new WebserverContext(core);
-        }
+        this.core = new WebserverContext(core);
     }
 
     @Override
     public void start(Future<Void> start) {
-        context.handler(() -> new WebHandler(context)).setHandler(generic(start));
+        Router router = Router.router(core.vertx());
+        router.route().handler(BodyHandler.create());
+
+        router.route("/*").handler(StaticHandler.create()
+                .setCachingEnabled(false)
+                .setWebRoot(POLYMER));
+
+        core.vertx().createHttpServer(new ListenerSettings().getHttpOptions(core))
+                .requestHandler(router::accept)
+                .listen(443, untyped(start));
     }
 }

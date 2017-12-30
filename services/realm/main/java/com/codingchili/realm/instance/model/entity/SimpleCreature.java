@@ -1,9 +1,9 @@
 package com.codingchili.realm.instance.model.entity;
 
 import com.codingchili.realm.instance.context.GameContext;
+import com.codingchili.realm.instance.model.afflictions.AfflictionState;
 import com.codingchili.realm.instance.model.events.Event;
 import com.codingchili.realm.instance.model.items.Inventory;
-import com.codingchili.realm.instance.model.afflictions.AfflictionState;
 import com.codingchili.realm.instance.model.spells.SpellState;
 import com.codingchili.realm.instance.model.stats.Attribute;
 import com.codingchili.realm.instance.model.stats.Stats;
@@ -15,7 +15,7 @@ import java.util.UUID;
 /**
  * @author Robin Duda
  */
-public abstract class SimpleEntity implements Entity {
+public abstract class SimpleCreature implements Creature {
     private Stats calculated = new Stats();
     protected String id = UUID.randomUUID().toString();
     protected Inventory inventory = Inventory.EMPTY;
@@ -24,12 +24,14 @@ public abstract class SimpleEntity implements Entity {
     protected Stats stats = new Stats().add(Attribute.strength, 3).add(Attribute.health, 300);
     protected EventProtocol protocol;
     protected GameContext context;
+    protected String name = "<no name>";
 
     protected Vector vector = new Vector()
             .setX((float) (Math.random() * 1000))
             .setY((float) (Math.random() * 1000));
 
-    public SimpleEntity(GameContext context) {
+    @Override
+    public void setContext(GameContext context) {
         this.context = context;
         this.protocol = context.subscribe(this);
     }
@@ -39,6 +41,7 @@ public abstract class SimpleEntity implements Entity {
         protocol.get(event.getType().toString()).submit(event);
     }
 
+    @JsonIgnore
     @Override
     public Set<String> getInteractions() {
         return protocol.available();
@@ -86,7 +89,12 @@ public abstract class SimpleEntity implements Entity {
 
     @Override
     public String getName() {
-        return "<no name>";
+        return name;
+    }
+
+    public SimpleCreature setName(String name) {
+        this.name = name;
+        return this;
     }
 
     public void setId(String id) {

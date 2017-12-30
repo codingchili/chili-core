@@ -1,7 +1,6 @@
 package com.codingchili.core.storage;
 
-import com.googlecode.cqengine.IndexedCollection;
-import com.googlecode.cqengine.ObjectLockingIndexedCollection;
+import com.googlecode.cqengine.*;
 import com.googlecode.cqengine.index.hash.HashIndex;
 import com.googlecode.cqengine.persistence.disk.DiskPersistence;
 import io.vertx.core.Future;
@@ -41,7 +40,7 @@ public class IndexedMapPersisted<Value extends Storable> extends IndexedMap<Valu
             }
         }, context);
 
-        super.setMapper((value) -> Serializer.kryo((kryo) -> kryo.copy(value)));
+        setMapper((value) -> Serializer.kryo((kryo) -> kryo.copy(value)));
         future.complete(this);
     }
 

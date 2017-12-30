@@ -1,24 +1,27 @@
-function Network(service) {
-    var self = this;
-    this.remote = '/';
-    this.port = 80;
-    this.service = service;
+// handles network communication with backend api's.
+class Network {
 
-    this.send = function (callback, route, json) {
+    constructor(service) {
+        this.remote = '/';
+        this.port = 1443;
+        this.service = service;
+    }
+
+    send(callback, route, json) {
         if (!json) {
             json = {};
         }
-        json.target = service;
+        json.target = this.service;
         json.route = route;
 
         // todo provide multiple transport implementations here.
         $.ajax({
             type: "POST",
-            url: this.remote,
+            url: '//' + window.location.hostname + ':' + this.port + this.remote,
             dataType: 'json',
             contentType: 'application/json; charset=utf-8',
             data: JSON.stringify(json),
-            success: function (data) {
+            success: (data) => {
                 if (callback.any) {
                     callback.any(data);
                 } else {
@@ -54,11 +57,11 @@ function Network(service) {
                             } else {
                                 console.log('Unhandled protocol error: ' + JSON.stringify(data));
                             }
-                }
+                    }
                 }
             },
-            error: function (code) {
-                var error = {'message': 'Network error (' + JSON.stringify(code) + ')', 'status': ResponseStatus.ERROR}
+            error: (code) => {
+                var error = {'message': 'Network error (' + JSON.stringify(code) + ')', 'status': ResponseStatus.ERROR};
                 if (callback.failed) {
                     callback.failed(error);
                 } else {
@@ -68,14 +71,12 @@ function Network(service) {
         });
     };
 
-    this.ping = function (callback) {
-        self.send(callback, 'ping', {});
-    };
-
-    return this;
+    ping(callback) {
+        this.send(callback, 'ping', {});
+    }
 }
 
-var ResponseStatus = {
+const ResponseStatus = {
     ACCEPTED: 'ACCEPTED',
     BAD: 'BAD',
     MISSING: 'MISSING',

@@ -17,12 +17,13 @@
     },
     "enabled" : false
   },
-  "secret" : "unEluLPRoo5GzU6dR/5V3lZS0jlIpHZOUL3dnS0bc9trHKkL5o07WEpaGeR+N4bRn+Xb1XNfHCef94GRPKDEug==",
+  "secret" : "wK4SOoq6pGmyibhH4pq9fe8eA282wiC7f4heq/KivPktKzFcB2jDYLuji5Y1ibxXyoCp4rsxcwzKlYoKucgvDQ==",
   "console" : false,
-  "global" : "XLHtKfhr000jy0fM4p17gqFBSppSedze83g3H1PGrHKlPDEMhf3s7YJWzptFZiB69AdubAnWCZbvg6rAQT5dEA==",
+  "global" : "O+iw8Biw+SC3ZARlOovCtRf7egqKXMidr3pc+WbV86MFQtrqFMbyl4zRtB88l9fqckANHwQIfZEtgOfRXqSBxw==",
   "logging" : {
-    "key" : "OJ4iEY0k8SB0JPKO648FDVfPc2NUhS1Xp2GKe1agcuygKzXKqUxoY0JqXXXobiqgItYI1FXynh8XCV1EZuZ2BQ==",
-    "expiry" : 1497889120,
-    "domain" : "logging.node"
+    "properties" : { },
+    "key" : "2wjwuABn/jNhwsLw/krIdk/Tn+F5oZDggGJ5lsXNkm4lSgQPaSjgbZX+HhdTNGUxkT+4e9HWbuChC/CwfzX+zg==",
+    "domain" : "logging.node",
+    "expiry" : 1514642437
   }
 }

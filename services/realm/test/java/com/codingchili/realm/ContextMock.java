@@ -8,7 +8,7 @@ import com.codingchili.core.security.TokenFactory;
 import com.codingchili.core.storage.StorageLoader;
 import com.codingchili.realm.configuration.RealmContext;
 import com.codingchili.realm.configuration.RealmSettings;
-import com.codingchili.realm.instance.model.entity.PlayerEntity;
+import com.codingchili.realm.instance.model.entity.PlayerCreature;
 import com.codingchili.realm.instance.model.entity.PlayableClass;
 import com.codingchili.realm.model.AsyncCharacterStore;
 import com.codingchili.realm.model.CharacterDB;
@@ -20,28 +20,26 @@ import io.vertx.core.Future;
  * Context mock for realms.
  */
 public class ContextMock extends RealmContext {
-    private RealmSettings realm = new RealmSettings();
 
     public ContextMock() {
         this(new SystemContext());
     }
 
     public ContextMock(CoreContext context) {
-        super(context);
-
-        realm = new RealmSettings()
+        super(context,new RealmSettings()
                 .setName("realmName")
-                .setAuthentication(new Token(new TokenFactory("s".getBytes()), "realmName"));
-        realm.getClasses().add(new PlayableClass().setName("class.name"));
+                .setAuthentication(new Token(new TokenFactory("s".getBytes()), "realmName")));
+
+        super.getClasses().add(new PlayableClass().setName("class.name"));
     }
 
     @Override
-    public Future<AsyncCharacterStore> getCharacterStore(RealmSettings settings) {
+    public Future<AsyncCharacterStore> getCharacterStore() {
         Future<AsyncCharacterStore> future = Future.future();
 
-        new StorageLoader<PlayerEntity>().sharedmap(new StorageContext<PlayerEntity>(this))
+        new StorageLoader<PlayerCreature>().sharedmap(new StorageContext<PlayerCreature>(this))
                 .withDB("", "")
-                .withValue(PlayerEntity.class)
+                .withValue(PlayerCreature.class)
                 .build(storage -> {
                     future.complete(new CharacterDB(storage.result()));
                 });
@@ -49,11 +47,11 @@ public class ContextMock extends RealmContext {
     }
 
     public TokenFactory getClientFactory() {
-        return new TokenFactory(realm.getTokenBytes());
+        return new TokenFactory(realm().getTokenBytes());
     }
 
     @Override
     public RealmSettings realm() {
-        return realm;
+        return super.realm();
     }
 }

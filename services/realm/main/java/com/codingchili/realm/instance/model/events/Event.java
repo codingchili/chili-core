@@ -1,6 +1,6 @@
 package com.codingchili.realm.instance.model.events;
 
-import com.codingchili.realm.instance.model.entity.Entity;
+import com.codingchili.realm.instance.model.entity.Creature;
 
 import java.util.Optional;
 
@@ -19,7 +19,7 @@ public interface Event {
         }
     }
 
-    default Optional<Entity> getSource() {
+    default Optional<Creature> getSource() {
         return Optional.empty();
     }
 

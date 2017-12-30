@@ -2,6 +2,8 @@ package com.codingchili.realm.instance.model.spells;
 
 import javax.script.*;
 
+import java.util.function.Function;
+
 import com.codingchili.core.context.CoreRuntimeException;
 
 /**
@@ -45,7 +47,9 @@ public class JavaScript implements Scripted {
     }
 
     public static void main(String[] args) {
-        Scripted scripted = new JavaScript("var x = 99; x;");
-        System.out.println((Integer) scripted.apply(null));
+        Scripted scripted = new JavaScript("addr(100);");
+        Bindings bindings = new Bindings();
+        bindings.put("addr", (Function<Integer, Integer>) (base) -> base + 9);
+        System.out.println((Integer) scripted.apply(bindings));
     }
 }

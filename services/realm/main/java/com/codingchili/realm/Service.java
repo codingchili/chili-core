@@ -20,7 +20,7 @@ import io.vertx.core.json.JsonObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.codingchili.core.context.FutureHelper.generic;
+import static com.codingchili.core.context.FutureHelper.untyped;
 import static com.codingchili.core.files.Configurations.system;
 import static com.codingchili.realm.configuration.RealmServerSettings.PATH_REALMSERVER;
 
@@ -58,7 +58,7 @@ public class Service implements CoreService {
             deploy(future, realm);
             deployments.add(future);
         }
-        CompositeFuture.all(deployments).setHandler(generic(start));
+        CompositeFuture.all(deployments).setHandler(untyped(start));
     }
 
     /**

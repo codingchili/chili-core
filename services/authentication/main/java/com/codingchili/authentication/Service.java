@@ -6,7 +6,7 @@ import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.listener.CoreService;
 import io.vertx.core.Future;
 
-import static com.codingchili.core.context.FutureHelper.generic;
+import static com.codingchili.core.context.FutureHelper.untyped;
 
 /**
  * @author Robin Duda
@@ -28,7 +28,7 @@ public class Service implements CoreService {
         providerFuture.setHandler(future -> {
             if (future.succeeded()) {
                 context = future.result();
-                context.handler(() -> new ClientHandler(context)).setHandler(generic(start));
+                context.handler(() -> new ClientHandler(context)).setHandler(untyped(start));
             } else {
                 start.fail(future.cause());
             }

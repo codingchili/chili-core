@@ -16,4 +16,8 @@ public class AuthorizationRequiredException extends CoreRuntimeException {
     public AuthorizationRequiredException() {
         super(ERROR_NOT_AUTHORIZED, ResponseStatus.UNAUTHORIZED);
     }
+
+    public AuthorizationRequiredException(String message) {
+        super(message, ResponseStatus.UNAUTHORIZED);
+    }
 }

@@ -50,33 +50,26 @@
 
     </template>
     <script>
-        Polymer({
-            is: 'game-view',
-            ready: function () {
-                var self = this;
+        class GameView extends Polymer.Element {
+
+            static get is() {
+                return 'game-view';
+            }
+
+            constructor() {
+                super();
 
                 application.onGameStart(function () {
                     eval(new TextDecoder('UTF-8').decode(resources["game.js"]));
-
                     game.initialize(document.getElementById('game'));
-                    self.update();
                 });
-
-                this.update();
                 $(window).resize(this.update);
-            },
+            }
 
-            update: function () {
-                var canvas = document.getElementById('game');
-                var container = $('#game');
-                canvas.width = container.width();
-                canvas.height = container.height();
-            },
-
-            characters: function (e) {
+            characters(e) {
                 application.showCharacters();
             }
-        })
-        ;
+        }
+        window.customElements.define(GameView.is, GameView);
     </script>
 </dom-module>

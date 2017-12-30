@@ -23,14 +23,17 @@ import static com.codingchili.realm.instance.model.events.SpawnEvent.SpawnType.D
 
 /**
  * @author Robin Duda
+ *
+ * The core game loop.
  */
 public class GameContext {
-    public static final int TICK_RATE = 20;
-    private Map<EventType, Map<Integer, EventProtocol>> listeners = new ConcurrentHashMap<>();
-    private Map<String, Entity> entities = new ConcurrentHashMap<>();
+    public static final int TICK_INTERVAL_MS = 20;
+    private Map<EventType, Map<String, EventProtocol>> listeners = new ConcurrentHashMap<>();
+    private Map<String, Creature> creatures = new ConcurrentHashMap<>();
     private Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
     private Set<Ticker> tickers = new ConcurrentHashSet<>();
     private SpellEngine spells = new SpellEngine(this);
+    private AtomicInteger skippedTicks = new AtomicInteger(0);
     private AtomicBoolean processing = new AtomicBoolean(false);
     private AtomicBoolean closed = new AtomicBoolean(false);
     private InstanceContext instance;
@@ -42,15 +45,15 @@ public class GameContext {
     public GameContext(InstanceContext instance) {
         this.logger = instance.logger(getClass());
         this.instance = instance;
-        this.grid = new Grid(256, instance.settings().getWidth());
 
-        instance.periodic(() -> TICK_RATE, instance.address(), this::tick);
+        // the grid update is the first in each tick.
+        this.grid = new Grid(this, 256);
+
+        instance.periodic(() -> TICK_INTERVAL_MS, instance.address(), this::tick);
     }
 
-    private AtomicInteger skippedTicks = new AtomicInteger(0);
-
+    // the game loop.
     private void tick(Long timer) {
-
         if (processing.getAndSet(true)) {
             skippedTicks.incrementAndGet();
         } else {
@@ -61,23 +64,16 @@ public class GameContext {
 
             instance.blocking(block -> {
                 Runnable runnable;
+
                 while ((runnable = queue.poll()) != null) {
                     runnable.run();
                 }
-
-                grid.update(entities.values());
 
                 tickers.forEach(ticker -> {
                     if (currentTick % ticker.getTick() == 0) {
                         ticker.run();
                     }
                 });
-
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
 
                 block.complete();
             }, (done) -> {
@@ -124,16 +120,17 @@ public class GameContext {
         }
     }
 
-    public void addEntity(Entity entity) {
-        entities.put(entity.getId(), entity);
-        publish(new SpawnEvent().setEntity(entity));
-        System.out.println("spawned entity " + entity.getId() + " at " + entity.getVector());
+    public void addCreature(Creature creature) {
+        creature.setContext(this);
+        creatures.put(creature.getId(), creature);
+        publish(new SpawnEvent().setCreature(creature));
+        System.out.println("spawned entity " + creature.getId() + " at " + creature.getVector());
     }
 
-    public void removeEntity(Entity entity) {
-        entities.remove(entity.getId());
-        publish(new SpawnEvent().setEntity(entity).setType(DESPAWN));
-        unsubscribe(entity);
+    public void removeEntity(Creature creature) {
+        creatures.remove(creature.getId());
+        publish(new SpawnEvent().setCreature(creature).setType(DESPAWN));
+        unsubscribe(creature);
     }
 
     public void unsubscribe(Entity entity) {
@@ -154,12 +151,11 @@ public class GameContext {
     }
 
     public void publish(Event event) {
-        Map<Integer, EventProtocol> scoped = listeners.computeIfAbsent(event.getType(), (key) -> new ConcurrentHashMap<>());
+        Map<String, EventProtocol> scoped = listeners.computeIfAbsent(event.getType(), (key) -> new ConcurrentHashMap<>());
         String type = event.getType().toString();
 
         switch (event.getBroadcast()) {
             case PARTITION:
-                // todo implement network partitions.
             case GLOBAL:
                 scoped.values().forEach(listener -> listener.get(type).submit(event));
                 break;
@@ -177,12 +173,16 @@ public class GameContext {
         return instance.logger(getClass());
     }
 
-    public Collection<Entity> getEntities() {
-        return entities.values();
+    public Collection<Creature> getCreatures() {
+        return creatures.values();
     }
 
-    public Optional<Entity> getEntity(Integer id) {
-        return Optional.ofNullable(entities.get(id));
+    public Optional<Creature> getCreature(String id) {
+        return Optional.ofNullable(creatures.get(id));
+    }
+
+    public InstanceContext getInstance() {
+        return instance;
     }
 
     public static void main(String[] args) throws InterruptedException {
@@ -193,9 +193,9 @@ public class GameContext {
         GameContext game = new GameContext(ins);
 
         for (int i = 0; i < 200; i++) {
-            game.addEntity(new TalkingPerson(game));
-            game.addEntity(new TalkingPerson(game));
-            game.addEntity(new ListeningPerson(game));
+            game.addCreature(new TalkingPerson());
+            game.addCreature(new TalkingPerson());
+            game.addCreature(new ListeningPerson());
         }
 
         System.out.println("BEGIN");
@@ -213,8 +213,8 @@ public class GameContext {
 
         //  System.exit(0);
 
-/*        game.addEntity(new TalkingPerson(game));
-        game.addEntity(new TalkingPerson(game));
-        game.addEntity(new ListeningPerson(game));*/
+/*        game.addCreature(new TalkingPerson(game));
+        game.addCreature(new TalkingPerson(game));
+        game.addCreature(new ListeningPerson(game));*/
     }
 }

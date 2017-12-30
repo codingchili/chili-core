@@ -1,18 +1,18 @@
 package com.codingchili.realm.instance.model.events;
 
-import com.codingchili.realm.instance.model.entity.Entity;
+import com.codingchili.realm.instance.model.entity.Creature;
 
 /**
  * @author Robin Duda
  */
 public class EntityUpdateEvent implements Event {
-    private Entity updated;
+    private Creature updated;
 
-    public EntityUpdateEvent(Entity updated) {
+    public EntityUpdateEvent(Creature updated) {
         this.updated = updated;
     }
 
-    public Entity getUpdated() {
+    public Creature getUpdated() {
         return updated;
     }
 

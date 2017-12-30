@@ -9,9 +9,10 @@
     "type" : "PvP"
   },
   "authentication" : {
-    "key" : "jUG1Mve6G32ZWjflyD11LwYMIs4xYVxYUmYfiUCam+s0YdK4+PX/xC9+uvvdFCY3QeVzktYnghVWmCAKCOC1AQ==",
-    "expiry" : 1497889120,
-    "domain" : "Angel Oak.realm.node"
+    "properties" : { },
+    "key" : "61ZY7+rlynBq907GNTF4LJbMQBPwbxw/JXR/OSH7WjipVoqHEhKWdOq8u2PXpC3HhxZr5IGhqX0H9YqrMjXXTQ==",
+    "domain" : "Angel Oak.realm.node",
+    "expiry" : 1514642437
   },
   "resources" : "patching.node",
   "version" : 1.0,
@@ -19,11 +20,12 @@
   "players" : 0,
   "name" : "Angel Oak",
   "remote" : "Angel Oak.realm.node",
-  "secret" : "Y9fgg91QAq8MwdEG4SA5d4jnWLbPv9oBAAnO1I5DVtQV6/GuhJ0EZBUPhkH+UYdU/hssf08l6QaVyMlEz2I35Q==",
-  "global" : "XLHtKfhr000jy0fM4p17gqFBSppSedze83g3H1PGrHKlPDEMhf3s7YJWzptFZiB69AdubAnWCZbvg6rAQT5dEA==",
+  "secret" : "8c1Z6e0Q7ohaw996uoqABzU5OfE55oq5wRB6Z0ekLlXqX/Y57cUIAcfB7IB2bM0kFcVvacItrgYwA5A94xl3pg==",
+  "global" : "O+iw8Biw+SC3ZARlOovCtRf7egqKXMidr3pc+WbV86MFQtrqFMbyl4zRtB88l9fqckANHwQIfZEtgOfRXqSBxw==",
   "logging" : {
-    "key" : "E4nezhaDsmtMdsBLrur7ecv5fjS36EgTNjghSDSbrcX2jg+2Ny6CdngSoF7fnd/VMjTz8eXjcoCra9ztjJSSkw==",
-    "expiry" : 1497889119,
-    "domain" : "Angel Oak.realm.node"
+    "properties" : { },
+    "key" : "+xTH+788CI8jzeIxHJzOPE7Bx3BS4voHOP8tLlUxJkfU9/vBtS4nmOE8zk8JvnHHr7h8QGr4g1uK3wK45Figug==",
+    "domain" : "Angel Oak.realm.node",
+    "expiry" : 1514642437
   }
 }

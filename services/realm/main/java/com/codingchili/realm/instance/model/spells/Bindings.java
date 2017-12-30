@@ -7,6 +7,7 @@ import com.codingchili.realm.instance.model.stats.Attribute;
 import com.codingchili.realm.instance.model.stats.Stats;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Robin Duda
@@ -22,6 +23,12 @@ public class Bindings extends HashMap<String, Object> {
     private static final String ATTRIBUTE = "ATTRIBUTE";
     private static final String AFFLICTION = "AFFLICTION";
     public static final String STATS = "STATS";
+
+    public Bindings() {}
+
+    public Bindings(Map<String, Object> map) {
+        map.forEach(this::put);
+    }
 
     public Bindings setContext(GameContext context) {
         put(CONTEXT, context);

@@ -1,10 +1,11 @@
 {
   "node" : "social.node",
   "message" : "hello world!!!",
-  "global" : "XLHtKfhr000jy0fM4p17gqFBSppSedze83g3H1PGrHKlPDEMhf3s7YJWzptFZiB69AdubAnWCZbvg6rAQT5dEA==",
+  "global" : "O+iw8Biw+SC3ZARlOovCtRf7egqKXMidr3pc+WbV86MFQtrqFMbyl4zRtB88l9fqckANHwQIfZEtgOfRXqSBxw==",
   "logging" : {
-    "key" : "4ZpmmQ3/mjJzGo0COwvZBcoibpQ7kI88LIVDFvr+J+Z5G1xppQ6/Cexxr9oWQIQ888A6FXMELRJI+A3ons4mjg==",
-    "expiry" : 1497889120,
-    "domain" : "social.node"
+    "properties" : { },
+    "key" : "pG8AMIFxnE2/hrODwpBip9NWdWOmFvM/5aMcYsG+Z6UqlnaGi4bHwCEuNfz8JH+Epg2YTmrxiQwZBXug71w7aQ==",
+    "domain" : "social.node",
+    "expiry" : 1514642437
   }
 }

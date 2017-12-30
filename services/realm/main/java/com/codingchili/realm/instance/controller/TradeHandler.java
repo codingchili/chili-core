@@ -1,7 +1,7 @@
 package com.codingchili.realm.instance.controller;
 
 import com.codingchili.realm.instance.context.GameContext;
-import com.codingchili.realm.instance.model.entity.Entity;
+import com.codingchili.realm.instance.model.entity.Creature;
 import com.codingchili.realm.instance.model.items.Item;
 
 import java.util.Collection;
@@ -12,8 +12,8 @@ import com.codingchili.core.listener.*;
  * @author Robin Duda
  */
 public class TradeHandler implements Receiver<InstanceRequest> {
-    private Entity initiator;
-    private Entity other;
+    private Creature initiator;
+    private Creature other;
     private Collection<Item> initiatorItems;
     private Collection<Item> otherItems;
     private GameContext game;
@@ -22,20 +22,20 @@ public class TradeHandler implements Receiver<InstanceRequest> {
         this.game = game;
     }
 
-    public void offer(Entity entity, Item item) {
+    public void offer(Creature creature, Item item) {
         // notify other entity of added item
     }
 
-    public void remove(Entity entity, Item item) {
+    public void remove(Creature creature, Item item) {
         // notify other entity of removed item.
     }
 
-    public void accept(Entity entity) {
+    public void accept(Creature creature) {
         // both entities accept the trade.
         // transfer items here, lock entities inventories.
     }
 
-    public void complete(Entity entity) {
+    public void complete(Creature creature) {
         // both entities completes the trade.
     }
 

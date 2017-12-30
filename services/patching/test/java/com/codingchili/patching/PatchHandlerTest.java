@@ -125,67 +125,6 @@ public class PatchHandlerTest {
     }
 
     @Test
-    public void testDownloadPatchFiles(TestContext context) {
-        Async async = context.async();
-
-        handle(PATCH_DOWNLOAD, (response, status) -> {
-            context.assertEquals(ResponseStatus.ACCEPTED, status);
-            context.assertNotNull(response.getBinary(ID_BYTES));
-            context.assertNotNull(response.getLong(ID_MODIFIED));
-            context.assertNotNull(response.getLong(ID_SIZE));
-            context.assertEquals(response.getString(ID_PATH), TEST_FILE);
-
-            async.complete();
-        }, getDownloadFile(TEST_FILE).put(ID_VERSION, MAX_VERSION));
-    }
-
-    @Test
-    public void testWebseedFile(TestContext context) {
-        Async async = context.async();
-
-        handle(PATCH_WEBSEED, (response, status) -> {
-            context.assertEquals("/**", response.getString(ID_BUFFER));
-            context.assertEquals(ResponseStatus.ACCEPTED, status);
-            async.complete();
-        }, getWebseedFile(TEST_FILE, 0, 2));
-    }
-
-    private JsonObject getWebseedFile(String fileName, int start, int end) {
-        return new JsonObject()
-                .put(ID_FILE, fileName)
-                .put(ID_RANGE, BYTE_PREFIX_HEADER + start + RANGE_DELIMETER + end);
-    }
-
-    @Test
-    public void testDownloadPatchFileOutdatedVersion(TestContext context) {
-        Async async = context.async();
-
-        handle(PATCH_DOWNLOAD, (response, status) -> {
-            context.assertEquals(ResponseStatus.CONFLICT, status);
-
-            async.complete();
-        }, getDownloadFile(TEST_FILE).put(ID_VERSION, MIN_VERSION));
-    }
-
-    @Test
-    public void testDownloadMissingFile(TestContext context) {
-        Async async = context.async();
-
-        handle(PATCH_DOWNLOAD, (response, status) -> {
-
-            context.assertEquals("Could not find file missing-file", response.getString(PROTOCOL_MESSAGE));
-            context.assertEquals(ResponseStatus.MISSING, status);
-
-            async.complete();
-        }, getDownloadFile(MISSING_FILE).put(ID_VERSION, MAX_VERSION));
-    }
-
-    private JsonObject getDownloadFile(String filename) {
-        return new JsonObject()
-                .put(ID_FILE, filename);
-    }
-
-    @Test
     public void testPingPatchHandler(TestContext context) {
         handle(ID_PING, (response, status) -> {
             context.assertEquals(status, ResponseStatus.ACCEPTED);

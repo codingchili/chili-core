@@ -1,26 +1,26 @@
 package com.codingchili.realm.instance.model.events;
 
-import com.codingchili.realm.instance.model.entity.Entity;
+import com.codingchili.realm.instance.model.entity.Creature;
 
 /**
  * @author Robin Duda
  */
 public class SpawnEvent implements Event {
     private SpawnType type = SpawnType.SPAWN;
-    private Entity entity;
+    private Creature creature;
 
     public SpawnEvent setType(SpawnType type) {
         this.type = type;
         return this;
     }
 
-    public SpawnEvent setEntity(Entity entity) {
-        this.entity = entity;
+    public SpawnEvent setCreature(Creature creature) {
+        this.creature = creature;
         return this;
     }
 
-    public Entity getEntity() {
-        return entity;
+    public Creature getCreature() {
+        return creature;
     }
 
     @Override

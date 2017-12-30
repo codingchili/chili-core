@@ -25,7 +25,7 @@ public class RegisteredRealm implements Storable {
 
     @Override
     public String getId() {
-        return name.toLowerCase();
+        return name;
     }
 
     /**

@@ -21,8 +21,8 @@ abstract class AbstractLogHandler implements CoreHandler {
     final ConsoleLogger console;
     final StorageLogger store;
     private final Protocol<Request> protocol = new Protocol<>();
-    LogContext context;
     private String address;
+    protected LogContext context;
 
     AbstractLogHandler(LogContext context, String address) {
         this.context = context;

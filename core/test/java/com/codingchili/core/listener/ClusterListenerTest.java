@@ -30,7 +30,7 @@ public class ClusterListenerTest {
     private static final String TEST_MESSAGE = "{}";
     private static final String REPLY_ADDRESS = "clusterlistener-test";
     @Rule
-    public Timeout timeout = new Timeout(8, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(20, TimeUnit.SECONDS);
     private ContextMock context;
     private TestHandler handler;
     private CoreListener cluster;

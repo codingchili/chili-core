@@ -1,15 +1,12 @@
 package com.codingchili.router.configuration;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.util.*;
+
 import com.codingchili.core.configuration.ServiceConfigurable;
 import com.codingchili.core.listener.ListenerSettings;
 import com.codingchili.core.listener.WireType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.codingchili.core.configuration.CoreStrings.getService;
 
@@ -21,7 +18,7 @@ import static com.codingchili.core.configuration.CoreStrings.getService;
 public class RouterSettings extends ServiceConfigurable {
     public static final String PATH_ROUTING = getService("routingserver");
     private List<ListenerSettings> transport = new ArrayList<>();
-    private Set<String> hidden = new HashSet<>();
+    private Map<String, String> external = new HashMap<>();
 
     public RouterSettings() {
     }
@@ -59,12 +56,12 @@ public class RouterSettings extends ServiceConfigurable {
      * @return returns a set of hidden nodes, the router must not route
      * messages to these nodes.
      */
-    public Set<String> getHidden() {
-        return hidden;
+    public Map<String, String> getExternal() {
+        return external;
     }
 
-    public void setHidden(Set<String> hidden) {
-        this.hidden = hidden.stream().map(String::toLowerCase).collect(Collectors.toSet());
+    public void setHidden(Map<String, String> external) {
+        this.external = external;
     }
 
     /**
@@ -86,16 +83,22 @@ public class RouterSettings extends ServiceConfigurable {
      * Sets a route to hidden in the router. Any requests for this route will return
      * with an error and the unauthorized code.
      *
-     * @param route the route to 'hide' requests for
+     * @param target     the route to 'hide' requests for
+     * @param routeRegex the regex to match routes against.
      * @return fluent
      */
-    public RouterSettings addHidden(String route) {
-        hidden.add(route.toLowerCase());
+    public RouterSettings addExternal(String target, String routeRegex) {
+        if (external.containsKey(target)) {
+            throw new IllegalArgumentException(String.format("External target '%s' is already added.", target));
+        }
+        external.put(target, routeRegex);
         return this;
     }
 
     @JsonIgnore
-    public boolean isHidden(String target) {
-        return hidden.contains(target.toLowerCase());
+    public boolean isExternal(String target, String route) {
+        target = target.toLowerCase();
+        route = route.toLowerCase();
+        return external.containsKey(target) && route.matches(external.get(target));
     }
 }

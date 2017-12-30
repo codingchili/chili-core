@@ -6,7 +6,7 @@ import com.codingchili.patching.configuration.PatchContext;
 import com.codingchili.patching.controller.PatchHandler;
 import io.vertx.core.Future;
 
-import static com.codingchili.core.context.FutureHelper.generic;
+import static com.codingchili.core.context.FutureHelper.untyped;
 
 /**
  * @author Robin Duda
@@ -22,6 +22,6 @@ public class Service implements CoreService {
 
     @Override
     public void start(Future<Void> start) {
-        context.handler(() -> new PatchHandler(context)).setHandler(generic(start));
+        context.handler(() -> new PatchHandler(context)).setHandler(untyped(start));
     }
 }

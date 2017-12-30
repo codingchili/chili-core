@@ -4,7 +4,7 @@ import com.codingchili.core.files.ConfigurationFactory;
 import com.codingchili.core.files.exception.NoSuchResourceException;
 import com.codingchili.core.protocol.Serializer;
 
-import com.codingchili.realm.instance.model.entity.PlayerEntity;
+import com.codingchili.realm.instance.model.entity.PlayerCreature;
 import com.codingchili.realm.instance.model.entity.PlayableClass;
 import com.codingchili.realm.instance.model.items.Inventory;
 import com.codingchili.realm.instance.model.afflictions.AfflictionList;
@@ -68,11 +68,10 @@ public class ConfigurationsTest {
     @Test
     public void testReadPlayerTemplate() throws IOException {
         JsonObject template = ConfigurationFactory.readObject(testFile("character.json"));
-        PlayerEntity player = Serializer.unpack(template, PlayerEntity.class);
+        PlayerCreature player = Serializer.unpack(template, PlayerCreature.class);
 
         Assert.assertNotNull(player);
-        Assert.assertFalse(player.getAttributes().isEmpty());
-
+        Assert.assertFalse(player.getBaseStats().isEmpty());
         Inventory inventory = player.getInventory();
         Assert.assertFalse(inventory.getEquipped().isEmpty());
         Assert.assertFalse(inventory.getItems().isEmpty());

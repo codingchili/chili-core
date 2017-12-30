@@ -9,7 +9,7 @@ import com.codingchili.logging.controller.ServiceLogHandler;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 
-import static com.codingchili.core.context.FutureHelper.generic;
+import static com.codingchili.core.context.FutureHelper.untyped;
 
 /**
  * @author Robin Duda
@@ -30,7 +30,7 @@ public class Service implements CoreService {
             CompositeFuture.all(
                     context.handler(() -> new ServiceLogHandler(context)),
                     context.handler(() -> new ClientLogHandler(context))
-            ).setHandler(generic(start));
+            ).setHandler(untyped(start));
         });
     }
 }

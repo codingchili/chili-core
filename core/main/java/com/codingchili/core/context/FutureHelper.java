@@ -40,7 +40,7 @@ public abstract class FutureHelper {
      * @param <T> inferred future type
      * @return a generic future with a handler set.
      */
-    public static <T> Future<T> generic(Future<?> typed) {
+    public static <T> Future<T> untyped(Future<?> typed) {
         Future<T> future = Future.future();
 
         future.setHandler(done -> {

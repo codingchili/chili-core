@@ -1,20 +1,19 @@
 package com.codingchili.core.listener.transport;
 
-import com.codingchili.core.configuration.RestHelper;
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.listener.CoreHandler;
-import com.codingchili.core.listener.CoreListener;
-import com.codingchili.core.listener.ListenerSettings;
-import com.codingchili.core.listener.RequestProcessor;
 import io.vertx.core.Future;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.ext.web.handler.StaticHandler;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
-import static com.codingchili.core.configuration.CoreStrings.LOG_AT;
-import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
+import com.codingchili.core.configuration.RestHelper;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.listener.*;
+
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
@@ -24,19 +23,42 @@ import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
 public class RestListener implements CoreListener {
     private Supplier<ListenerSettings> settings = ListenerSettings::getDefaultSettings;
     private RequestProcessor processor;
+    private String path;
+    private String regex;
     private CoreContext core;
     private CoreHandler handler;
     private Router router;
 
+
     @Override
     public void init(CoreContext core) {
-        this.core = core;
-
         router = Router.router(core.vertx());
         router.route().handler(BodyHandler.create());
         RestHelper.addHeaders(router, settings.get().isSecure());
+
+        // enable routing for static resources.
+        if (regex != null && path != null) {
+            router.routeWithRegex(regex).handler(StaticHandler.create()
+                    //.setCachingEnabled(false) -- set in HttpOptions.
+                    .setWebRoot(path));
+        }
+
         router.route().handler(this::packet);
         handler.init(core);
+        this.core = core;
+    }
+
+    /**
+     * @param path  a directory from which to serve static resources.
+     * @param regex a regular expression that maps request routes to the static handler.
+     * @return fluent.
+     */
+    public RestListener setResources(String path, String regex) {
+        Objects.requireNonNull(path);
+        Objects.requireNonNull(regex);
+        this.path = path;
+        this.regex = regex;
+        return this;
     }
 
     @Override

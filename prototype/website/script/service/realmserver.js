@@ -7,7 +7,7 @@ class RealmServer {
     }
 
     characterlist (callback) {
-        this.network.send(callback, "characterlist", {token : this.realm.token});
+        this.network.send(callback, "character.list", {token : this.realm.token});
     }
 
     static ping (callback, realm) {

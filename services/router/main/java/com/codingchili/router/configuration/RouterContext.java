@@ -26,8 +26,8 @@ public class RouterContext extends SystemContext implements ServiceContext {
         return Configurations.get(PATH_ROUTING, RouterSettings.class);
     }
 
-    public boolean isRouteHidden(String target) {
-        return service().isHidden(target);
+    public boolean isRouteExternal(String target, String route) {
+        return service().isExternal(target, route);
     }
 
     public List<ListenerSettings> transports() {

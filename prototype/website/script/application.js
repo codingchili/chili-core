@@ -46,6 +46,7 @@ var application = {
 
     loadedVersion: function (event) {
         application.publish('onVersion', event);
+        this.version = event;
     },
 
     onAuthentication: function (callback) {
@@ -78,6 +79,10 @@ var application = {
 
     onVersion: function (callback) {
         application.subscribe('onVersion', callback);
+
+        if (this.version) {
+            callback(this.version)
+        }
     },
 
     showLogin: function () {
@@ -103,7 +108,7 @@ var application = {
         application.publish('onGameStart', {});
     },
 
-    showStart: function() {
+    showStart: function () {
         application.view('page');
         application.publish('onViewStart', {});
     },

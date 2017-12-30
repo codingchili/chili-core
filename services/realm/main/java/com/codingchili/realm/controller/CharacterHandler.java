@@ -2,7 +2,7 @@ package com.codingchili.realm.controller;
 
 import com.codingchili.realm.configuration.RealmContext;
 import com.codingchili.realm.instance.model.entity.PlayableClass;
-import com.codingchili.realm.instance.model.entity.PlayerEntity;
+import com.codingchili.realm.instance.model.entity.PlayerCreature;
 import com.codingchili.realm.model.*;
 import io.vertx.core.Future;
 
@@ -10,6 +10,7 @@ import java.util.Collection;
 
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
+import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.*;
 
 import static com.codingchili.common.Strings.*;
@@ -24,9 +25,11 @@ public class CharacterHandler implements CoreHandler {
     private AsyncCharacterStore characters;
     private boolean registered = false;
     private RealmContext context;
+    private Logger logger;
 
     public CharacterHandler(RealmContext context) {
         this.context = context;
+        this.logger = context.logger(getClass());
 
         context.periodic(context::updateRate, getClass().getSimpleName(), this::registerRealm);
 
@@ -51,6 +54,9 @@ public class CharacterHandler implements CoreHandler {
     }
 
     private void instanceHandler(Request request) {
+        // todo handle some events.
+
+
         // todo forward to instance
     }
 
@@ -87,7 +93,7 @@ public class CharacterHandler implements CoreHandler {
     private void characterList(RealmRequest request) {
         characters.findByUsername(characters -> {
             if (characters.succeeded()) {
-                Collection<PlayerEntity> result = characters.result();
+                Collection<PlayerCreature> result = characters.result();
 
                 if (result != null) {
                     request.write(new CharacterList(context.realm(), result));
@@ -101,6 +107,8 @@ public class CharacterHandler implements CoreHandler {
     }
 
     private void characterCreate(RealmRequest request) {
+        PlayerCreature creature = new PlayerCreature(request.character());
+
         characters.create(creation -> {
             if (creation.succeeded()) {
                 request.accept();
@@ -108,9 +116,9 @@ public class CharacterHandler implements CoreHandler {
                 request.error(new CharacterExistsException(request.character()));
             }
 
-            // todo: create a PlayerEntity from the template.
-            // playerentity is the serializable entity.
-        }, request.account(), new PlayerEntity(null));
+            // todo: create a PlayerCreature from the class template.
+            //
+        }, request.account(), creature);
     }
 
     private PlayableClass readTemplate(String characterName, String className) throws PlayerClassDisabledException {

@@ -1,6 +1,6 @@
 package com.codingchili.realm.instance.model.events;
 
-import com.codingchili.realm.instance.model.entity.Entity;
+import com.codingchili.realm.instance.model.entity.Creature;
 
 import java.util.Optional;
 
@@ -8,16 +8,16 @@ import java.util.Optional;
  * @author Robin Duda
  */
 public class ChatEvent implements Event {
-    private Entity entity;
+    private Creature creature;
     private String text;
 
-    public ChatEvent(Entity source, String text) {
-        this.entity = source;
+    public ChatEvent(Creature source, String text) {
+        this.creature = source;
         this.text = text;
     }
 
-    public Entity getEntity() {
-        return entity;
+    public Creature getCreature() {
+        return creature;
     }
 
     public String getText() {
@@ -25,8 +25,8 @@ public class ChatEvent implements Event {
     }
 
     @Override
-    public Optional<Entity> getSource() {
-        return Optional.of(entity);
+    public Optional<Creature> getSource() {
+        return Optional.of(creature);
     }
 
     @Override

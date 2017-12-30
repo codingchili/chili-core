@@ -1,6 +1,6 @@
 package com.codingchili.realm.instance.model.items;
 
-import com.codingchili.realm.instance.model.entity.Entity;
+import com.codingchili.realm.instance.model.entity.Creature;
 
 import java.util.*;
 
@@ -19,7 +19,7 @@ public class Recipe extends ArrayList<RecipeEntry> {
         return this;
     }
 
-    public Optional<Item> craft(Entity entity) {
+    public Optional<Item> craft(Creature creature) {
 
         // todo check requisites.
         // todo: deduct requisites.

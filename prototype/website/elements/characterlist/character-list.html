@@ -186,7 +186,7 @@
 
                 realmregistry.realmtoken({
                     accepted: function (data) {
-                        self.token = data;
+                        self.realm.token = data;
                         self.loadCharacters();
                     },
                     error: function (error) {
@@ -201,13 +201,14 @@
             },
 
             loadCharacters: function () {
+                let self = this;
                 this.showLoading("Loading characters..");
                 new RealmServer(this.realm).characterlist({
                     accepted: function(data) {
                         data.realm.characters = data.characters;
-                        this.set("realm", data.realm);
-                        this.showCharacters();
-                        this.hideLoading();
+                        self.set("realm", data.realm);
+                        self.showCharacters();
+                        self.hideLoading();
                         application.realmLoaded({realm: data.realm, token: this.token});
                     },
                     unauthorized: function(data) {

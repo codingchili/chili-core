@@ -1,24 +1,24 @@
 package com.codingchili.realm.instance.model.events;
 
-import com.codingchili.realm.instance.model.entity.Entity;
+import com.codingchili.realm.instance.model.entity.Creature;
 
 /**
  * @author Robin Duda
  */
 public class DeathEvent implements Event {
-    private Entity dead;
-    private Entity cause;
+    private Creature dead;
+    private Creature cause;
 
-    public DeathEvent(Entity dead, Entity cause) {
+    public DeathEvent(Creature dead, Creature cause) {
         this.dead = dead;
         this.cause = cause;
     }
 
-    public Entity getDead() {
+    public Creature getDead() {
         return dead;
     }
 
-    public Entity getCause() {
+    public Creature getCause() {
         return cause;
     }
 

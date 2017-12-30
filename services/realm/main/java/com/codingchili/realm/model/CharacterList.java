@@ -1,7 +1,7 @@
 package com.codingchili.realm.model;
 
 import com.codingchili.realm.configuration.RealmSettings;
-import com.codingchili.realm.instance.model.entity.PlayerEntity;
+import com.codingchili.realm.instance.model.entity.PlayerCreature;
 
 import java.util.Collection;
 
@@ -10,9 +10,9 @@ import java.util.Collection;
  */
 public class CharacterList {
     private RealmSettings realm;
-    private Collection<PlayerEntity> characters;
+    private Collection<PlayerCreature> characters;
 
-    public CharacterList(RealmSettings realm, Collection<PlayerEntity> characters) {
+    public CharacterList(RealmSettings realm, Collection<PlayerCreature> characters) {
         this.realm = realm.removeAuthentication();
         this.characters = characters;
     }
@@ -25,11 +25,11 @@ public class CharacterList {
         this.realm = realm;
     }
 
-    public Collection<PlayerEntity> getCharacters() {
+    public Collection<PlayerCreature> getCharacters() {
         return characters;
     }
 
-    public void setCharacters(Collection<PlayerEntity> characters) {
+    public void setCharacters(Collection<PlayerCreature> characters) {
         this.characters = characters;
     }
 }

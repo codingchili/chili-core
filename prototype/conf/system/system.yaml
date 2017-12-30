@@ -1,0 +1,12 @@
+---
+metricRate: 15000
+handlers: 1
+metrics: false
+deployTimeout: 3000
+shutdownLogTimeout: 3000
+shutdownHookTimeout: 3000
+configurationPoll: 1500
+cachedFilePoll: 2000
+consoleLogging: true
+workerPoolSize: 16
+clusterTimeout: 3000

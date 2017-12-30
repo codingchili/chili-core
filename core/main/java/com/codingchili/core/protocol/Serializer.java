@@ -1,24 +1,16 @@
 package com.codingchili.core.protocol;
 
 
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.context.CoreRuntimeException;
-import com.codingchili.core.protocol.exception.SerializerPayloadException;
-import com.codingchili.core.storage.Storable;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.pool.KryoFactory;
 import com.esotericsoftware.kryo.pool.KryoPool;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.json.Json;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
+import io.vertx.core.json.*;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -28,8 +20,12 @@ import java.util.function.Function;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import static com.codingchili.core.configuration.CoreStrings.ID_COLLECTION;
-import static com.codingchili.core.configuration.CoreStrings.STORAGE_ARRAY;
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.context.CoreRuntimeException;
+import com.codingchili.core.protocol.exception.SerializerPayloadException;
+import com.codingchili.core.storage.Storable;
+
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
@@ -247,10 +243,24 @@ public class Serializer {
                 object = ((JsonObject) object).getValue(field);
             } else {
                 try {
-                    Field fx = object.getClass().getDeclaredField(field);
-                    fx.setAccessible(true);
-                    object = fx.get(object);
-                } catch (NoSuchFieldException | IllegalAccessException e) {
+                    boolean foundField = false;
+                    Class<?> origin = object.getClass();
+
+                    for (Class<?> iterator = origin; iterator != null; iterator = iterator.getSuperclass()) {
+                        for (Field member : iterator.getDeclaredFields()) {
+                            if (member.getName().equals(field)) {
+                                member.setAccessible(true);
+                                object = member.get(object);
+                                foundField = true;
+                            }
+                        }
+                    }
+
+                    if (!foundField) {
+                        throw new CoreRuntimeException(String.format("Not able to find field '%s' in class '%s'.",
+                                field, origin.getName()));
+                    }
+                } catch (IllegalAccessException e) {
                     throw new CoreRuntimeException(CoreStrings.getReflectionErrorInSerializer(path));
                 }
             }

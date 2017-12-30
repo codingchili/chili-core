@@ -107,23 +107,32 @@
 
     </template>
     <script>
-        Polymer({
-            is: 'page-patchnotes',
-            patch: {},
+        class PagePatchnotes extends Polymer.Element {
 
-            ready: function () {
-                var self = this;
+            constructor () {
+                super();
+                this.patch = {};
+            }
+
+            static get is() {
+                return 'page-patchnotes';
+            }
+
+            ready() {
+                super.ready();
+                let patchserver = new PatchServer();
 
                 patchserver.patch({
-                    accepted: function (data) {
-                        self.set('patch', data);
+                    accepted: (data) => {
+                        this.set('patch', data);
                         application.loadedVersion({name: data.name, version: data.version});
                     },
-                    failed: function () {
+                    failed: () => {
                         application.error("Failed to load application version.");
                     }
                 });
             }
-        });
+        }
+        window.customElements.define(PagePatchnotes.is, PagePatchnotes);
     </script>
 </dom-module>

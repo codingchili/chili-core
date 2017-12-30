@@ -1,16 +1,8 @@
 package com.codingchili.realm.controller;
 
 import com.codingchili.common.Strings;
-import com.codingchili.core.protocol.ResponseStatus;
-import com.codingchili.core.protocol.Serializer;
-import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
-import com.codingchili.core.security.Token;
-import com.codingchili.core.security.TokenFactory;
-import com.codingchili.core.testing.RequestMock;
-import com.codingchili.core.testing.ResponseListener;
 import com.codingchili.realm.ContextMock;
-import com.codingchili.realm.configuration.RealmSettings;
-import com.codingchili.realm.instance.model.entity.PlayerEntity;
+import com.codingchili.realm.instance.model.entity.PlayerCreature;
 import com.codingchili.realm.model.AsyncCharacterStore;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
@@ -20,13 +12,18 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeUnit;
+
+import com.codingchili.core.protocol.ResponseStatus;
+import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
+import com.codingchili.core.security.Token;
+import com.codingchili.core.security.TokenFactory;
+import com.codingchili.core.testing.RequestMock;
+import com.codingchili.core.testing.ResponseListener;
 
 import static com.codingchili.common.Strings.*;
 
@@ -56,7 +53,7 @@ public class CharacterHandlerTest {
         clientToken = context.getClientFactory();
 
         Future<Void> future = Future.<Void>future().setHandler(done -> {
-            context.getCharacterStore(new RealmSettings()).setHandler(characters -> {
+            context.getCharacterStore().setHandler(characters -> {
                 this.characters = characters.result();
                 createCharacters(async);
             });
@@ -70,8 +67,8 @@ public class CharacterHandlerTest {
     }
 
     private void createCharacters(Async async) {
-        PlayerEntity add = new PlayerEntity().setName(CHARACTER_NAME).setAccount(USERNAME);
-        PlayerEntity delete = new PlayerEntity().setName(CHARACTER_NAME_DELETED).setAccount(USERNAME);
+        PlayerCreature add = new PlayerCreature(CHARACTER_NAME).setAccount(USERNAME);
+        PlayerCreature delete = new PlayerCreature(CHARACTER_NAME_DELETED).setAccount(USERNAME);
         Future<Void> addFuture = Future.future();
         Future<Void> removeFuture = Future.future();
 
@@ -167,10 +164,9 @@ public class CharacterHandlerTest {
             JsonObject realm = response.getJsonObject(ID_REALM);
 
             test.assertEquals(ResponseStatus.ACCEPTED, status);
-            test.assertTrue(realm.containsKey(ID_CLASSES));
             test.assertTrue(realm.containsKey(ID_NAME));
+            test.assertTrue(realm.containsKey(ID_CLASSES));
             test.assertTrue(realm.containsKey(ID_AFFLICTIONS));
-            test.assertTrue(realm.containsKey(ID_TEMPLATE));
 
             async.complete();
         }, new JsonObject()

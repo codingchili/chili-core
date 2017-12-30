@@ -1,11 +1,9 @@
 package com.codingchili.realm.instance.model.entity;
 
-import com.codingchili.realm.instance.model.items.Inventory;
+import com.codingchili.realm.instance.context.GameContext;
 import com.codingchili.realm.instance.model.events.Event;
-import com.codingchili.realm.instance.model.afflictions.AfflictionState;
-import com.codingchili.realm.instance.model.spells.SpellState;
-import com.codingchili.realm.instance.model.stats.Stats;
 
+import java.util.Optional;
 import java.util.Set;
 
 import com.codingchili.core.listener.Receiver;
@@ -14,12 +12,7 @@ import com.codingchili.core.storage.Storable;
 /**
  * @author Robin Duda
  * <p>
- * An entity models a living creature that may be player controlled or not.
- * Entities can message other entities through Events that are routed
- * through the game context.
- * <p>
- * Entities can travel between worlds/instances, therefore their state must be
- * attached to the entity and not the instances context.
+ * An entity that exists in the game, can be a player, a house or anything else.
  */
 public interface Entity extends Storable, Receiver<Event> {
 
@@ -39,35 +32,22 @@ public interface Entity extends Storable, Receiver<Event> {
     Vector getVector();
 
     /**
-     * @return a set of spells that is available to the entity
-     * and their current state, including cooldowns.
-     */
-    SpellState getSpells();
-
-    /**
-     * @return the effective stats that is calculated from the base stats,
-     * the equipped items and any afflictions currently active on the entity.
-     */
-    Stats getStats();
-
-    /**
-     * @return the base stats of the entity.
-     */
-    Stats getBaseStats();
-
-    /**
-     * @return contains afflictions currently active on the entity.
-     */
-    AfflictionState getAfflictions();
-
-    /**
-     * @return contains all items in posession by the entity and all
-     * items that is equipped.
-     */
-    Inventory getInventory();
-
-    /**
      * @return a set of names of the events that this entity is a subscriber of.
      */
     Set<String> getInteractions();
+
+    /**
+     * Called after loading the creature to set the context.
+     *
+     * @param context the game context.
+     */
+    void setContext(GameContext context);
+
+    /**
+     * @return true if the entity is a creature.
+     * todo: remove this?
+     */
+    default Optional<Creature> creature() {
+        return Optional.ofNullable((this instanceof Creature) ? (Creature) this : null);
+    }
 }

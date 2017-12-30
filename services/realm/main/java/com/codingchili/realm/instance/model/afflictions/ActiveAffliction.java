@@ -1,7 +1,7 @@
 package com.codingchili.realm.instance.model.afflictions;
 
 import com.codingchili.realm.instance.context.GameContext;
-import com.codingchili.realm.instance.model.entity.Entity;
+import com.codingchili.realm.instance.model.entity.Creature;
 import com.codingchili.realm.instance.model.spells.Bindings;
 import com.codingchili.realm.instance.model.stats.Attribute;
 import com.codingchili.realm.instance.model.stats.Stats;
@@ -15,12 +15,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class ActiveAffliction extends Affliction {
     private Stats stats = new Stats();
     private Affliction affliction;
-    private Entity source;
-    private Entity target;
+    private Creature source;
+    private Creature target;
     private Integer ticks;
     private Long start = System.currentTimeMillis();
 
-    public ActiveAffliction(Entity source, Entity target, Affliction affliction) {
+    public ActiveAffliction(Creature source, Creature target, Affliction affliction) {
         this.source = source;
         this.target = target;
         this.affliction = affliction;
@@ -63,19 +63,19 @@ public class ActiveAffliction extends Affliction {
         this.affliction = affliction;
     }
 
-    public Entity getSource() {
+    public Creature getSource() {
         return source;
     }
 
-    public void setSource(Entity source) {
+    public void setSource(Creature source) {
         this.source = source;
     }
 
-    public Entity getTarget() {
+    public Creature getTarget() {
         return target;
     }
 
-    public void setTarget(Entity target) {
+    public void setTarget(Creature target) {
         this.target = target;
     }
 }

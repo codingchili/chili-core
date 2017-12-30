@@ -1,7 +1,7 @@
 package com.codingchili.realm.configuration;
 
 import com.codingchili.realm.instance.context.InstanceSettings;
-import com.codingchili.realm.instance.model.entity.PlayerEntity;
+import com.codingchili.realm.instance.model.entity.PlayerCreature;
 import com.codingchili.realm.instance.model.entity.PlayableClass;
 import com.codingchili.realm.model.AsyncCharacterStore;
 import com.codingchili.realm.model.CharacterDB;
@@ -40,9 +40,9 @@ public class RealmContext extends SystemContext implements ServiceContext {
     public Future<AsyncCharacterStore> getCharacterStore() {
         Future<AsyncCharacterStore> future = Future.future();
 
-        new StorageLoader<PlayerEntity>(new StorageContext<>(this))
+        new StorageLoader<PlayerCreature>(new StorageContext<>(this))
                 .withPlugin(service().getStorage())
-                .withValue(PlayerEntity.class)
+                .withValue(PlayerCreature.class)
                 .withCollection(COLLECTION_CHARACTERS)
                 .build(storage -> {
                     if (storage.succeeded()) {

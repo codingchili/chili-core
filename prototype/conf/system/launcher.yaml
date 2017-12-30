@@ -1,0 +1,29 @@
+---
+version: CORE-1.0.5-PR
+application: prototype
+blocks:
+  default:
+  - com.codingchili.logging.Service
+  - com.codingchili.authentication.Service
+  - com.codingchili.patching.Service
+  - com.codingchili.realm.Service
+  - com.codingchili.router.Service
+  - com.codingchili.social.controller.SocialHandler
+  - com.codingchili.website.Service
+  - com.codingchili.realmregistry.Service
+  router:
+  - com.codingchili.router.Service
+  website:
+  - com.codingchili.website.Service
+  patcher:
+  - com.codingchili.patching.Service
+  social:
+  - com.codingchili.social.Service
+  logger:
+  - com.codingchili.logging.Service
+  realm:
+  - com.codingchili.realm.Service
+  authentication:
+  - com.codingchili.authentication.Service
+hosts:
+  localhost: default

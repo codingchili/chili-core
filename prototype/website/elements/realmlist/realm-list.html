@@ -252,7 +252,8 @@
                 this.set("sort", this.favoriteSort.bind(this));
 
                 application.onAuthentication((function (authentication) {
-                    this.set("favourites", authentication.account.servers);
+
+                    //this.set("favourites", authentication.account.servers);
                     this.update();
                     this.timer = setInterval(this.update.bind(this), 6000);
 
@@ -285,7 +286,7 @@
             },
 
             favourite: function (realm) {
-                return this.favourites[realm];
+                return true;//this.favourites[realm];
             },
 
             favoriteSort: function (a, b) {

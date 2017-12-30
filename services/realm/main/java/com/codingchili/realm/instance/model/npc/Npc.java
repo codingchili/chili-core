@@ -1,15 +1,16 @@
 package com.codingchili.realm.instance.model.npc;
 
 import com.codingchili.realm.instance.context.GameContext;
-import com.codingchili.realm.instance.model.entity.SimpleEntity;
+import com.codingchili.realm.instance.model.entity.SimpleCreature;
 
 /**
  * @author Robin Duda
  * Contains questgiver details, dialog and AI.
  */
-public class Npc extends SimpleEntity {
+public class Npc extends SimpleCreature {
 
-    public Npc(GameContext context) {
-        super(context);
+    @Override
+    public void setContext(GameContext context) {
+        super.setContext(context);
     }
 }

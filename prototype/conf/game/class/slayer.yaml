@@ -2,7 +2,7 @@
 name: "Slayer"
 description: "A ferocious murderer feeding on the fear and blood of their victims, melee fighting with health-based damage."
 weapons:
-  - "axe"
+  - "battleaxe"
 armors:
   - "mail"
   - "plate"

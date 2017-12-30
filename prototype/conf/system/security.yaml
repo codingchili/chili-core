@@ -1,0 +1,38 @@
+---
+dependencies:
+  service/[^/]*:
+    preshare:
+    - global
+    secrets: []
+    tokens:
+      logging:
+        service: logserver
+        secret: secret
+  service/logserver:
+    preshare: []
+    secrets:
+    - secret
+    tokens: {}
+  service/authserver:
+    preshare:
+    - clientSecret
+    secrets: []
+    tokens: {}
+  service/realmregistry:
+    preshare:
+    - clientSecret
+    secrets:
+    - realmSecret
+  realm/[^/]*:
+    preshare:
+    - global
+    secrets:
+    - secret
+    tokens:
+      logging:
+        service: logserver
+        secret: secret
+      authentication:
+        service: realmregistry
+        secret: realmSecret
+secretBytes: 64

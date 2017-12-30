@@ -45,35 +45,40 @@
         <div class="container">
             <paper-material elevation="0">
 
-                <template id="t" is="dom-bind">
+                <paper-material elevation="1" class="item">
+                    <div class="title">
+                        <h4>{{data.title}}</h4>
+                    </div>
 
-                    <iron-ajax url="/api/gameinfo" last-response="{{data}}" auto></iron-ajax>
-
-                    <paper-material elevation="1" class="item">
-                        <div class="title">
-                            <h4>{{data.title}}</h4>
-                        </div>
-
-                        <div class="text">
-                            <p>
-                                {{data.content}}
-                            </p>
-                        </div>
-
-
-                    </paper-material>
-
-                </template>
+                    <div class="text">
+                        <p>
+                            {{data.content}}
+                        </p>
+                    </div>
+                </paper-material>
 
             </paper-material>
         </div>
 
     </template>
     <script>
-        Polymer({
-            is: 'page-gameinfo',
-            ready: function () {
+        class PageGameInfo extends Polymer.Element {
+
+            constructor() {
+                super();
+                let patchserver = new PatchServer();
+
+                patchserver.gameinfo({
+                    accepted: (data) => {
+                        this.data = data;
+                    }
+                });
             }
-        });
+
+            static get is() {
+                return 'page-gameinfo';
+            }
+        }
+        window.customElements.define(PageGameInfo.is, PageGameInfo);
     </script>
 </dom-module>

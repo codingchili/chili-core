@@ -1,14 +1,17 @@
 package com.codingchili.realm.instance.model.entity;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Robin Duda
+ * <p>
+ * A vector within the game world.
  */
 public class Vector {
     private float velocity = 1.0f;
     private float direction = 0.0f;
-    private int radius = 24;
+    private int size = 24;
     private float x = 0;
     private float y = 0;
 
@@ -48,12 +51,12 @@ public class Vector {
         return this;
     }
 
-    public int getRadius() {
-        return radius;
+    public int getSize() {
+        return size;
     }
 
-    public Vector setRadius(int radius) {
-        this.radius = radius;
+    public Vector setSize(int size) {
+        this.size = size;
         return this;
     }
 
@@ -62,14 +65,31 @@ public class Vector {
         return String.format("x=%f y=%f, dir=%f velocity=%f", x, y, direction, velocity);
     }
 
-    public Set<Integer> cells(final int cellSize, final int gridWidth) {
-        Set<Integer> buckets = new HashSet<>();
-        buckets.add(Math.round(((x + radius) / cellSize) + ((y / cellSize) * gridWidth)));
-        buckets.add(Math.round(((x - radius) / cellSize) + ((y / cellSize) * gridWidth)));
-        buckets.add(Math.round((x / cellSize) + (((y + radius) / cellSize) * gridWidth)));
-        buckets.add(Math.round((x / cellSize) + (((y - radius) / cellSize) * gridWidth)));
-        return buckets;
+    /**
+     * @return a copy of this vector.
+     */
+    public Vector copy() {
+        return new Vector()
+                .setVelocity(velocity)
+                .setDirection(direction)
+                .setSize(size)
+                .setX(x).setY(y);
     }
 
-    // todo add copy with kryo after merging.
+
+    /**
+     * Returns the cells that the vector is placed in.
+     *
+     * @param cellSize  the size of the cells.
+     * @param gridWidth the size of the grid.
+     * @return cell numbers that this vector exists within.
+     */
+    public Set<Integer> cells(final int cellSize, final int gridWidth) {
+        Set<Integer> buckets = new HashSet<>();
+        buckets.add(Math.round(((x + size) / cellSize) + ((y / cellSize) * gridWidth)));
+        buckets.add(Math.round(((x - size) / cellSize) + ((y / cellSize) * gridWidth)));
+        buckets.add(Math.round((x / cellSize) + (((y + size) / cellSize) * gridWidth)));
+        buckets.add(Math.round((x / cellSize) + (((y - size) / cellSize) * gridWidth)));
+        return buckets;
+    }
 }

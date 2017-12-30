@@ -28,10 +28,12 @@ public class RouterHandler extends BusRouter {
 
     @Override
     public void handle(Request request) {
-        if (context.isRouteHidden(request.target())) {
-            request.error(new AuthorizationRequiredException());
-        } else {
+        if (context.isRouteExternal(request.target(), request.route())) {
             protocol.get(request.target(), Role.USER).submit(request);
+        } else {
+            request.error(new AuthorizationRequiredException(
+                    String.format("Requested target '%s' and route '%s' does not exist or is not external.",
+                            request.target(), request.route())));
         }
     }
 

@@ -7,17 +7,15 @@ import com.codingchili.realm.instance.model.stats.Stats;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.codingchili.core.files.ConfigurationFactory;
-
 /**
  * @author Robin Duda
+ *
+ * A playable class, a character template.
  */
 public class PlayableClass {
     private String name = "default";
     private String description = "description";
     private Stats stats;
-
-    // todo read spell info from spellDB, getSpellByName.
     private Collection<String> spells = new ArrayList<>();
     private Collection<String> keywords = new ArrayList<>();
     private Collection<WeaponType> weapons = new ArrayList<>();
@@ -84,9 +82,5 @@ public class PlayableClass {
     public PlayableClass setStats(Stats stats) {
         this.stats = stats;
         return this;
-    }
-
-    public static void main(String[] args) {
-        //ConfigurationFactory.add();
     }
 }
