@@ -240,11 +240,10 @@
                 super.ready();
                 this.showSelect();
 
-                application.onRealmLoaded((loaded) => {
-                    this.set("token", loaded.token);
-                    this.set("realm", loaded.realm);
+                application.onRealmLoaded((realm) => {
+                    console.log(realm);
+                    this.set('realm', realm);
                 });
-
             }
 
             static get is() {
@@ -261,7 +260,7 @@
                     let bonus = playableClass.stats[key];
 
                     if (bonus - 5 > 0 && key !== 'level') {
-                        stats.push({'bonus':bonus, 'name':key});
+                        stats.push({'bonus': bonus, 'name': key});
                     }
                 }
                 return stats;
@@ -288,27 +287,17 @@
                         this.$["toast-exists"].open();
                     else {
                         this.$["toast-creating"].open();
-                        $.ajax({
-                            type: "POST",
-                            url: api.authentication("character-create"),
-                            contentType: "text/plain",
-                            data: JSON.stringify({
-                                token: application.authentication.token,
-                                realm: this.realm.name,
-                                className: this.selected.name,
-                                character: this.characterName
-                            }),
-                            statusCode: {
-                                200: () => {
-                                    application.publish("character-create", {});
-                                    this.characterName = "";
-                                    this.showSelect();
-                                }
+
+                        new RealmServer(this.realm).create({
+                            accepted: () => {
+                                application.publish("character-create", {});
+                                this.characterName = "";
+                                this.showSelect();
                             },
                             error: () => {
                                 application.error("Failed to connect to the authentication server for character creation.");
                             }
-                        });
+                        }, this.selected.name, this.characterName);
                     }
                 }
             }
@@ -327,9 +316,5 @@
             }
         }
         window.customElements.define(CharacterCreate.is, CharacterCreate);
-
-
-
-
     </script>
 </dom-module>

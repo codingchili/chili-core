@@ -25,7 +25,7 @@ public class CharacterDB implements AsyncCharacterStore {
     }
 
     @Override
-    public void create(Handler<AsyncResult<Void>> future, String username, PlayerCreature character) {
+    public void create(Handler<AsyncResult<Void>> future, PlayerCreature character) {
         characters.putIfAbsent(character, future);
     }
 

@@ -13,6 +13,8 @@ import com.codingchili.core.protocol.RoleMap;
 public class EventProtocol extends Protocol<Event> {
     private String id;
 
+    public EventProtocol() {}
+
     public EventProtocol(Entity entity) {
         this.id = entity.getId();
         setRole(RoleMap.get(RoleMap.PUBLIC));

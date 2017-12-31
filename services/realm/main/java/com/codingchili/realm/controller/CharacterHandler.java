@@ -108,6 +108,7 @@ public class CharacterHandler implements CoreHandler {
 
     private void characterCreate(RealmRequest request) {
         PlayerCreature creature = new PlayerCreature(request.character());
+        creature.setAccount(request.account());
 
         characters.create(creation -> {
             if (creation.succeeded()) {
@@ -118,7 +119,7 @@ public class CharacterHandler implements CoreHandler {
 
             // todo: create a PlayerCreature from the class template.
             //
-        }, request.account(), creature);
+        }, creature);
     }
 
     private PlayableClass readTemplate(String characterName, String className) throws PlayerClassDisabledException {

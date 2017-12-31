@@ -14,10 +14,9 @@ public interface AsyncCharacterStore {
      * Adds a character to an username.
      *
      * @param future    callback
-     * @param username  the handler of the username the character is added to.
      * @param character the character to be added.
      */
-    void create(Handler<AsyncResult<Void>> future, String username, PlayerCreature character);
+    void create(Handler<AsyncResult<Void>> future, PlayerCreature character);
 
     /**
      * Finds all characters associated with an account on specified realmName.

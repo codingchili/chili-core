@@ -76,6 +76,7 @@ public class SpellEngine {
         ActiveSpell spell = casting.get(caster);
         if (spell != null) {
             game.publish(new SpellCastEvent(spell.setCycle(SpellCycle.CANCELLED)));
+            casting.remove(caster);
         }
     }
 
@@ -87,6 +88,14 @@ public class SpellEngine {
         ActiveAffliction affliction = afflictions.getByName(name).apply(source, target);
         source.getAfflictions().add(affliction, game);
         game.publish(new AfflictionEvent(affliction));
+    }
+
+    public void interrupt(Creature caster) {
+        ActiveSpell spell = casting.get(caster);
+        if (spell != null) {
+            game.publish(new SpellCastEvent(spell.setCycle(SpellCycle.INTERRUPTED)));
+            casting.remove(caster);
+        }
     }
 
     public void energy(Creature target, int amount) {

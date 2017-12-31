@@ -125,8 +125,7 @@
 
 
                     <div class="character-list-box" hidden="[[loading]]">
-
-                        <template is="dom-repeat" items="{{realm.characters}}" as="character">
+                        <template is="dom-repeat" items="[[realm.characters]]" as="character">
                             <paper-material elevation="2" class="character" on-tap="select">
                                 <paper-ripple></paper-ripple>
                                 <paper-tooltip animation-delay="0" class="tooltip">
@@ -134,7 +133,7 @@
                                 </paper-tooltip>
                                 <iron-icon on-tap="removeCharacter"
                                            icon="icons:close" class="character-remove"></iron-icon>
-                                <img src="{{realm.resources}}/api/download?file=gui/class/{{character.className}}.svg"
+                                <img src="{{realm.resources}}/gui/class/{{character.className}}.svg"
                                      class="class-image">
 
                                 <div class="character-name">{{character.name}}</div>
@@ -183,8 +182,6 @@
 
             realmtoken(realm) {
                 this.showLoading('Authenticating..');
-
-
                 new RealmRegistry().realmtoken({
                     accepted: (data) => {
                         this.realm.token = data;
@@ -200,11 +197,12 @@
                 this.showLoading('Loading characters..');
                 new RealmServer(this.realm).characterlist({
                     accepted: (data) => {
-                        data.realm.characters = data.characters;
-                        this.set('realm', data.realm);
+                        Object.assign(this.realm, data.realm);
+                        this.set('realm', this.realm);
+                        this.set('realm.characters', data.characters);
                         this.showCharacters();
                         this.hideLoading();
-                        application.realmLoaded({realm: data.realm, token: this.token});
+                        application.realmLoaded(this.realm);
                     },
                     unauthorized: (data) => {
                         application.error('The authentication server rejected the realm token when listing characters.');
@@ -216,25 +214,14 @@
                 e.stopPropagation();
                 this.showLoading('Removing character..');
 
-                $.ajax({
-                    type: 'POST',
-                    url: api.authentication('character-remove'),
-                    contentType: 'text/plain',
-                    data: JSON.stringify({
-                        token: application.authentication.token,
-                        realm: this.realm.name,
-                        character: e.model.character.name
-                    }),
-                    statusCode: {
-                        200: () => {
-                            this.loadCharacters();
-                        }
+                new RealmServer(this.realm).remove({
+                    accepted: () => {
+                        this.loadCharacters();
                     },
-                    error: (code) => {
-                        if (code.status !== 401)
-                            application.error('Failed to connect to the authentication server to delete a character..');
+                    error: () => {
+                        application.error('Failed to connect to the authentication server to delete a character..');
                     }
-                });
+                }, e.model.character.name);
             }
 
             showLoading(status) {

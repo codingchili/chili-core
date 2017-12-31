@@ -75,6 +75,7 @@
             }
 
             ready() {
+                super.ready();
                 this.set('text', 'No error defined.');
 
                 application.onError((error) => {
