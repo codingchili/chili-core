@@ -11,6 +11,7 @@ import com.codingchili.core.protocol.Serializer;
  */
 public class PlayerCreature extends SimpleCreature {
     private String account;
+    private String className;
 
     public PlayerCreature() {
     }
@@ -34,6 +35,14 @@ public class PlayerCreature extends SimpleCreature {
     public PlayerCreature setAccount(String account) {
         this.account = account;
         return this;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
     }
 
     public static void main(String[] args) {

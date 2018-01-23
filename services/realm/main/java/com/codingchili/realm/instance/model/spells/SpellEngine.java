@@ -201,8 +201,8 @@ public class SpellEngine {
         JsonObject affConfig = ConfigurationFactory.readObject("/afflictiontest.yaml");
         Affliction affliction = Serializer.unpack(affConfig, Affliction.class);
 
-        SimpleCreature target = new ListeningPerson();
-        SimpleCreature source = new ListeningPerson();
+        Creature target = new ListeningPerson();
+        Creature source = new ListeningPerson();
 
         game.add(target);
         game.add(source);

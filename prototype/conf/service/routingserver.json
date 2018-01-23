@@ -41,15 +41,15 @@
   } ],
   "external" : {
     "client.authentication.node" : ".*",
-    "client.realmregistry.node": ".*",
+    "client.realmregistry.node" : ".*",
     "patching.node" : ".*",
-    "angel oak.realm.node": ".*"
+    "angel oak.realm.node" : ".*"
   },
-  "global" : "XQWBnrNDa+sJIvw01+e2dUVbcWIVqC7pbWqy3SYhPRwy7PgTgNPATCbj/WJACh5Uq4IYCNfHKuI5Cp/Nqgn6Sg==",
+  "global" : "hM3x6XbpKwhRV5h8MIWM37XdRhFluhULwOzBJjXU1uVyZtWhtir1Pr8KNb39hdyXq7l06PDF2y66qh8WYdxkwA==",
   "logging" : {
     "properties" : { },
-    "key" : "5tkj3V6syusAXs04q111VMg0D3cVyjx47XVmgovI1/xWIknYhQO+RtIBz9x44SIndSWGp4pOwJ5my+6iTdJBkg==",
+    "key" : "xOCBl4RrCsq4h+I8v5wtGl8kEWiHyl3acTZYUvrwph1p+LoI1mKyoEOP4Zc/0aNp65teZmUZcIYF00LSqQ8MDg==",
     "domain" : "routing.node",
-    "expiry" : 1515258206
+    "expiry" : 1517335502
   }
 }

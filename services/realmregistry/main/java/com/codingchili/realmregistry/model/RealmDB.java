@@ -1,10 +1,5 @@
 package com.codingchili.realmregistry.model;
 
-import com.codingchili.core.security.Token;
-import com.codingchili.core.security.TokenFactory;
-import com.codingchili.core.storage.AsyncStorage;
-import com.codingchili.core.storage.EntryWatcher;
-import com.codingchili.core.storage.QueryBuilder;
 import com.codingchili.realmregistry.configuration.RegisteredRealm;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -14,10 +9,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.codingchili.core.configuration.CoreStrings.ID_NAME;
-import static com.codingchili.core.configuration.CoreStrings.ID_UPDATED;
-import static io.vertx.core.Future.failedFuture;
-import static io.vertx.core.Future.succeededFuture;
+import com.codingchili.core.security.Token;
+import com.codingchili.core.security.TokenFactory;
+import com.codingchili.core.storage.*;
+
+import static com.codingchili.core.configuration.CoreStrings.*;
+import static io.vertx.core.Future.*;
 
 
 /**
@@ -38,10 +35,8 @@ public class RealmDB implements AsyncRealmStore {
         this.watcher = new EntryWatcher<>(realms, this::getStaleQuery, this::getTimeout)
                 .start(items -> items.forEach(item ->
                         realms.remove(item.getId(), (removed) -> {
-                            System.out.print(removed.succeeded());
-
                             if (removed.failed()) {
-                                System.out.println(removed.cause().getMessage());
+                                map.context().logger(getClass()).onError(removed.cause());
                             }
                         })));
     }

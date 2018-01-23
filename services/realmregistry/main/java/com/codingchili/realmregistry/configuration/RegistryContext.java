@@ -15,6 +15,11 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
+
 import static com.codingchili.common.Strings.*;
 import static com.codingchili.realmregistry.configuration.RealmRegistrySettings.PATH_REALMREGISTRY;
 
@@ -24,6 +29,9 @@ import static com.codingchili.realmregistry.configuration.RealmRegistrySettings.
 public class RegistryContext extends SystemContext implements ServiceContext {
     protected AsyncRealmStore realms;
     protected TokenFactory realmFactory;
+    private AsyncRealmStore realmDB;
+    private AtomicBoolean loading = new AtomicBoolean(false);
+    private Queue<Consumer<AsyncRealmStore>> waiting = new ConcurrentLinkedQueue<>();
     private Logger logger;
 
     public RegistryContext(CoreContext core) {
@@ -34,12 +42,18 @@ public class RegistryContext extends SystemContext implements ServiceContext {
     }
 
     public void getRealmStore(Handler<AsyncResult<AsyncRealmStore>> handler) {
-        new StorageLoader<RegisteredRealm>().diskIndex(this)
-                .withCollection(COLLECTION_REALMS)
-                .withValue(RegisteredRealm.class)
-                .build(prepare -> {
-                    handler.handle(Future.succeededFuture(new RealmDB(prepare.result())));
-                });
+        if (!loading.getAndSet(true)) {
+            new StorageLoader<RegisteredRealm>().memIndex(this)
+                    .withCollection(COLLECTION_REALMS)
+                    .withValue(RegisteredRealm.class)
+                    .build(prepare -> {
+                        this.realmDB = new RealmDB(prepare.result());
+                        waiting.forEach(waiting -> waiting.accept(realmDB));
+                        handler.handle(Future.succeededFuture(realmDB));
+                    });
+        } else {
+            waiting.add((store) -> handler.handle(Future.succeededFuture(realmDB)));
+        }
     }
 
     public boolean verifyRealmToken(Token token) {

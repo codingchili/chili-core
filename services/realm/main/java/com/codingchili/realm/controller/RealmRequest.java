@@ -25,7 +25,7 @@ class RealmRequest extends RequestWrapper {
     }
 
     public String className() {
-        return data().getString(ID_CLASS);
+        return data().getString(ID_PLAYERCLASS);
     }
 
     public Account getAccount() {

@@ -74,8 +74,8 @@ public class CharacterHandlerTest {
 
         CompositeFuture.all(addFuture, removeFuture).setHandler(done -> async.complete());
 
-        characters.create(addFuture, USERNAME, add);
-        characters.create(removeFuture, USERNAME, delete);
+        characters.create(addFuture, add);
+        characters.create(removeFuture, delete);
     }
 
     @Test

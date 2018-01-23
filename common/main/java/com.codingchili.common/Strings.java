@@ -35,6 +35,7 @@ public abstract class Strings extends CoreStrings {
 
     public static final String ID_CHARACTER = "character";
     public static final String ID_CHARACTERS = "characters";
+    public static final String ID_PLAYERCLASS = "className";
     public static final String ID_ACCOUNT = "account";
     public static final String ID_REALM = "realm";
     public static final String ID_REALMS = "realms";
