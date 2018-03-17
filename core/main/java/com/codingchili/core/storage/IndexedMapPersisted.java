@@ -40,7 +40,11 @@ public class IndexedMapPersisted<Value extends Storable> extends IndexedMap<Valu
             }
         }, context);
 
+        // we perform this expensive operation to simplify clients - otherwise
+        // clients would need to copy objects when using this storage and not
+        // others for updates. Should probably be removed later and documented instead.
         setMapper((value) -> Serializer.kryo((kryo) -> kryo.copy(value)));
+
         future.complete(this);
     }
 
