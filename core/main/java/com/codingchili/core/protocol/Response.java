@@ -19,6 +19,7 @@ public class Response {
     /**
      * Creates a response object given a response status.
      *
+     * @param request the request to create a response for.
      * @param status the status to create the response from.
      * @return a JSON encoded response packed in a buffer.
      */
@@ -30,6 +31,7 @@ public class Response {
     /**
      * Creates a response object given a response status and a throwable.
      *
+     * @param request the request to create a response for.
      * @param status the status to include in the response.
      * @param e      an exception that was the cause of an abnormal response status.
      * @return a JSON encoded response packed in a buffer.

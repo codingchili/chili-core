@@ -20,8 +20,7 @@ public class RingBufferScheduler<E extends Supplier<Integer>> {
     private AtomicInteger head = new AtomicInteger(0);
 
     /**
-     *
-     * @param segmentCount
+     * @param segmentCount the number of segments that may contain items.
      */
     public RingBufferScheduler(int segmentCount) {
         for (int i = 0; i < segmentCount; i++) {
@@ -30,17 +29,19 @@ public class RingBufferScheduler<E extends Supplier<Integer>> {
     }
 
     /**
+     * Process the items in the next segment and move the head forward by one.
      *
-     * @param consumer
+     * @param consumer to consume items in the next segment.
      */
     public void forNext(Consumer<E> consumer) {
         forNext(consumer, 1);
     }
 
     /**
+     * Process the items in the next segments and move the head forward.
      *
-     * @param consumer
-     * @param count
+     * @param consumer to consume items in the next segments.
+     * @param count    the number of segments to process.
      */
     public void forNext(Consumer<E> consumer, int count) {
         final int step = count;
@@ -62,17 +63,20 @@ public class RingBufferScheduler<E extends Supplier<Integer>> {
     }
 
     /**
+     * Adds an item to a segment with the offset received from the item as a Supplier.
      *
-     * @param item
+     * @param item the item to schedule.
      */
     public void schedule(E item) {
         schedule(item, item.get());
     }
 
     /**
+     * Adds an item to a segment with the offset specified. When the item is rescheduled
+     * the value of the Supplier will be used.
      *
-     * @param item
-     * @param delay
+     * @param item  the item to schedule.
+     * @param delay the delay as specified in number of segments as an offset to the current head.
      */
     public void schedule(E item, int delay) {
         if (delay >= segments.size()) {
@@ -91,7 +95,7 @@ public class RingBufferScheduler<E extends Supplier<Integer>> {
         RingBufferScheduler<Supplier<Integer>> scheduler = new RingBufferScheduler<>(600);
 
         for (int i = 601; i < 10000; i++) {
-            final int index = ((i + 1) % 599)+1;
+            final int index = ((i + 1) % 599) + 1;
 
             scheduler.schedule(() -> {
                 times.incrementAndGet();
