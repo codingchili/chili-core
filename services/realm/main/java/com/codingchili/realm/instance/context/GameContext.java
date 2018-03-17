@@ -5,8 +5,8 @@ import com.codingchili.realm.configuration.RealmSettings;
 import com.codingchili.realm.instance.model.entity.*;
 import com.codingchili.realm.instance.model.events.*;
 import com.codingchili.realm.instance.model.npc.ListeningPerson;
-import com.codingchili.realm.instance.model.npc.TalkingPerson;
 import com.codingchili.realm.instance.model.spells.SpellEngine;
+import com.codingchili.realm.instance.model.spells.SpellTarget;
 import io.vertx.core.impl.ConcurrentHashSet;
 
 import java.util.*;
@@ -28,31 +28,28 @@ import static com.codingchili.realm.instance.model.events.SpawnEvent.SpawnType.D
  * The core game loop.
  */
 public class GameContext {
-    public static final int TICK_INTERVAL_MS = 20;
+    private static final int TICK_INTERVAL_MS = 20;
     private Map<EventType, Map<String, EventProtocol>> listeners = new ConcurrentHashMap<>();
-    private Map<String, Creature> creatureMap = new ConcurrentHashMap<>();
-    private Map<String, Entity> structureMap = new ConcurrentHashMap<>();
     private Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
     private Set<Ticker> tickers = new ConcurrentHashSet<>();
     private AtomicInteger skippedTicks = new AtomicInteger(0);
     private AtomicBoolean processing = new AtomicBoolean(false);
     private AtomicBoolean closed = new AtomicBoolean(false);
-    private SpellEngine spells;
     private InstanceContext instance;
-
-    private Long currentTick = 0L;
     private Grid<Creature> creatures;
-    private Grid<Entity> entities;
+    private Grid<Entity> structures;
+    private SpellEngine spells;
+    private Long currentTick = 0L;
 
     public GameContext(InstanceContext instance) {
         this.instance = instance;
 
         int width = instance.settings().getWidth();
-        this.creatures = new Grid<>(width, creatureMap::values);
-        this.entities = new Grid<>(width, structureMap::values);
+        this.creatures = new Grid<>(width);
+        this.structures = new Grid<>(width);
 
         ticker(creatures::update, 1);
-        ticker(entities::update, 5);
+        ticker(structures::update, 5);
 
         spells = new SpellEngine(this);
 
@@ -76,7 +73,7 @@ public class GameContext {
                 }
 
                 tickers.forEach(ticker -> {
-                    if (currentTick % ticker.getTick() == 0) {
+                    if (currentTick % ticker.get() == 0) {
                         ticker.run();
                     }
                 });
@@ -110,7 +107,7 @@ public class GameContext {
     }
 
     public Grid<Entity> entities() {
-        return entities;
+        return structures;
     }
 
     public SpellEngine spells() {
@@ -127,7 +124,7 @@ public class GameContext {
     }
 
     public void setTicker(Ticker ticker) {
-        if (ticker.getTick() > 0) {
+        if (ticker.get() > 0) {
             tickers.add(ticker);
         } else {
             tickers.remove(ticker);
@@ -135,12 +132,12 @@ public class GameContext {
     }
 
     public void add(Creature creature) {
-        creatureMap.put(creature.getId(), creature);
+        creatures.add(creature);
         addNew(creature);
     }
 
     public void add(Entity entity) {
-        structureMap.put(entity.getId(), entity);
+        structures.add(entity);
         addNew(entity);
     }
 
@@ -151,8 +148,8 @@ public class GameContext {
     }
 
     public void remove(Entity entity) {
-        creatureMap.remove(entity.getId());
-        structureMap.remove(entity.getId());
+        creatures.remove(entity.getId());
+        structures.remove(entity.getId());
         publish(new SpawnEvent().setEntity(entity).setType(DESPAWN));
         unsubscribe(entity);
     }
@@ -174,25 +171,40 @@ public class GameContext {
         return protocol;
     }
 
+    // publish-subscribe does not support unicast.
     public void publish(Event event) {
         Map<String, EventProtocol> scoped = listeners.computeIfAbsent(event.getType(), (key) -> new ConcurrentHashMap<>());
         String type = event.getType().toString();
 
+        //System.out.println(Serializer.yaml(event));
+
         switch (event.getBroadcast()) {
             case PARTITION:
+                // todo implement network partitioning.
             case GLOBAL:
                 scoped.values().forEach(listener -> listener.get(type).submit(event));
                 break;
             case ADJACENT:
-                event.getSource().ifPresent(source -> {
-                    Stream.of(creatures, entities).forEach(grid -> {
-                        grid.adjacent(source.getVector()).forEach(entity -> {
-                            scoped.get(entity.getId()).get(type).submit(event);
-                        });
+                Stream.of(creatures, structures).forEach(grid -> {
+                    grid.adjacent(getById(event.getSource()).getVector()).forEach(entity -> {
+                        scoped.get(entity.getId()).get(type).submit(event);
                     });
                 });
                 break;
         }
+    }
+
+    public Entity getById(String id) {
+        Entity entity = null;
+        if (creatures.exists(id)) {
+            entity = creatures.get(id);
+        } else {
+            if (structures.exists(id)) {
+                entity = structures.get(id);
+            }
+        }
+        Objects.requireNonNull(entity, String.format("Could not find entity with id '%s'.", id));
+        return entity;
     }
 
     public Logger getLogger(Class<?> aClass) {
@@ -203,37 +215,68 @@ public class GameContext {
         return instance;
     }
 
-   /* public static void main(String[] args) throws InterruptedException {
+    public static Integer secondsToTicks(double seconds) {
+        return (int) (seconds * 1000 / TICK_INTERVAL_MS);
+    }
+
+    public static double ticksToSeconds(int ticks) {
+        return (ticks * TICK_INTERVAL_MS) / 1000;
+    }
+
+    public static void main(String[] args) throws InterruptedException {
         RealmSettings settings = new RealmSettings().setName("testing");
-        RealmContext realm = new RealmContext(new SystemContext(), settings);
-        InstanceContext ins = new InstanceContext(realm, new InstanceSettings());
 
-        GameContext game = new GameContext(ins);
+        RealmContext.create(new SystemContext(), settings).setHandler(create -> {
+            RealmContext realm = create.result();
 
-        for (int i = 0; i < 200; i++) {
+
+            InstanceContext ins = new InstanceContext(realm, new InstanceSettings());
+
+            GameContext game = new GameContext(ins);
+
+/*        game.ticker(ticker -> {
+            System.out.println("DING");
+        }, 50);*/
+
+            Creature cl = new ListeningPerson();
+            game.add(cl);
+
+            // cast the poison spell on himself.
+            cl.getSpells().getLearned().add("poisoner");
+
+            for (int i = 0; i < 2; i++) {
+                boolean casted = game.spells.cast(cl, new SpellTarget().setCreature(cl), "poisoner");
+                System.out.println("casted = " + casted);
+            }
+        });
+
+
+        // todo: add more hooks to SpellEngine afflictions. onDamage etc.
+        // todo: test cases
+        // todo: script npcs: onDeath, onAI etc.
+        // - afflict, duration, cancel etc.
+        // - cast spell: cooldown, charges etc.
+
+        /*for (int i = 0; i < 200; i++) {
             game.add(new TalkingPerson());
             game.add(new TalkingPerson());
             game.add(new ListeningPerson());
-        }
+        }*/
 
-        game.ticker(ticker -> {
+        /*game.ticker(ticker -> {
             System.out.println(ListeningPerson.called);
-        }, TICK_INTERVAL_MS);
+        }, TICK_INTERVAL_MS);*/
 
         //game.ticker((ticker) -> System.out.println(ticker.delta()), 1);
 
         //  System.exit(0);
 
-*//*        game.addCreature(new TalkingPerson(game));
+/*        game.addCreature(new TalkingPerson(game));
         game.addCreature(new TalkingPerson(game));
-        game.addCreature(new ListeningPerson(game));*//*
-    }*/
-
-    public static Integer secondsToTicks(double seconds) {
-        return (int) (seconds * 1000 / TICK_INTERVAL_MS);
+        game.addCreature(new ListeningPerson(game));*/
     }
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
        System.out.println(secondsToTicks(0.5));
-    }
+    }*/
 }

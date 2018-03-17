@@ -60,10 +60,9 @@
                 super();
 
                 application.onGameStart(function () {
-                    eval(new TextDecoder('UTF-8').decode(resources["game.js"]));
+                    //eval(new TextDecoder('UTF-8').decode(resources["game.js"])); ???
                     game.initialize(document.getElementById('game'));
                 });
-                $(window).resize(this.update);
             }
 
             characters(e) {

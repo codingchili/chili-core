@@ -21,7 +21,7 @@ import static com.codingchili.core.protocol.ResponseStatus.*;
  */
 @RunWith(VertxUnitRunner.class)
 public class RequestMockTest {
-    private static final String BUFFER_DATA = "<html>buffer example data </html>";
+    private static final String BUFFER_DATA = new JsonObject().put("json", true).encode();
     private static final String PASS = "pass";
     private static final String TEST = "test";
 
@@ -54,7 +54,7 @@ public class RequestMockTest {
 
         Request request = RequestMock.get((response, status) -> {
             test.assertEquals(ACCEPTED, status);
-            test.assertEquals(BUFFER_DATA, response.getString(ID_BUFFER));
+            test.assertTrue(response.containsKey("json"));
             async.complete();
         });
         request.write(Buffer.buffer(BUFFER_DATA));

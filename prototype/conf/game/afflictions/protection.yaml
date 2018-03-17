@@ -1,0 +1,9 @@
+---
+name: "protection"
+description: "Blocks the next incoming physical or magical attack."
+onDamageTaken:
+  jexl: |
+    return;
+onDamageGiven:
+  jexl: |
+    return;

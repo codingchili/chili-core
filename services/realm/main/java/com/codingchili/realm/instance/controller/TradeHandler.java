@@ -11,7 +11,7 @@ import com.codingchili.core.listener.*;
 /**
  * @author Robin Duda
  */
-public class TradeHandler implements Receiver<InstanceRequest> {
+public class TradeHandler implements Receiver<Request> {
     private Creature initiator;
     private Creature other;
     private Collection<Item> initiatorItems;
@@ -40,7 +40,7 @@ public class TradeHandler implements Receiver<InstanceRequest> {
     }
 
     @Override
-    public void handle(InstanceRequest request) {
+    public void handle(Request request) {
         // todo check event type.
     }
 }

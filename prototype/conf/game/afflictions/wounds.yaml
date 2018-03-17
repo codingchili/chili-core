@@ -3,4 +3,4 @@ name: "wounds"
 description: "Efficiency of heals reduced by 50%."
 modifier:
   jexl: |
-    stats[attribute.healing] -= target.stats[attribute.healing] * 0.5;
+    //stats[attribute.healing] -= target.stats[attribute.healing] * 0.5;

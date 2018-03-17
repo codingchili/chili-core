@@ -3,13 +3,14 @@ package com.codingchili.realm.instance.context;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * @author Robin Duda
  *
  * Ticker executes periodically on the game loop.
  */
-public class Ticker {
+public class Ticker implements Supplier<Integer> {
     private int id = UUID.randomUUID().hashCode();
     private GameContext context;
     private AtomicInteger tick;
@@ -62,7 +63,8 @@ public class Ticker {
         return id;
     }
 
-    public Integer getTick() {
+        @Override
+    public Integer get() {
         return tick.get();
     }
 }

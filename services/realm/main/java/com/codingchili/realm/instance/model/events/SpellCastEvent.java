@@ -1,9 +1,7 @@
 package com.codingchili.realm.instance.model.events;
 
-import com.codingchili.realm.instance.model.entity.Creature;
 import com.codingchili.realm.instance.model.spells.ActiveSpell;
-
-import java.util.Optional;
+import com.codingchili.realm.instance.model.spells.SpellTarget;
 
 /**
  * @author Robin Duda
@@ -13,14 +11,12 @@ import java.util.Optional;
 public class SpellCastEvent implements Event {
     private ActiveSpell spell;
 
-    public SpellCastEvent() {}
-
     public SpellCastEvent(ActiveSpell spell) {
         this.spell = spell;
     }
 
-    public ActiveSpell getSpell() {
-        return spell;
+    public String getSpell() {
+        return spell.getSpell().getName();
     }
 
     public SpellCastEvent setSpell(ActiveSpell spell) {
@@ -28,9 +24,21 @@ public class SpellCastEvent implements Event {
         return this;
     }
 
+    public SpellCycle getCycle() {
+        return spell.getCycle();
+    }
+
+    public SpellTarget getTarget() {
+        return spell.getTarget();
+    }
+
+    public Float getCastTime() {
+        return spell.getSpell().getCasttime();
+    }
+
     @Override
-    public Optional<Creature> getSource() {
-        return Optional.of(spell.getCaster());
+    public String getSource() {
+        return spell.getSource().getId();
     }
 
     @Override

@@ -119,9 +119,9 @@ class Application {
     view(view) {
         for (var i = 0; i < this.views.length; i++) {
             if (this.views[i] === view)
-                $('#' + this.views[i]).show();
+                document.getElementById(this.views[i]).style.display = 'block';
             else
-                $('#' + this.views[i]).hide();
+                document.getElementById(this.views[i]).style.display= 'none';
         }
     }
 
@@ -141,6 +141,6 @@ class Application {
 
 var application = new Application();
 
-$(document).ready(function () {
+document.addEventListener('DOMContentLoaded', function() {
     application.view('game-login');
 });

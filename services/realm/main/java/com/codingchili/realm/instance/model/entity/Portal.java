@@ -15,16 +15,16 @@ public class Portal extends SimpleEntity {
 
     @Api
     public void use(Event event) {
-        event.getSource().ifPresent(source -> {
+        if (event.getSource() != null) {
             context.creatures().adjacent(vector).forEach(entity -> {
-                if (entity.getId().equals(source.getId())) {
+                if (entity.getId().equals(event.getSource())) {
                     // todo perform preflight check, adjacency not in combat etc.
                     // todo figure out how to move an entity through realms.
                     // todo: we have a reference to the realm context, can we
                     // use the realm context to message upstreams?
                 }
             });
-        });
+        }
     }
 
     public Vector getEndpoint() {

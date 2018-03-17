@@ -1,6 +1,6 @@
 package com.codingchili.realm.instance.model.spells;
 
-import com.codingchili.core.context.CoreRuntimeException;
+        import com.codingchili.core.context.CoreRuntimeException;
 
 /**
  * @author Robin Duda
@@ -9,7 +9,7 @@ import com.codingchili.core.context.CoreRuntimeException;
  */
 public class NoSuchSpellException extends CoreRuntimeException {
 
-    public NoSuchSpellException(String description) {
-        super(description);
+    public NoSuchSpellException(String name) {
+        super(String.format("No spell was loaded with the name '%s'.", name));
     }
 }

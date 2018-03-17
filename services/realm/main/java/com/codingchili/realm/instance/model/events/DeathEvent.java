@@ -8,28 +8,28 @@ import com.codingchili.realm.instance.model.entity.Creature;
  * Event emitted when a creature dies.
  */
 public class DeathEvent implements Event {
-    private Creature dead;
-    private Creature cause;
+    private Creature target;
+    private Creature source;
 
-    public DeathEvent(Creature dead, Creature cause) {
-        this.dead = dead;
-        this.cause = cause;
+    public DeathEvent(Creature target, Creature source) {
+        this.target = target;
+        this.source = source;
     }
 
-    public Creature getDead() {
-        return dead;
+    public String getTargetId() {
+        return target.getId();
     }
 
-    public Creature getCause() {
-        return cause;
+    public String getSourceId() {
+        return source.getId();
     }
 
     public void setDead(Creature dead) {
-        this.dead = dead;
+        this.target = dead;
     }
 
     public void setCause(Creature cause) {
-        this.cause = cause;
+        this.source = cause;
     }
 
     @Override

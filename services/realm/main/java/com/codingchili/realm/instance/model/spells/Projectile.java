@@ -22,19 +22,30 @@ public class Projectile {
     private Vector vector;
     private ActiveSpell spell;
 
-    public Projectile(GameContext game, ActiveSpell spell, Map<String, Float> properties) {
-
-        // todo: read velocity, ttl, size from properties - override defaults.
+    public Projectile(GameContext game, ActiveSpell spell) {
         // todo: read direction from SpellTarget
-        // todo: set x,y from casters location
-
         this.game = game;
         this.spell = spell;
-        this.vector = spell.getCaster().getVector()
+        this.vector = spell.getSource().getVector()
                 .copy()
                 .setDirection(0)
                 .setVelocity(4.0f)
                 .setSize(16);
+    }
+
+    public Projectile setDirection(float direction) {
+        vector.setDirection(direction);
+        return this;
+    }
+
+    public Projectile setVelocity(float velocity) {
+        vector.setVelocity(velocity);
+        return this;
+    }
+
+    public Projectile setSize(int size) {
+        vector.setSize(size);
+        return this;
     }
 
     // update position, check collisions.
@@ -42,7 +53,7 @@ public class Projectile {
         vector.forward();
 
         game.creatures().radius(vector).forEach(creature -> {
-            spell.getSpell().onSpellEffect.apply(getBindings(creature));
+            spell.getSpell().onSpellActive.apply(getBindings(creature));
             hit.set(true);
         });
 
@@ -51,7 +62,7 @@ public class Projectile {
 
     private Bindings getBindings(Creature target) {
         Bindings bindings = new Bindings();
-        bindings.put(SOURCE, spell.getCaster());
+        bindings.put(SOURCE, spell.getSource());
         bindings.put(TARGET, target);
         bindings.put(SPELLS, game.spells());
         return bindings;

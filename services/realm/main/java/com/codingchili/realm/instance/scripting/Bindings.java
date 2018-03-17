@@ -19,11 +19,12 @@ import java.util.Map;
  */
 public class Bindings extends HashMap<String, Object> {
     private static final String CONTEXT = "context";
-        private static final String ATTRIBUTE = "attribute";
+        private static final String ATTRIBUTE = "Attribute";
     private static final String AFFLICTION = "affliction";
     private static final String STATS = "stats";
     private static final String SOURCE = "source";
     private static final String TARGET = "target";
+    private static final String STATE = "state";
 
     public Bindings() {}
 
@@ -79,5 +80,15 @@ public class Bindings extends HashMap<String, Object> {
 
     public Creature getTarget() {
         return (Creature) get(TARGET);
+    }
+
+    public Bindings setState(Map<String,Object> state) {
+        put(STATE, state);
+        return this;
+    }
+
+    public Bindings set(String name, Object value) {
+        put(name, value);
+        return this;
     }
 }

@@ -5,6 +5,10 @@ import com.codingchili.realm.instance.model.entity.Creature;
 import com.codingchili.realm.instance.model.events.SpellCycle;
 import com.codingchili.realm.instance.scripting.Bindings;
 
+import java.util.function.Consumer;
+
+import com.codingchili.core.logging.Level;
+
 /**
  * @author Robin Duda
  *
@@ -16,12 +20,19 @@ public class ActiveSpell {
     private static final String TARGET = "target";
     private static final String GAME = "game";
     private static final String ACTIVE = "active";
+    private static final String SPELLS = "spells";
     private SpellCycle cycle = SpellCycle.CASTING;
     private int progress = 0;
     private int timer;
-    private Creature caster;
+    private Creature source;
     private SpellTarget target;
     private Spell spell;
+
+    public ActiveSpell(Spell spell) {
+        this.timer = GameContext.secondsToTicks(spell.getActive());
+        this.progress = GameContext.secondsToTicks(spell.getCasttime());
+        this.spell = spell;
+    }
 
     public boolean completed() {
         return (--progress <= 0);
@@ -45,25 +56,38 @@ public class ActiveSpell {
         }
     }
 
-    public void onCastBegin(GameContext game) {
+    public boolean onCastBegin(GameContext game) {
+        source.getSpells().setCooldown(spell);
         if (spell.onCastBegin != null) {
-            spell.onCastBegin.apply(getBindings(game));
+            return spell.onCastBegin.apply(getBindings(game));
+        } else {
+            return true;
         }
     }
 
     public void onSpellEffects(GameContext game, int tick) {
-        if (spell.onSpellEffect != null) {
+        if (spell.onSpellActive != null) {
             Bindings bindings = getBindings(game);
             bindings.put(TICK, tick);
-            spell.onSpellEffect.apply(bindings);
+            spell.onSpellActive.apply(bindings);
         }
+    }
+
+    public boolean shouldTick(long currentTick) {
+        return currentTick % spell.getInterval() == 0;
     }
 
     private Bindings getBindings(GameContext game) {
         Bindings bindings = new Bindings();
-        bindings.put(CASTER, caster);
+        bindings.put(CASTER, source);
         bindings.put(TARGET, target);
+        bindings.put(SPELLS, game.spells());
         bindings.put(GAME, game);
+        bindings.put("log", (Consumer<String>) (line) -> {
+            game.getLogger(getClass()).event("spell", Level.INFO)
+                    .put("name", spell.getName())
+                    .send();
+        });
         bindings.put(ACTIVE, this);
         return bindings;
     }
@@ -72,19 +96,12 @@ public class ActiveSpell {
         return spell;
     }
 
-    public ActiveSpell setSpell(Spell spell) {
-        this.timer = spell.getActive();
-        this.progress = spell.getCasttime();
-        this.spell = spell;
-        return this;
+    public Creature getSource() {
+        return source;
     }
 
-    public Creature getCaster() {
-        return caster;
-    }
-
-    public ActiveSpell setCaster(Creature caster) {
-        this.caster = caster;
+    public ActiveSpell setSource(Creature source) {
+        this.source = source;
         return this;
     }
 

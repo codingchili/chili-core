@@ -8,11 +8,11 @@ class RealmRegistry {
     }
 
     list(callback) {
-        this.network.send(callback, 'realmlist');
+        this.network.rest(callback, 'realmlist');
     }
 
     realmtoken(callback, realmName) {
-        this.network.send(callback, 'realmtoken', {
+        this.network.rest(callback, 'realmtoken', {
            'realm': realmName,
             'token': application.authentication.token
         });

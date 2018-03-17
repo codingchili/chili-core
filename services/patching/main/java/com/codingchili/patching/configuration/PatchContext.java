@@ -48,7 +48,7 @@ public class PatchContext extends SystemContext {
     }
 
     public void onPatchLoaded(String name, String version) {
-        event(LOG_PATCHER_LOADED)
+        logger.event(LOG_PATCHER_LOADED)
                 .put(ID_NAME, name)
                 .put(LOG_VERSION, version).send();
     }

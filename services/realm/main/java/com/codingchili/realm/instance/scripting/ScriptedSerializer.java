@@ -13,7 +13,9 @@ import java.io.IOException;
  * Custom jackson serializer to unpack an AbstractMap.SimpleEntry.
  * Used to further simplify the format of scripts embedded into configuration.
  *
- * todo example
+ * example:
+ * onUpdate:
+ *      jexl: x = 1
  */
 public class ScriptedSerializer extends StdDeserializer<Scripted> {
 

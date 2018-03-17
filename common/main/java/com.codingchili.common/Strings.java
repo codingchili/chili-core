@@ -25,6 +25,8 @@ public abstract class Strings extends CoreStrings {
     public static final String CLIENT_CHARACTER_LIST = "character.list";
     public static final String CLIENT_CHARACTER_CREATE = "character.create";
     public static final String CLIENT_CHARACTER_REMOVE = "character.remove";
+    public static final String CLIENT_INSTANCE_JOIN = "instance.join";
+    public static final String CLIENT_INSTANCE_LEAVE = "instance.leave";
     public static final String CLIENT_AUTHENTICATE = "authenticate";
     public static final String CLIENT_REGISTER = "register";
     public static final String CLIENT_REALM_TOKEN = "realmtoken";

@@ -97,6 +97,7 @@ public class Vector {
      * Moves the vector in its direction given its velocity.
      */
     public void forward() {
+        // todo: support variable/configurable tick rate.
         x += Math.sin(direction) * velocity;
         y += Math.cos(direction) * velocity;
     }

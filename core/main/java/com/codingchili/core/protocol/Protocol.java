@@ -1,6 +1,7 @@
 package com.codingchili.core.protocol;
 
 import com.esotericsoftware.reflectasm.MethodAccess;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
 import java.lang.reflect.Method;
@@ -46,30 +47,6 @@ public class Protocol<RequestType> {
      */
     public Protocol(Receiver<RequestType> handler) {
         annotated(handler);
-    }
-
-    /**
-     * Creates a response object given a response status.
-     *
-     * @param status the status to create the response from.
-     * @return a JSON encoded response packed in a buffer.
-     */
-    public static JsonObject response(ResponseStatus status) {
-        return new JsonObject()
-                .put(PROTOCOL_STATUS, status);
-    }
-
-    /**
-     * Creates a response object given a response status and a throwable.
-     *
-     * @param status the status to include in the response.
-     * @param e      an exception that was the cause of an abnormal response status.
-     * @return a JSON encoded response packed in a buffer.
-     */
-    public static JsonObject response(ResponseStatus status, Throwable e) {
-        return new JsonObject()
-                .put(PROTOCOL_STATUS, status)
-                .put(PROTOCOL_MESSAGE, e.getMessage());
     }
 
     /**
@@ -225,7 +202,7 @@ public class Protocol<RequestType> {
      * Returns the route handler for the given target route and its access level.
      *
      * @param route the handler route to find
-     * @param role list of roles that are allowed to map to a route
+     * @param role  list of roles that are allowed to map to a route
      * @return the handler that is mapped to the route and access level.
      * @throws AuthorizationRequiredException when authorization level is not fulfilled for given route.
      * @throws HandlerMissingException        when the requested route handler is not registered.

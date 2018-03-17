@@ -1,15 +1,17 @@
 package com.codingchili.realm.instance.model.events;
 
 import com.codingchili.realm.instance.model.entity.Creature;
+import com.codingchili.realm.instance.model.entity.Entity;
 import com.codingchili.realm.instance.model.spells.DamageType;
 
 /**
  * @author Robin Duda
- *
+ * <p>
  * Event fired when a creature takes damage;
  */
 public class DamageEvent implements Event {
-    private Creature target;
+    private Entity target;
+    private Entity source;
     private DamageType damage;
     private double value;
 
@@ -19,16 +21,21 @@ public class DamageEvent implements Event {
         this.value = value;
     }
 
-    public Creature getTarget() {
-        return target;
+    public DamageEvent setSource(Creature source) {
+        this.source = source;
+        return this;
     }
 
-    public void setTarget(Creature target) {
-        this.target = target;
+    public String getSourceId() {
+        if (source != null) {
+            return source.getId();
+        } else {
+            return null;
+        }
     }
 
-    public void setDamage(DamageType damage) {
-        this.damage = damage;
+    public String getTargetId() {
+        return target.getId();
     }
 
     public DamageType getDamage() {
@@ -37,10 +44,6 @@ public class DamageEvent implements Event {
 
     public double getValue() {
         return value;
-    }
-
-    public void setValue(double value) {
-        this.value = value;
     }
 
     @Override

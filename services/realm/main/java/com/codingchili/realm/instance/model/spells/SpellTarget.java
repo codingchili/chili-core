@@ -2,8 +2,7 @@ package com.codingchili.realm.instance.model.spells;
 
 import com.codingchili.realm.instance.model.entity.Creature;
 import com.codingchili.realm.instance.model.entity.Vector;
-
-import java.util.Optional;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * A spelltarget.
@@ -12,19 +11,26 @@ public class SpellTarget {
     private Vector vector;
     private Creature creature;
 
-    public Optional<Vector> getVector() {
-        return Optional.ofNullable(vector);
+    public Vector getVector() {
+        return vector;
     }
 
-    public void setVector(Vector vector) {
+    public SpellTarget setVector(Vector vector) {
         this.vector = vector;
+        return this;
     }
 
-    public Optional<Creature> getCreature() {
-        return Optional.ofNullable(creature);
+    @JsonIgnore
+    public Creature getCreature() {
+        return creature;
     }
 
-    public void setCreature(Creature creature) {
+    public String getTargetId() {
+        return creature.getId();
+    }
+
+    public SpellTarget setCreature(Creature creature) {
         this.creature = creature;
+        return this;
     }
 }

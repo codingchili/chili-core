@@ -3,8 +3,8 @@ package com.codingchili.realmregistry;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.listener.CoreService;
 import com.codingchili.realmregistry.configuration.RegistryContext;
-import com.codingchili.realmregistry.controller.ClientHandler;
-import com.codingchili.realmregistry.controller.RealmHandler;
+import com.codingchili.realmregistry.controller.RealmRegistryClientHandler;
+import com.codingchili.realmregistry.controller.RealmRegistryInstanceHandler;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 
@@ -29,8 +29,8 @@ public class Service implements CoreService {
         context = new RegistryContext(core);
 
         CompositeFuture.all(
-                context.handler(() -> new RealmHandler(context)),
-                context.handler(() -> new ClientHandler(context))
+                context.handler(() -> new RealmRegistryInstanceHandler(context)),
+                context.handler(() -> new RealmRegistryClientHandler(context))
         ).setHandler(untyped(start));
     }
 }

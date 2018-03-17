@@ -182,7 +182,7 @@ public class StorageContext<Value> extends SystemContext {
      * @param cause the reason why invocation failed.
      */
     public void onWatcherFailed(String name, String cause) {
-        event(LOG_STORAGE_WATCHER)
+        logger.event(LOG_STORAGE_WATCHER)
                 .put(ID_NAME, name)
                 .put(ID_MESSAGE, CoreStrings.getWatcherFailed(cause)).send();
     }
@@ -195,7 +195,7 @@ public class StorageContext<Value> extends SystemContext {
      */
     public void onWatcherCompleted(String name, int affected) {
         if (affected > 0) {
-            event(LOG_STORAGE_WATCHER)
+            logger.event(LOG_STORAGE_WATCHER)
                     .put(ID_NAME, name)
                     .put(ID_COUNT, affected)
                     .put(ID_MESSAGE, CoreStrings.WATCHER_COMPLETED).send();
@@ -203,13 +203,13 @@ public class StorageContext<Value> extends SystemContext {
     }
 
     public void onWatcherPaused(String name) {
-        event(LOG_STORAGE_WATCHER)
+        logger.event(LOG_STORAGE_WATCHER)
                 .put(ID_NAME, name)
                 .put(ID_MESSAGE, CoreStrings.WATCHER_PAUSED).send();
     }
 
     public void onWatcherResumed(String name) {
-        event(LOG_STORAGE_WATCHER)
+        logger.event(LOG_STORAGE_WATCHER)
                 .put(ID_NAME, name)
                 .put(ID_MESSAGE, CoreStrings.WATCHER_RESUMED).send();
     }
@@ -218,7 +218,7 @@ public class StorageContext<Value> extends SystemContext {
      * Called when the collection has been dropped/cleared.
      */
     public void onCollectionDropped() {
-        event(LOG_STORAGE_CLEARED).send();
+        logger.event(LOG_STORAGE_CLEARED).send();
     }
 
     private void log(JsonObject json) {

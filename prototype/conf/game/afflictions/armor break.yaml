@@ -3,4 +3,4 @@ name: "armor break"
 description: "Armor and resistance reduced."
 modifier:
   jexl: |
-    stats[attribute.armor] -= target.stats[attribute.armor] * 0.5;
+    //stats[attribute.armor] -= target.stats[attribute.armor] * 0.5;

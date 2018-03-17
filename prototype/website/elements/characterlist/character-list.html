@@ -71,10 +71,6 @@
                 text-align: center;
             }
 
-            .character-image {
-                max-height: 128px;
-            }
-
             .container-loading-box {
                 padding-bottom: 128px;
             }
@@ -165,6 +161,7 @@
                 this.list = true;
                 application.onRealmSelect((realm) => {
                     this.set('realm', realm);
+                    this.server = new RealmServer(this.realm);
                     this.showCharacters();
                     this.realmtoken(realm);
                 });
@@ -184,7 +181,7 @@
                 this.showLoading('Authenticating..');
                 new RealmRegistry().realmtoken({
                     accepted: (data) => {
-                        this.realm.token = data;
+                        this.realm.token = data.token;
                         this.loadCharacters();
                     },
                     error: (error) => {
@@ -195,7 +192,7 @@
 
             loadCharacters() {
                 this.showLoading('Loading characters..');
-                new RealmServer(this.realm).characterlist({
+                this.server.characterlist({
                     accepted: (data) => {
                         Object.assign(this.realm, data.realm);
                         this.set('realm', this.realm);
@@ -214,12 +211,12 @@
                 e.stopPropagation();
                 this.showLoading('Removing character..');
 
-                new RealmServer(this.realm).remove({
+                this.server.remove({
                     accepted: () => {
                         this.loadCharacters();
                     },
                     error: () => {
-                        application.error('Failed to connect to the authentication server to delete a character..');
+                        application.error('Failed to connect to the authentication server to delete a character.');
                     }
                 }, e.model.character.name);
             }
@@ -250,57 +247,16 @@
             }
 
             select(e) {
-                this.showLoading('Connecting to ' + this.realm.name + '..');
-                const ws = new WebSocket(api.realmWebSocket(this.realm));
-
-                ws.onopen = () => {
-                    this.showLoading('Authenticating..');
-
-                    ws.send(JSON.stringify({
-                        token: this.token,
-                        name: e.model.character.name,
-                        header: {action: 'character.request'}
-                    }));
-                };
-
-                ws.onmessage = (event) => {
-                    const packet = JSON.parse(event.data);
-
-                    if (packet.success) {
-                        switch (packet.header.action) {
-                            case 'authentication.result':
-                                this.showLoading('Downloading character..');
-                                break;
-                            case 'character.response':
-                                this.showLoading('Checking version..');
-
-                                new Patcher().check({
-                                    completed: () => {
-                                        application.update({
-                                            socket: ws,
-                                            realm: this.realm,
-                                            character: packet.character
-                                        })
-                                    },
-                                    resource: this.realm.resources
-                                });
-                                break;
-                        }
-                    }
-                    else {
-                        ws.close();
-                        application.error('Failure occured when processing ' + packet.header.action + '.');
-                    }
-                };
-
-                ws.onerror = (event) => {
-                    application.error('Error connecting to ' + this.realm.name + '.');
-                };
-
-                ws.onclose = (event) => {
-                    if (!event.wasClean)
-                        application.error('The connection to the ' + this.realm.name + ' server was lost, please retry.');
-                };
+               this.showLoading('Checking version..');
+                patcher.check({
+                    completed: () => {
+                        application.update({
+                            server: this.server,
+                            realm: this.realm,
+                            character: e.model.character});
+                    },
+                    resource: this.realm.resources
+                });
             }
         }
         window.customElements.define(CharacterList.is, CharacterList);

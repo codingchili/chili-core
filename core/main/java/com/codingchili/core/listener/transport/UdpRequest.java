@@ -1,12 +1,12 @@
 package com.codingchili.core.listener.transport;
 
+import io.vertx.core.datagram.DatagramPacket;
+import io.vertx.core.json.JsonObject;
+
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.listener.ListenerSettings;
 import com.codingchili.core.listener.Request;
-import com.codingchili.core.protocol.Serializer;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.datagram.DatagramPacket;
-import io.vertx.core.json.JsonObject;
+import com.codingchili.core.protocol.Response;
 
 /**
  * @author Robin Duda
@@ -28,8 +28,15 @@ class UdpRequest implements Request {
     }
 
     @Override
-    public void write(Object object) {
-        send(object);
+    public void write(Object message) {
+        context.vertx().createDatagramSocket()
+                .send(Response.message(this, message).toBuffer(),
+                        packet.sender().port(),
+                        packet.sender().host(), sent -> {
+                            if (sent.failed()) {
+                                throw new RuntimeException(sent.cause());
+                            }
+                        });
     }
 
     @Override
@@ -53,21 +60,5 @@ class UdpRequest implements Request {
     @Override
     public int size() {
         return size;
-    }
-
-    private void send(Object object) {
-        if (object instanceof Buffer) {
-            send((Buffer) object);
-        } else {
-            send(Serializer.buffer(object));
-        }
-    }
-
-    private void send(Buffer buffer) {
-        context.vertx().createDatagramSocket()
-                .send(buffer,
-                        packet.sender().port(),
-                        packet.sender().host(), sent -> {
-                        });
     }
 }

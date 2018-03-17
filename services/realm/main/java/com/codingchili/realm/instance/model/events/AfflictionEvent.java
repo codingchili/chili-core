@@ -6,18 +6,30 @@ import com.codingchili.realm.instance.model.afflictions.ActiveAffliction;
  * @author Robin Duda
  */
 public class AfflictionEvent implements Event {
-    private ActiveAffliction affliction;
+    private ActiveAffliction active;
 
     public AfflictionEvent(ActiveAffliction affliction) {
-        this.affliction = affliction;
+        this.active = affliction;
     }
 
-    public ActiveAffliction getAffliction() {
-        return affliction;
+    public String getSourceId() {
+        return active.getSource().getId();
     }
 
-    public void setAffliction(ActiveAffliction affliction) {
-        this.affliction = affliction;
+    public String getTargetId() {
+        return active.getTarget().getId();
+    }
+
+    public String getName() {
+        return active.getAffliction().getName();
+    }
+
+    public String getDescription() {
+        return active.getAffliction().getDescription();
+    }
+
+    public Float getDuration() {
+        return active.getAffliction().getDuration();
     }
 
     @Override

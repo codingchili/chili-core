@@ -42,14 +42,13 @@
   "external" : {
     "client.authentication.node" : ".*",
     "client.realmregistry.node" : ".*",
-    "patching.node" : ".*",
-    "angel oak.realm.node" : ".*"
+    "patching.node" : ".*"
   },
-  "global" : "hM3x6XbpKwhRV5h8MIWM37XdRhFluhULwOzBJjXU1uVyZtWhtir1Pr8KNb39hdyXq7l06PDF2y66qh8WYdxkwA==",
+  "global" : "GP77OTJiahOg9iDvPQWhRDx02uoKjRoR+yp/beVn5JnSxS1GVN3iZurKVPl8zT/Xma0oWJs4gqTEFwFbnkoihw==",
   "logging" : {
     "properties" : { },
-    "key" : "xOCBl4RrCsq4h+I8v5wtGl8kEWiHyl3acTZYUvrwph1p+LoI1mKyoEOP4Zc/0aNp65teZmUZcIYF00LSqQ8MDg==",
+    "key" : "89qX15ryDakklVr+Uqg2BHtXwJKFOe9tIn3ZJS7aOcaZb57zFCwtpNpYYj03g+STfZ7BTFniKnHb6JEdSzGJog==",
     "domain" : "routing.node",
-    "expiry" : 1517335502
+    "expiry" : 1521235363
   }
 }

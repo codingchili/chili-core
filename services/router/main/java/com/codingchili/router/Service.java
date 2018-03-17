@@ -68,7 +68,7 @@ public class Service implements CoreService {
         }
         Logger logger = context.logger(getClass());
         all(deployments).setHandler(done -> {
-            logger.onServiceStarted(this);
+            //logger.onServiceStarted(this);
             start.complete();
         });
     }

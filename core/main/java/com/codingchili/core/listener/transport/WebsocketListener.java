@@ -1,17 +1,20 @@
 package com.codingchili.core.listener.transport;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.listener.*;
-import com.codingchili.core.listener.ClusteredSessionFactory;
-import com.codingchili.core.listener.SessionFactory;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.BodyHandler;
 
-import java.util.UUID;
 import java.util.function.Supplier;
+
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.configuration.RestHelper;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.listener.*;
+import com.codingchili.core.protocol.*;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
@@ -22,7 +25,6 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  */
 public class WebsocketListener implements CoreListener {
     private Supplier<ListenerSettings> settings = ListenerSettings::getDefaultSettings;
-    private String id = UUID.randomUUID().toString();
     private RequestProcessor processor;
     private CoreContext core;
     private CoreHandler handler;
@@ -48,54 +50,50 @@ public class WebsocketListener implements CoreListener {
     @Override
     public void start(Future<Void> start) {
         this.processor = new RequestProcessor(core, handler);
-
-        ClusteredSessionFactory.get(core).setHandler(sessions -> {
-            listen(start, sessions.result());
-        });
+        listen(start);
     }
 
-    private void listen(Future<Void> start, SessionFactory<?> sessions) {
+    private void listen(Future<Void> start) {
+        Router router = Router.router(core.vertx());
+        router.route().handler(BodyHandler.create());
+        RestHelper.addHeaders(router, settings.get().isSecure());
 
-        core.bus().consumer(id, message -> {
-            String connection = message.headers().get(Session.ID);
-            core.bus().send(connection, message.body());
-        });
-
-        core.periodic(() -> 5000, "getSession", (l) -> {
-            sessions.query(Session.ID).execute(sess -> {
-                if (sess.succeeded()) {
-                    sess.result().forEach(s -> {
-                        s.write(new JsonObject().put("hello-client", System.currentTimeMillis() + ""));
-                    });
-                }
-            });
+        router.routeWithRegex(".*").handler(request -> {
+            // handle all attempts at performing a HTTP request.
+           request.response()
+                   .setStatusCode(HttpResponseStatus.ACCEPTED.code())
+                   .end(new JsonObject()
+                           .put(PROTOCOL_STATUS, ResponseStatus.ACCEPTED)
+                           .put(ID_MESSAGE, CoreStrings.getRestNotSupportedByWebsocketListener())
+                           .encodePrettily());
         });
 
         core.vertx().createHttpServer(settings.get().getHttpOptions(core))
                 .websocketHandler(socket -> {
+                    Connection connection = connected(socket);
 
-                    // create a new clustered session.
-                    sessions.create(id, socket.textHandlerID()).setHandler(created -> {
-                        Session session = created.result();
+                    // write data to the connection.
+                    socket.handler(data -> handle(connection, data));
 
-                        // write data to the connection.
-                        socket.handler(data -> handle(socket, data));
+                    // close the connection on disconnect.
+                    socket.closeHandler(closed -> connection.close());
 
-                        // destroy the session on disconnect.
-                        socket.closeHandler(closed -> session.destroy());
+                }).requestHandler(router::accept)
 
-                    });
+                .listen(settings.get().getPort(), getBindAddress(), listen -> {
+                    if (listen.succeeded()) {
+                        settings.get().addListenPort(listen.result().actualPort());
+                        handler.start(start);
+                    } else {
+                        start.fail(listen.cause());
+                    }
+                });
+    }
 
-                }).requestHandler(rest -> {
-            rest.response().setStatusCode(HttpResponseStatus.NOT_IMPLEMENTED.code()).end();
-        }).listen(settings.get().getPort(), getBindAddress(), listen -> {
-            if (listen.succeeded()) {
-                settings.get().addListenPort(listen.result().actualPort());
-                handler.start(start);
-            } else {
-                start.fail(listen.cause());
-            }
-        });
+    private Connection connected(ServerWebSocket socket) {
+        return new Connection((msg) -> {
+            socket.writeTextMessage(Response.convert(msg).encodePrettily());
+        }, socket.textHandlerID());
     }
 
     @Override
@@ -103,8 +101,8 @@ public class WebsocketListener implements CoreListener {
         handler.stop(stop);
     }
 
-    private void handle(ServerWebSocket socket, Buffer buffer) {
-        processor.submit(() -> new WebsocketRequest(socket, buffer, settings.get()));
+    private void handle(Connection connection, Buffer buffer) {
+        processor.submit(() -> new WebsocketRequest(connection, buffer, settings.get()));
     }
 
     @Override

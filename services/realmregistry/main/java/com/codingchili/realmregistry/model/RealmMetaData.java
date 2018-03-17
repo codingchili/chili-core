@@ -11,15 +11,16 @@ public class RealmMetaData extends Attributes {
     private long updated;
     private String name;
     private String description;
-    private String remote;
+    private String host;
     private String resources;
     private String version;
-    private int size;
     private String type;
     private String lifetime;
-    private int players = 0;
     private Boolean trusted;
     private Boolean secure;
+    private int size;
+    private int port;
+    private int players = 0;
 
     public RealmMetaData() {
     }
@@ -28,11 +29,12 @@ public class RealmMetaData extends Attributes {
 
         this.setName(settings.getName())
                 .setDescription(settings.getDescription())
-                .setRemote(settings.getRemote())
                 .setResources(settings.getResources())
                 .setVersion(settings.getVersion())
                 .setSize(settings.getSize())
                 .setType(settings.getType())
+                .setHost(settings.getHost())
+                .setPort(settings.getPort())
                 .setLifetime(settings.getLifetime())
                 .setPlayers(settings.getPlayers())
                 .setTrusted(settings.getTrusted())
@@ -46,6 +48,24 @@ public class RealmMetaData extends Attributes {
 
     private RealmMetaData setUpdated(long updated) {
         this.updated = updated;
+        return this;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public RealmMetaData setHost(String host) {
+        this.host = host;
+        return this;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public RealmMetaData setPort(int port) {
+        this.port = port;
         return this;
     }
 
@@ -72,15 +92,6 @@ public class RealmMetaData extends Attributes {
 
     private RealmMetaData setDescription(String description) {
         this.description = description;
-        return this;
-    }
-
-    public String getRemote() {
-        return remote;
-    }
-
-    private RealmMetaData setRemote(String remote) {
-        this.remote = remote;
         return this;
     }
 

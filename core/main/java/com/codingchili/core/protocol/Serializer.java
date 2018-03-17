@@ -37,10 +37,15 @@ public class Serializer {
     private static ObjectMapper yaml = new ObjectMapper(new YAMLFactory());
 
     static {
+        // enable pretty printing for all json.
+        Json.mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+
         json.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         json.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         json.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         json.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+        json.configure(SerializationFeature.INDENT_OUTPUT, true);
+
         yaml.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         yaml.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         yaml.setSerializationInclusion(JsonInclude.Include.NON_NULL);

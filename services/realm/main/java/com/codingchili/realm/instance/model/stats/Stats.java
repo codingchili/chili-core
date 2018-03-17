@@ -2,6 +2,9 @@ package com.codingchili.realm.instance.model.stats;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * @author Robin Duda
+ */
 public class Stats extends ConcurrentHashMap<Attribute, Float> {
 
     public Stats() {

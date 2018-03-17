@@ -7,10 +7,13 @@ import com.codingchili.realm.model.AsyncCharacterStore;
 import com.codingchili.realm.model.CharacterDB;
 import io.vertx.core.Future;
 
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.codingchili.core.context.*;
 import com.codingchili.core.files.Configurations;
+import com.codingchili.core.listener.Connection;
+import com.codingchili.core.listener.ListenerSettings;
 import com.codingchili.core.logging.Level;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.security.Token;
@@ -27,26 +30,31 @@ import static com.codingchili.realm.configuration.RealmServerSettings.PATH_REALM
  * Context for realms.
  */
 public class RealmContext extends SystemContext implements ServiceContext {
+    private Map<String, Connection> connections = new ConcurrentHashMap<>();
+    private AsyncCharacterStore characters;
     private RealmSettings settings;
     private Logger logger;
 
-    public RealmContext(CoreContext core, RealmSettings settings) {
+    RealmContext(CoreContext core, RealmSettings settings) {
         super(core);
         this.settings = settings;
         this.logger = core.logger(getClass())
                 .setMetadata("realm", realm()::getName);
     }
 
-    public Future<AsyncCharacterStore> getCharacterStore() {
-        Future<AsyncCharacterStore> future = Future.future();
+    public static Future<RealmContext> create(CoreContext core, RealmSettings settings) {
+        Future<RealmContext> future = Future.future();
 
-        new StorageLoader<PlayerCreature>(new StorageContext<>(this))
-                .withPlugin(service().getStorage())
+        RealmContext context = new RealmContext(core, settings);
+
+        new StorageLoader<PlayerCreature>(new StorageContext<>(context))
+                .withPlugin(context.service().getStorage())
                 .withValue(PlayerCreature.class)
                 .withCollection(COLLECTION_CHARACTERS)
                 .build(storage -> {
                     if (storage.succeeded()) {
-                        future.complete(new CharacterDB(storage.result()));
+                        context.characters = new CharacterDB(storage.result());
+                        future.complete(context);
                     } else {
                         future.fail(storage.cause());
                     }
@@ -60,16 +68,28 @@ public class RealmContext extends SystemContext implements ServiceContext {
         return logger;
     }
 
+    public Map<String, Connection> connections() {
+        return connections;
+    }
+
     public RealmSettings realm() {
         return settings;
+    }
+
+    public AsyncCharacterStore characters() {
+        return characters;
     }
 
     public RealmServerSettings service() {
         return Configurations.get(PATH_REALMSERVER, RealmServerSettings.class);
     }
 
+    public ListenerSettings getListenerSettings() {
+        return new ListenerSettings().setPort(realm().getPort());
+    }
+
     public String address() {
-        return realm().getRemote();
+        return realm().getHost();
     }
 
     public List<InstanceSettings> instances() {
@@ -93,32 +113,38 @@ public class RealmContext extends SystemContext implements ServiceContext {
     }
 
     public void onRealmStarted(String realm) {
-        event(LOG_REALM_START, Level.STARTUP)
+        logger.event(LOG_REALM_START, Level.STARTUP)
                 .put(ID_REALM, realm).send();
     }
 
     public void onRealmRejected(String realm, String message) {
-        event(LOG_REALM_REJECTED, Level.WARNING)
+        logger.event(LOG_REALM_REJECTED, Level.WARNING)
                 .put(ID_REALM, realm)
                 .put(ID_MESSAGE, message).send();
     }
 
     public void onRealmStopped(Future<Void> future, String realm) {
-        event(LOG_REALM_STOP, ERROR)
+        logger.event(LOG_REALM_STOP, ERROR)
                 .put(ID_REALM, realm).send();
 
         Delay.forShutdown(future);
     }
 
     public void onRealmRegistered(String realm) {
-        event(LOG_REALM_REGISTERED).put(ID_REALM, realm).send();
+        logger.event(LOG_REALM_REGISTERED)
+                .put(ID_REALM, realm)
+                .send();
     }
 
     public void onDeployRealmFailure(String realm) {
-        event(LOG_REALM_DEPLOY_ERROR, ERROR).put(LOG_MESSAGE, getDeployFailError(realm)).send();
+        logger.event(LOG_REALM_DEPLOY_ERROR, ERROR)
+                .put(LOG_MESSAGE, getDeployFailError(realm))
+                .send();
     }
 
     public void onInstanceFailed(String instance, Throwable cause) {
-        event(LOG_INSTANCE_DEPLOY_ERROR, ERROR).put(LOG_MESSAGE, getdeployInstanceError(instance, cause)).send();
+        logger.event(LOG_INSTANCE_DEPLOY_ERROR, ERROR)
+                .put(LOG_MESSAGE, getdeployInstanceError(instance, cause))
+                .send();
     }
 }

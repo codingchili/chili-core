@@ -16,7 +16,7 @@ import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.storage.exception.*;
 
 import static com.googlecode.cqengine.query.QueryFactory.*;
-import static io.vertx.core.Future.*;
+import static io.vertx.core.Future.succeededFuture;
 
 /**
  * Implementation of the in-memory/disk indexed collections using CQEngine.
@@ -158,29 +158,30 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
 
     @Override
     public void remove(String key, Handler<AsyncResult<Void>> handler) {
-        get(key, got -> {
-            context.blocking(blocking -> {
-                if (got.succeeded() && db.remove(got.result())) {
-                    blocking.complete();
-                } else {
-                    blocking.fail(new NothingToRemoveException(key));
-                }
-            }, handler);
-        });
+        context.blocking(blocking -> {
+            Iterator<Value> result = db.retrieve(equal(FIELD_ID, key)).iterator();
+            if (!result.hasNext()) {
+                blocking.fail(new NothingToRemoveException(key));
+            } else {
+                do {
+                    db.remove(result.next());
+                } while (result.hasNext());
+                blocking.complete();
+            }
+        }, handler);
     }
 
     @Override
     public void update(Value value, Handler<AsyncResult<Void>> handler) {
-        get(value.getId(), get -> {
             context.blocking(blocking -> {
-                if (get.succeeded()) {
-                    db.update(Collections.singleton(get.result()), Collections.singleton(mapper.apply(value)));
+                Iterator<Value> result = db.retrieve(equal(FIELD_ID, value.getId())).iterator();
+                if (result.hasNext()) {
+                    db.update(Collections.singleton(result.next()), Collections.singleton(mapper.apply(value)));
                     blocking.complete();
                 } else {
                     blocking.fail(new NothingToUpdateException(value.getId()));
                 }
             }, handler);
-        });
     }
 
     @Override

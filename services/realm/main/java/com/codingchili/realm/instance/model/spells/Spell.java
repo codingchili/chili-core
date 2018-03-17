@@ -1,8 +1,6 @@
 package com.codingchili.realm.instance.model.spells;
 
-import com.codingchili.realm.instance.context.GameContext;
 import com.codingchili.realm.instance.scripting.Scripted;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.configuration.CoreStrings;
@@ -17,25 +15,25 @@ import com.codingchili.core.storage.Storable;
 public class Spell implements Storable, Configurable {
     protected String name = "no name";
     protected String description = "no description";
-    protected Boolean mobile = true;
-    protected Target target = Target.caster;
-    protected Integer charges = 1;
-    protected Integer recharge = Integer.MAX_VALUE;
-    protected Integer cooldown = 1;
-    protected Integer casttime = 0;
-    protected Integer range = 100;
-    protected Integer active = 0;
-    protected Integer tick = GameContext.secondsToTicks(0.5);
+    protected Boolean mobile = true; // can move and cast?
+    protected Target target = Target.caster; // spell target: caster, area etc.
+    protected Integer charges = 1;  // number of times the spell can be cast in a sequence without recharge.
+    protected Integer range = 100; // how far away the target may be.
+    protected Float interval = 0.5f; // how often to call onProgress and onEffects.
+    protected Float cooldown = 1.0f; // time to regenerate a charge.
+    protected Float casttime = 0.0f; // the time taken to cast the spell.
+    protected Float active = 0.0f; // how long the spell is active after casting is completed.
     protected Scripted onCastBegin;    // check pre-requisites - must check result.
     protected Scripted onCastProgress; // implement for channeled abilities.
     protected Scripted onCastComplete; // implement casted spell logic here.
-    protected Scripted onSpellEffect;    // for spells that are active longer than the casting period.
+    protected Scripted onSpellActive;    // for spells that are active longer than the casting period.
 
     @Override
     public String getPath() {
         return "conf/game/classes/" + name + CoreStrings.EXT_YAML;
     }
 
+    @Override
     public String getId() {
         return name;
     }
@@ -80,27 +78,19 @@ public class Spell implements Storable, Configurable {
         this.charges = charges;
     }
 
-    public Integer getRecharge() {
-        return recharge;
-    }
-
-    public void setRecharge(Integer recharge) {
-        this.recharge = recharge;
-    }
-
-    public Integer getCooldown() {
+    public Float getCooldown() {
         return cooldown;
     }
 
-    public void setCooldown(Integer cooldown) {
+    public void setCooldown(Float cooldown) {
         this.cooldown = cooldown;
     }
 
-    public Integer getCasttime() {
+    public Float getCasttime() {
         return casttime;
     }
 
-    public void setCasttime(Integer casttime) {
+    public void setCasttime(Float casttime) {
         this.casttime = casttime;
     }
 
@@ -112,22 +102,20 @@ public class Spell implements Storable, Configurable {
         this.range = range;
     }
 
-    @JsonIgnore
-    public Integer getActive() {
+    public Float getActive() {
         return active;
     }
 
-    public void setActive(Integer active) {
+    public void setActive(Float active) {
         this.active = active;
     }
 
-    @JsonIgnore
-    public Integer getTick() {
-        return tick;
+    public Float getInterval() {
+        return interval;
     }
 
-    public void setTick(Integer tick) {
-        this.tick = tick;
+    public void setInterval(Float interval) {
+        this.interval = interval;
     }
 
     public Scripted getOnCastBegin() {
@@ -154,12 +142,12 @@ public class Spell implements Storable, Configurable {
         this.onCastComplete = onCastComplete;
     }
 
-    public Scripted getOnSpellEffect() {
-        return onSpellEffect;
+    public Scripted getOnSpellActive() {
+        return onSpellActive;
     }
 
-    public void setOnSpellEffect(Scripted onSpellEffect) {
-        this.onSpellEffect = onSpellEffect;
+    public void setOnSpellActive(Scripted onSpellActive) {
+        this.onSpellActive = onSpellActive;
     }
 
     public static void main(String[] args) {

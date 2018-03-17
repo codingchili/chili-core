@@ -1,6 +1,5 @@
 package com.codingchili.realm.instance.model.events;
 
-import com.codingchili.realm.instance.model.entity.Creature;
 import com.codingchili.realm.instance.model.entity.Entity;
 
 /**
@@ -8,7 +7,7 @@ import com.codingchili.realm.instance.model.entity.Entity;
  */
 public class SpawnEvent implements Event {
     private SpawnType type = SpawnType.SPAWN;
-    private Creature creature;
+    private Entity entity;
 
     public SpawnEvent setType(SpawnType type) {
         this.type = type;
@@ -16,12 +15,16 @@ public class SpawnEvent implements Event {
     }
 
     public SpawnEvent setEntity(Entity entity) {
-        this.creature = creature;
+        this.entity = entity;
         return this;
     }
 
-    public Creature getCreature() {
-        return creature;
+    public Entity getEntity() {
+        return entity;
+    }
+
+    public SpawnType getSpawn() {
+        return type;
     }
 
     @Override
@@ -29,5 +32,5 @@ public class SpawnEvent implements Event {
         return EventType.SPAWN;
     }
 
-    public enum SpawnType {SPAWN, DESPAWN}
+    public enum SpawnType {SPAWN, DESPAWN, DISCONNECT, DEATH}
 }

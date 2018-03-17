@@ -1,18 +1,17 @@
 package com.codingchili.core.listener.transport;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.listener.CoreHandler;
-import com.codingchili.core.listener.CoreListener;
-import com.codingchili.core.listener.ListenerSettings;
-import com.codingchili.core.listener.RequestProcessor;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetSocket;
 
 import java.util.function.Supplier;
 
-import static com.codingchili.core.configuration.CoreStrings.LOG_AT;
-import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.listener.*;
+import com.codingchili.core.protocol.Response;
+import com.codingchili.core.protocol.Serializer;
+
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * @author Robin Duda
@@ -47,9 +46,17 @@ public class TcpListener implements CoreListener {
     public void start(Future<Void> start) {
         this.processor = new RequestProcessor(core, handler);
 
-        core.vertx().createNetServer(settings.get().getHttpOptions(core)).connectHandler(handler -> {
-            handler.handler(data -> packet(handler, data));
-        }).listen(settings.get().getPort(), getBindAddress(), listen -> {
+        core.vertx().createNetServer(settings.get().getHttpOptions(core))
+                .connectHandler(socket -> {
+                    Connection connection = connected(socket);
+
+                    // handle incoming data.
+                    socket.handler(data -> packet(connection, data));
+
+                    // close the connection.
+                    socket.closeHandler((v) -> connection.close());
+
+                }).listen(settings.get().getPort(), getBindAddress(), listen -> {
             if (listen.succeeded()) {
                 settings.get().addListenPort(listen.result().actualPort());
                 handler.start(start);
@@ -59,13 +66,19 @@ public class TcpListener implements CoreListener {
         });
     }
 
+    public Connection connected(NetSocket socket) {
+        return new Connection((msg) -> {
+            socket.write(Response.convert(msg).toBuffer());
+        }, socket.writeHandlerID());
+    }
+
     @Override
     public void stop(Future<Void> stop) {
         handler.stop(stop);
     }
 
-    private void packet(NetSocket socket, Buffer data) {
-        processor.submit(() -> new TcpRequest(socket, data, settings.get()));
+    private void packet(Connection connection, Buffer data) {
+        processor.submit(() -> new TcpRequest(connection, data, settings.get()));
     }
 
     @Override

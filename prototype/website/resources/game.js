@@ -12,12 +12,12 @@ var game = {
         context = canvas.getContext('2d');
         account = application.authentication.account;
 
-        $(document).keydown(function (event) {
+        document.keydown(function (event) {
             console.log(event);
             keys[event.keyCode] = true;
         });
 
-        $(document).keyup(function (event) {
+        document.keyup(function (event) {
             console.log(event);
             keys[event.keyCode] = false;
         });

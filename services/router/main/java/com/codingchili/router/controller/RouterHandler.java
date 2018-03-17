@@ -32,7 +32,7 @@ public class RouterHandler extends BusRouter {
             protocol.get(request.target(), Role.USER).submit(request);
         } else {
             request.error(new AuthorizationRequiredException(
-                    String.format("Requested target '%s' and route '%s' does not exist or is not external.",
+                    String.format("Requested target '%s' and route '%s' is not allowed.",
                             request.target(), request.route())));
         }
     }

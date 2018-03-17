@@ -1,13 +1,13 @@
 package com.codingchili.core.listener.transport;
 
-import com.codingchili.core.files.Configurations;
-import com.codingchili.core.listener.Request;
-import com.codingchili.core.protocol.Protocol;
-import com.codingchili.core.protocol.ResponseStatus;
-import com.codingchili.core.listener.ClusterHelper;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
+
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.listener.Request;
+import com.codingchili.core.protocol.Response;
+import com.codingchili.core.protocol.ResponseStatus;
 
 /**
  * @author Robin Duda
@@ -21,11 +21,6 @@ public class ClusterRequest implements Request {
     private int timeout = Configurations.system().getClusterTimeout();
     private Buffer buffer;
     private JsonObject json;
-
-    protected ClusterRequest(Request request) {
-        this(((ClusterRequest) request).getMessage());
-        this.timeout = request.timeout();
-    }
 
     /**
      * Creates a cluster request from an eventbus message.
@@ -46,20 +41,20 @@ public class ClusterRequest implements Request {
     }
 
     @Override
-    public void write(Object object) {
-        if (object != null) {
-            ClusterHelper.reply(message, object);
+    public void write(Object msg) {
+        if (msg != null) {
+            message.reply(Response.message(this, msg));
         } else {
             accept();
         }
     }
 
     protected void send(ResponseStatus status, Throwable exception) {
-        write(Protocol.response(status, exception));
+        write(Response.error(this, status, exception));
     }
 
     protected void send(ResponseStatus status) {
-        write(Protocol.response(status));
+        write(Response.status(this, status));
     }
 
     @Override

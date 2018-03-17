@@ -8,16 +8,12 @@ import java.util.Optional;
  * @author Robin Duda
  */
 public class ChatEvent implements Event {
-    private Creature creature;
+    private String source;
     private String text;
 
     public ChatEvent(Creature source, String text) {
-        this.creature = source;
+        this.source = source.getId();
         this.text = text;
-    }
-
-    public Creature getCreature() {
-        return creature;
     }
 
     public String getText() {
@@ -25,8 +21,8 @@ public class ChatEvent implements Event {
     }
 
     @Override
-    public Optional<Creature> getSource() {
-        return Optional.of(creature);
+    public String getSource() {
+        return source;
     }
 
     @Override

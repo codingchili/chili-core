@@ -1,27 +1,24 @@
 package com.codingchili.realm.instance.controller;
 
+import com.codingchili.realm.instance.context.GameContext;
+import com.codingchili.realm.instance.context.InstanceContext;
+import io.vertx.core.Future;
+
 import com.codingchili.core.context.DeploymentAware;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
-import com.codingchili.core.protocol.Protocol;
-import com.codingchili.core.protocol.Role;
-import com.codingchili.realm.instance.context.InstanceContext;
-import com.codingchili.realm.instance.context.GameContext;
-import io.vertx.core.Future;
-
-import static com.codingchili.common.Strings.ID_PING;
+import com.codingchili.core.protocol.*;
 
 /**
  * @author Robin Duda
  * Handles players in an settings.
  */
 public class InstanceHandler implements CoreHandler, DeploymentAware {
-    private final Protocol<InstanceRequest> protocol = new Protocol<>();
+    private final Protocol<Request> protocol = new Protocol<>(this);
     private InstanceContext context;
 
     public InstanceHandler(InstanceContext context) {
         this.context = context;
-        protocol.use(ID_PING, this::ping, Role.PUBLIC);
 
         GameContext game = new GameContext(context);
 
@@ -31,7 +28,8 @@ public class InstanceHandler implements CoreHandler, DeploymentAware {
         protocol.annotated(new DialogHandler(game));
     }
 
-    private void ping(InstanceRequest request) {
+    @Api
+    public void ping(InstanceRequest request) {
         request.accept();
     }
 
@@ -41,6 +39,12 @@ public class InstanceHandler implements CoreHandler, DeploymentAware {
         } else {
             return Role.PUBLIC;
         }
+    }
+
+    @Api
+    public void joinInstance(InstanceRequest request) {
+
+        request.accept();
     }
 
     @Override
@@ -60,12 +64,13 @@ public class InstanceHandler implements CoreHandler, DeploymentAware {
 
     @Override
     public void start(Future<Void> future) {
-        // todo: set up the game loop
-        // todo: set up session handling
-
-        context.onInstanceStarted(context.realm().getName(), context.settings().getName());
+        //context.onInstanceStarted(context.realm().getName(), context.settings().getName());
         future.complete();
     }
+
+    // todo: only log listener started if handler does not implement start or ignore it altogether?
+    // todo: instance metadata is wrong in the listener.start logging, fix.
+    // todo: log loaded X instances, X realms, X classes, X afflictions, X spells - once in the static loader.
 
     @Override
     public int instances() {

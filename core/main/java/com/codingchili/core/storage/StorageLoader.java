@@ -66,7 +66,7 @@ public class StorageLoader<Value extends Storable> {
             }
         }, (done) -> {
             if (done.failed()) {
-                handler.handle(Future.failedFuture(done.cause()));
+                future.tryFail(done.cause());
             }
         });
     }

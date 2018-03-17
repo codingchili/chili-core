@@ -61,19 +61,19 @@ public class AuthenticationContext extends SystemContext implements ServiceConte
     }
 
     public void onAuthenticationFailure(Account account, String host) {
-        event(LOG_ACCOUNT_UNAUTHORIZED, WARNING)
+        logger.event(LOG_ACCOUNT_UNAUTHORIZED, WARNING)
                 .put(LOG_USER, account.getUsername())
                 .put(LOG_REMOTE, host).send();
     }
 
     public void onAuthenticated(String username, String host) {
-        event(LOG_ACCOUNT_AUTHENTICATED)
+        logger.event(LOG_ACCOUNT_AUTHENTICATED)
                 .put(LOG_USER, username)
                 .put(LOG_REMOTE, host).send();
     }
 
     public void onRegistered(String username, String host) {
-        event(LOG_ACCOUNT_REGISTERED)
+        logger.event(LOG_ACCOUNT_REGISTERED)
                 .put(LOG_USER, username)
                 .put(LOG_REMOTE, host).send();
     }

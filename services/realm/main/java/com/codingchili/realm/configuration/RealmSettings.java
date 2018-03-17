@@ -32,7 +32,8 @@ public class RealmSettings extends AttributeConfigurable {
     private String description;
     private String resources;
     private String version;
-    private String remote;
+    private String host;
+    private int port;
     private int size;
     private String type;
     private String lifetime;
@@ -63,6 +64,8 @@ public class RealmSettings extends AttributeConfigurable {
 
     public RealmSettings removeAuthentication() {
         RealmSettings copy = new RealmSettings()
+                .setPort(port)
+                .setHost(host)
                 .setClasses(classes)
                 .setAfflictions(afflictions)
                 .setDescription(description)
@@ -115,18 +118,34 @@ public class RealmSettings extends AttributeConfigurable {
     }
 
     /**
-     * @return the remote handler of the realm.
+     * @return the remote host of the realm.
      */
-    public String getRemote() {
-        return remote;
+    public String getHost() {
+        return host;
     }
 
     /**
-     * @param remote set the remote address for this realm.
+     * @param host set the remote host for this realm.
      * @return fluent
      */
-    public RealmSettings setRemote(String remote) {
-        this.remote = remote;
+    public RealmSettings setHost(String host) {
+        this.host = host;
+        return this;
+    }
+
+    /**
+     * @return the port of this realm.
+     */
+    public int getPort() {
+        return port;
+    }
+
+    /**
+     * @param port the port the realm is listening on.
+     * @return fluent
+     */
+    public RealmSettings setPort(int port) {
+        this.port = port;
         return this;
     }
 

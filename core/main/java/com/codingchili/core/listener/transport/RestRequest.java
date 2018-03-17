@@ -1,11 +1,5 @@
 package com.codingchili.core.listener.transport;
 
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.listener.Endpoint;
-import com.codingchili.core.listener.ListenerSettings;
-import com.codingchili.core.listener.Request;
-import com.codingchili.core.protocol.Protocol;
-import com.codingchili.core.protocol.ResponseStatus;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
@@ -14,12 +8,16 @@ import io.vertx.ext.web.RoutingContext;
 
 import java.util.Map;
 
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.listener.*;
+import com.codingchili.core.protocol.*;
+
 /**
  * @author Robin Duda
  * <p>
  * HTTP/REST request object.
  */
-class RestRequest implements Request{
+class RestRequest implements Request {
     private HttpServerRequest request;
     private JsonObject data = new JsonObject();
     private ListenerSettings settings;
@@ -32,6 +30,23 @@ class RestRequest implements Request{
 
         parseData(context);
         parseHeaders(context);
+    }
+
+    @Override
+    public Connection connection() {
+        // write the head first.
+        request.response().setStatusCode(HttpResponseStatus.OK.code());
+
+        final Connection connection = new Connection((object) -> {
+            // write data without calling end - supports long polling.
+            request.response().write(Buffer.buffer(object.toString()));
+        }, request.netSocket().writeHandlerID());
+
+        connection.onClose(() -> {
+            // commit the response when the connection is (pre-)closed.
+            request.response().end();
+        });
+        return connection;
     }
 
     private void parseData(RoutingContext context) {
@@ -77,14 +92,8 @@ class RestRequest implements Request{
     }
 
     @Override
-    public void write(Object object) {
-        if (object instanceof Buffer) {
-            send((Buffer) object);
-        } else if (object instanceof JsonObject) {
-            send(Buffer.buffer(((JsonObject) object).encodePrettily()));
-        } else {
-            send(object);
-        }
+    public void write(Object message) {
+        send(Response.message(this, message).toBuffer());
     }
 
     @Override
@@ -109,19 +118,15 @@ class RestRequest implements Request{
 
     protected void send(ResponseStatus status, Throwable e) {
         request.response().setStatusCode(HttpResponseStatus.OK.code())
-                .end(Protocol.response(status, e).encode());
+                .end(Response.error(this, status, e).encode());
     }
 
     protected void send(ResponseStatus status) {
         request.response().setStatusCode(HttpResponseStatus.OK.code())
-                .end(Protocol.response(status).encode());
+                .end(Response.status(this, status).encode());
     }
 
     private void send(Buffer buffer) {
         request.response().setStatusCode(HttpResponseStatus.OK.code()).end(buffer);
-    }
-
-    private void send(Object object) {
-        request.response().setStatusCode(HttpResponseStatus.OK.code()).end(Buffer.buffer(object.toString()));
     }
 }

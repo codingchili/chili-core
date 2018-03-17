@@ -1,11 +1,13 @@
 package com.codingchili.core.listener;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.CoreException;
+import com.codingchili.core.context.*;
 import com.codingchili.core.listener.transport.ClusterListener;
+import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.testing.ContextMock;
 import com.codingchili.core.testing.EmptyRequest;
 import io.vertx.core.Future;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
@@ -16,9 +18,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
+import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_STATUS;
 import static com.codingchili.core.files.Configurations.system;
+import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
 
 /**
  * @author Robin Duda
@@ -27,6 +34,7 @@ import static com.codingchili.core.files.Configurations.system;
  */
 @RunWith(VertxUnitRunner.class)
 public class ClusterListenerTest {
+    private static final String address = ClusterListenerTest.class.getName();
     private static final String TEST_MESSAGE = "{}";
     private static final String REPLY_ADDRESS = "clusterlistener-test";
     @Rule
@@ -74,6 +82,65 @@ public class ClusterListenerTest {
     public void handlerOnStopCalled(TestContext test) throws CoreException {
         handler.setStopHandler(test.async(system().getListeners()));
         context.stop(deployment);
+    }
+
+    @Test
+    public void testWriteBuffer(TestContext test) {
+        Buffer buffer = Buffer.buffer("test");
+        sendAndReply(buffer, (res) -> {
+            test.assertEquals(buffer, res);
+        }, test.async());
+    }
+
+    @Test
+    public void testWriteCollection(TestContext test) {
+        List<POJO> list = new ArrayList<>();
+        list.add(new POJO().setStatus("test"));
+        sendAndReply(list,  res -> {
+            test.assertEquals(Serializer.json(list).put(PROTOCOL_STATUS, ACCEPTED), res);
+        }, test.async());
+    }
+
+    @Test
+    public void testWriteJsonObject(TestContext test) {
+        JsonObject json = new JsonObject().put("testing", true);
+        sendAndReply(json, res -> {
+            test.assertEquals(json, res);
+        }, test.async());
+    }
+
+    @Test
+    public void testWritePOJO(TestContext test) {
+        POJO pojo = new POJO().setStatus("accepted");
+
+        sendAndReply(pojo, res -> {
+            test.assertEquals(Serializer.json(pojo), res);
+        }, test.async());
+    }
+
+    private <T> void sendAndReply(T object, Consumer<Object> assertion, Async async) {
+        context.bus().consumer(address, msg -> {
+            ClusterHelper.reply(msg, object);
+        });
+
+        context.bus().send(address, new JsonObject(), msg -> {
+            assertion.accept(msg.result().body());
+            async.complete();
+        });
+    }
+
+    private class POJO {
+        private String status;
+
+
+        public String getStatus() {
+            return status;
+        }
+
+        public POJO setStatus(String status) {
+            this.status = status;
+            return this;
+        }
     }
 
     private class TestHandler implements CoreHandler {

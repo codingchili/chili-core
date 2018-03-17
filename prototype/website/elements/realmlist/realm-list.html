@@ -258,7 +258,7 @@
 
             application.onAuthentication((authentication) => {
 
-                //this.set("favourites", authentication.account.servers);
+                this.set("favourites", authentication.account.servers);
                 this.update();
                 this.timer = setInterval(this.update.bind(this), 6000);
 

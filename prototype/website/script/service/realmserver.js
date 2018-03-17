@@ -5,16 +5,15 @@ class RealmServer {
 
     constructor(realm) {
         this.realm = realm;
-        this.network = new Network(realm.remote);
-        this.ping = this.network.ping;
+        this.connection = new Connection(realm.host, realm.port);
     }
 
     characterlist(callback) {
-        this.network.send(callback, 'character.list', {token: this.realm.token});
+        this.connection.send(callback, 'character.list', {token: this.realm.token});
     }
 
     create(callback, className, characterName) {
-        this.network.send(callback, 'character.create', {
+        this.connection.send(callback, 'character.create', {
             token: this.realm.token,
             className: className,
             character: characterName
@@ -22,7 +21,7 @@ class RealmServer {
     }
 
     remove(callback, characterName) {
-        this.network.send(callback, 'character.remove', {
+        this.connection.send(callback, 'character.remove', {
             token: this.realm.token,
             realm: this.realm.name,
             character: characterName
@@ -30,6 +29,9 @@ class RealmServer {
     }
 
     static ping(callback, realm) {
-        new Network(realm.remote).ping(callback);
+        new Network()
+            .setPort(realm.port)
+            .setHost(realm.host)
+            .ping(callback);
     }
 }

@@ -9,4 +9,4 @@ onCastBegin:
     spell.energy(source, -40);
 onCastComplete:
   jexl: |
-    spell.afflict(source, 'holy aura')
+    spell.afflict(source, 'holy aura');

@@ -33,4 +33,11 @@ public class JexlScript implements Scripted {
     public String getSource() {
         return script.getText();
     }
+
+    public static void main(String[] args) {
+        Object result = new JexlScript("    //spells.energy(caster, -40);\n" +
+                "    //log.accept('onCastBegin!');\n" +
+                "    return true;").apply(new Bindings());
+        System.out.println("got class=" + result.getClass() + " value=" + result);
+    }
 }

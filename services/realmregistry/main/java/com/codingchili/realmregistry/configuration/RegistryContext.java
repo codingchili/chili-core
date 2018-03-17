@@ -43,7 +43,7 @@ public class RegistryContext extends SystemContext implements ServiceContext {
 
     public void getRealmStore(Handler<AsyncResult<AsyncRealmStore>> handler) {
         if (!loading.getAndSet(true)) {
-            new StorageLoader<RegisteredRealm>().memIndex(this)
+            new StorageLoader<RegisteredRealm>().jsonmap(this)
                     .withCollection(COLLECTION_REALMS)
                     .withValue(RegisteredRealm.class)
                     .build(prepare -> {
@@ -77,11 +77,11 @@ public class RegistryContext extends SystemContext implements ServiceContext {
     }
 
     public void onRealmDisconnect(String realm) {
-        event(LOG_REALM_DISCONNECT, Level.ERROR).put(ID_REALM, realm).send();
+        logger.event(LOG_REALM_DISCONNECT, Level.ERROR).put(ID_REALM, realm).send();
     }
 
     public void onRealmUpdated(String realm, int players) {
-        event(LOG_REALM_UPDATE, Level.INFO)
+        logger.event(LOG_REALM_UPDATE, Level.INFO)
                 .put(ID_REALM, realm)
                 .put(ID_PLAYERS, players).send();
     }

@@ -8,7 +8,6 @@ import com.codingchili.realm.instance.model.entity.*;
 import com.codingchili.realm.instance.model.events.*;
 import com.codingchili.realm.instance.model.npc.ListeningPerson;
 import com.codingchili.realm.instance.model.stats.Attribute;
-import com.codingchili.realm.instance.scripting.Bindings;
 import io.vertx.core.json.JsonObject;
 
 import java.util.Collection;
@@ -49,14 +48,13 @@ public class SpellEngine {
             if (caster.getSpells().cooldown(spell)) {
                 return false;
             } else {
-                if (spell.onCastBegin.apply(getCastBindings())) {
+                ActiveSpell active = new ActiveSpell(spell)
+                        .setSource(caster)
+                        .setTarget(target);
+
+                if (active.onCastBegin(game)) {
                     cancel(caster);
-
-                    ActiveSpell active = new ActiveSpell()
-                            .setCaster(caster)
-                            .setSpell(spell)
-                            .setTarget(target);
-
+                    casting.put(active.getSource(), active);
                     game.publish(new SpellCastEvent(active));
                     return true;
                 } else {
@@ -68,10 +66,6 @@ public class SpellEngine {
         }
     }
 
-    private Bindings getCastBindings() {
-        return new Bindings();
-    }
-
     public void cancel(Creature caster) {
         ActiveSpell spell = casting.get(caster);
         if (spell != null) {
@@ -80,15 +74,23 @@ public class SpellEngine {
         }
     }
 
+    public void cleanse(Creature target, String affliction) {
+        // todo: remove an active affliction or all.
+    }
+
     public void afflict(Creature source, String affliction) {
         afflict(source, source, affliction);
     }
+
+    // todo: call active afflictions on target with registered callback for onAfflict
 
     public void afflict(Creature source, Creature target, String name) {
         ActiveAffliction affliction = afflictions.getByName(name).apply(source, target);
         source.getAfflictions().add(affliction, game);
         game.publish(new AfflictionEvent(affliction));
     }
+
+    // todo: call active afflictions on target with registered callback for onInterrupt
 
     public void interrupt(Creature caster) {
         ActiveSpell spell = casting.get(caster);
@@ -102,6 +104,8 @@ public class SpellEngine {
         target.getStats().update(Attribute.energy, amount);
     }
 
+    // todo: call active afflictions on target with registered callback for onHeal.
+
     public void heal(Creature target, double value) {
         float max = target.getBaseStats().get(Attribute.maxhealth);
         float current = target.getBaseStats().get(Attribute.health);
@@ -113,19 +117,23 @@ public class SpellEngine {
     }
 
     public void projectile(ActiveSpell spell, Map<String, Float> properties) {
-        projectiles.add(new Projectile(game, spell, properties));
+        projectiles.add(new Projectile(game, spell)); // todo set properties.
     }
 
-    public void damage(ActiveAffliction active, double value, String type) {
-        damage(active.getSource(), active.getTarget(), value, DamageType.valueOf(type));
+    public Spell getSpellByName(String spellName) {
+        return spells.getByName(spellName);
     }
+
+    // todo: call active afflictions on target with registered callback for onDamage.
 
     public void damage(Creature source, Creature target, double value, DamageType type) {
         target.getBaseStats().update(Attribute.health, (int) value);
 
-        game.publish(new DamageEvent(target, value, type));
+        game.publish(new DamageEvent(target, value, type).setSource(source));
 
         if (target.getStats().get(Attribute.health) < 0) {
+            // todo: if the player is already dead: dont kill it AGAIN.
+            // prevent healing/damaging dead targets, remove afflictions etc.v
             game.publish(new DeathEvent(target, source));
         }
     }
@@ -139,15 +147,19 @@ public class SpellEngine {
         if (tick == Integer.MAX_VALUE) {
             tick = 0;
         }
+        tick++;
     }
 
     // update affliction state and spell cooldowns.
     private void updateCreatureSpellState() {
         creatures.all().forEach(entity -> {
-            entity.getAfflictions().removeIf(affliction ->
-                    (affliction.getStart() + tick) % affliction.getInterval() == 0 && !(affliction.tick(game)), game);
+            entity.getAfflictions().removeIf(active -> {
+                if (active.shouldTick(active.getStart() + tick))
+                    if (!active.tick(game)) return true;
+                return false;
+            }, game);
 
-            entity.getSpells().tick();
+            entity.getSpells().tick(spells, tick);
         });
     }
 
@@ -162,7 +174,7 @@ public class SpellEngine {
                 passive.add(casting);
                 return true;
             } else {
-                if (tick % casting.getSpell().getTick() == 0) {
+                if (casting.shouldTick(tick)) {
                     casting.onCastProgress(game, tick);
                 }
             }
@@ -175,7 +187,7 @@ public class SpellEngine {
         passive.removeIf(spell -> {
             if (spell.active()) {
 
-                if (tick % spell.getSpell().getTick() == 0) {
+                if (spell.shouldTick(tick)) {
                     spell.onSpellEffects(game, tick);
                 }
 
@@ -192,23 +204,28 @@ public class SpellEngine {
 
     public static void main(String[] args) {
         RealmSettings settings = new RealmSettings().setName("testing");
-        RealmContext realm = new RealmContext(new SystemContext(), settings);
-        InstanceContext ins = new InstanceContext(realm, new InstanceSettings());
-        GameContext game = new GameContext(ins);
 
-        SpellEngine engine = new SpellEngine(game);
+        RealmContext.create(new SystemContext(), settings).setHandler(create -> {
+           RealmContext rc = create.result();
 
-        JsonObject affConfig = ConfigurationFactory.readObject("/afflictiontest.yaml");
-        Affliction affliction = Serializer.unpack(affConfig, Affliction.class);
 
-        Creature target = new ListeningPerson();
-        Creature source = new ListeningPerson();
+            InstanceContext ins = new InstanceContext(rc, new InstanceSettings());
+            GameContext game = new GameContext(ins);
 
-        game.add(target);
-        game.add(source);
+            SpellEngine engine = new SpellEngine(game);
 
-        for (int i = 0; i < 500; i++) {
-            engine.afflict(source, target, affliction.getName());
-        }
+            JsonObject affConfig = ConfigurationFactory.readObject("/afflictiontest.yaml");
+            Affliction affliction = Serializer.unpack(affConfig, Affliction.class);
+
+            Creature target = new ListeningPerson();
+            Creature source = new ListeningPerson();
+
+            game.add(target);
+            game.add(source);
+
+            for (int i = 0; i < 500; i++) {
+                engine.afflict(source, target, affliction.getName());
+            }
+        });
     }
 }

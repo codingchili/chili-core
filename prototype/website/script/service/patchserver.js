@@ -8,14 +8,14 @@ class PatchServer {
     }
 
     patch(callback) {
-        this.network.send(callback, 'patch');
+        this.network.rest(callback, 'patch');
     }
 
     gameinfo(callback) {
-        this.network.send(callback, 'gameinfo');
+        this.network.rest(callback, 'gameinfo');
     }
 
     news(callback) {
-        this.network.send(callback, 'news');
+        this.network.rest(callback, 'news');
     }
 }

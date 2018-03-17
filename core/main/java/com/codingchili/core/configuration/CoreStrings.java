@@ -636,5 +636,9 @@ public abstract class CoreStrings {
         return String.format("Reflection failed to retrieve value at '%s'.", path);
     }
 
+    public static String getRestNotSupportedByWebsocketListener() {
+        return "REST Requests are not supported by the websocket listener.";
+    }
+
     private enum IPVersion {IP4, IP6;}
 }

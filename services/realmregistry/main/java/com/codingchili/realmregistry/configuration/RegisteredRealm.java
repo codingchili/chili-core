@@ -12,34 +12,21 @@ public class RegisteredRealm implements Storable {
     private Token authentication;
     private String description;
     private String resources;
-    private String remote;
+    private String host;
     private String version;
-    private int size;
     private String type;
+    private String name;
     private String lifetime;
-    private int players = 0;
     private Boolean trusted;
     private Boolean secure;
     private long updated;
-    private String name;
+    private int players = 0;
+    private int port;
+    private int size;
 
     @Override
     public String getId() {
         return name;
-    }
-
-    /**
-     * @return get the remote handler of the server.
-     */
-    public String getRemote() {
-        return remote;
-    }
-
-    /**
-     * @param remote set the remote handler of the server.
-     */
-    public void setRemote(String remote) {
-        this.remote = remote;
     }
 
     /**
@@ -114,6 +101,35 @@ public class RegisteredRealm implements Storable {
     public RegisteredRealm setSize(int size) {
         this.size = size;
         return this;
+    }
+
+
+    /**
+     * @return the public hostname of the realm server.
+     */
+    public String getHost() {
+        return host;
+    }
+
+    /**
+     * @param host set the public hostname of the realm server.
+     */
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    /**
+     * @return the port of the realm server.
+     */
+    public int getPort() {
+        return port;
+    }
+
+    /**
+     * @param port sets the port of the realm server.
+     */
+    public void setPort(int port) {
+        this.port = port;
     }
 
     /**

@@ -12,7 +12,7 @@ public class SimpleAffliction extends Affliction {
     {
         name = "Bleeding";
         description = "you are injured.";
-        duration = 30;
+        duration = 30.0f;
         tick = new JexlScript("return 1;");
         modifier = new JexlScript("return 2;");
     }

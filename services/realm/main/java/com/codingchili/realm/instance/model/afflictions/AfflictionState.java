@@ -39,6 +39,15 @@ public class AfflictionState {
         update(game);
     }
 
+    public boolean has(String afflictionName) {
+        for (ActiveAffliction active : list) {
+            if (active.getAffliction().getName().equals(afflictionName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void removeIf(Predicate<ActiveAffliction> predicate, GameContext game) {
         AtomicBoolean removed = new AtomicBoolean(false);
 

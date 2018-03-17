@@ -1,5 +1,6 @@
 package com.codingchili.realm.model;
 
+import com.codingchili.common.Strings;
 import com.codingchili.realm.configuration.RealmSettings;
 import com.codingchili.realm.instance.model.entity.PlayerCreature;
 
@@ -15,6 +16,10 @@ public class CharacterList {
     public CharacterList(RealmSettings realm, Collection<PlayerCreature> characters) {
         this.realm = realm.removeAuthentication();
         this.characters = characters;
+    }
+
+    public String getRoute() {
+        return Strings.CLIENT_CHARACTER_LIST;
     }
 
     public RealmSettings getRealm() {

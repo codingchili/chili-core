@@ -1,17 +1,22 @@
 package com.codingchili.realm.instance.model.afflictions;
 
+import com.codingchili.realm.instance.context.GameContext;
 import com.codingchili.realm.instance.model.entity.Creature;
 import com.codingchili.realm.instance.scripting.Bindings;
 import com.codingchili.realm.instance.scripting.Scripted;
 
+import java.util.Random;
+
+import com.codingchili.core.storage.Storable;
+
 /**
  * @author Robin Duda
  */
-public class Affliction {
+public class Affliction implements Storable {
     protected String name = "missing name";
     protected String description = "missing description";
-    protected Integer duration = 30;
-    protected Integer interval = 50;
+    protected Float duration = 8.0f;
+    protected Float interval = 2.0f;
     protected Float chance = 1.0f;
     protected Scripted modifier;
     protected Scripted tick;
@@ -24,13 +29,20 @@ public class Affliction {
         return name;
     }
 
+    @Override
+    public String getId() {
+        return name;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
 
     public <T> T tick(Bindings bindings) {
         if (tick != null && interval > 0) {
-            return tick.apply(bindings);
+            if (chance == 1.0f || new Random().nextFloat() < chance) {
+                return tick.apply(bindings);
+            }
         }
         return null;
     }
@@ -50,11 +62,11 @@ public class Affliction {
         this.description = description;
     }
 
-    public Integer getDuration() {
+    public Float getDuration() {
         return duration;
     }
 
-    public void setDuration(Integer duration) {
+    public void setDuration(Float duration) {
         this.duration = duration;
     }
 
@@ -82,11 +94,11 @@ public class Affliction {
         this.tick = tick;
     }
 
-    public Integer getInterval() {
+    public Float getInterval() {
         return interval;
     }
 
-    public void setInterval(Integer interval) {
+    public void setInterval(Float interval) {
         this.interval = interval;
     }
 }

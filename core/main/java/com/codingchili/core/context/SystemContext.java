@@ -280,12 +280,4 @@ public class SystemContext implements CoreContext {
     public Vertx vertx() {
         return vertx;
     }
-
-    protected LogMessage event(String event) {
-        return event(event, Level.INFO);
-    }
-
-    protected LogMessage event(String event, Level level) {
-        return logger.event(event, level);
-    }
 }

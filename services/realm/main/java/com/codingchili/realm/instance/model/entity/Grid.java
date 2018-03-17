@@ -1,11 +1,10 @@
 package com.codingchili.realm.instance.model.entity;
 
 
-import com.codingchili.realm.instance.context.GameContext;
 import com.codingchili.realm.instance.context.Ticker;
 
 import java.util.*;
-import java.util.function.Supplier;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -14,25 +13,28 @@ import java.util.stream.Collectors;
  * A grid to map entities onto a spatially hashed map.
  */
 public class Grid<T extends Entity> {
+    private ConcurrentHashMap<String, T> entities = new ConcurrentHashMap<>();
     private volatile Map<Integer, List<T>> cells = new HashMap<>();
-    private Supplier<Collection<T>> supplier;
     private int cellSize = 256;
     private int gridWidth;
 
     /**
      * @param width the width of the grid
-     * @param supplier a supplier of entities.
      */
-    public Grid(int width, Supplier<Collection<T>> supplier) {
+    public Grid(int width) {
         this.gridWidth = width;
         this.cellSize = Math.max(width / 256, 256);
-        this.supplier = supplier;
     }
 
-    public Grid update(Ticker ticker) {
-        Collection<T> entities = supplier.get();
+    /**
+     * Updates the entities in the grid.
+     *
+     * @param ticker the ticker that triggered the update.
+     * @return fluent.
+     */
+    public Grid<T> update(Ticker ticker) {
         Map<Integer, List<T>> buffer = new HashMap<>();
-        entities.forEach(entity -> {
+        entities.values().forEach((entity) -> {
             entity.getVector().cells(cellSize, gridWidth).forEach(id -> {
                 List<T> list = buffer.computeIfAbsent(id, key -> new ArrayList<>());
                 list.add(entity);
@@ -42,6 +44,42 @@ public class Grid<T extends Entity> {
         cells = buffer;
         tmp.clear();
         return this;
+    }
+
+    /**
+     * @param entity the entity to add to the grid.
+     * @return fluent.
+     */
+    public Grid<T> add(T entity) {
+        entities.put(entity.getId(), entity);
+        return this;
+    }
+
+    /**
+     * @param id the id of the entity to remove.
+     * @return fluent.
+     */
+    public Grid<T> remove(String id) {
+        entities.remove(id);
+        return this;
+    }
+
+    /**
+     * @param id the id of the entity to retrieve.
+     * @return an entity with the given id.
+     */
+    public T get(String id) {
+        T entity = entities.get(id);
+        Objects.requireNonNull(entity, String.format("No entity with id '%s' found.", id));
+        return entities.get(id);
+    }
+
+    /**
+     * @param id the id to check if there is an entity registered for.
+     * @return true if the entity exists on the grid.
+     */
+    public boolean exists(String id) {
+        return entities.containsKey(id);
     }
 
     /**
@@ -57,7 +95,7 @@ public class Grid<T extends Entity> {
      * @return all entities in the grid.
      */
     public Collection<T> all() {
-        return supplier.get();
+        return entities.values();
     }
 
     /**
@@ -74,7 +112,8 @@ public class Grid<T extends Entity> {
      * @return a list of entities that exists in the same network partition.
      */
     public Collection<T> partition(Vector vector) {
-        return supplier.get();
+        // todo: partition entities into supercells for network updates.
+        return entities.values();
     }
 
     /**

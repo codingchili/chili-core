@@ -13,15 +13,21 @@ public enum Role implements RoleType {
     private String name;
     private int level;
 
+    /**
+     * @param name  the name of the role to create.
+     * @param level the access level of the role.
+     */
     Role(String name, int level) {
         this.name = name;
         this.level = level;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public int getLevel() {
         return level;
     }

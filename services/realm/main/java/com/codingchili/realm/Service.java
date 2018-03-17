@@ -1,16 +1,9 @@
 package com.codingchili.realm;
 
 import com.codingchili.common.Strings;
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.files.Configurations;
-import com.codingchili.core.listener.CoreListener;
-import com.codingchili.core.listener.CoreService;
-import com.codingchili.core.listener.transport.ClusterListener;
 import com.codingchili.realm.configuration.*;
-import com.codingchili.realm.controller.CharacterHandler;
-import com.codingchili.realm.instance.context.InstanceContext;
-import com.codingchili.realm.instance.context.InstanceSettings;
-import com.codingchili.realm.instance.controller.InstanceHandler;
+import com.codingchili.realm.controller.RealmClientHandler;
+import com.codingchili.realm.controller.RealmInstanceHandler;
 import com.codingchili.realm.model.RealmNotUniqueException;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
@@ -19,6 +12,12 @@ import io.vertx.core.json.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.listener.*;
+import com.codingchili.core.listener.transport.WebsocketListener;
 
 import static com.codingchili.core.context.FutureHelper.untyped;
 import static com.codingchili.core.files.Configurations.system;
@@ -68,49 +67,52 @@ public class Service implements CoreService {
      * @param realm the realm to be deployed dynamically.
      */
     private void deploy(Future<Void> future, RealmSettings realm) {
-        // Check if the routing id for the realm is unique
-        context.bus().send(realm.getRemote(), getPing(), getDeliveryOptions(), response -> {
+        Consumer<RealmContext> deployer = (rc) -> {
+            // Check if the routing id for the realm is unique
+            context.bus().send(realm.getName(), getPing(), getDeliveryOptions(), response -> {
 
-            if (response.failed()) {
-                // If no response then the id is not already in use.
-                    RealmContext realmContext = new RealmContext(context, realm);
-                    CoreListener listener = new ClusterListener()
-                            .handler(new CharacterHandler(realmContext));
+                if (response.failed()) {
+                    // If no response then the id is not already in use.
+                    ListenerSettings settings = rc.getListenerSettings();
 
-                    realmContext.listener(() -> listener).setHandler(deploy -> {
-                        if (deploy.failed()) {
-                            realmContext.onDeployRealmFailure(realm.getName());
-                            throw new RuntimeException(deploy.cause());
+                    CoreListener listener = new WebsocketListener()
+                            .settings(() -> settings)
+                            .handler(new RealmClientHandler(rc));
+
+                    // deploy handler for incoming messages from instances.
+                    rc.handler(() -> new RealmInstanceHandler(rc)).setHandler(instances -> {
+
+                        if (instances.succeeded()) {
+                            // deploy handler for incoming messages from clients.
+                            rc.listener(() -> listener).setHandler(deploy -> {
+                                if (deploy.failed()) {
+                                    rc.onDeployRealmFailure(realm.getName());
+                                    throw new RuntimeException(deploy.cause());
+                                }
+                            }).setHandler(clients -> {
+                                if (clients.succeeded()) {
+                                    future.complete();
+                                } else {
+                                    future.fail(clients.cause());
+                                }
+                            });
                         } else {
-                            startInstances(future, realmContext);
+                            future.fail(instances.cause());
                         }
                     });
-            } else {
-                future.fail(new RealmNotUniqueException());
-            }
-        });
-    }
 
-    private void startInstances(Future<Void> future, RealmContext context) {
-        List<Future> futures = new ArrayList<>();
-        for (InstanceSettings instance : context.instances()) {
-            Future deploy = Future.future();
-            futures.add(deploy);
-
-            context.handler(() -> new InstanceHandler(new InstanceContext(context, instance))).setHandler((done) -> {
-                if (done.succeeded()) {
-                    deploy.complete();
                 } else {
-                    context.onInstanceFailed(instance.getName(), done.cause());
-                    deploy.fail(done.cause());
+                    future.fail(new RealmNotUniqueException());
                 }
             });
-        }
-        CompositeFuture.all(futures).setHandler(done -> {
-            if (done.succeeded()) {
-                future.complete();
+        };
+
+        // set up the realm context asynchronously.
+        RealmContext.create(context, realm).setHandler(create -> {
+            if (create.succeeded()) {
+                deployer.accept(create.result());
             } else {
-                future.fail(done.cause());
+                future.fail(new RuntimeException(create.cause()));
             }
         });
     }

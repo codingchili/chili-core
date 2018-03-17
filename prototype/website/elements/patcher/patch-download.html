@@ -147,7 +147,7 @@
 
                 application.onUpdate((event) => {
                     this.downloading = false;
-                    this.socket = event.socket;
+                    this.server = event.server;
                     this.realm = event.realm;
                     this.character = event.character;
                     this.set("patch", {
@@ -158,7 +158,7 @@
                         file: ""
                     });
 
-                    new Patcher().update({
+                    patcher.update({
                         started: (name, version, size, files) => {
                             this.set("downloading", true);
                             this.set("patch", {
@@ -170,7 +170,7 @@
                         },
                         completed: () => {
                             application.updateComplete({
-                                socket: this.socket,
+                                server: this.server,
                                 realm: this.realm,
                                 character: this.character
                             });

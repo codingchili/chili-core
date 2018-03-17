@@ -1,11 +1,9 @@
 package com.codingchili.core.listener.transport;
 
-import com.codingchili.core.listener.ListenerSettings;
-import com.codingchili.core.listener.Request;
-import com.codingchili.core.protocol.Serializer;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.json.JsonObject;
+
+import com.codingchili.core.listener.*;
 
 /**
  * @author Robin Duda
@@ -14,24 +12,25 @@ import io.vertx.core.json.JsonObject;
  */
 class WebsocketRequest implements Request {
     private int size;
-    private ServerWebSocket socket;
+    private Connection connection;
     private ListenerSettings settings;
     private JsonObject data;
 
-    WebsocketRequest(ServerWebSocket socket, Buffer buffer, ListenerSettings settings) {
+    WebsocketRequest(Connection connection, Buffer buffer, ListenerSettings settings) {
+        this.connection = connection;
         this.size = buffer.length();
-        this.socket = socket;
         this.settings = settings;
         this.data = buffer.toJsonObject();
     }
 
     @Override
+    public Connection connection() {
+        return connection;
+    }
+
+    @Override
     public void write(Object object) {
-        if (object instanceof Buffer) {
-            socket.write((Buffer) object);
-        } else {
-            socket.write(Serializer.buffer(object));
-        }
+        connection.write(object);
     }
 
     @Override

@@ -7,6 +7,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Set;
 import java.util.UUID;
 
+import com.codingchili.core.context.SystemContext;
+import com.codingchili.core.storage.AsyncStorage;
+import com.codingchili.core.storage.StorageLoader;
+
 /**
  * @author Robin Duda
  */
@@ -60,5 +64,34 @@ public abstract class SimpleEntity implements Entity {
     @Override
     public Set<String> getInteractions() {
         return protocol.available();
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return compareTo(other) == 0;
+    }
+
+    public static void main(String[] args) {
+        new StorageLoader<PlayerCreature>().diskIndex(new SystemContext())
+                .withValue(PlayerCreature.class)
+                .build(load -> {
+                    AsyncStorage<PlayerCreature> storage = load.result();
+                    PlayerCreature c = new PlayerCreature();
+
+                    storage.put(c, done -> {
+
+                        c.setName("newName");
+                        storage.update(c, updated -> {
+                            storage.get(c.id, got -> {
+                                System.out.println(got.result().name);
+                            });
+                        });
+                    });
+                });
     }
 }

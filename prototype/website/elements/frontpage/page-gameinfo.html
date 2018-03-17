@@ -64,8 +64,9 @@
     <script>
         class PageGameInfo extends Polymer.Element {
 
-            constructor() {
-                super();
+            ready() {
+                super.ready();
+
                 let patchserver = new PatchServer();
 
                 patchserver.gameinfo({

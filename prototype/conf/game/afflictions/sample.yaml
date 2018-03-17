@@ -1,0 +1,27 @@
+---
+name: "sample affliction"
+description: "Sample affliction."
+duration: -1 # time in ms to keep the affliction, -1 = forever.
+interval: 1000 # how often to trigger the onTick
+onDamageTaken:
+  jexl: |
+    return;
+# if (source.getAfflictions().has('divinity'))
+#    damage.value = 0;
+onDamageGiven:
+  jexl: |
+    # collect all damage out.
+    state.put('outDamage', state.getOrDefault('outDamage', 0) + damage);
+    return;
+onTick:
+  jexl: |
+# supports js using nashorn.
+
+# source, target available.
+# spell: SpellEngine
+# game: GameContext
+# grid: Grid
+# state: Map<String, Object> for use by the script.
+
+
+# onBegin, onEnd, onDamageTaken, onDamageGiven

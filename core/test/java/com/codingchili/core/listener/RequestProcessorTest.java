@@ -42,7 +42,7 @@ public class RequestProcessorTest {
 
             @Override
             public JsonObject data() {
-                return null;
+                return new JsonObject();
             }
 
             @Override
