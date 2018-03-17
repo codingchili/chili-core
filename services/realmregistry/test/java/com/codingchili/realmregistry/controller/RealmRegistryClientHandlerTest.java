@@ -76,7 +76,7 @@ public class RealmRegistryClientHandlerTest {
         Async async = test.async();
 
         handle(CLIENT_REALM_TOKEN, (response, status) -> {
-            Token token = Serializer.unpack(response, Token.class);
+            Token token = Serializer.unpack(response.getJsonObject(ID_TOKEN), Token.class);
 
             test.assertEquals(ResponseStatus.ACCEPTED, status);
             test.assertEquals(USERNAME, token.getDomain());
