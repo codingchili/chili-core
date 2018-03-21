@@ -5,7 +5,7 @@ jdk: oraclejdk8
 install: true
 script:
   - ./gradlew -version
-  - ./gradlew build
+  - ./gradlew build --info --stacktrace
   - ./gradlew sourcesJar -x test
   - ./gradlew archivePrototype -x test
   - ./gradlew javadocJar -x test
