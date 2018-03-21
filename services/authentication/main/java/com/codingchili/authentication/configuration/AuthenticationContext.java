@@ -4,7 +4,7 @@ import com.codingchili.authentication.model.AccountDB;
 import com.codingchili.authentication.model.AccountMapping;
 import com.codingchili.authentication.model.AsyncAccountStore;
 import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.ServiceContext;
+import com.codingchili.core.context.CoreServiceContext;
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.Logger;
@@ -23,7 +23,7 @@ import static com.codingchili.core.logging.Level.WARNING;
  * <p>
  * Authentication service context.
  */
-public class AuthenticationContext extends SystemContext implements ServiceContext {
+public class AuthenticationContext extends SystemContext implements CoreServiceContext {
     private AsyncAccountStore accounts;
     private Logger logger;
 

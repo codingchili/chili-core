@@ -1,7 +1,7 @@
 package com.codingchili.logging.configuration;
 
 import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.ServiceContext;
+import com.codingchili.core.context.CoreServiceContext;
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.security.Token;
@@ -18,7 +18,7 @@ import static com.codingchili.logging.configuration.LogServerSettings.PATH_LOGSE
  * <p>
  * Context used by logging handlers.
  */
-public class LogContext extends SystemContext implements ServiceContext {
+public class LogContext extends SystemContext implements CoreServiceContext {
     private TokenFactory factory = new TokenFactory(service().getSecret());
     private AsyncStorage<JsonItem> storage;
 

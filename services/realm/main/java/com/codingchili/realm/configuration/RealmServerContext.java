@@ -1,7 +1,7 @@
 package com.codingchili.realm.configuration;
 
 import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.ServiceContext;
+import com.codingchili.core.context.CoreServiceContext;
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.files.Configurations;
 
@@ -10,7 +10,7 @@ import static com.codingchili.realm.configuration.RealmServerSettings.PATH_REALM
 /**
  * Context for the service that deploys realms.
  */
-public class RealmServerContext extends SystemContext implements ServiceContext {
+public class RealmServerContext extends SystemContext implements CoreServiceContext {
 
     public RealmServerContext(CoreContext context) {
         super(context);

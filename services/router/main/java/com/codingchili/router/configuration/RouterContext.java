@@ -1,7 +1,7 @@
 package com.codingchili.router.configuration;
 
 import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.ServiceContext;
+import com.codingchili.core.context.CoreServiceContext;
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.ListenerSettings;
@@ -16,7 +16,7 @@ import static com.codingchili.router.configuration.RouterSettings.PATH_ROUTING;
  * <p>
  * A context for the router service.
  */
-public class RouterContext extends SystemContext implements ServiceContext {
+public class RouterContext extends SystemContext implements CoreServiceContext {
 
     public RouterContext(CoreContext core) {
         super(core);

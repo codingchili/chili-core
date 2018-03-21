@@ -29,7 +29,7 @@ import static com.codingchili.realm.configuration.RealmServerSettings.PATH_REALM
  * <p>
  * Context for realms.
  */
-public class RealmContext extends SystemContext implements ServiceContext {
+public class RealmContext extends SystemContext implements CoreServiceContext {
     private Map<String, Connection> connections = new ConcurrentHashMap<>();
     private AsyncCharacterStore characters;
     private RealmSettings settings;
