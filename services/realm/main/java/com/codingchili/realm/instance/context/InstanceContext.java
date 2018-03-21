@@ -1,7 +1,7 @@
 package com.codingchili.realm.instance.context;
 
 import com.codingchili.core.context.Delay;
-import com.codingchili.core.context.CoreServiceContext;
+import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.Level;
@@ -17,7 +17,7 @@ import static com.codingchili.common.Strings.*;
 /**
  * @author Robin Duda
  */
-public class InstanceContext extends SystemContext implements CoreServiceContext {
+public class InstanceContext extends SystemContext implements ServiceContext {
     private static final String LOG_INSTANCE_SKIPTICKS = "skippedTicks";
     private static final String COUNT = "count";
     private Logger logger;

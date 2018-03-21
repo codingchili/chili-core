@@ -5,7 +5,7 @@ import com.codingchili.core.configuration.ServiceConfigurable;
 /**
  * May be implemented by service specific contexts.
  */
-public interface CoreServiceContext {
+public interface ServiceContext {
     /**
      * @return configuration for the service.
      */

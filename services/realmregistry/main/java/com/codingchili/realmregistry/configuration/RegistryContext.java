@@ -1,7 +1,7 @@
 package com.codingchili.realmregistry.configuration;
 
 import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.CoreServiceContext;
+import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.Level;
@@ -26,7 +26,7 @@ import static com.codingchili.realmregistry.configuration.RealmRegistrySettings.
 /**
  * @author Robin Duda
  */
-public class RegistryContext extends SystemContext implements CoreServiceContext {
+public class RegistryContext extends SystemContext implements ServiceContext {
     protected AsyncRealmStore realms;
     protected TokenFactory realmFactory;
     private AsyncRealmStore realmDB;

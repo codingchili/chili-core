@@ -1,7 +1,7 @@
 package com.codingchili.website.configuration;
 
 import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.CoreServiceContext;
+import com.codingchili.core.context.ServiceContext;
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.Request;
@@ -17,7 +17,7 @@ import static com.codingchili.website.configuration.WebserverSettings.PATH_WEBSE
  * <p>
  * Context for the web server.
  */
-public class WebserverContext extends SystemContext implements CoreServiceContext {
+public class WebserverContext extends SystemContext implements ServiceContext {
     private Logger logger;
 
     public WebserverContext(CoreContext core) {
