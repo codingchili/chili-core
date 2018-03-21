@@ -33,8 +33,8 @@ dependencies {
     compile 'io.vertx:vertx-mongo-client:3.5.1'
     compile 'io.vertx:vertx-dropwizard-metrics:3.5.1'
     compile 'de.neuland-bfi:jade4j:1.2.7'
-    compile 'de.mkammerer:argon2-jvm:2.2'
-    compile 'org.fusesource.jansi:jansi:1.16'
+    compile 'de.mkammerer:argon2-jvm:2.4'
+    compile 'org.fusesource.jansi:jansi:1.17'
     compile 'com.googlecode.cqengine:cqengine:2.12.4'
     compile 'org.elasticsearch.client:transport:5.6.2'
 
