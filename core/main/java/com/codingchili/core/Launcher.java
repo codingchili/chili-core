@@ -27,6 +27,11 @@ public class Launcher implements CoreService {
     private static List<String> nodes = new ArrayList<>();
     private CoreContext core;
 
+    /**
+     * Creates a new launcher with the given launcher context.
+     *
+     * @param context the launcher context to use.
+     */
     public Launcher(LaunchContext context) {
         Future<Boolean> future = Future.future();
 
@@ -45,7 +50,7 @@ public class Launcher implements CoreService {
                 }
             } catch (Throwable e) {
                 logger.log(e.getMessage(), Level.ERROR);
-                logger.log(getCommandError(context.addCommand()), Level.INFO);
+                logger.log(getCommandError(context.getCommand()), Level.INFO);
                 exit();
             }
         });

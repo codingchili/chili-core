@@ -128,7 +128,7 @@ public class LaunchContext {
     /**
      * @return the command that was passed to the launcher if existing.
      */
-    public String addCommand() {
+    public String getCommand() {
         if (args.length > 0) {
             return args[0];
         } else {
@@ -146,7 +146,7 @@ public class LaunchContext {
      * @param command the command to add.
      * @return fluent.
      */
-    public LaunchContext addCommand(Command command) {
+    public LaunchContext getCommand(Command command) {
         executor.add(command);
         return this;
     }

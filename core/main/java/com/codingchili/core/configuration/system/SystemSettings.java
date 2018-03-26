@@ -13,11 +13,11 @@ import static com.codingchili.core.configuration.CoreStrings.PATH_SYSTEM;
  * Contains settings for the core system.
  */
 public class SystemSettings implements Configurable {
+    private VertxOptions options = createVertxOptions();
     private int metricRate = 15000;
     private int services = 1;
     private int handlers = 1;
     private int listeners = 1;
-    private boolean metrics = false;
     private int deployTimeout = 3000;
     private int shutdownLogTimeout = 3000;
     private int shutdownHookTimeout = 3000;
@@ -26,6 +26,10 @@ public class SystemSettings implements Configurable {
     private boolean consoleLogging = true;
     private int workerPoolSize = 16;
     private int clusterTimeout = 3000;
+
+    private VertxOptions createVertxOptions() {
+        return new VertxOptions().setMetricsOptions(new MetricsOptions().setEnabled(false));
+    }
 
     @Override
     public String getPath() {
@@ -119,7 +123,7 @@ public class SystemSettings implements Configurable {
      * @return returns true if metrics are configured.
      */
     public boolean isMetrics() {
-        return metrics;
+        return options.getMetricsOptions().isEnabled();
     }
 
     /**
@@ -128,7 +132,7 @@ public class SystemSettings implements Configurable {
      * @return fluent
      */
     public SystemSettings setMetrics(boolean metrics) {
-        this.metrics = metrics;
+        options.getMetricsOptions().setEnabled(metrics);
         return this;
     }
 
@@ -137,7 +141,13 @@ public class SystemSettings implements Configurable {
      */
     @JsonIgnore
     public VertxOptions getOptions() {
-        return new VertxOptions().setMetricsOptions(new MetricsOptions().setEnabled(metrics));
+        return options;
+    }
+
+    @JsonIgnore
+    public SystemSettings setOptions(VertxOptions options) {
+        this.options = options;
+        return this;
     }
 
     /**

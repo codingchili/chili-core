@@ -23,7 +23,7 @@ public class ProtocolDescription<T> {
         this.text = text;
     }
 
-    public Object getModel() {
+    public Map<String, String> getModel() {
         return model;
     }
 

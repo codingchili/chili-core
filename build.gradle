@@ -1,7 +1,8 @@
 apply plugin: 'java'
 apply plugin: 'idea'
+apply plugin: 'maven'
 
-project.version = "1.0.20-SNAPSHOT"
+project.version = "1.0.21-SNAPSHOT"
 project.group = 'com.github.codingchili.chili-core'
 
 subprojects {
@@ -39,6 +40,7 @@ subprojects {
     }
 
     repositories {
+        mavenLocal()
         maven { url 'http://repo.maven.apache.org/maven2' }
     }
 

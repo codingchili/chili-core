@@ -52,10 +52,10 @@ import static com.codingchili.core.context.FutureHelper.result;
  */
 public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     private StorageContext<Value> context;
-    private Logger logger;
     private TransportClient client;
+    private Logger logger;
 
-    public ElasticMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) throws IOException {
+    public ElasticMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
         this.context = context;
         this.logger = context.logger(getClass());
         try {
@@ -65,7 +65,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                     .addTransportAddress(
                             new InetSocketTransportAddress(InetAddress.getByName(context.host()), context.port()));
 
-            client.admin().indices().create(new CreateIndexRequest(context.database())).get();
+            client.admin().indices().create(new CreateIndexRequest(context.collection())).get();
         } catch (UnknownHostException | InterruptedException | ExecutionException e) {
             logger.onError(e);
         }
