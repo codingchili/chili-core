@@ -65,6 +65,7 @@ public class LauncherIT {
 
     @Test
     public void testMetricsEnabled(TestContext test) {
+        LauncherIT.test = test;
         async = test.async();
         system().setMetrics(true);
         onStart = (vx) -> test.assertTrue(vx.isMetricsEnabled());

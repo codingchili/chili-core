@@ -15,6 +15,7 @@ import static com.codingchili.core.configuration.CoreStrings.PATH_SYSTEM;
  */
 public class SystemSettings implements Configurable {
     private VertxOptions options = null;
+    private boolean metrics = false;
     private int metricRate = 15000;
     private int services = 1;
     private int handlers = 1;
@@ -120,7 +121,7 @@ public class SystemSettings implements Configurable {
      * @return returns true if metrics are configured.
      */
     public boolean isMetrics() {
-        return options.getMetricsOptions().isEnabled();
+        return metrics;
     }
 
     /**
@@ -129,7 +130,10 @@ public class SystemSettings implements Configurable {
      * @return fluent
      */
     public SystemSettings setMetrics(boolean metrics) {
-        options.getMetricsOptions().setEnabled(metrics);
+        if (options != null) {
+            options.getMetricsOptions().setEnabled(metrics);
+        }
+        this.metrics = metrics;
         return this;
     }
 
@@ -142,7 +146,7 @@ public class SystemSettings implements Configurable {
         // mode it will set clustered = true, if creating a new instance without clustering
         // an exception will be thrown. This causes most test cases to fail.
         if (options == null) {
-            return new VertxOptions().setMetricsOptions(new MetricsOptions().setEnabled(false));
+            return new VertxOptions().setMetricsOptions(new MetricsOptions().setEnabled(isMetrics()));
         } else {
             return options;
         }
@@ -151,6 +155,7 @@ public class SystemSettings implements Configurable {
     @JsonIgnore
     public SystemSettings setOptions(VertxOptions options) {
         this.options = options;
+        this.metrics = options.getMetricsOptions().isEnabled();
         return this;
     }
 
