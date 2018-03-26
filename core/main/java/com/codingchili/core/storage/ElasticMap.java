@@ -18,7 +18,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.IndexNotFoundException;
 import org.elasticsearch.index.engine.DocumentMissingException;
@@ -63,7 +63,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                     .put("client.transport.sniff", true)
                     .build())
                     .addTransportAddress(
-                            new InetSocketTransportAddress(InetAddress.getByName(context.host()), context.port()));
+                            new TransportAddress(InetAddress.getByName(context.host()), context.port()));
 
             client.admin().indices().create(new CreateIndexRequest(context.collection())).get();
         } catch (UnknownHostException | InterruptedException | ExecutionException e) {
