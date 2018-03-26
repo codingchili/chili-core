@@ -1,23 +1,6 @@
 package com.codingchili.core.storage;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.context.SystemContext;
-import com.codingchili.core.logging.ConsoleLogger;
-import com.codingchili.core.protocol.Serializer;
-import com.codingchili.core.storage.AsyncStorage;
-import com.codingchili.core.storage.QueryBuilder;
-import com.codingchili.core.storage.SortOrder;
-import com.codingchili.core.storage.StorageLoader;
-import com.codingchili.core.storage.exception.NothingToRemoveException;
-import com.codingchili.core.storage.exception.NothingToUpdateException;
-import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
-import com.codingchili.core.storage.exception.ValueMissingException;
-import com.codingchili.core.testing.StorageObject;
-
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
+import io.vertx.core.*;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
@@ -28,6 +11,12 @@ import org.junit.runner.RunWith;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import com.codingchili.core.context.*;
+import com.codingchili.core.logging.ConsoleLogger;
+import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.storage.exception.*;
+import com.codingchili.core.testing.StorageObject;
 
 import static com.codingchili.core.configuration.CoreStrings.ID_NAME;
 import static com.codingchili.core.logging.Level.WARNING;

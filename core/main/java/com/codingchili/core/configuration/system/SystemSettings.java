@@ -1,9 +1,10 @@
 package com.codingchili.core.configuration.system;
 
-import com.codingchili.core.configuration.Configurable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.metrics.MetricsOptions;
+
+import com.codingchili.core.configuration.Configurable;
 
 import static com.codingchili.core.configuration.CoreStrings.PATH_SYSTEM;
 
@@ -13,7 +14,7 @@ import static com.codingchili.core.configuration.CoreStrings.PATH_SYSTEM;
  * Contains settings for the core system.
  */
 public class SystemSettings implements Configurable {
-    private VertxOptions options = createVertxOptions();
+    private VertxOptions options = null;
     private int metricRate = 15000;
     private int services = 1;
     private int handlers = 1;
@@ -26,10 +27,6 @@ public class SystemSettings implements Configurable {
     private boolean consoleLogging = true;
     private int workerPoolSize = 16;
     private int clusterTimeout = 3000;
-
-    private VertxOptions createVertxOptions() {
-        return new VertxOptions().setMetricsOptions(new MetricsOptions().setEnabled(false));
-    }
 
     @Override
     public String getPath() {
@@ -141,7 +138,14 @@ public class SystemSettings implements Configurable {
      */
     @JsonIgnore
     public VertxOptions getOptions() {
-        return options;
+        // only reuse options if explicitly configured - when vertx is started in clustered
+        // mode it will set clustered = true, if creating a new instance without clustering
+        // an exception will be thrown. This causes most test cases to fail.
+        if (options == null) {
+            return new VertxOptions().setMetricsOptions(new MetricsOptions().setEnabled(false));
+        } else {
+            return options;
+        }
     }
 
     @JsonIgnore
