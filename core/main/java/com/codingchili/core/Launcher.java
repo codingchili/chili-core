@@ -75,7 +75,9 @@ public class Launcher implements CoreService {
     }
 
     void exit() {
-        // empty for now: used in tests.
+        // no vertx context is initialized yet - but some thread pools
+        // might need to be shut down after running the command.
+        ShutdownListener.publish();
     }
 
     private void clusterIfEnabled(LaunchContext launcher) {
@@ -155,7 +157,7 @@ public class Launcher implements CoreService {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             logger.log(LAUNCHER_SHUTDOWN_STARTED, Level.ERROR);
             try {
-                ShutdownListener.publish(core);
+                ShutdownListener.publish();
                 Thread.sleep(system().getShutdownHookTimeout());
                 logger.log(LAUNCHER_SHUTDOWN_COMPLETED, Level.ERROR);
             } catch (InterruptedException e) {

@@ -11,6 +11,7 @@ public class ShutdownListener {
 
     /**
      * Adds a shutdown listener that is called when the application context is closed.
+     *
      * @param runnable listener.
      */
     public static void subscribe(Runnable runnable) {
@@ -18,9 +19,9 @@ public class ShutdownListener {
     }
 
     /**
-     * @param core the context that was closed.
+     * Emits a shutdown event to all subscribers.
      */
-    public static void publish(CoreContext core) {
+    public static void publish() {
         listeners.forEach(Runnable::run);
         listeners.clear();
     }

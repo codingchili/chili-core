@@ -271,7 +271,7 @@ public class SystemContext implements CoreContext {
         initialized.set(false);
         vertx.close((close) -> {
             StartupListener.publish(null);
-            ShutdownListener.publish(this);
+            ShutdownListener.publish();
             handler.handle(Future.succeededFuture());
         });
     }
