@@ -67,19 +67,19 @@ public class ClusterListenerTest {
     }
 
     @Test
-    public void deployHandlerTest(TestContext test) throws CoreException {
+    public void deployHandlerTest(TestContext test) {
         Async async = test.async();
         context.bus().consumer(REPLY_ADDRESS, event -> async.complete());
         handler.handle(new EmptyRequest());
     }
 
     @Test
-    public void handlerOnStartCalled(TestContext test) throws CoreException {
+    public void handlerOnStartCalled(TestContext test) {
         test.assertTrue(handler.startCalled);
     }
 
     @Test
-    public void handlerOnStopCalled(TestContext test) throws CoreException {
+    public void handlerOnStopCalled(TestContext test) {
         handler.setStopHandler(test.async(system().getListeners()));
         context.stop(deployment);
     }

@@ -279,7 +279,7 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
                 if (isOrdered) {
                     String orderBy = getOrderByAttribute();
                     paging = new PagingPredicate<>(predicate, (Serializable & Comparator<Map.Entry<String, Value>>) (first, second) -> {
-                        return first.getValue().compareToAttribute(second.getValue(), orderBy);
+                        return first.getValue().compareToAttribute(second.getValue(), orderBy) * getSortDirection();
                     }, pageSize);
                 } else {
                     paging = new PagingPredicate<>(predicate, pageSize);
