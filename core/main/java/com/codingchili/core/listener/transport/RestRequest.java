@@ -17,15 +17,15 @@ import com.codingchili.core.protocol.*;
  * <p>
  * HTTP/REST request object.
  */
-class RestRequest implements Request {
+public class RestRequest implements Request {
     private HttpServerRequest request;
     private JsonObject data = new JsonObject();
     private ListenerSettings settings;
     private int size;
 
-    RestRequest(RoutingContext context, ListenerSettings settings, HttpServerRequest request) {
+    public RestRequest(RoutingContext context, ListenerSettings settings) {
         this.size = context.getBody().length();
-        this.request = request;
+        this.request = context.request();
         this.settings = settings;
 
         parseData(context);

@@ -13,14 +13,14 @@ import com.codingchili.core.protocol.Response;
  * <p>
  * UDP request object.
  */
-class UdpRequest implements Request {
+public class UdpRequest implements Request {
     private int size;
     private DatagramPacket packet;
     private CoreContext context;
     private ListenerSettings settings;
     private JsonObject data;
 
-    UdpRequest(CoreContext context, ListenerSettings settings, DatagramPacket packet) {
+    public UdpRequest(CoreContext context, ListenerSettings settings, DatagramPacket packet) {
         this.size = packet.data().length();
         this.context = context;
         this.settings = settings;

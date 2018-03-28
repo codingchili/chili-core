@@ -95,7 +95,7 @@ public class RestListener implements CoreListener {
     }
 
     private void packet(RoutingContext context) {
-        processor.submit(() -> new RestRequest(context, settings.get(), context.request()));
+        processor.submit(() -> new RestRequest(context, settings.get()));
     }
 
     @Override

@@ -10,13 +10,13 @@ import com.codingchili.core.listener.*;
  * <p>
  * TCP request implementation.
  */
-class TcpRequest implements Request {
+public class TcpRequest implements Request {
     private Connection connection;
     private ListenerSettings settings;
     private JsonObject data;
     private int size;
 
-    TcpRequest(Connection connection, Buffer buffer, ListenerSettings settings) {
+    public TcpRequest(Connection connection, Buffer buffer, ListenerSettings settings) {
         this.size = buffer.length();
         this.connection = connection;
         this.settings = settings;
