@@ -1,13 +1,9 @@
 package com.codingchili.core.configuration;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Optional;
+import java.net.*;
+import java.util.*;
+
+import com.codingchili.core.context.CoreRuntimeException;
 
 /**
  * @author Robin Duda
@@ -24,6 +20,19 @@ public class Environment {
             return Optional.of(InetAddress.getLocalHost().getHostName());
         } catch (UnknownHostException e) {
             return Optional.empty();
+        }
+    }
+
+    /**
+     * @return an IP address of this host. Which address that is returned is
+     * not deterministic in case of multiple network interfaces. It should however
+     * not return the loopback address.
+     */
+    public static String address() {
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            throw new CoreRuntimeException(e.getMessage());
         }
     }
 

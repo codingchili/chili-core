@@ -5,6 +5,7 @@ import io.vertx.core.VertxOptions;
 import io.vertx.core.metrics.MetricsOptions;
 
 import com.codingchili.core.configuration.Configurable;
+import com.codingchili.core.configuration.Environment;
 
 import static com.codingchili.core.configuration.CoreStrings.PATH_SYSTEM;
 
@@ -146,7 +147,9 @@ public class SystemSettings implements Configurable {
         // mode it will set clustered = true, if creating a new instance without clustering
         // an exception will be thrown. This causes most test cases to fail.
         if (options == null) {
-            return new VertxOptions().setMetricsOptions(new MetricsOptions().setEnabled(isMetrics()));
+            return new VertxOptions()
+                    .setMetricsOptions(new MetricsOptions().setEnabled(isMetrics()))
+                    .setClusterHost(Environment.address());
         } else {
             return options;
         }
