@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import java.util.ArrayList;
 
 import static com.codingchili.core.configuration.CoreStrings.HELP;
+import static com.codingchili.core.context.CommandResult.SHUTDOWN;
 
 /**
  * @author Robin Duda
@@ -57,7 +58,7 @@ public class LauncherCommandExecutorTest {
     }
 
     private Command getHiddenCommand() {
-        return new BaseCommand((executor) -> true, HIDDEN, HIDDEN).setVisible(false);
+        return new BaseCommand((executor) -> SHUTDOWN, HIDDEN, HIDDEN).setVisible(false);
     }
 
     @Test

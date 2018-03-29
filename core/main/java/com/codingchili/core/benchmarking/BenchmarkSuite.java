@@ -1,8 +1,6 @@
 package com.codingchili.core.benchmarking;
 
-import com.codingchili.core.context.CommandExecutor;
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.SystemContext;
+import com.codingchili.core.context.*;
 import com.codingchili.core.storage.*;
 import io.vertx.core.Future;
 
@@ -27,7 +25,7 @@ public class BenchmarkSuite {
      * @param future   callback on completion
      * @param executor executor to invoke this as a command.
      */
-    public Void execute(Future<Boolean> future, CommandExecutor executor) {
+    public Void execute(Future<CommandResult> future, CommandExecutor executor) {
         executor.getProperty(PARAM_ITERATIONS).ifPresent(iterations ->
                 this.iterations = Integer.parseInt(iterations));
 
@@ -44,7 +42,7 @@ public class BenchmarkSuite {
         return null;
     }
 
-    private void createReport(Future<Boolean> future, List<BenchmarkGroup> result, CommandExecutor executor) {
+    private void createReport(Future<CommandResult> future, List<BenchmarkGroup> result, CommandExecutor executor) {
         Optional<String> template = executor.getProperty(PARAM_TEMPLATE);
         BenchmarkReport report;
 
@@ -55,7 +53,7 @@ public class BenchmarkSuite {
         }
         template.ifPresent(report::template);
         report.display();
-        future.complete(true);
+        future.complete(CommandResult.SHUTDOWN);
     }
 
     /**

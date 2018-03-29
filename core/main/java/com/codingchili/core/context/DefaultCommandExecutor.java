@@ -4,7 +4,6 @@ import com.codingchili.core.configuration.system.LauncherSettings;
 import com.codingchili.core.context.exception.CommandAlreadyExistsException;
 import com.codingchili.core.context.exception.NoSuchCommandException;
 import com.codingchili.core.files.Configurations;
-import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
 import io.vertx.core.Future;
 
@@ -44,12 +43,12 @@ public class DefaultCommandExecutor implements CommandExecutor {
     }
 
     @Override
-    public CommandExecutor execute(Future<Boolean> future, String... commandLine) {
+    public CommandExecutor execute(Future<CommandResult> future, String... commandLine) {
         parseCommandLine(commandLine);
         Optional<String> command = getCommand();
 
         if (command.isPresent() && commands.containsKey(command.get())) {
-            Future<Boolean> execution = Future.future();
+            Future<CommandResult> execution = Future.future();
             commands.get(command.get()).execute(execution, this);
             execution.setHandler(future);
         } else {
@@ -59,8 +58,8 @@ public class DefaultCommandExecutor implements CommandExecutor {
     }
 
     @Override
-    public Boolean execute(String... command) {
-        Future<Boolean> future = Future.future();
+    public CommandResult execute(String... command) {
+        Future<CommandResult> future = Future.future();
         execute(future, command);
 
         if (future.failed()) {
@@ -134,13 +133,13 @@ public class DefaultCommandExecutor implements CommandExecutor {
     }
 
     @Override
-    public CommandExecutor add(BiFunction<Future<Boolean>, CommandExecutor, Void> executor, String name, String
+    public CommandExecutor add(BiFunction<Future<CommandResult>, CommandExecutor, Void> executor, String name, String
             description) {
         return add(new BaseCommand(executor, name, description));
     }
 
     @Override
-    public CommandExecutor add(Function<CommandExecutor, Boolean> executor, String name, String description) {
+    public CommandExecutor add(Function<CommandExecutor, CommandResult> executor, String name, String description) {
         return add(new BaseCommand(executor, name, description));
     }
 

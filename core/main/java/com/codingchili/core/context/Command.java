@@ -25,7 +25,7 @@ public interface Command {
      * @param future   callback: complete with true to abort startup.
      * @param executor the executor executing the command, can be used to get properties.
      */
-    void execute(Future<Boolean> future, CommandExecutor executor);
+    void execute(Future<CommandResult> future, CommandExecutor executor);
 
     /**
      * @return the command description.

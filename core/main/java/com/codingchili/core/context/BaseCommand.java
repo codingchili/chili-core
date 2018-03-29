@@ -3,7 +3,6 @@ package com.codingchili.core.context;
 import io.vertx.core.Future;
 
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -12,7 +11,7 @@ import java.util.function.Function;
  * A basic
  */
 public class BaseCommand implements Command {
-    private BiFunction<Future<Boolean>, CommandExecutor, Void> command;
+    private BiFunction<Future<CommandResult>, CommandExecutor, Void> command;
     private boolean visible = true;
     private String name;
     private String description;
@@ -24,7 +23,7 @@ public class BaseCommand implements Command {
      * @param name        the handler of the command
      * @param description the command description
      */
-    public BaseCommand(BiFunction<Future<Boolean>, CommandExecutor, Void> consumer, String name, String description) {
+    public BaseCommand(BiFunction<Future<CommandResult>, CommandExecutor, Void> consumer, String name, String description) {
         this.command = consumer;
         this.name = name;
         this.description = description;
@@ -37,7 +36,7 @@ public class BaseCommand implements Command {
      * @param name        the handler of the command
      * @param description the command description
      */
-    public BaseCommand(Function<CommandExecutor, Boolean> runnable, String name, String description) {
+    public BaseCommand(Function<CommandExecutor, CommandResult> runnable, String name, String description) {
         this((future, executor) -> {
             future.complete(runnable.apply(executor));
             return null;
@@ -55,7 +54,7 @@ public class BaseCommand implements Command {
     }
 
     @Override
-    public void execute(Future<Boolean> future, CommandExecutor executor) {
+    public void execute(Future<CommandResult> future, CommandExecutor executor) {
         command.apply(future, executor);
     }
 

@@ -1,18 +1,17 @@
 package com.codingchili.core;
 
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.context.*;
-import com.codingchili.core.files.Configurations;
-import com.codingchili.core.listener.CoreHandler;
-import com.codingchili.core.listener.CoreListener;
-import com.codingchili.core.listener.CoreService;
-import com.codingchili.core.logging.ConsoleLogger;
-import com.codingchili.core.logging.Level;
 import io.vertx.core.Future;
 import io.vertx.core.Verticle;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.context.*;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.listener.*;
+import com.codingchili.core.logging.ConsoleLogger;
+import com.codingchili.core.logging.Level;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.files.Configurations.system;
@@ -33,23 +32,33 @@ public class Launcher implements CoreService {
      * @param context the launcher context to use.
      */
     public Launcher(LaunchContext context) {
-        Future<Boolean> future = Future.future();
+        Future<CommandResult> future = Future.future();
 
         logger.log(CoreStrings.getStartupText(), Level.STARTUP);
 
         context.getExecutor().execute(future, context.args());
         future.setHandler(done -> {
+            CommandResult result = done.result();
             try {
-                // the command was executed and returned false = no abort.
-                if (done.failed() || !done.result()) {
-                    nodes = context.block(context.args());
-                    nodes = new ArrayList<>(nodes);
-                    clusterIfEnabled(context);
+                if (done.succeeded()) {
+                    if (CommandResult.CONTINUE.equals(result)) {
+                        nodes = context.block(context.args());
+                        nodes = new ArrayList<>(nodes);
+                        clusterIfEnabled(context);
+                    }
+                    if (CommandResult.SHUTDOWN.equals(result)) {
+                        exit();
+                    }
                 } else {
-                    exit();
+                    if (done.cause() != null) {
+                        throw done.cause();
+                    } else {
+                        throw new CoreRuntimeException("Unknown cause: ");
+                    }
                 }
+                // else: the future succeeded with "true" - no action.
             } catch (Throwable e) {
-                logger.log(e.getMessage(), Level.ERROR);
+                logger.log(throwableToString(e), Level.ERROR);
                 logger.log(getCommandError(context.getCommand()), Level.INFO);
                 exit();
             }

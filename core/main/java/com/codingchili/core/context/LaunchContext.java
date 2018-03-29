@@ -101,7 +101,7 @@ public class LaunchContext {
     }
 
     public List<String> block(String[] args) throws CoreException {
-        return block((args.length == 0) ? findBlockByEnvironment() : args[0]);
+        return block((args.length < 2) ? findBlockByEnvironment() : args[1]);
     }
 
     /**

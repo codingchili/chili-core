@@ -103,6 +103,7 @@ public abstract class CoreStrings {
     public static final String PARAM_ITERATIONS = getCommand("iterations");
     public static final String PARAM_HTML = getCommand("html");
     public static final String PARAM_TEMPLATE = getCommand("template");
+    public static final String DEPLOY = getCommand("deploy");
 
     // keys used in json objects.
     public static final String ID_TOKEN = "token";
@@ -465,6 +466,10 @@ public abstract class CoreStrings {
 
     public static String getReconfigureDescription() {
         return "resets system configuration files.";
+    }
+
+    public static String getDeployDescription() {
+        return "deploys the services in the given block. example: --deploy blockName";
     }
 
     public static String getDescriptionMissing() {

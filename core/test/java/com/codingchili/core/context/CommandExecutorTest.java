@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import java.util.Optional;
 
 import static com.codingchili.core.configuration.CoreStrings.HELP;
+import static com.codingchili.core.context.CommandResult.SHUTDOWN;
 import static org.junit.Assert.fail;
 
 /**
@@ -35,7 +36,11 @@ public class CommandExecutorTest {
 
     @Before
     public void setUp() {
-        executor.add((executor) -> executed = true, HELP, "");
+        executor.add((executor) -> {
+            executed = true;
+            return SHUTDOWN;
+        }, HELP, "");
+
         executor.add(((future, executor1) -> {
             future.complete();
             return null;
@@ -53,8 +58,8 @@ public class CommandExecutorTest {
         executor.execute(getCompleter(test.async()), HELP_ASYNC);
     }
 
-    private Future<Boolean> getCompleter(Async async) {
-        return Future.<Boolean>future().setHandler(done -> async.complete());
+    private Future<CommandResult> getCompleter(Async async) {
+        return Future.<CommandResult>future().setHandler(done -> async.complete());
     }
 
     @Test
@@ -68,7 +73,7 @@ public class CommandExecutorTest {
 
     @Test
     public void testErrorWhenCommandMissingAsync(TestContext test) {
-        Future<Boolean> future = Future.future();
+        Future<CommandResult> future = Future.future();
         Async async = test.async();
 
         future.setHandler(done -> {
@@ -129,14 +134,14 @@ public class CommandExecutorTest {
             test.assertTrue(executor.getProperty(PROPERTY).isPresent());
             test.assertEquals(VALUE, executor.getProperty(PROPERTY).get());
             async.complete();
-            return true;
+            return SHUTDOWN;
         }, TEST_COMMAND, "").execute(TEST_COMMANDLINE_WITH_PARAM.split(" "));
     }
 
     @Test
     public void testThrowsErrorIfAlreadyExists(TestContext test) {
         try {
-            executor.add((executor) -> true, HELP, "");
+            executor.add((executor) -> SHUTDOWN, HELP, "");
             test.fail("Test did not fail when adding an existing command.");
         } catch (CommandAlreadyExistsException ignored) {
         }
@@ -156,7 +161,7 @@ public class CommandExecutorTest {
         Async async = test.async();
         executor.add((executor) -> {
             async.complete();
-            return true;
+            return SHUTDOWN;
         }, COMMAND, "");
         executor.execute(COMMAND);
     }

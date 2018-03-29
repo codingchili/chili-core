@@ -38,6 +38,7 @@ public class LauncherCommandExecutor extends DefaultCommandExecutor {
         AuthenticationGenerator generator = new AuthenticationGenerator(logger);
         BenchmarkSuite suite = new BenchmarkSuite();
 
+        super.add((executor) -> CommandResult.CONTINUE, DEPLOY, getDeployDescription());
         add(Configurations::reset, RECONFIGURE, getReconfigureDescription());
         add(generator::preshare, GENERATE_PRESHARED, getGeneratePresharedDescription());
         add(generator::secrets, GENERATE_SECRETS, getGenerateSecretsDescription());
@@ -51,7 +52,7 @@ public class LauncherCommandExecutor extends DefaultCommandExecutor {
     private void add(Runnable runnable, String name, String description) {
         super.add((executor) -> {
             runnable.run();
-            return true; // abort startup.
+            return CommandResult.SHUTDOWN;
         }, name, description);
     }
 

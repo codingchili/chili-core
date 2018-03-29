@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'maven'
 
-project.version = "1.0.24-SNAPSHOT"
+project.version = "1.0.26-SNAPSHOT"
 project.group = 'com.github.codingchili.chili-core'
 
 subprojects {

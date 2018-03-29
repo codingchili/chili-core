@@ -19,7 +19,7 @@ public interface CommandExecutor {
      * @param commandLine the commands/properties to execute.
      * @return fluent
      */
-    CommandExecutor execute(Future<Boolean> future, String... commandLine);
+    CommandExecutor execute(Future<CommandResult> future, String... commandLine);
 
     /**
      * Executes the given command synchronously.
@@ -27,7 +27,7 @@ public interface CommandExecutor {
      * @param command the command to execute
      * @return true if startup is to be aborted.
      */
-    Boolean execute(String... command);
+    CommandResult execute(String... command);
 
     /**
      * Get the first command passed to the executor.
@@ -77,7 +77,7 @@ public interface CommandExecutor {
      * @param description the description of the command
      * @return fluent
      */
-    CommandExecutor add(BiFunction<Future<Boolean>, CommandExecutor, Void> executor, String name, String
+    CommandExecutor add(BiFunction<Future<CommandResult>, CommandExecutor, Void> executor, String name, String
             description);
 
     /**
@@ -88,7 +88,7 @@ public interface CommandExecutor {
      * @param description the description of the command
      * @return fluent
      */
-    CommandExecutor add(Function<CommandExecutor, Boolean> executor, String name, String description);
+    CommandExecutor add(Function<CommandExecutor, CommandResult> executor, String name, String description);
 
     /**
      * Lists all commands added to the executor.

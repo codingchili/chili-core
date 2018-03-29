@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static com.codingchili.core.configuration.CoreStrings.DEPLOY;
 import static com.codingchili.core.files.Configurations.system;
 
 /**
@@ -125,7 +126,7 @@ public class LauncherIT {
     }
 
     public LaunchContext getLaunchContextFor(String node) {
-        return new LaunchContext() {
+        return new LaunchContext(DEPLOY) {
             @Override
             protected List<String> block(String block) {
                 List<String> list = new ArrayList<>();
