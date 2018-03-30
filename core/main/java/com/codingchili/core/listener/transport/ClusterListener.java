@@ -1,15 +1,14 @@
 package com.codingchili.core.listener.transport;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.DeploymentAware;
-import com.codingchili.core.files.Configurations;
-import com.codingchili.core.listener.CoreHandler;
-import com.codingchili.core.listener.CoreListener;
-import com.codingchili.core.listener.ListenerSettings;
-import com.codingchili.core.listener.RequestProcessor;
 import io.vertx.core.Future;
 
 import java.util.function.Supplier;
+import java.util.stream.Stream;
+
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.DeploymentAware;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.listener.*;
 
 import static com.codingchili.core.configuration.CoreStrings.LOG_AT;
 
@@ -43,7 +42,12 @@ public class ClusterListener implements CoreListener, DeploymentAware {
     @Override
     public void start(Future<Void> start) {
         RequestProcessor processor = new RequestProcessor(core, handler);
-        core.bus().consumer(handler.address()).handler(message -> processor.submit(() -> new ClusterRequest(message)));
+        Stream.of(handler.address().split(","))
+                .forEach(address -> {
+                    core.bus().consumer(handler.address())
+                            .handler(message -> processor.submit(
+                                    () -> new ClusterRequest(message)));
+                });
         handler.start(start);
     }
 

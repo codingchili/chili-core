@@ -164,7 +164,7 @@ public class MultiHandler implements CoreHandler {
 
     @Override
     public String toString() {
-        return map.values().stream().map(handler -> handler.getClass().getSimpleName())
+        return map.values().stream().map(CoreHandler::address)
                 .collect(Collectors.joining(","));
     }
 }
