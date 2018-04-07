@@ -97,7 +97,9 @@ The core uses some great software, such as
 Applications currently using chili-core
 
 * [flashcards](https://flashcardsalligator.com/) - Progressive web app for studying  with flashcards.
-* [etethereum-ingest](https://github.com/codingchili/ethereum-ingest) - Ethereum block/transaction import utility.
+* [ethereum-ingest](https://github.com/codingchili/ethereum-ingest) - Ethereum block/transaction import utility.
+* [zapperfly-asm](https://github.com/codingchili/zapperfly-asm) - Extra simple clustered build servers.
+* [chili-game-ext](https://github.com/codingchili/chili-game-ext) - 2D MMORPG game in development.
 
 ## Contributing
 Issues and PR's are welcome with :blue_heart:.
