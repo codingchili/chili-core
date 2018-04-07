@@ -14,8 +14,7 @@ import com.codingchili.core.protocol.exception.HandlerMissingException;
 
 /**
  * @author Robin Duda
- * <p>
- * <p>
+ *
  * The MultiHandler is capable of routing a request into any
  * of the given handlers using the #{@link Request#target()}. The requests
  * target should match the address of the handler. If no handlers matching
@@ -29,7 +28,7 @@ public class MultiHandler implements CoreHandler {
     private String address;
 
     /**
-     * @param handlers @see #MultiHandler(CoreHandler...)
+     * @param handlers same as @see #MultiHandler(CoreHandler...)
      */
     public MultiHandler(List<CoreHandler> handlers) {
         handlers.forEach(this::add);

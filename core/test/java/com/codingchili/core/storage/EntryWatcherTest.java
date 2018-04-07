@@ -69,7 +69,8 @@ public class EntryWatcherTest {
     }
 
     private void createStorage(Handler<AsyncResult<AsyncStorage<StorageObject>>> future) {
-        new StorageLoader<StorageObject>().jsonmap(context)
+        new StorageLoader<StorageObject>(context)
+                .withPlugin(JsonMap.class)
                 .withValue(StorageObject.class)
                 .withDB(DB, COLLECTION)
                 .build(result -> {

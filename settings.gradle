@@ -1,11 +1,4 @@
 rootProject.name = 'chili-core'
-include 'core',
-        'common',
-        'services:authentication',
-        'services:realm',
-        'services:realmregistry',
-        'services:social',
-        'services:patching',
-        'services:router',
-        'services:logging',
-        'services:website'
+include 'core'
+include 'storage:elastic'
+

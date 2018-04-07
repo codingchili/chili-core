@@ -1,6 +1,0 @@
----
-name: "slow"
-description: "Movement speed slowed."
-modifier:
-  jexl: |
-    //stats[attribute.movement] -= target.stats[attribute.movement] * 0.25;

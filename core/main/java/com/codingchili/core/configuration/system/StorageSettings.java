@@ -1,7 +1,6 @@
 package com.codingchili.core.configuration.system;
 
 import com.codingchili.core.configuration.Configurable;
-import com.codingchili.core.storage.ElasticMap;
 import com.codingchili.core.storage.MongoDBMap;
 
 import java.util.HashMap;
@@ -23,8 +22,6 @@ public class StorageSettings implements Configurable{
     public StorageSettings() {
         storage.put(MongoDBMap.class.getName(),
                 new RemoteStorage(LOCALHOST, 27017, CHILI));
-        storage.put(ElasticMap.class.getName(),
-                new RemoteStorage(LOCALHOST, 9300, CHILI));
     }
 
     @Override
@@ -67,7 +64,12 @@ public class StorageSettings implements Configurable{
      * @return fluent
      */
     public StorageSettings add(RemoteStorage config, Class plugin) {
-        storage.put(plugin.getName(), config);
+        if (!storage.containsKey(plugin.getName())) {
+            storage.put(plugin.getName(), config);
+        } else {
+            throw new UnsupportedOperationException(plugin.getName() + " is already configured. " +
+                    "Use getSettingsForPlugin to modify.");
+        }
         return this;
     }
 

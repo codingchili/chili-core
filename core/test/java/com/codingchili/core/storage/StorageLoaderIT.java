@@ -81,12 +81,6 @@ public class StorageLoaderIT {
         loadStoragePlugin(test, HazelMap.class);
     }
 
-    @Ignore("Requires an available ElasticSearch database.")
-    @Test
-    public void testLoadElasticMap(TestContext test) {
-        loadStoragePlugin(test, ElasticMap.class);
-    }
-
     @Ignore("Requires an available MongoDB database.")
     @Test
     public void testLoadMongoMap(TestContext test) {

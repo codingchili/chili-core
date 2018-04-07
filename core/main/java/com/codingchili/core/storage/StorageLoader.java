@@ -164,42 +164,4 @@ public class StorageLoader<Value extends Storable> {
     private void checkIsSet(Object object, String type) {
         Objects.requireNonNull(object, CoreStrings.getStorageLoaderMissingArgument(type));
     }
-
-    public StorageLoader<Value> mongodb(CoreContext context) {
-        return makeWith(context, MongoDBMap.class);
-    }
-
-    public StorageLoader<Value> elasticsearch(CoreContext context) {
-        return makeWith(context, ElasticMap.class);
-    }
-
-    public StorageLoader<Value> hazelcast(CoreContext context) {
-        return makeWith(context, HazelMap.class);
-    }
-
-    public StorageLoader<Value> memIndex(CoreContext context) {
-        return makeWith(context, IndexedMapVolatile.class);
-    }
-
-    public StorageLoader<Value> diskIndex(CoreContext context) {
-        return makeWith(context, IndexedMapPersisted.class);
-    }
-
-    public StorageLoader<Value> jsonmap(CoreContext context) {
-        return makeWith(context, JsonMap.class);
-    }
-
-    public StorageLoader<Value> privatemap(CoreContext context) {
-        return makeWith(context, PrivateMap.class);
-    }
-
-    public StorageLoader<Value> sharedmap(CoreContext context) {
-        return makeWith(context, SharedMap.class);
-    }
-
-    private StorageLoader<Value> makeWith(CoreContext context, Class<? extends AsyncStorage> plugin) {
-        this.plugin = plugin;
-        this.context = context;
-        return this;
-    }
 }

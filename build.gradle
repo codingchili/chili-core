@@ -41,7 +41,7 @@ subprojects {
 
     repositories {
         mavenLocal()
-        maven { url 'http://repo.maven.apache.org/maven2' }
+        mavenCentral()
     }
 
     test {
@@ -49,36 +49,6 @@ subprojects {
             exceptionFormat "full"
         }
         reports.html.enabled = false
-    }
-}
-
-task archivePrototype(type: Zip, dependsOn: subprojects.jar) {
-    baseName = 'prototype'
-    from fileTree('prototype')
-
-    from (project('core').jar) {
-        into 'lib'
-    }
-
-    from (project('common').jar) {
-        into 'lib'
-    }
-
-    from (project('services').subprojects.jar) {
-        into 'lib'
-    }
-}
-
-task prototype(type: JavaExec, dependsOn: subprojects.classes) {
-    workingDir = 'prototype'
-    main = 'com.codingchili.core.Launcher'
-
-    if (project.hasProperty('exec')) {
-        args += exec
-    }
-
-    subprojects.each {
-        classpath += it.sourceSets.main.runtimeClasspath
     }
 }
 
