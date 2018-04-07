@@ -23,6 +23,7 @@ dependencies {
     compile 'org.elasticsearch.client:transport:6.1.1'
     compileOnly project(':core')
 
+    testCompile project(':core')
     testCompile project(':core').sourceSets.test.output
     testCompile 'io.vertx:vertx-unit:3.5.1'
     testCompile 'junit:junit:4.12'
