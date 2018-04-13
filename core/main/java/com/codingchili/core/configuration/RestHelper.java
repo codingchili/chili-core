@@ -49,7 +49,8 @@ public abstract class RestHelper {
                 .putHeader("Access-Control-Allow-Origin", "*")
                 .putHeader("Access-Control-Allow-Methods", "POST, GET")
                 .putHeader("Access-Control-Allow-Headers",
-                        "Content-Type, Access-Control-Allow-Headers, files, X-Requested-With");
+                        "Content-Type, Access-Control-Allow-Headers, files, X-Requested-With")
+                .putHeader("Access-Control-Max-Age", "1728000");
     }
 
     /**
