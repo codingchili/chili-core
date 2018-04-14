@@ -7,10 +7,6 @@ To build chili-core clone this repository with **git**,
 ```
 git clone https://github.com/codingchili/chili-core.git
 ```
-Start the prototype, uses the classpath of all subprojects and **prototype/** as the working directory.
-```
-gradlew prototype
-```
 
 Builds project jars and run tests
 ```
@@ -22,19 +18,9 @@ Note: when targeting java 9 the following hacks are needed for Netty/Vert.x
 --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/sun.net.dns=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
 ```
 
-Build a standalone prototype zip
-```
-gradlew archivePrototype
-```
-
-To run the prototype from within an IDE, add the 'prototype' gradle task as a run configuration. It is then possible to start and debug from within the IDE.
-
-For information on how to setup the prototype installation look at the README.md in **prototype/**.
 
 ## Background
 The project consists of two parts. The core, which is a framework built on top of the vertx toolkit. The purpose of wrapping vertx in a framework is to increase productivity. This is done by providing common functionality that can be used to build microservices on. With all the logic packed into core, it is possible to create distributed microservices capable of handling authentication, request routing and storage in 66 lines of code. If you are interested in vertx, I recommend using it directly instead. This framework is intended to improve productivity in a very specific use case. In order to achieve this it is much more invasive than the vertx toolkit.
-
-Additionally, on top of the services developed using the core, an online game will be implemented.
 
 ###### Summary
 * Built on the high-performance reactive toolkit vertx
@@ -81,7 +67,7 @@ The configuration structure
 - Configuration of services typically reside in **conf/services/**
 - The configuration for the prototype is a good starting point.
 
-All configuration files are loaded by their respective service with support for reloading changes at runtime. Minimally the framework configuration in **conf/system/** must exist as it is required by the launcher. 
+All configuration files are loaded by their respective service with support for reloading changes at runtime.
 
 ## Makes use of
 The core uses some great software, such as
