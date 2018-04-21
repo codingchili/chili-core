@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.listener.*;
 import com.codingchili.core.protocol.Response;
-import com.codingchili.core.protocol.Serializer;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
@@ -54,7 +53,7 @@ public class TcpListener implements CoreListener {
                     socket.handler(data -> packet(connection, data));
 
                     // close the connection.
-                    socket.closeHandler((v) -> connection.close());
+                    socket.closeHandler((v) -> connection.runCloseHandlers());
 
                 }).listen(settings.get().getPort(), getBindAddress(), listen -> {
             if (listen.succeeded()) {
@@ -66,10 +65,11 @@ public class TcpListener implements CoreListener {
         });
     }
 
-    public Connection connected(NetSocket socket) {
+        public Connection connected(NetSocket socket) {
         return new Connection((msg) -> {
-            socket.write(Response.convert(msg).toBuffer());
-        }, socket.writeHandlerID());
+            socket.write(Response.buffer(msg));
+        }, socket.writeHandlerID())
+                .setProperty(PROTOCOL_CONNECTION, socket.remoteAddress().host());
     }
 
     @Override

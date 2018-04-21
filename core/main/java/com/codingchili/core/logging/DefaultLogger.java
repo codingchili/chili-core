@@ -49,7 +49,11 @@ public abstract class DefaultLogger extends Handler implements Logger {
 
     @Override
     public Logger setMetadata(String key, Supplier<String> value) {
-        metadata.put(key, value);
+        if (value == null) {
+            metadata.remove(key);
+        } else {
+            metadata.put(key, value);
+        }
         return this;
     }
 
@@ -129,7 +133,7 @@ public abstract class DefaultLogger extends Handler implements Logger {
         event(LOG_HANDLER_MISSING, Level.WARNING)
                 .put(PROTOCOL_TARGET, target)
                 .put(PROTOCOL_ROUTE, route)
-                .put(LOG_MESSAGE, getHandlerMissing(target)).send();
+                .put(LOG_MESSAGE, getHandlerMissing()).send();
     }
 
     @Override

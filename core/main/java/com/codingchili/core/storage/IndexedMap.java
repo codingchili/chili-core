@@ -91,17 +91,22 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
                     try {
                         Attribute<Value, String> attribute = getAttribute(fieldName, multiValued);
                         holder.attributes.put(fieldName, attribute);
-                        holder.db.addIndex(NavigableIndex.onAttribute(attribute));
-                        holder.db.addIndex(RadixTreeIndex.onAttribute(attribute));
+                        addIndexesForAttribute(attribute);
                     } catch (Throwable e) {
                         context.logger(getClass()).onError(e);
                     } finally {
+                        // only attempt to add the index once.
                         holder.indexed.add(fieldName);
                     }
                 }
             }
         }
     }
+
+    /**
+     * @param attribute the attribute to add an index for based on implementation.
+     */
+    protected abstract void addIndexesForAttribute(Attribute<Value, String> attribute);
 
     /**
      * @param mapper a mapper that is executed on all values returned from the map.

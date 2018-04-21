@@ -3,14 +3,16 @@ package com.codingchili.core.listener.transport;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.listener.*;
+import com.codingchili.core.listener.ListenerSettings;
+import com.codingchili.core.listener.Request;
+import com.codingchili.core.protocol.Response;
 
 /**
  * @author Robin Duda
  * <p>
  * Websocket request object.
  */
-class WebsocketRequest implements Request {
+public class WebsocketRequest implements Request {
     private int size;
     private Connection connection;
     private ListenerSettings settings;
@@ -30,7 +32,7 @@ class WebsocketRequest implements Request {
 
     @Override
     public void write(Object object) {
-        connection.write(object);
+        connection.write(Response.buffer(target(), route(), object));
     }
 
     @Override

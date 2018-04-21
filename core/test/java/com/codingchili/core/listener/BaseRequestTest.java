@@ -1,6 +1,7 @@
 package com.codingchili.core.listener;
 
 import com.codingchili.core.context.CoreException;
+import com.codingchili.core.listener.transport.Connection;
 import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.protocol.exception.UnmappedException;
@@ -54,20 +55,22 @@ public class BaseRequestTest {
     }
 
     @Test
-    public void testTokenEmptyAndNotNullIfMissing(TestContext test) {
+    public void testEmptyTokenGeneratedAndDomainIsRandom(TestContext test) {
         data.remove(ID_TOKEN);
         test.assertNotNull(request.token());
         test.assertNotEquals(token, request.token());
 
-        test.assertEquals(new Token().getDomain(), request.token().getDomain());
-        test.assertEquals(new Token().getKey(), request.token().getKey());
-        test.assertEquals(new Token().getExpiry(), request.token().getExpiry());
+        test.assertNotNull(request.token().getDomain());
+        test.assertNotNull(request.token().getKey());
+
+        // even if the domain is randomized - make sure its expired.
+        test.assertEquals(0L, request.token().getExpiry());
     }
 
     @Test
-    public void testRouteIsDirRootIfUnset(TestContext test) {
+    public void testRouteIsANYIfUnset(TestContext test) {
         data.remove(PROTOCOL_ROUTE);
-        test.assertEquals(DIR_SEPARATOR, request.route());
+        test.assertEquals(ANY, request.route());
     }
 
     @Test
@@ -138,6 +141,11 @@ public class BaseRequestTest {
             if (!response.containsKey(PROTOCOL_STATUS)) {
                 response.put(PROTOCOL_STATUS, ACCEPTED);
             }
+        }
+
+        @Override
+        public Connection connection() {
+            return new Connection(this::write, "_test_ic");
         }
 
         @Override

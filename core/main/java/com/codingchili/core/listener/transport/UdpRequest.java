@@ -1,12 +1,14 @@
 package com.codingchili.core.listener.transport;
 
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.datagram.DatagramPacket;
 import io.vertx.core.json.JsonObject;
 
 import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.listener.ListenerSettings;
-import com.codingchili.core.listener.Request;
+import com.codingchili.core.listener.*;
 import com.codingchili.core.protocol.Response;
+
+import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_CONNECTION;
 
 /**
  * @author Robin Duda
@@ -14,6 +16,7 @@ import com.codingchili.core.protocol.Response;
  * UDP request object.
  */
 public class UdpRequest implements Request {
+    private Connection connection;
     private int size;
     private DatagramPacket packet;
     private CoreContext context;
@@ -29,14 +32,35 @@ public class UdpRequest implements Request {
 
     @Override
     public void write(Object message) {
+        write(message, true);
+    }
+
+    private void write(Object message, boolean reflectHeaders) {
+        Buffer buffer;
+
+        // only include the request headers when replying to a request - not on a connection.
+        if (reflectHeaders) {
+            buffer = Response.buffer(target(), route(), message);
+        } else {
+            buffer = Response.buffer(message);
+        }
         context.vertx().createDatagramSocket()
-                .send(Response.message(this, message).toBuffer(),
+                .send(buffer,
                         packet.sender().port(),
                         packet.sender().host(), sent -> {
                             if (sent.failed()) {
                                 throw new RuntimeException(sent.cause());
                             }
                         });
+    }
+
+    @Override
+    public Connection connection() {
+        if (connection == null) {
+            connection = new Connection((message) -> this.write(message, false), token().getDomain())
+                .setProperty(PROTOCOL_CONNECTION, packet.sender().host());
+        }
+        return connection;
     }
 
     @Override

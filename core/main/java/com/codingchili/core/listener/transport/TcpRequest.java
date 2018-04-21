@@ -4,6 +4,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
 import com.codingchili.core.listener.*;
+import com.codingchili.core.protocol.Response;
 
 /**
  * @author Robin Duda
@@ -30,7 +31,7 @@ public class TcpRequest implements Request {
 
     @Override
     public void write(Object object) {
-        connection.write(object);
+        connection.write(Response.buffer(target(), route(), object));
     }
 
     @Override

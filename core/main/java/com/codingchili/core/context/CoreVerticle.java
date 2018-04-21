@@ -24,7 +24,7 @@ class CoreVerticle implements Verticle, CoreDeployment {
     public CoreVerticle(CoreDeployment deployment, CoreContext core) {
         this.deployment = deployment;
         this.core = core;
-        this.logger = core.logger(deployment.getClass());
+        this.logger = core.logger(core.getClass());
     }
 
     @Override

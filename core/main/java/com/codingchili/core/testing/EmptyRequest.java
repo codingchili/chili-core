@@ -1,5 +1,6 @@
 package com.codingchili.core.testing;
 
+import com.codingchili.core.listener.transport.Connection;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.security.Token;
 import io.vertx.core.json.JsonObject;
@@ -41,6 +42,11 @@ public class EmptyRequest implements Request {
     public Token token() {
         throw new UnsupportedOperationException();
 
+    }
+
+    @Override
+    public Connection connection() {
+        return new Connection(this::write, "emptyRequest");
     }
 
     @Override

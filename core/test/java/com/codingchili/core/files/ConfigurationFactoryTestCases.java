@@ -29,7 +29,7 @@ public abstract class ConfigurationFactoryTestCases {
     private String extension;
 
     public ConfigurationFactoryTestCases(FileStore store) {
-        extension = store.getExtension().iterator().next();
+        extension = store.getExtensions().iterator().next();
     }
 
     @Rule

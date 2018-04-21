@@ -2,6 +2,7 @@ package com.codingchili.core.logging;
 
 import com.codingchili.core.listener.CoreListener;
 import com.codingchili.core.listener.CoreService;
+
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 
@@ -28,7 +29,7 @@ public interface Logger extends JsonLogger, StringLogger {
     /**
      * Creates a logging event using a provided logger level.
      *
-     * @param name the name of the event.
+     * @param name  the name of the event.
      * @param level the level.
      * @return a LogMessage with a generated event, level, timestamp and context.
      */
@@ -169,8 +170,9 @@ public interface Logger extends JsonLogger, StringLogger {
     /**
      * Sets a metadata value on the logger.
      *
-     * @param key   the values key
-     * @param value a supplier invoked when an event is created
+     * @param key   the value key
+     * @param value a supplier invoked when an event is created, if null then the given
+     *              key will be removed from the existing metadata.
      * @return fluent.
      */
     Logger setMetadata(String key, Supplier<String> value);

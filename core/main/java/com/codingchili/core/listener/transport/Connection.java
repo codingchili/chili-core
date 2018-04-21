@@ -1,7 +1,11 @@
-package com.codingchili.core.listener;
+package com.codingchili.core.listener.transport;
 
 import java.util.*;
 import java.util.function.Consumer;
+
+import com.codingchili.core.listener.Messageable;
+
+import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_CONNECTION;
 
 /**
  * @author Robin Duda
@@ -12,7 +16,7 @@ import java.util.function.Consumer;
  */
 public class Connection implements Messageable {
     private Map<String, String> properties = new HashMap<>();
-    private List<Runnable> closeHandlers = new ArrayList<>();
+    private Map<String, Runnable> closeHandlers = new HashMap<>();
     private static final String ID = "id";
     private Consumer<Object> writer;
 
@@ -40,21 +44,54 @@ public class Connection implements Messageable {
     }
 
     /**
-     * Adds a listener for the close event.
+     * A textual representation of the sending party. This is typically the IP address
+     * retrieved from the underlying connection.
      *
-     * @param closeHandler called after the connection is closed.
+     * @return the sending party represented as a string.
+     */
+    public String remote() {
+        return getProperty(PROTOCOL_CONNECTION).orElse("");
+    }
+
+    /**
+     * Creates a unnamed close handler that cannot be removed.
+     *
+     * @param runnable called after the connection is closed.
      * @return fluent.
      */
-    public Connection onClose(Runnable closeHandler) {
-        closeHandlers.add(closeHandler);
+    public Connection onCloseHandler(Runnable runnable) {
+        onCloseHandler(UUID.randomUUID().toString(), runnable);
         return this;
     }
 
     /**
-     * closes the connection and committing any pending messages.
+     * Adds a listener for the close event.
+     *
+     * @param name the name of the close handler so that it can be removed or updated.
+     * @param closeHandler called after the connection is closed.
+     * @return fluent.
      */
-    public void close() {
-        closeHandlers.forEach(Runnable::run);
+    public Connection onCloseHandler(String name, Runnable closeHandler) {
+        closeHandlers.put(name, closeHandler);
+        return this;
+    }
+
+    /**
+     * @param name the name of the close handler to remove.
+     * @return fluent.
+     */
+    public Connection removeCloseHandler(String name) {
+        closeHandlers.remove(name);
+        return this;
+    }
+
+    /**
+     * executes the close handlers registered on the connection. Does not actually
+     * close the connection itself. This method is primarily intended to be called by
+     * the listener which created the connection.
+     */
+    public void runCloseHandlers() {
+        closeHandlers.values().forEach(Runnable::run);
     }
 
     /**

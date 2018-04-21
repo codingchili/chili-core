@@ -34,7 +34,7 @@ public class JsonFileStore implements FileStore {
     }
 
     @Override
-    public List<String> getExtension() {
+    public List<String> getExtensions() {
         return Collections.singletonList(CoreStrings.EXT_JSON);
     }
 }

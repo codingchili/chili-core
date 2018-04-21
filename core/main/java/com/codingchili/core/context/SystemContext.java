@@ -27,10 +27,10 @@ import static com.codingchili.core.configuration.CoreStrings.getUnsupportedDeplo
  */
 public class SystemContext implements CoreContext {
     private static AtomicBoolean initialized = new AtomicBoolean(false);
-    protected Vertx vertx;
     private Map<String, List<String>> deployments = new HashMap<>();
     private WorkerExecutor executor;
     private RemoteLogger logger;
+    protected Vertx vertx;
 
     /**
      * Creates a new system context that shares vertx instance with the given context.
@@ -71,7 +71,7 @@ public class SystemContext implements CoreContext {
     }
 
     private void initialize() {
-        executor = vertx.createSharedWorkerExecutor("systemcontext", system().getWorkerPoolSize());
+        executor = vertx.createSharedWorkerExecutor("chili-core-blocking-pool", system().getWorkerPoolSize());
         vertx.exceptionHandler(throwable -> logger.onError(throwable));
 
         if (!initialized.get()) {

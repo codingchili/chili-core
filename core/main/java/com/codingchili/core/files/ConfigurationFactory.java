@@ -7,6 +7,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.codingchili.core.configuration.CoreStrings;
@@ -29,7 +30,19 @@ public class ConfigurationFactory {
      * @param store the new implementation to add.
      */
     public static void add(FileStore store) {
-        store.getExtension().forEach(ext -> implementations.put(ext, store));
+        store.getExtensions().forEach(ext -> implementations.put(ext, store));
+    }
+
+    /**
+     * @return a set of all supported file extensions. The file
+     * extension should include the dot if appropriate, for example .yaml.
+     */
+    public static Set<String> supported() {
+        Set<String> supported = new HashSet<>();
+        implementations.values().forEach(implementation -> {
+            supported.addAll(implementation.getExtensions());
+        });
+        return supported;
     }
 
     /**
@@ -38,15 +51,13 @@ public class ConfigurationFactory {
      * exception if none is registered.
      */
     public static FileStore get(String path) {
-        int index = path.lastIndexOf(".");
+        Optional<String> extension = extension(path);
 
-        if (index > 0) {
-            String ext = path.substring(index, path.length());
-
-            if (implementations.containsKey(ext)) {
-                return implementations.get(ext);
+        if (extension.isPresent()) {
+            if (implementations.containsKey(extension.get())) {
+                return implementations.get(extension.get());
             } else {
-                throw new NoFileStoreRegisteredException(path, ext);
+                throw new NoFileStoreRegisteredException(path, extension.get());
             }
         } else {
             throw new NoFileStoreRegisteredException(path, "<missing>");
@@ -56,16 +67,33 @@ public class ConfigurationFactory {
     /**
      * Reads a JsonObject from a specified application-relative path.
      *
-     * @param path the path from where to load the json object.
+     * @param path the path from where to load the json object. If the file does not exist
+     *             or if it does not contain an extension - all supported extensions will
+     *             be attempted.
      * @return the loaded json object.
      */
     public static JsonObject readObject(String path) {
+        AtomicReference<String> detectedExtension = new AtomicReference<>("");
         Optional<Buffer> buffer = new Resource(path).read();
-        if (buffer.isPresent()) {
-            return get(path).readObject(buffer.get());
-        } else {
-            throw new NoSuchResourceException(path);
+
+        // not found - attempt all supported extensions.
+        if (!buffer.isPresent()) {
+            // but only if the path does not include an extension.
+            if (!extension(path).isPresent()) {
+                buffer = supported().stream()
+                        .map(extension -> {
+                            detectedExtension.set(extension);
+                            return new Resource(path + extension).read();
+                        })
+                        .filter(Optional::isPresent)
+                        .findFirst().orElse(Optional.empty());
+            }
+
+            if (!buffer.isPresent()) {
+                throw new NoSuchResourceException(path);
+            }
         }
+        return get(path + detectedExtension.get()).readObject(buffer.get());
     }
 
     /**
@@ -136,11 +164,30 @@ public class ConfigurationFactory {
         return file.delete();
     }
 
+    private static Optional<String> extension(String path) {
+        int index = path.lastIndexOf(".");
+
+        if (index > 0) {
+            return Optional.of(path.substring(index, path.length()));
+        } else {
+            return Optional.empty();
+        }
+    }
+
     /**
      * @param path the path to a file to check if it exists.
      * @return true if the file exists.
      */
     public static boolean exists(String path) {
-        return Paths.get(path).toFile().exists();
+        boolean exists = Paths.get(path).toFile().exists();
+
+        // make sure to check all supported file extensions if none is provided.
+        if (!extension(path).isPresent()) {
+            exists = supported().stream()
+                    .anyMatch(ext -> Paths.get(path + ext)
+                            .toFile().exists()
+                    );
+        }
+        return exists;
     }
 }

@@ -7,10 +7,13 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 
 import java.util.Map;
+import java.util.UUID;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.listener.*;
 import com.codingchili.core.protocol.*;
+
+import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_CONNECTION;
 
 /**
  * @author Robin Duda
@@ -19,6 +22,7 @@ import com.codingchili.core.protocol.*;
  */
 public class RestRequest implements Request {
     private HttpServerRequest request;
+    private Connection connection;
     private JsonObject data = new JsonObject();
     private ListenerSettings settings;
     private int size;
@@ -34,18 +38,27 @@ public class RestRequest implements Request {
 
     @Override
     public Connection connection() {
-        // write the head first.
-        request.response().setStatusCode(HttpResponseStatus.OK.code());
+        if (connection == null) {
+            connection = new Connection((object) -> {
 
-        final Connection connection = new Connection((object) -> {
-            // write data without calling end - supports long polling.
-            request.response().write(Buffer.buffer(object.toString()));
-        }, request.netSocket().writeHandlerID());
+                // write the status code if not already writtem.
+                connection.getProperty("headersSent").orElseGet(() -> {
+                    request.response().setStatusCode(HttpResponseStatus.OK.code());
+                    connection.setProperty("headersSent", "1");
 
-        connection.onClose(() -> {
-            // commit the response when the connection is (pre-)closed.
-            request.response().end();
-        });
+                    connection.onCloseHandler(() -> {
+                        // commit the response when the connection is (pre-)closed.
+                        request.response().end();
+                    });
+                    return null;
+                });
+
+                // write data without calling end - supports long polling.
+                request.response().write(Response.buffer(object));
+            }, UUID.randomUUID().toString())
+                   .setProperty(PROTOCOL_CONNECTION, request.connection().remoteAddress().host());
+        }
+
         return connection;
     }
 
@@ -93,7 +106,7 @@ public class RestRequest implements Request {
 
     @Override
     public void write(Object message) {
-        send(Response.message(this, message).toBuffer());
+        send(Response.buffer(target(), route(), message));
     }
 
     @Override
@@ -118,12 +131,12 @@ public class RestRequest implements Request {
 
     protected void send(ResponseStatus status, Throwable e) {
         request.response().setStatusCode(HttpResponseStatus.OK.code())
-                .end(Response.error(this, status, e).encode());
+                .end(Response.error(target(), route(), status, e).encode());
     }
 
     protected void send(ResponseStatus status) {
         request.response().setStatusCode(HttpResponseStatus.OK.code())
-                .end(Response.status(this, status).encode());
+                .end(Response.status(target(), route(), status).encode());
     }
 
     private void send(Buffer buffer) {

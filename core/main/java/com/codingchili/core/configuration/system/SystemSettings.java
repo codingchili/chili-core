@@ -29,6 +29,8 @@ public class SystemSettings implements Configurable {
     private boolean consoleLogging = true;
     private int workerPoolSize = 16;
     private int clusterTimeout = 3000;
+    private long blockedThreadChecker = VertxOptions.DEFAULT_BLOCKED_THREAD_CHECK_INTERVAL;
+    private long maxEventLoopExecuteTime = VertxOptions.DEFAULT_MAX_EVENT_LOOP_EXECUTE_TIME / (1000 * 1000);
 
     @Override
     public String getPath() {
@@ -119,6 +121,37 @@ public class SystemSettings implements Configurable {
     }
 
     /**
+     * @return the number of milliseconds to wait before logging an error if an event
+     * loop thread is blocked.
+     */
+    public long getBlockedThreadChecker() {
+        return blockedThreadChecker;
+    }
+
+    /**
+     * @param blockedThreadChecker sets the number of milliseconds to wait before logging an
+     *                             error if an event loop thread is blocked.
+     */
+    public void setBlockedThreadChecker(long blockedThreadChecker) {
+        this.blockedThreadChecker = blockedThreadChecker;
+    }
+
+    /**
+     * @return the max event loop execute time the blocked thread checker uses in milliseconds.
+     */
+    public long getMaxEventLoopExecuteTime() {
+        return maxEventLoopExecuteTime;
+    }
+
+    /**
+     * @param maxEventLoopExecuteTime the number of milliseconds the event loop can block without
+     *                                having the blocked-thread-checker generate warning.
+     */
+    public void setMaxEventLoopExecuteTime(long maxEventLoopExecuteTime) {
+        this.maxEventLoopExecuteTime = maxEventLoopExecuteTime;
+    }
+
+    /**
      * @return returns true if metrics are configured.
      */
     public boolean isMetrics() {
@@ -149,7 +182,9 @@ public class SystemSettings implements Configurable {
         if (options == null) {
             return new VertxOptions()
                     .setMetricsOptions(new MetricsOptions().setEnabled(isMetrics()))
-                    .setClusterHost(Environment.address());
+                    .setClusterHost(Environment.address())
+                    .setBlockedThreadCheckInterval(blockedThreadChecker)
+                    .setMaxEventLoopExecuteTime(maxEventLoopExecuteTime * 1000 * 1000);
         } else {
             return options;
         }

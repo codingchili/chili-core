@@ -2,13 +2,13 @@ package com.codingchili.core.protocol;
 
 
 import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.pool.KryoFactory;
 import com.esotericsoftware.kryo.pool.KryoPool;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.*;
 
@@ -34,7 +34,8 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 public class Serializer {
     // use vertx's objectmapper, it comes with custom serializer modules.
     private static ObjectMapper json = Json.mapper;
-    private static ObjectMapper yaml = new ObjectMapper(new YAMLFactory());
+    private static ObjectMapper yaml = new ObjectMapper(new YAMLFactory()
+            .configure(YAMLGenerator.Feature.LITERAL_BLOCK_STYLE, true));
 
     static {
         // enable pretty printing for all json.
@@ -51,8 +52,7 @@ public class Serializer {
         yaml.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
-    private static KryoFactory factory = Kryo::new;
-    private static KryoPool pool = new KryoPool.Builder(factory).softReferences().build();
+    private static KryoPool pool = new KryoPool.Builder(Kryo::new).softReferences().build();
 
     /**
      * Execute with a pooled kryo instance.
@@ -92,11 +92,12 @@ public class Serializer {
     public static String yaml(Object object) {
         try {
             if (object instanceof JsonObject) {
-                return yaml.writeValueAsString(((JsonObject) object).getMap());
+                JsonNode node = new ObjectMapper().readTree(((JsonObject) object).encode());
+                return yaml.writeValueAsString(node);
             } else {
                 return yaml.writeValueAsString(object);
             }
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             throw new CoreRuntimeException(e.getMessage());
         }
     }

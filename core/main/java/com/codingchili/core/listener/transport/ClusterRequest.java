@@ -7,7 +7,6 @@ import io.vertx.core.json.JsonObject;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.Response;
-import com.codingchili.core.protocol.ResponseStatus;
 
 /**
  * @author Robin Duda
@@ -17,6 +16,7 @@ import com.codingchili.core.protocol.ResponseStatus;
  * Size does not apply to these requests.
  */
 public class ClusterRequest implements Request {
+    private Connection connection;
     private final Message message;
     private int timeout = Configurations.system().getClusterTimeout();
     private Buffer buffer;
@@ -35,26 +35,28 @@ public class ClusterRequest implements Request {
         }
         if (message.body() instanceof String) {
             this.json = new JsonObject((String) message.body());
-        } else {
+        }
+
+        if (message.body() instanceof JsonObject) {
             this.json = (JsonObject) message.body();
         }
+        // else: passing non supported types - requires special handling in listener.
     }
 
     @Override
     public void write(Object msg) {
         if (msg != null) {
-            message.reply(Response.message(this, msg));
+            message.reply(Response.json(target(), route(), msg));
         } else {
             accept();
         }
     }
 
-    protected void send(ResponseStatus status, Throwable exception) {
-        write(Response.error(this, status, exception));
-    }
-
-    protected void send(ResponseStatus status) {
-        write(Response.status(this, status));
+    @Override
+    public Connection connection() {
+        return new Connection((message) -> {
+            throw new UnsupportedOperationException("Cannot write to the connection of Cluster requests, use #write instead.");
+        }, "");
     }
 
     @Override
@@ -83,9 +85,5 @@ public class ClusterRequest implements Request {
     public int maxSize() {
         // override the default max value for clustered requests.
         return Integer.MAX_VALUE;
-    }
-
-    private Message getMessage() {
-        return message;
     }
 }

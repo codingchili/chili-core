@@ -60,6 +60,7 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
             } catch (NoSuchResourceException e) {
                 logger.log(getFileReadError(dbPath()));
             }
+            maps.put(context.identifier(), db);
         }
         this.fileWriter = context.vertx().createSharedWorkerExecutor(JSONMAP_WORKERS);
         this.enableSave();

@@ -1,17 +1,17 @@
 package com.codingchili.core.logging;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.ShutdownListener;
 import io.vertx.core.json.JsonObject;
 import org.fusesource.jansi.AnsiConsole;
 
 import java.time.Instant;
 import java.util.Collections;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.ShutdownListener;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
@@ -21,9 +21,17 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  * Implementation of a console logger, filters some key/value combinations to better display the messages.
  */
 public class ConsoleLogger extends DefaultLogger implements StringLogger {
-    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
     public static final String RESET = "\u001B[0m";
     private final AtomicBoolean enabled = new AtomicBoolean(true);
+    private static final ExecutorService executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
+        @Override
+        public Thread newThread(Runnable runnable) {
+            Thread thread = new Thread(runnable);
+            thread.setName(getClass().getName());
+            thread.setDaemon(false);
+            return thread;
+        }
+    });
 
     static {
         ShutdownListener.subscribe(executor::shutdown);

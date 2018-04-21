@@ -2,6 +2,7 @@ package com.codingchili.core.configuration.system;
 
 import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.configuration.CoreStrings;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ public class LauncherSettings implements Configurable {
     private String application = "launcher";
     private String version = CoreStrings.VERSION;
     private String author = CoreStrings.AUTHOR;
+    private boolean warnOnDefaultsLoaded = false;
     private boolean clustered;
     private HashMap<String, List<String>> blocks = defaultBlockConfiguration();
     private HashMap<String, String> hosts = defaultHostConfiguration();
@@ -43,6 +45,24 @@ public class LauncherSettings implements Configurable {
     public LauncherSettings setVersion(String version) {
         this.version = version;
         return this;
+    }
+
+    /**
+     * @return true if a warning should be logged when a configuration file is not found
+     * and the configurable is loaded from the java class. To avoid these errors
+     * add your java configurable to the Configuration.
+     */
+    public boolean isWarnOnDefaultsLoaded() {
+        return warnOnDefaultsLoaded;
+    }
+
+    /**
+     * @param warnOnDefaultsLoaded set to true to disable warnings when default settings
+     *                             are loaded. Default settings will be loaded when the
+     *                             path to a configurable is not available.
+     */
+    public void setWarnOnDefaultsLoaded(boolean warnOnDefaultsLoaded) {
+        this.warnOnDefaultsLoaded = warnOnDefaultsLoaded;
     }
 
     /**

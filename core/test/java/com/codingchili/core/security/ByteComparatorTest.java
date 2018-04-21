@@ -20,13 +20,13 @@ import org.junit.runner.RunWith;
 public class ByteComparatorTest {
     private static final String password = "pass";
     private static final String wrong = "wrong";
-    private HashHelper hasher;
+    private HashFactory hasher;
     private CoreContext context;
 
     @Before
     public void setUp() {
         context = new SystemContext();
-        hasher = new HashHelper(new SystemContext());
+        hasher = new HashFactory(new SystemContext());
     }
 
     @After

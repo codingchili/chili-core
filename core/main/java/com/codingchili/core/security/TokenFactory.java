@@ -1,5 +1,6 @@
 package com.codingchili.core.security;
 
+import com.codingchili.core.files.Configurations;
 import com.codingchili.core.protocol.Serializer;
 
 import javax.crypto.Mac;
@@ -8,6 +9,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.Objects;
 
 import static com.codingchili.core.configuration.CoreStrings.ERROR_TOKEN_FACTORY;
 
@@ -16,11 +18,14 @@ import static com.codingchili.core.configuration.CoreStrings.ERROR_TOKEN_FACTORY
  * <p>
  * Verifies and generates tokens for access.
  */
-public class    TokenFactory {
-    private static final String ALGORITHM = "HmacSHA512";
+public class TokenFactory {
     private final byte[] secret;
 
+    /**
+     * @param secret the secret to use to generate HMAC tokens, must not be null.
+     */
     public TokenFactory(byte[] secret) {
+        Objects.requireNonNull(secret, "Cannot create TokenFactory with 'null' secret.");
         this.secret = secret;
     }
 
@@ -53,9 +58,10 @@ public class    TokenFactory {
     }
 
     private byte[] generateKey(Token token) throws NoSuchAlgorithmException, InvalidKeyException {
-        Mac mac = Mac.getInstance(ALGORITHM);
+        String algorithm = Configurations.security().getHmacAlgorithm();
+        Mac mac = Mac.getInstance(algorithm);
 
-        SecretKeySpec spec = new SecretKeySpec(secret, ALGORITHM);
+        SecretKeySpec spec = new SecretKeySpec(secret, algorithm);
         mac.init(spec);
 
         // encoding to json object here to avoid byte differing byte representations.
@@ -71,7 +77,7 @@ public class    TokenFactory {
      *
      * @param token the token to sign, sets the key of this token.
      */
-    public void sign(Token token) {
+    public void hmac(Token token) {
         try {
             token.setKey(Base64.getEncoder().encodeToString(generateKey(token)));
         } catch (InvalidKeyException | NoSuchAlgorithmException e) {

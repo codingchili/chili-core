@@ -36,7 +36,6 @@ public abstract class Configurations {
     private static final ConcurrentHashMap<String, ConfigEntry> configs = new ConcurrentHashMap<>();
     private static final AtomicBoolean initialized = new AtomicBoolean(false);
     private static Logger logger = new ConsoleLogger(Configurations.class);
-    private static boolean warnOnDefaultsLoaded = false;
 
     /*
       When uninitialized default in-memory configuration is used, this configuration is
@@ -54,13 +53,6 @@ public abstract class Configurations {
         configs.put(PATH_SECURITY, new ConfigEntry(new SecuritySettings(), SecuritySettings.class));
         configs.put(PATH_SYSTEM, new ConfigEntry(new SystemSettings(), SystemSettings.class));
         configs.put(PATH_STORAGE, new ConfigEntry(new StorageSettings(), StorageSettings.class));
-    }
-
-    /**
-     * @param doWarn if true will log a warning message when default configuration is loaded.
-     */
-    public static void setWarnOnDefaultsLoaded(boolean doWarn) {
-        warnOnDefaultsLoaded = doWarn;
     }
 
     /**
@@ -178,8 +170,11 @@ public abstract class Configurations {
         configs.put(path, new ConfigEntry(config, clazz));
 
         if (defaultsLoaded) {
-            if (warnOnDefaultsLoaded) {
-                logger.onConfigurationDefaultsLoaded(path, clazz);
+            if (!clazz.getName().equals(LauncherSettings.class.getName())) {
+                // we cannot warn if the launcher defaults are loaded.
+                if (launcher().isWarnOnDefaultsLoaded()) {
+                    logger.onConfigurationDefaultsLoaded(path, clazz);
+                }
             }
         } else {
             logger.onFileLoaded(path);

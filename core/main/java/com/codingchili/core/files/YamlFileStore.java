@@ -26,14 +26,14 @@ public class YamlFileStore implements FileStore {
     @Override
     public void writeObject(JsonObject object, Path path) {
         try {
-            Files.write(path, Serializer.yaml(object.getMap()).getBytes(StandardCharsets.UTF_8));
+            Files.write(path, Serializer.yaml(object).getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new CoreRuntimeException(e.getMessage());
         }
     }
 
     @Override
-    public List<String> getExtension() {
+    public List<String> getExtensions() {
         return Arrays.asList(CoreStrings.EXT_YAML, CoreStrings.EXT_YML);
     }
 }

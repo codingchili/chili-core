@@ -1,5 +1,6 @@
 package com.codingchili.core.listener;
 
+import com.codingchili.core.listener.transport.Connection;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
 import com.codingchili.core.testing.ContextMock;
 import com.codingchili.core.testing.RequestMock;
@@ -38,6 +39,11 @@ public class RequestProcessorTest {
             @Override
             public void write(Object object) {
                 test.assertEquals(BAD.name(), ((JsonObject) object).getString(PROTOCOL_STATUS));
+            }
+
+            @Override
+            public Connection connection() {
+                return new Connection(this::write, "test_id");
             }
 
             @Override

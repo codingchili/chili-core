@@ -60,12 +60,12 @@ public class WebsocketListener implements CoreListener {
 
         router.routeWithRegex(".*").handler(request -> {
             // handle all attempts at performing a HTTP request.
-           request.response()
-                   .setStatusCode(HttpResponseStatus.ACCEPTED.code())
-                   .end(new JsonObject()
-                           .put(PROTOCOL_STATUS, ResponseStatus.ACCEPTED)
-                           .put(ID_MESSAGE, CoreStrings.getRestNotSupportedByWebsocketListener())
-                           .encodePrettily());
+            request.response()
+                    .setStatusCode(HttpResponseStatus.ACCEPTED.code())
+                    .end(new JsonObject()
+                            .put(PROTOCOL_STATUS, ResponseStatus.ACCEPTED)
+                            .put(ID_MESSAGE, CoreStrings.getRestNotSupportedByWebsocketListener())
+                            .encodePrettily());
         });
 
         core.vertx().createHttpServer(settings.get().getHttpOptions(core))
@@ -76,7 +76,7 @@ public class WebsocketListener implements CoreListener {
                     socket.handler(data -> handle(connection, data));
 
                     // close the connection on disconnect.
-                    socket.closeHandler(closed -> connection.close());
+                    socket.closeHandler(closed -> connection.runCloseHandlers());
 
                 }).requestHandler(router::accept)
 
@@ -91,9 +91,15 @@ public class WebsocketListener implements CoreListener {
     }
 
     private Connection connected(ServerWebSocket socket) {
+        boolean isBinary = settings.get().isBinaryWebsockets();
         return new Connection((msg) -> {
-            socket.writeTextMessage(Response.convert(msg).encodePrettily());
-        }, socket.textHandlerID());
+            Buffer buffer = Response.buffer(msg);
+            if (isBinary) {
+                socket.write(buffer);
+            } else {
+                socket.writeTextMessage(buffer.toString());
+            }
+        }, socket.textHandlerID()).setProperty(PROTOCOL_CONNECTION, socket.remoteAddress().host());
     }
 
     @Override

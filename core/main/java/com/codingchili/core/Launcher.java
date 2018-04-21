@@ -1,7 +1,6 @@
 package com.codingchili.core;
 
-import io.vertx.core.Future;
-import io.vertx.core.Verticle;
+import io.vertx.core.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,7 +85,11 @@ public class Launcher implements CoreService {
     void exit() {
         // no vertx context is initialized yet - but some thread pools
         // might need to be shut down after running the command.
-        ShutdownListener.publish();
+        if (this.core == null) {
+            ShutdownListener.publish();
+        } else {
+            this.core.close();
+        }
     }
 
     private void clusterIfEnabled(LaunchContext launcher) {
@@ -125,21 +128,22 @@ public class Launcher implements CoreService {
      * Deploy services in the order they are defined in the service block.
      */
     private void deployServices(List<String> nodes) {
-        String node = nodes.get(0);
+        List<Future> deployments = new ArrayList<>();
+        //String node = nodes.get(0);
 
-        if (isDeployable(node)) {
-            core.deploy(nodes.get(0)).setHandler(deploy -> {
-                if (deploy.succeeded()) {
-                    nodes.remove(0);
-
-                    if (nodes.size() > 0) {
-                        deployServices(nodes);
-                    }
-                } else {
-                    throw new RuntimeException(deploy.cause());
-                }
-            });
+        for (String node : nodes) {
+            if (isDeployable(node)) {
+                Future<String> future = Future.future();
+                core.deploy(node).setHandler(future);
+                deployments.add(future);
+            }
         }
+        CompositeFuture.all(deployments).setHandler(deployed -> {
+           if (deployed.failed()) {
+               logger.onError(deployed.cause());
+               exit();
+           }
+        });
     }
 
     private boolean isDeployable(String node) {

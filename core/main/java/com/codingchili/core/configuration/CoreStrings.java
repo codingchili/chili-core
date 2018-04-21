@@ -244,8 +244,12 @@ public abstract class CoreStrings {
         return COMMAND_PREFIX + command;
     }
 
-    public static String getHandlerMissing(String name) {
-        return String.format("The requested handler '%s' was not found.", name);
+    public static String getHandlerMissing() {
+        return "Requested handler not found.";
+    }
+
+    public static String getHandlerMissing(String handlerName) {
+        return String.format("Requested handler '%s' not found.", handlerName);
     }
 
     /**
@@ -369,7 +373,7 @@ public abstract class CoreStrings {
     }
 
     public static String getService(String config) {
-        return CoreStrings.DIR_SERVICES + config + EXT_JSON;
+        return CoreStrings.DIR_SERVICES + config;
     }
 
     public static String format(Path path) {
@@ -420,7 +424,7 @@ public abstract class CoreStrings {
     }
 
     public static String getIdentityNotConfigured(String name) {
-        return "[" + name + "] Error: Identity must be configured.";
+        return "[" + name + "] Error: '" + ID_NODE + "' must be configured for token generation.";
     }
 
     public static String getStorageLoaderError(Class plugin, String database, String collection) {
@@ -568,7 +572,8 @@ public abstract class CoreStrings {
     }
 
     public static String timestamp(long ms) {
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli(ms), ZoneOffset.UTC).toString().split("T")[1];
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(ms), ZoneOffset.systemDefault())
+                .toString().split("T")[1];
     }
 
     public static String getHashMismatchException() {

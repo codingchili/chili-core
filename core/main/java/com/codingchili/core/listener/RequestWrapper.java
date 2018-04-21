@@ -1,66 +1,62 @@
 package com.codingchili.core.listener;
 
+import com.codingchili.core.listener.transport.Connection;
 import com.codingchili.core.security.Token;
+
 import io.vertx.core.json.JsonObject;
 
 /**
  * Wraps a request to allow decorating request objects without re-initializing
- * the source request. Extend with handler-specific request classes.
+ * the source request. Implement by handler-specific request classes.
  */
-public class RequestWrapper implements Request {
-    protected Request request;
+public interface RequestWrapper extends Request {
 
-    public RequestWrapper(Request request) {
-        this.request = request;
+    /**
+     * @return the wrapped request.
+     */
+    Request request();
+
+    default void write(Object object) {
+        request().write(object);
     }
 
-    @Override
-    public void write(Object object) {
-        request.write(object);
+    default void accept() {
+        request().accept();
     }
 
-    @Override
-    public void accept() {
-        request.accept();
+    default void error(Throwable exception) {
+        request().error(exception);
     }
 
-    @Override
-    public void error(Throwable exception) {
-        request.error(exception);
+    default String route() {
+        return request().route();
     }
 
-    @Override
-    public String route() {
-        return request.route();
+    default String target() {
+        return request().target();
     }
 
-    @Override
-    public String target() {
-        return request.target();
+    default Token token() {
+        return request().token();
     }
 
-    @Override
-    public Token token() {
-        return request.token();
+    default Connection connection() {
+        return request().connection();
     }
 
-    @Override
-    public JsonObject data() {
-        return request.data();
+    default JsonObject data() {
+        return request().data();
     }
 
-    @Override
-    public int timeout() {
-        return request.timeout();
+    default int timeout() {
+        return request().timeout();
     }
 
-    @Override
-    public int size() {
-        return request.size();
+    default int size() {
+        return request().size();
     }
 
-    @Override
-    public int maxSize() {
-        return request.maxSize();
+    default int maxSize() {
+        return request().maxSize();
     }
 }

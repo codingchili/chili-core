@@ -35,6 +35,9 @@ public class SecuritySettings implements Configurable {
     private Map<String, AuthenticationDependency> dependencies = new HashMap<>();
     private Map<String, TrustAndKeyProvider> loadedKeyStores = new HashMap<>();
     private Set<KeyStore> keystores = new HashSet<>();
+    private ArgonSettings argon = new ArgonSettings();
+    private String hmacAlgorithm = "HmacSHA512";
+    ;
     private int secretBytes = 64;
     private int tokenttl = 3600 * 24 * 7;
 
@@ -136,6 +139,35 @@ public class SecuritySettings implements Configurable {
     }
 
     /**
+     * @return argon2 parameters used for password hashing.
+     */
+    public ArgonSettings getArgon() {
+        return argon;
+    }
+
+    /**
+     * @param argon the argon2 parameters used for password hashing.
+     */
+    public void setArgon(ArgonSettings argon) {
+        this.argon = argon;
+    }
+
+    /**
+     * @return the HMAC algorithm identifier used to create HMAC tokens.
+     */
+    public String getHmacAlgorithm() {
+        return hmacAlgorithm;
+    }
+
+    /**
+     * @param hmacAlgorithm the HMAC algorithm used to create HMAC tokens,
+     *                      the specified algorithm must be available in the JVM.
+     */
+    public void setHmacAlgorithm(String hmacAlgorithm) {
+        this.hmacAlgorithm = hmacAlgorithm;
+    }
+
+    /**
      * @return a map of dependencies, where the key is the regex that match other
      * configurations. The value contains the actual security configuration to be applied.
      */
@@ -172,10 +204,17 @@ public class SecuritySettings implements Configurable {
         return this;
     }
 
+    /**
+     * @return the time to live for generated tokens in seconds.
+     */
     public int getTokenttl() {
         return tokenttl;
     }
 
+    /**
+     * @param tokenttl the time to live for generated tokens in seconds.
+     * @return fluent.
+     */
     public SecuritySettings setTokenttl(int tokenttl) {
         this.tokenttl = tokenttl;
         return this;

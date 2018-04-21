@@ -34,7 +34,7 @@ public class TokenFactoryTest {
 
     @Test
     public void createToken() throws TokenException {
-        tokenFactory.sign(new Token()
+        tokenFactory.hmac(new Token()
                 .setDomain(domain)
                 .setExpiry(now));
     }
@@ -83,14 +83,14 @@ public class TokenFactoryTest {
     @Test
     public void testVerifyTokenWithProperties(TestContext test) {
         Token token = getTokenWithProperties();
-        tokenFactory.sign(token);
+        tokenFactory.hmac(token);
         test.assertTrue(tokenFactory.verifyToken(token));
     }
 
     @Test
     public void testVerifyFailTokenPropertiesModified(TestContext test) {
         Token token = getTokenWithProperties();
-        tokenFactory.sign(token);
+        tokenFactory.hmac(token);
         test.assertTrue(tokenFactory.verifyToken(token));
         token.addProperty("roles", Arrays.asList("programmer", "root", "sysadmin"));
         test.assertFalse(tokenFactory.verifyToken(token));
@@ -100,7 +100,7 @@ public class TokenFactoryTest {
     public void testSerializeToken() {
         Token token = getTokenWithProperties();
         token.addProperty("account", new Account().setUsername("robba"));
-        tokenFactory.sign(token);
+        tokenFactory.hmac(token);
         Serializer.pack(Serializer.unpack(Serializer.pack(token), Token.class));
     }
 

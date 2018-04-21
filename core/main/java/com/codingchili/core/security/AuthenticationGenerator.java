@@ -30,10 +30,17 @@ public class AuthenticationGenerator {
     private final SecuritySettings security;
     private String directory;
 
+    /**
+     * @param logger a logger to write output to.
+     */
     public AuthenticationGenerator(Logger logger) {
         this(DIR_CONFIG, logger);
     }
 
+    /**
+     * @param directory the directory to search for configurations.
+     * @param logger a logger to write output to.
+     */
     public AuthenticationGenerator(String directory, Logger logger) {
         this.logger = logger;
         this.security = Configurations.security();
@@ -117,7 +124,7 @@ public class AuthenticationGenerator {
         if (directory.equals(DIR_CONFIG)) {
             return CoreStrings.getService(name);
         } else {
-            return directory + DIR_ROOT + name + EXT_JSON;
+            return directory + DIR_ROOT + name;
         }
     }
 
@@ -126,9 +133,12 @@ public class AuthenticationGenerator {
 
         if (config.containsKey(ID_NODE)) {
             identity = config.getString(ID_NODE);
+            if (!identity.endsWith(ID_NODE)){
+                identity += "." + ID_NODE;
+            }
         } else {
             identity = ID_UNDEFINED;
-            config.put(ID_NODE, identity);
+            config.put(ID_NODE, String.format("%s.%s", identity, ID_NODE));
             logger.log(getIdentityNotConfigured(getClass().getSimpleName()));
         }
         return identity;
@@ -142,7 +152,11 @@ public class AuthenticationGenerator {
     }
 
     private boolean isKeyMatchingPath(String fileName, String path) {
-        Pattern pattern = Pattern.compile(".*" + fileName + EXT_JSON);
+        // make sure to allow any file with an extension that is registered in the configuration factory.
+        String supportedExtensions = "(" + ConfigurationFactory.supported().stream()
+                .collect(Collectors.joining("|")) + ")";
+
+        Pattern pattern = Pattern.compile(".*" + fileName + supportedExtensions);
         Matcher matcher = pattern.matcher(path);
         return matcher.matches();
     }
@@ -156,7 +170,7 @@ public class AuthenticationGenerator {
                 processor.parse(settings, config, path);
                 ConfigurationFactory.writeObject(config, path);
             } catch (NoSuchResourceException e) {
-                logger.onFileLoadError(path);
+                logger.onError(e);
             }
         });
     }

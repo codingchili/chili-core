@@ -31,5 +31,5 @@ public interface FileStore {
     /**
      * @return the extension handled by this file store.
      */
-    List<String> getExtension();
+    List<String> getExtensions();
 }

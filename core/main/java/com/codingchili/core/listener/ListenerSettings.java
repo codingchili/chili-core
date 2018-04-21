@@ -27,7 +27,9 @@ public class ListenerSettings {
     private Set<Integer> actualPorts = new HashSet<>();
     private String defaultTarget = "default";
     private String keystore = CoreStrings.DEFAULT_KEYSTORE;
+    private boolean binaryWebsockets = true;
     private boolean secure = true;
+    private boolean alpn = false;
     private int port = 8080;
     private int timeout = DEFAULT_TIMEOUT;
     private int maxRequestBytes = DEFAULT_MAX_REQUEST_BYTES;
@@ -64,6 +66,23 @@ public class ListenerSettings {
     public ListenerSettings setKeystore(String keystore) {
         this.keystore = keystore;
         this.secure = true;
+        return this;
+    }
+
+    /**
+     * @return if true indicates that websocket frames should be written as binary.
+     */
+    public boolean isBinaryWebsockets() {
+        return binaryWebsockets;
+    }
+
+    /**
+     * @param binaryWebsockets set to true to write websocket frames as binary,
+     *                         otherwise writes a text frame.
+     * @return fluent.
+     */
+    public ListenerSettings setBinaryWebsockets(boolean binaryWebsockets) {
+        this.binaryWebsockets = binaryWebsockets;
         return this;
     }
 
@@ -160,6 +179,20 @@ public class ListenerSettings {
     }
 
     /**
+     * @return true if ALPN is enabled - this is required to support HTTP/2.
+     */
+    public boolean isAlpn() {
+        return alpn;
+    }
+
+    /**
+     * @param alpn if true attempt to use ALPN - also requires that secure is set to true.
+     */
+    public void setAlpn(boolean alpn) {
+        this.alpn = alpn;
+    }
+
+    /**
      * @param context core context.
      * @return HttpOptions created from the listeners settings.
      */
@@ -169,7 +202,7 @@ public class ListenerSettings {
         if (httpOptions == null) {
             httpOptions = new HttpServerOptions()
                     .setMaxWebsocketFrameSize(maxRequestBytes)
-                    .setUseAlpn(Environment.isJava9())
+                    .setUseAlpn(alpn && secure)
                     .setSsl(secure);
 
             if (secure) {

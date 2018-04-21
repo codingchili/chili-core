@@ -2,6 +2,9 @@ package com.codingchili.core.storage;
 
 import com.googlecode.cqengine.ConcurrentIndexedCollection;
 import com.googlecode.cqengine.IndexedCollection;
+import com.googlecode.cqengine.attribute.Attribute;
+import com.googlecode.cqengine.index.navigable.NavigableIndex;
+import com.googlecode.cqengine.index.radix.RadixTreeIndex;
 import com.googlecode.cqengine.index.unique.UniqueIndex;
 import com.googlecode.cqengine.persistence.onheap.OnHeapPersistence;
 import io.vertx.core.Future;
@@ -25,5 +28,11 @@ public class IndexedMapVolatile<Value extends Storable> extends IndexedMap<Value
             return db;
         }, context);
         future.complete(this);
+    }
+
+    @Override
+    protected void addIndexesForAttribute(Attribute<Value, String> attribute) {
+        db.addIndex(NavigableIndex.onAttribute(attribute));
+        db.addIndex(RadixTreeIndex.onAttribute(attribute));
     }
 }

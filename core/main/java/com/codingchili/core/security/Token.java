@@ -5,8 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Robin Duda
@@ -15,8 +14,8 @@ import java.util.Map;
  */
 public class Token implements Serializable {
     private Map<String, Object> properties = new HashMap<>();
+    private String domain = UUID.randomUUID().toString();
     private String key = "";
-    private String domain = "";
     private long expiry = Instant.now().getEpochSecond() +
             Configurations.security().getTokenttl();
 
@@ -25,7 +24,7 @@ public class Token implements Serializable {
 
     public Token(TokenFactory factory, String domain) {
         this.domain = domain;
-        factory.sign(this);
+        factory.hmac(this);
     }
 
     public String getKey() {
