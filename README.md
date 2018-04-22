@@ -92,6 +92,6 @@ Issues and PR's are welcome with :blue_heart:.
 
 ## License
 The MIT License (MIT)
-Copyright (c) 2017 Robin Duda
+Copyright (c) 2018 Robin Duda
 
 See: [License](./LICENSE.md)
