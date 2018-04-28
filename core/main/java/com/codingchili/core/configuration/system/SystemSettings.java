@@ -27,7 +27,7 @@ public class SystemSettings implements Configurable {
     private int configurationPoll = 1500;
     private int cachedFilePoll = 1500;
     private boolean consoleLogging = true;
-    private int workerPoolSize = 16;
+    private int workerPoolSize = 24;
     private int clusterTimeout = 3000;
     private long blockedThreadChecker = VertxOptions.DEFAULT_BLOCKED_THREAD_CHECK_INTERVAL;
     private long maxEventLoopExecuteTime = VertxOptions.DEFAULT_MAX_EVENT_LOOP_EXECUTE_TIME / (1000 * 1000);

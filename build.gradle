@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'maven'
 
-project.version = "1.0.31-SNAPSHOT"
+project.version = "1.0.32-SNAPSHOT"
 project.group = 'com.github.codingchili.chili-core'
 
 subprojects {
@@ -13,8 +13,8 @@ subprojects {
     version = rootProject.version
     group = rootProject.group
 
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    sourceCompatibility = 1.9
+    targetCompatibility = 1.9
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
