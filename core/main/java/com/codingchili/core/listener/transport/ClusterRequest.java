@@ -54,9 +54,12 @@ public class ClusterRequest implements Request {
 
     @Override
     public Connection connection() {
-        return new Connection((message) -> {
-            throw new UnsupportedOperationException("Cannot write to the connection of Cluster requests, use #write instead.");
-        }, "");
+        if (connection == null) {
+            connection = new Connection((message) -> {
+                throw new UnsupportedOperationException("Cannot write to the connection of Cluster requests, use #write instead.");
+            }, "");
+        }
+        return connection;
     }
 
     @Override
