@@ -60,7 +60,8 @@ public class TokenFactory {
                             .send(String.format("Token algorithm '%s' - not enabled/trusted.", algorithm));
                     return false;
                 }
-            } else {
+                // only log an error if the token is secured and type is missing.
+            } else if (token.getKey() != null) {
                 logger.event("token.verify", Level.WARNING)
                         .send(String.format("Token is missing property '%s' - unable to verify.", CRYPTO_TYPE));
             }
