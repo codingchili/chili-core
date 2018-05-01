@@ -26,7 +26,7 @@ public class ByteComparatorTest {
     @Before
     public void setUp() {
         context = new SystemContext();
-        hasher = new HashFactory(new SystemContext());
+        hasher = context.hasher();
     }
 
     @After

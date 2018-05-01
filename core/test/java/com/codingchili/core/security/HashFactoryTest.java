@@ -33,7 +33,7 @@ public class HashFactoryTest {
     @Before
     public void setUp() {
         context = new SystemContext();
-        hasher = new HashFactory(new SystemContext());
+        hasher = context.hasher();
         executor = context.vertx().createSharedWorkerExecutor("worker_pool_name", 8);
     }
 

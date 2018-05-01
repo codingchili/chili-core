@@ -1,9 +1,16 @@
 package com.codingchili.core.security;
 
-import io.vertx.core.net.JksOptions;
-import io.vertx.core.net.KeyCertOptions;
-import io.vertx.core.net.SelfSignedCertificate;
-import io.vertx.core.net.TrustOptions;
+import io.vertx.core.net.*;
+import io.vertx.core.net.impl.SelfSignedCertificateImpl;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.security.*;
+import java.security.cert.CertificateException;
+
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.context.CoreRuntimeException;
 
 /**
  * Common wrapper class for #{@link SelfSignedCertificate} and #{@link JksOptions} as they
@@ -11,20 +18,99 @@ import io.vertx.core.net.TrustOptions;
  * a common interface.
  */
 public class TrustAndKeyProvider implements KeyCertOptions, TrustOptions {
+    private static final String KEY_TYPE = "RSA";
+    private static final String KEYSTORE_TYPE = "jks";
     private TrustOptions trust;
     private KeyCertOptions keyCert;
+    private PrivateKey privateKey;
+    private PublicKey publicKey;
+    private String path = "<self-signed>";
+    private String alias = "<self-signed>";
 
-    public TrustAndKeyProvider(TrustOptions trust, KeyCertOptions keyCert) {
-        this.trust = trust;
-        this.keyCert = keyCert;
+    /**
+     * Creates a new trust/key provider using the given jks options.
+     *
+     * @param jks jks options with trust and/or key configuration.
+     */
+    private TrustAndKeyProvider(JksOptions jks) {
+        this.trust = jks;
+        this.keyCert = jks;
+        this.path = jks.getPath();
+        try {
+            KeyStore store = KeyStore.getInstance(KEYSTORE_TYPE);
+
+            // we use null as the password here - this is because the JksOptions getValue
+            // handles decryption internally.
+            store.load(new ByteArrayInputStream(jks.getValue().getBytes()), null);
+
+            // only support one alias per keystore.
+            alias = store.aliases().nextElement();
+
+            // attempt to load the public key if available.
+            if (store.isCertificateEntry(alias)) {
+                this.publicKey = store.getCertificate(alias).getPublicKey();
+            }
+
+            // attempt to load the private key if available.
+            if (store.isKeyEntry(alias)) {
+                this.publicKey = store.getCertificate(alias).getPublicKey();
+
+                // we re-use the jks password for the private key.
+                this.privateKey = (PrivateKey) store.getKey(alias, jks.getPassword().toCharArray());
+            }
+        } catch (UnrecoverableKeyException | CertificateException | KeyStoreException | NoSuchAlgorithmException | IOException e) {
+            throw new CoreRuntimeException(e.getMessage());
+        }
+    }
+
+    /**
+     * Creates a new trust/key provider using the given trust and key options.
+     *
+     * @param certificate a self signed certificate.
+     */
+    private TrustAndKeyProvider(TestCertificate certificate) {
+        this.trust = certificate.trustOptions();
+        this.keyCert = certificate.keyCertOptions();
+        this.publicKey = certificate.getPublicKey();
+        this.privateKey = certificate.getPrivateKey();
+    }
+
+    /**
+     * @return the private key of this keystore.
+     */
+    public PrivateKey getPrivateKey() {
+        if (privateKey == null) {
+            throw new CoreRuntimeException(
+                    String.format("there is no private key with alias '%s' in keystore '%s'.",
+                            alias,
+                            path
+                    )
+            );
+        }
+        return privateKey;
+    }
+
+    /**
+     * @return the public key of this keystore.
+     */
+    public PublicKey getPublicKey() {
+        if (publicKey == null) {
+            throw new CoreRuntimeException(
+                    String.format("there is no public key with alias '%s' in keystore '%s'.",
+                            alias,
+                            path
+                    )
+            );
+        }
+        return publicKey;
     }
 
     /**
      * @param self a self signed certificate to get trust and keycert options from.
      * @return a new TrustAndKeyProvider instance.
      */
-    public static TrustAndKeyProvider of(SelfSignedCertificate self) {
-        return new TrustAndKeyProvider(self.trustOptions(), self.keyCertOptions());
+    public static TrustAndKeyProvider of(TestCertificate self) {
+        return new TrustAndKeyProvider(self);
     }
 
     /**
@@ -32,7 +118,7 @@ public class TrustAndKeyProvider implements KeyCertOptions, TrustOptions {
      * @return a new TrustAndKeyProvider instance.
      */
     public static TrustAndKeyProvider of(JksOptions jks) {
-        return new TrustAndKeyProvider(jks, jks);
+        return new TrustAndKeyProvider(jks);
     }
 
     /**
@@ -51,6 +137,7 @@ public class TrustAndKeyProvider implements KeyCertOptions, TrustOptions {
 
     @Override
     public TrustAndKeyProvider clone() {
-        return new TrustAndKeyProvider(trust, keyCert);
+        // we don't really need to clone it.
+        return this;
     }
 }

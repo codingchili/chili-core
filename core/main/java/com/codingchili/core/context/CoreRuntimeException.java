@@ -15,7 +15,24 @@ public class CoreRuntimeException extends RuntimeException implements CoreExcept
      * @param description of the generated error and the cause.
      */
     public CoreRuntimeException(String description) {
-        super(description);
+        super(description, null, false, false);
+    }
+
+    /**
+     * creates a runtime exception with a stacktrace.
+     *
+     * @param description why we are throwing an exception
+     * @param cause       the original exception.
+     */
+    public CoreRuntimeException(String description, Throwable cause) {
+        super(description, cause);
+    }
+
+    /**
+     * @param cause the original exception.
+     */
+    public CoreRuntimeException(Throwable cause) {
+        super(cause);
     }
 
     /**
@@ -23,7 +40,7 @@ public class CoreRuntimeException extends RuntimeException implements CoreExcept
      * @param status the error level.
      */
     public CoreRuntimeException(String error, ResponseStatus status) {
-        super(error);
+        super(error, null, false, false);
         this.status = status;
     }
 

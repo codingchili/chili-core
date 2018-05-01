@@ -36,7 +36,6 @@ public class FileWatcherIT {
     @Before
     public void setUp() {
         this.context = new ContextMock();
-        Delay.initialize(context);
     }
 
     @After

@@ -1,7 +1,6 @@
 package com.codingchili.core.security;
 
 import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.configuration.system.SecuritySettings;
 
 import java.util.function.Consumer;
 
@@ -12,15 +11,15 @@ import java.util.function.Consumer;
  */
 public class KeyStoreBuilder<E> {
     private boolean readPasswordFromConsole = false;
-    private KeyStore keystore = new KeyStore();
-    private Consumer<KeyStore> completer;
+    private KeyStoreReference keystore = new KeyStoreReference();
+    private Consumer<KeyStoreReference> completer;
     private E fluent;
 
     /**
      * @param fluent    the object to be returned when building is completed.
      * @param completer called with the result.
      */
-    public KeyStoreBuilder(E fluent, Consumer<KeyStore> completer) {
+    public KeyStoreBuilder(E fluent, Consumer<KeyStoreReference> completer) {
         this.completer = completer;
         this.fluent = fluent;
     }

@@ -7,7 +7,7 @@ import com.codingchili.core.configuration.system.SecuritySettings;
 /**
  * Used in #{@link SecuritySettings} to contain references to keystores.
  */
-public class KeyStore {
+public class KeyStoreReference {
     private String password = "changeit";
     private String path;
     private String shortName;
@@ -23,7 +23,7 @@ public class KeyStore {
      * @param password set keystore password. If unset reads the password from console.
      * @return fluent
      */
-    public KeyStore setPassword(String password) {
+    public KeyStoreReference setPassword(String password) {
         this.password = password;
         return this;
     }
@@ -39,7 +39,7 @@ public class KeyStore {
      * @param path path to the keystore.
      * @return fluent
      */
-    public KeyStore setPath(String path) {
+    public KeyStoreReference setPath(String path) {
         this.path = path;
         if (shortName == null) {
             this.shortName = new File(path).getName();
@@ -54,14 +54,14 @@ public class KeyStore {
 
     @Override
     public boolean equals(Object other) {
-        return ((KeyStore) other).getPath().equals(path);
+        return ((KeyStoreReference) other).getPath().equals(path);
     }
 
     /**
      * @param shortName sets the name the keystore is identified by.
      * @return fluent.
      */
-    public KeyStore setShortName(String shortName) {
+    public KeyStoreReference setShortName(String shortName) {
         this.shortName = shortName;
         return this;
     }

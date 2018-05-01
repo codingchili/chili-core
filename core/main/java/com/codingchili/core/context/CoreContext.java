@@ -4,8 +4,10 @@ import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.CoreListener;
 import com.codingchili.core.listener.CoreService;
-import com.codingchili.core.listener.Request;
 import com.codingchili.core.logging.Logger;
+import com.codingchili.core.security.HashFactory;
+import com.codingchili.core.security.TokenFactory;
+
 import io.vertx.core.*;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.file.FileSystem;
@@ -143,4 +145,19 @@ public interface CoreContext {
      * @param handler called when the context has closed or failed closing.
      */
     void close(Handler<AsyncResult<Void>> handler);
+
+    /**
+     * Get a TokenFactory instance.
+     *
+     * @param secret the secret to instantiate the factory with - used for hmac.
+     * @return a tokenfactory on the current context.
+     */
+    TokenFactory tokens(byte[] secret);
+
+    /**
+     * Get a HashFactory instance.
+     *
+     * @return a hashfactory on the current context.
+     */
+    HashFactory hasher();
 }

@@ -4,6 +4,7 @@ import com.codingchili.core.configuration.BaseConfigurable;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.AuthenticationDependency;
 import com.codingchili.core.configuration.system.SecuritySettings;
+import com.codingchili.core.context.*;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.files.ConfigurationFactory;
 import com.codingchili.core.files.exception.NoSuchResourceException;
@@ -28,21 +29,23 @@ import static com.codingchili.core.protocol.Serializer.json;
 public class AuthenticationGenerator {
     private final Logger logger;
     private final SecuritySettings security;
+    private CoreContext core;
     private String directory;
 
     /**
-     * @param logger a logger to write output to.
+     * @param core the core context to run on.
      */
-    public AuthenticationGenerator(Logger logger) {
-        this(DIR_CONFIG, logger);
+    public AuthenticationGenerator(CoreContext core) {
+        this(core, DIR_CONFIG);
     }
 
     /**
+     * @param core the core context to run on.
      * @param directory the directory to search for configurations.
-     * @param logger a logger to write output to.
      */
-    public AuthenticationGenerator(String directory, Logger logger) {
-        this.logger = logger;
+    public AuthenticationGenerator(CoreContext core, String directory) {
+        this.core = core;
+        this.logger = core.logger(getClass());
         this.security = Configurations.security();
         this.directory = directory;
     }
@@ -113,7 +116,7 @@ public class AuthenticationGenerator {
 
         if (issuer.containsKey(identifier.getSecret())) {
             byte[] secret = Base64.getDecoder().decode(issuer.getString(identifier.getSecret()));
-            return new TokenFactory(secret);
+            return core.tokens(secret);
         } else {
             logger.onSecurityDependencyMissing(identifier.getService(), identifier.getSecret());
             throw new SecurityMissingDependencyException(identifier.getService(), identifier.getSecret());

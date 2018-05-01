@@ -45,7 +45,6 @@ public class LauncherIT {
     @Before
     public void setUp() {
         core = new SystemContext();
-        Delay.initialize(core);
     }
 
     @After

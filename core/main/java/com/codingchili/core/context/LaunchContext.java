@@ -1,19 +1,15 @@
 package com.codingchili.core.context;
 
+import java.util.List;
+import java.util.Optional;
+
 import com.codingchili.core.Launcher;
 import com.codingchili.core.configuration.Environment;
-import com.codingchili.core.configuration.exception.BlockNotConfiguredException;
-import com.codingchili.core.configuration.exception.NoServicesConfiguredForBlock;
-import com.codingchili.core.configuration.exception.RemoteBlockNotConfiguredException;
+import com.codingchili.core.configuration.exception.*;
 import com.codingchili.core.configuration.system.LauncherSettings;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Consumer;
 
 import static com.codingchili.core.configuration.CoreStrings.ID_DEFAULT;
 
@@ -25,10 +21,8 @@ import static com.codingchili.core.configuration.CoreStrings.ID_DEFAULT;
 public class LaunchContext {
     private static final String BLOCK_DEFAULT = "default";
     private CommandExecutor executor = new LauncherCommandExecutor();
-    private String[] args = new String[]{};
     private Logger console = new ConsoleLogger(getClass());
-    private List<Consumer<CoreContext>> listeners = new ArrayList<>();
-    private CoreContext core;
+    private String[] args;
 
     /**
      * @param args process arguments to create a launcher for.
@@ -175,29 +169,5 @@ public class LaunchContext {
      */
     public void start() {
         Launcher.start(this);
-    }
-
-    /**
-     * Add a listener that will be called when the core context is loaded but
-     * before any services are deployed.
-     * @param listener a listener to be called.
-     * @return fluent.
-     */
-    public LaunchContext onLoaded(Consumer<CoreContext> listener) {
-        if (core != null) {
-            listener.accept(core);
-        } else {
-            listeners.add(listener);
-        }
-        return this;
-    }
-
-    /**
-     * notifies all listeners that the core context is loaded.
-     * @param core the core context that was loaded.
-     */
-    public void loaded(CoreContext core) {
-        this.core = core;
-        listeners.forEach(listener -> listener.accept(core));
     }
 }

@@ -34,10 +34,11 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 public class SecuritySettings implements Configurable {
     private Map<String, AuthenticationDependency> dependencies = new HashMap<>();
     private Map<String, TrustAndKeyProvider> loadedKeyStores = new HashMap<>();
-    private Set<KeyStore> keystores = new HashSet<>();
+    private Set<KeyStoreReference> keystores = new HashSet<>();
     private ArgonSettings argon = new ArgonSettings();
     private String hmacAlgorithm = "HmacSHA512";
-    ;
+    private String signatureAlgorithm = "SHA256withRSA";
+
     private int secretBytes = 64;
     private int tokenttl = 3600 * 24 * 7;
 
@@ -54,32 +55,39 @@ public class SecuritySettings implements Configurable {
      */
     public KeyStoreBuilder<SecuritySettings> addKeystore() {
         return new KeyStoreBuilder<>(this, store -> {
+            keystores.remove(store);
             keystores.add(store);
         });
     }
 
     /**
+     * @param core    the core context to log errors to.
      * @param storeId name of the keystore to retrieve: the mapped shortname of the filename with extension.
-     * @param core    core context used when loading.
      * @return a keystore if it is loaded, if no keystore is added with the given shortname uses a
      * self signed certificate. If it fails to load a keystore then the application shuts down.
      */
     @JsonIgnore
     public synchronized TrustAndKeyProvider getKeystore(CoreContext core, String storeId) {
         if (!loadedKeyStores.containsKey(storeId)) {
-            Optional<KeyStore> store = getByName(storeId);
+            Optional<KeyStoreReference> store = getByName(storeId);
 
             if (store.isPresent()) {
                 loadKeystore(core, store.get().setShortName(storeId));
             } else {
-                loadedKeyStores.put(storeId, generateSelfSigned(core, storeId));
+                loadedKeyStores.put(storeId, generateSelfSigned(core));
             }
         }
         return loadedKeyStores.get(storeId);
     }
 
-    public Optional<KeyStore> getByName(String storeId) {
-        for (KeyStore keystore : keystores) {
+    /**
+     * Retrieve a keystore given its short name (ID).
+     *
+     * @param storeId the store id to retrieve.
+     * @return a keystore that matches the given id, empty otherwise.
+     */
+    public Optional<KeyStoreReference> getByName(String storeId) {
+        for (KeyStoreReference keystore : keystores) {
             if (keystore.getShortName().equals(storeId)) {
                 return Optional.of(keystore);
             }
@@ -87,11 +95,12 @@ public class SecuritySettings implements Configurable {
         return Optional.empty();
     }
 
-    private void loadKeystore(CoreContext core, KeyStore store) {
+    private void loadKeystore(CoreContext core, KeyStoreReference store) {
         try {
             loadedKeyStores.put(store.getShortName(),
                     TrustAndKeyProvider.of(new JksOptions()
-                            .setValue(Buffer.buffer(Files.readAllBytes(Paths.get(store.getPath()))))
+                            .setPath(store.getPath())
+                            .setValue(Buffer.buffer(Files.readAllBytes(Paths.get(store.getPath()).toAbsolutePath())))
                             .setPassword(store.getPassword())));
         } catch (Throwable e) {
             // failed to load keystore due to wrong password or missing file etc.
@@ -101,17 +110,16 @@ public class SecuritySettings implements Configurable {
         }
     }
 
-    private TrustAndKeyProvider generateSelfSigned(CoreContext core, String storeId) {
+    private TrustAndKeyProvider generateSelfSigned(CoreContext core) {
         core.logger(getClass())
                 .event(LOG_SECURITY, Level.WARNING).send(getMissingKeyStore());
-
-        return TrustAndKeyProvider.of(SelfSignedCertificate.create(CoreStrings.GITHUB));
+        return TrustAndKeyProvider.of(new TestCertificate(CoreStrings.GITHUB));
     }
 
     /**
      * @return a list of configured keystores.
      */
-    public Set<KeyStore> getKeystores() {
+    public Set<KeyStoreReference> getKeystores() {
         return keystores;
     }
 
@@ -119,7 +127,7 @@ public class SecuritySettings implements Configurable {
      * @param keystores keystores to  set
      * @return fluent
      */
-    public SecuritySettings setKeystores(Set<KeyStore> keystores) {
+    public SecuritySettings setKeystores(Set<KeyStoreReference> keystores) {
         this.keystores = keystores;
         return this;
     }
@@ -150,6 +158,27 @@ public class SecuritySettings implements Configurable {
      */
     public void setArgon(ArgonSettings argon) {
         this.argon = argon;
+    }
+
+    /**
+     * @return the signature algorithm to use for signatures.
+     */
+    public String getSignatureAlgorithm() {
+        return signatureAlgorithm;
+    }
+
+    /**
+     * Sets the signature algorithm to use for signing.
+     * <p>
+     * supported by the default provider:
+     * - SHA1withDSA
+     * - SHA1withRSA
+     * - SHA256withRSA
+     *
+     * @param signatureAlgorithm the algorithm identifier to use.
+     */
+    public void setSignatureAlgorithm(String signatureAlgorithm) {
+        this.signatureAlgorithm = signatureAlgorithm;
     }
 
     /**

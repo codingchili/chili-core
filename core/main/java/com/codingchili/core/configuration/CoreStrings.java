@@ -3,16 +3,18 @@ package com.codingchili.core.configuration;
 import com.codingchili.core.benchmarking.Benchmark;
 import com.codingchili.core.benchmarking.BenchmarkGroup;
 import com.codingchili.core.benchmarking.BenchmarkImplementation;
-import com.codingchili.core.security.KeyStore;
+import com.codingchili.core.security.KeyStoreReference;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.CoreListener;
 import com.codingchili.core.listener.CoreService;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
+
 import io.vertx.core.Verticle;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URI;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,7 +25,6 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import static com.codingchili.core.files.Configurations.launcher;
 
@@ -56,6 +57,7 @@ public abstract class CoreStrings {
 
     // common directories.
     public static final String DIR_ROOT = "/";
+    public static final String DIR_CURRENT = "./";
     public static final String DIR_SEPARATOR = "/";
     public static final String DIR_CONFIG = "conf/";
     public static final String DIR_SYSTEM = "conf/system/";
@@ -262,7 +264,7 @@ public abstract class CoreStrings {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
-        return sw.toString();
+        return sw.toString().trim();
     }
 
     /**
@@ -633,7 +635,7 @@ public abstract class CoreStrings {
                 target, route, timeout);
     }
 
-    public static String getKeystorePrompt(KeyStore store) {
+    public static String getKeystorePrompt(KeyStoreReference store) {
         return "Enter password for '" + store.getPath() + "': ";
     }
 

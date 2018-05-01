@@ -1,29 +1,26 @@
 package com.codingchili.core.files;
 
-import com.codingchili.core.configuration.Configurable;
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.configuration.exception.InvalidConfigurableException;
-import com.codingchili.core.configuration.system.*;
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.files.exception.FileReadException;
-import com.codingchili.core.files.exception.InvalidConfigurationPath;
-import com.codingchili.core.files.exception.NoSuchResourceException;
-import com.codingchili.core.logging.ConsoleLogger;
-import com.codingchili.core.logging.Logger;
-import com.codingchili.core.protocol.Serializer;
 import io.vertx.core.json.JsonObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import com.codingchili.core.configuration.Configurable;
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.configuration.exception.InvalidConfigurableException;
+import com.codingchili.core.configuration.system.*;
+import com.codingchili.core.context.StartupListener;
+import com.codingchili.core.files.exception.*;
+import com.codingchili.core.logging.ConsoleLogger;
+import com.codingchili.core.logging.Logger;
+import com.codingchili.core.protocol.Serializer;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
@@ -46,6 +43,21 @@ public abstract class Configurations {
     static {
         init();
         reloadAll();
+
+        StartupListener.subscibe(core -> {
+            if (initialized.get()) {
+                logger.onAlreadyInitialized();
+            } else {
+                logger = core.logger(Configurations.class);
+                new FileWatcherBuilder(core)
+                        .rate(Configurations::getConfigurationPoll)
+                        .onDirectory(Paths.get(CoreStrings.DIR_CURRENT).toString())
+                        .withListener(new ConfigurationFileWatcher())
+                        .build();
+
+                initialized.set(true);
+            }
+        });
     }
 
     private static void init() {
@@ -53,26 +65,6 @@ public abstract class Configurations {
         configs.put(PATH_SECURITY, new ConfigEntry(new SecuritySettings(), SecuritySettings.class));
         configs.put(PATH_SYSTEM, new ConfigEntry(new SystemSettings(), SystemSettings.class));
         configs.put(PATH_STORAGE, new ConfigEntry(new StorageSettings(), StorageSettings.class));
-    }
-
-    /**
-     * Sets the context of the configurator and enables file watching and logging.
-     *
-     * @param context the context to set for the configuration system.
-     */
-    public static void initialize(CoreContext context) {
-        if (initialized.get()) {
-            logger.onAlreadyInitialized();
-        } else {
-            logger = context.logger(Configurations.class);
-            new FileWatcherBuilder(context)
-                    .rate(Configurations::getConfigurationPoll)
-                    .onDirectory(CoreStrings.DIR_CONFIG)
-                    .withListener(new ConfigurationFileWatcher())
-                    .build();
-
-            initialized.set(true);
-        }
     }
 
     private static void reloadAll() {

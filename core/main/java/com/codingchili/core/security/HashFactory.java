@@ -31,6 +31,10 @@ public class HashFactory {
         );
     }
 
+    /**
+     * Creates a new hash factory - requires a context to be created.
+     * @param context core context to execute on.
+     */
     public HashFactory(CoreContext context) {
         this.context = context;
     }

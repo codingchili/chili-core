@@ -1,8 +1,6 @@
 package com.codingchili.core.protocol;
 
 import com.esotericsoftware.reflectasm.MethodAccess;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.json.JsonObject;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
@@ -15,7 +13,7 @@ import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
 
-import static com.codingchili.core.configuration.CoreStrings.*;
+import static com.codingchili.core.configuration.CoreStrings.ANY;
 import static com.codingchili.core.protocol.RoleMap.*;
 
 /**

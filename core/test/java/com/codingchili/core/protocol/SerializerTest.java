@@ -22,15 +22,13 @@ import java.util.*;
 @RunWith(VertxUnitRunner.class)
 public class SerializerTest {
     private static final String TEST = "test";
-    private static final String SECRET = "secret";
     private static final String OWNER = "owner";
     private static final String PROPERTIES_OWNER = "properties.owner";
     private Token token;
 
     @Before
     public void setUp() {
-        TokenFactory factory = new TokenFactory(SECRET.getBytes());
-        token = new Token(factory, TEST);
+        token = new Token().setDomain(TEST).setKey("0x00");
         token = token.addProperty(OWNER, getClass().getSimpleName());
     }
 

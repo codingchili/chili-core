@@ -1,11 +1,11 @@
 install.dependsOn jar
 
 jar {
-    from {
+    /*from {
         (configurations.runtime).collect {
             it.isDirectory() ? it : zipTree(it)
         }
-    }
+    }*/
     manifest {
         attributes 'Implementation-Title': 'chili-core',
                 'Implementation-Version': version,

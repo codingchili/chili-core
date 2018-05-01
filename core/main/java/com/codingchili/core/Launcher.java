@@ -110,9 +110,6 @@ public class Launcher implements CoreService {
     private void start(CoreContext core) {
         this.core = core;
 
-        Configurations.initialize(core);
-        Delay.initialize(core);
-
         // the Launcher is a good example of a service.
         core.service(() -> this).setHandler(deployed -> {
             if (deployed.failed()) {

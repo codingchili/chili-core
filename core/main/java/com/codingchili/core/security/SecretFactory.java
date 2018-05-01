@@ -8,7 +8,7 @@ import java.util.Base64;
  * <p>
  * Generates and verifies secret keys.
  */
-abstract class SecretFactory {
+public abstract class SecretFactory {
     private static final SecureRandom random = new SecureRandom();
 
     /**
@@ -17,7 +17,7 @@ abstract class SecretFactory {
      * @param bytes length of the secret in bytes.
      * @return number of random bytes specified.
      */
-    static String generate(int bytes) {
+    public static String generate(int bytes) {
         byte[] secret = new byte[bytes];
         random.nextBytes(secret);
         return Base64.getEncoder().encodeToString(secret);
@@ -30,7 +30,7 @@ abstract class SecretFactory {
      * @param clone  the secret to verify.
      * @return true if an exact match is found.
      */
-    static boolean verify(String origin, String clone) {
+    public static boolean verify(String origin, String clone) {
         return ByteComparator.compare(origin.getBytes(), clone.getBytes());
     }
 }

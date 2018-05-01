@@ -1,13 +1,5 @@
 package com.codingchili.core.files;
 
-import com.codingchili.core.configuration.Configurable;
-import com.codingchili.core.configuration.ConfigurableTest;
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.configuration.exception.InvalidConfigurableException;
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.logging.ConsoleLogger;
-import com.codingchili.core.logging.Logger;
-import com.codingchili.core.testing.ContextMock;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
@@ -15,8 +7,13 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+
+import com.codingchili.core.configuration.Configurable;
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.configuration.exception.InvalidConfigurableException;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.testing.ContextMock;
 
 /**
  * @author Robin Duda
@@ -25,16 +22,15 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(VertxUnitRunner.class)
 public class ConfigurationsTest {
-    private static final String CONFIGURATIONS = "Configurations";
-    private static final String DEFAULT_JSON = "default.json";
+
     @Rule
-    public Timeout timeout = new Timeout(6, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(4, TimeUnit.SECONDS);
     private CoreContext context;
 
     @Before
     public void setUp() {
+        Configurations.shutdown();
         context = new ContextMock();
-        Configurations.reset();
     }
 
     @After
@@ -45,7 +41,7 @@ public class ConfigurationsTest {
     }
 
     @Test
-    public void loadLauncherConfiguration() throws IOException {
+    public void loadLauncherConfiguration() {
         Assert.assertNotNull(Configurations.launcher());
     }
 
@@ -62,29 +58,6 @@ public class ConfigurationsTest {
     @Test
     public void loadStorageConfiguration() {
         Assert.assertNotNull(Configurations.storage());
-    }
-
-    @Test
-    public void testLoadDefaultsFromConfigurable(TestContext test) {
-        Async async = test.async();
-
-        Configurations.initialize(new ContextMock(context) {
-            @Override
-            public Logger logger(Class aClass) {
-                return new ConsoleLogger(aClass) {
-
-                    @Override
-                    public void onConfigurationDefaultsLoaded(String path, Class<?> clazz) {
-                        if (path.equals(CoreStrings.testFile(CONFIGURATIONS, DEFAULT_JSON))) {
-                            Configurations.reset();
-                            async.complete();
-                        }
-                    }
-                };
-            }
-        });
-        Configurations.launcher().setWarnOnDefaultsLoaded(true);
-        load(CoreStrings.testFile(CONFIGURATIONS, DEFAULT_JSON), ConfigurableTest.class);
     }
 
     @Test

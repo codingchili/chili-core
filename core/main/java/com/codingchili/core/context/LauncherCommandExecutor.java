@@ -3,12 +3,12 @@ package com.codingchili.core.context;
 import com.codingchili.core.benchmarking.BenchmarkSuite;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.files.Configurations;
-import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.security.AuthenticationGenerator;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
@@ -35,17 +35,26 @@ public class LauncherCommandExecutor extends DefaultCommandExecutor {
     }
 
     private void registerCommands() {
-        AuthenticationGenerator generator = new AuthenticationGenerator(logger);
         BenchmarkSuite suite = new BenchmarkSuite();
 
         super.add((executor) -> CommandResult.CONTINUE, DEPLOY, getDeployDescription());
         add(Configurations::reset, RECONFIGURE, getReconfigureDescription());
-        add(generator::preshare, GENERATE_PRESHARED, getGeneratePresharedDescription());
-        add(generator::secrets, GENERATE_SECRETS, getGenerateSecretsDescription());
-        add(generator::tokens, GENERATE_TOKENS, getGenerateTokensDescription());
-        add(generator::all, GENERATE, getGenerateAllDescription());
+
+        add(generator((AuthenticationGenerator::preshare)), GENERATE_PRESHARED, getGeneratePresharedDescription());
+        add(generator((AuthenticationGenerator::secrets)), GENERATE_SECRETS, getGenerateSecretsDescription());
+        add(generator((AuthenticationGenerator::tokens)), GENERATE_TOKENS, getGenerateTokensDescription());
+        add(generator((AuthenticationGenerator::all)), GENERATE, getGenerateAllDescription());
+
         add(suite::execute, BENCHMARK, getBenchmarkDescription());
         add(this::help, HELP, getCommandExecutorHelpDescription());
+    }
+
+    private Runnable generator(Consumer<AuthenticationGenerator> function) {
+        return () -> {
+            CoreContext core = new SystemContext();
+            function.accept(new AuthenticationGenerator(core));
+            core.close();
+        };
     }
 
     /* helper method to support methods that does not implement Consumer<CommandExecutor> */

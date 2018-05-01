@@ -44,7 +44,6 @@ public class SystemContextTest {
                 return settings;
             }
         };
-        Delay.initialize(context);
     }
 
     @After

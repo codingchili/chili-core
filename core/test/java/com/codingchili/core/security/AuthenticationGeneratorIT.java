@@ -6,7 +6,6 @@ import com.codingchili.core.configuration.system.SecuritySettings;
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.files.ConfigurationFactory;
-import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.exception.SecurityMissingDependencyException;
 import com.codingchili.core.testing.ContextMock;
@@ -47,13 +46,10 @@ public class AuthenticationGeneratorIT {
     @Before
     public void setUp() {
         context = new ContextMock();
-        Configurations.initialize(context);
 
         Configurations.put(createSecuritySettings());
 
-        generator = new AuthenticationGenerator(
-                CoreStrings.testDirectory(AUTHENTICATION_GENERATOR) + DIR_ROOT,
-                new ConsoleLogger(getClass()));
+        generator = new AuthenticationGenerator(context,CoreStrings.testDirectory(AUTHENTICATION_GENERATOR) + DIR_ROOT);
     }
 
     @After
@@ -117,14 +113,14 @@ public class AuthenticationGeneratorIT {
         byte[] service1secret = getService1().getBinary(SERVICE_1_SECRET);
         byte[] service2secret = getService2().getBinary(LOCAL);
 
-        TokenFactory service1factory = new TokenFactory(service1secret);
-        TokenFactory service2factory = new TokenFactory(service2secret);
+        TokenFactory service1factory = context.tokens(service1secret);
+        TokenFactory service2factory = context.tokens(service2secret);
 
         Token service1token = Serializer.unpack(getService1().getJsonObject(SERVICE_1_TOKEN), Token.class);
         Token service2token = Serializer.unpack(getService2().getJsonObject(SERVICE_2_TOKEN), Token.class);
 
-        test.assertTrue(service1factory.verifyToken(service2token));
-        test.assertTrue(service2factory.verifyToken(service1token));
+        test.assertTrue(service1factory.verify(service2token));
+        test.assertTrue(service2factory.verify(service1token));
     }
 
     @Test

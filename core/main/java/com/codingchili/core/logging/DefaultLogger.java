@@ -142,10 +142,14 @@ public abstract class DefaultLogger extends Handler implements Logger {
     }
 
     @Override
-    public void onError(Throwable cause) {
-        event(LOG_ERROR, Level.ERROR)
-                .put(LOG_STACKTRACE, throwableToString(cause))
-                .send(cause.getMessage());
+    public void onError(Throwable throwable) {
+        LogMessage event = event(LOG_ERROR, Level.ERROR);
+
+        if (throwable.getStackTrace() == null) {
+            event.send(throwable.getMessage());
+        } else {
+            event.put(LOG_STACKTRACE, throwableToString(throwable)).send();
+        }
     }
 
     @Override

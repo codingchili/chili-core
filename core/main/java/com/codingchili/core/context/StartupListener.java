@@ -11,8 +11,16 @@ public class StartupListener {
     private static Collection<Consumer<CoreContext>> listeners = new ArrayList<>();
     private static CoreContext core;
 
+    static {
+        ShutdownListener.subscribe(() -> {
+            // unset the core so that listeners are not called with closed contexts.
+            core = null;
+        });
+    }
+
     /**
      * Adds a subcriber that will be notified when the application context is loaded.
+     *
      * @param listener called on load or if already loaded.
      */
     public static void subscibe(Consumer<CoreContext> listener) {
@@ -25,16 +33,15 @@ public class StartupListener {
 
     /**
      * Calls all listeners once and removes them as listeners.
+     *
      * @param core the application context that was loaded.
      */
     public static void publish(CoreContext core) {
-        StartupListener.core = core;
         if (core != null) {
-            core.blocking(blocking -> {
-                listeners.forEach(listener -> listener.accept(core));
-                listeners.clear();
-                blocking.complete();
-            }, done -> {});
+            StartupListener.core = core;
+
+            listeners.forEach(listener -> listener.accept(core));
+            listeners.clear();
         }
     }
 }

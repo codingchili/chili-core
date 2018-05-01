@@ -7,9 +7,7 @@ import io.vertx.core.Future;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 /**
@@ -19,11 +17,11 @@ import org.junit.runner.RunWith;
  */
 @RunWith(VertxUnitRunner.class)
 public class DelayTest {
-    private CoreContext context;
+    private static CoreContext context;
 
-    @Before
-    public void setUp() {
-        this.context = new ContextMock() {
+    @BeforeClass
+    public static void setUp() {
+        context = new ContextMock() {
             @Override
             public SystemSettings system() {
                 SystemSettings settings = new SystemSettings();
@@ -31,11 +29,10 @@ public class DelayTest {
                 return settings;
             }
         };
-        Delay.initialize(context);
     }
 
-    @After
-    public void tearDown(TestContext test) {
+    @AfterClass
+    public static void tearDown(TestContext test) {
         context.close(test.asyncAssertSuccess());
     }
     @Test
@@ -59,7 +56,6 @@ public class DelayTest {
     @Test
     public void testDelayNotInitialized(TestContext test) {
         try {
-            Delay.initialize(null);
             Delay.forMS(Future.future(), 1);
         } catch (SystemNotInitializedException e) {
             test.assertTrue(e.getMessage().contains(Delay.class.getSimpleName()));

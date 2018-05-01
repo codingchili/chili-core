@@ -60,9 +60,11 @@ public class LauncherSettings implements Configurable {
      * @param warnOnDefaultsLoaded set to true to disable warnings when default settings
      *                             are loaded. Default settings will be loaded when the
      *                             path to a configurable is not available.
+     * @return fluent
      */
-    public void setWarnOnDefaultsLoaded(boolean warnOnDefaultsLoaded) {
+    public LauncherSettings setWarnOnDefaultsLoaded(boolean warnOnDefaultsLoaded) {
         this.warnOnDefaultsLoaded = warnOnDefaultsLoaded;
+        return this;
     }
 
     /**
