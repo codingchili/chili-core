@@ -61,7 +61,7 @@ public class TokenFactory {
                     return false;
                 }
                 // only log an error if the token is secured and type is missing.
-            } else if (token.getKey() != null) {
+            } else if (token.getKey() != null && !token.getKey().isEmpty()) {
                 logger.event("token.verify", Level.WARNING)
                         .send(String.format("Token is missing property '%s' - unable to verify.", CRYPTO_TYPE));
             }
