@@ -22,6 +22,7 @@ public class LauncherSettings implements Configurable {
     private String version = CoreStrings.VERSION;
     private String author = CoreStrings.AUTHOR;
     private boolean warnOnDefaultsLoaded = false;
+    private String configurationDirectory = CoreStrings.DIR_CONFIG;
     private boolean clustered;
     private HashMap<String, List<String>> blocks = defaultBlockConfiguration();
     private HashMap<String, String> hosts = defaultHostConfiguration();
@@ -134,6 +135,20 @@ public class LauncherSettings implements Configurable {
             throw new IllegalArgumentException(getBlockNotConfigured(block));
         }
         return this;
+    }
+
+    /**
+     * @return the path to the configuration directory to use.
+     */
+    public String getConfigurationDirectory() {
+        return configurationDirectory;
+    }
+
+    /**
+     * @param configurationDirectory the path to the configuration directory to use.
+     */
+    public void setConfigurationDirectory(String configurationDirectory) {
+        this.configurationDirectory = configurationDirectory;
     }
 
     /**

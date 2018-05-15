@@ -51,7 +51,7 @@ public abstract class Configurations {
                 logger = core.logger(Configurations.class);
                 new FileWatcherBuilder(core)
                         .rate(Configurations::getConfigurationPoll)
-                        .onDirectory(Paths.get(CoreStrings.DIR_CURRENT).toString())
+                        .onDirectory(Paths.get(launcher().getConfigurationDirectory()).toString())
                         .withListener(new ConfigurationFileWatcher())
                         .build();
 
