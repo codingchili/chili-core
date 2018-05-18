@@ -359,19 +359,19 @@ public abstract class CoreStrings {
     }
 
     public static String getGeneratingSecret(String name, String key) {
-        return "[Generating] secret '" + name + "' for " + key + " ..";
+        return "[Generated] secret '" + name + "' for " + key + " ..";
     }
 
     public static String getCommandError(String command) {
         return "Failed to execute command '" + command + "', list available with --help";
     }
 
-    public static String getGeneratingToken(String owner, String secret, String service) {
-        return "[Generating] token '" + owner + "/" + secret + "' for " + service + " ..";
+    public static String generatedToken(String owner, String secret, String service) {
+        return "[Generated] token '" + owner + "/" + secret + "' for " + service + " ..";
     }
 
     public static String getGeneratingShared(String key, String path) {
-        return "[Generating] preshared key '" + key + "' for " + path + " ..";
+        return "[Generated] preshared key '" + key + "' for " + path + " ..";
     }
 
     public static String getService(String config) {

@@ -15,9 +15,8 @@ import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.*;
 import com.codingchili.core.listener.transport.ClusterListener;
-import com.codingchili.core.logging.*;
-import com.codingchili.core.security.HashFactory;
-import com.codingchili.core.security.TokenFactory;
+import com.codingchili.core.logging.Logger;
+import com.codingchili.core.logging.RemoteLogger;
 
 import static com.codingchili.core.configuration.CoreStrings.getUnsupportedDeployment;
 
@@ -276,16 +275,6 @@ public class SystemContext implements CoreContext {
             ShutdownListener.publish();
             handler.handle(Future.succeededFuture());
         });
-    }
-
-    @Override
-    public TokenFactory tokens(byte[] secret) {
-        return new TokenFactory(this, secret);
-    }
-
-    @Override
-    public HashFactory hasher() {
-        return new HashFactory(this);
     }
 
     @Override

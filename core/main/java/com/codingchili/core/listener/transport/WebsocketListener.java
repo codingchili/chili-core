@@ -68,7 +68,7 @@ public class WebsocketListener implements CoreListener {
                             .encodePrettily());
         });
 
-        core.vertx().createHttpServer(settings.get().getHttpOptions(core))
+        core.vertx().createHttpServer(settings.get().getHttpOptions())
                 .websocketHandler(socket -> {
                     Connection connection = connected(socket);
 

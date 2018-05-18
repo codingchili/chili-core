@@ -6,9 +6,7 @@ import io.vertx.core.http.HttpServerOptions;
 import java.util.*;
 
 import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.configuration.Environment;
 import com.codingchili.core.configuration.system.SecuritySettings;
-import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.security.TrustAndKeyProvider;
 
 import static com.codingchili.core.files.Configurations.security;
@@ -193,11 +191,10 @@ public class ListenerSettings {
     }
 
     /**
-     * @param context core context.
      * @return HttpOptions created from the listeners settings.
      */
     @JsonIgnore
-    public HttpServerOptions getHttpOptions(CoreContext context) {
+    public HttpServerOptions getHttpOptions() {
 
         if (httpOptions == null) {
             httpOptions = new HttpServerOptions()
@@ -206,7 +203,7 @@ public class ListenerSettings {
                     .setSsl(secure);
 
             if (secure) {
-                TrustAndKeyProvider provider = security().getKeystore(context, keystore);
+                TrustAndKeyProvider provider = security().getKeystore(keystore);
                 httpOptions.setTrustOptions(provider.trustOptions())
                         .setKeyCertOptions(provider.keyCertOptions());
             }

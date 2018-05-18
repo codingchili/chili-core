@@ -4,7 +4,6 @@ package com.codingchili.core.configuration.system;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.JksOptions;
-import io.vertx.core.net.SelfSignedCertificate;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -12,8 +11,8 @@ import java.util.*;
 
 import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.logging.Level;
+import com.codingchili.core.context.StartupListener;
+import com.codingchili.core.logging.*;
 import com.codingchili.core.security.*;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
@@ -32,6 +31,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  * configuration that is requested, for example a token or shared secret.
  */
 public class SecuritySettings implements Configurable {
+    private static Logger logger = new ConsoleLogger(SecuritySettings.class);
     private Map<String, AuthenticationDependency> dependencies = new HashMap<>();
     private Map<String, TrustAndKeyProvider> loadedKeyStores = new HashMap<>();
     private Set<KeyStoreReference> keystores = new HashSet<>();
@@ -41,6 +41,12 @@ public class SecuritySettings implements Configurable {
 
     private int secretBytes = 64;
     private int tokenttl = 3600 * 24 * 7;
+
+    static {
+        StartupListener.subscibe(core -> {
+            logger = core.logger(SecuritySettings.class);
+        });
+    }
 
     @Override
     public String getPath() {
@@ -61,20 +67,19 @@ public class SecuritySettings implements Configurable {
     }
 
     /**
-     * @param core    the core context to log errors to.
      * @param storeId name of the keystore to retrieve: the mapped shortname of the filename with extension.
      * @return a keystore if it is loaded, if no keystore is added with the given shortname uses a
      * self signed certificate. If it fails to load a keystore then the application shuts down.
      */
     @JsonIgnore
-    public synchronized TrustAndKeyProvider getKeystore(CoreContext core, String storeId) {
+    public synchronized TrustAndKeyProvider getKeystore(String storeId) {
         if (!loadedKeyStores.containsKey(storeId)) {
             Optional<KeyStoreReference> store = getByName(storeId);
 
             if (store.isPresent()) {
-                loadKeystore(core, store.get().setShortName(storeId));
+                loadKeystore(store.get().setShortName(storeId));
             } else {
-                loadedKeyStores.put(storeId, generateSelfSigned(core));
+                loadedKeyStores.put(storeId, generateSelfSigned());
             }
         }
         return loadedKeyStores.get(storeId);
@@ -95,7 +100,7 @@ public class SecuritySettings implements Configurable {
         return Optional.empty();
     }
 
-    private void loadKeystore(CoreContext core, KeyStoreReference store) {
+    private void loadKeystore(KeyStoreReference store) {
         try {
             loadedKeyStores.put(store.getShortName(),
                     TrustAndKeyProvider.of(new JksOptions()
@@ -105,14 +110,13 @@ public class SecuritySettings implements Configurable {
         } catch (Throwable e) {
             // failed to load keystore due to wrong password or missing file etc.
             // cannot recover from this in a safe manner: shut down.
-            core.logger(getClass()).onError(e);
+            logger.onError(e);
             System.exit(0);
         }
     }
 
-    private TrustAndKeyProvider generateSelfSigned(CoreContext core) {
-        core.logger(getClass())
-                .event(LOG_SECURITY, Level.WARNING).send(getMissingKeyStore());
+    private TrustAndKeyProvider generateSelfSigned() {
+        logger.event(LOG_SECURITY, Level.WARNING).send(getMissingKeyStore());
         return TrustAndKeyProvider.of(new TestCertificate(CoreStrings.GITHUB));
     }
 

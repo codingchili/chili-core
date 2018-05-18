@@ -33,7 +33,7 @@ public class HashFactoryTest {
     @Before
     public void setUp() {
         context = new SystemContext();
-        hasher = context.hasher();
+        hasher = new HashFactory(context);
         executor = context.vertx().createSharedWorkerExecutor("worker_pool_name", 8);
     }
 
@@ -44,42 +44,49 @@ public class HashFactoryTest {
 
     @Test
     public void testHashesAreUnique(TestContext test) {
-        String hash = hasher.hash(PLAINTEXT);
-        String hash2 = hasher.hash(PLAINTEXT);
+        Async async = test.async();
 
-        test.assertNotNull(hash);
-        test.assertTrue(hash.length() != 0);
-        test.assertNotEquals(hash, PLAINTEXT);
-        test.assertNotEquals(hash, hash2);
+        hasher.hash(PLAINTEXT).setHandler(hash1 -> {
+            hasher.hash(PLAINTEXT).setHandler(hash2 -> {
+                test.assertNotNull(hash1.result());
+                test.assertTrue(hash1.result().length() != 0);
+                test.assertNotEquals(hash1.result(), PLAINTEXT);
+                test.assertNotEquals(hash1.result(), hash2.result());
+                async.complete();
+            });
+        });
     }
 
     @Test
     public void testFailVerifyWrongPassword(TestContext test) {
         Async async = test.async();
-        String hash = hasher.hash(PLAINTEXT);
-        String hash2 = hasher.hash(PLAINTEXT_WRONG);
+        hasher.hash(PLAINTEXT).setHandler(hash -> {
+            hasher.hash(PLAINTEXT_WRONG).setHandler(wrong -> {
 
-        test.assertNotEquals(hash, hash2);
-        test.assertNotNull(hash);
-        test.assertNotNull(hash2);
-        test.assertTrue(hash.length() != 0);
-        test.assertTrue(hash2.length() != 0);
+                test.assertNotEquals(hash.result(), wrong.result());
+                test.assertNotNull(hash.result());
+                test.assertNotNull(wrong.result());
+                test.assertTrue(hash.result().length() != 0);
+                test.assertTrue(wrong.result().length() != 0);
 
-        hasher.verify(result -> {
-            Assert.assertTrue(result.failed());
-            async.complete();
-        }, PLAINTEXT, "other");
+                hasher.verify(result -> {
+                    Assert.assertTrue(result.failed());
+                    async.complete();
+                }, PLAINTEXT, "other");
+
+            });
+        });
     }
 
     @Test
     public void testVerifySuccess(TestContext test) {
         Async async = test.async();
-        String hash = hasher.hash(PLAINTEXT);
-
-        hasher.verify(result -> {
-            test.assertTrue(result.succeeded());
-            async.complete();
-        }, hash, PLAINTEXT);
+        hasher.hash(PLAINTEXT).setHandler(hash -> {
+            hasher.verify(result -> {
+                test.assertTrue(result.succeeded());
+                async.complete();
+            }, hash.result(), PLAINTEXT);
+        });
     }
 
     @Test
@@ -89,9 +96,8 @@ public class HashFactoryTest {
         AtomicInteger countdown = new AtomicInteger(100);
 
         for (int i = 0; i < 100; i++) {
-            executor.executeBlocking((blocking) -> {
-                hasher.hash(PLAINTEXT);
-                blocking.complete();
+            executor.<String>executeBlocking((blocking) -> {
+                hasher.hash(PLAINTEXT).setHandler(blocking);
             }, false, (result) -> {
                 if (countdown.decrementAndGet() == 0) {
                     long time = getTimeMS() - start;
@@ -107,11 +113,11 @@ public class HashFactoryTest {
     public void testCheckHashingWithWorkerPool(TestContext test) {
         Async async = test.async();
 
-        hasher.hash(hash -> {
+        hasher.hash(PLAINTEXT).setHandler(hash -> {
             test.assertTrue(hash.succeeded());
             test.assertNotNull(hash.result());
             async.complete();
-        }, PLAINTEXT);
+        });
     }
 
     private long getTimeMS() {

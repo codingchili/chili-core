@@ -29,12 +29,10 @@ public class Token implements Serializable {
     /**
      * Creates a new hmac token with the specified token factory.
      *
-     * @param factory the token factory to generate the hmac.
      * @param domain  a unique identifier - username or service id.
      */
-    public Token(TokenFactory factory, String domain) {
+    public Token(String domain) {
         this.domain = domain;
-        factory.hmac(this);
     }
 
     /**

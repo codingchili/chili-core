@@ -26,7 +26,7 @@ public class ByteComparatorTest {
     @Before
     public void setUp() {
         context = new SystemContext();
-        hasher = context.hasher();
+        hasher = new HashFactory(context);
     }
 
     @After
@@ -37,26 +37,26 @@ public class ByteComparatorTest {
     @Test
     public void verifyHashCompareSuccess(TestContext test) {
         Async async = test.async();
-        hasher.hash(result -> {
+        hasher.hash(password).setHandler(result -> {
             String hash = result.result();
             Assert.assertTrue(ByteComparator.compare(hash, hash));
             Assert.assertTrue(ByteComparator.compare(hash.getBytes(), hash.getBytes()));
             async.complete();
-        }, password);
+        });
     }
 
     @Test
     public void verifyHashCompareFailure(TestContext test) {
         Async async = test.async();
-        hasher.hash(hash1 -> {
-            hasher.hash(hash2 -> {
+        hasher.hash(password).setHandler(hash1 -> {
+            hasher.hash(wrong).setHandler(hash2 -> {
                 Assert.assertFalse(
                         ByteComparator.compare(hash1.result(), hash2.result()));
                 Assert.assertFalse(
                         ByteComparator.compare(hash1.result().getBytes(), hash2.result().getBytes()));
                 async.complete();
-            }, wrong);
-        }, password);
+            });
+        });
     }
 
 }

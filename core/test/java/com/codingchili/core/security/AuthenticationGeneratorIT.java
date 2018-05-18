@@ -9,7 +9,9 @@ import com.codingchili.core.files.ConfigurationFactory;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.exception.SecurityMissingDependencyException;
 import com.codingchili.core.testing.ContextMock;
+
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.After;
@@ -49,7 +51,7 @@ public class AuthenticationGeneratorIT {
 
         Configurations.put(createSecuritySettings());
 
-        generator = new AuthenticationGenerator(context,CoreStrings.testDirectory(AUTHENTICATION_GENERATOR) + DIR_ROOT);
+        generator = new AuthenticationGenerator(context, CoreStrings.testDirectory(AUTHENTICATION_GENERATOR) + DIR_ROOT);
     }
 
     @After
@@ -107,20 +109,29 @@ public class AuthenticationGeneratorIT {
     }
 
     @Test
-    public void testGenerateTokens(TestContext test) throws IOException {
-        generator.all();
+    public void testGenerateTokens(TestContext test) {
+        Async async = test.async();
+        generator.all().setHandler(done -> {
+            test.assertTrue(done.succeeded());
 
-        byte[] service1secret = getService1().getBinary(SERVICE_1_SECRET);
-        byte[] service2secret = getService2().getBinary(LOCAL);
+            byte[] service1secret = getService1().getBinary(SERVICE_1_SECRET);
+            byte[] service2secret = getService2().getBinary(LOCAL);
 
-        TokenFactory service1factory = context.tokens(service1secret);
-        TokenFactory service2factory = context.tokens(service2secret);
+            TokenFactory service1factory = new TokenFactory(context, service1secret);
+            TokenFactory service2factory = new TokenFactory(context, service2secret);
 
-        Token service1token = Serializer.unpack(getService1().getJsonObject(SERVICE_1_TOKEN), Token.class);
-        Token service2token = Serializer.unpack(getService2().getJsonObject(SERVICE_2_TOKEN), Token.class);
+            Token service1token = Serializer.unpack(getService1().getJsonObject(SERVICE_1_TOKEN), Token.class);
+            Token service2token = Serializer.unpack(getService2().getJsonObject(SERVICE_2_TOKEN), Token.class);
 
-        test.assertTrue(service1factory.verify(service2token));
-        test.assertTrue(service2factory.verify(service1token));
+            service1factory.verify(service2token).setHandler(verify -> {
+                test.assertTrue(verify.succeeded());
+
+                service2factory.verify(service1token).setHandler(verify2 -> {
+                    test.assertTrue(verify2.succeeded());
+                    async.complete();
+                });
+            });
+        });
     }
 
     @Test
@@ -141,11 +152,11 @@ public class AuthenticationGeneratorIT {
         generator.all();
     }
 
-    private JsonObject getService1() throws IOException {
+    private JsonObject getService1() {
         return ConfigurationFactory.readObject(testFile(AUTHENTICATION_GENERATOR, SERVICE1_JSON));
     }
 
-    private JsonObject getService2() throws IOException {
+    private JsonObject getService2() {
         return ConfigurationFactory.readObject(testFile(AUTHENTICATION_GENERATOR, SERVICE2_JSON));
     }
 }

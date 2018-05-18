@@ -10,9 +10,12 @@ import com.codingchili.core.files.ConfigurationFactory;
 import com.codingchili.core.files.exception.NoSuchResourceException;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.security.exception.SecurityMissingDependencyException;
+
+import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -54,10 +57,10 @@ public class AuthenticationGenerator {
      * Generate new secrets, preshared secrets and tokens based on the
      * system security configuration.
      */
-    public void all() {
+    public Future<Void> all() {
         secrets();
         preshare();
-        tokens();
+        return tokens();
     }
 
     /**
@@ -66,7 +69,7 @@ public class AuthenticationGenerator {
     public void preshare() {
         HashMap<String, String> shared = new HashMap<>();
 
-        configurations((settings, config, path) -> {
+        configurations((settings, config, path, save) -> {
             andPathMatchesKeyRegex(settings, path).forEach(dependency -> {
 
                 dependency.getPreshare().forEach(key -> {
@@ -77,6 +80,8 @@ public class AuthenticationGenerator {
                     config.put(key, shared.get(key));
                     logger.log(CoreStrings.getGeneratingShared(key, path));
                 });
+
+                save.run();
             });
         });
     }
@@ -85,13 +90,15 @@ public class AuthenticationGenerator {
      * Generates new secrets based on the system security configuration.
      */
     public void secrets() {
-        configurations((settings, config, path) -> {
+        configurations((settings, config, path, save) -> {
             andPathMatchesKeyRegex(settings, path).forEach(dependency -> {
 
                 dependency.getSecrets().forEach(entry -> {
                     logger.log(getGeneratingSecret(entry, path));
                     config.put(entry, SecretFactory.generate(security.getSecretBytes()));
                 });
+
+                save.run();
             });
         });
     }
@@ -99,27 +106,51 @@ public class AuthenticationGenerator {
     /**
      * Generates new tokens based on the system security configuration.
      */
-    public void tokens() {
-        configurations((settings, config, path) -> {
+    public Future<Void> tokens() {
+        Future<Void> future = Future.future();
+
+        configurations((settings, config, path, save) -> {
             andPathMatchesKeyRegex(settings, path).forEach(dependency -> {
+                AtomicInteger latch = new AtomicInteger(dependency.getTokens().size());
 
                 dependency.getTokens().forEach((key, identifier) -> {
-                    logger.log(CoreStrings.getGeneratingToken(identifier.getService(), key, path));
-                    config.put(key, json(new Token(getFactory(identifier), getIdentity(config))));
+                    Optional<TokenFactory> factory = getFactory(identifier);
+
+                    if (factory.isPresent()) {
+                        Token token = new Token(getIdentity(config));
+
+                        factory.get().hmac(token).setHandler(done -> {
+                            if (done.succeeded()) {
+                                logger.log(CoreStrings.generatedToken(identifier.getService(), key, path));
+
+                                config.put(key, json(token));
+                                save.run();
+
+                                if (latch.decrementAndGet() == 0) {
+                                    future.tryComplete();
+                                }
+                            } else {
+                                future.fail(done.cause());
+                            }
+                        });
+                    } else {
+                        logger.onSecurityDependencyMissing(identifier.getService(), identifier.getSecret());
+                        throw new SecurityMissingDependencyException(identifier.getService(), identifier.getSecret());
+                    }
                 });
             });
         });
+        return future;
     }
 
-    private TokenFactory getFactory(TokenIdentifier identifier) {
+    private Optional<TokenFactory> getFactory(TokenIdentifier identifier) {
         JsonObject issuer = ConfigurationFactory.readObject(getService(identifier.getService()));
 
         if (issuer.containsKey(identifier.getSecret())) {
             byte[] secret = Base64.getDecoder().decode(issuer.getString(identifier.getSecret()));
-            return core.tokens(secret);
+            return Optional.of(new TokenFactory(core, secret));
         } else {
-            logger.onSecurityDependencyMissing(identifier.getService(), identifier.getSecret());
-            throw new SecurityMissingDependencyException(identifier.getService(), identifier.getSecret());
+            return Optional.empty();
         }
     }
 
@@ -170,8 +201,9 @@ public class AuthenticationGenerator {
         getConfigurationsReferencedBySecurity(settings).forEach(path -> {
             try {
                 JsonObject config = ConfigurationFactory.readObject(path);
-                processor.parse(settings, config, path);
-                ConfigurationFactory.writeObject(config, path);
+                processor.parse(settings, config, path, () -> {
+                    ConfigurationFactory.writeObject(config, path);
+                });
             } catch (NoSuchResourceException e) {
                 logger.onError(e);
             }
@@ -196,6 +228,6 @@ public class AuthenticationGenerator {
 
     @FunctionalInterface
     private interface TokenProcessor {
-        void parse(Map<String, AuthenticationDependency> settings, JsonObject config, String key);
+        void parse(Map<String, AuthenticationDependency> settings, JsonObject config, String key, Runnable done);
     }
 }

@@ -77,7 +77,7 @@ public class RestListener implements CoreListener {
     public void start(Future<Void> start) {
         this.processor = new RequestProcessor(core, handler);
 
-        core.vertx().createHttpServer(settings.get().getHttpOptions(core))
+        core.vertx().createHttpServer(settings.get().getHttpOptions())
                 .requestHandler(router::accept)
                 .listen(settings.get().getPort(), getBindAddress(), listen -> {
                     if (listen.succeeded()) {

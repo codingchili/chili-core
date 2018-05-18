@@ -64,7 +64,7 @@ public class SecuritySettingsTest {
     @Test
     public void loadKeyStoreWithPrivateKey(TestContext test) {
         getKeyStoreBuilder(KEYSTORE_JKS).build();
-        TrustAndKeyProvider provider = security().getKeystore(context, KEY_JKS);
+        TrustAndKeyProvider provider = security().getKeystore(KEY_JKS);
 
         // verify that the private key can be loaded.
         test.assertEquals(provider.getPrivateKey().getAlgorithm(), ALGORITHM_RSA);
@@ -77,7 +77,7 @@ public class SecuritySettingsTest {
     @Test
     public void loadKeyStoreWithPublicKey(TestContext test) {
         getKeyStoreBuilder(TRUSTSTORE_JKS).build();
-        TrustAndKeyProvider provider = security().getKeystore(context, TRUST_JKS);
+        TrustAndKeyProvider provider = security().getKeystore(TRUST_JKS);
         test.assertEquals(provider.getPublicKey().getAlgorithm(), ALGORITHM_RSA);
         try {
             // the private key is not available - access will throw an exception.

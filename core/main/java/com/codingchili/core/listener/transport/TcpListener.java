@@ -45,7 +45,7 @@ public class TcpListener implements CoreListener {
     public void start(Future<Void> start) {
         this.processor = new RequestProcessor(core, handler);
 
-        core.vertx().createNetServer(settings.get().getHttpOptions(core))
+        core.vertx().createNetServer(settings.get().getHttpOptions())
                 .connectHandler(socket -> {
                     Connection connection = connected(socket);
 

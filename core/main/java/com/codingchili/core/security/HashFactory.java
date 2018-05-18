@@ -33,24 +33,11 @@ public class HashFactory {
 
     /**
      * Creates a new hash factory - requires a context to be created.
+     *
      * @param context core context to execute on.
      */
     public HashFactory(CoreContext context) {
         this.context = context;
-    }
-
-    /**
-     * Blocking password hashing with internal salt using ARGON2.
-     *
-     * @param plaintext plaintext password to be hashed.
-     * @return the hash in argon format.
-     */
-    public String hash(String plaintext) {
-        return argon2.hash(
-                settings.getIterations(),
-                settings.getMemory(),
-                settings.getParallelism(),
-                plaintext);
     }
 
     /**
@@ -75,19 +62,25 @@ public class HashFactory {
     /**
      * Async hashing a password with an internal salt using ARGON2.
      *
-     * @param future    callback for string result with hex encoded hash.
      * @param plaintext plaintext password to be hashed.
+     * @return callback
      */
-    public void hash(Handler<AsyncResult<String>> future, String plaintext) {
+    public Future<String> hash(String plaintext) {
+        Future<String> future = Future.future();
         context.<String>blocking(blocking -> {
-            blocking.complete(hash(plaintext));
+            blocking.complete(argon2.hash(
+                    settings.getIterations(),
+                    settings.getMemory(),
+                    settings.getParallelism(),
+                    plaintext));
         }, result -> {
             if (result.succeeded()) {
-                future.handle(Future.succeededFuture(result.result()));
+                future.complete(result.result());
             } else {
-                future.handle(Future.failedFuture(new HashMismatchException()));
+                future.fail(new HashMismatchException());
             }
         });
+        return future;
     }
 
     /**

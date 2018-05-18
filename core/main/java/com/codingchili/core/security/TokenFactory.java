@@ -1,10 +1,11 @@
 package com.codingchili.core.security;
 
+import io.vertx.core.Future;
+
 import com.codingchili.core.configuration.system.SecuritySettings;
 import com.codingchili.core.context.*;
 import com.codingchili.core.files.Configurations;
-import com.codingchili.core.logging.Level;
-import com.codingchili.core.logging.Logger;
+import com.codingchili.core.logging.*;
 import com.codingchili.core.protocol.Serializer;
 
 import javax.crypto.Mac;
@@ -26,24 +27,23 @@ public class TokenFactory {
     private static final String ALIAS = "alias";
     private final byte[] secret;
     private CoreContext core;
-    private Logger logger;
 
     /**
-     * @param core   the core context to execute on.
      * @param secret the secret to use to generate HMAC tokens, must not be null.
      */
     public TokenFactory(CoreContext core, byte[] secret) {
         Objects.requireNonNull(secret, "Cannot create TokenFactory with 'null' secret.");
         this.secret = secret;
-        this.logger = core.logger(getClass());
         this.core = core;
     }
 
     /**
+     * Verifies the validity of the given token.
+     *
      * @param token the token to be verified.
      * @return true if the token is accepted.
      */
-    public boolean verify(Token token) {
+    public Future<Void> verify(Token token) {
         // verify token not null and token is still valid.
         if (token != null && token.getExpiry() > Instant.now().getEpochSecond()) {
             if (token.getProperties().containsKey(CRYPTO_TYPE)) {
@@ -56,27 +56,33 @@ public class TokenFactory {
                 } else if (algorithm.equals(security.getSignatureAlgorithm())) {
                     return verifySignature(token);
                 } else {
-                    logger.event("token.verify", Level.WARNING)
-                            .send(String.format("Token algorithm '%s' - not enabled/trusted.", algorithm));
-                    return false;
+                    return Future.failedFuture(
+                            String.format("Token algorithm '%s' - not enabled/trusted.", algorithm));
                 }
                 // only log an error if the token is secured and type is missing.
             } else if (token.getKey() != null && !token.getKey().isEmpty()) {
-                logger.event("token.verify", Level.WARNING)
-                        .send(String.format("Token is missing property '%s' - unable to verify.", CRYPTO_TYPE));
+                return Future.failedFuture(
+                        String.format("Token is missing property '%s' - unable to verify.", CRYPTO_TYPE));
             }
         }
-        return false;
+        return Future.failedFuture("Token is not valid.");
     }
 
-    private boolean verifyHmac(Token token) {
-        try {
-            byte[] result = Base64.getEncoder().encode(hmacKey(token));
-            return ByteComparator.compare(result, token.getKey().getBytes());
-        } catch (Exception e) {
-            logger.onError(e);
-            return false;
-        }
+    private Future<Void> verifyHmac(Token token) {
+        Future<Void> future = Future.future();
+        core.blocking((blocking) -> {
+            try {
+                byte[] result = Base64.getEncoder().encode(hmacKey(token));
+                if (ByteComparator.compare(result, token.getKey().getBytes())) {
+                    blocking.complete();
+                } else {
+                    blocking.fail("Failed to verify HMAC token.");
+                }
+            } catch (Exception e) {
+                blocking.fail(e);
+            }
+        }, future);
+        return future;
     }
 
     private byte[] hmacKey(Token token) throws NoSuchAlgorithmException, InvalidKeyException {
@@ -95,13 +101,18 @@ public class TokenFactory {
      *
      * @param token the token to sign, sets the key of this token.
      */
-    public void hmac(Token token) {
-        try {
-            token.addProperty(CRYPTO_TYPE, Configurations.security().getHmacAlgorithm());
-            token.setKey(Base64.getEncoder().encodeToString(hmacKey(token)));
-        } catch (InvalidKeyException | NoSuchAlgorithmException e) {
-            throw new RuntimeException(ERROR_TOKEN_FACTORY);
-        }
+    public Future<Void> hmac(Token token) {
+        Future<Void> future = Future.future();
+        core.blocking((blocking) -> {
+            try {
+                token.addProperty(CRYPTO_TYPE, Configurations.security().getHmacAlgorithm());
+                token.setKey(Base64.getEncoder().encodeToString(hmacKey(token)));
+                blocking.complete();
+            } catch (InvalidKeyException | NoSuchAlgorithmException e) {
+                blocking.fail(ERROR_TOKEN_FACTORY);
+            }
+        }, future);
+        return future;
     }
 
     /**
@@ -111,14 +122,23 @@ public class TokenFactory {
      * @param token    the token to be signed.
      * @param keystore the keystore that contains the private key to use for signing.
      */
-    public void sign(Token token, String keystore) {
-        byte[] key = signedKey(token, keystore);
-        token.setKey(Base64.getEncoder().encodeToString(key));
+    public Future<Void> sign(Token token, String keystore) {
+        Future<Void> future = Future.future();
+        core.blocking((blocking) -> {
+            try {
+                byte[] key = signedKey(token, keystore);
+                token.setKey(Base64.getEncoder().encodeToString(key));
+                blocking.complete();
+            } catch (Throwable e) {
+                blocking.fail(e);
+            }
+        }, future);
+        return future;
     }
 
     private byte[] signedKey(Token token, String keystore) {
         try {
-            TrustAndKeyProvider provider = Configurations.security().getKeystore(core, keystore);
+            TrustAndKeyProvider provider = Configurations.security().getKeystore(keystore);
             Signature signature = Signature.getInstance(Configurations.security().getSignatureAlgorithm());
             signature.initSign(provider.getPrivateKey());
 
@@ -132,25 +152,30 @@ public class TokenFactory {
         }
     }
 
-    private boolean verifySignature(Token token) {
+    private Future<Void> verifySignature(Token token) {
+        Future<Void> future = Future.future();
         String alias = token.getProperty(ALIAS);
 
         if (alias == null) {
-            logger.event("token.verify", Level.WARNING)
-                    .send(String.format("token is missing property '%s' - unable to verify.", ALIAS));
+            future.fail(String.format("token is missing property '%s' - unable to verify.", ALIAS));
         } else {
-            TrustAndKeyProvider provider = Configurations.security().getKeystore(core, alias);
-            try {
-                Signature signature = Signature.getInstance(Configurations.security().getSignatureAlgorithm());
-                signature.initVerify(provider.getPublicKey());
-                canonicalizeTokenWithCrypto(token, signature::update);
-                return signature.verify(Base64.getDecoder().decode(token.getKey()));
-            } catch (SignatureException | InvalidKeyException | NoSuchAlgorithmException e) {
-                logger.onError(e);
-                return false;
-            }
+            core.blocking((blocking) -> {
+                TrustAndKeyProvider provider = Configurations.security().getKeystore(alias);
+                try {
+                    Signature signature = Signature.getInstance(Configurations.security().getSignatureAlgorithm());
+                    signature.initVerify(provider.getPublicKey());
+                    canonicalizeTokenWithCrypto(token, signature::update);
+                    if (signature.verify(Base64.getDecoder().decode(token.getKey()))) {
+                        blocking.complete();
+                    } else {
+                        blocking.fail("Failed to verify token signature.");
+                    }
+                } catch (SignatureException | InvalidKeyException | NoSuchAlgorithmException e) {
+                    blocking.fail(e);
+                }
+            }, future);
         }
-        return false;
+        return future;
     }
 
     /**
