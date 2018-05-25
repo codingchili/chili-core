@@ -1,5 +1,7 @@
 package com.codingchili.core.protocol;
 
+import io.vertx.core.Future;
+
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.testing.StorageObject;
@@ -52,5 +54,15 @@ public class AnnotatedRouter implements CoreHandler {
     @Override
     public void handle(Request request) {
         // unused: protocol is called directly by tests.
+    }
+
+    @Authenticator
+    public Future<Role> authenticate(Request request) {
+        return Future.succeededFuture(Role.PUBLIC);
+    }
+
+    @RouteMapper
+    public String map(Request request) {
+        return request.route();
     }
 }

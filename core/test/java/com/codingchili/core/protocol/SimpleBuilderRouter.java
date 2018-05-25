@@ -1,5 +1,7 @@
 package com.codingchili.core.protocol;
 
+import io.vertx.core.Future;
+
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.testing.StorageObject;
@@ -14,6 +16,8 @@ public class SimpleBuilderRouter implements CoreHandler {
     public SimpleBuilderRouter() {
         protocol.setDescription(ProtocolTest.DOCSTRING_TEXT)
                 .setDataModel(StorageObject.class)
+                .routeMapper(this::map)
+                .authenticator(this::authenticate)
                 .setRole(Role.PUBLIC)
                     .use(documentedRoute, this::documentedRoute)
                         .document(DOC_PUBLIC)
@@ -24,6 +28,14 @@ public class SimpleBuilderRouter implements CoreHandler {
                     .use(specialRoute, this::customRouteName)
                     .use(multipleUserRoute, this::multipleUserRoute, USER, ADMIN)
                     .use(customRoleOnRoute, this::customRoleOnRoute, RoleMap.get(CUSTOM_ROLE));
+    }
+
+    private Future<Role> authenticate(Request request) {
+        return Future.succeededFuture(Role.PUBLIC);
+    }
+
+    private String map(Request request) {
+        return request.route();
     }
 
     public Protocol<Request> getProtocol() {

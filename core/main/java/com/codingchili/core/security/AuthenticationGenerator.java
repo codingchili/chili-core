@@ -56,6 +56,8 @@ public class AuthenticationGenerator {
     /**
      * Generate new secrets, preshared secrets and tokens based on the
      * system security configuration.
+     *
+     * @return callback.
      */
     public Future<Void> all() {
         secrets();
@@ -66,7 +68,7 @@ public class AuthenticationGenerator {
     /**
      * Generates new preshared secrets based on the system security configuration.
      */
-    public void preshare() {
+    public Future<Void> preshare() {
         HashMap<String, String> shared = new HashMap<>();
 
         configurations((settings, config, path, save) -> {
@@ -84,12 +86,13 @@ public class AuthenticationGenerator {
                 save.run();
             });
         });
+        return Future.succeededFuture();
     }
 
     /**
      * Generates new secrets based on the system security configuration.
      */
-    public void secrets() {
+    public Future<Void> secrets() {
         configurations((settings, config, path, save) -> {
             andPathMatchesKeyRegex(settings, path).forEach(dependency -> {
 
@@ -101,6 +104,7 @@ public class AuthenticationGenerator {
                 save.run();
             });
         });
+        return Future.succeededFuture();
     }
 
     /**

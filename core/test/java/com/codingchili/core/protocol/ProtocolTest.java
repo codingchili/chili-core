@@ -34,7 +34,6 @@ public abstract class ProtocolTest {
     static final String adminRoleRoute = "adminRoleRoute";
     static final String userRoleRoute = "userRoleRoute";
     static final String multipleUserRoute = "multipleUserRoute";
-    static final String customRouteName = "customRouteName";
     static final String customRoleOnRoute = "customRoleOnRoute";
     static final String specialRoute = "specialRoute";
     static final String CUSTOM_ROLE = "CUSTOM_ROLE";
