@@ -41,12 +41,10 @@ public class ClusterListener implements CoreListener, DeploymentAware {
 
     @Override
     public void start(Future<Void> start) {
-        RequestProcessor processor = new RequestProcessor(core, handler);
         Stream.of(handler.address().split(","))
                 .forEach(address -> {
                     core.bus().consumer(handler.address())
-                            .handler(message -> processor.submit(
-                                    () -> new ClusterRequest(message)));
+                            .handler(message -> handler.handle(new ClusterRequest(message)));
                 });
         handler.start(start);
     }

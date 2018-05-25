@@ -25,7 +25,6 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  */
 public class WebsocketListener implements CoreListener {
     private Supplier<ListenerSettings> settings = ListenerSettings::getDefaultSettings;
-    private RequestProcessor processor;
     private CoreContext core;
     private CoreHandler handler;
 
@@ -49,7 +48,6 @@ public class WebsocketListener implements CoreListener {
 
     @Override
     public void start(Future<Void> start) {
-        this.processor = new RequestProcessor(core, handler);
         listen(start);
     }
 
@@ -108,7 +106,7 @@ public class WebsocketListener implements CoreListener {
     }
 
     private void handle(Connection connection, Buffer buffer) {
-        processor.submit(() -> new WebsocketRequest(connection, buffer, settings.get()));
+        handler.handle(new WebsocketRequest(connection, buffer, settings.get()));
     }
 
     @Override

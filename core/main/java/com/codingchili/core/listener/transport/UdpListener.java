@@ -5,7 +5,6 @@ import com.codingchili.core.context.DeploymentAware;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.CoreListener;
 import com.codingchili.core.listener.ListenerSettings;
-import com.codingchili.core.listener.RequestProcessor;
 import io.vertx.core.Future;
 import io.vertx.core.datagram.DatagramPacket;
 
@@ -21,7 +20,6 @@ import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
  */
 public class UdpListener implements CoreListener, DeploymentAware {
     private Supplier<ListenerSettings> settings = ListenerSettings::getDefaultSettings;
-    private RequestProcessor processor;
     private CoreHandler handler;
     private CoreContext core;
 
@@ -45,8 +43,6 @@ public class UdpListener implements CoreListener, DeploymentAware {
 
     @Override
     public void start(Future<Void> start) {
-        this.processor = new RequestProcessor(core, handler);
-
         core.vertx().createDatagramSocket().listen(settings.get().getPort(), getBindAddress(), listen -> {
             if (listen.succeeded()) {
                 settings.get().addListenPort(listen.result().localAddress().port());
@@ -64,7 +60,7 @@ public class UdpListener implements CoreListener, DeploymentAware {
     }
 
     private void handle(DatagramPacket connection) {
-        processor.submit(() -> new UdpRequest(core, settings.get(), connection));
+        handler.handle(new UdpRequest(core, settings.get(), connection));
     }
 
     @Override

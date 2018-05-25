@@ -19,7 +19,6 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  */
 public class TcpListener implements CoreListener {
     private Supplier<ListenerSettings> settings = ListenerSettings::getDefaultSettings;
-    private RequestProcessor processor;
     private CoreContext core;
     private CoreHandler handler;
 
@@ -43,8 +42,6 @@ public class TcpListener implements CoreListener {
 
     @Override
     public void start(Future<Void> start) {
-        this.processor = new RequestProcessor(core, handler);
-
         core.vertx().createNetServer(settings.get().getHttpOptions())
                 .connectHandler(socket -> {
                     Connection connection = connected(socket);
@@ -78,7 +75,7 @@ public class TcpListener implements CoreListener {
     }
 
     private void packet(Connection connection, Buffer data) {
-        processor.submit(() -> new TcpRequest(connection, data, settings.get()));
+        handler.handle(new TcpRequest(connection, data, settings.get()));
     }
 
     @Override

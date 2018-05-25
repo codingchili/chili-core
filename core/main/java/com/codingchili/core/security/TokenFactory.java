@@ -29,6 +29,7 @@ public class TokenFactory {
     private CoreContext core;
 
     /**
+     * @param core   the core context to run async operations on.
      * @param secret the secret to use to generate HMAC tokens, must not be null.
      */
     public TokenFactory(CoreContext core, byte[] secret) {
@@ -100,6 +101,7 @@ public class TokenFactory {
      * Signs the given token using HMAC.
      *
      * @param token the token to sign, sets the key of this token.
+     * @return callback.
      */
     public Future<Void> hmac(Token token) {
         Future<Void> future = Future.future();
@@ -121,6 +123,7 @@ public class TokenFactory {
      *
      * @param token    the token to be signed.
      * @param keystore the keystore that contains the private key to use for signing.
+     * @return callback
      */
     public Future<Void> sign(Token token, String keystore) {
         Future<Void> future = Future.future();

@@ -22,7 +22,6 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  */
 public class RestListener implements CoreListener {
     private Supplier<ListenerSettings> settings = ListenerSettings::getDefaultSettings;
-    private RequestProcessor processor;
     private String path;
     private String regex;
     private CoreContext core;
@@ -75,8 +74,6 @@ public class RestListener implements CoreListener {
 
     @Override
     public void start(Future<Void> start) {
-        this.processor = new RequestProcessor(core, handler);
-
         core.vertx().createHttpServer(settings.get().getHttpOptions())
                 .requestHandler(router::accept)
                 .listen(settings.get().getPort(), getBindAddress(), listen -> {
@@ -95,7 +92,7 @@ public class RestListener implements CoreListener {
     }
 
     private void packet(RoutingContext context) {
-        processor.submit(() -> new RestRequest(context, settings.get()));
+        handler.handle(new RestRequest(context, settings.get()));
     }
 
     @Override

@@ -1,17 +1,18 @@
 package com.codingchili.core.protocol;
 
 import com.esotericsoftware.reflectasm.MethodAccess;
+import io.vertx.core.Future;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.listener.Receiver;
 import com.codingchili.core.listener.Request;
-import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
-import com.codingchili.core.protocol.exception.HandlerMissingException;
+import com.codingchili.core.protocol.exception.*;
 
 import static com.codingchili.core.configuration.CoreStrings.ANY;
 import static com.codingchili.core.protocol.RoleMap.*;
@@ -31,6 +32,8 @@ public class Protocol<RequestType> {
     private AuthorizationHandler<RequestType> authorizer = new SimpleAuthorizationHandler<>();
     private String description = CoreStrings.getDescriptionMissing();
     private RoleType[] defaultRoles = new RoleType[]{RoleMap.get(USER)};
+    private Function<Request, Future<Role>> authenticator = (Request) -> Future.succeededFuture(Role.PUBLIC);
+    private Function<Request, String> routeMapper = Request::route;
     private boolean emitDocumentation = false;
     private Route<RequestType> lastAddedRoute;
     private Class<?> dataModel;
@@ -90,24 +93,50 @@ public class Protocol<RequestType> {
 
     private void setHandlerRoutes(Receiver<RequestType> handler) {
         for (Method method : handler.getClass().getDeclaredMethods()) {
-            Api api = method.getAnnotation(Api.class);
-            Description description = method.getAnnotation(Description.class);
-            DataModel model = method.getAnnotation(DataModel.class);
+            readMapper(method, handler);
+            readAuthenticator(method, handler);
+            readApi(method, handler);
+        }
+    }
 
-            if (api != null) {
-                String route = (api.route().isEmpty()) ? method.getName() : api.route();
-                RoleType[] roles = (api.value()[0].equals(UNSET)) ? defaultRoles : RoleMap.get(api.value());
+    private void readMapper(Method method, Receiver<RequestType> handler) {
+        RouteMapper mapper = method.getAnnotation(RouteMapper.class);
 
-                wrap(route, handler, method, roles);
+        if (mapper != null) {
+            MethodAccess access = MethodAccess.get(handler.getClass());
+            int index = access.getIndex(method.getName());
+            this.routeMapper = (request) -> (String) access.invoke(handler, index, request);
+        }
+    }
 
-                if (description != null) {
-                    emitDocumentation = true;
-                    this.document(description.value());
-                }
+    private void readAuthenticator(Method method, Receiver<RequestType> handler) {
+        Authenticator authenticator = method.getAnnotation(Authenticator.class);
 
-                if (model != null) {
-                    this.model(model.value());
-                }
+        if (authenticator != null) {
+            MethodAccess access = MethodAccess.get(handler.getClass());
+            int index = access.getIndex(method.getName());
+            this.authenticator= (request) -> (Future<Role>) access.invoke(handler, index, request);
+        }
+    }
+
+    private void readApi(Method method, Receiver<RequestType> handler) {
+        Api api = method.getAnnotation(Api.class);
+        Description description = method.getAnnotation(Description.class);
+        DataModel model = method.getAnnotation(DataModel.class);
+
+        if (api != null) {
+            String route = (api.route().isEmpty()) ? method.getName() : api.route();
+            RoleType[] roles = (api.value()[0].equals(UNSET)) ? defaultRoles : RoleMap.get(api.value());
+
+            wrap(route, handler, method, roles);
+
+            if (description != null) {
+                emitDocumentation = true;
+                this.document(description.value());
+            }
+
+            if (model != null) {
+                this.model(model.value());
             }
         }
     }
@@ -225,6 +254,59 @@ public class Protocol<RequestType> {
     }
 
     /**
+     * Processes a request with some additional error handling. The authenticator {@link #authenticator(Function)}
+     * is invoked with a future to support asynchronous cryptography operations, the request size is checked against
+     * the configured maximum value. The route to invoke may be configured by specifying a
+     * custom {@link #routeMapper(Function)}. Any exceptions thrown by the invoked route, or if the route is missing
+     * or authorization insufficient, an error will be written as a response to the request.
+     *
+     * @param request the request to be processed.
+     */
+    @SuppressWarnings("unchecked")
+    public void process(Request request) {
+        if (request.size() > request.maxSize()) {
+            request.error(new RequestPayloadSizeException(request.maxSize()));
+        } else {
+            authenticator.apply(request).setHandler(done -> {
+                if (done.succeeded()) {
+                    try {
+                        get(routeMapper.apply(request), done.result()).submit((RequestType) request);
+                    } catch (Throwable e) {
+                        request.error(e);
+                    }
+                } else {
+                    request.error(done.cause());
+                }
+            });
+        }
+    }
+
+    /**
+     * Set the route mapper used to process requests. A route mapper determines which protocol route
+     * that is to be invoked for the given request. The default mapper invokes {@link Request#route()}.
+     *
+     * @param mapper the mapper to use for this protocol instance.
+     * @return fluent.
+     */
+    public Protocol<RequestType> routeMapper(Function<Request, String> mapper) {
+        this.routeMapper = mapper;
+        return this;
+    }
+
+    /**
+     * Set the authenticator used to {@link #process(Request)} requests. The authenticator consumes
+     * a Request and produces an optionally asynchronous result that indicates which role is valid
+     * for the current request. The default authenticator responds with {@link Role#PUBLIC}.
+     *
+     * @param authenticator the authenticator to use for this protocol instance.
+     * @return fluent.
+     */
+    public Protocol<RequestType> authenticator(Function<Request, Future<Role>> authenticator) {
+        this.authenticator = authenticator;
+        return this;
+    }
+
+    /**
      * Adds a documentation string to the last added route.
      * <p>
      * Annotated alternative #{@link Description} on requesthandler class
@@ -278,4 +360,3 @@ public class Protocol<RequestType> {
         return authorizer.list().stream().map(Route::getName).collect(Collectors.toSet());
     }
 }
-
