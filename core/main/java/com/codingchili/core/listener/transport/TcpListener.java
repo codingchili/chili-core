@@ -2,6 +2,7 @@ package com.codingchili.core.listener.transport;
 
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.net.NetSocket;
 
 import java.util.function.Supplier;
@@ -62,7 +63,7 @@ public class TcpListener implements CoreListener {
         });
     }
 
-        public Connection connected(NetSocket socket) {
+    public Connection connected(NetSocket socket) {
         return new Connection((msg) -> {
             socket.write(Response.buffer(msg));
         }, socket.writeHandlerID())

@@ -85,6 +85,7 @@ public abstract class ListenerTestCases {
     }
 
     @Test
+    @Ignore("Needs to be reconsidered/redesigned.")
     public void testLargePacketRejected(TestContext test) {
         Async async = test.async();
 

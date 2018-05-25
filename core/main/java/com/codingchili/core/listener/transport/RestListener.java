@@ -32,7 +32,7 @@ public class RestListener implements CoreListener {
     @Override
     public void init(CoreContext core) {
         router = Router.router(core.vertx());
-        router.route().handler(BodyHandler.create());
+        router.route().handler(BodyHandler.create().setBodyLimit(settings.get().getMaxRequestBytes()));
         RestHelper.addHeaders(router, settings.get().isSecure());
 
         // enable routing for static resources.

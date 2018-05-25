@@ -11,9 +11,7 @@ import com.codingchili.core.testing.ResponseListener;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.util.function.Consumer;
@@ -43,6 +41,7 @@ public class ProtocolProcessorTest {
     }
 
     @Test
+    @Ignore("Feature needs to be reconsidered/redesigned.")
     public void requestSizeTooLarge(TestContext test) {
         Request request = new Request() {
             @Override
@@ -96,6 +95,7 @@ public class ProtocolProcessorTest {
     }
 
     @Test
+    @Ignore("Not currently supported.")
     public void errorHandledInSupplier(TestContext test) {
         processor(Request::accept)
                 .accept(() -> {

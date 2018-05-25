@@ -67,6 +67,7 @@ public class AuthenticationGenerator {
 
     /**
      * Generates new preshared secrets based on the system security configuration.
+     * @return callback
      */
     public Future<Void> preshare() {
         HashMap<String, String> shared = new HashMap<>();
@@ -91,6 +92,7 @@ public class AuthenticationGenerator {
 
     /**
      * Generates new secrets based on the system security configuration.
+     * @return callback
      */
     public Future<Void> secrets() {
         configurations((settings, config, path, save) -> {
@@ -109,6 +111,7 @@ public class AuthenticationGenerator {
 
     /**
      * Generates new tokens based on the system security configuration.
+     * @return callback
      */
     public Future<Void> tokens() {
         Future<Void> future = Future.future();

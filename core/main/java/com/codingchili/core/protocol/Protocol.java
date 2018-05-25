@@ -115,7 +115,7 @@ public class Protocol<RequestType> {
         if (authenticator != null) {
             MethodAccess access = MethodAccess.get(handler.getClass());
             int index = access.getIndex(method.getName());
-            this.authenticator= (request) -> (Future<Role>) access.invoke(handler, index, request);
+            this.authenticator = (request) -> (Future<Role>) access.invoke(handler, index, request);
         }
     }
 
@@ -264,9 +264,7 @@ public class Protocol<RequestType> {
      */
     @SuppressWarnings("unchecked")
     public void process(Request request) {
-        if (request.size() > request.maxSize()) {
-            request.error(new RequestPayloadSizeException(request.maxSize()));
-        } else {
+        try {
             authenticator.apply(request).setHandler(done -> {
                 if (done.succeeded()) {
                     try {
@@ -278,6 +276,8 @@ public class Protocol<RequestType> {
                     request.error(done.cause());
                 }
             });
+        } catch (Throwable e) {
+            request.error(e);
         }
     }
 
