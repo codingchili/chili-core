@@ -43,7 +43,7 @@ public class SecuritySettings implements Configurable {
     private int tokenttl = 3600 * 24 * 7;
 
     static {
-        StartupListener.subscibe(core -> {
+        StartupListener.subscribe(core -> {
             logger = core.logger(SecuritySettings.class);
         });
     }

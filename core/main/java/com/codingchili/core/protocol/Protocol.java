@@ -10,8 +10,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.context.StartupListener;
 import com.codingchili.core.listener.Receiver;
 import com.codingchili.core.listener.Request;
+import com.codingchili.core.logging.ConsoleLogger;
+import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.exception.*;
 
 import static com.codingchili.core.configuration.CoreStrings.ANY;
@@ -37,6 +40,13 @@ public class Protocol<RequestType> {
     private boolean emitDocumentation = false;
     private Route<RequestType> lastAddedRoute;
     private Class<?> dataModel;
+    private Logger logger = new ConsoleLogger(getClass());
+
+    {
+        StartupListener.subscribe(core -> {
+            logger = core.logger(getClass());
+        });
+    }
 
     public Protocol() {
     }
@@ -270,13 +280,16 @@ public class Protocol<RequestType> {
                     try {
                         get(routeMapper.apply(request), done.result()).submit((RequestType) request);
                     } catch (Throwable e) {
+                        logger.onError(e);
                         request.error(e);
                     }
                 } else {
+                    logger.onError(done.cause());
                     request.error(done.cause());
                 }
             });
         } catch (Throwable e) {
+            logger.onError(e);
             request.error(e);
         }
     }

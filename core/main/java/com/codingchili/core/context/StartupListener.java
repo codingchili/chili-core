@@ -23,7 +23,7 @@ public class StartupListener {
      *
      * @param listener called on load or if already loaded.
      */
-    public static void subscibe(Consumer<CoreContext> listener) {
+    public static void subscribe(Consumer<CoreContext> listener) {
         if (core != null) {
             listener.accept(core);
         } else {

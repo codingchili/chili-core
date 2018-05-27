@@ -12,7 +12,7 @@ public abstract class Delay {
     private static CoreContext context;
 
     static {
-        StartupListener.subscibe(core -> {
+        StartupListener.subscribe(core -> {
             Delay.context = core;
         });
     }

@@ -44,7 +44,7 @@ public abstract class Configurations {
         init();
         reloadAll();
 
-        StartupListener.subscibe(core -> {
+        StartupListener.subscribe(core -> {
             if (initialized.get()) {
                 logger.onAlreadyInitialized();
             } else {

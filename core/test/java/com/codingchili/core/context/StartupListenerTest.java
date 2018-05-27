@@ -25,7 +25,7 @@ public class StartupListenerTest {
     public void startupNotified(TestContext test) {
         Async async = test.async();
 
-        StartupListener.subscibe(core -> {
+        StartupListener.subscribe(core -> {
             test.assertNotNull(core);
             async.complete();
         });

@@ -77,7 +77,7 @@ public class Serializer {
         } else {
             try {
                 return json.writeValueAsString(object);
-            } catch (JsonProcessingException e) {
+            } catch (Throwable e) {
                 throw new CoreRuntimeException(e.getMessage());
             }
         }
@@ -97,7 +97,7 @@ public class Serializer {
             } else {
                 return yaml.writeValueAsString(object);
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new CoreRuntimeException(e.getMessage());
         }
     }
@@ -127,7 +127,7 @@ public class Serializer {
     public static <T> T unpack(String data, Class<T> clazz) {
         try {
             return json.readValue(data, clazz);
-        } catch (IOException e) {
+        } catch (Throwable e) {
             throw new SerializerPayloadException(e.getMessage(), clazz);
         }
     }
@@ -143,7 +143,7 @@ public class Serializer {
     public static <T> T unyaml(String data, Class<T> clazz) {
         try {
             return yaml.readValue(data, clazz);
-        } catch (IOException e) {
+        } catch (Throwable e) {
             throw new SerializerPayloadException(e.getMessage(), clazz);
         }
     }
@@ -164,7 +164,11 @@ public class Serializer {
             if (json == null) {
                 throw new SerializerPayloadException("null", clazz);
             } else {
-                return json.mapTo(clazz);
+                try {
+                    return json.mapTo(clazz);
+                } catch (Throwable e) {
+                    throw new SerializerPayloadException(e.getMessage(), clazz);
+                }
             }
         }
     }
