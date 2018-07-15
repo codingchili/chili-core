@@ -1,10 +1,12 @@
 package com.codingchili.core.configuration.system;
 
 import com.codingchili.core.configuration.Configurable;
+import com.codingchili.core.files.Configurations;
 import com.codingchili.core.storage.MongoDBMap;
 
 import java.util.HashMap;
 
+import static com.codingchili.core.configuration.CoreStrings.LOCALHOST;
 import static com.codingchili.core.configuration.CoreStrings.PATH_STORAGE;
 
 /**
@@ -22,6 +24,10 @@ public class StorageSettings implements Configurable{
     public StorageSettings() {
         storage.put(MongoDBMap.class.getName(),
                 new RemoteStorage(LOCALHOST, 27017, CHILI));
+
+        // we cannot depend on the elastic storage from here, but we can still configure it.
+        storage.put("com.codingchili.core.storage.ElasticMap",
+                new RemoteStorage(LOCALHOST, 9300, "chili"));
     }
 
     @Override

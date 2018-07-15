@@ -1,22 +1,20 @@
 package com.codingchili.core.storage;
 
-import com.codingchili.core.configuration.system.RemoteStorage;
-import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.files.Configurations;
-import com.codingchili.core.logging.Logger;
-import com.codingchili.core.security.Validator;
-import com.codingchili.core.storage.exception.*;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
+import io.vertx.core.*;
+import org.elasticsearch.ResourceAlreadyExistsException;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.DocWriteResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.client.AdminClient;
+import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.settings.Settings;
@@ -25,25 +23,25 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.IndexNotFoundException;
 import org.elasticsearch.index.engine.DocumentMissingException;
 import org.elasticsearch.index.engine.VersionConflictEngineException;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.RegexpFlag;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortOrder;
+import org.elasticsearch.transport.RemoteTransportException;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
-import static com.codingchili.core.configuration.CoreStrings.LOCALHOST;
-import static com.codingchili.core.context.FutureHelper.error;
-import static com.codingchili.core.context.FutureHelper.result;
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.logging.Logger;
+import com.codingchili.core.security.Validator;
+import com.codingchili.core.storage.exception.*;
+
+import static com.codingchili.core.context.FutureHelper.*;
 
 /**
  * @author Robin Duda
@@ -57,11 +55,6 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     private TransportClient client;
     private Logger logger;
 
-    static {
-        Configurations.storage().add(
-                new RemoteStorage(LOCALHOST, 9300, "chili"), ElasticMap.class);
-    }
-
     public ElasticMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
         this.context = context;
         this.logger = context.logger(getClass());
@@ -72,11 +65,40 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                     .addTransportAddress(
                             new TransportAddress(InetAddress.getByName(context.host()), context.port()));
 
-            client.admin().indices().create(new CreateIndexRequest(context.collection())).get();
-        } catch (UnknownHostException | InterruptedException | ExecutionException e) {
-            logger.onError(e);
+
+            IndicesAdminClient indices = client.admin().indices();
+
+            // multiple requests just because we cannot do an addIfNotExists anymore.
+            indices.exists(new IndicesExistsRequest(context.collection()), new ActionListener<IndicesExistsResponse>() {
+                @Override
+                public void onResponse(IndicesExistsResponse indicesExistsResponse) {
+                    if (!indicesExistsResponse.isExists()) {
+                        logger.log(String.format("index %s does not exist, creating.", context.collection()));
+
+                        indices.create(new CreateIndexRequest(context.collection()), new ActionListener<CreateIndexResponse>() {
+                            @Override
+                            public void onResponse(CreateIndexResponse createIndexResponse) {
+                                future.complete(ElasticMap.this);
+                            }
+
+                            @Override
+                            public void onFailure(Exception e) {
+                                future.fail(e);
+                            }
+                        });
+                    } else {
+                        future.complete(ElasticMap.this);
+                    }
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    future.fail(e);
+                }
+            });
+        } catch (Throwable e) {
+            future.fail(e);
         }
-        future.complete(this);
     }
 
     @Override

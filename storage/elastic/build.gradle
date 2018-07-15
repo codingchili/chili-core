@@ -21,6 +21,7 @@ jar {
 
 dependencies {
     compile 'org.elasticsearch.client:transport:6.1.1'
+    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.5'
     compileOnly project(':core')
 
     testCompile project(':core')
