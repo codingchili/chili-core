@@ -6,8 +6,8 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.listener.*;
@@ -21,12 +21,25 @@ import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_CONNECTION
  * HTTP/REST request object.
  */
 public class RestRequest implements Request {
+    private static String basePath;
     private HttpServerRequest request;
     private Connection connection;
     private JsonObject data = new JsonObject();
     private ListenerSettings settings;
     private int size;
 
+    /**
+     * @param basePath a basepath to be used for REST requests. The basepath will
+     *                 be stripped from the request URI before retrieving the target.
+     */
+    public static void setBasePath(String basePath) {
+        RestRequest.basePath = basePath;
+    }
+
+    /**
+     * @param context  the routing context for the request.
+     * @param settings listener settings for the listener that created the request.
+     */
     public RestRequest(RoutingContext context, ListenerSettings settings) {
         this.size = context.getBody().length();
         this.request = context.request();
@@ -56,30 +69,46 @@ public class RestRequest implements Request {
                 // write data without calling end - supports long polling.
                 request.response().write(Response.buffer(object));
             }, UUID.randomUUID().toString())
-                   .setProperty(PROTOCOL_CONNECTION, request.connection().remoteAddress().host());
+                    .setProperty(PROTOCOL_CONNECTION, request.connection().remoteAddress().host());
         }
 
         return connection;
     }
 
     private void parseData(RoutingContext context) {
-        String body = context.getBodyAsString();
-        if (body == null || body.length() == 0) {
-            request.params().forEach(entry -> {
-                data.put(entry.getKey(), entry.getValue());
-            });
-        } else {
+        Buffer body = context.getBody();
+
+        if (body != null && body.length() != 0) {
             data = new JsonObject(body);
+        } else {
+            data = new JsonObject();
         }
 
+        request.params().forEach(entry -> data.put(entry.getKey(), entry.getValue()));
         parseApi(context);
 
-        if (!data.containsKey(CoreStrings.PROTOCOL_ROUTE)) {
-            data.put(CoreStrings.PROTOCOL_ROUTE, context.request().path().replaceFirst("/", ""));
+        if (!data.containsKey(CoreStrings.PROTOCOL_TARGET)) {
+            data.put(CoreStrings.PROTOCOL_TARGET,
+                    Arrays.stream(getPath().split("/"))
+                            .filter((s) -> !s.isEmpty())
+                            .findFirst()
+                            .orElse(settings.getDefaultTarget()));
         }
 
-        if (!data.containsKey(CoreStrings.PROTOCOL_TARGET)) {
-            data.put(CoreStrings.PROTOCOL_TARGET, settings.getDefaultTarget());
+        if (!data.containsKey(CoreStrings.PROTOCOL_ROUTE)) {
+            data.put(CoreStrings.PROTOCOL_ROUTE,
+                    Arrays.stream(getPath().split("/"))
+                            .filter(s -> !s.isEmpty())
+                            .skip(1)
+                            .collect(Collectors.joining("/")));
+        }
+    }
+
+    private String getPath() {
+        if (basePath != null) {
+            return request.path().replaceFirst(basePath, "");
+        } else {
+            return request.path();
         }
     }
 
