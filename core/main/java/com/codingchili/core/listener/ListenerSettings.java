@@ -25,6 +25,7 @@ public class ListenerSettings {
     private Set<Integer> actualPorts = new HashSet<>();
     private String defaultTarget = "default";
     private String keystore = CoreStrings.DEFAULT_KEYSTORE;
+    private String basePath = null;
     private boolean binaryWebsockets = true;
     private boolean secure = true;
     private boolean alpn = false;
@@ -275,5 +276,21 @@ public class ListenerSettings {
      */
     public static ListenerSettings getDefaultSettings() {
         return defaultSettings;
+    }
+
+    /**
+     * @return a regex that matches the basePath for received calls. When using
+     * #{@link com.codingchili.core.listener.transport.RestRequest} the basePath will
+     * not be considered when mapping the URL to target/route.
+     */
+    public String getBasePath() {
+        return basePath;
+    }
+
+    /**
+     * @param basePath see #{@link #getBasePath()}
+     */
+    public void setBasePath(String basePath) {
+        this.basePath = basePath;
     }
 }

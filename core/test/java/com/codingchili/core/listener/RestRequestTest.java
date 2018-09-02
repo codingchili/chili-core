@@ -13,6 +13,7 @@ import io.vertx.ext.web.*;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.web.Locale;
 import io.vertx.ext.web.Session;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -47,11 +48,15 @@ public class RestRequestTest {
             .put(PROTOCOL_ROUTE, ROUTE)
             .put(PAYLOAD, JESUS);
 
+    @After
+    public void tearDown() {
+        settings.setBasePath(null);
+    }
+
     @Test
     public void stripBasePath(TestContext test) {
-        RestRequest.setBasePath(BASEPATH);
+        settings.setBasePath(BASEPATH);
         assertRoute(getRequest(BASEPATH + PATH_ROUTE), test);
-        RestRequest.setBasePath(null);
     }
 
     @Test
@@ -79,7 +84,7 @@ public class RestRequestTest {
 
     @Test
     public void setDefaultTargetIfTargetNotSpecified(TestContext test) {
-        RestRequest.setBasePath(BASEPATH);
+        settings.setBasePath(BASEPATH);
         test.assertEquals(getRequest(BASEPATH).target(), DEFAULT_TARGET);
     }
 

@@ -21,20 +21,11 @@ import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_CONNECTION
  * HTTP/REST request object.
  */
 public class RestRequest implements Request {
-    private static String basePath;
     private HttpServerRequest request;
     private Connection connection;
     private JsonObject data = new JsonObject();
     private ListenerSettings settings;
     private int size;
-
-    /**
-     * @param basePath a basepath to be used for REST requests. The basepath will
-     *                 be stripped from the request URI before retrieving the target.
-     */
-    public static void setBasePath(String basePath) {
-        RestRequest.basePath = basePath;
-    }
 
     /**
      * @param context  the routing context for the request.
@@ -105,8 +96,8 @@ public class RestRequest implements Request {
     }
 
     private String getPath() {
-        if (basePath != null) {
-            return request.path().replaceFirst(basePath, "");
+        if (settings.getBasePath() != null) {
+            return request.path().replaceFirst(settings.getBasePath(), "");
         } else {
             return request.path();
         }
