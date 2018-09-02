@@ -148,7 +148,9 @@ public class MultiHandler implements CoreHandler {
         if (map.containsKey(request.target())) {
             map.get(request.target()).handle(request);
         } else {
-            throw new HandlerMissingException(request.target());
+            CoreRuntimeException exception = new HandlerMissingException(request.target());
+            request.error(exception);
+            core.logger(getClass()).onError(exception);
         }
     }
 
