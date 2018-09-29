@@ -35,7 +35,7 @@ public class Protocol<RequestType> {
     private AuthorizationHandler<RequestType> authorizer = new SimpleAuthorizationHandler<>();
     private String description = CoreStrings.getDescriptionMissing();
     private RoleType[] defaultRoles = new RoleType[]{RoleMap.get(USER)};
-    private Function<Request, Future<Role>> authenticator = (Request) -> Future.succeededFuture(Role.PUBLIC);
+    private Function<Request, Future<RoleType>> authenticator = (Request) -> Future.succeededFuture(Role.PUBLIC);
     private Function<Request, String> routeMapper = Request::route;
     private boolean emitDocumentation = false;
     private Route<RequestType> lastAddedRoute;
@@ -119,13 +119,14 @@ public class Protocol<RequestType> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void readAuthenticator(Method method, Receiver<RequestType> handler) {
         Authenticator authenticator = method.getAnnotation(Authenticator.class);
 
         if (authenticator != null) {
             MethodAccess access = MethodAccess.get(handler.getClass());
             int index = access.getIndex(method.getName());
-            this.authenticator = (request) -> (Future<Role>) access.invoke(handler, index, request);
+            this.authenticator = (request) -> (Future<RoleType>) access.invoke(handler, index, request);
         }
     }
 
@@ -314,7 +315,7 @@ public class Protocol<RequestType> {
      * @param authenticator the authenticator to use for this protocol instance.
      * @return fluent.
      */
-    public Protocol<RequestType> authenticator(Function<Request, Future<Role>> authenticator) {
+    public Protocol<RequestType> authenticator(Function<Request, Future<RoleType>> authenticator) {
         this.authenticator = authenticator;
         return this;
     }
