@@ -398,6 +398,11 @@ public class RestRequestTest {
         }
 
         @Override
+        public Cookie removeCookie(String name, boolean invalidate) {
+            return null;
+        }
+
+        @Override
         public int cookieCount() {
             return 0;
         }
@@ -518,12 +523,32 @@ public class RestRequestTest {
         }
 
         @Override
+        public void reroute(String path) {
+
+        }
+
+        @Override
         public void reroute(HttpMethod httpMethod, String s) {
 
         }
 
         @Override
         public List<Locale> acceptableLocales() {
+            return null;
+        }
+
+        @Override
+        public List<LanguageHeader> acceptableLanguages() {
+            return null;
+        }
+
+        @Override
+        public Locale preferredLocale() {
+            return null;
+        }
+
+        @Override
+        public LanguageHeader preferredLanguage() {
             return null;
         }
 

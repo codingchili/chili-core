@@ -30,7 +30,7 @@ public class SimpleBuilderRouter implements CoreHandler {
                     .use(customRoleOnRoute, this::customRoleOnRoute, RoleMap.get(CUSTOM_ROLE));
     }
 
-    private Future<Role> authenticate(Request request) {
+    private Future<RoleType> authenticate(Request request) {
         return Future.succeededFuture(Role.PUBLIC);
     }
 

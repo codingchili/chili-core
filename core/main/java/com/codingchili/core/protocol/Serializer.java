@@ -2,10 +2,9 @@ package com.codingchili.core.protocol;
 
 
 import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.pool.KryoPool;
+import com.esotericsoftware.kryo.util.Pool;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
@@ -52,7 +51,11 @@ public class Serializer {
         yaml.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
-    private static KryoPool pool = new KryoPool.Builder(Kryo::new).softReferences().build();
+    private static Pool<Kryo> pool = new Pool<Kryo>(true, true, 8) {
+        protected Kryo create () {
+            return new Kryo();
+        }
+    };
 
     /**
      * Execute with a pooled kryo instance.
@@ -62,7 +65,10 @@ public class Serializer {
      * @return the value that is returned by the kryo invocation.
      */
     public static <T> T kryo(Function<Kryo, T> kryo) {
-        return pool.run(kryo::apply);
+        Kryo instance = pool.obtain();
+        T object = kryo.apply(instance);
+        pool.free(instance);
+        return object;
     }
 
     /**
