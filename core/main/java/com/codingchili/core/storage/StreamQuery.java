@@ -139,20 +139,26 @@ public class StreamQuery<Value extends Storable, Streaming> {
 
             private Set<Streaming> results() {
                 return source.stream().filter(entry -> {
-                    // if an entry matches any of the classes it is a hit
-                    for (List<StatementPredicate> clause : statements) {
-                        boolean match = true;
-                        // check if the entry matches all statements in the clause
-                        for (StatementPredicate statement : clause) {
-                            if (!anyMatch(entry, statement)) {
-                                match = false;
+
+                    if (statements.size() > 0) {
+                        // if an entry matches any of the classes it is a hit
+                        for (List<StatementPredicate> clause : statements) {
+                            boolean match = true;
+                            // check if the entry matches all statements in the clause
+                            for (StatementPredicate statement : clause) {
+                                if (!anyMatch(entry, statement)) {
+                                    match = false;
+                                }
+                            }
+                            if (match) {
+                                return true;
                             }
                         }
-                        if (match) {
-                            return true;
-                        }
+                        return false;
+                    } else {
+                        // if there are no constraints - consider everything as matching.
+                        return true;
                     }
-                    return false;
                 }).collect(Collectors.toSet());
             }
 
