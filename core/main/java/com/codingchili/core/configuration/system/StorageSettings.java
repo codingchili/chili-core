@@ -27,7 +27,7 @@ public class StorageSettings implements Configurable{
 
         // we cannot depend on the elastic storage from here, but we can still configure it.
         storage.put("com.codingchili.core.storage.ElasticMap",
-                new RemoteStorage(LOCALHOST, 9300, "chili"));
+                new RemoteStorage(LOCALHOST, 9200, "chili"));
     }
 
     @Override

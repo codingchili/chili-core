@@ -50,7 +50,7 @@ public class MapTestCases {
     protected static Integer STARTUP_DELAY = 1;
 
     @Rule
-    public Timeout timeout = Timeout.seconds(15);
+    public Timeout timeout = Timeout.seconds(60);
 
     protected Class<? extends AsyncStorage> plugin;
     protected StorageContext<StorageObject> context;
