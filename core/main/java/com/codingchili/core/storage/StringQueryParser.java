@@ -1,10 +1,5 @@
 package com.codingchili.core.storage;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
-
-import java.util.Collection;
-
 /**
  * Parses string based queries.
  */
@@ -16,5 +11,5 @@ public interface StringQueryParser<T extends Storable> {
      * @param expression the expression to parse.
      * @return the constructed query
      */
-    Handler<AsyncResult<Collection<T>>> parse(String expression);
+    QueryBuilder<T> parse(String expression);
 }

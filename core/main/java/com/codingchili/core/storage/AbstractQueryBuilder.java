@@ -1,13 +1,12 @@
 package com.codingchili.core.storage;
 
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.context.TimerSource;
-import com.codingchili.core.files.Configurations;
-import io.vertx.core.json.JsonObject;
-
 import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Consumer;
+
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.context.TimerSource;
+import com.codingchili.core.files.Configurations;
 
 import static com.codingchili.core.configuration.CoreStrings.STORAGE_ARRAY;
 import static com.codingchili.core.protocol.Serializer.getValueByPath;
@@ -35,29 +34,32 @@ public abstract class AbstractQueryBuilder<Value extends Storable> implements Qu
 
     /**
      * Creates a new query builder with specified attribute. Array notations will be removed.
-     *
-     * @param attribute the attribute to query for
+     * @param storage the backing storage implementation.
      */
-    AbstractQueryBuilder(AsyncStorage<Value> storage, String attribute) {
-        this(storage, attribute, STORAGE_ARRAY);
+    AbstractQueryBuilder(AsyncStorage<Value> storage) {
+        this(storage, STORAGE_ARRAY);
     }
 
     /**
      * Creates a new query builder with the specified attribute, and defines a new
      * array notation.
      *
-     * @param attribute     the attribute to query for
      * @param arrayNotation the new array notation
      */
-    AbstractQueryBuilder(AsyncStorage<Value> storage, String attribute, String arrayNotation) {
+    AbstractQueryBuilder(AsyncStorage<Value> storage, String arrayNotation) {
         this.arrayNotation = arrayNotation;
         this.storage = storage;
-        setAttribute(attribute);
     }
 
     @Override
     public EntryWatcher<Value> poll(Consumer<Collection<Value>> consumer, TimerSource timer) {
         return new EntryWatcher<>(storage, () -> this, timer).start(consumer);
+    }
+
+    @Override
+    public QueryBuilder<Value> on(String attribute) {
+        setAttribute(attribute);
+        return this;
     }
 
     @Override
@@ -88,8 +90,10 @@ public abstract class AbstractQueryBuilder<Value extends Storable> implements Qu
     }
 
     public void setAttribute(String attribute) {
-        isAttributeArray = attribute.contains(STORAGE_ARRAY);
-        this.attribute = setArrayNotation(attribute);
+        if (attribute != null) {
+            isAttributeArray = attribute.contains(STORAGE_ARRAY);
+            this.attribute = setArrayNotation(attribute);
+        }
     }
 
     public boolean isAttributeArray() {

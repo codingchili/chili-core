@@ -54,7 +54,7 @@ public class ClusteredSessionFactory implements SessionFactory<ClusteredSession>
 
     @Override
     public QueryBuilder<ClusteredSession> query(String attribute) {
-        Query<ClusteredSession> query = Query.on(attribute);
+        Query<ClusteredSession> query = new Query<ClusteredSession>().on(attribute);
         query.storage(sessions);
         query.mapper((session) -> session.setSessionFactory(this));
         return query;

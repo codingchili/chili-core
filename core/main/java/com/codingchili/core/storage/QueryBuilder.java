@@ -64,6 +64,8 @@ public interface QueryBuilder<Value extends Storable> {
      */
     QueryBuilder<Value> or(String attribute);
 
+    QueryBuilder<Value> on(String attribute);
+
     /**
      * set the page offset for paging support.
      *

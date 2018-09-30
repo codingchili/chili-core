@@ -188,12 +188,17 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public QueryBuilder<Value> query(String field) {
-        addIndex(field);
-
-        return new AbstractQueryBuilder<Value>(this, field) {
+    public QueryBuilder<Value> query() {
+        return new AbstractQueryBuilder<Value>(this) {
             JsonArray statements = new JsonArray();
             JsonArray builder = new JsonArray();
+
+            @Override
+            public QueryBuilder<Value> on(String attribute) {
+                addIndex(attribute);
+                setAttribute(attribute);
+                return this;
+            }
 
             @Override
             public QueryBuilder<Value> and(String attribute) {

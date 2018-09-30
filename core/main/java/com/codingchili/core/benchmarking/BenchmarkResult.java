@@ -30,12 +30,12 @@ public interface BenchmarkResult {
     String getTimeFormatted();
 
     /**
-     * @return the number of operations per second as a formatted string.
+     * @return the number of defaults per second as a formatted string.
      */
     String getRateFormatted();
 
     /**
-     * @return the number of operations per second.
+     * @return the number of defaults per second.
      */
     int getRate();
 

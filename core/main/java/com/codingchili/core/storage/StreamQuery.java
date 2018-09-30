@@ -43,10 +43,16 @@ public class StreamQuery<Value extends Storable, Streaming> {
         return this;
     }
 
-    public QueryBuilder<Value> query(String attribute) {
-        return new AbstractQueryBuilder<Value>(storage, attribute) {
+    public QueryBuilder<Value> query() {
+        return new AbstractQueryBuilder<Value>(storage) {
             List<List<StatementPredicate>> statements = new ArrayList<>();
             int bucketIndex = 0;
+
+            @Override
+            public QueryBuilder<Value> on(String attribute) {
+                setAttribute(attribute);
+                return this;
+            }
 
             @Override
             public QueryBuilder<Value> and(String attribute) {

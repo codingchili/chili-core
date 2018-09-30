@@ -209,8 +209,8 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
     }
 
     @Override
-    public QueryBuilder<Value> query(String attribute) {
-        return new IndexedMapQuery<>(this, attribute).setMapper(mapper);
+    public QueryBuilder<Value> query() {
+        return new IndexedMapQuery<>(this).setMapper(mapper);
     }
 
     @Override

@@ -105,17 +105,25 @@ public interface AsyncStorage<Value extends Storable> {
     void size(Handler<AsyncResult<Integer>> handler);
 
     /**
-     * initialize the construction of a query.
-     *
-     * @param attribute the attribute to be queried.
-     * @return a builder String for constructing the query.
-     */
-    QueryBuilder<Value> query(String attribute);
-
-    /**
      * Get the context for the storage.
      *
      * @return a storage context.
      */
     StorageContext<Value> context();
+
+    /**
+     * initialize the construction of a query.
+     *
+     * @return a builder String for constructing the query.
+     */
+    QueryBuilder<Value> query();
+
+    /**
+     * Creates a new query on the specified attribute.
+     * @param attribute the attribute to query.
+     * @return a new query builder.
+     */
+    default QueryBuilder<Value> query(String attribute) {
+        return query().on(attribute);
+    }
 }

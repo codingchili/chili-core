@@ -91,7 +91,8 @@ public class MapBenchmarkImplementation extends BaseBenchmarkImplementation {
      * The query does not target the primary key.
      */
     private void startsWithQuery(Future<Void> future) {
-        storage.query(ID_NAME)
+        storage.query()
+                .on(ID_NAME)
                 .startsWith(counter.getAndIncrement() + "")
                 .execute(done -> future.complete());
     }
@@ -101,7 +102,8 @@ public class MapBenchmarkImplementation extends BaseBenchmarkImplementation {
      * The query does not target the primary key.
      */
     private void equalToQuery(Future<Void> future) {
-        storage.query(ID_NAME)
+        storage.query()
+                .on(ID_NAME)
                 .equalTo(getName(counter.getAndIncrement()))
                 .execute(done -> future.complete());
     }
@@ -112,7 +114,8 @@ public class MapBenchmarkImplementation extends BaseBenchmarkImplementation {
      */
     private void betweenQuery(Future<Void> future) {
         int low = counter.getAndIncrement();
-        storage.query(StorageObject.levelField)
+        storage.query()
+                .on(StorageObject.levelField)
                 .between((long) (low - 1), (long) (low + 1))
                 .execute(done -> future.complete());
     }
@@ -129,7 +132,8 @@ public class MapBenchmarkImplementation extends BaseBenchmarkImplementation {
      * The query does not target the primary key.
      */
     private void regexpQuery(Future<Void> future) {
-        storage.query(ID_NAME).matches(".*")
+        storage.query()
+                .on(ID_NAME).matches(".*")
                 .execute(done -> future.complete());
     }
 
@@ -137,7 +141,8 @@ public class MapBenchmarkImplementation extends BaseBenchmarkImplementation {
      * Measures the time taken to get all entries that are equal to the given primary key.
      */
     private void equalToPrimaryKey(Future<Void> future) {
-        storage.query(Storable.idField)
+        storage.query()
+                .on(Storable.idField)
                 .equalTo(counter.getAndIncrement() + "")
                 .execute(done -> future.complete());
     }

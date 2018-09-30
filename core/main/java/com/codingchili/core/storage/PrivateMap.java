@@ -114,8 +114,8 @@ public class PrivateMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public QueryBuilder<Value> query(String field) {
-        return new StreamQuery<>(this, () -> map.values().stream()).query(field);
+    public QueryBuilder<Value> query() {
+        return new StreamQuery<>(this, () -> map.values().stream()).query();
     }
 
     @Override

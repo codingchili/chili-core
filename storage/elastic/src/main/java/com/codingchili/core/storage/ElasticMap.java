@@ -52,6 +52,7 @@ import static com.codingchili.core.context.FutureHelper.*;
  */
 public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     private static final int MAX_RESULTS = 10000;
+    public static final String ARRAY_NOTATION = "";
     private StorageContext<Value> context;
     private RestHighLevelClient client;
     private String index;
@@ -371,8 +372,8 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public QueryBuilder<Value> query(String field) {
-        return new AbstractQueryBuilder<Value>(this, field, "") {
+    public QueryBuilder<Value> query() {
+        return new AbstractQueryBuilder<Value>(this, ARRAY_NOTATION) {
             List<BoolQueryBuilder> statements = new ArrayList<>();
             BoolQueryBuilder builder = new BoolQueryBuilder();
 

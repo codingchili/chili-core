@@ -19,6 +19,21 @@ import java.util.function.Consumer;
  */
 public class Query<Value extends Storable> implements QueryBuilder<Value> {
     private static final String NO_NAME = "unnamed";
+    public static final String ON = "ON";
+    public static final String AND = "AND";
+    public static final String OR = "OR";
+    public static final String PAGE = "PAGE";
+    public static final String PAGESIZE = "PAGESIZE";
+    public static final String BETWEEN = "BETWEEN";
+    public static final String LIKE = "LIKE";
+    public static final String STARTSWITH = "STARTSWITH";
+    public static final String IN = "IN";
+    public static final String EQ = "EQ";
+    public static final String ORDERBY = "ORDERBY";
+    public static final String REGEX = "REGEX";
+    public static final String QUERY = "QUERY";
+    public static final String NAMED = "NAMED";
+
     private LinkedList<Runnable> proxy = new LinkedList<>();
     private StringBuilder query = new StringBuilder();
     private StringBuilder options = new StringBuilder();
@@ -26,68 +41,65 @@ public class Query<Value extends Storable> implements QueryBuilder<Value> {
     private AsyncStorage<Value> storage;
     private Consumer<Value> mapper;
     private String name = NO_NAME;
-    private String initial;
-
-    private Query(String attribute) {
-        this.initial = attribute;
-        append("%s %s", "QUERY ON", attribute);
-    }
 
     private void append(String format, Object... params) {
         query.append(String.format(format, params));
         query.append(" ");
     }
 
-    public static <Value extends Storable> Query<Value> on(String attribute) {
-        return new Query<>(attribute);
-    }
-
     @Override
     public Query<Value> and(String attribute) {
         proxy.add(() -> builder.and(attribute));
-        append("%s %s", "AND", attribute);
+        append("%s %s", AND, attribute);
         return this;
     }
 
     @Override
     public Query<Value> or(String attribute) {
         proxy.add(() -> builder.or(attribute));
-        append("\n\t%s %s", "OR", attribute);
+        append("\n\t%s %s", OR, attribute);
+        return this;
+    }
+
+    @Override
+    public Query<Value> on(String attribute) {
+        proxy.add(() -> builder.on(attribute));
+        append("%s %s %s", QUERY, ON, attribute);
         return this;
     }
 
     @Override
     public Query<Value> page(int page) {
         proxy.add(() -> builder.page(page));
-        option("%s %d", "PAGE", page);
+        option("%s %d", PAGE, page);
         return this;
     }
 
     @Override
     public Query<Value> pageSize(int pageSize) {
         proxy.add(() -> builder.pageSize(pageSize));
-        option("%s %d", "PAGESIZE", pageSize);
+        option("%s %d", PAGESIZE, pageSize);
         return this;
     }
 
     @Override
     public Query<Value> between(Long minimum, Long maximum) {
         proxy.add(() -> builder.between(minimum, maximum));
-        append("%s %d %d", "BETWEEN", minimum, maximum);
+        append("%s %d %d", BETWEEN, minimum, maximum);
         return this;
     }
 
     @Override
     public Query<Value> like(String text) {
         proxy.add(() -> builder.like(text));
-        append("%s %s", "LIKE", text);
+        append("%s %s", LIKE, text);
         return this;
     }
 
     @Override
     public Query<Value> startsWith(String text) {
         proxy.add(() -> builder.startsWith(text));
-        append("%s %s", "STARTSWITH", text);
+        append("%s %s", STARTSWITH, text);
         return this;
     }
 
@@ -103,28 +115,28 @@ public class Query<Value extends Storable> implements QueryBuilder<Value> {
             }
         }
         in.append(")");
-        append("%s %s", "IN", in.toString());
+        append("%s %s", IN, in.toString());
         return this;
     }
 
     @Override
     public Query<Value> equalTo(Comparable match) {
         proxy.add(() -> builder.equalTo(match));
-        append("%s %s", "EQ", match + "");
+        append("%s %s", EQ, match + "");
         return this;
     }
 
     @Override
     public Query<Value> matches(String regex) {
         proxy.add(() -> builder.matches(regex));
-        append("REGEX(%s)", regex);
+        append("%s(%s)", REGEX, regex);
         return this;
     }
 
     @Override
     public Query<Value> orderBy(String orderByAttribute) {
         proxy.add(() -> builder.orderBy(orderByAttribute));
-        option("%s %s", "ORDERBY", orderByAttribute);
+        option("%s %s", ORDERBY, orderByAttribute);
         return this;
     }
 
@@ -157,7 +169,7 @@ public class Query<Value extends Storable> implements QueryBuilder<Value> {
 
         // allow calling execute multiple times.
         if (builder == null) {
-            builder = storage.query(initial);
+            builder = storage.query();
             proxy.forEach(Runnable::run);
         }
 
@@ -213,7 +225,8 @@ public class Query<Value extends Storable> implements QueryBuilder<Value> {
 
         // set a name on the query if it has been set.
         if (!name.equals(NO_NAME)) {
-            result = result.replace("QUERY ON", String.format("NAMED QUERY '%s' ON\n   ", name));
+            result = result.replace(String.format("%s %s", QUERY, ON),
+                    String.format("%s %s '%s' %s\n   ", NAMED, QUERY, ON, name));
         }
 
         return result;

@@ -163,11 +163,11 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public QueryBuilder<Value> query(String field) {
+    public QueryBuilder<Value> query() {
         return new StreamQuery<>(this, () -> db.stream().map(Map.Entry::getValue))
                 // set the mapper to only pay serialization costs for matching results.
                 .setMapper(value -> context.toValue((JsonObject) value))
-                .query(field);
+                .query();
     }
 
     @Override

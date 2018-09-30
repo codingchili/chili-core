@@ -1,20 +1,53 @@
 package com.codingchili.core.storage;
 
 import com.codingchili.core.context.CoreRuntimeException;
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.security.Account;
+
+import io.vertx.core.Future;
+import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
+
+import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.StreamSupport;
+
+import static com.codingchili.core.storage.QueryParser.next;
 
 /**
  * Tests the standalone query builder.
  */
 @RunWith(VertxUnitRunner.class)
 public class QueryTest {
+    private static StorageContext<Account> context;
+    private QueryParser<Account> parser;
+
+    @BeforeClass
+    public static void setUpContext() {
+        context = new StorageContext<Account>()
+                .setDatabase("")
+                .setCollection("")
+                .setClass(Account.class)
+                .setPlugin(JsonMap.class);
+    }
+
+    @AfterClass
+    public static void tearDown(TestContext test) {
+        context.close(test.asyncAssertSuccess());
+    }
+
+    @Before
+    public void setUp() {
+        parser = new QueryParser<>(new JsonMap<>(Future.future(), context));
+    }
 
     @Test
     public void testGenerateQueryString(TestContext test) {
-        String query = Query.on("cat.type")
+        String query = new Query().on("cat.type")
                 .in("siamese", "perser", "ragdoll")
                 .and("cat.color").equalTo("white")
                 .or("cat.lifestyle").in("amphibians", "wateranimal").matches("[water].*")
@@ -23,41 +56,48 @@ public class QueryTest {
                 .page(3).pageSize(24)
                 .setName("findCatsQ")
                 .toString();
-        System.out.println(query);
     }
 
 
     @Test
-    public void testParseQueryString() {
+    public void testParseQueryString(TestContext test) {
+        parser.parse("NAMED QUERY 'findCats Query' ON\n" +
+                "    cat.type IN (siamese,perser,ragdoll) AND cat.color EQ white \n" +
+                "\tOR cat.lifestyle IN (amphibians one, wateranimal) REGEX([water ].*) \n" +
+                "\tOR cat.age BETWEEN 0 100 AND cat.name STARTSWITH fl \n" +
+                "ORDERBY cat.name ASCENDING PAGE 3 PAGESIZE 24\n");
 
     }
 
     @Test
-    public void testQueryWithStorage() {
-
+    public void testCallCustomFunction(TestContext test) {
+        parser.customize().put("success", (builder, matcher) -> {
+            test.assertEquals(Boolean.TRUE.toString(), QueryParser.nextValue(matcher));
+        });
+        parser.parse("success(true)");
     }
 
     @Test
-    public void testQueryWithPoll() {
-
+    public void testCallGlobalFunction(TestContext test) {
+        QueryParser.defaults().put("global", (builder, matcher) -> {
+            test.assertEquals(Boolean.TRUE.toString(), QueryParser.nextValue(matcher));
+        });
+        parser.parse("global(true)");
     }
 
     @Test
     public void testErrorWhenStorageNotSet(TestContext test) {
         try {
-            Query.on("x").execute((done -> { }));
+            new Query<>().on("x").execute((done -> {
+            }));
             test.fail("did not throw exception when storage null");
         } catch (CoreRuntimeException e) {
         }
         try {
-            Query.on("x").poll((storable) -> { }, () -> 0);
+            new Query<>().on("x").poll((storable) -> {
+            }, () -> 0);
             test.fail("did not throw exception when storage null");
         } catch (CoreRuntimeException e) {
         }
-    }
-
-    @Test
-    public void testMapperCalled() {
-
     }
 }

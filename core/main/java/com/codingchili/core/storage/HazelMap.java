@@ -173,13 +173,19 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public QueryBuilder<Value> query(String field) {
-        addIndex(field);
+    public QueryBuilder<Value> query() {
 
-        return new AbstractQueryBuilder<Value>(this, field, HAZEL_ARRAY) {
+        return new AbstractQueryBuilder<Value>(this, HAZEL_ARRAY) {
             private List<Predicate<String, Value>> predicates = new ArrayList<>();
             private Predicate<String, Value> predicate;
             private BooleanOperator operator = BooleanOperator.AND;
+
+            @Override
+            public QueryBuilder<Value> on(String attribute) {
+                addIndex(attribute);
+                setAttribute(attribute);
+                return this;
+            }
 
             @Override
             public QueryBuilder<Value> and(String attribute) {

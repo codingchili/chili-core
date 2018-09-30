@@ -25,10 +25,16 @@ public class IndexedMapQuery<Value extends Storable> extends AbstractQueryBuilde
     private IndexedMap<Value> storage;
     private Query<Value> builder;
 
-    public IndexedMapQuery(IndexedMap<Value> storage, String attribute) {
-        super(storage, attribute);
+    public IndexedMapQuery(IndexedMap<Value> storage) {
+        super(storage);
         this.storage = storage;
+    }
+
+    @Override
+    public QueryBuilder<Value> on(String attribute) {
         prepareField(attribute);
+        setAttribute(attribute);
+        return this;
     }
 
     @Override
