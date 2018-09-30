@@ -66,7 +66,7 @@ public class QueryTest {
 
         parser.parse("NAMED QUERY 'findCats Query' ON\n" +
                 "    cat.type IN (siamese,perser,ragdoll) AND cat.color EQ white \n" +
-                "\tOR cat.lifestyle IN (amphibians, wateranimal) AND cat.address REGEX([water ].*) \n" +
+                "\tOR cat.lifestyle IN (amphibians,wateranimal) AND cat.address REGEX([water ].*) \n" +
                 "\tOR cat.age BETWEEN 0 100 AND cat.name STARTSWITH fl \n" +
                 "ORDERBY cat.name ASCENDING PAGE 3 PAGESIZE 24\n");
 
@@ -87,6 +87,15 @@ public class QueryTest {
             test.assertEquals(Boolean.TRUE.toString(), QueryParser.nextValue(matcher));
         });
         parser.parse("global(true)");
+    }
+
+    @Test
+    public void testInferDataType(TestContext test) {
+        test.assertEquals(QueryParser.toComparable("true").getClass(), Boolean.class);
+        test.assertEquals(QueryParser.toComparable("100").getClass(), Integer.class);
+        test.assertEquals(QueryParser.toComparable("5.5").getClass(), Double.class);
+        test.assertEquals(QueryParser.toComparable("5,5").getClass(), Double.class);
+        test.assertEquals(QueryParser.toComparable("a string").getClass(), String.class);
     }
 
     @Test

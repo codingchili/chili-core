@@ -1,6 +1,7 @@
 package com.codingchili.core.storage;
 
-import java.util.Map;
+import java.text.DecimalFormatSymbols;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
@@ -17,6 +18,9 @@ import com.codingchili.core.context.CoreRuntimeException;
  * Implementation is pluggable.
  */
 public class QueryParser<T extends Storable> implements StringQueryParser<T> {
+    private static final String DECIMAL_SEPARATOR =
+            new DecimalFormatSymbols(Locale.getDefault()).getDecimalSeparator() + "";
+
     private static Map<String, BiConsumer<QueryBuilder<?>, Matcher>> operations = new ConcurrentHashMap<>();
     // matches a regex and everything within the following parenthesis, quoted strings and regular tokens.
     private static Pattern pattern = Pattern.compile("([0-9a-zA-Z.,]+)|\\(([^()]+)\\)|'([^']+)'|(\\(.+?\\))",
@@ -36,10 +40,10 @@ public class QueryParser<T extends Storable> implements StringQueryParser<T> {
 
         // aliasing works, try and figure out a better option for query(null).
         operations.put(Query.ON, (builder, matcher) -> builder.on(nextValue(matcher)));
-        operations.put(Query.IN, (builder, matcher) -> builder.in(nextValue(matcher).replaceAll("[()]", "").split("[,]")));
+        operations.put(Query.IN, (builder, matcher) -> builder.in(nextComparableArray(matcher)));
         operations.put(Query.AND, (builder, matcher) -> builder.and(nextValue(matcher)));
         operations.put(Query.OR, (builder, matcher) -> builder.or(nextValue(matcher)));
-        operations.put(Query.EQ, (builder, matcher) -> builder.equalTo(nextValue(matcher)));
+        operations.put(Query.EQ, (builder, matcher) -> builder.equalTo(nextComparable(matcher)));
         operations.put(Query.STARTSWITH, (builder, matcher) -> builder.startsWith((nextValue(matcher))));
         operations.put(Query.ORDERBY, (builder, matcher) -> builder.orderBy(nextValue(matcher)));
         operations.put(Query.PAGE, (builder, matcher) -> builder.page(Integer.parseInt(nextValue(matcher))));
@@ -53,6 +57,51 @@ public class QueryParser<T extends Storable> implements StringQueryParser<T> {
                 builder.between(from, Long.parseLong(value(matcher)));
             }
         });
+    }
+
+    /**
+     * @param matcher the matcher to get the next comparable. from/
+     * @return a typed comparable.
+     */
+    public static Comparable nextComparable(Matcher matcher) {
+        return toComparable(nextValue(matcher));
+    }
+
+    /**
+     * Converts the given input string into a comparable depending on its content.
+     *
+     * @param string a string that may either represent an integer, double, boolean or a string.
+     * @return the parsed data type.
+     */
+    public static Comparable toComparable(String string) {
+        Comparable comparable = string;
+        if (string.matches("true|false|TRUE|FALSE")) {
+            comparable = Boolean.parseBoolean(string);
+        } else {
+            if (string.matches("[0-9]+")) {
+                comparable = Integer.parseInt(string);
+            } else {
+                if (string.matches("[0-9.,]+")) {
+                    string = string.replaceAll("[,.]", DECIMAL_SEPARATOR);
+                    comparable = Double.parseDouble(string);
+                }
+            }
+        }
+        return comparable;
+    }
+
+    /**
+     * @param matcher the matcher to retrieve comparables from.
+     * @return an array of comparables, parsed from an input list "one,two,three" and separated by comma.
+     */
+    public static Comparable[] nextComparableArray(Matcher matcher) {
+        List<Comparable> comparables = new ArrayList<>();
+
+        for (String value : nextValue(matcher).split(",")) {
+            comparables.add(toComparable(value));
+        }
+
+        return comparables.toArray(new Comparable[] {});
     }
 
     /**
