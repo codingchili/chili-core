@@ -42,7 +42,7 @@ public class QueryTest {
 
     @Before
     public void setUp() {
-        parser = new QueryParser<>(new JsonMap<>(Future.future(), context));
+        parser = new QueryParser<>(new JsonMap<>(Future.future(), context)::query);
     }
 
     @Test
@@ -61,12 +61,16 @@ public class QueryTest {
 
     @Test
     public void testParseQueryString(TestContext test) {
+        QueryBuilder<Account> builder = new Query<>();
+        QueryParser<Account> parser = new QueryParser<>(() -> builder);
+
         parser.parse("NAMED QUERY 'findCats Query' ON\n" +
                 "    cat.type IN (siamese,perser,ragdoll) AND cat.color EQ white \n" +
-                "\tOR cat.lifestyle IN (amphibians one, wateranimal) REGEX([water ].*) \n" +
+                "\tOR cat.lifestyle IN (amphibians, wateranimal) AND cat.address REGEX([water ].*) \n" +
                 "\tOR cat.age BETWEEN 0 100 AND cat.name STARTSWITH fl \n" +
                 "ORDERBY cat.name ASCENDING PAGE 3 PAGESIZE 24\n");
 
+        System.out.println(builder.toString());
     }
 
     @Test

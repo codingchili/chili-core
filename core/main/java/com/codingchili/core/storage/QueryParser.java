@@ -3,6 +3,7 @@ package com.codingchili.core.storage;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,22 +23,19 @@ public class QueryParser<T extends Storable> implements StringQueryParser<T> {
             Pattern.CASE_INSENSITIVE & Pattern.MULTILINE);
 
     private Map<String, BiConsumer<QueryBuilder<?>, Matcher>> custom = new ConcurrentHashMap<>();
-    private AsyncStorage<T> store;
+    private Supplier<QueryBuilder<T>> builders;
 
     static {
+        operations.put(Query.QUERY, (builder, matcher) -> {
+        });
         operations.put(Query.NAMED, (builder, matcher) -> {
-            next(matcher);
-            if (matcher.group().equalsIgnoreCase(Query.QUERY)) {
-                if (matcher.find()) {
-                    builder.setName(value(matcher));
-                }
-            } else {
-                builder.setName(value(matcher));
+            if (nextValue(matcher).equalsIgnoreCase(Query.QUERY)) {
+                builder.setName(nextValue(matcher));
             }
         });
 
         // aliasing works, try and figure out a better option for query(null).
-        operations.put(Query.ON, (builder, matcher) -> builder.and(nextValue(matcher)));
+        operations.put(Query.ON, (builder, matcher) -> builder.on(nextValue(matcher)));
         operations.put(Query.IN, (builder, matcher) -> builder.in(nextValue(matcher).replaceAll("[()]", "").split("[,]")));
         operations.put(Query.AND, (builder, matcher) -> builder.and(nextValue(matcher)));
         operations.put(Query.OR, (builder, matcher) -> builder.or(nextValue(matcher)));
@@ -57,10 +55,17 @@ public class QueryParser<T extends Storable> implements StringQueryParser<T> {
         });
     }
 
+    /**
+     * @param builders a query builder to use.
+     */
+    public QueryParser(Supplier<QueryBuilder<T>> builders) {
+        this.builders = builders;
+    }
+
     @Override
     public QueryBuilder<T> parse(String expression) {
         // we can reuse the string-based query builder to verify Query.on(null)
-        QueryBuilder<T> builder = store.query();
+        QueryBuilder<T> builder = builders.get();
 
         Matcher matcher = pattern.matcher(expression);
         while (matcher.find()) {
@@ -116,13 +121,6 @@ public class QueryParser<T extends Storable> implements StringQueryParser<T> {
             }
         }
         return matcher.group();
-    }
-
-    /**
-     * @param store backing storage to execute the parsed query on.
-     */
-    public QueryParser(AsyncStorage<T> store) {
-        this.store = store;
     }
 
     /**

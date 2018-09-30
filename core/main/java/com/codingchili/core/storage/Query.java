@@ -64,7 +64,12 @@ public class Query<Value extends Storable> implements QueryBuilder<Value> {
     @Override
     public Query<Value> on(String attribute) {
         proxy.add(() -> builder.on(attribute));
-        append("%s %s %s", QUERY, ON, attribute);
+        append("\n\t%s %s", ON, attribute);
+
+        if (NO_NAME.equals(name)) {
+            query.insert(0, String.format("%s ", QUERY));
+        }
+
         return this;
     }
 
@@ -216,6 +221,7 @@ public class Query<Value extends Storable> implements QueryBuilder<Value> {
     @Override
     public Query<Value> setName(String name) {
         this.name = name;
+        query.insert(0, String.format("%s %s '%s' ", NAMED, QUERY, name));
         return this;
     }
 
