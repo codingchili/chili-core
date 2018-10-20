@@ -53,7 +53,10 @@ public class Serializer {
 
     private static Pool<Kryo> pool = new Pool<Kryo>(true, true, 8) {
         protected Kryo create () {
-            return new Kryo();
+            Kryo kryo = new Kryo();
+            // this instance should not be used for de-serializing arbitrary classes.
+            kryo.setRegistrationRequired(false);
+            return kryo;
         }
     };
 
