@@ -53,10 +53,16 @@ public class IndexedMapPersisted<Value extends Storable> extends IndexedMap<Valu
             return Serializer.kryo((kryo) -> {
                 // this needs to be set for all kryo instances - new ones may be created
                 // from the kryo factory when using pooling.
-                ((FieldSerializer<?>) kryo.getSerializer(context.valueClass()))
-                        .getFieldSerializerConfig()
-                        .setCopyTransient(false);
+                @SuppressWarnings("unchecked")
+                FieldSerializer<Value> serializer = (FieldSerializer<Value>) kryo.getSerializer(context.valueClass());
+                FieldSerializer.FieldSerializerConfig config = serializer.getFieldSerializerConfig();
 
+                if (config.getCopyTransient()) {
+                    // avoid calling updateFields if transient fields are already disabled.
+                    config.setCopyTransient(false);
+                    config.setSerializeTransient(false);
+                    serializer.updateFields();
+                }
                 return kryo.copy(value);
             });
         });
