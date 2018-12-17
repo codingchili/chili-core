@@ -107,7 +107,6 @@ public class AuthenticationGeneratorIT {
     }
 
     @Test
-    @Ignore("Unhandled exception stacktrace=io.vertx.core.json.DecodeException: Failed to decode:null")
     public void testGenerateTokens(TestContext test) {
         Async async = test.async();
         generator.all().setHandler(done -> {
