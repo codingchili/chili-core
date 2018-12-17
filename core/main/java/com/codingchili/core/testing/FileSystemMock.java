@@ -1,9 +1,6 @@
 package com.codingchili.core.testing;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
+import io.vertx.core.*;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.file.*;
 
@@ -257,7 +254,7 @@ public class FileSystemMock implements FileSystem {
     @Override
     public FileSystem readFile(String path, Handler<AsyncResult<Buffer>> handler) {
         handler.handle(Future.succeededFuture(fs.readFileBlocking(path)));
-        return this;
+        return fs;
     }
 
     @Override
@@ -323,5 +320,71 @@ public class FileSystemMock implements FileSystem {
     @Override
     public FileSystemProps fsPropsBlocking(String path) {
         return fs.fsPropsBlocking(path);
+    }
+
+    @Override
+    public FileSystem createTempDirectory(String prefix, Handler<AsyncResult<String>> handler) {
+        handler.handle(Future.succeededFuture());
+        return this;
+    }
+
+    @Override
+    public String createTempDirectoryBlocking(String prefix) {
+        return "none";
+    }
+
+    @Override
+    public FileSystem createTempDirectory(String prefix, String perms, Handler<AsyncResult<String>> handler) {
+        handler.handle(Future.succeededFuture());
+        return this;
+    }
+
+    @Override
+    public String createTempDirectoryBlocking(String prefix, String perms) {
+        return "none";
+    }
+
+    @Override
+    public FileSystem createTempDirectory(String dir, String prefix, String perms, Handler<AsyncResult<String>> handler) {
+        handler.handle(Future.succeededFuture());
+        return this;
+    }
+
+    @Override
+    public String createTempDirectoryBlocking(String dir, String prefix, String perms) {
+        return "none";
+    }
+
+    @Override
+    public FileSystem createTempFile(String prefix, String suffix, Handler<AsyncResult<String>> handler) {
+        handler.handle(Future.succeededFuture());
+        return this;
+    }
+
+    @Override
+    public String createTempFileBlocking(String prefix, String suffix) {
+        return "none";
+    }
+
+    @Override
+    public FileSystem createTempFile(String prefix, String suffix, String perms, Handler<AsyncResult<String>> handler) {
+        handler.handle(Future.succeededFuture());
+        return this;
+    }
+
+    @Override
+    public String createTempFileBlocking(String prefix, String suffix, String perms) {
+        return "none";
+    }
+
+    @Override
+    public FileSystem createTempFile(String dir, String prefix, String suffix, String perms, Handler<AsyncResult<String>> handler) {
+        handler.handle(Future.succeededFuture());
+        return this;
+    }
+
+    @Override
+    public String createTempFileBlocking(String dir, String prefix, String suffix, String perms) {
+        return "none";
     }
 }
