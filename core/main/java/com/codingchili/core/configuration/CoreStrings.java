@@ -14,7 +14,6 @@ import io.vertx.core.Verticle;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.URI;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -534,13 +533,13 @@ public abstract class CoreStrings {
         return "Tests completed for " + implementation.getName();
     }
 
-    public static String getBenchmarkProgressUpdate(Benchmark benchmark, String progress) {
-        return "Tests for " + benchmark.getImplementation() + "::" + benchmark.getName() +
+    public static String getBenchmarkProgressUpdate(BenchmarkImplementation implementation, Benchmark benchmark, String progress) {
+        return "Tests for " + implementation.getName() + "::" + benchmark.getName() +
                 " " + progress + "%";
     }
 
-    public static String getBenchmarkCompleted(Benchmark benchmark) {
-        return "Completed benchmark " + benchmark.getImplementation() +
+    public static String getBenchmarkCompleted(BenchmarkImplementation implementation, Benchmark benchmark) {
+        return "Completed benchmark " + implementation.getName() +
                 "::" + benchmark.getName() + " in " + benchmark.getElapsedMS() + " ms.";
     }
 

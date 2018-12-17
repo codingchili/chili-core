@@ -2,7 +2,7 @@ package com.codingchili.core.context;
 
 import io.vertx.core.Future;
 
-import com.codingchili.core.benchmarking.BenchmarkSuite;
+import com.codingchili.core.benchmarking.CoreBenchmarkSuite;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.Level;
@@ -37,7 +37,7 @@ public class LauncherCommandExecutor extends DefaultCommandExecutor {
     }
 
     private void registerCommands() {
-        BenchmarkSuite suite = new BenchmarkSuite();
+        CoreBenchmarkSuite suite = new CoreBenchmarkSuite();
 
         super.add((executor) -> CommandResult.CONTINUE, DEPLOY, getDeployDescription());
         add(Configurations::reset, RECONFIGURE, getReconfigureDescription());

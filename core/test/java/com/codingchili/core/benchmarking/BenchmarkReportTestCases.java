@@ -22,8 +22,8 @@ public class BenchmarkReportTestCases {
     @Before
     public void setUp() {
         context = new SystemContext();
-        groups.add(new MockGroup(context, "group#1", 750));
-        groups.add(new MockGroup(context, "group#2", 500));
+        groups.add(new MockGroupBuilder(context, "group#1", 750));
+        groups.add(new MockGroupBuilder(context, "group#2", 500));
     }
 
     @After

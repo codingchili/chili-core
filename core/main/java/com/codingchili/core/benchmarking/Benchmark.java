@@ -13,7 +13,7 @@ public interface Benchmark extends BenchmarkResult {
      *
      * @return an executable benchmark.
      */
-    BenchmarkOperation operation();
+    BenchmarkOperation getOperation();
 
     /**
      * The handler of the single benchmark operation to run. Should typically
@@ -22,18 +22,6 @@ public interface Benchmark extends BenchmarkResult {
      * @return a string that identifies the handler the Benchmark operation.
      */
     String getName();
-
-    /**
-     * Return the handler of the implementation that generated the result.
-     *
-     * @return handler of the implementation.
-     */
-    String getImplementation();
-
-    /**
-     * @return Return the number of iterations the benchmark is executed.
-     */
-    int getIterations();
 
     /**
      * Sets a property on the benchmark object, may be a parameter or a result.
@@ -50,5 +38,37 @@ public interface Benchmark extends BenchmarkResult {
      * @return a map of all the properties that has been set.
      */
     Map<String, Object> getProperties();
+
+    /**
+     * Start measuring of the execution time.
+     *
+     * @return fluent
+     */
+    Benchmark start();
+
+    /**
+     * Finish benchmarking: calculates the results.
+     */
+    void finish();
+
+    /**
+     * @return the time taken to complete the benchmark in ms.
+     */
+    long getElapsedMS();
+
+    /**
+     * @return returns true if {@link #finish()} has been called.
+     */
+    boolean isFinished();
+
+    /**
+     * @param iterations the number of iterations this benchmark will be executed for.
+     */
+    Benchmark setIterations(int iterations);
+
+    /**
+     * @param name the name of the benchmark to set.
+     */
+    void setName(String name);
 }
 

@@ -40,12 +40,12 @@ public interface BenchmarkGroup {
     BenchmarkGroup setImplementations(List<BenchmarkImplementation> implementations);
 
     /**
-     * Adds a new benchmark to the benchmark group.
+     * Adds a new implementation to the benchmark group.
      *
-     * @param benchmark the benchmark to be added.
-     * @return fluent
+     * @param implementationName the name of the implementation to add.
+     * @return an implementation
      */
-    BenchmarkGroup add(BenchmarkImplementation benchmark);
+    BenchmarkImplementation implementation(String implementationName);
 
     /**
      * Return the number of iterations to complete before calling a listeners

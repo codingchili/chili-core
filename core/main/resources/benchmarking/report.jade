@@ -41,15 +41,15 @@ html
                 .panel.panel-primary
                     .panel-heading(data-toggle="collapse", href="#" + groupId) #{group.name}
                     .panel-body.collapse(id=groupId)
-                        each implementation, implementationId in group.implementations
-                            - var id = groupId + "-" + implementationId
+                        each set, setId in group.sets
+                            - var id = groupId + "-" + setId
                             .panel.panel-default.col-xs-8.col-xs-offset-2
-                                .panel-heading(data-toggle="collapse", href="#" + id) #{implementation.name}
+                                .panel-heading(data-toggle="collapse", href="#" + id) #{set.name}
                                 .panel-body.collapse(id=id)
-                                    each benchmark in implementation.benchmarks
+                                    each item in set.items
                                         .progress
-                                            .progress-bar(role='progressbar', style="width:#{benchmark.properties.localIndex}%;")
-                                                | #{benchmark.implementation}
+                                            .progress-bar(role='progressbar', style="width:#{item.localIndex}%;text-align: right;")
+                                                | #{item.name}&nbsp;&nbsp;
 
                                     table.table.table-striped.table-hover
                                         thead
@@ -58,11 +58,11 @@ html
                                                 th Time
                                                 th Operations/s
                                         tbody
-                                            each benchmark in implementation.benchmarks
+                                            each item in set.items
                                                 tr
-                                                    td #{benchmark.implementation}
-                                                    td #{benchmark.timeFormatted}
-                                                    td #{benchmark.rateFormatted}
+                                                    td #{item.name}
+                                                    td #{item.timeFormatted}
+                                                    td #{item.rateFormatted}
 
                         div.col-xs-8.col-xs-offset-2
                             p Parameters

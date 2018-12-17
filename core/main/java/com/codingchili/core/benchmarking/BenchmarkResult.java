@@ -6,23 +6,8 @@ package com.codingchili.core.benchmarking;
  * Results for benchmarks.
  */
 public interface BenchmarkResult {
-
-    /**
-     * Start measuring of the execution time.
-     *
-     * @return fluent
-     */
-    Benchmark start();
-
-    /**
-     * Finish benchmarking: calculates the results.
-     */
-    void finish();
-
-    /**
-     * @return the time taken to complete the benchmark in ms.
-     */
-    long getElapsedMS();
+    int EPOCH_BASE = 3600000;
+    String DATE_FORMAT = "HH:mm:ss.SSS";
 
     /**
      * @return time formatted as HH:mm:ss.SSS using the elapsed ms as source.
@@ -39,8 +24,5 @@ public interface BenchmarkResult {
      */
     int getRate();
 
-    /**
-     * @return returns true if {@link #finish()} has been called.
-     */
-    boolean isFinished();
+
 }

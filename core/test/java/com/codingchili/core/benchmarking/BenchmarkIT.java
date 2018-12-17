@@ -1,5 +1,6 @@
 package com.codingchili.core.benchmarking;
 
+import com.codingchili.core.benchmarking.reporting.BenchmarkHTMLReport;
 import com.codingchili.core.context.*;
 
 import io.vertx.core.Future;
@@ -13,7 +14,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import static com.codingchili.core.configuration.CoreStrings.PARAM_ITERATIONS;
 
@@ -58,7 +63,7 @@ public class BenchmarkIT {
         Async async = test.async();
         MockListener listener = new MockListener(test);
 
-        new BenchmarkSuite().setIterations(ITERATIONS).maps(context, listener)
+        new CoreBenchmarkSuite().setIterations(ITERATIONS).maps(context, listener)
                 .setHandler(done -> {
                     test.assertTrue(done.succeeded());
                     test.assertTrue(done.result().size() > 0);
@@ -79,7 +84,40 @@ public class BenchmarkIT {
             async.complete();
         });
         executor.addProperty(PARAM_ITERATIONS, STRING_ITERATIONS);
-        new BenchmarkSuite().execute(future, executor);
+        new CoreBenchmarkSuite().execute(future, executor);
+    }
+
+    @Test
+    public void testBenchmarkBuilders(TestContext test) {
+        Async async = test.async();
+
+        List<BenchmarkGroup> groups = new ArrayList<>();
+
+        BiConsumer<BenchmarkGroup, String> addOneOperation = (group, implementation) -> {
+            group.implementation(implementation)
+                    .add("sleep1x", Future::complete)
+                    .add("sleep2x", Future::complete);
+        };
+
+        BiConsumer<String, Integer> addOneGroup = (name, iterations) -> {
+            BenchmarkGroup group = new BenchmarkGroupBuilder(name, iterations);
+            addOneOperation.accept(group, "fastImplementation");
+            addOneOperation.accept(group, "slowImplementation");
+            groups.add(group);
+        };
+
+        addOneGroup.accept("group_1", 999999);
+        addOneGroup.accept("group_2", 999999);
+        addOneGroup.accept("group_3", 999999);
+
+        new BenchmarkExecutor(context)
+                //.setListener(new BenchmarkConsoleListener())
+                .start(groups).setHandler(done -> {
+            new BenchmarkHTMLReport(done.result())
+                    .saveTo("wowza.html");
+
+            async.complete();
+        });
     }
 
 }

@@ -1,5 +1,6 @@
 package com.codingchili.core.benchmarking;
 
+import com.codingchili.core.benchmarking.reporting.BenchmarkHTMLReport;
 import com.codingchili.core.files.exception.NoSuchResourceException;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;

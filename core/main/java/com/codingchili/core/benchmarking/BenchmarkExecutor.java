@@ -5,8 +5,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -34,20 +33,21 @@ public class BenchmarkExecutor {
     }
 
     /**
-     * @param future completed with the results of the benchmark when all benchmarks have passed.
      * @param group  a group of implementations that contains a set of benchmarks to be performed
+     * @return future completed when benchmarks are done.
      */
-    public void start(Future<List<BenchmarkGroup>> future, BenchmarkGroup group) {
-        List<BenchmarkGroup> list = new ArrayList<>();
-        list.add(group);
-        start(future, list);
+    public Future<List<BenchmarkGroup>> start(BenchmarkGroup group) {
+        Future<List<BenchmarkGroup>> future = Future.future();
+        start(Collections.singletonList(group)).setHandler(future);
+        return future;
     }
 
     /**
-     * @param future completed with the results of the benchmark when all benchmarks have passed.
      * @param groups a list of groups of implementations that contains a set of benchmarks to be performed
+     * @return future completed when benchmarks are done.
      */
-    public void start(Future<List<BenchmarkGroup>> future, List<BenchmarkGroup> groups) {
+    public Future<List<BenchmarkGroup>> start(List<BenchmarkGroup> groups) {
+        Future<List<BenchmarkGroup>> future = Future.future();
         Future<BenchmarkGroup> allGroups = Future.succeededFuture();
 
         for (BenchmarkGroup group : groups) {
@@ -62,6 +62,7 @@ public class BenchmarkExecutor {
             future.complete(groups);
             return Future.succeededFuture();
         });
+        return future;
     }
 
     private void executeImplementations(Future<BenchmarkGroup> future, BenchmarkGroup group) {
@@ -163,7 +164,7 @@ public class BenchmarkExecutor {
                     listener.onProgressUpdate(benchmark, completed.get());
                 }
             });
-            benchmark.operation().perform(iteration);
+            benchmark.getOperation().perform(iteration);
         }
         return future;
     }

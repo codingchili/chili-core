@@ -8,6 +8,8 @@ import org.junit.runner.RunWith;
 
 import java.nio.file.Paths;
 
+import com.codingchili.core.benchmarking.reporting.BenchmarkConsoleReport;
+
 /**
  * @author Robin Duda
  * <p>

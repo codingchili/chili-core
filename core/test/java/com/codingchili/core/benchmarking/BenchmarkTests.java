@@ -3,7 +3,6 @@ package com.codingchili.core.benchmarking;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.SystemContext;
 import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -31,8 +30,8 @@ public class BenchmarkTests {
     @Before
     public void setUp() {
         context = new SystemContext();
-        groups.add(new MockGroup(context, "mock-group-1", ITERATIONS));
-        groups.add(new MockGroup(context, "mock-group-2", ITERATIONS));
+        groups.add(new MockGroupBuilder(context, "mock-group-1", ITERATIONS));
+        groups.add(new MockGroupBuilder(context, "mock-group-2", ITERATIONS));
         executor = new BenchmarkExecutor(context);
     }
 
@@ -49,14 +48,12 @@ public class BenchmarkTests {
     }
 
     private void execute(Handler<AsyncResult<List<BenchmarkGroup>>> result) {
-        Future<List<BenchmarkGroup>> future = Future.future();
-        future.setHandler(result);
-        executor.start(future, groups);
+        executor.start(groups).setHandler(result);
     }
 
     @Test
     public void testAllBenchmarksExecuted(TestContext test) {
-        execute(done -> groups.stream().map(group -> (MockGroup) group)
+        execute(done -> groups.stream().map(group -> (MockGroupBuilder) group)
                 .forEach(group -> test.assertTrue(group.isExecuted())));
     }
 
@@ -73,8 +70,8 @@ public class BenchmarkTests {
         execute(done -> groups().forEach(group -> test.assertTrue(group.isExecuted())));
     }
 
-    private Stream<MockGroup> groups() {
-        return groups.stream().map(group -> (MockGroup) group);
+    private Stream<MockGroupBuilder> groups() {
+        return groups.stream().map(group -> (MockGroupBuilder) group);
     }
 
     @Test
@@ -91,7 +88,7 @@ public class BenchmarkTests {
     @Test
     public void testVerifyNumberOfIterations(TestContext test) {
         execute(done -> groups().forEach(group -> group.getImplementations().stream()
-                .map(implementation -> (MockImplementation) implementation)
+                .map(implementation -> (MockImplementationBuilder) implementation)
                 .forEach(implementation -> {
                     test.assertEquals(ITERATIONS, implementation.getFirstBenchmarkExecutions());
                     test.assertEquals(ITERATIONS, implementation.getSecondBenchmarkExecutions());

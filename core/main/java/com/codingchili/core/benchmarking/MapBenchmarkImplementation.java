@@ -19,7 +19,7 @@ import static com.codingchili.core.configuration.CoreStrings.ID_NAME;
  * <p>
  * Implementation of a map for use with benchmarking.
  */
-public class MapBenchmarkImplementation extends BaseBenchmarkImplementation {
+public class MapBenchmarkImplementation extends BenchmarkImplementationBuilder {
     private static final String COLLECTION = "collection";
     private static final String DB = "db";
     private AtomicInteger counter = new AtomicInteger(0);
@@ -27,17 +27,18 @@ public class MapBenchmarkImplementation extends BaseBenchmarkImplementation {
     private Class<? extends AsyncStorage> plugin;
 
     public MapBenchmarkImplementation(BenchmarkGroup group, Class<? extends AsyncStorage> plugin, String implementation) {
-        super(group, implementation);
+        super(implementation);
+        setGroup(group);
         this.plugin = plugin;
 
-        add(this::putOne, "put all")
-                .add(this::getOne, "get all")
-                .add(this::values, "values")
-                .add(this::betweenQuery, "between query")
-                .add(this::equalToQuery, "equal to query")
-                .add(this::equalToPrimaryKey, "equal to primary key")
-                .add(this::regexpQuery, "regular expression")
-                .add(this::startsWithQuery, "starts with");
+        add( "put all", this::putOne)
+                .add("get all", this::getOne)
+                .add("values", this::values)
+                .add("between query", this::betweenQuery)
+                .add("equal to query", this::equalToQuery)
+                .add("equal to primary key", this::equalToPrimaryKey)
+                .add("regular expression", this::regexpQuery)
+                .add("starts with", this::startsWithQuery);
     }
 
     @Override
