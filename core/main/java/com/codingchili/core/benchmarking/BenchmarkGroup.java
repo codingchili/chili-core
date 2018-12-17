@@ -1,6 +1,7 @@
 package com.codingchili.core.benchmarking;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author Robin Duda
@@ -29,7 +30,7 @@ public interface BenchmarkGroup {
      *
      * @return a list of implementations to benchmark.
      */
-    List<BenchmarkImplementation> getImplementations();
+    Collection<BenchmarkImplementation> getImplementations();
 
     /**
      * Sets the implementations in the group to the given list. May be used when creating reports.
@@ -37,7 +38,7 @@ public interface BenchmarkGroup {
      * @param implementations the implementations to set.
      * @return fluent
      */
-    BenchmarkGroup setImplementations(List<BenchmarkImplementation> implementations);
+    BenchmarkGroup setImplementations(Map<String, BenchmarkImplementation> implementations);
 
     /**
      * Adds a new implementation to the benchmark group.

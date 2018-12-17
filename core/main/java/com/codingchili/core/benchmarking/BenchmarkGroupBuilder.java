@@ -1,7 +1,6 @@
 package com.codingchili.core.benchmarking;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Robin Duda
@@ -9,11 +8,15 @@ import java.util.List;
  * "Abstract" implementation of a map group.
  */
 public class BenchmarkGroupBuilder implements BenchmarkGroup {
-    private List<BenchmarkImplementation> implementations = new ArrayList<>();
+    private Map<String, BenchmarkImplementation> implementations = new HashMap<>();
     private int iterations;
     private int progress;
     private String name;
 
+    /**
+     * @param name the name of the group.
+     * @param iterations number of iterations to perform for each benchmark.
+     */
     public BenchmarkGroupBuilder(String name, int iterations) {
         this.name = name;
         this.iterations = iterations;
@@ -36,24 +39,23 @@ public class BenchmarkGroupBuilder implements BenchmarkGroup {
     }
 
     @Override
-    public List<BenchmarkImplementation> getImplementations() {
-        return implementations;
+    public Collection<BenchmarkImplementation> getImplementations() {
+        return implementations.values();
     }
 
     @Override
-    public BenchmarkGroup setImplementations(List<BenchmarkImplementation> implementations) {
-        implementations.forEach(implementation -> implementation.setGroup(this));
+    public BenchmarkGroup setImplementations(Map<String, BenchmarkImplementation> implementations) {
+        implementations.forEach((key, value) -> value.setGroup(this));
         this.implementations = implementations;
         return this;
     }
 
     @Override
     public BenchmarkImplementation implementation(String implementationName) {
-        BenchmarkImplementation implementation = new BenchmarkImplementationBuilder(implementationName)
-                .setGroup(this);
+        implementations.putIfAbsent(implementationName, new BenchmarkImplementationBuilder(implementationName)
+                .setGroup(this));
 
-        implementations.add(implementation);
-        return implementation;
+        return implementations.get(implementationName);
     }
 
     @Override
