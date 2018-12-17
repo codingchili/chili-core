@@ -63,6 +63,7 @@ public interface Benchmark extends BenchmarkResult {
 
     /**
      * @param iterations the number of iterations this benchmark will be executed for.
+     * @return fluent
      */
     Benchmark setIterations(int iterations);
 

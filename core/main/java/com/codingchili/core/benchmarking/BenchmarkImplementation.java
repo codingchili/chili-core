@@ -99,6 +99,7 @@ public interface BenchmarkImplementation {
 
     /**
      * @param group the group the implementation is part of.
+     * @return fluent
      */
     BenchmarkImplementation setGroup(BenchmarkGroup group);
 }

@@ -106,9 +106,9 @@ public class BenchmarkIT {
             groups.add(group);
         };
 
-        addOneGroup.accept("group_1", 999999);
-        addOneGroup.accept("group_2", 999999);
-        addOneGroup.accept("group_3", 999999);
+        addOneGroup.accept("group_1", ITERATIONS);
+        addOneGroup.accept("group_2", ITERATIONS);
+        addOneGroup.accept("group_3", ITERATIONS);
 
         new BenchmarkExecutor(context)
                 //.setListener(new BenchmarkConsoleListener())

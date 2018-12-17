@@ -33,14 +33,14 @@ public class CoreBenchmarkSuite {
                 this.iterations = Integer.parseInt(iterations));
 
         SystemContext.clustered(cluster -> {
-                maps(cluster.result(), new BenchmarkConsoleListener()).setHandler(done -> {
-                    if (done.succeeded()) {
-                        createReport(future, done.result(), executor);
-                    } else {
-                        future.fail(done.cause());
-                    }
-                    cluster.result().close();
-                });
+            maps(cluster.result(), new BenchmarkConsoleListener()).setHandler(done -> {
+                if (done.succeeded()) {
+                    createReport(future, done.result(), executor);
+                } else {
+                    future.fail(done.cause());
+                }
+                cluster.result().close();
+            });
         });
         return null;
     }
@@ -85,7 +85,8 @@ public class CoreBenchmarkSuite {
 
         new BenchmarkExecutor(context)
                 .setListener(listener)
-                .start(group);
+                .start(group)
+                .setHandler(future);
 
         return future;
     }
