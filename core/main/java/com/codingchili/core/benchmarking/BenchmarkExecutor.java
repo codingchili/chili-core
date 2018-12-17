@@ -153,12 +153,12 @@ public class BenchmarkExecutor {
 
         for (int i = 0; i < group.getIterations(); i++) {
             Future<Void> iteration = Future.<Void>future().setHandler(done -> {
-                if (completed.incrementAndGet() >= group.getIterations()) {
+                if (completed.incrementAndGet() == group.getIterations()) {
+                    if (!warmup.get()) {
+                        listener.onBenchmarkCompleted(benchmark);
+                    }
                     if (future.tryComplete()) {
                         benchmark.finish();
-                        if (!warmup.get()) {
-                            listener.onBenchmarkCompleted(benchmark);
-                        }
                     }
                 } else if (completed.get() % group.getProgressInterval() == 0) {
                     listener.onProgressUpdate(benchmark, completed.get());

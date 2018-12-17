@@ -89,11 +89,6 @@ public class BenchmarkImplementationBuilder implements BenchmarkImplementation {
     }
 
     @Override
-    public String toString() {
-        return "impl=" + name;
-    }
-
-    @Override
     public Map<String, Object> getProperties() {
         return properties;
     }

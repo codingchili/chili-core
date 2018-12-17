@@ -40,7 +40,7 @@ public class BenchmarkGroupBuilder implements BenchmarkGroup {
 
     @Override
     public Collection<BenchmarkImplementation> getImplementations() {
-        return implementations.values();
+        return new ArrayList<>(implementations.values());
     }
 
     @Override
@@ -61,5 +61,10 @@ public class BenchmarkGroupBuilder implements BenchmarkGroup {
     @Override
     public int getProgressInterval() {
         return progress;
+    }
+
+    @Override
+    public void add(BenchmarkImplementation implementation) {
+        implementations.put(implementation.getName(), implementation);
     }
 }

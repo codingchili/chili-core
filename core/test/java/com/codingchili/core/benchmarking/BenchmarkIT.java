@@ -34,7 +34,7 @@ public class BenchmarkIT {
     private static CoreContext context;
 
     @Rule
-    public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(16, TimeUnit.SECONDS);
 
     @BeforeClass
     public static void setUp(TestContext test) {

@@ -71,7 +71,7 @@ public class CoreBenchmarkSuite {
         BenchmarkGroup group = new BenchmarkGroupBuilder(MAP_BENCHMARKS, iterations);
 
         Consumer<Class<? extends AsyncStorage>> add = (clazz) -> {
-            group.getImplementations().add(new MapBenchmarkImplementation(group, clazz, clazz.getSimpleName()));
+            group.add(new MapBenchmarkImplementation(group, clazz, clazz.getSimpleName()));
         };
 
         add.accept(JsonMap.class);

@@ -26,14 +26,14 @@ public interface BenchmarkListener {
      *
      * @param implementation the implementation to warm up.
      */
-    default void onImplementationWarmup(BenchmarkImplementation implementation) {};
+    default void onImplementationWarmup(BenchmarkImplementation implementation) {}
 
     /**
      * Triggers when an implementation has completed the warmup phase.
      *
      * @param implementation the benchmark implementation that was warmed up.
      */
-    default void onImplementationWarmupComplete(BenchmarkImplementation implementation) {};
+    default void onImplementationWarmupComplete(BenchmarkImplementation implementation) {}
 
     /**
      * Triggers when an implementation starts the actual testing.

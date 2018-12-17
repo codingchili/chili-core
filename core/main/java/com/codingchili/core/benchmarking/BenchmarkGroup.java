@@ -55,4 +55,9 @@ public interface BenchmarkGroup {
      * @return the number of iterations.
      */
     int getProgressInterval();
+
+    /**
+     * @param implementation the benchmark implementation to add.
+     */
+    void add(BenchmarkImplementation implementation);
 }

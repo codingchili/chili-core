@@ -1,6 +1,6 @@
 package com.codingchili.core.benchmarking;
 
-import java.util.Collection;
+import java.util.*;
 
 import com.codingchili.core.context.CoreContext;
 
@@ -25,8 +25,8 @@ public class MockGroupBuilder extends BenchmarkGroupBuilder {
         super(name, iterations);
         firstImplementation = new MockImplementationBuilder(context, this, "implementation#1");
         secondImplementation = new MockImplementationBuilder(context, this, "implementation#2");
-        getImplementations().add(firstImplementation);
-        getImplementations().add(secondImplementation);
+        add(firstImplementation);
+        add(secondImplementation);
     }
 
     @Override
