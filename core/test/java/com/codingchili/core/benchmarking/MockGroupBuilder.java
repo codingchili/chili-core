@@ -1,8 +1,8 @@
 package com.codingchili.core.benchmarking;
 
-import com.codingchili.core.context.CoreContext;
+import java.util.Collection;
 
-import java.util.List;
+import com.codingchili.core.context.CoreContext;
 
 /**
  * @author Robin Duda
@@ -30,7 +30,7 @@ public class MockGroupBuilder extends BenchmarkGroupBuilder {
     }
 
     @Override
-    public List<BenchmarkImplementation> getImplementations() {
+    public Collection<BenchmarkImplementation> getImplementations() {
         executed = true;
         return super.getImplementations();
     }
