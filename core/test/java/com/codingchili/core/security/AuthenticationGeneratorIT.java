@@ -3,6 +3,7 @@ package com.codingchili.core.security;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.AuthenticationDependency;
 import com.codingchili.core.configuration.system.SecuritySettings;
+import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.files.ConfigurationFactory;
@@ -100,9 +101,8 @@ public class AuthenticationGeneratorIT {
     }
 
     @Test
-    public void testGeneratePreshared(TestContext test) throws IOException {
+    public void testGeneratePreshared(TestContext test) {
         generator.preshare();
-
         test.assertEquals(getService1().getString(GLOBAL), getService2().getString(GLOBAL));
     }
 
@@ -122,10 +122,14 @@ public class AuthenticationGeneratorIT {
             Token service2token = Serializer.unpack(getService2().getJsonObject(SERVICE_2_TOKEN), Token.class);
 
             service1factory.verify(service2token).setHandler(verify -> {
-                test.assertTrue(verify.succeeded());
+                if (!verify.succeeded()) {
+                    throw new CoreRuntimeException(verify.cause());
+                }
 
                 service2factory.verify(service1token).setHandler(verify2 -> {
-                    test.assertTrue(verify2.succeeded());
+                    if (!verify.succeeded()) {
+                        throw new CoreRuntimeException(verify.cause());
+                    }
                     async.complete();
                 });
             });
