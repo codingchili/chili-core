@@ -152,6 +152,11 @@ public class RestRequestTest {
                 }
 
                 @Override
+                public HttpServerRequest fetch(long amount) {
+                    return this;
+                }
+
+                @Override
                 public HttpServerRequest endHandler(Handler<Void> handler) {
                     return null;
                 }
@@ -199,6 +204,11 @@ public class RestRequestTest {
                 @Override
                 public String host() {
                     return null;
+                }
+
+                @Override
+                public long bytesRead() {
+                    return 0;
                 }
 
                 @Override
@@ -318,6 +328,11 @@ public class RestRequestTest {
                 @Override
                 public HttpConnection connection() {
                     return null;
+                }
+
+                @Override
+                public HttpServerRequest streamPriorityHandler(Handler<StreamPriority> handler) {
+                    return this;
                 }
             };
         }
