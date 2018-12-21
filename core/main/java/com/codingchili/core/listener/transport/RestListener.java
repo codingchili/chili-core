@@ -37,7 +37,7 @@ public class RestListener implements CoreListener {
 
         // enable routing for static resources.
         if (regex != null && path != null) {
-            router.routeWithRegex(regex).handler(StaticHandler.create()
+            router.routeWithRegex(regex).handler(StaticHandler.create() // caching enabled by static handler.
                     //.setCachingEnabled(false) -- set in HttpOptions.
                     .setWebRoot(path));
         }
@@ -75,7 +75,7 @@ public class RestListener implements CoreListener {
     @Override
     public void start(Future<Void> start) {
         core.vertx().createHttpServer(settings.get().getHttpOptions())
-                .requestHandler(router::accept)
+                .requestHandler(router)
                 .listen(settings.get().getPort(), getBindAddress(), listen -> {
                     if (listen.succeeded()) {
                         settings.get().addListenPort(listen.result().actualPort());
