@@ -18,7 +18,6 @@ public class ContextMock extends SystemContext implements ServiceContext {
         super();
     }
 
-    @Override
     public ServiceConfigurable service() {
         return new ServiceConfigurable() {
         };

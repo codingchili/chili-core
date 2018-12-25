@@ -19,25 +19,25 @@ import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
  * Mock class for messages.
  */
 public class MessageMock implements Message<Object> {
-    private JsonObject json;
     private ResponseListener listener;
+    private JsonObject json;
 
     /**
      * Creates a new message mock.
      *
-     * @param route    the route to which the message is destined.
-     * @param listener a listener that will be invoked when the message is written to.
      * @param json     the payload of the message.
      */
-    public MessageMock(String route, ResponseListener listener, JsonObject json) {
+    public MessageMock(JsonObject json) {
         if (json == null) {
             this.json = new JsonObject();
         } else {
             this.json = json;
         }
+    }
 
-        this.json.put(PROTOCOL_ROUTE, route);
+    public MessageMock setListener(ResponseListener listener) {
         this.listener = listener;
+        return this;
     }
 
     @Override
@@ -65,7 +65,9 @@ public class MessageMock implements Message<Object> {
                 data.put(PROTOCOL_STATUS, ACCEPTED);
             }
         }
-        listener.handle(data, responseStatusFromJson(data));
+        if (listener != null) {
+            listener.handle(data, responseStatusFromJson(data));
+        }
     }
 
     private ResponseStatus responseStatusFromJson(JsonObject json) {

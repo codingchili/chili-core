@@ -39,7 +39,6 @@ public class StartupListener {
     public static void publish(CoreContext core) {
         if (core != null) {
             StartupListener.core = core;
-
             listeners.forEach(listener -> listener.accept(core));
             listeners.clear();
         }

@@ -271,7 +271,6 @@ public class SystemContext implements CoreContext {
     public void close(Handler<AsyncResult<Void>> handler) {
         initialized.set(false);
         vertx.close((close) -> {
-            StartupListener.publish(null);
             ShutdownListener.publish();
             handler.handle(Future.succeededFuture());
         });
