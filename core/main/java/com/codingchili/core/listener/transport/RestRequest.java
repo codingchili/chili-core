@@ -45,7 +45,7 @@ public class RestRequest implements Request {
         if (connection == null) {
             connection = new Connection((object) -> {
 
-                // write the status code if not already writtem.
+                // write the status code if not already written.
                 connection.getProperty("headersSent").orElseGet(() -> {
                     request.response().setStatusCode(HttpResponseStatus.OK.code());
                     connection.setProperty("headersSent", "1");

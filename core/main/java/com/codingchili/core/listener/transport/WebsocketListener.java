@@ -77,8 +77,7 @@ public class WebsocketListener implements CoreListener {
                     // close the connection on disconnect.
                     socket.closeHandler(closed -> connection.runCloseHandlers());
 
-                }).requestHandler(router::accept)
-
+                }).requestHandler(router)
                 .listen(settings.get().getPort(), getBindAddress(), listen -> {
                     if (listen.succeeded()) {
                         settings.get().addListenPort(listen.result().actualPort());

@@ -1,4 +1,3 @@
 rootProject.name = 'chili-core'
 include 'core'
 include 'storage:elastic'
-
