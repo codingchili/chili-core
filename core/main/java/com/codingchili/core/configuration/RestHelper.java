@@ -37,16 +37,14 @@ public abstract class RestHelper {
      * @param secure indiciates if security headers should be set.
      */
     public static void addHeaders(Router router, boolean secure) {
-        Consumer<RoutingContext> headers = (context) -> {
+        Consumer<RoutingContext> headers = (routing) -> {
+            addCORSHeaders(routing);
             if (secure) {
-                addSecurityHeaders(context);
+                addSecurityHeaders(routing);
             }
         };
 
         router.options("/*").handler(routing -> {
-            // only add CORS headers for the options method.
-            addCORSHeaders(routing);
-
             headers.accept(routing);
             routing.response().setStatusCode(HttpResponseStatus.OK.code()).end();
         });
