@@ -57,6 +57,11 @@ task alljavadoc(type: Javadoc) {
     classpath = files(subprojects.collect { it.sourceSets.main.compileClasspath })
 }
 
+task copyJavadoc(type: Copy, dependsOn: alljavadoc) {
+    from(javadoc.outputs.files)
+    into 'docs/javadoc'
+}
+
 task javadocJar(type: Jar, dependsOn: alljavadoc) {
     classifier = 'javadoc'
     from alljavadoc.destinationDir

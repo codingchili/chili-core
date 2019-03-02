@@ -3,19 +3,21 @@ Welcome to the chili-core wiki!
 The documentation is a work in progress.
 
 Recommended reading order
-1. [Context](Context)
-2. [Services](Services)
-3. [Listeners](Listeners)
-4. [Handlers](Handlers)
-5. [Protocol](Protocol)
-6. [Configuration](Configuration)
-7. [Launcher](Launcher)
-8. [Logging](Logging)
-9. [Security](Security)
-10. [Storage](Storage)
-11. [Testing](Testing)
-12. [Files](Files)
-13. [Benchmarking](Benchmarking)
+1. [Context](context)
+2. [Services](services)
+3. [Listeners](listeners)
+4. [Handlers](handlers)
+5. [Protocol](protocol)
+6. [Configuration](configuration)
+7. [Launcher](launcher)
+8. [Logging](logging)
+9. [Security](security)
+10. [Storage](storage)
+11. [Testing](testing)
+12. [Files](files)
+13. [Benchmarking](benchmarking)
+
+Complete javadoc can be found [here](javadoc/).
 
 |Content|Chapter|Description|Package|
 |---|---|---|---|
