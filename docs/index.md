@@ -1,6 +1,11 @@
-Welcome to the chili-core wiki!
+Welcome to the chili-core documentation!
 
-The documentation is a work in progress.
+##### Important resources
+- Complete javadoc can be found [here](javadoc/).
+- A sample project for getting started can be found [here](https://github.com/codingchili/chili-core-examples).
+
+##### Documentation
+The documentation is a work in progress, most chapters are incomplete or not started.
 
 Recommended reading order
 1. [Context](context)
@@ -16,8 +21,8 @@ Recommended reading order
 11. [Testing](testing)
 12. [Files](files)
 13. [Benchmarking](benchmarking)
-
-Complete javadoc can be found [here](javadoc/).
+ 
+ ##### Documentation overview
 
 |Content|Chapter|Description|Package|
 |---|---|---|---|

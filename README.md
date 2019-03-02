@@ -1,6 +1,8 @@
 # chili-core [![Build Status](https://travis-ci.org/codingchili/chili-core.svg?branch=master)](https://travis-ci.org/codingchili/chili-core) [![](https://jitpack.io/v/codingchili/chili-core.svg)](https://jitpack.io/#codingchili/chili-core)
 
-The chili core is a lightweight distributed **architecture** for creating microservices with focus on **modularity**, **security** and **scalability**. The backend uses **Vert.x** with **Hazelcast** as its cluster manager. 
+The chili core is an opinionated framework for creating microservices with focus on speed of development and time to market. It's based on the Vert.x toolkit for maximum power and uses Hazelcast for plug-and-play clustering. 
+
+Find the official documentation [here](https://codingchili.github.io/chili-core/).
 
 ## Building
 To build chili-core clone this repository with **git**,
@@ -13,19 +15,24 @@ Builds project jars and run tests
 gradlew build
 ```
 
-Note: when targeting java 9 the following hacks are needed for Netty/Vert.x
+Note: when targeting java 9+ the following hacks are needed for Netty/Vert.x
 ```
 --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/sun.net.dns=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
 ```
 
 
-## Background
-The project consists of two parts. The core, which is a framework built on top of the vertx toolkit. The purpose of wrapping vertx in a framework is to increase productivity. This is done by providing common functionality that can be used to build microservices on. With all the logic packed into core, it is possible to create distributed microservices capable of handling authentication, request routing and storage in 66 lines of code. If you are interested in vertx, I recommend using it directly instead. This framework is intended to improve productivity in a very specific use case. In order to achieve this it is much more invasive than the vertx toolkit.
+## Background 
+The purpose of wrapping vertx in a framework is to increase productivity. This is done by providing common 
+functionality that can be used to build microservices on as a framework. With all the logic packed into core, it is 
+possible to create distributed microservices capable of handling authentication, request routing and storage 
+in 66 lines of code. If you are interested in vertx, I recommend using it directly instead. 
+This framework is intended to improve productivity for a single developer, aka the author. 
+In order to achieve this it is much more invasive than the vertx toolkit.
 
 ###### Summary
 * Built on the high-performance reactive toolkit vertx
 * Uses clustering to improve scalability
-* Support for a variety of storage options
+* Support for a variety of storage options, query API's and a DSL.
 * A distributed logging system and logging aggregator
 * Highly adaptable and flexible with a configuration system
 * High availability with support for multiple transports
@@ -35,10 +42,6 @@ The project consists of two parts. The core, which is a framework built on top o
 ## Features
 The complete feature list may change during development. 
 
-##### Audience
-- Programmers seeking to create microservices productively in a very specific use case.
-- Aspiring game, web-app or mobile-app developers with an interest in backend development.
-
 ##### Core
 * Transport & protocol independent implementation
 * Logging system for data analysis and real time monitoring
@@ -47,27 +50,9 @@ The complete feature list may change during development.
 * Statistics API that builds on top of the logging system
 * Interchangeable storage options with indexing and query support
 
-## Configuration
-The configuration directory **'conf' must be in the same directory as the jar file** or **on the classpath**.
-Configuration may also be done programmatically using com.codingchili.core.configuration.files.Configurations.
-
-The configuration structure
-```
-├── conf/
-│   ├──system/
-│   │   ├── launcher.json
-│   │   ├── validator.json
-│   │   ├── security.json
-│   │   ├── storage.json
-│   │   ├── system.json
-```
-##### Explanation
-- **conf/system/** contains framework configuration.
-- Default configuration may be generated using --reconfigure.
-- Configuration of services typically reside in **conf/services/**
-- The configuration for the prototype is a good starting point.
-
-All configuration files are loaded by their respective service with support for reloading changes at runtime.
+##### Audience
+- Programmers seeking to create microservices productively in a very specific use case.
+- Game, web-app or mobile-app developers with an interest in backend development.
 
 ## Makes use of
 The core uses some great software, such as
@@ -92,6 +77,6 @@ Issues and PR's are welcome with :blue_heart:.
 
 ## License
 The MIT License (MIT)
-Copyright (c) 2018 Robin Duda
+Copyright (c) 2019 Robin Duda
 
 See: [License](./LICENSE.md)
