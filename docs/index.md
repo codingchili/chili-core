@@ -22,7 +22,7 @@ Recommended reading order
 12. [Files](files)
 13. [Benchmarking](benchmarking)
  
- ##### Documentation overview
+##### Documentation overview
 
 |Content|Chapter|Description|Package|
 |---|---|---|---|
