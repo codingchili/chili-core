@@ -25,7 +25,6 @@ import com.codingchili.core.protocol.Serializer;
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
- * @author Robin Duda
  * <p>
  * Handles loading and parsing of the configuration files.
  */

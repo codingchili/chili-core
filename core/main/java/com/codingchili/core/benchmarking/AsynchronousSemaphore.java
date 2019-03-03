@@ -1,19 +1,16 @@
 package com.codingchili.core.benchmarking;
 
-import com.codingchili.core.context.CoreContext;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
+import io.vertx.core.*;
 
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.codingchili.core.context.CoreContext;
+
 import static com.codingchili.core.configuration.CoreStrings.getSemaphoreTimeout;
 
 /**
- * @author Robin Duda
- * <p>
  * An asynchronous semaphore.
  * <p>
  * This implementation does not make sure that a principal releasing

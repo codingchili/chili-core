@@ -15,8 +15,6 @@ import org.junit.runner.RunWith;
 import java.util.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests for the serializer.
  */
 @RunWith(VertxUnitRunner.class)

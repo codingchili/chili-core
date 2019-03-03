@@ -1,26 +1,18 @@
 package com.codingchili.core.storage;
 
-import com.codingchili.core.context.FutureHelper;
-import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.storage.exception.NothingToRemoveException;
-import com.codingchili.core.storage.exception.NothingToUpdateException;
-import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
-import com.codingchili.core.storage.exception.ValueMissingException;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
+import io.vertx.core.*;
 
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Stream;
 
-import static com.codingchili.core.context.FutureHelper.error;
-import static com.codingchili.core.context.FutureHelper.result;
+import com.codingchili.core.context.FutureHelper;
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.storage.exception.*;
+
+import static com.codingchili.core.context.FutureHelper.*;
 
 
 /**
- * @author Robin Duda
- * <p>
  * Implements an async map for use with local data.
  * <p>
  * This storage implementation implements a fallback for supporting queries.

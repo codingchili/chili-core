@@ -27,8 +27,7 @@ import com.codingchili.core.storage.Storable;
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
- * @author Robin Duda
- * serializes objects to JSON and back.
+ * Serializes objects to JSON or YAML and back. Utility methods for gzip and class definition generation.
  */
 public class Serializer {
     // use vertx's objectmapper, it comes with custom serializer modules.
@@ -52,7 +51,7 @@ public class Serializer {
     }
 
     private static Pool<Kryo> pool = new Pool<Kryo>(true, true, 8) {
-        protected Kryo create () {
+        protected Kryo create() {
             Kryo kryo = new Kryo();
             // this instance should not be used for de-serializing arbitrary classes.
             kryo.setRegistrationRequired(false);

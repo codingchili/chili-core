@@ -11,13 +11,12 @@ import java.util.stream.Collectors;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.listener.*;
-import com.codingchili.core.protocol.*;
+import com.codingchili.core.protocol.Response;
+import com.codingchili.core.protocol.ResponseStatus;
 
 import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_CONNECTION;
 
 /**
- * @author Robin Duda
- * <p>
  * HTTP/REST request object.
  */
 public class RestRequest implements Request {

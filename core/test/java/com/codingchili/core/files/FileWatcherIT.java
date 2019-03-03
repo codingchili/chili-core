@@ -19,8 +19,6 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * @author Robin Duda
- * <p>
  * Tests that the FileWatcher emits modified/delete events when a file is
  * created/deleted/modified and that it ignores files outside the specified directory.
  */

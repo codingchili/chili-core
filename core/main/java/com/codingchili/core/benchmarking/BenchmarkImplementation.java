@@ -8,8 +8,6 @@ import java.util.Map;
 import com.codingchili.core.context.CoreContext;
 
 /**
- * @author Robin Duda
- * <p>
  * Groups benchmarks of the same implementation together.
  */
 public interface BenchmarkImplementation {

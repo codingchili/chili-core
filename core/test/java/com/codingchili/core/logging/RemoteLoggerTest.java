@@ -13,8 +13,6 @@ import org.junit.runner.RunWith;
 import static com.codingchili.core.configuration.CoreStrings.NODE_LOGGING;
 
 /**
- * @author Robin Duda
- * <p>
  * Verify that the remote logger is pushing events to a remote.
  */
 @RunWith(VertxUnitRunner.class)

@@ -11,8 +11,6 @@ import java.nio.file.Paths;
 import com.codingchili.core.benchmarking.reporting.BenchmarkConsoleReport;
 
 /**
- * @author Robin Duda
- * <p>
  * Test cases for console reporting.
  */
 @RunWith(VertxUnitRunner.class)

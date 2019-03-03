@@ -1,43 +1,31 @@
 package com.codingchili.core.storage;
 
+import io.vertx.core.*;
+import io.vertx.core.json.JsonObject;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
+
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.files.ConfigurationFactory;
 import com.codingchili.core.files.exception.NoSuchResourceException;
 import com.codingchili.core.logging.Logger;
-import com.codingchili.core.storage.exception.NothingToRemoveException;
-import com.codingchili.core.storage.exception.NothingToUpdateException;
-import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
-import com.codingchili.core.storage.exception.ValueMissingException;
+import com.codingchili.core.storage.exception.*;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.WorkerExecutor;
-import io.vertx.core.json.JsonObject;
-
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
-
-import static com.codingchili.core.configuration.CoreStrings.EXT_JSON;
-import static com.codingchili.core.configuration.CoreStrings.getFileReadError;
-import static com.codingchili.core.context.FutureHelper.error;
-import static com.codingchili.core.context.FutureHelper.result;
+import static com.codingchili.core.configuration.CoreStrings.*;
+import static com.codingchili.core.context.FutureHelper.*;
 
 /**
- * @author Robin Duda
- *         <p>
- *         Map backed by a json-file.
- *         <p>
- *         Do not use for data that is changing frequently, as this is extremely inefficient.
- *         The dirty-state of the map will be checked to determine when the map should be
- *         persisted. This is done in intervals specified in plugin configuration.
- *         <p>
- *         this map flushes its contents to disk every now and then.
+ * Map backed by a json-file.
+ * <p>
+ * Do not use for data that is changing frequently, as this is extremely inefficient.
+ * The dirty-state of the map will be checked to determine when the map should be
+ * persisted. This is done in intervals specified in plugin configuration.
+ * <p>
+ * this map flushes its contents to disk every now and then.
  */
 public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     private static final String JSONMAP_WORKERS = "asyncjsonmap.workers";

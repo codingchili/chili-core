@@ -1,6 +1,5 @@
 package com.codingchili.core.testing;
 
-import com.codingchili.core.listener.Request;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
@@ -9,13 +8,12 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static com.codingchili.core.configuration.CoreStrings.ID_BUFFER;
+import com.codingchili.core.listener.Request;
+
 import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_STATUS;
 import static com.codingchili.core.protocol.ResponseStatus.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests the request mock, and partially ClusterRequest.
  * (there have been some problems with passing both buffers and json objects)
  */

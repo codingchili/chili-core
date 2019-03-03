@@ -8,8 +8,6 @@ import com.codingchili.core.listener.Messageable;
 import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_CONNECTION;
 
 /**
- * @author Robin Duda
- * <p>
  * Represents the stateful connection over which requests may be passed.
  * For stateless requests such as ClusterRequest and RestRequest the
  * client may only live during a single request.
@@ -67,7 +65,7 @@ public class Connection implements Messageable {
     /**
      * Adds a listener for the close event.
      *
-     * @param name the name of the close handler so that it can be removed or updated.
+     * @param name         the name of the close handler so that it can be removed or updated.
      * @param closeHandler called after the connection is closed.
      * @return fluent.
      */

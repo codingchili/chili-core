@@ -6,8 +6,6 @@ import io.vertx.core.json.JsonObject;
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Helper methods for creating response messages.
  * <p>
  * Response messages should always contain a reference to the request.
@@ -86,8 +84,8 @@ public abstract class Response {
     /**
      * Creates a json response message.
      *
-     * @param target the target header to set for the response.
-     * @param route  the route header to set for the response.
+     * @param target  the target header to set for the response.
+     * @param route   the route header to set for the response.
      * @param message the message to add request headers to.
      * @return a json object.
      */

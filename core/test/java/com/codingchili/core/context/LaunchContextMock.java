@@ -11,8 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * @author Robin Duda
- * <p>
  * Mock of a launcher context.
  */
 class LaunchContextMock extends LaunchContext {

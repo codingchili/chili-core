@@ -18,8 +18,6 @@ import static com.codingchili.core.listener.ListenerSettings.*;
 import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
 
 /**
- * @author Robin Duda
- * <p>
  * Base request class.
  */
 public interface Request extends Messageable {

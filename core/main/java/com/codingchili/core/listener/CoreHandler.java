@@ -3,10 +3,8 @@ package com.codingchili.core.listener;
 import com.codingchili.core.protocol.Address;
 
 /**
- * @author Robin Duda
- * <p>
  * A simplified handler that may be deployed directly.
- *
+ * <p>
  * Supports DeploymentAware and ListenerAware.
  */
 public interface CoreHandler extends Receiver<Request>, CoreDeployment {

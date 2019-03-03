@@ -1,15 +1,12 @@
 package com.codingchili.core.security;
 
 import io.vertx.core.net.*;
-import io.vertx.core.net.impl.SelfSignedCertificateImpl;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.security.*;
 import java.security.cert.CertificateException;
 
-import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreRuntimeException;
 
 /**

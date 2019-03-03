@@ -1,8 +1,6 @@
 package com.codingchili.core.configuration;
 
 /**
- * @author Robin Duda
- * <p>
  * Represents a basic configurable that is saveable.
  */
 public class BaseConfigurable implements Configurable {

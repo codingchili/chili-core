@@ -1,20 +1,16 @@
 package com.codingchili.core.configuration.system;
 
-import com.codingchili.core.configuration.Configurable;
-import com.codingchili.core.files.Configurations;
-import com.codingchili.core.storage.MongoDBMap;
-
 import java.util.HashMap;
 
-import static com.codingchili.core.configuration.CoreStrings.LOCALHOST;
+import com.codingchili.core.configuration.Configurable;
+import com.codingchili.core.storage.MongoDBMap;
+
 import static com.codingchili.core.configuration.CoreStrings.PATH_STORAGE;
 
 /**
- * @author Robin Duda
- * <p>
  * configuration used by storages.
  */
-public class StorageSettings implements Configurable{
+public class StorageSettings implements Configurable {
     private static final String LOCALHOST = "localhost";
     private static final String CHILI = "chili";
     private HashMap<String, RemoteStorage> storage = new HashMap<>();

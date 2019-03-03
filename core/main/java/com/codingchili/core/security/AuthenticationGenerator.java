@@ -1,16 +1,5 @@
 package com.codingchili.core.security;
 
-import com.codingchili.core.configuration.BaseConfigurable;
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.configuration.system.AuthenticationDependency;
-import com.codingchili.core.configuration.system.SecuritySettings;
-import com.codingchili.core.context.*;
-import com.codingchili.core.files.Configurations;
-import com.codingchili.core.files.ConfigurationFactory;
-import com.codingchili.core.files.exception.NoSuchResourceException;
-import com.codingchili.core.logging.Logger;
-import com.codingchili.core.security.exception.SecurityMissingDependencyException;
-
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 
@@ -20,13 +9,22 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.codingchili.core.configuration.BaseConfigurable;
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.configuration.system.AuthenticationDependency;
+import com.codingchili.core.configuration.system.SecuritySettings;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.files.ConfigurationFactory;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.files.exception.NoSuchResourceException;
+import com.codingchili.core.logging.Logger;
+import com.codingchili.core.security.exception.SecurityMissingDependencyException;
+
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.files.Configurations.security;
 import static com.codingchili.core.protocol.Serializer.json;
 
 /**
- * @author Robin Duda
- * <p>
  * Generates service security configuration based on system security mappings.
  */
 public class AuthenticationGenerator {
@@ -43,7 +41,7 @@ public class AuthenticationGenerator {
     }
 
     /**
-     * @param core the core context to run on.
+     * @param core      the core context to run on.
      * @param directory the directory to search for configurations.
      */
     public AuthenticationGenerator(CoreContext core, String directory) {
@@ -67,6 +65,7 @@ public class AuthenticationGenerator {
 
     /**
      * Generates new preshared secrets based on the system security configuration.
+     *
      * @return callback
      */
     public Future<Void> preshare() {
@@ -92,6 +91,7 @@ public class AuthenticationGenerator {
 
     /**
      * Generates new secrets based on the system security configuration.
+     *
      * @return callback
      */
     public Future<Void> secrets() {
@@ -111,6 +111,7 @@ public class AuthenticationGenerator {
 
     /**
      * Generates new tokens based on the system security configuration.
+     *
      * @return callback
      */
     public Future<Void> tokens() {
@@ -174,7 +175,7 @@ public class AuthenticationGenerator {
 
         if (config.containsKey(ID_NODE)) {
             identity = config.getString(ID_NODE);
-            if (!identity.endsWith(ID_NODE)){
+            if (!identity.endsWith(ID_NODE)) {
                 identity += "." + ID_NODE;
             }
         } else {

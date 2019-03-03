@@ -1,8 +1,6 @@
 package com.codingchili.core.listener;
 
 /**
- * @author Robin Duda
- * <p>
  * Used to map API routes to another target/route
  */
 public class Endpoint {

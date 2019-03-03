@@ -1,13 +1,11 @@
 package com.codingchili.core.testing;
 
-import com.codingchili.core.storage.NestedStorable;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import com.codingchili.core.storage.NestedStorable;
+
 /**
- * @author Robin Duda
- * <p>
  * Object used for testing, nested within StorageObject.
  */
 public class NestedObject implements NestedStorable {

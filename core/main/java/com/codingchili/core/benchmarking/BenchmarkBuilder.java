@@ -5,8 +5,6 @@ import java.time.Instant;
 import java.util.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Base implementation of a benchmark.
  */
 public class BenchmarkBuilder implements Benchmark {
@@ -18,6 +16,11 @@ public class BenchmarkBuilder implements Benchmark {
     private int iterations;
     private int elapsedMS = -1;
 
+    /**
+     * Creates a new benchmark builder.
+     *
+     * @param name the name of the benchmark to build.
+     */
     public BenchmarkBuilder(String name) {
         this.name = name;
     }
@@ -111,6 +114,6 @@ public class BenchmarkBuilder implements Benchmark {
         if (elapsedMS == 0) {
             return 1000 * iterations;
         }
-        return (int) (iterations / (elapsedMS/ 1000f));
+        return (int) (iterations / (elapsedMS / 1000f));
     }
 }

@@ -1,9 +1,9 @@
 package com.codingchili.core.protocol;
 
+import java.util.List;
+
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
-
-import java.util.List;
 
 /**
  * Handles the mapping of routes to roles.
@@ -24,7 +24,7 @@ public interface AuthorizationHandler<T> {
      * route id and that any of the given roles have permission to.
      *
      * @param route the id of the route to retrieve
-     * @param role the role used in the authorization check
+     * @param role  the role used in the authorization check
      * @return a request handler used for the route.
      * @throws AuthorizationRequiredException when a route exists but none
      *                                        of the given roles has permission to execute it.

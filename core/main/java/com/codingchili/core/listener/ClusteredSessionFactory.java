@@ -1,15 +1,16 @@
 package com.codingchili.core.listener;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.files.Configurations;
-import com.codingchili.core.logging.Logger;
-import com.codingchili.core.storage.*;
 import io.vertx.core.Future;
 
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.logging.Logger;
+import com.codingchili.core.storage.*;
 
 /**
  * Creates new sessions and manages existing.

@@ -14,9 +14,8 @@ import com.codingchili.core.logging.Logger;
 import static com.codingchili.core.configuration.CoreStrings.ID_DEFAULT;
 
 /**
- * @author Robin Duda
- * <p>
- * Provides context for the Launcher system.
+ * Provides context for the Launcher system, passed to the launcher when starting an application
+ * using the {@link Launcher} subsystem.
  */
 public class LaunchContext {
     private static final String BLOCK_DEFAULT = "default";
@@ -31,6 +30,9 @@ public class LaunchContext {
         this.args = args;
     }
 
+    /**
+     * @return the launcher settings, must be modified before starting the launcher.
+     */
     public LauncherSettings settings() {
         return Configurations.launcher();
     }
@@ -90,10 +92,23 @@ public class LaunchContext {
         return blocks;
     }
 
+    /**
+     * @return the commandline arguments that was passed to the constructor.
+     */
     public String[] args() {
         return args;
     }
 
+    /**
+     * Retrieves a block of services that should be deployed. If no block is explicitly set as the second
+     * argument then the block is inferred from the host-to-block mappings. if there is no such mapping
+     * the 'default' block is deployed, if one is specified.
+     *
+     * @param args the arguments that was passed to the launcher.
+     * @return a list of services to be deployed for the given arguments.
+     * @throws CoreException when the specified block does not exist or when no blocks are specified
+     *                       that match the host and the 'default' block is missing.
+     */
     public List<String> block(String[] args) throws CoreException {
         return block((args.length < 2) ? findBlockByEnvironment() : args[1]);
     }
@@ -130,6 +145,9 @@ public class LaunchContext {
         }
     }
 
+    /**
+     * @return the active logger for the current context.
+     */
     public Logger logger() {
         return console;
     }
@@ -158,6 +176,7 @@ public class LaunchContext {
 
     /**
      * Get the CommandExecutor attached to the launch context.
+     *
      * @return fluent
      */
     public CommandExecutor getExecutor() {

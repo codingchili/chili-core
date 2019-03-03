@@ -14,8 +14,6 @@ import org.junit.runner.RunWith;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests the timers and metrics in the system context.
  */
 @RunWith(VertxUnitRunner.class)

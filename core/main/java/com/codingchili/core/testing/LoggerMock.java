@@ -1,12 +1,8 @@
 package com.codingchili.core.testing;
 
-import com.codingchili.core.logging.ConsoleLogger;
-import com.codingchili.core.logging.Level;
-import com.codingchili.core.logging.Logger;
+import com.codingchili.core.logging.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Logger mock to capture console output for testing purposes.
  */
 public class LoggerMock extends ConsoleLogger {

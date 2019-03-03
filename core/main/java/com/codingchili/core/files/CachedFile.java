@@ -7,8 +7,6 @@ import java.io.File;
 import java.nio.file.Path;
 
 /**
- * @author Robin Duda
- * <p>
  * Represents a file loaded from disk into main memory.
  */
 public class CachedFile {

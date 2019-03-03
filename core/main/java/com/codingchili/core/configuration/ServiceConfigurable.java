@@ -4,8 +4,6 @@ package com.codingchili.core.configuration;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * @author Robin Duda
- * <p>
  * Service configurables are loaded by service contexts for use in services.
  */
 public class ServiceConfigurable extends BaseConfigurable {

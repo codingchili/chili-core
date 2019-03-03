@@ -1,20 +1,15 @@
 package com.codingchili.core.configuration.system;
 
-import com.codingchili.core.configuration.Configurable;
-import com.codingchili.core.configuration.CoreStrings;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+
+import com.codingchili.core.configuration.Configurable;
+import com.codingchili.core.configuration.CoreStrings;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Contains the settings for the launcher.
  */
 public class LauncherSettings implements Configurable {

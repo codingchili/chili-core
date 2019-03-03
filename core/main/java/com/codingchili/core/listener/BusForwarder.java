@@ -3,8 +3,6 @@ package com.codingchili.core.listener;
 import com.codingchili.core.context.CoreContext;
 
 /**
- * @author Robin Duda
- * <p>
  * A bus routerhandler with a static delivery address.
  */
 public class BusForwarder extends BusRouter {

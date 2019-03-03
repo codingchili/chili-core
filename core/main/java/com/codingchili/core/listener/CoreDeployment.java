@@ -1,10 +1,11 @@
 package com.codingchili.core.listener;
 
-import com.codingchili.core.context.CoreContext;
 import io.vertx.core.Future;
 
+import com.codingchili.core.context.CoreContext;
+
 /**
- * @author Robin Duda
+ * An unit that is deployable on the {@link CoreContext}.
  */
 public interface CoreDeployment {
     /**

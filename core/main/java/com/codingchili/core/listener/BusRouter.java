@@ -1,26 +1,21 @@
 package com.codingchili.core.listener;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.logging.Level;
-import com.codingchili.core.logging.Logger;
-import com.codingchili.core.protocol.Address;
-import com.codingchili.core.protocol.exception.NodeFailedToAcknowledge;
-import com.codingchili.core.protocol.exception.NodeNotReachableException;
-import com.codingchili.core.protocol.exception.RequestTimedOutException;
-import io.vertx.core.eventbus.DeliveryOptions;
-import io.vertx.core.eventbus.ReplyException;
-import io.vertx.core.eventbus.ReplyFailure;
+import io.vertx.core.eventbus.*;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.logging.Level;
+import com.codingchili.core.logging.Logger;
+import com.codingchili.core.protocol.Address;
+import com.codingchili.core.protocol.exception.*;
+
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static io.vertx.core.eventbus.ReplyFailure.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Simple handler that routes messages to the event bus and
  * passes eventbus errors back to sender.
  */

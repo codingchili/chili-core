@@ -1,24 +1,20 @@
 package com.codingchili.core.context;
 
+import io.vertx.core.Future;
+
+import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+
 import com.codingchili.core.configuration.system.LauncherSettings;
 import com.codingchili.core.context.exception.CommandAlreadyExistsException;
 import com.codingchili.core.context.exception.NoSuchCommandException;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.Logger;
-import io.vertx.core.Future;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import static com.codingchili.core.configuration.CoreStrings.COMMAND_PREFIX;
 
 /**
- * @author Robin Duda
- * <p>
  * Parses and executes commands from the command line.
  */
 public class DefaultCommandExecutor implements CommandExecutor {

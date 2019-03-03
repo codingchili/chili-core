@@ -23,9 +23,7 @@ import static com.codingchili.core.logging.Level.WARNING;
 
 
 /**
- * @author Robin Duda
- *         <p>
- *         Common test cases for the map implementations.
+ * Common test cases for the map implementations.
  */
 @Ignore("Extend this class to run the tests.")
 @RunWith(VertxUnitRunner.class)

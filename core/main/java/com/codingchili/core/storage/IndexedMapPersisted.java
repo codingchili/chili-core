@@ -16,8 +16,6 @@ import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.protocol.Serializer;
 
 /**
- * @author Robin Duda
- * <p>
  * Adds disk persistence to IndexedMap.
  * <p>
  * Overrides some methods where the underlying implementation differs between

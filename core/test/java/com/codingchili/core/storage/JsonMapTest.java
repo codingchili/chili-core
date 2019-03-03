@@ -20,8 +20,6 @@ import static com.codingchili.core.configuration.CoreStrings.getDBIdentifier;
 import static com.codingchili.core.configuration.CoreStrings.getDBPath;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests for the storage providers in core. Reuse these tests when new
  * storage subsystems are implemented using the StorageLoader.
  */

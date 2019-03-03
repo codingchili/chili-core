@@ -18,8 +18,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /**
- * @author Robin Duda
- * <p>
  * Contains test cases for transport implementations.
  */
 @Ignore("Extend this class to run the tests.")

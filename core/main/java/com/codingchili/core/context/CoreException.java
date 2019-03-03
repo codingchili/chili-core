@@ -4,8 +4,6 @@ import com.codingchili.core.context.exception.CoreExceptionFormat;
 import com.codingchili.core.protocol.ResponseStatus;
 
 /**
- * @author Robin Duda
- * <p>
  * Exceptions should extend this class to allow for catching all core-type exceptions.
  * Additionally, all classes extending CoreException must be safe to be forwarded to clients.
  */

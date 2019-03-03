@@ -9,8 +9,6 @@ import com.codingchili.core.files.Configurations;
 import com.codingchili.core.security.exception.HashMismatchException;
 
 /**
- * @author Robin Duda
- * <p>
  * Handles the hashing of passwords and the generation
  * of the salts used in the hashing; internally in Argon2.
  * <p>

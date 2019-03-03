@@ -13,8 +13,6 @@ import com.codingchili.core.logging.ConsoleLogger;
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Crates benchmark reports in the terminal.
  */
 public class BenchmarkConsoleReport implements BenchmarkReport {

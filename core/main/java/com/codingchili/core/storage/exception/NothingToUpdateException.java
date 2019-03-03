@@ -5,8 +5,6 @@ import com.codingchili.core.context.CoreException;
 import com.codingchili.core.protocol.ResponseStatus;
 
 /**
- * @author Robin Duda
- * <p>
  * Throw when the replace operation cannot complete as there is no object stored
  * that matches the value of the oject to update.
  */

@@ -3,8 +3,6 @@ package com.codingchili.core.benchmarking;
 import io.vertx.ext.unit.TestContext;
 
 /**
- * @author Robin Duda
- * <p>
  * Asserts that all test methods of a listener is called and that
  * they are called in the expected order.
  */

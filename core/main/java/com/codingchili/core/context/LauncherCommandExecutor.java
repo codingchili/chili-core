@@ -2,6 +2,9 @@ package com.codingchili.core.context;
 
 import io.vertx.core.Future;
 
+import java.util.*;
+import java.util.function.Function;
+
 import com.codingchili.core.benchmarking.CoreBenchmarkSuite;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.files.Configurations;
@@ -9,14 +12,9 @@ import com.codingchili.core.logging.Level;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.security.AuthenticationGenerator;
 
-import java.util.*;
-import java.util.function.Function;
-
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Command executor that registers launch commands to a CommandExecutor.
  */
 public class LauncherCommandExecutor extends DefaultCommandExecutor {

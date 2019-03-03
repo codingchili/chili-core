@@ -2,12 +2,6 @@ package com.codingchili.core.security;
 
 import io.vertx.core.Future;
 
-import com.codingchili.core.configuration.system.SecuritySettings;
-import com.codingchili.core.context.*;
-import com.codingchili.core.files.Configurations;
-import com.codingchili.core.logging.*;
-import com.codingchili.core.protocol.Serializer;
-
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.*;
@@ -15,11 +9,15 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.Objects;
 
+import com.codingchili.core.configuration.system.SecuritySettings;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.CoreRuntimeException;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.protocol.Serializer;
+
 import static com.codingchili.core.configuration.CoreStrings.ERROR_TOKEN_FACTORY;
 
 /**
- * @author Robin Duda
- * <p>
  * Verifies and generates tokens for access.
  */
 public class TokenFactory {

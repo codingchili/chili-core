@@ -1,8 +1,6 @@
 package com.codingchili.core.protocol;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Contains protocol mappings and descriptions.

@@ -10,7 +10,7 @@ import static com.codingchili.core.configuration.CoreStrings.testDirectory;
 import static com.codingchili.core.configuration.CoreStrings.testFile;
 
 /**
- * @author Robin Duda
+ * test case for the configuration system to check if configuration can be overridden.
  */
 @RunWith(VertxUnitRunner.class)
 public class SettingsOverrideTest {

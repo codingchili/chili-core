@@ -1,24 +1,17 @@
 package com.codingchili.core.storage;
 
-import com.codingchili.core.context.FutureHelper;
-import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.storage.exception.NothingToRemoveException;
-import com.codingchili.core.storage.exception.NothingToUpdateException;
-import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
-import com.codingchili.core.storage.exception.ValueMissingException;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
+import io.vertx.core.*;
 import io.vertx.core.shareddata.LocalMap;
 
 import java.util.Collection;
 
-import static com.codingchili.core.context.FutureHelper.error;
-import static com.codingchili.core.context.FutureHelper.result;
+import com.codingchili.core.context.FutureHelper;
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.storage.exception.*;
+
+import static com.codingchili.core.context.FutureHelper.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Storage implementation that uses vertx local-shared map.
  * <p>
  * This storage implementation implements a fallback for supporting queries.

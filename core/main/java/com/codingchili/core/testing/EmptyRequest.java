@@ -1,14 +1,13 @@
 package com.codingchili.core.testing;
 
-import com.codingchili.core.listener.transport.Connection;
-import com.codingchili.core.listener.Request;
-import com.codingchili.core.security.Token;
 import io.vertx.core.json.JsonObject;
+
+import com.codingchili.core.listener.Request;
+import com.codingchili.core.listener.transport.Connection;
+import com.codingchili.core.security.Token;
 
 
 /**
- * @author Robin Duda
- * <p>
  * An empty request for testing.
  */
 public class EmptyRequest implements Request {

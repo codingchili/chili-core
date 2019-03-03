@@ -22,8 +22,6 @@ import static com.codingchili.core.configuration.CoreStrings.getUnsupportedDeplo
 
 
 /**
- * @author Robin Duda
- * <p>
  * Implementation of the CoreContext, each context gets its own worker pool.
  */
 public class SystemContext implements CoreContext {
@@ -264,7 +262,8 @@ public class SystemContext implements CoreContext {
 
     @Override
     public void close() {
-        close(closed -> { });
+        close(closed -> {
+        });
     }
 
     @Override

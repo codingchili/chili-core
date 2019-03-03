@@ -3,14 +3,16 @@ package com.codingchili.core.context;
 import io.vertx.core.Future;
 
 /**
- * @author Robin Duda
- *
  * Helper method to simplify working with handlers and asyncresult.
  */
 public abstract class FutureHelper {
 
+    private FutureHelper() {}
+
     /**
-     * @param e the cause of the failure.
+     * Creates a failed future from a throwable.
+     *
+     * @param e   the cause of the failure.
      * @param <T> inferred future type
      * @return a failed future with the given cause.
      */
@@ -19,8 +21,10 @@ public abstract class FutureHelper {
     }
 
     /**
+     * Creates a succeeded future from the given value.
+     *
      * @param value the value that is the result
-     * @param <T> inferred future type
+     * @param <T>   inferred future type
      * @return a succeeded future with the given value.
      */
     public static <T> Future<T> result(T value) {
@@ -28,6 +32,8 @@ public abstract class FutureHelper {
     }
 
     /**
+     * Creates a succeeded future with an empty result.
+     *
      * @param <T> inferred future type
      * @return a succeeded future with an empty result.
      */
@@ -36,8 +42,10 @@ public abstract class FutureHelper {
     }
 
     /**
+     * Converts the given untyped feature into an inferred type by wrapping.
+     *
      * @param typed future of any type
-     * @param <T> inferred future type
+     * @param <T>   inferred future type
      * @return a generic future with a handler set.
      */
     public static <T> Future<T> untyped(Future<?> typed) {

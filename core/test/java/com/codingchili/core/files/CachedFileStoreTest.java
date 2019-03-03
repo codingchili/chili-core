@@ -22,8 +22,6 @@ import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests the loading of files in CachedFileStore.
  */
 @RunWith(VertxUnitRunner.class)

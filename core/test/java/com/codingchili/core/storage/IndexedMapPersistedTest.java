@@ -6,8 +6,6 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests for the CQEngine indexed storage.
  */
 @Ignore("Slow to execute.")

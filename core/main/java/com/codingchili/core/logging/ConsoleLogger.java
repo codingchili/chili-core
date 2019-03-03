@@ -4,10 +4,7 @@ import io.vertx.core.json.JsonObject;
 import org.fusesource.jansi.AnsiConsole;
 
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -19,15 +16,13 @@ import com.codingchili.core.context.ShutdownListener;
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Implementation of a console logger, filters some key/value combinations to better display the messages.
  */
 public class ConsoleLogger extends DefaultLogger implements StringLogger {
     public static final String RESET = "\u001B[0m";
     private final AtomicBoolean enabled = new AtomicBoolean(true);
     private static final Set<String> filtered = new HashSet<>(Arrays.asList(
-        ID_TOKEN, LOG_EVENT, LOG_APPLICATION, LOG_CONTEXT, LOG_HOST, LOG_VERSION
+            ID_TOKEN, LOG_EVENT, LOG_APPLICATION, LOG_CONTEXT, LOG_HOST, LOG_VERSION
     ));
 
     private static final ExecutorService executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
@@ -109,11 +104,11 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
         data.forEach(entry -> {
             if (entry.getValue() != null && !filtered.contains(entry.getKey())) {
                 text.append(
-                    String.format("%s%-1s%s=%s ",
-                        level.color,
-                        entry.getKey(),
-                        RESET,
-                        entry.getValue().toString()));
+                        String.format("%s%-1s%s=%s ",
+                                level.color,
+                                entry.getKey(),
+                                RESET,
+                                entry.getValue().toString()));
             }
         });
         return text.toString();

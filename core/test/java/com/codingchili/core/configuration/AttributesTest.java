@@ -12,8 +12,6 @@ import java.util.HashMap;
 import java.util.Optional;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests the implementation of attributes.
  */
 @RunWith(VertxUnitRunner.class)

@@ -9,8 +9,6 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.runner.RunWith;
 
 /**
- * @author Robin Duda
- * <p>
  * Test cases for HTTP/REST transport.
  */
 @RunWith(VertxUnitRunner.class)

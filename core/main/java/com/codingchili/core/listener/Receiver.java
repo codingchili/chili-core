@@ -1,8 +1,6 @@
 package com.codingchili.core.listener;
 
 /**
- * @author Robin Duda
- *
  * A handler to handle things.
  */
 public interface Receiver<T> {

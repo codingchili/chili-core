@@ -9,8 +9,6 @@ import java.util.Base64;
 import java.util.HashSet;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests the generation and verification of secret keys in SecretFactory
  */
 @RunWith(VertxUnitRunner.class)

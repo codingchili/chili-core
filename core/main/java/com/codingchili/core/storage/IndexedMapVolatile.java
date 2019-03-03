@@ -12,11 +12,9 @@ import io.vertx.core.Future;
 import com.codingchili.core.context.StorageContext;
 
 /**
- * @author Robin Duda
- *         <p>
- *         A storage implementation that is local and indexed. Always use this when using queries.
- *         The indexing is fully based on CQEngine. see http://github.com/npgall/cqengine
- *         The db/collection is shared over multiple instances.
+ * A storage implementation that is local and indexed. Always use this when using queries.
+ * The indexing is fully based on CQEngine. see http://github.com/npgall/cqengine
+ * The db/collection is shared over multiple instances.
  */
 public class IndexedMapVolatile<Value extends Storable> extends IndexedMap<Value> {
 

@@ -28,8 +28,6 @@ import static com.codingchili.core.files.Configurations.system;
 import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests for the router handler.
  */
 @RunWith(VertxUnitRunner.class)

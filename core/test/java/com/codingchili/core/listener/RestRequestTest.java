@@ -28,8 +28,6 @@ import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_ROUTE;
 import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_TARGET;
 
 /**
- * @author Robin Duda
- *
  * Tests to verify that parsing of HTTP target/route representations are working as expected.
  */
 @RunWith(VertxUnitRunner.class)

@@ -1,8 +1,5 @@
 package com.codingchili.core.files;
 
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.context.CoreRuntimeException;
-import com.codingchili.core.protocol.Serializer;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
@@ -11,6 +8,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.context.CoreRuntimeException;
+import com.codingchili.core.protocol.Serializer;
 
 /**
  * Parses YAML configuration files into JsonObjects.

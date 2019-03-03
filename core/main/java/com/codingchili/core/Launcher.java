@@ -4,10 +4,10 @@ import io.vertx.core.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.*;
-import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.*;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
@@ -16,9 +16,13 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.files.Configurations.system;
 
 /**
- * @author Robin Duda
+ * Launches all the components of the system on a single host. An application can be started using the
+ * `Launcher.main(args)` or `Launcher.start(context)`. The context provides more configuration options
+ * while the main can be used directly by passing the args from the main method.
  * <p>
- * Launches all the components of the system on a single host.
+ * Deploying a {@link CoreService} can also be done using the {@link CoreContext#service(Supplier)} methods.
+ * To avoid the Launcher entirely, create a new {@link SystemContext} and use the deployments method
+ * directly on that object.
  */
 public class Launcher implements CoreService {
     private static final ConsoleLogger logger = new ConsoleLogger(Launcher.class);
@@ -136,10 +140,10 @@ public class Launcher implements CoreService {
             }
         }
         CompositeFuture.all(deployments).setHandler(deployed -> {
-           if (deployed.failed()) {
-               logger.onError(deployed.cause());
-               exit();
-           }
+            if (deployed.failed()) {
+                logger.onError(deployed.cause());
+                exit();
+            }
         });
     }
 

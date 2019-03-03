@@ -1,17 +1,11 @@
 package com.codingchili.core.context;
 
-import com.codingchili.core.listener.CoreDeployment;
-import com.codingchili.core.listener.CoreListener;
-import com.codingchili.core.listener.CoreService;
+import io.vertx.core.*;
+
+import com.codingchili.core.listener.*;
 import com.codingchili.core.logging.Logger;
-import io.vertx.core.Context;
-import io.vertx.core.Future;
-import io.vertx.core.Verticle;
-import io.vertx.core.Vertx;
 
 /**
- * @author Robin Duda
- * <p>
  * A wrapper for the Vertx api to a deployable service/handler/listener in chili-core.
  * Avoids having to deal with vertx specifics where it is not required.
  */

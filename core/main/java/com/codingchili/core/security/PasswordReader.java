@@ -10,6 +10,7 @@ public class PasswordReader {
 
     /**
      * Reads a password input from the console. Uses input masking if possible.
+     *
      * @param prompt the text to display when requesting for input.
      * @return the read line.
      */

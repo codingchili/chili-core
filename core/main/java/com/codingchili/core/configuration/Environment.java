@@ -6,8 +6,6 @@ import java.util.*;
 import com.codingchili.core.context.CoreRuntimeException;
 
 /**
- * @author Robin Duda
- * <p>
  * Utility class to get environment information. Use with care.
  */
 public class Environment {

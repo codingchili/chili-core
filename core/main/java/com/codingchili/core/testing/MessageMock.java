@@ -14,8 +14,6 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
 
 /**
- * @author Robin Duda
- * <p>
  * Mock class for messages.
  */
 public class MessageMock implements Message<Object> {
@@ -25,7 +23,7 @@ public class MessageMock implements Message<Object> {
     /**
      * Creates a new message mock.
      *
-     * @param json     the payload of the message.
+     * @param json the payload of the message.
      */
     public MessageMock(JsonObject json) {
         if (json == null) {

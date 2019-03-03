@@ -1,7 +1,5 @@
 package com.codingchili.core.files;
 
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.context.CoreRuntimeException;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
@@ -12,9 +10,10 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.context.CoreRuntimeException;
+
 /**
- * @author Robin Duda
- * <p>
  * Handles the loading/writing of json objects and lists to/from disk.
  */
 public class JsonFileStore implements FileStore {

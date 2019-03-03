@@ -12,8 +12,6 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 
 
 /**
- * @author Robin Duda
- * <p>
  * Most configuration files are mocked during test, this suite
  * verifies that the configuration files exists and are loaded correctly.
  */

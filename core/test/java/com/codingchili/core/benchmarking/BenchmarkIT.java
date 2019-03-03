@@ -1,30 +1,24 @@
 package com.codingchili.core.benchmarking;
 
-import com.codingchili.core.benchmarking.reporting.BenchmarkHTMLReport;
-import com.codingchili.core.context.*;
-
 import io.vertx.core.Future;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
+
+import com.codingchili.core.benchmarking.reporting.BenchmarkHTMLReport;
+import com.codingchili.core.context.*;
 
 import static com.codingchili.core.configuration.CoreStrings.PARAM_ITERATIONS;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests for the benchmarking subsystem
  */
 @RunWith(VertxUnitRunner.class)

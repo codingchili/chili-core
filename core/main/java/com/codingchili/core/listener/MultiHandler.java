@@ -13,8 +13,6 @@ import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
 
 /**
- * @author Robin Duda
- *
  * The MultiHandler is capable of routing a request into any
  * of the given handlers using the #{@link Request#target()}. The requests
  * target should match the address of the handler. If no handlers matching
@@ -113,8 +111,8 @@ public class MultiHandler implements CoreHandler {
     public void start(Future<Void> start) {
         started.getAndSet(true);
         forAll((handler, future) -> {
-           handler.init(core);
-           handler.start(future);
+            handler.init(core);
+            handler.start(future);
         }).setHandler(start);
     }
 

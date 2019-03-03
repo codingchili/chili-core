@@ -6,8 +6,6 @@ import com.codingchili.core.listener.Request;
 import static com.codingchili.core.configuration.CoreStrings.getNodeNotReachable;
 
 /**
- * @author Robin Duda
- * <p>
  * Throw when a remote node is not in listening state. (not registered on the event bus)
  */
 public class NodeNotReachableException extends CoreException {

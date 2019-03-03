@@ -5,8 +5,6 @@ import com.codingchili.core.context.CoreContext;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * @author Robin Duda
- * <p>
  * Mock implementation for a benchmark implementation.
  */
 public class MockImplementationBuilder extends BenchmarkImplementationBuilder {

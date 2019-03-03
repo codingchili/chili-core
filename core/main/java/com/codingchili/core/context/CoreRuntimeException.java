@@ -4,8 +4,6 @@ import com.codingchili.core.context.exception.CoreExceptionFormat;
 import com.codingchili.core.protocol.ResponseStatus;
 
 /**
- * @author Robin Duda
- * <p>
  * Runtime exception.
  */
 public class CoreRuntimeException extends RuntimeException implements CoreExceptionFormat {

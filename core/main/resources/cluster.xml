@@ -29,8 +29,8 @@
         <property name="hazelcast.client.max.no.heartbeat.seconds">30</property>
         <property name="hazelcast.connection.monitor.max.faults">1</property>
         <property name="hazelcast.phone.home.enabled">false</property>
-<!--    <property name="hazelcast.client.responsequeue.idlestrategy">backoff</property>
-        <property name="hazelcast.operation.responsequeue.idlestrategy">backoff</property>-->
+        <!--    <property name="hazelcast.client.responsequeue.idlestrategy">backoff</property>
+                <property name="hazelcast.operation.responsequeue.idlestrategy">backoff</property>-->
     </properties>
 
     <map name="[^__]*">

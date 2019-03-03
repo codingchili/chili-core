@@ -8,8 +8,6 @@ import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.Response;
 
 /**
- * @author Robin Duda
- * <p>
  * Websocket request object.
  */
 public class WebsocketRequest implements Request {

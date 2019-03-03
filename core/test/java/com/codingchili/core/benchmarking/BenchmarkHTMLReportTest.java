@@ -13,8 +13,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests for the HTML reporter
  */
 @RunWith(VertxUnitRunner.class)

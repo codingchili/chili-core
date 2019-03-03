@@ -1,8 +1,6 @@
 package com.codingchili.core.logging;
 
 /**
- * @author Robin Duda
- * <p>
  * Interface for text-only logger.
  */
 interface StringLogger {

@@ -1,10 +1,5 @@
 package com.codingchili.core.logging;
 
-import com.codingchili.core.configuration.Environment;
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.Delay;
-import com.codingchili.core.listener.CoreListener;
-import com.codingchili.core.listener.CoreService;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 
@@ -15,13 +10,17 @@ import java.util.function.Supplier;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
+import com.codingchili.core.configuration.Environment;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.Delay;
+import com.codingchili.core.listener.CoreListener;
+import com.codingchili.core.listener.CoreService;
+
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.files.Configurations.launcher;
 import static com.codingchili.core.logging.Level.INFO;
 
 /**
- * @author Robin Duda
- * <p>
  * Default logging implementation.
  */
 public abstract class DefaultLogger extends Handler implements Logger {

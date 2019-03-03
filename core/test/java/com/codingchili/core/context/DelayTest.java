@@ -11,8 +11,6 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 
 /**
- * @author Robin Duda
- * <p>
  * Verifies that the STARTUP_DELAY system is working, is required for some tests.
  */
 @RunWith(VertxUnitRunner.class)

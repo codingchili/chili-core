@@ -22,8 +22,8 @@ public interface FileStore {
     /**
      * Writes a json-object to the given path.
      *
-     * @param object   the object to write.
-     * @param path the path to where the object is written to.
+     * @param object the object to write.
+     * @param path   the path to where the object is written to.
      * @throws RuntimeException on failure to write.
      */
     void writeObject(JsonObject object, Path path);

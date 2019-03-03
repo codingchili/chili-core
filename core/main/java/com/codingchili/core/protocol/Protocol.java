@@ -15,14 +15,13 @@ import com.codingchili.core.listener.Receiver;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
-import com.codingchili.core.protocol.exception.*;
+import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
+import com.codingchili.core.protocol.exception.HandlerMissingException;
 
 import static com.codingchili.core.configuration.CoreStrings.ANY;
 import static com.codingchili.core.protocol.RoleMap.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Maps packet data to authorizer and manages authentication status for authorizer.
  * <p>
  * Route documentation and listing may be retrieved using #{@link #getDescription()}

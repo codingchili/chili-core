@@ -1,11 +1,11 @@
 package com.codingchili.core.context;
 
-import com.codingchili.core.logging.ConsoleLogger;
-import com.codingchili.core.logging.Level;
 import io.vertx.core.json.JsonObject;
 
-import static com.codingchili.core.configuration.CoreStrings.LOG_LEVEL;
-import static com.codingchili.core.configuration.CoreStrings.LOG_MESSAGE;
+import com.codingchili.core.logging.ConsoleLogger;
+import com.codingchili.core.logging.Level;
+
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * A simple logger without any metadata, replacement for System.out.

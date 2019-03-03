@@ -24,8 +24,6 @@ import java.util.HashMap;
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests for the generation of secrets and tokens in configuration files.
  */
 @RunWith(VertxUnitRunner.class)

@@ -1,8 +1,9 @@
 package com.codingchili.core.listener;
 
-import com.codingchili.core.storage.Storable;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
+
+import com.codingchili.core.storage.Storable;
 
 /**
  * Indicates that a request is part of a persistent connection. This means
@@ -29,12 +30,14 @@ public interface Session extends Messageable, Storable {
 
     /**
      * Destroys the session.
+     *
      * @return callback
      */
     Future<Void> destroy();
 
     /**
      * Call this to update the session data after modification.
+     *
      * @return callback
      */
     Future<Void> update();

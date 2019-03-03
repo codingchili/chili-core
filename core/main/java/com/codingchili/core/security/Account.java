@@ -1,13 +1,11 @@
 package com.codingchili.core.security;
 
-import com.codingchili.core.storage.Storable;
-
 import java.util.HashMap;
 import java.util.Map;
 
+import com.codingchili.core.storage.Storable;
+
 /**
- * @author Robin Duda
- * <p>
  * Transfer object used for authentication from clients.
  * Password is to be consumed once read.
  */

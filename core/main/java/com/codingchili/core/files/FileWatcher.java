@@ -14,8 +14,6 @@ import static com.codingchili.core.configuration.CoreStrings.DIR_SEPARATOR;
 import static java.nio.file.StandardWatchEventKinds.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Watches changes to files in a registered directory and all its subdirectories.
  */
 public class FileWatcher {

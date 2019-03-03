@@ -16,8 +16,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests base implementations of benchmark groups, implementations and benchmarks.
  */
 @RunWith(VertxUnitRunner.class)

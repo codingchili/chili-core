@@ -3,9 +3,7 @@ package com.codingchili.core.benchmarking;
 import java.util.Map;
 
 /**
- * @author Robin Duda
- * <p>
- * Implemented by executable benchmarks.
+ * Implemented by executable benchmarks, a benchmark object is a single benchmark operation.
  */
 public interface Benchmark extends BenchmarkResult {
     /**

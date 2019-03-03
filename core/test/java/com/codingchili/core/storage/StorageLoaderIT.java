@@ -14,8 +14,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests the loading of the available storage plugins.
  */
 @RunWith(VertxUnitRunner.class)

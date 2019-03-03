@@ -3,8 +3,6 @@ package com.codingchili.core.benchmarking;
 import java.util.*;
 
 /**
- * @author Robin Duda
- * <p>
  * "Abstract" implementation of a map group.
  */
 public class BenchmarkGroupBuilder implements BenchmarkGroup {
@@ -14,7 +12,7 @@ public class BenchmarkGroupBuilder implements BenchmarkGroup {
     private String name;
 
     /**
-     * @param name the name of the group.
+     * @param name       the name of the group.
      * @param iterations number of iterations to perform for each benchmark.
      */
     public BenchmarkGroupBuilder(String name, int iterations) {

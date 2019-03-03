@@ -1,15 +1,14 @@
 package com.codingchili.core.storage;
 
-import com.codingchili.core.context.TimerSource;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
 import java.util.Collection;
 import java.util.function.Consumer;
 
+import com.codingchili.core.context.TimerSource;
+
 /**
- * @author Robin Duda
- * <p>
  * Interface for the query builder.
  * <p>
  * All queries must start with a single attribute name, this is usually passed

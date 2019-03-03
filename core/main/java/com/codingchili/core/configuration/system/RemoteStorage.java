@@ -3,8 +3,6 @@ package com.codingchili.core.configuration.system;
 import com.codingchili.core.configuration.CoreStrings;
 
 /**
- * @author Robin Duda
- * <p>
  * configuration settings for a remote storage.
  */
 public class RemoteStorage {

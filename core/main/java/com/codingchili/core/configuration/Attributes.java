@@ -1,12 +1,8 @@
 package com.codingchili.core.configuration;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Extended by classes with dynamic attributes.
  */
 public abstract class Attributes {

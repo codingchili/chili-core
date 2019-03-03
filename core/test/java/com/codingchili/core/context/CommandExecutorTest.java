@@ -17,8 +17,6 @@ import static com.codingchili.core.context.CommandResult.SHUTDOWN;
 import static org.junit.Assert.fail;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests for the CommandExecutor
  */
 @RunWith(VertxUnitRunner.class)

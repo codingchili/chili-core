@@ -9,8 +9,6 @@ import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.Response;
 
 /**
- * @author Robin Duda
- * <p>
  * A request in the cluster.
  * <p>
  * Size does not apply to these requests.

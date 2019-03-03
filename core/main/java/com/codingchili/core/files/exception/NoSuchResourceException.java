@@ -5,8 +5,6 @@ import com.codingchili.core.context.CoreRuntimeException;
 import static com.codingchili.core.configuration.CoreStrings.getNoSuchResource;
 
 /**
- * @author Robin Duda
- * <p>
  * Throw when a resource is missing from the filesystem and the classpath.
  */
 public class NoSuchResourceException extends CoreRuntimeException {

@@ -3,8 +3,6 @@ package com.codingchili.core.benchmarking;
 import io.vertx.core.Future;
 
 /**
- * @author Robin Duda
- * <p>
  * Benchmark operation called when benchmarking.
  */
 @FunctionalInterface

@@ -11,8 +11,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * @author Robin Duda
- * <p>
  * Verifies the console logger can write.
  */
 @RunWith(VertxUnitRunner.class)

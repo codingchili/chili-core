@@ -4,8 +4,6 @@ package com.codingchili.core.context;
 import io.vertx.core.Future;
 
 /**
- * @author Robin Duda
- * <p>
  * A command that may be executed by the CommandExecutor.
  */
 public interface Command {

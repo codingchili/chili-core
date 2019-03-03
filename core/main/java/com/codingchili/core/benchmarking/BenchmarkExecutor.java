@@ -1,17 +1,15 @@
 package com.codingchili.core.benchmarking;
 
-import com.codingchili.core.context.CoreContext;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
+import io.vertx.core.*;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.codingchili.core.context.CoreContext;
+
 /**
- * @author Robin Duda
- * <p>
  * Micro-benchmarks runner.
  * <p>
  * Creates and runs a group of benchmarks. Benchmarks are run for one implementation at a time
@@ -19,7 +17,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * benchmark test is also preserved. No more than one benchmark is executed concurrently.
  */
 public class BenchmarkExecutor {
-    private BenchmarkListener listener = new BenchmarkListener() {};
+    private BenchmarkListener listener = new BenchmarkListener() {
+    };
     private AtomicBoolean warmup = new AtomicBoolean(true);
     private CoreContext context;
 
@@ -33,7 +32,7 @@ public class BenchmarkExecutor {
     }
 
     /**
-     * @param group  a group of implementations that contains a set of benchmarks to be performed
+     * @param group a group of implementations that contains a set of benchmarks to be performed
      * @return future completed when benchmarks are done.
      */
     public Future<List<BenchmarkGroup>> start(BenchmarkGroup group) {

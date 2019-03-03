@@ -1,11 +1,9 @@
 package com.codingchili.core.context;
 
 /**
- * @author Robin Duda
- *
  * Results returned from an #{@link Command} when it is
  * executed by a #{@link CommandExecutor}.
- *
+ * <p>
  * If the command fails and wants to display the error message
  * (stacktrace) that generated the failure, then the future
  * passed from the #{@link CommandExecutor} should be failed,

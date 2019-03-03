@@ -1,8 +1,6 @@
 package com.codingchili.core.configuration;
 
 /**
- * @author Robin Duda
- * <p>
  * A configurable implementation for use in tests.
  */
 public class ConfigurableTest extends BaseConfigurable {

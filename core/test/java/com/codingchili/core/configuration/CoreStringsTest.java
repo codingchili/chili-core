@@ -9,8 +9,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests for the String constant/helper class.
  */
 @RunWith(VertxUnitRunner.class)

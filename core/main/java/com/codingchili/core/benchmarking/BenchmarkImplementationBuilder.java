@@ -7,8 +7,6 @@ import java.util.*;
 import com.codingchili.core.context.CoreContext;
 
 /**
- * @author Robin Duda
- * <p>
  * "Abstract" benchmark-implementation.
  */
 public class BenchmarkImplementationBuilder implements BenchmarkImplementation {

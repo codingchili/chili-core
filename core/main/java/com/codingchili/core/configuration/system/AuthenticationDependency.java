@@ -1,13 +1,11 @@
 package com.codingchili.core.configuration.system;
 
-import com.codingchili.core.security.TokenIdentifier;
-
 import java.util.HashMap;
 import java.util.HashSet;
 
+import com.codingchili.core.security.TokenIdentifier;
+
 /**
- * @author Robin Duda
- * <p>
  * Defines preshared secrets between services, local secrets and tokens
  * which are generated from another services secret.
  */

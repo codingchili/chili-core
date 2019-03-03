@@ -1,8 +1,8 @@
 package com.codingchili.core.security;
 
-import com.codingchili.core.configuration.CoreStrings;
-
 import java.util.function.Consumer;
+
+import com.codingchili.core.configuration.CoreStrings;
 
 /**
  * Keystore builder for use in #{@link com.codingchili.core.configuration.system.SecuritySettings}.
@@ -69,6 +69,7 @@ public class KeyStoreBuilder<E> {
 
     /**
      * reads the password from the console when build is called.
+     *
      * @return fluent
      */
     public KeyStoreBuilder<E> readPasswordFromConsole() {

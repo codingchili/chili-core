@@ -17,8 +17,6 @@ import static com.codingchili.core.configuration.CoreStrings.HELP;
 import static com.codingchili.core.context.CommandResult.SHUTDOWN;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests the command parsing functionality.
  */
 @RunWith(VertxUnitRunner.class)

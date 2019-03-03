@@ -28,8 +28,6 @@ import static com.codingchili.core.configuration.CoreStrings.DEPLOY;
 import static com.codingchili.core.files.Configurations.system;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests for the launcher.
  */
 @RunWith(VertxUnitRunner.class)

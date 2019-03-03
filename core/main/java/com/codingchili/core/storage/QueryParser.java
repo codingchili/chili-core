@@ -11,8 +11,6 @@ import java.util.regex.Pattern;
 import com.codingchili.core.context.CoreRuntimeException;
 
 /**
- * @author Robin Duda
- * <p>
  * parses a query in string format.
  * <p>
  * Implementation is pluggable.
@@ -101,7 +99,7 @@ public class QueryParser<T extends Storable> implements StringQueryParser<T> {
             comparables.add(toComparable(value));
         }
 
-        return comparables.toArray(new Comparable[] {});
+        return comparables.toArray(new Comparable[]{});
     }
 
     /**

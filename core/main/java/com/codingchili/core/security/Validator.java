@@ -1,17 +1,16 @@
 package com.codingchili.core.security;
 
-import com.codingchili.core.configuration.RegexComponent;
-import com.codingchili.core.configuration.system.ParserSettings;
-import com.codingchili.core.configuration.system.ValidatorSettings;
-import com.codingchili.core.protocol.exception.RequestValidationException;
 import io.vertx.core.json.JsonObject;
 
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 
+import com.codingchili.core.configuration.RegexComponent;
+import com.codingchili.core.configuration.system.ParserSettings;
+import com.codingchili.core.configuration.system.ValidatorSettings;
+import com.codingchili.core.protocol.exception.RequestValidationException;
+
 /**
- * @author Robin Duda
- * <p>
  * Validates the contents of a json object according to the validation configuration.
  */
 public class Validator {

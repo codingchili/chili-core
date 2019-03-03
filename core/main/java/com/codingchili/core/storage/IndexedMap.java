@@ -2,8 +2,6 @@ package com.codingchili.core.storage;
 
 import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.attribute.*;
-import com.googlecode.cqengine.index.navigable.NavigableIndex;
-import com.googlecode.cqengine.index.radix.RadixTreeIndex;
 import com.googlecode.cqengine.query.option.QueryOptions;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -178,15 +176,15 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
 
     @Override
     public void update(Value value, Handler<AsyncResult<Void>> handler) {
-            context.blocking(blocking -> {
-                Iterator<Value> result = db.retrieve(equal(FIELD_ID, value.getId())).iterator();
-                if (result.hasNext()) {
-                    db.update(Collections.singleton(result.next()), Collections.singleton(mapper.apply(value)));
-                    blocking.complete();
-                } else {
-                    blocking.fail(new NothingToUpdateException(value.getId()));
-                }
-            }, handler);
+        context.blocking(blocking -> {
+            Iterator<Value> result = db.retrieve(equal(FIELD_ID, value.getId())).iterator();
+            if (result.hasNext()) {
+                db.update(Collections.singleton(result.next()), Collections.singleton(mapper.apply(value)));
+                blocking.complete();
+            } else {
+                blocking.fail(new NothingToUpdateException(value.getId()));
+            }
+        }, handler);
     }
 
     @Override

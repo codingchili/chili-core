@@ -1,13 +1,13 @@
 package com.codingchili.core.listener;
 
-import com.codingchili.core.protocol.Serializer;
-
 import io.vertx.core.Future;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
 
 import java.util.Map;
 import java.util.UUID;
+
+import com.codingchili.core.protocol.Serializer;
 
 /**
  * A clustered session that can be used to write directly to a listener at the

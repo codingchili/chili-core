@@ -4,8 +4,6 @@ import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreException;
 
 /**
- * @author Robin Duda
- * <p>
  * Throw when a change has been made to a configuration file that cannot
  * be applied to runtime.
  */

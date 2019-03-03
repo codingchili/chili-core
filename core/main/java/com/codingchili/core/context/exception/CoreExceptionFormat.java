@@ -3,8 +3,6 @@ package com.codingchili.core.context.exception;
 import com.codingchili.core.protocol.ResponseStatus;
 
 /**
- * @author Robin Duda
- * <p>
  * Base format for all core based exceptions.
  */
 public interface CoreExceptionFormat {

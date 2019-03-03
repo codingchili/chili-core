@@ -1,8 +1,6 @@
 package com.codingchili.core.benchmarking;
 
 /**
- * @author Robin Duda
- * <p>
  * Listens for progress during benchmarking.
  */
 public interface BenchmarkListener {
@@ -12,42 +10,48 @@ public interface BenchmarkListener {
      *
      * @param group the group that is starting up.
      */
-    default void onGroupStarted(BenchmarkGroup group) {}
+    default void onGroupStarted(BenchmarkGroup group) {
+    }
 
     /**
      * Triggers when a group of implementations has completed.
      *
      * @param group the group that was completed.
      */
-    default void onGroupCompleted(BenchmarkGroup group) {}
+    default void onGroupCompleted(BenchmarkGroup group) {
+    }
 
     /**
      * Triggers when an implementation is starting to warmup.
      *
      * @param implementation the implementation to warm up.
      */
-    default void onImplementationWarmup(BenchmarkImplementation implementation) {}
+    default void onImplementationWarmup(BenchmarkImplementation implementation) {
+    }
 
     /**
      * Triggers when an implementation has completed the warmup phase.
      *
      * @param implementation the benchmark implementation that was warmed up.
      */
-    default void onImplementationWarmupComplete(BenchmarkImplementation implementation) {}
+    default void onImplementationWarmupComplete(BenchmarkImplementation implementation) {
+    }
 
     /**
      * Triggers when an implementation starts the actual testing.
      *
      * @param implementation the implementation under test.
      */
-    default void onImplementationTestBegin(BenchmarkImplementation implementation) {}
+    default void onImplementationTestBegin(BenchmarkImplementation implementation) {
+    }
 
     /**
      * Triggers when an implementation has completed testing.
      *
      * @param implementation the benchmark implementation that was completed.
      */
-    default void onImplementationCompleted(BenchmarkImplementation implementation) {}
+    default void onImplementationCompleted(BenchmarkImplementation implementation) {
+    }
 
     /**
      * Triggers in intervals of 5% when iterations has completed.
@@ -55,12 +59,14 @@ public interface BenchmarkListener {
      * @param benchmark  the benchmark that was updated
      * @param iterations the number of iterations that have been completed
      */
-    default void onProgressUpdate(Benchmark benchmark, int iterations) {}
+    default void onProgressUpdate(Benchmark benchmark, int iterations) {
+    }
 
     /**
      * Triggers when a single benchmark is completed.
      *
      * @param benchmark the benchmark that was completed.
      */
-    default void onBenchmarkCompleted(Benchmark benchmark) {}
+    default void onBenchmarkCompleted(Benchmark benchmark) {
+    }
 }

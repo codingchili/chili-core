@@ -3,8 +3,6 @@ package com.codingchili.core.security;
 import com.codingchili.core.files.Configurations;
 
 /**
- * @author Robin Duda
- * <p>
  * Contains default argon2 parameters for password hashing.
  * These can be configured in the {@link Configurations#security()}.
  * <p>

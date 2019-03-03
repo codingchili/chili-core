@@ -12,8 +12,6 @@ import com.codingchili.core.security.TrustAndKeyProvider;
 import static com.codingchili.core.files.Configurations.security;
 
 /**
- * @author Robin Duda
- * <p>
  * Settings for transport listeners.
  */
 public class ListenerSettings {

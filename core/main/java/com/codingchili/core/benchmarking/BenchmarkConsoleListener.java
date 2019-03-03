@@ -6,8 +6,6 @@ import com.codingchili.core.logging.Level;
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Captures events from the logging executor and logs to console.
  */
 public class BenchmarkConsoleListener implements BenchmarkListener {

@@ -14,8 +14,6 @@ import com.codingchili.core.storage.*;
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Contains system benchmarks..
  */
 public class CoreBenchmarkSuite {

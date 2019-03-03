@@ -6,8 +6,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
- * @author Robin Duda
- * <p>
  * A basic
  */
 public class BaseCommand implements Command {

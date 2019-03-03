@@ -15,8 +15,6 @@ import com.codingchili.core.storage.AsyncStorage;
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
- * @author Robin Duda
- * <p>
  * context used by storage plugins.
  */
 public class StorageContext<Value> extends SystemContext {
@@ -83,7 +81,7 @@ public class StorageContext<Value> extends SystemContext {
     /**
      * converts a byte array to a value using the deserialization template class
      *
-     * @param string  a json-formatted string
+     * @param string a json-formatted string
      * @return generic Value inflated using the bytes and template class.
      */
     public Value toValue(String string) {
@@ -273,11 +271,10 @@ public class StorageContext<Value> extends SystemContext {
     }
 
     /**
-     *
      * @return storage identifier.
      */
     public String identifier() {
-       return String.format("%s in %s/%s using %s.",
-               valueClass.getSimpleName(), database, collection, plugin.getSimpleName());
+        return String.format("%s in %s/%s using %s.",
+                valueClass.getSimpleName(), database, collection, plugin.getSimpleName());
     }
 }

@@ -12,15 +12,13 @@ import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.protocol.Serializer;
 
 /**
- * @author Robin Duda
- * <p>
  * Query implementations for non-indexed json streams.
  * Use an indexed collection if performance is needed.
  * This implementation is mostly for testing.
- *
+ * <p>
  * Value = the type of the result to be returned.
  * Streaming = the type of objects that are queried.
- *
+ * <p>
  * If the types of Value and Streaming are disjoint,
  * a mapper must be supplied to map the Streaming values to the Value type.
  */
@@ -138,7 +136,7 @@ public class StreamQuery<Value extends Storable, Streaming> {
                             .skip(page * pageSize)
                             .limit(pageSize)
                             .map(mapper)
-                    .collect(Collectors.toList()));
+                            .collect(Collectors.toList()));
 
                 }, handler);
             }

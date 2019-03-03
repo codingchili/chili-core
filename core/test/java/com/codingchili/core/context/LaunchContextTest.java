@@ -15,8 +15,6 @@ import static com.codingchili.core.configuration.CoreStrings.getNoServicesConfig
 import static com.codingchili.core.context.LaunchContextMock.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests for the launcher context.
  */
 @RunWith(VertxUnitRunner.class)

@@ -4,8 +4,6 @@ import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreException;
 
 /**
- * @author Robin Duda
- * <p>
  * Generic storage error, throw when a requested operation has error.
  */
 public class StorageFailureException extends CoreException {

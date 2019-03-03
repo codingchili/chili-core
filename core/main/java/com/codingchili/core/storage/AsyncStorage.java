@@ -1,18 +1,16 @@
 package com.codingchili.core.storage;
 
-import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.storage.exception.ValueMissingException;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
 import java.util.Collection;
 
-import static com.codingchili.core.context.FutureHelper.error;
-import static com.codingchili.core.context.FutureHelper.result;
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.storage.exception.ValueMissingException;
+
+import static com.codingchili.core.context.FutureHelper.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Reuses the AsyncMap interface from hazelcast.
  * <p>
  * Storages implementing this class are recommended to create an index for
@@ -69,6 +67,8 @@ public interface AsyncStorage<Value extends Storable> {
     void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler);
 
     /**
+     * Removes an entry by its key.
+     *
      * @param key     identifies the entry to be removed.
      * @param handler callback
      */
@@ -120,6 +120,7 @@ public interface AsyncStorage<Value extends Storable> {
 
     /**
      * Creates a new query on the specified attribute.
+     *
      * @param attribute the attribute to query.
      * @return a new query builder.
      */

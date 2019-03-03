@@ -19,8 +19,6 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * @author Robin Duda
- * <p>
  * Tests the stale handler for realms.
  */
 @RunWith(VertxUnitRunner.class)

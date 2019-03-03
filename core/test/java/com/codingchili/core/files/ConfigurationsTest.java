@@ -16,8 +16,6 @@ import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.testing.ContextMock;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests for the configuration system.
  */
 @RunWith(VertxUnitRunner.class)

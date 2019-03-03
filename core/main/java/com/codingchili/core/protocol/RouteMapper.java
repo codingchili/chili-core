@@ -6,8 +6,6 @@ import java.util.function.Function;
 import com.codingchili.core.listener.Receiver;
 
 /**
- * @author Robin Duda
- *
  * An annotation that indicates that the annotated method should be picked up by
  * protocols when calling {@link Protocol#annotated(Receiver)}. This is an alternative
  * to calling {@link Protocol#routeMapper(Function)}.

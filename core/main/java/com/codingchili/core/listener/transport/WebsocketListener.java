@@ -3,7 +3,6 @@ package com.codingchili.core.listener.transport;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
@@ -15,13 +14,12 @@ import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.RestHelper;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.listener.*;
-import com.codingchili.core.protocol.*;
+import com.codingchili.core.protocol.Response;
+import com.codingchili.core.protocol.ResponseStatus;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Websocket transport listener.
  */
 public class WebsocketListener implements CoreListener {

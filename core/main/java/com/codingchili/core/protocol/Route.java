@@ -1,10 +1,11 @@
 package com.codingchili.core.protocol;
 
-import com.codingchili.core.configuration.CoreStrings;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import com.codingchili.core.configuration.CoreStrings;
 
 import static com.codingchili.core.protocol.RoleMap.USER;
 
@@ -14,7 +15,8 @@ import static com.codingchili.core.protocol.RoleMap.USER;
  * @param <T> type of the handler to handle the route.
  */
 public class Route<T> {
-    @JsonIgnore  private RequestHandler<T> handler;
+    @JsonIgnore
+    private RequestHandler<T> handler;
     private Map<String, String> model = new HashMap<>();
     private String description = CoreStrings.getDescriptionMissing();
     private RoleType[] role;

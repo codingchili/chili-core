@@ -1,7 +1,7 @@
 package com.codingchili.core.listener;
 
 /**
- * @author Robin Duda
+ * Types of transports available.
  */
 public enum WireType {
     UDP,

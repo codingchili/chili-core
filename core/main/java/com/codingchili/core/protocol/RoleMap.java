@@ -1,9 +1,9 @@
 package com.codingchili.core.protocol;
 
-import com.codingchili.core.configuration.CoreStrings;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.codingchili.core.configuration.CoreStrings;
 
 /**
  * Add custom roles to the rolemap, must be done before initializing protocols.

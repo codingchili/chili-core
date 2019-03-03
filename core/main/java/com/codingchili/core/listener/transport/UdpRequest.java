@@ -5,14 +5,13 @@ import io.vertx.core.datagram.DatagramPacket;
 import io.vertx.core.json.JsonObject;
 
 import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.listener.*;
+import com.codingchili.core.listener.ListenerSettings;
+import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.Response;
 
 import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_CONNECTION;
 
 /**
- * @author Robin Duda
- * <p>
  * UDP request object.
  */
 public class UdpRequest implements Request {
@@ -58,7 +57,7 @@ public class UdpRequest implements Request {
     public Connection connection() {
         if (connection == null) {
             connection = new Connection((message) -> this.write(message, false), token().getDomain())
-                .setProperty(PROTOCOL_CONNECTION, packet.sender().host());
+                    .setProperty(PROTOCOL_CONNECTION, packet.sender().host());
         }
         return connection;
     }

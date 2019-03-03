@@ -1,5 +1,9 @@
 package com.codingchili.core.storage;
 
+import io.vertx.core.*;
+
+import java.util.Objects;
+
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.StorageContext;
@@ -7,18 +11,9 @@ import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.Level;
 import com.codingchili.core.logging.Logger;
 
-import com.esotericsoftware.reflectasm.ConstructorAccess;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-
-import java.util.Objects;
-
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Builder to load storage plugins.
  */
 public class StorageLoader<Value extends Storable> {

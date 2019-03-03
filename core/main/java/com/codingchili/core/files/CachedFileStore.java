@@ -1,5 +1,13 @@
 package com.codingchili.core.files;
 
+import io.vertx.core.buffer.Buffer;
+
+import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.codingchili.core.configuration.CachedFileStoreSettings;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.exception.ConfigurationMismatchException;
@@ -7,20 +15,8 @@ import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.files.exception.FileMissingException;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.Serializer;
-import io.vertx.core.buffer.Buffer;
-
-import java.io.IOException;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @author Robin Duda
- * <p>
  * Caches files from disk in memory and reloads them on change.
  */
 public final class CachedFileStore implements FileStoreListener {

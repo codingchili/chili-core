@@ -10,8 +10,6 @@ import org.junit.runner.RunWith;
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Verifies the creation of logging events in DefaultLogger.
  */
 @RunWith(VertxUnitRunner.class)

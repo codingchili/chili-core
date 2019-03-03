@@ -18,8 +18,6 @@ import com.codingchili.core.security.*;
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Contains mappings of security dependencies between services.
  * <p>
  * For example: service A may depend on a shared secret with service B,

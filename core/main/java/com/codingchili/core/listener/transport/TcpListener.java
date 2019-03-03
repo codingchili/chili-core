@@ -2,7 +2,6 @@ package com.codingchili.core.listener.transport;
 
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.net.NetSocket;
 
 import java.util.function.Supplier;
@@ -14,8 +13,6 @@ import com.codingchili.core.protocol.Response;
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
- * @author Robin Duda
- * <p>
  * TCP listener implementation.
  */
 public class TcpListener implements CoreListener {

@@ -25,8 +25,6 @@ import com.codingchili.core.files.exception.NoSuchResourceException;
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Generates a HTML benchmark report with Jade.
  */
 public class BenchmarkHTMLReport implements BenchmarkReport {
@@ -86,7 +84,7 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
 
         groups.forEach(group -> group.getSets().forEach(implementation -> {
             int localMax = max.apply(implementation);
-            implementation.getItems().forEach(item -> item.setLocalIndex(((item.getRate()* 1.0f / localMax) * 100)));
+            implementation.getItems().forEach(item -> item.setLocalIndex(((item.getRate() * 1.0f / localMax) * 100)));
         }));
         return groups;
     }

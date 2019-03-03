@@ -1,15 +1,14 @@
 package com.codingchili.core.logging;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.files.Configurations;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.json.JsonObject;
+
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.files.Configurations;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
- * @author Robin Duda
- * <p>
  * A logger that logs to a remote host.
  */
 public class RemoteLogger extends DefaultLogger {

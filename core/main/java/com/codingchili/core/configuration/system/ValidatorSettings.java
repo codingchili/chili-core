@@ -1,17 +1,15 @@
 package com.codingchili.core.configuration.system;
 
-import com.codingchili.core.configuration.Configurable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.codingchili.core.configuration.CoreStrings.PATH_VALIDATOR;
-import static com.codingchili.core.configuration.CoreStrings.getNoSuchValidator;
+import com.codingchili.core.configuration.Configurable;
+
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Contains a set of of named validators.
  */
 public class ValidatorSettings implements Configurable {

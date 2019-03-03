@@ -16,8 +16,6 @@ import java.time.Instant;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests for the HashHelper
  */
 @RunWith(VertxUnitRunner.class)

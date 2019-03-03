@@ -1,13 +1,11 @@
 package com.codingchili.core.testing;
 
-import com.codingchili.core.storage.Storable;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import com.codingchili.core.storage.Storable;
+
 /**
- * @author Robin Duda
- * <p>
  * Test class to simulate a stored object.
  */
 public class StorageObject implements Storable {

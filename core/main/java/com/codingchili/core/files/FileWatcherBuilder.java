@@ -1,12 +1,11 @@
 package com.codingchili.core.files;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.TimerSource;
 import com.hazelcast.util.Preconditions;
 
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.TimerSource;
+
 /**
- * @author Robin Duda
- *
  * File watcher builder.
  */
 public class FileWatcherBuilder {
@@ -51,6 +50,7 @@ public class FileWatcherBuilder {
 
     /**
      * Constructs the new FileWatcher.
+     *
      * @return fluent
      */
     public FileWatcher build() {

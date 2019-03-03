@@ -3,12 +3,11 @@ package com.codingchili.core.listener.transport;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
-import com.codingchili.core.listener.*;
+import com.codingchili.core.listener.ListenerSettings;
+import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.Response;
 
 /**
- * @author Robin Duda
- * <p>
  * TCP request implementation.
  */
 public class TcpRequest implements Request {

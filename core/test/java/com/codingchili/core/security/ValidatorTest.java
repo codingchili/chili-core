@@ -21,8 +21,6 @@ import static com.codingchili.core.security.RegexAction.REJECT;
 import static com.codingchili.core.security.RegexAction.REPLACE;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests the validation mechanism.
  */
 @RunWith(VertxUnitRunner.class)

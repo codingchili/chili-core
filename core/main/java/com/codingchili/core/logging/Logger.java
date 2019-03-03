@@ -1,19 +1,15 @@
 package com.codingchili.core.logging;
 
-import com.codingchili.core.listener.CoreListener;
-import com.codingchili.core.listener.CoreService;
-
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 
 import java.util.function.Supplier;
 
-import static com.codingchili.core.logging.Level.*;
+import com.codingchili.core.listener.CoreListener;
+import com.codingchili.core.listener.CoreService;
 
 
 /**
- * @author Robin Duda
- * <p>
  * Interface to generate logging messages.
  */
 public interface Logger extends JsonLogger, StringLogger {

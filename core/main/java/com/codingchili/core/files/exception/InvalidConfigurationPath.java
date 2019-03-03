@@ -4,8 +4,6 @@ import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreRuntimeException;
 
 /**
- * @author Robin Duda
- * <p>
  * Throw when a requested configuration is missing.
  */
 public class InvalidConfigurationPath extends CoreRuntimeException {

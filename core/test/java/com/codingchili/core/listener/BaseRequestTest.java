@@ -18,8 +18,6 @@ import static com.codingchili.core.listener.Request.TARGET_UNDEFINED;
 import static com.codingchili.core.protocol.ResponseStatus.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Test cases for request implementations.
  */
 @RunWith(VertxUnitRunner.class)

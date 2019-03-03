@@ -18,8 +18,6 @@ import static com.codingchili.core.configuration.CoreStrings.testDirectory;
 import static com.codingchili.core.configuration.CoreStrings.testFile;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests the JSON file store.
  */
 @RunWith(VertxUnitRunner.class)

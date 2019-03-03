@@ -16,8 +16,6 @@ import com.codingchili.core.listener.*;
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
- * @author Robin Duda
- * <p>
  * HTTP/REST transport listener.
  */
 public class RestListener implements CoreListener {

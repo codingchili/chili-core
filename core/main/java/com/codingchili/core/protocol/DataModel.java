@@ -1,14 +1,11 @@
 package com.codingchili.core.protocol;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Used to sed the data transfer object for a protocol,
  * used for documentation purposes.
- *
+ * <p>
  * If set on a class sets the model of the whole handler,
  * does not affect routes.
  */

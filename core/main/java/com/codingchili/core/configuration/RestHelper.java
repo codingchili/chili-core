@@ -8,8 +8,6 @@ import io.vertx.ext.web.RoutingContext;
 import java.util.function.Consumer;
 
 /**
- * @author Robin Duda
- * <p>
  * Utility class to set CORS headers for HTTP routing.
  */
 public abstract class RestHelper {

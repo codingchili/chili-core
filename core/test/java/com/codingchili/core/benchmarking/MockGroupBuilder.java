@@ -5,8 +5,6 @@ import java.util.*;
 import com.codingchili.core.context.CoreContext;
 
 /**
- * @author Robin Duda
- * <p>
  * Mock implementation for a benchmark group.
  */
 public class MockGroupBuilder extends BenchmarkGroupBuilder {

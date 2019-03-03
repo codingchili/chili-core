@@ -1,16 +1,14 @@
 package com.codingchili.core.storage;
 
-import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.context.TimerSource;
-
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.context.TimerSource;
+
 /**
- * @author Robin Duda
- * <p>
  * Periodically executes a reusable query.
  * <p>
  * May be used as a near-cache.

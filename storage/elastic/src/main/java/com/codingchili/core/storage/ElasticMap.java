@@ -44,8 +44,6 @@ import com.codingchili.core.storage.exception.*;
 import static com.codingchili.core.context.FutureHelper.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Map implementation that uses ElasticSearch.
  * Does not support case sensitivity for equals.
  * Does not support ordering nested fields without server configuration

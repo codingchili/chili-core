@@ -2,8 +2,7 @@ package com.codingchili.core.logging;
 
 import io.vertx.core.json.JsonObject;
 
-import static com.codingchili.core.configuration.CoreStrings.LOG_LEVEL;
-import static com.codingchili.core.configuration.CoreStrings.LOG_MESSAGE;
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * Helper class to construct logging messages.
@@ -47,6 +46,7 @@ public class LogMessage {
 
     /**
      * Commits the logging message.
+     *
      * @return the logger that was used to send the message.
      */
     public Logger send() {
@@ -68,6 +68,7 @@ public class LogMessage {
 
     /**
      * Converts the logging event into a json object.
+     *
      * @return a json object representing the logging event.
      */
     public JsonObject toJson() {

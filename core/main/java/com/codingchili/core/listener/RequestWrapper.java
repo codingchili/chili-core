@@ -1,9 +1,9 @@
 package com.codingchili.core.listener;
 
+import io.vertx.core.json.JsonObject;
+
 import com.codingchili.core.listener.transport.Connection;
 import com.codingchili.core.security.Token;
-
-import io.vertx.core.json.JsonObject;
 
 /**
  * Wraps a request to allow decorating request objects without re-initializing

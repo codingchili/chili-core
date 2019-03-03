@@ -1,14 +1,13 @@
 package com.codingchili.core.configuration.system;
 
-import com.codingchili.core.configuration.RegexComponent;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.codingchili.core.configuration.RegexComponent;
+
 /**
- * @author Robin Duda
- * <p>
  * Contains settings for validating strings with regexes, length and field names.
  */
 public class ParserSettings {

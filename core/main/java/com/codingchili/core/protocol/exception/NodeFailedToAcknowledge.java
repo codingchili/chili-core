@@ -6,8 +6,6 @@ import com.codingchili.core.listener.Request;
 import static com.codingchili.core.configuration.CoreStrings.getNodeFailedToAcknowledge;
 
 /**
- * @author Robin Duda
- * <p>
  * Throw when the remote end has failed in some way.
  */
 public class NodeFailedToAcknowledge extends CoreException {

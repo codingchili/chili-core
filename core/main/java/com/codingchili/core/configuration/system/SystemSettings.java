@@ -10,8 +10,6 @@ import com.codingchili.core.configuration.Environment;
 import static com.codingchili.core.configuration.CoreStrings.PATH_SYSTEM;
 
 /**
- * @author Robin Duda
- * <p>
  * Contains settings for the core system.
  */
 public class SystemSettings implements Configurable {

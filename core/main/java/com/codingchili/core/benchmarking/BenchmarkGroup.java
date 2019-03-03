@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * @author Robin Duda
- * <p>
  * Contains a set of benchmarks and groups them by type, for example
  * "network" or "storage".
  */

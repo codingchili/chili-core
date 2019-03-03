@@ -7,8 +7,6 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests for the storage providers in core. Reuse these tests when new
  * storage subsystems are implemented using the StorageLoader.
  */

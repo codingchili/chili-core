@@ -1,22 +1,17 @@
 package com.codingchili.core.benchmarking;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.storage.AsyncStorage;
-import com.codingchili.core.storage.Storable;
-import com.codingchili.core.storage.StorageLoader;
-import com.codingchili.core.testing.StorageObject;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
+import io.vertx.core.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
+
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.storage.*;
+import com.codingchili.core.testing.StorageObject;
 
 import static com.codingchili.core.configuration.CoreStrings.ID_NAME;
 
 /**
- * @author Robin Duda
- * <p>
  * Implementation of a map for use with benchmarking.
  */
 public class MapBenchmarkImplementation extends BenchmarkImplementationBuilder {
@@ -31,7 +26,7 @@ public class MapBenchmarkImplementation extends BenchmarkImplementationBuilder {
         setGroup(group);
         this.plugin = plugin;
 
-        add( "put all", this::putOne)
+        add("put all", this::putOne)
                 .add("get all", this::getOne)
                 .add("values", this::values)
                 .add("between query", this::betweenQuery)

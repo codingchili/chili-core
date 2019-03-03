@@ -12,8 +12,6 @@ import static com.codingchili.core.configuration.CoreStrings.STORAGE_ARRAY;
 import static com.codingchili.core.protocol.Serializer.getValueByPath;
 
 /**
- * @author Robin Duda
- * <p>
  * Base class for the query builder.
  * <p>
  * Removes any array notations formatted as {@link CoreStrings#STORAGE_ARRAY}
@@ -34,6 +32,7 @@ public abstract class AbstractQueryBuilder<Value extends Storable> implements Qu
 
     /**
      * Creates a new query builder with specified attribute. Array notations will be removed.
+     *
      * @param storage the backing storage implementation.
      */
     AbstractQueryBuilder(AsyncStorage<Value> storage) {

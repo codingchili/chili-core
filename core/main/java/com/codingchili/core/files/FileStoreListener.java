@@ -3,8 +3,6 @@ package com.codingchili.core.files;
 import java.nio.file.Path;
 
 /**
- * @author Robin Duda
- * <p>
  * Interface to be used with a FileWatcher to be notified of changes.
  */
 public interface FileStoreListener {

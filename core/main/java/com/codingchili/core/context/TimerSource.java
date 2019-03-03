@@ -1,8 +1,6 @@
 package com.codingchili.core.context;
 
 /**
- * @author Robin Duda
- * <p>
  * Provides a method to get a timer interval that may change
  * after retrieving it.
  */

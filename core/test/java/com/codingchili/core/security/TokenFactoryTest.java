@@ -15,8 +15,6 @@ import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.protocol.Serializer;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests for the Token Factory
  */
 @RunWith(VertxUnitRunner.class)

@@ -20,8 +20,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static com.codingchili.core.protocol.Role.*;
 
 /**
- * @author Robin Duda
- * <p>
  * Tests the protocol class and its authorization mechanism.
  */
 @RunWith(VertxUnitRunner.class)

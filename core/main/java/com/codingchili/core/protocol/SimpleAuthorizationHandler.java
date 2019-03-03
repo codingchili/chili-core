@@ -6,8 +6,6 @@ import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
 
 /**
- * @author Robin Duda
- * <p>
  * Maps roles to routes.
  * <p>
  * A route with an access level of 25 is not accessible by

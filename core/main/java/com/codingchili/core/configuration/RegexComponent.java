@@ -3,8 +3,6 @@ package com.codingchili.core.configuration;
 import com.codingchili.core.security.RegexAction;
 
 /**
- * @author Robin Duda
- * <p>
  * Contains settings used for a single regex validator action.
  */
 public class RegexComponent {

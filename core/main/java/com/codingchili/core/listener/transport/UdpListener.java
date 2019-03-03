@@ -1,22 +1,17 @@
 package com.codingchili.core.listener.transport;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.DeploymentAware;
-import com.codingchili.core.listener.CoreHandler;
-import com.codingchili.core.listener.CoreListener;
-import com.codingchili.core.listener.ListenerSettings;
 import io.vertx.core.Future;
 import io.vertx.core.datagram.DatagramPacket;
-import io.vertx.core.datagram.DatagramSocketOptions;
 
 import java.util.function.Supplier;
 
-import static com.codingchili.core.configuration.CoreStrings.LOG_AT;
-import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.DeploymentAware;
+import com.codingchili.core.listener.*;
+
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
- * @author Robin Duda
- * <p>
  * UDP transport listener.
  */
 public class UdpListener implements CoreListener, DeploymentAware {

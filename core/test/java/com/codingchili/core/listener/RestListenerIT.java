@@ -14,8 +14,6 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
 
 /**
- * @author Robin Duda
- * <p>
  * Test cases for HTTP/REST transport.
  */
 @RunWith(VertxUnitRunner.class)

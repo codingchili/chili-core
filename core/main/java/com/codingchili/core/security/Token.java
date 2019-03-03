@@ -1,16 +1,14 @@
 package com.codingchili.core.security;
 
-import com.codingchili.core.files.Configurations;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.*;
 
+import com.codingchili.core.files.Configurations;
+
 /**
- * @author Robin Duda
- * <p>
  * Used to authenticate requests between services and with clients.
  */
 public class Token implements Serializable {
@@ -29,7 +27,7 @@ public class Token implements Serializable {
     /**
      * Creates a new hmac token with the specified token factory.
      *
-     * @param domain  a unique identifier - username or service id.
+     * @param domain a unique identifier - username or service id.
      */
     public Token(String domain) {
         this.domain = domain;

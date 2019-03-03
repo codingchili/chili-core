@@ -1,14 +1,12 @@
 package com.codingchili.core.testing;
 
-import com.codingchili.core.listener.transport.ClusterRequest;
-import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_ROUTE;
-import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_TARGET;
-
 import io.vertx.core.json.JsonObject;
 
+import com.codingchili.core.listener.transport.ClusterRequest;
+
+import static com.codingchili.core.configuration.CoreStrings.*;
+
 /**
- * @author Robin Duda
- * <p>
  * Mocked request object.
  */
 public abstract class RequestMock {
@@ -25,7 +23,7 @@ public abstract class RequestMock {
         json.put(PROTOCOL_ROUTE, route);
 
         return new ClusterRequestMock(new MessageMock(json)
-            .setListener(listener));
+                .setListener(listener));
     }
 
     public static class ClusterRequestMock extends ClusterRequest {
