@@ -4,6 +4,61 @@ The chili core is an opinionated framework for creating microservices with focus
 
 Find the official documentation [here](https://codingchili.github.io/chili-core/).
 
+## Quickstart
+
+Using gradle
+```$groovy
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    compile "com.github.codingchili.chili-core:core:1.1.0"
+}
+```
+
+Creating a new handler
+
+```$java
+@Role(PUBLIC)
+@Address("api")
+public class MyHandler implements CoreHandler {
+    private Protocol<Request> protocol = new Protocol<>(this);
+    
+    @Api
+    public void list(Request request) {
+        request.write(new ArrayList<>(Arrays.asList("hello", "world")));
+    } 
+    
+    @Override
+    public void handle(Request request) {
+        protocol.process(request);
+    }
+    
+}
+```
+
+Deploying a handler with the REST listener on port 8080 (default).
+
+```$java
+public static void main(String[] args) {
+    ListenerSettings settings = new ListenerSettings()
+            .setPort(8080)
+            .setSecure(false);
+
+    CoreContext core = new SystemContext();
+
+    core.listener(() -> new RestListener()
+            .settings(() -> settings)
+            .handler(new MyHandler()));
+}
+```
+
+Start it up and check the service with
+```$bash
+curl -v http://localhost:8080/api/list
+```
+
 ## Building
 To build chili-core clone this repository with **git**,
 ```
