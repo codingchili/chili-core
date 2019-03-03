@@ -26,10 +26,10 @@ Recommended reading order
 
 |Content|Chapter|Description|Package|
 |---|---|---|---|
-||Context|Documentation on the `CoreContext` and the `SystemContext`.|[com.codingchili.core.context](https://github.com/codingchili/chili-core/tree/master/core/main/java/com/codingchili/core/context)
-||Services|A deployable unit, deploys listeners and assigns handlers to them.|[com.codingchili.core.listener](https://github.com/codingchili/chili-core/tree/master/core/main/java/com/codingchili/core/listener)
-||Listeners|Deployed from a service, listens for requests and delegates to a handler.|[com.codingchili.core.listener](https://github.com/codingchili/chili-core/tree/master/core/main/java/com/codingchili/core/listener)
-||Handlers|Contains business logic and authentication.|[com.codingchili.core.listener](https://github.com/codingchili/chili-core/tree/master/core/main/java/com/codingchili/core/listener)
+|yes|Context|Documentation on the `CoreContext` and the `SystemContext`.|[com.codingchili.core.context](https://github.com/codingchili/chili-core/tree/master/core/main/java/com/codingchili/core/context)
+|yes|Services|A deployable unit, deploys listeners and assigns handlers to them.|[com.codingchili.core.listener](https://github.com/codingchili/chili-core/tree/master/core/main/java/com/codingchili/core/listener)
+|yes|Listeners|Deployed from a service, listens for requests and delegates to a handler.|[com.codingchili.core.listener](https://github.com/codingchili/chili-core/tree/master/core/main/java/com/codingchili/core/listener)
+|yes|Handlers|Contains business logic and authentication.|[com.codingchili.core.listener](https://github.com/codingchili/chili-core/tree/master/core/main/java/com/codingchili/core/listener)
 ||Protocol|Provides the mapping from routes in a handler to methods invoked by the listener.|[com.codingchili.core.protocol](https://github.com/codingchili/chili-core/tree/master/core/main/java/com/codingchili/core/protocol)
 |yes|Configuration|The configuration subsystem and framework configuration.|[com.codingchili.core.configuration](https://github.com/codingchili/chili-core/tree/master/core/main/java/com/codingchili/core/configuration)
 ||Launcher|Provides additional features for deploying applications, optional.|[com.codingchili.core.context](https://github.com/codingchili/chili-core/tree/master/core/main/java/com/codingchili/core/context)

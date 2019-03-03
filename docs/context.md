@@ -2,7 +2,7 @@
 The context provides access to core functionality, such as worker pools, service deployments, the event bus and the vertx instance.
 Using the context directly is one way of deploying the services, handlers and listeners of the application.
 
-[javadoc](http://localhost:8081/com/codingchili/core/context/CoreContext.html)
+[javadoc](javadoc/com/codingchili/core/context/CoreContext.html)
 
 ## Context lifecycle
 A context is required to deploy services, create a new context with
@@ -42,6 +42,41 @@ SystemContext.clustered(core -> {
     // the event bus is clustered and the Hazelcast distributed map available.
 });
 ```
+
+##### Deploying
+Deploying a service that may in turn issue more deployments.
+
+```$java
+// deploys a service that may issue more deployments.
+core.service(new CoreServiceImpl());
+```
+
+A small example that deploys a listener and a handler without any services.
+```$java
+// deploys a HTTP listener on port 8080 that uses the
+// BusForwarder to forward requests over the cluster.
+core.listener(new RestListener()
+    .settings(() -> {
+        new ListenerSettings()
+            .setPort(8080)
+            .setSecure(false)
+    })
+    .setHandler(new BusForwarder("orders")));
+
+// deploys the handler with a cluster listener on the address
+// specified in the handler with the @Address annotation.
+core.handler(new CoreHandlerImpl());
+```
+
+In this example, any HTTP requests to port 8080 will be published
+onto the event bus on the "orders" address. The request will then be
+passed to the `CoreHandlerImpl` handler, which is your handler that
+implements the `CoreHandler` interface.
+
+If the `route` of the request matches a method in the handlers API it can be invoked. The `BusForwarder`
+works both when in clustered and non-clustered mode.
+
+A BusRouter can be used to dynamically determine the target address.
 
 ##### Undeploying
 
