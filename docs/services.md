@@ -45,4 +45,11 @@ public class MyService implements CoreService {
 
 ```
 
+### Deploying your service
+Deployment is done like this,
+
+```$java
+core.service(MyService::new);
+```
+
 An application may deploy 0..n services. A service should be self-contained, can be seen as a microservice.

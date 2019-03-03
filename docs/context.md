@@ -117,11 +117,13 @@ The context contains some additional functionality listed here.
 
 
 - Access to the asynchronous vert.x [FileSystem](https://vertx.io/docs/apidocs/io/vertx/core/file/FileSystem.html) implementation.
+
 ```$java
 FileSystem fs = core.fileSystem();
 ```
 
 - Scheduling support
+
 ```$java
 core.periodic(() -> 100, "10xPoll", (id) -> {
     // invoked every 100ms, the interval is a supplier that can be modified during runtime.
@@ -139,6 +141,7 @@ core.cancel(timerTask);
 ```
 
 - Running blocking code
+
 ```$java
 // false indicates that scheduled blocking operations does not have to 
 // be executed in order. This parameter is optional and defaults to false.
@@ -155,6 +158,7 @@ core.blocking((future) -> {
 ```
 
 - Retrieving a logger instance
+
 ```$java
 // use the name of the current class, or pass a specific class.
 // see the chapter on logging for more information.
@@ -162,6 +166,7 @@ Logger logger = context.logger(getClass());
 ```
 
 - Accessing the Vert.x event bus
+
 ```$java
 EventBus bus = core.bus();
 
@@ -183,11 +188,13 @@ bus.send("address", message);
 ```
 
 - Retrieving the underlying Vert.x instance
+
 ```$java
 core.vertx();
 ```
 
 - Get the system settings
+
 ```$java
 SystemSettings system = core.system();
 ```
