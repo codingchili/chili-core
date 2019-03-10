@@ -1,4 +1,5 @@
-#Context
+# Context
+
 The context provides access to core functionality, such as worker pools, service deployments, the event bus and the vertx instance.
 Using the context directly is one way of deploying the services, handlers and listeners of the application.
 

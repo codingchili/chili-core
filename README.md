@@ -1,6 +1,7 @@
 # chili-core [![Build Status](https://travis-ci.org/codingchili/chili-core.svg?branch=master)](https://travis-ci.org/codingchili/chili-core) [![](https://jitpack.io/v/codingchili/chili-core.svg)](https://jitpack.io/#codingchili/chili-core)
 
-The chili core is an opinionated framework for creating microservices with focus on speed of development and time to market. It's based on the Vert.x toolkit for maximum power and uses Hazelcast for plug-and-play clustering. 
+The chili core is an opinionated framework for creating microservices with focus on speed of development and time to market. 
+It's based on the Vert.x toolkit for maximum power and uses Hazelcast for plug-and-play clustering. 
 
 Find the official documentation [here](https://codingchili.github.io/chili-core/).
 
@@ -122,10 +123,12 @@ The core uses some great software, such as
 
 Applications currently using chili-core
 
-* [flashcards](https://flashcardsalligator.com/) - Progressive web app for studying  with flashcards.
-* [ethereum-ingest](https://github.com/codingchili/ethereum-ingest) - Ethereum block/transaction import utility.
-* [zapperfly-asm](https://github.com/codingchili/zapperfly-asm) - Extra simple clustered build servers.
-* [chili-game-ext](https://github.com/codingchili/chili-game-ext) - 2D MMORPG game in development.
+|application|description|
+|---|---|
+|[flashcards](https://flashcardsalligator.com/)|Progressive web app for studying  with flashcards.|
+|[ethereum-ingest](https://github.com/codingchili/ethereum-ingest)|Ethereum block/transaction import utility.|
+|[zapperfly-asm](https://github.com/codingchili/zapperfly-asm)|Extra simple clustered build servers.|
+|[chili-game-ext](https://github.com/codingchili/chili-game-ext)|2D MMORPG game in development.|
 
 ## Contributing
 Issues and PR's are welcome with :blue_heart:.

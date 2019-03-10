@@ -1,4 +1,5 @@
 # Services
+
 A service is the notion of a single or multiple services composed into a single unit with a common purpose.
 
 Services must implement the [CoreService](javadoc/com/codingchili/core/listener/CoreService.html) interface.

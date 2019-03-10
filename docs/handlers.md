@@ -1,4 +1,5 @@
-#Handlers
+# Handlers
+
 A handler implements the business logic of the API. Listeners forwarads requests to a handler for processing. A 
 handler may register the API's of other handlers on it's protocol, as a proxy-handler or simply define its own API.
 

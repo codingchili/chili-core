@@ -1,4 +1,5 @@
 # Protocol
+
 The protocol provides support for mapping a request to a method declared on a handler. It also 
 features role-based access control through an AuthorizationHandler.
 
