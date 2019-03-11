@@ -15,6 +15,15 @@ public enum Level {
 
     public String color;
 
+    /**
+     * Changes the default color of the log level to the given.
+     *
+     * @param color defined as an ANSI escape code.
+     */
+    void setColor(String color) {
+        this.color = color;
+    }
+
     Level(String color) {
         this.color = color;
     }
