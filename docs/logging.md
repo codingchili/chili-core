@@ -89,7 +89,7 @@ When performance monitoring is enabled a remote logger will be used to send the 
 In the visualization platform these messages will have the event type of `metrics`.
 
 Enabling performance monitoring
-```
+```java
     SystemSettings settings = Configurations.system();
     settings.setMetrics(true);
     

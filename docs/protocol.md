@@ -11,7 +11,7 @@ API is used instead, reflection will not be used at all.
 ### Registering a protocol
 There are two ways of creating a protocol mapping, lets create the protocol instance first.
 
-```$java
+```java
 private Protocol<Request> protocol = new Protocol<>();
 ```
 
@@ -22,7 +22,7 @@ Annotations can be used to simplify the mapping.
  
 Setting the default `Role` required for the api to `USER` and mapping a method to a route called `list`.
 
-```$java
+```java
 @Roles(USER)
 public class MyHandler implements CoreHandler {
 
@@ -36,7 +36,7 @@ public class MyHandler implements CoreHandler {
 ##### Programmatically
 Programmatic registration is more dynamic and a tiny bit faster at runtime.
 
-```$java
+```java
 protocol.setRoles(Role.USER)
         .use("ROUTE", this::list)
         .use("ROUTE", this::listAsAdmin, Role.ADMIN);
@@ -50,7 +50,7 @@ The `@Authenticator` annotation can be applied to a function with the signature
 `Function<Request, Future<RoleType>>`, which maps a request into a role. If the user is not
 authorized, then the RoleType of `PUBLIC` is used. It's also possible to define custom role types.
 
-```$java
+```java
 @Authenticator
 public Future<RoleType> authenticator(Request request) {
     Future<RoleType> future = Future.future();
@@ -71,7 +71,7 @@ passed to the `Protocol` constructor or registered with the `Protocol.annotated(
 
 If annotations are not being used, the authenticator can be set with the following,
 
-```$java
+```java
 protocol.authenticator(this::authenticator);
 ``` 
 
@@ -85,7 +85,7 @@ the `RoleMap`.
 
 Example of creating a custom role
 
-```$java
+```java
 public SuperRootRole implements RoleType {
     
     public String getName() {
@@ -100,14 +100,14 @@ public SuperRootRole implements RoleType {
 
 Registering the role in the `RoleMap`,
 
-```$java
+```java
 RoleMap.put("super_root", new SuperRootRole());
 ```
 
 In order to provide more advanced authorization models, the authorization handler can be replaced in the protocol.
 
 This is done by calling
-```$java
+```java
 protocol.setAuthorizationHandler(customHandler);
 ```
 
@@ -116,7 +116,7 @@ The interface to implement, [AuthorizationHandler](javadoc/com/codingchili/core/
 ### Processing
 Processing is the invocation of a mapped method, it's initiated from the `CoreHandler::handle` method.
 
-```$java
+```java
 public void handle(Request request) {
     protocol.process(request);
 }
@@ -127,7 +127,7 @@ This handles authorization and error handling internally within the protocol.
 ### Documenting the API
 Programmatically documenting
 
-```$java
+```java
 protocol
     .model(DefaultModel.class)
     .description("this is the API")
@@ -138,7 +138,7 @@ protocol
 
 Alternatively, with annotations
 
-```$java
+```java
 @Description("this is the API")
 @DataModel(Wowza.class)
 public class MyHandler implements CoreHandler {
@@ -168,7 +168,7 @@ It is also possible to register multiple classes onto the same protocol.
 
 The current format looks like this, from zapperfly-asm.
 
-```$yaml
+```yaml
 model:
   request: "com.codingchili.core.listener.Request"
 text: "Handles configuration and build requests."

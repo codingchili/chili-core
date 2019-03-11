@@ -7,7 +7,7 @@ handler may register the API's of other handlers on it's protocol, as a proxy-ha
 The dpeloyment of a handler requires at least a `CoreService`, see [listeners](listeners) for a set of listeners that
 are included in the framework.
 
-```$java
+```java
 // The address is used by the listener to determine where to mount the handler.
 // the REST handler would mount this at "/cats" for example.
 @Role(PUBLIC)
@@ -53,7 +53,7 @@ public class CatHandler implements CoreHandler {
 To simplify dealing with request data we can wrap the request body in a model class. If we use
 the `request.data()` only a JsonObject API will be available.
 
-```$java
+```java
 public class CatRequest implements RequestWrapper() {
     private Request request;
     
@@ -75,7 +75,7 @@ public class CatRequest implements RequestWrapper() {
 ```
 
 **Another example of a minimal handler without request wrapping,**
-```$java
+```java
 @Role(PUBLIC)
 @Address("cats")
 public class Cathandler implements CoreHandler {
@@ -96,7 +96,7 @@ public class Cathandler implements CoreHandler {
 
 ### Deploying a handler
 Deploying a handler requires a running `SystemContext`, example
-```$java
+```java
 core.handler(Cathandler::new);
 ```
 
@@ -104,7 +104,7 @@ When a handler is deployed using the `handler` method on the context the listene
 
 To deploy the handler on a specific listener the following can be used,
 
-```$java
+```java
 core.listener(() -> new RestListener().handler(new CatHandler()));
 ```
 

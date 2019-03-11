@@ -19,7 +19,7 @@ ClusterListener.
 ### Starting a listener
 Starting a listener is done using the `CoreContext`,
 
-```$java
+```java
 ListenerSettings settings = new ListenerSettings()
     .setPort(8080) // not applicable to the ClusterListener.
     .setSecure(false);
@@ -33,7 +33,7 @@ core.listener(() ->
 
 ### Using custom listeners
 A custom listener can be implemented with the following
-```$java
+```java
 // sample listener that retrieves unread smses from an sms gateway API.
 public class SmsListener implements CoreListener {
     // SmsGateway is a third-party implementation of an sms gateway.
@@ -88,7 +88,7 @@ public class SmsListener implements CoreListener {
 ```
 
 A request object is required to handle responses and usage in the handler/protocol classes.
-```$java
+```java
 public class Smsrequest implements Request {
     private AtomicBoolean written = new AtomicBoolean(false);
     private SmsGateway gateway;

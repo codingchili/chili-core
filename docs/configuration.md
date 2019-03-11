@@ -5,7 +5,7 @@ Contains the server configuration.
 ## Configuration APIs
 This section contains information on using the configuration API's.
 
-```
+```java
 import com.codingchili.core.configuration.Configurable;
 
 public class ConfigurationClass implements Configurable {
@@ -27,7 +27,7 @@ Here is another [example configuration model](https://github.com/codingchili/chi
 ### Loading configuration
 Loading configuration from a file with the model/schema file `ConfigurationClass.class`.
 
-```
+```java
 ConfigurationClass config = Configurations.get("path/to/configurable.yml", ConfigurationClass.class);
 ```
 
@@ -37,7 +37,7 @@ If the file does not exist it will be instantiated with the defaults in Configur
 
 Configuration can also be loaded directly from memory into the `Configurations` manager. This is done with the following call.
 
-```
+```java
 Configurations.put(ConfigurationClass.class);
 ```
 
@@ -46,7 +46,7 @@ Whenever configuration changes it will be reloaded in memory. Any configuration 
 
 If the call to `Configurations.get` is cached, an additional O(1) map lookup can be avoided - with the implication that changes to the configuration on disk will not be visible. To limit the time configuration is cached, or to always retrieve the latest copy from the cache a wrapper is recommended. 
 
-```
+```java
 public ConfigurationClass getMyConfiguration() {
     // custom logic to cache the call goes here.
     return Configurations.get("path/to/configurable.yaml", ConfigurationClass.class);
@@ -56,7 +56,7 @@ public ConfigurationClass getMyConfiguration() {
 ### Persisting configuration
 Persisting configuration is easy, perform any changes to the configuration class in memory and call the save method on the configurable object.
 
-```
+```java
 myConfiguration.fastMode = true;
 
 // saves the configuration to disk, location is specified by the 'getPath' method.
@@ -81,7 +81,7 @@ To use a custom format a custom `com.codingchili.core.files.FileStore` needs to 
 The custom mapper needs to be registered on the `com.codingchili.core.files.ConfigurationFactory`.
 
 This can be done with the following sample,
-```
+```java
 ConfigurationFactory.add(new YamlFileStore());
 ```
 
@@ -93,7 +93,7 @@ The `ConfigurationFactory` may be combined with a `com.codingchili.core.files.Fi
 
 Example of using the ConfigurationFactory with a FileWatcher
 
-```
+```java
 // creates a FileWatcher on the given directory that checks the WatchService each 1500ms.
 FileWatcher.builder(core)
     .onDirectory('path/to/directory/')
@@ -140,7 +140,7 @@ The launcher configuration  allows for configuration of the following properties
 If there is no matching host and a block has not been explicitly specified a block named `default` will be deployed.
 
 Sample configuration file
-```
+```yaml
 version: CORE-1.0.5-PR
 application: prototype
 clustered: false
@@ -198,7 +198,7 @@ Controls internal security configuration.
 |tokenttl|how long tokens generated from the `TokenFactory` are valid.|
 
 Sample configuration
-```
+```yaml
 dependencies:
   service/[^/]*:
     preshare:
@@ -247,7 +247,7 @@ Contains settings for storage implementations, these can be any of the included 
 It's up to the storage implementation to respect the `maxResults` and `minFeedbackChars` properties. The default storage implementations honor them.
 
 Configuration for a specific plugin can be retrieved with
-```
+```java
 RemoteStorage config = Configurations.storage(Plugin.class);
 ```
 
@@ -262,7 +262,7 @@ A remote storage configuration contains the following properties
 |persistInterval|some implementations that support persistence will persist at this interval.|
 
 Sample configuration
-```
+```yaml
 storage:
   com.codingchili.core.storage.ElasticMap:
     host: localhost
@@ -296,7 +296,7 @@ It's possible to add custom implementations here. Either in the configuration fi
 
 Adding a custom storage plugin,
 
-```
+```java
 // RemoteStorage is the configuration, Class is a class that implements AsyncStorage<Value> where value extends `Storable`.
 Configurations.storage().add(RemoteStorage, Class);
 ```

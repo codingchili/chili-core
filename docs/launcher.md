@@ -15,7 +15,7 @@ these blocks can be deployed by passing the block name for the launcher option `
 the block using the hostname of the deploying machine, no block name should then be specified for the deploy command.
 
 Example launcher configuration in YAML.
-```
+```yaml
 version: CORE-1.0.5-PR
 application: prototype
 clustered: false
@@ -58,14 +58,14 @@ Breakdown
 
 Example using the `com.codingchili.core.Launcher` with another main-class.
 
-```
+```java
 public static void main(String[] args) {
     Launcher.main(args);
 }
 ```
 
 Another example with programmatic configuration
-```
+```java
 public static void main(String[] args) {
     LaunchContext context = new LaunchContext(args);
     
@@ -88,7 +88,7 @@ To write multiple cats, specify the `-times` option.
 
 The command returns `SHUTDOWN` to indicate that the application should shut down after the command has completed. 
 
-```
+```java
     public static void main(String[] args) {
         LaunchContext context = new LaunchContext(args)
         CommandExecutor executor = new DefaultCommandExecutor();
@@ -111,7 +111,7 @@ The command receives a future object to facilitate asynchronous calls as
 well as a reference to the current context.
 
 A sample invocation would look like
-```
+```console
 java -jar <file.jar> --print-cat -upper -times 100
 ```
 
