@@ -2,9 +2,10 @@
 
 This section covers logging, both local and remote logging can be used and preferrably with ElasticSearch for indexing and Kibana for visualization.
 
-There is a storage implementation for ElasticSearch that can be used for indexing.
+- There is a storage implementation for ElasticSearch that can be used for indexing.
+- There are two main types of loggers, local and remote.
 
-There are two main types of loggers, local and remote.
+Javadoc [here](javadoc/com/codingchili/core/logging/package-summary.html)
 
 ##### Local
 
@@ -12,7 +13,7 @@ A local logger will write its output to the terminal, or a file if stdout is red
 
 Creating a local logger, does not require a `Context`.
 
-```
+```java
 Logger logger = new ConsoleLogger(getClass());
 ```
 
@@ -26,7 +27,7 @@ It is configurable whether a remote logger should print to the terminal or not.
 
 Grabbing a (remote+console) logger is easy,
 
-```
+```java
 public static void main(String[] args) {
     CoreContext core = new SystemContext();
     
@@ -38,26 +39,35 @@ public static void main(String[] args) {
 
 Logging an event is easy
 
-```
+```java
 logger.event("onTimeZoneChanged").send();
 ```
 
 Logging at a specific level.
-```
+```java
 logger.event("onTimeZoneFailure", Level.WARNING).send();
 ```
 
 Logging with a simple message
-```
+```java
 logger.event("message").send("one message text.");
 ```
 
 Logging with some additional key-value based data.
-```
+```java
 logger.event("onMeasurement")
     .put("temperature", "over 9000.")
     .send("periodic reading of nuclear reactor complete.");
 ```
+
+Logging an error with a stacktrace
+```java
+logger.onError(throwable);
+```
+
+Additionally there are some pre-defined events that can be used.
+
+See javadoc [here](javadoc/com/codingchili/core/logging/Logger.html)
 
 ### Events
 

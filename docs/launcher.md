@@ -2,11 +2,11 @@
 
 The launcher is an alternative to using `CoreContext` directly for deployments. The Launcher can be combined with dynamically deployed services.
 
-See: `com.codingchili.core.Launcher` and `com.codingchili.core.context`.
-
 It adds the following functionality
 - a CommandExecutor that parses the commandline and executes an operation.
 - deployment of service blocks, ie a block of services configured for a specific host.
+
+See: `com.codingchili.core.Launcher` and `com.codingchili.core.context`.
 
 ### Deployment configuration
 
