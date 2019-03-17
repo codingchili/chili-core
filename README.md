@@ -8,7 +8,7 @@ Find the official documentation [here](https://codingchili.github.io/chili-core/
 ## Quickstart
 
 Using gradle
-```$groovy
+```groovy
 repositories {
     maven { url 'https://jitpack.io' }
 }
@@ -20,7 +20,7 @@ dependencies {
 
 Creating a new handler
 
-```$java
+```java
 @Role(PUBLIC)
 @Address("api")
 public class MyHandler implements CoreHandler {
@@ -41,7 +41,7 @@ public class MyHandler implements CoreHandler {
 
 Deploying a handler with the REST listener on port 8080 (default).
 
-```$java
+```java
 public static void main(String[] args) {
     ListenerSettings settings = new ListenerSettings()
             .setPort(8080)
@@ -56,23 +56,27 @@ public static void main(String[] args) {
 ```
 
 Start it up and check the service with
-```$bash
+
+```console
 curl -v http://localhost:8080/api/list
 ```
 
 ## Building
 To build chili-core clone this repository with **git**,
-```
+
+```console
 git clone https://github.com/codingchili/chili-core.git
 ```
 
 Builds project jars and run tests
-```
+
+```console
 gradlew build
 ```
 
 Note: when targeting java 9+ the following hacks are needed for Netty/Vert.x
-```
+
+```console
 --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/sun.net.dns=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
 ```
 
@@ -99,9 +103,9 @@ In order to achieve this it is much more invasive than the vertx toolkit.
 The complete feature list may change during development. 
 
 ##### Core
-* Transport & protocol independent implementation
+* Transport & storage independent implementations
 * Logging system for data analysis and real time monitoring
-* Authentication based on hmac tokens.
+* Authentication based on signed tokens.
 * A router for routing external connections into the clustered event bus.
 * Statistics API that builds on top of the logging system
 * Interchangeable storage options with indexing and query support

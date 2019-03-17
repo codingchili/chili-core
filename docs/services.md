@@ -9,7 +9,7 @@ Services can be deployed using the [Launcher](launcher).
 ### Creating your service
 A service simply implements the `CoreService` interface.
 
-```$java
+```java
 
 public class MyService implements CoreService {
 
@@ -49,7 +49,7 @@ public class MyService implements CoreService {
 ### Deploying your service
 Deployment is done like this,
 
-```$java
+```java
 core.service(MyService::new);
 ```
 
