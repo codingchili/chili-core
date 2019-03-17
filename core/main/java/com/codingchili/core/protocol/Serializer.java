@@ -31,8 +31,8 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  */
 public class Serializer {
     // use vertx's objectmapper, it comes with custom serializer modules.
-    private static ObjectMapper json = Json.mapper;
-    private static ObjectMapper yaml = new ObjectMapper(new YAMLFactory()
+    public static ObjectMapper json = Json.mapper;
+    public static ObjectMapper yaml = new ObjectMapper(new YAMLFactory()
             .configure(YAMLGenerator.Feature.LITERAL_BLOCK_STYLE, true));
 
     static {
