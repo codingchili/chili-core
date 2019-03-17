@@ -19,6 +19,7 @@ import java.util.function.Function;
 import com.codingchili.core.benchmarking.BenchmarkGroup;
 import com.codingchili.core.benchmarking.BenchmarkReport;
 import com.codingchili.core.configuration.system.LauncherSettings;
+import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.files.Resource;
 import com.codingchili.core.files.exception.NoSuchResourceException;
 
@@ -164,7 +165,8 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
     public BenchmarkReport display() {
         try {
             Desktop.getDesktop().browse(Paths.get(saveToFile()).toUri());
-        } catch (Exception ignored) {
+        } catch (IOException e) {
+            throw new CoreRuntimeException(e);
         }
         return this;
     }
