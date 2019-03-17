@@ -164,7 +164,7 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
     public BenchmarkReport display() {
         try {
             Desktop.getDesktop().browse(Paths.get(saveToFile()).toUri());
-        } catch (IOException ignored) {
+        } catch (Exception ignored) {
         }
         return this;
     }
