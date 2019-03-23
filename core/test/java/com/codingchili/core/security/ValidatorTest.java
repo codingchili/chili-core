@@ -1,24 +1,23 @@
 package com.codingchili.core.security;
 
-import com.codingchili.core.configuration.RegexComponent;
-import com.codingchili.core.configuration.system.ParserSettings;
-import com.codingchili.core.configuration.system.ValidatorSettings;
-import com.codingchili.core.protocol.exception.RequestValidationException;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.codingchili.core.configuration.RegexComponent;
+import com.codingchili.core.configuration.system.ValidatorSettings;
+import com.codingchili.core.protocol.exception.RequestValidationException;
+import static com.codingchili.core.configuration.CoreStrings.*;
+import static com.codingchili.core.security.RegexAction.*;
 
-import static com.codingchili.core.configuration.CoreStrings.ID_NAME;
-import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_MESSAGE;
-import static com.codingchili.core.security.RegexAction.REJECT;
-import static com.codingchili.core.security.RegexAction.REPLACE;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 /**
  * Tests the validation mechanism.
@@ -28,23 +27,20 @@ public class ValidatorTest {
     private static final String NESTED = "nested";
     private static final String KEY = "key";
     private static Validator validator;
-    private static ValidatorSettings settings;
+    private static Set<ValidatorSettings> settings;
 
     @Before
     public void setUp() {
-        settings = new ValidatorSettings().setValidators(getDefaultValidators())
-                .add(NESTED,
-                        new ParserSettings()
-                                .length(0, 8)
-                                .addKey(NESTED + "." + KEY));
-        validator = new Validator(() -> settings);
+        settings = getDefaultValidators();
+        validator = new Validator();
+        settings.forEach(validator::add);
     }
 
     @Test
     public void testMessageIsFiltered() throws RequestValidationException {
         Assert.assertEquals("test " +
-                settings.getValidators().get("chat-messages").regex.get(0).replacement +
-                " hello", getMessage("test f**k hello"));
+            validator.get("chat-messages").getRegex().get(0).getSubstitution() +
+            " hello", getMessage("test f**k hello"));
     }
 
     @Test
@@ -101,7 +97,6 @@ public class ValidatorTest {
     @Test
     public void testMaximumLengthIsEnforced(TestContext test) {
         String tooLong = new String(new char[100]).replace("\0", "X");
-
         try {
             getMessage(tooLong);
             test.fail("Too long string does not fail to validate.");
@@ -114,21 +109,61 @@ public class ValidatorTest {
         String[] texts = {"!@#$%^&*()_?\\[]{}"};
 
         for (String text : texts) {
-            test.assertTrue(plaintext(validator.toPlainText(text)));
+            test.assertTrue(plaintext(Validator.toPlainText(text)));
         }
     }
 
     @Test
-    public void testNestedAttributeOk(TestContext test) throws RequestValidationException {
+    public void testNestedAttributeOk() throws RequestValidationException {
         validator.validate(getNestedObject("ok"));
     }
 
     @Test
-    public void testNestedAttributeFail(TestContext test) throws RequestValidationException {
+    public void testNestedAttributeFail(TestContext test) {
         try {
             validator.validate(getNestedObject("too-long-should-fail"));
             test.fail("validation did not fail for nested object.");
         } catch (RequestValidationException ignored) {
+        }
+    }
+
+    @Test
+    public void testAttributeInArray(TestContext test) {
+        JsonObject json = new JsonObject()
+            .put("list", new JsonArray()
+                .add(new JsonObject().put(ID_USERNAME, "invalid_username//#!!;"))
+            );
+        try {
+            validator.validate(json);
+            test.fail("failed to run validation on values in array.");
+        } catch (RequestValidationException e) {
+        }
+    }
+
+    @Test
+    public void testSimpleElementInArray(TestContext test) {
+        JsonObject json = new JsonObject()
+            .put(ID_USERNAME, new JsonArray()
+                .add("invalid_username//#!!;")
+            );
+        try {
+            validator.validate(json);
+            test.fail("failed to run validation on values in array.");
+        } catch (RequestValidationException e) {
+        }
+    }
+
+    @Test
+    public void testArrayWithinArray(TestContext test) {
+        JsonObject json = new JsonObject()
+            .put(ID_NAME,
+                new JsonArray()
+                    .add(new JsonArray()
+                        .add("invalid_username//#!!;")));
+        try {
+            validator.validate(json);
+            test.fail("failed to run validation on values in array.");
+        } catch (RequestValidationException e) {
         }
     }
 
@@ -148,28 +183,36 @@ public class ValidatorTest {
         return validator.validate(json);
     }
 
-    private Map<String, ParserSettings> getDefaultValidators() {
-        Map<String, ParserSettings> validators = new HashMap<>();
+    private Set<ValidatorSettings> getDefaultValidators() {
+        Set<ValidatorSettings> settings = new HashSet<>();
 
-        validators.put("display-name", new ParserSettings()
-                .addKey("username")
-                .addKey("name")
-                .length(4, 32)
-                .addRegex(new RegexComponent()
-                        .setAction(REJECT)
-                        .setLine("[A-Z,a-z,0-9]*"))
+        settings.add(new ValidatorSettings("user-name")
+            .addKeys(ID_USERNAME, ID_NAME)
+            .length(4, 32)
+            .addRegex(new RegexComponent()
+                .setAction(ACCEPT)
+                .setExpression("[A-Z,a-z,0-9]*"))
         );
 
 
-        validators.put("chat-messages", new ParserSettings()
-                .addKey("message")
-                .length(1, 76)
-                .addRegex(new RegexComponent()
-                        .setAction(REPLACE)
-                        .setLine("(f..(c|k))")
-                        .setReplacement("*^$#!?"))
+        settings.add(new ValidatorSettings("chat-messages")
+            .addKey(ID_MESSAGE)
+            .length(1, 76)
+            .addRegex(new RegexComponent()
+                .setAction(SUBSTITUTE)
+                .setExpression("(f..(c|k))")
+                .setSubstitution("*^$#!?"))
         );
 
-        return validators;
+        settings.add(new ValidatorSettings("reject")
+            .addRegex(new RegexComponent()
+                .setAction(REJECT)
+                .setExpression("[!]")));
+
+        settings.add(new ValidatorSettings("nested-length")
+            .addKey(KEY)
+            .length(2, 4));
+
+        return settings;
     }
 }

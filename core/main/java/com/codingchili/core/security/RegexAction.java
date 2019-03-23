@@ -5,5 +5,19 @@ package com.codingchili.core.security;
  * validation should fail.
  */
 public enum RegexAction {
-    REJECT, REPLACE
+
+    /**
+     * Rejects the input whenever the configured regex matches.
+     */
+    REJECT,
+
+    /**
+     * Substitutes parts of the input which matches the regex.
+     */
+    SUBSTITUTE,
+
+    /**
+     * Accepts the input if there is a complete match for the input.
+     */
+    ACCEPT
 }

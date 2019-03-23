@@ -1,30 +1,59 @@
 package com.codingchili.core.security;
 
-import io.vertx.core.json.JsonObject;
-
-import java.util.function.Supplier;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 
+import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.configuration.RegexComponent;
-import com.codingchili.core.configuration.system.ParserSettings;
 import com.codingchili.core.configuration.system.ValidatorSettings;
 import com.codingchili.core.protocol.exception.RequestValidationException;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import static com.codingchili.core.configuration.CoreStrings.PATH_VALIDATOR;
+import static com.codingchili.core.configuration.CoreStrings.getNoSuchValidator;
+
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 /**
  * Validates the contents of a json object according to the validation configuration.
  */
-public class Validator {
+public class Validator implements Configurable {
+    private static final String VALIDATION_FAILED_FOR_VALIDATOR = "Validation failed for validator '%s'.";
     private static final String REGEX_PLAINTEXT = "[A-Za-z0-9 \\-:&].*";
     private static final String REGEX_SPECIAL_CHARS = "[^A-Za-z0-9 \\-:&]";
-    private static final int MIN = 0;
-    private static final int MAX = 1;
-    private Supplier<ValidatorSettings> settings;
+    private Set<ValidatorSettings> settings = new HashSet<>();
+
+    public Validator() {
+    }
+
+    @Override
+    public String getPath() {
+        return PATH_VALIDATOR;
+    }
 
     /**
-     * @param settings creates a new validator with the given settings.
+     * @param name the name of the validator to retrieve.
+     * @return a validator matching the given name.
      */
-    public Validator(Supplier<ValidatorSettings> settings) {
-        this.settings = settings;
+    @JsonIgnore
+    public ValidatorSettings get(String name) {
+        return settings.stream()
+            .filter(settings -> settings.getName().equals(name))
+            .findFirst()
+            .orElseThrow(() ->
+                new IllegalArgumentException(getNoSuchValidator(name)));
+    }
+
+    /**
+     * Adds a validator.
+     *
+     * @param settings the settings for the validation to apply.
+     * @return fluent
+     */
+    public Validator add(ValidatorSettings settings) {
+        this.settings.add(settings);
+        return this;
     }
 
     /**
@@ -59,67 +88,81 @@ public class Validator {
      * @throws RequestValidationException when the evaluation is configured to reject a value.
      */
     public JsonObject validate(JsonObject json) throws RequestValidationException {
-
-        for (String field : json.fieldNames()) {
-            for (ParserSettings validator : settings.get().getValidators().values()) {
-
-                if (json.getValue(field) instanceof JsonObject) {
-                    validate(json.getJsonObject(field), field);
-                } else {
-                    if (validator.keys.contains(field)) {
-                        json.put(field, validate(validator, json.getValue(field)));
-                    }
-                }
-            }
+        for (ValidatorSettings settings : settings) {
+            validateJsonObject(settings, json);
         }
         return json;
     }
 
-    /**
-     * Validates nested JSON objects within a JSON object.
-     *
-     * @param json      the json object to validate.
-     * @param fieldName the handler of the field to validate.
-     * @throws RequestValidationException when the evaluation is configured to reject a value
-     */
-    private void validate(JsonObject json, String fieldName) throws RequestValidationException {
-        for (String field : json.fieldNames()) {
-            if (json.getValue(field) instanceof JsonObject) {
-                validate(json, fieldName + "." + field);
-            } else {
-                for (ParserSettings validator : settings.get().getValidators().values()) {
-                    if (validator.keys.contains(fieldName + "." + field)) {
-                        json.put(field, validate(validator, json.getValue(field)));
-                    }
-                }
-            }
+    private Object validateFieldByType(ValidatorSettings settings, String fieldName, Object value) {
+        if (value instanceof JsonObject) {
+            return validateJsonObject(settings, (JsonObject) value);
+        } else if (value instanceof JsonArray) {
+            return validateJsonArray(settings, fieldName, (JsonArray) value);
+        } else {
+            return validateSimpleType(settings, fieldName, value);
         }
     }
 
-    private Object validate(ParserSettings validator, Object value) throws RequestValidationException {
-        if (value instanceof String) {
-            return validateString(validator, (String) value);
+    @SuppressWarnings("unchecked")
+    private JsonArray validateJsonArray(ValidatorSettings settings, String fieldName, JsonArray value) {
+        for (int i = 0; i < value.size(); i++) {
+            value.getList().set(i, validateFieldByType(settings, fieldName, value.getValue(i)));
         }
         return value;
     }
 
-    private String validateString(ParserSettings validator, String text) throws RequestValidationException {
-        if (text.length() < validator.length[MIN] || text.length() > validator.length[MAX]) {
-            throw new RequestValidationException();
+    private JsonObject validateJsonObject(ValidatorSettings settings, JsonObject value) {
+        for (String fieldName : value.fieldNames()) {
+            value.put(fieldName, validateFieldByType(settings, fieldName, value.getValue(fieldName)));
+        }
+        return value;
+    }
+
+    private Object validateSimpleType(ValidatorSettings settings, String fieldName, Object value) {
+        if (settings.isFieldValidated(fieldName)) {
+            if (value instanceof String) {
+                return validateString(settings, (String) value);
+            } else {
+                // only string type supports substitution.
+                validateString(settings, value.toString());
+                return value;
+            }
+        } else {
+            return value;
+        }
+    }
+
+    private String validateString(ValidatorSettings settings, String text) {
+        if (text.length() < settings.getMinLength() || text.length() > settings.getMaxLength()) {
+            throw RequestValidationException.lengthError(settings, text.length());
         }
 
-        for (RegexComponent regex : validator.regex) {
+        for (RegexComponent regex : settings.getRegex()) {
+            switch (regex.getAction()) {
+                case SUBSTITUTE:
+                    text = text.replaceAll(regex.getExpression(),
+                        Matcher.quoteReplacement(regex.getSubstitution()));
 
-            switch (regex.action) {
-                case REJECT:
-                    if (!text.matches(regex.line))
-                        throw new RequestValidationException();
+                    text = text.trim();
                     break;
-                case REPLACE:
-                    text = text.replaceAll(regex.line, Matcher.quoteReplacement(regex.replacement));
+                case REJECT:
+                    if (text.matches(regex.getExpression())) {
+                        fail(settings);
+                    }
+                    break;
+                case ACCEPT:
+                    if (!text.matches(regex.getExpression())) {
+                        fail(settings);
+                    }
                     break;
             }
         }
-        return text.trim();
+        return text;
+    }
+
+    private void fail(ValidatorSettings settings) {
+        throw new RequestValidationException(String.format(
+            VALIDATION_FAILED_FOR_VALIDATOR, settings.getName()));
     }
 }
