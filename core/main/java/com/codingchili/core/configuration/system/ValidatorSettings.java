@@ -13,11 +13,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Contains settings for validating strings with regexes, length and field names.
  */
-public class ParserSettings {
-    public String name;
-    public Set<String> keys = new HashSet<>();
-    public List<RegexComponent> regex = new ArrayList<>();
-    public int[] length = new int[] {Integer.MIN_VALUE, Integer.MAX_VALUE};
+public class ValidatorSettings {
+    private List<RegexComponent> regex = new ArrayList<>();
+    private Set<String> keys = new HashSet<>();
+    private int minLength = Integer.MIN_VALUE;
+    private int maxLength = Integer.MAX_VALUE;
+    private String name;
 
     /**
      * Creates a new settings object with no field validation enabled by default.
@@ -25,7 +26,7 @@ public class ParserSettings {
      * @param name the name of the ruleset.
      */
     @JsonCreator
-    public ParserSettings(@JsonProperty("name") String name) {
+    public ValidatorSettings(@JsonProperty("name") String name) {
         this.name = name;
     }
 
@@ -47,7 +48,7 @@ public class ParserSettings {
      * @param regex a list of regular expressions to apply on matching fields.
      * @return fluent.
      */
-    public ParserSettings setRegex(List<RegexComponent> regex) {
+    public ValidatorSettings setRegex(List<RegexComponent> regex) {
         this.regex = regex;
         return this;
     }
@@ -69,17 +70,31 @@ public class ParserSettings {
     }
 
     /**
-     * @return an array of a minimum and maximum field length.
+     * @return the minimum length of the input.
      */
-    public int[] getLength() {
-        return length;
+    public int getMinLength() {
+        return minLength;
     }
 
     /**
-     * @param length the min and max lengths for the validated field.
+     * @param minLength the minimum length of the input.
      */
-    public void setLength(int[] length) {
-        this.length = length;
+    public void setMinLength(int minLength) {
+        this.minLength = minLength;
+    }
+
+    /**
+     * @return the maximum length of the input.
+     */
+    public int getMaxLength() {
+        return maxLength;
+    }
+
+    /**
+     * @param maxLength the maximum length of the input.
+     */
+    public void setMaxLength(int maxLength) {
+        this.maxLength = maxLength;
     }
 
     /**
@@ -89,7 +104,7 @@ public class ParserSettings {
      * @return fluent.
      */
     @JsonIgnore
-    public ParserSettings addKey(String key) {
+    public ValidatorSettings addKey(String key) {
         keys.add(key);
         return this;
     }
@@ -98,7 +113,8 @@ public class ParserSettings {
      * @param keys a list of keys to add, see {@link #addKey(String)}.
      * @return fluent.
      */
-    public ParserSettings addKeys(String... keys) {
+    @JsonIgnore
+    public ValidatorSettings addKeys(String... keys) {
         for (String key: keys) {
             addKey(key);
         }
@@ -111,9 +127,9 @@ public class ParserSettings {
      * @return fluent.
      */
     @JsonIgnore
-    public ParserSettings length(int min, int max) {
-        length[0] = min;
-        length[1] = max;
+    public ValidatorSettings length(int min, int max) {
+        minLength = min;
+        maxLength = max;
         return this;
     }
 
@@ -122,7 +138,7 @@ public class ParserSettings {
      * @return fluent.
      */
     @JsonIgnore
-    public ParserSettings addRegex(RegexComponent component) {
+    public ValidatorSettings addRegex(RegexComponent component) {
         regex.add(component);
         return this;
     }
