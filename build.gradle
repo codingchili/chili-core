@@ -13,8 +13,8 @@ subprojects {
     version = rootProject.version
     group = rootProject.group
 
-    sourceCompatibility = 8
-    targetCompatibility = 8
+    sourceCompatibility = 11
+    targetCompatibility = 11
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
