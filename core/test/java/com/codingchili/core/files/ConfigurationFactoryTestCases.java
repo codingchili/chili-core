@@ -34,15 +34,21 @@ public abstract class ConfigurationFactoryTestCases {
     public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
 
     @Test
-    public void testReadObject(TestContext test) throws IOException {
+    public void testReadObject(TestContext test) {
         JsonObject json = ConfigurationFactory.readObject(testFile(DIR, getFile("ReadObject")));
         test.assertEquals("object", json.getString("item"));
     }
 
     @Test
-    public void testReadDirectoryObjects(TestContext test) throws IOException {
+    public void testReadDirectoryObjects(TestContext test) {
         Collection<JsonObject> json = ConfigurationFactory.readDirectory(testDirectory(DIR + "/Objects"));
         test.assertEquals(2, json.size());
+    }
+
+    @Test
+    public void testReadDirectoryTree(TestContext test) {
+        Collection<JsonObject> json = ConfigurationFactory.readDirectoryTree(testDirectory(DIR + "/Objects"));
+        test.assertEquals(3, json.size());
     }
 
     @Test

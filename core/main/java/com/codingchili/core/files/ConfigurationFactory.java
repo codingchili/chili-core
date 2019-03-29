@@ -19,6 +19,7 @@ import com.codingchili.core.files.exception.NoSuchResourceException;
  * Supports reading/writing to multiple configuration formats.
  */
 public class ConfigurationFactory {
+    private static final String HIDDEN_FILE_PREFIX = ".";
     private static Map<String, FileStore> implementations = new HashMap<>();
 
     static {
@@ -93,7 +94,11 @@ public class ConfigurationFactory {
                 throw new NoSuchResourceException(path);
             }
         }
-        return get(path + detectedExtension.get()).readObject(buffer.get());
+        try {
+            return get(path + detectedExtension.get()).readObject(buffer.get());
+        } catch (Exception e) {
+            throw new ConfigurationParseException(path, e);
+        }
     }
 
     /**
@@ -102,34 +107,51 @@ public class ConfigurationFactory {
      * @param directory the directory to enumerate
      * @return a list of absolute file paths.
      */
-    public static Collection<String> enumerate(String directory) {
-        File[] files = new File(directory).listFiles(file -> !file.isDirectory());
+    private static Collection<String> enumerate(String directory, boolean subdirs) {
+        File[] files = new File(directory).listFiles(file -> !file.isDirectory() || subdirs);
 
         if (files == null) {
             return Collections.emptyList();
         } else {
-            return Arrays.stream(files).map(File::getPath)
+            return Arrays.stream(files)
+                    .filter(file -> !file.getName().startsWith(HIDDEN_FILE_PREFIX))
+                    .map(file -> {
+                        if (file.isDirectory()) {
+                            return enumerate(file.getPath(), true);
+                        } else {
+                            return Collections.singleton(file.getPath());
+                        }
+                    })
+                    .flatMap(Collection::stream)
                     .collect(Collectors.toList());
         }
     }
 
     /**
-     * Reads a directory of json-files formatted as JsonObjects.
+     * Like {@link #readDirectory(String)} but includes all subdirectories not starting with a '.'
+     *
+     * @param path the path to a directory tree to read.
+     * @return a list of json objects where each object corresponds to a file.
+     */
+    public static Collection<JsonObject> readDirectoryTree(String path) {
+        return enumerate(path, true)
+                .parallelStream()
+                .map(ConfigurationFactory::readObject)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Reads a directory of json-files formatted as JsonObjects, ignores files starting with a '.'
      *
      * @param path the application-relative directory to read from.
-     * @return a list of jsonobjects where each object corresponds to a file.
+     * @return a list of json objects where each object corresponds to a file.
      * returns nothing when more than zero files fails to load.
      */
     public static Collection<JsonObject> readDirectory(String path) {
-        return enumerate(path).parallelStream()
-                .map(file -> {
-                    Optional<Buffer> buffer = new Resource(file).read();
-                    if (buffer.isPresent()) {
-                        return get(file).readObject(buffer.get());
-                    } else {
-                        throw new NoSuchResourceException(path);
-                    }
-                }).collect(Collectors.toList());
+        return enumerate(path, false)
+                .parallelStream()
+                .map(ConfigurationFactory::readObject)
+                .collect(Collectors.toList());
     }
 
     /**
