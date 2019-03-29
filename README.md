@@ -1,7 +1,7 @@
 # chili-core [![Build Status](https://travis-ci.org/codingchili/chili-core.svg?branch=master)](https://travis-ci.org/codingchili/chili-core) [![](https://jitpack.io/v/codingchili/chili-core.svg)](https://jitpack.io/#codingchili/chili-core)
 
 The chili core is an opinionated framework for creating microservices with focus on speed of development and time to market. 
-It's based on the Vert.x toolkit for maximum power and uses Hazelcast for plug-and-play clustering. 
+It's based on the Vert.x toolkit for maximum power and uses Hazelcast for plug-and-play clustering. This project is small with only 22k LOC.
 
 Find the official documentation [here](https://codingchili.github.io/chili-core/).
 
