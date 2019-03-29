@@ -107,7 +107,7 @@ public class ConfigurationFactory {
      * @param directory the directory to enumerate
      * @return a list of absolute file paths.
      */
-    private static Collection<String> enumerate(String directory, boolean subdirs) {
+    public static Collection<String> enumerate(String directory, boolean subdirs) {
         File[] files = new File(directory).listFiles(file -> !file.isDirectory() || subdirs);
 
         if (files == null) {
@@ -123,6 +123,7 @@ public class ConfigurationFactory {
                         }
                     })
                     .flatMap(Collection::stream)
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toList());
         }
     }
