@@ -121,18 +121,15 @@ public class ConfigurationFactory {
      * returns nothing when more than zero files fails to load.
      */
     public static Collection<JsonObject> readDirectory(String path) {
-        List<JsonObject> list = new ArrayList<>();
-
-        for (String file : enumerate(path)) {
-            Optional<Buffer> buffer = new Resource(file).read();
-
-            if (buffer.isPresent()) {
-                list.add(get(file).readObject(buffer.get()));
-            } else {
-                throw new NoSuchResourceException(path);
-            }
-        }
-        return list;
+        return enumerate(path).parallelStream()
+                .map(file -> {
+                    Optional<Buffer> buffer = new Resource(file).read();
+                    if (buffer.isPresent()) {
+                        return get(file).readObject(buffer.get());
+                    } else {
+                        throw new NoSuchResourceException(path);
+                    }
+                }).collect(Collectors.toList());
     }
 
     /**
