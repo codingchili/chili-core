@@ -2,8 +2,6 @@ group 'com.github.codingchili.chili-core'
 
 apply plugin: 'java'
 
-sourceCompatibility = 1.8
-
 repositories {
     mavenLocal()
     mavenCentral()
