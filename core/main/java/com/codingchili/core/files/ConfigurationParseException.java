@@ -12,6 +12,6 @@ public class ConfigurationParseException extends CoreRuntimeException {
      * @param cause the original exception.
      */
     public ConfigurationParseException(String filePath, Throwable cause) {
-        super(String.format("Failure parsing configuration file %s", filePath), cause);
+        super(String.format("Failure parsing configuration file '%s'; %s", filePath, cause.getMessage()));
     }
 }
