@@ -11,6 +11,7 @@ public class RemoteStorage {
     private String database = CoreStrings.DEFAULT_DB;
     private Integer port = 27017;
     private int persistInterval = 3000;
+    private boolean secure = false;
 
     /**
      * @param host     the hostname of the remote storage
@@ -112,5 +113,22 @@ public class RemoteStorage {
     public RemoteStorage setPersistInterval(int persistInterval) {
         this.persistInterval = persistInterval;
         return this;
+    }
+
+    /**
+     * @return true if the storage plugin should attempt to use a secure connection.
+     * If the plugin supports security and fails to enable it an error must be thrown
+     * and storage initialization fail.
+     */
+    public boolean isSecure() {
+        return secure;
+    }
+
+    /**
+     * @param secure indicates that this storage must be loaded with a secure
+     *               connection.
+     */
+    public void setSecure(boolean secure) {
+        this.secure = secure;
     }
 }

@@ -44,6 +44,6 @@ public class HazelMapIT extends MapTestCases {
 
     @Before
     public void setUp(TestContext test) {
-        super.setUp(test.async(), HazelMap.class, context);
+        super.setUp(test, HazelMap.class, context);
     }
 }
