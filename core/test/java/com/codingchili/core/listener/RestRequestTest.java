@@ -356,6 +356,11 @@ public class RestRequestTest {
         }
 
         @Override
+        public void fail(int i, Throwable throwable) {
+
+        }
+
+        @Override
         public RoutingContext put(String s, Object o) {
             return null;
         }
