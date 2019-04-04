@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static com.codingchili.core.configuration.CoreStrings.testDirectory;
 import static com.codingchili.core.configuration.CoreStrings.testFile;
@@ -41,13 +42,17 @@ public abstract class ConfigurationFactoryTestCases {
 
     @Test
     public void testReadDirectoryObjects(TestContext test) {
-        Collection<JsonObject> json = ConfigurationFactory.readDirectory(testDirectory(DIR + "/Objects"));
+        Collection<JsonObject> json = ConfigurationFactory.readDirectory(testDirectory(DIR + "/Objects"))
+                .collect(Collectors.toList());
+
         test.assertEquals(2, json.size());
     }
 
     @Test
     public void testReadDirectoryTree(TestContext test) {
-        Collection<JsonObject> json = ConfigurationFactory.readDirectoryTree(testDirectory(DIR + "/Objects"));
+        Collection<JsonObject> json = ConfigurationFactory.readDirectoryTree(testDirectory(DIR + "/Objects"))
+                .collect(Collectors.toList());
+
         test.assertEquals(3, json.size());
     }
 

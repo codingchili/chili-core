@@ -8,7 +8,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreRuntimeException;
@@ -107,24 +108,24 @@ public class ConfigurationFactory {
      * @param directory the directory to enumerate
      * @return a list of absolute file paths.
      */
-    public static Collection<String> enumerate(String directory, boolean subdirs) {
+    public static Stream<String> enumerate(String directory, boolean subdirs) {
         File[] files = new File(directory).listFiles(file -> !file.isDirectory() || subdirs);
 
         if (files == null) {
-            return Collections.emptyList();
+            return Stream.empty();
         } else {
             return Arrays.stream(files)
+                    .parallel()
                     .filter(file -> !file.getName().startsWith(HIDDEN_FILE_PREFIX))
                     .map(file -> {
                         if (file.isDirectory()) {
-                            return enumerate(file.getPath(), true);
+                            return enumerate(file.getPath(), subdirs);
                         } else {
-                            return Collections.singleton(file.getPath());
+                            return Stream.of(file.getPath());
                         }
                     })
-                    .flatMap(Collection::stream)
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
+                    .flatMap(Function.identity())
+                    .filter(Objects::nonNull);
         }
     }
 
@@ -134,11 +135,9 @@ public class ConfigurationFactory {
      * @param path the path to a directory tree to read.
      * @return a list of json objects where each object corresponds to a file.
      */
-    public static Collection<JsonObject> readDirectoryTree(String path) {
+    public static Stream<JsonObject> readDirectoryTree(String path) {
         return enumerate(path, true)
-                .parallelStream()
-                .map(ConfigurationFactory::readObject)
-                .collect(Collectors.toList());
+                .map(ConfigurationFactory::readObject);
     }
 
     /**
@@ -148,11 +147,9 @@ public class ConfigurationFactory {
      * @return a list of json objects where each object corresponds to a file.
      * returns nothing when more than zero files fails to load.
      */
-    public static Collection<JsonObject> readDirectory(String path) {
+    public static Stream<JsonObject> readDirectory(String path) {
         return enumerate(path, false)
-                .parallelStream()
-                .map(ConfigurationFactory::readObject)
-                .collect(Collectors.toList());
+                .map(ConfigurationFactory::readObject);
     }
 
     /**
