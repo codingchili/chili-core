@@ -1,14 +1,17 @@
 package com.codingchili.core.storage;
 
-import io.vertx.core.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 import org.apache.http.HttpHost;
 import org.elasticsearch.ElasticsearchStatusException;
-import org.elasticsearch.action.*;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
-import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.action.ActionListener;
+import org.elasticsearch.action.DocWriteRequest;
+import org.elasticsearch.action.DocWriteResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
-import org.elasticsearch.action.admin.indices.get.GetIndexRequest;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetRequest;
@@ -17,31 +20,42 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
-import org.elasticsearch.client.*;
+import org.elasticsearch.client.IndicesClient;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.client.indices.CreateIndexResponse;
+import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.bytes.BytesReference;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.IndexNotFoundException;
-import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RegexpFlag;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
 import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Validator;
-import com.codingchili.core.storage.exception.*;
+import com.codingchili.core.storage.exception.NothingToRemoveException;
+import com.codingchili.core.storage.exception.NothingToUpdateException;
+import com.codingchili.core.storage.exception.StorageFailureException;
+import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
+import com.codingchili.core.storage.exception.ValueMissingException;
+import static com.codingchili.core.context.FutureHelper.error;
+import static com.codingchili.core.context.FutureHelper.result;
 
-import static com.codingchili.core.context.FutureHelper.*;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
 
 /**
  * Map implementation that uses ElasticSearch.
@@ -54,22 +68,16 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     private StorageContext<Value> context;
     private RestHighLevelClient client;
     private String index;
-    private String type;
-    private Logger logger;
 
     public ElasticMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
         this.context = context;
-        this.logger = context.logger(getClass());
-        this.index = context.database().toLowerCase() + "abcnnna";
-        this.type = context.collection().toLowerCase();
+        this.index = constructIndexName(context);
 
         try {
             client = new RestHighLevelClient(
                     RestClient.builder(
-                            new HttpHost(context.host(), context.port(), "http")));
+                            new HttpHost(context.host(), context.port(), scheme(context))));
 
-
-            // multiple requests just because we cannot do an addIfNotExists anymore.
             createIndexIfNotExists().setHandler(done -> {
                 if (done.succeeded()) {
                     future.complete(ElasticMap.this);
@@ -82,16 +90,29 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
         }
     }
 
+    private String scheme(StorageContext<Value> context) {
+        return context.storage().isSecure() ? "https" : "http";
+    }
+
+    private String constructIndexName(StorageContext<Value> context) {
+        if (context.collection() != null) {
+            return String.format("%s.%s",
+                context.database().toLowerCase(),
+                context.collection().toLowerCase());
+        } else {
+            return context.database();
+        }
+    }
+
     private Future<Void> createIndexIfNotExists() {
         Future<Void> future = Future.future();
         IndicesClient indices = client.indices();
 
-        indices.existsAsync(new GetIndexRequest().indices(index), RequestOptions.DEFAULT, new ActionListener<Boolean>() {
+        indices.existsAsync(new GetIndexRequest(index), RequestOptions.DEFAULT, new ActionListener<Boolean>() {
             @Override
             public void onResponse(Boolean exists) {
                 if (!exists) {
-                    CreateIndexRequest request = new CreateIndexRequest(index,
-                            Settings.builder().build());
+                    CreateIndexRequest request = new CreateIndexRequest(index);
 
                     indices.createAsync(request, RequestOptions.DEFAULT, new ActionListener<CreateIndexResponse>() {
                         @Override
@@ -121,7 +142,6 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     public void get(String key, Handler<AsyncResult<Value>> handler) {
         GetRequest request = new GetRequest()
                 .index(index)
-                .type(type)
                 .id(key);
 
         client.getAsync(request, RequestOptions.DEFAULT, new ActionListener<GetResponse>() {
@@ -149,7 +169,6 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     public void put(Value value, Handler<AsyncResult<Void>> handler) {
         IndexRequest request = new IndexRequest()
                 .index(index)
-                .type(type)
                 .source(Serializer.buffer(value).getBytes(), XContentType.JSON)
                 .id(value.getId());
 
@@ -170,7 +189,6 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
         IndexRequest request = new IndexRequest()
                 .index(index)
-                .type(type)
                 .source(Serializer.buffer(value).getBytes(), XContentType.JSON)
                 .id(value.getId());
 
@@ -197,15 +215,10 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
         });
     }
 
-    private Throwable nested(Throwable exception) {
-        return exception.getCause().getCause();
-    }
-
     @Override
     public void remove(String key, Handler<AsyncResult<Void>> handler) {
         DeleteRequest request = new DeleteRequest()
                 .index(index)
-                .type(type)
                 .id(key);
 
         client.deleteAsync(request, RequestOptions.DEFAULT, new ActionListener<DeleteResponse>() {
@@ -229,7 +242,6 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     public void update(Value value, Handler<AsyncResult<Void>> handler) {
         UpdateRequest request = new UpdateRequest()
                 .index(index)
-                .type(type)
                 .doc(Serializer.buffer(value).getBytes(), XContentType.JSON)
                 .id(value.getId());
 
@@ -263,7 +275,6 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     public void values(Handler<AsyncResult<Collection<Value>>> handler) {
         SearchRequest request = new SearchRequest()
                 .indices(index)
-                .types(type)
                 .source(new SearchSourceBuilder()
                         .query(QueryBuilders.matchAllQuery())
                         .size(MAX_RESULTS)
@@ -292,12 +303,11 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     @Override
     public void clear(Handler<AsyncResult<Void>> handler) {
 
-        DeleteIndexRequest request = new DeleteIndexRequest()
-                .indices(index);
+        DeleteIndexRequest request = new DeleteIndexRequest(index);
 
-        client.indices().deleteAsync(request, RequestOptions.DEFAULT, new ActionListener<DeleteIndexResponse>() {
+        client.indices().deleteAsync(request, RequestOptions.DEFAULT, new ActionListener<AcknowledgedResponse>() {
             @Override
-            public void onResponse(DeleteIndexResponse response) {
+            public void onResponse(AcknowledgedResponse response) {
                 if (response.isAcknowledged()) {
                     handler.handle(result());
                 } else {
@@ -311,38 +321,11 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                 //handler.handle(error(e));
             }
         });
-
-        /*SearchSourceBuilder builder = new SearchSourceBuilder()
-                .query(QueryBuilders.matchAllQuery())
-                .size(Integer.MAX_VALUE);
-
-        SearchRequest search = new SearchRequest()
-                .indices(index)
-                .types(type)
-                .source(builder);
-
-        DeleteByQueryRequest request = new DeleteByQueryRequest(search).;
-
-        DeleteRequest deleter = new DeleteRequest()
-                .
-
-        client.deleteAsync(request, RequestOptions.DEFAULT, new ActionListener<DeleteResponse>() {
-            @Override
-            public void onResponse(DeleteResponse deleteResponse) {
-
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-
-            }
-        });*/
     }
 
     @Override
     public void size(Handler<AsyncResult<Integer>> handler) {
         SearchRequest request = new SearchRequest()
-                .types(type)
                 .indices(index);
 
         SearchSourceBuilder source = new SearchSourceBuilder()
@@ -356,7 +339,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
             @Override
             public void onResponse(SearchResponse response) {
                 if (response.status().equals(RestStatus.OK)) {
-                    handler.handle(result((int) response.getHits().getTotalHits()));
+                    handler.handle(result((int) response.getHits().getTotalHits().value));
                 } else {
                     handler.handle(result(0));
                 }
@@ -448,7 +431,6 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                 SearchSourceBuilder source = getRequestWithOptions().query(query);
                 SearchRequest request = new SearchRequest()
                         .indices(index)
-                        .types(type)
                         .source(source);
 
                 client.searchAsync(request, RequestOptions.DEFAULT, new ActionListener<SearchResponse>() {

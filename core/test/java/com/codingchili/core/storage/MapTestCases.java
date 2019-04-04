@@ -55,7 +55,7 @@ public class MapTestCases {
     protected AsyncStorage<StorageObject> store;
 
     protected void setUp(TestContext test, Class<? extends AsyncStorage> plugin) {
-        setUp(test.async(), plugin, new SystemContext());
+        setUp(test, plugin, new SystemContext());
     }
 
     @After
@@ -63,9 +63,10 @@ public class MapTestCases {
         context.close(test.asyncAssertSuccess());
     }
 
-    protected void setUp(Async async, Class<? extends AsyncStorage> plugin, CoreContext context) {
+    protected void setUp(TestContext test, Class<? extends AsyncStorage> plugin, CoreContext context) {
         this.context = new StorageContext<>(context);
         this.plugin = plugin;
+        Async async = test.async();
 
         new StorageLoader<StorageObject>(context)
                 .withDB(plugin.getSimpleName(), COLLECTION)
@@ -76,7 +77,7 @@ public class MapTestCases {
                         store = result.result();
                         prepareStore(async);
                     } else {
-                        throw new RuntimeException(result.cause());
+                        test.fail(result.cause());
                     }
                 });
     }

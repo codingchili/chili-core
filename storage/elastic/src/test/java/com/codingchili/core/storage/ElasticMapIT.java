@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
  * Tests for the storage providers in core. Reuse these tests when new
  * storage subsystems are implemented using the StorageLoader.
  */
-@Ignore("Requires running elasticsearch 6.4.1+, travis runs an older version.")
+@Ignore("Requires running elasticsearch 7.0.0+, travis runs an older version.")
 @RunWith(VertxUnitRunner.class)
 public class ElasticMapIT extends MapTestCases {
     private static final int ELASTIC_REFRESH = 1200;
@@ -57,7 +57,7 @@ public class ElasticMapIT extends MapTestCases {
     @Ignore("Test case is dependent on the configured analyzer.")
     @Override
     public void testQueryWithUppercases(TestContext test) {
-        super.testQueryWithUppercases(test);
+        //super.testQueryWithUppercases(test);
     }
 
     @Ignore("Searching with case sensitivity is not supported for ElasticSearch.")
