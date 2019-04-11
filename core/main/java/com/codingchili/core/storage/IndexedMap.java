@@ -3,6 +3,7 @@ package com.codingchili.core.storage;
 import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.attribute.*;
 import com.googlecode.cqengine.query.option.QueryOptions;
+import com.googlecode.cqengine.resultset.ResultSet;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
@@ -124,11 +125,12 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
     @Override
     public void get(String key, Handler<AsyncResult<Value>> handler) {
         context.blocking(blocking -> {
-            Iterator<Value> result = db.retrieve(equal(FIELD_ID, key)).iterator();
-            if (result.hasNext()) {
-                blocking.complete(mapper.apply(result.next()));
-            } else {
-                blocking.fail(new ValueMissingException(key));
+            try (ResultSet<Value> result = db.retrieve(equal(FIELD_ID, key))) {
+                if (result.isNotEmpty()) {
+                    blocking.complete(mapper.apply(result.iterator().next()));
+                } else {
+                    blocking.fail(new ValueMissingException(key));
+                }
             }
         }, handler);
     }
@@ -148,13 +150,13 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
     @Override
     public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
         context.blocking(blocking -> {
-            Iterator<Value> result = db.retrieve(equal(FIELD_ID, value.getId())).iterator();
-
-            if (result.hasNext()) {
-                blocking.fail(new ValueAlreadyPresentException(value.getId()));
-            } else {
-                db.add(mapper.apply(value));
-                blocking.complete();
+            try (ResultSet<Value> result = db.retrieve(equal(FIELD_ID, value.getId()))) {
+                if (result.isNotEmpty()) {
+                    blocking.fail(new ValueAlreadyPresentException(value.getId()));
+                } else {
+                    db.add(mapper.apply(value));
+                    blocking.complete();
+                }
             }
         }, handler);
     }
@@ -162,14 +164,13 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
     @Override
     public void remove(String key, Handler<AsyncResult<Void>> handler) {
         context.blocking(blocking -> {
-            Iterator<Value> result = db.retrieve(equal(FIELD_ID, key)).iterator();
-            if (!result.hasNext()) {
-                blocking.fail(new NothingToRemoveException(key));
-            } else {
-                do {
-                    db.remove(result.next());
-                } while (result.hasNext());
-                blocking.complete();
+            try (ResultSet<Value> result = db.retrieve(equal(FIELD_ID, key))) {
+                if (result.isNotEmpty()) {
+                    result.stream().forEach(db::remove);
+                    blocking.complete();
+                } else {
+                    blocking.fail(new NothingToRemoveException(key));
+                }
             }
         }, handler);
     }
@@ -177,12 +178,13 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
     @Override
     public void update(Value value, Handler<AsyncResult<Void>> handler) {
         context.blocking(blocking -> {
-            Iterator<Value> result = db.retrieve(equal(FIELD_ID, value.getId())).iterator();
-            if (result.hasNext()) {
-                db.update(Collections.singleton(result.next()), Collections.singleton(mapper.apply(value)));
-                blocking.complete();
-            } else {
-                blocking.fail(new NothingToUpdateException(value.getId()));
+            try (ResultSet<Value> result = db.retrieve(equal(FIELD_ID, value.getId()))) {
+                if (result.isNotEmpty()) {
+                    db.update(Collections.singleton(result.iterator().next()), Collections.singleton(mapper.apply(value)));
+                    blocking.complete();
+                } else {
+                    blocking.fail(new NothingToUpdateException(value.getId()));
+                }
             }
         }, handler);
     }
