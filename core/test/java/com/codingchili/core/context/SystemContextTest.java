@@ -1,17 +1,19 @@
 package com.codingchili.core.context;
 
-import com.codingchili.core.configuration.system.SystemSettings;
-import com.codingchili.core.testing.ContextMock;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import com.codingchili.core.configuration.system.SystemSettings;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.testing.ContextMock;
 
 /**
  * Tests the timers and metrics in the system context.
@@ -21,6 +23,9 @@ public class SystemContextTest {
     private SystemContext context;
     private OnMetricListener listener;
     private SystemSettings settings;
+
+    @Rule
+    public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
 
     @Before
     public void setUp() {
@@ -79,6 +84,17 @@ public class SystemContextTest {
         context.cancel(id);
 
         delayMS(async, settings.getMetricRate() * 2);
+    }
+
+    @Test
+    public void exceptionsDoesNotExhaustBlockingPool(TestContext test) {
+        int poolSize = Configurations.system().getOptions().getInternalBlockingPoolSize();
+        Async async = test.async(poolSize * 2);
+        for (int i = 0; i < poolSize * 2; i++) {
+            context.blocking((blocking) -> {
+                throw new RuntimeException();
+            }, complete -> async.countDown());
+        }
     }
 
     private void delayMS(Async async, int ms) {
