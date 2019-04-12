@@ -241,8 +241,7 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
 
             @Override
             public QueryBuilder<Value> in(Comparable... comparables) {
-                List<Comparable> list = new ArrayList<>();
-                list.addAll(Arrays.asList(comparables));
+                List<Comparable> list = new ArrayList<>(Arrays.asList(comparables));
 
                 builder.add(new JsonObject()
                         .put(attribute(), new JsonObject()

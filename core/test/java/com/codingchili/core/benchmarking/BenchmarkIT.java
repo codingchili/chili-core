@@ -16,7 +16,6 @@ import java.util.function.BiConsumer;
 import com.codingchili.core.benchmarking.reporting.BenchmarkHTMLReport;
 import com.codingchili.core.context.*;
 
-import static com.codingchili.core.configuration.CoreStrings.PARAM_HTML;
 import static com.codingchili.core.configuration.CoreStrings.PARAM_ITERATIONS;
 
 /**
@@ -29,7 +28,7 @@ public class BenchmarkIT {
     private static CoreContext context;
 
     @Rule
-    public Timeout timeout = new Timeout(3600, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(16, TimeUnit.SECONDS);
 
     @BeforeClass
     public static void setUp(TestContext test) {
@@ -78,7 +77,7 @@ public class BenchmarkIT {
             test.assertTrue(done.succeeded());
             async.complete();
         });
-        executor.addProperty(PARAM_ITERATIONS, "2000");
+        executor.addProperty(PARAM_ITERATIONS, STRING_ITERATIONS);
         new CoreBenchmarkSuite().execute(future, executor);
     }
 
