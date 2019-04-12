@@ -6,8 +6,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.codingchili.core.benchmarking.BenchmarkGroup;
-import com.codingchili.core.benchmarking.BenchmarkReport;
+import com.codingchili.core.benchmarking.*;
 import com.codingchili.core.logging.ConsoleLogger;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
@@ -19,8 +18,8 @@ public class BenchmarkConsoleReport implements BenchmarkReport {
     private static final int PARAM_COUNT = 5;
     private static final char TOKEN = '%';
     private List<BenchmarkGroup> groups;
-    private ConsoleLogger logger = new ConsoleLogger(BenchmarkConsoleReport.class);
-    private String template = "%-16s%-18s%-23s%-12s%-14s";
+    private ConsoleLogger logger = new ConsoleLogger(BenchmarkReport.class);
+    private String template = "%-20s%-24s%-24s%-12s%s";
 
     public BenchmarkConsoleReport(List<BenchmarkGroup> groups) {
         this.groups = groups;
@@ -68,10 +67,18 @@ public class BenchmarkConsoleReport implements BenchmarkReport {
         List<String> list = new ArrayList<>();
         groups.forEach(group -> group.getImplementations().forEach(implementation -> {
             implementation.getBenchmarks().forEach(benchmark -> list.add(String.format(template,
-                    group.getName(), implementation.getName(),
-                    benchmark.getName(), benchmark.getRateFormatted(),
+                    group.getName(), truncate(implementation.getName(), 20),
+                    truncate(benchmark.getName(), 22), benchmark.getRateFormatted(),
                     benchmark.getTimeFormatted())));
         }));
         return list;
+    }
+
+    private String truncate(String input, int length) {
+        if (input.length() > length) {
+            return input.substring(0, length - 1) + ".";
+        } else {
+            return input;
+        }
     }
 }

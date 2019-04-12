@@ -199,7 +199,7 @@ public abstract class CoreStrings {
     public static final String CONFIGURED_BLOCKS = "Configured deployment blocks";
     public static final String ERROR_PATCH_RELOADED = "The patch version changed during patch session.";
     public static final String[] BENCHMARK_CONSOLE_REPORT_COLUMNS =
-            {"\n[GROUP]", " [IMPLEMENTATION]", " [BENCHMARK]", " [OP/s]", " [TIME]"};
+            {"[GROUP]", "[IMPLEMENTATION]", "[BENCHMARK]", "[OP/s]", "[TIME]"};
     private static final String DIR_TEST = "test/resources/";
 
     // network constants
