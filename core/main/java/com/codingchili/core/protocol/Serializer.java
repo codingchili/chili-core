@@ -235,6 +235,9 @@ public class Serializer {
     }
 
 
+    // stores fields that has been set as accessible for the given class.
+    private static Map<Class<?>, Map<String, Field>> reflectCache = new HashMap<>();
+
     /**
      * Gets a value by the given path for an object.
      *
@@ -245,49 +248,60 @@ public class Serializer {
      */
     @SuppressWarnings("unchecked")
     public static <T> Collection<T> getValueByPath(Object object, String path) {
-        String[] fields = path.replace(STORAGE_ARRAY, "").split("\\.");
-
         if (object instanceof JsonObject) {
             return getValueByPath((JsonObject) object, path);
-        }
+        } else {
+            String[] fields = path.replace(STORAGE_ARRAY, "").split("\\.");
 
-        for (String field : fields) {
-            Objects.requireNonNull(object, CoreStrings.getValueByPathContainsNull(field, fields));
-            if (object instanceof Storable && field.equals(Storable.idField)) {
-                return Collections.singleton((T) ((Storable) object).getId());
-            } else if (object instanceof Map) {
-                object = ((Map) object).get(field);
-            } else if (object instanceof JsonObject) {
-                object = ((JsonObject) object).getValue(field);
-            } else {
-                try {
-                    boolean foundField = false;
-                    Class<?> origin = object.getClass();
+            for (String fieldName : fields) {
+                if (object == null) {
+                    throw new CoreRuntimeException(CoreStrings.getValueByPathContainsNull(fieldName, fields));
+                }
 
-                    for (Class<?> iterator = origin; iterator != null; iterator = iterator.getSuperclass()) {
-                        for (Field member : iterator.getDeclaredFields()) {
-                            if (member.getName().equals(field)) {
-                                member.setAccessible(true);
-                                object = member.get(object);
-                                foundField = true;
+                if (object instanceof Storable && fieldName.equals(Storable.idField)) {
+                    return Collections.singleton((T) ((Storable) object).getId());
+                } else if (object instanceof Map) {
+                    object = ((Map) object).get(fieldName);
+                } else if (object instanceof JsonObject) {
+                    object = ((JsonObject) object).getValue(fieldName);
+                } else {
+                    try {
+                        Class<?> origin = object.getClass();
+                        boolean found = false;
+
+                        for (Class<?> iterator = origin; iterator != Object.class; iterator = iterator.getSuperclass()) {
+                            Map<String, Field> fieldSet = reflectCache.computeIfAbsent(iterator, (k) -> new TreeMap<>());
+                            Field field = fieldSet.get(fieldName);
+
+                            if (field == null) {
+                                for (Field member : iterator.getDeclaredFields()) {
+                                    if (member.getName().equals(fieldName)) {
+                                        member.setAccessible(true);
+                                        fieldSet.put(fieldName, field);
+                                        field = member;
+                                        found = true;
+                                    }
+                                }
+                            }
+                            if (field != null) {
+                                object = field.get(object);
                             }
                         }
-                    }
+                        if (!found) {
+                            throw new CoreRuntimeException(String.format("Not able to find field '%s' from class '%s'.",
+                                    fieldName, origin.getName()));
 
-                    if (!foundField) {
-                        throw new CoreRuntimeException(String.format("Not able to find field '%s' in class '%s'.",
-                                field, origin.getName()));
+                        }
+                    } catch (IllegalAccessException e) {
+                        throw new CoreRuntimeException(CoreStrings.getReflectionErrorInSerializer(path));
                     }
-                } catch (IllegalAccessException e) {
-                    throw new CoreRuntimeException(CoreStrings.getReflectionErrorInSerializer(path));
                 }
             }
-        }
-
-        if (object instanceof Collection) {
-            return (Collection<T>) object;
-        } else {
-            return Collections.singleton((T) object);
+            if (object instanceof Collection) {
+                return (Collection<T>) object;
+            } else {
+                return Collections.singleton((T) object);
+            }
         }
     }
 
