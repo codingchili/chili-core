@@ -33,7 +33,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
     protected final IndexedCollection<Value> db;
 
     private IndexedMapHolder<Value> holder;
-    private Function<Value, Value> mapper = (value) -> value;
+    private Function<Value, Value> mapper = Function.identity();
 
     @SuppressWarnings("unchecked")
     public IndexedMap(Function<SimpleAttribute<Value, String>, IndexedCollection<Value>> supplier,
@@ -58,6 +58,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
         return db;
     }
 
+    @SuppressWarnings("unchecked")
     public Attribute<Value, String> getAttribute(String fieldName, boolean multiValue) {
         if (holder.attributes.containsKey(fieldName)) {
             return holder.attributes.get(fieldName);
@@ -65,7 +66,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
             Attribute<Value, String> attribute;
 
             if (multiValue) {
-                attribute = new MultiValueAttribute<Value, String>((Class<Value>) Generic.class, String.class, fieldName) {
+                attribute = new MultiValueAttribute<>((Class<Value>) Generic.class, String.class, fieldName) {
                     @Override
                     public Iterable<String> getValues(Value indexing, QueryOptions queryOptions) {
                         return Serializer.getValueByPath(indexing, fieldName).stream()
@@ -137,14 +138,16 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
 
     @Override
     public void put(Value value, Handler<AsyncResult<Void>> handler) {
-        context.blocking(blocking -> get(value.getId(), get -> {
-            if (get.result() != null) {
-                db.update(Collections.singleton(get.result()), Collections.singleton(mapper.apply(value)));
-            } else {
-                db.add(mapper.apply(value));
+        context.blocking(blocking -> {
+            try (ResultSet<Value> result = db.retrieve(equal(FIELD_ID, value.getId()))) {
+                if (result.isEmpty()) {
+                    db.add(mapper.apply(value));
+                } else {
+                    db.update(Collections.singleton(result.iterator().next()), Collections.singleton(mapper.apply(value)));
+                }
+                blocking.complete();
             }
-            blocking.complete();
-        }), handler);
+        }, handler);
     }
 
     @Override
