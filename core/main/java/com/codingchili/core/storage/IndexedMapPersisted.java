@@ -3,6 +3,7 @@ package com.codingchili.core.storage;
 import com.googlecode.cqengine.ConcurrentIndexedCollection;
 import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.attribute.Attribute;
+import com.googlecode.cqengine.index.disk.DiskIndex;
 import com.googlecode.cqengine.persistence.disk.DiskPersistence;
 import io.vertx.core.Future;
 
@@ -45,7 +46,6 @@ public class IndexedMapPersisted<Value extends Storable> extends IndexedMap<Valu
 
     @Override
     protected void addIndexesForAttribute(Attribute<Value, String> attribute) {
-        // adding another disk index breaks everything - queries on attributes
-        // in two different index does not work. The primary key has a separate index.
+        db.addIndex(DiskIndex.onAttribute(attribute));
     }
 }
