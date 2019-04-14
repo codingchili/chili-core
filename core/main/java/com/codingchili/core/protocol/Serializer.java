@@ -50,7 +50,7 @@ public class Serializer {
         yaml.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
-    private static Pool<Kryo> pool = new Pool<Kryo>(true, true, 8) {
+    private static Pool<Kryo> pool = new Pool<Kryo>(true, true, 128) {
         protected Kryo create() {
             Kryo kryo = new Kryo();
             // this instance should not be used for de-serializing arbitrary classes.
@@ -292,7 +292,7 @@ public class Serializer {
                                     fieldName, origin.getName()));
 
                         }
-                    } catch (IllegalAccessException e) {
+                    } catch (Throwable e) {
                         throw new CoreRuntimeException(CoreStrings.getReflectionErrorInSerializer(path));
                     }
                 }
