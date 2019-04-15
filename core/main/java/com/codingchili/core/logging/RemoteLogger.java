@@ -32,4 +32,9 @@ public class RemoteLogger extends DefaultLogger {
         }
         return this;
     }
+
+    @Override
+    public void close() throws SecurityException {
+        console.close();
+    }
 }

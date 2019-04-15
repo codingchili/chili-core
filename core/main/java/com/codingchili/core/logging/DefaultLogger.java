@@ -227,8 +227,4 @@ public abstract class DefaultLogger extends Handler implements Logger {
     @Override
     public void flush() {
     }
-
-    @Override
-    public void close() throws SecurityException {
-    }
 }

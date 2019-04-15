@@ -8,6 +8,7 @@ import io.vertx.ext.dropwizard.MetricsService;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import com.codingchili.core.configuration.CoreStrings;
@@ -15,10 +16,9 @@ import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.*;
 import com.codingchili.core.listener.transport.ClusterListener;
-import com.codingchili.core.logging.Logger;
-import com.codingchili.core.logging.RemoteLogger;
+import com.codingchili.core.logging.*;
 
-import static com.codingchili.core.configuration.CoreStrings.getUnsupportedDeployment;
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 
 /**
@@ -32,6 +32,13 @@ public class SystemContext implements CoreContext {
     protected Vertx vertx;
 
     /**
+     * Creates a new vertx instance to be used for this context.
+     */
+    public SystemContext() {
+        this(Vertx.vertx(Configurations.system().getOptions().setClustered(false)));
+    }
+
+    /**
      * Creates a new system context that shares vertx instance with the given context.
      *
      * @param context context to clone vertx instance from.
@@ -40,17 +47,11 @@ public class SystemContext implements CoreContext {
         this(context.vertx());
     }
 
-    /**
-     * Creates a new vertx instance to be used for this context.
-     */
-    public SystemContext() {
-        this(Vertx.vertx(Configurations.system().getOptions().setClustered(false)));
-    }
-
 
     private SystemContext(Vertx vertx) {
         this.vertx = vertx;
         this.logger = new RemoteLogger(this, SystemContext.class);
+        this.shutdownHandler();
         initialize();
     }
 
@@ -263,6 +264,7 @@ public class SystemContext implements CoreContext {
     @Override
     public void close() {
         close(closed -> {
+
         });
     }
 
@@ -273,6 +275,30 @@ public class SystemContext implements CoreContext {
             ShutdownListener.publish();
             handler.handle(Future.succeededFuture());
         });
+    }
+
+    private void shutdownHandler() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            AtomicInteger timeout = new AtomicInteger(system().getShutdownHookTimeout());
+            logger.log(LAUNCHER_SHUTDOWN_STARTED, Level.WARNING);
+            try {
+                ShutdownListener.publish().setHandler(listeners -> {
+                    if (listeners.failed()) {
+                        logger.onError(listeners.cause());
+                    }
+                    vertx.close((done) -> timeout.set(0));
+                });
+
+                while (timeout.decrementAndGet() > 0) {
+                    Thread.sleep(1L);
+                }
+
+                logger.close(); // flush pending tasks.
+                logger.log(LAUNCHER_SHUTDOWN_COMPLETED, Level.WARNING);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }));
     }
 
     @Override

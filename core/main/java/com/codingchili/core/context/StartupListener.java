@@ -1,5 +1,7 @@
 package com.codingchili.core.context;
 
+import io.vertx.core.Future;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;
@@ -15,6 +17,7 @@ public class StartupListener {
         ShutdownListener.subscribe(() -> {
             // unset the core so that listeners are not called with closed contexts.
             core = null;
+            return Future.succeededFuture();
         });
     }
 

@@ -119,7 +119,6 @@ public class Launcher implements CoreService {
             if (deployed.failed()) {
                 throw new RuntimeException(deployed.cause());
             } else {
-                addShutdownHook();
                 deployServices(nodes);
             }
         });
@@ -165,18 +164,5 @@ public class Launcher implements CoreService {
             exit();
             return false;
         }
-    }
-
-    private void addShutdownHook() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            logger.log(LAUNCHER_SHUTDOWN_STARTED, Level.ERROR);
-            try {
-                ShutdownListener.publish();
-                Thread.sleep(system().getShutdownHookTimeout());
-                logger.log(LAUNCHER_SHUTDOWN_COMPLETED, Level.ERROR);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }));
     }
 }
