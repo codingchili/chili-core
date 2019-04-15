@@ -19,7 +19,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  * HTTP/REST transport listener.
  */
 public class RestListener implements CoreListener {
-    private Supplier<ListenerSettings> settings = ListenerSettings::getDefaultSettings;
+    private ListenerSettings settings = ListenerSettings.getDefaultSettings();
     private String path;
     private String regex;
     private CoreContext core;
@@ -30,8 +30,8 @@ public class RestListener implements CoreListener {
     @Override
     public void init(CoreContext core) {
         router = Router.router(core.vertx());
-        router.route().handler(BodyHandler.create().setBodyLimit(settings.get().getMaxRequestBytes()));
-        RestHelper.addHeaders(router, settings.get().isSecure());
+        router.route().handler(BodyHandler.create().setBodyLimit(settings.getMaxRequestBytes()));
+        RestHelper.addHeaders(router, settings.isSecure());
 
         // enable routing for static resources.
         if (regex != null && path != null) {
@@ -59,7 +59,7 @@ public class RestListener implements CoreListener {
     }
 
     @Override
-    public CoreListener settings(Supplier<ListenerSettings> settings) {
+    public CoreListener settings(ListenerSettings settings) {
         this.settings = settings;
         return this;
     }
@@ -72,11 +72,11 @@ public class RestListener implements CoreListener {
 
     @Override
     public void start(Future<Void> start) {
-        core.vertx().createHttpServer(settings.get().getHttpOptions())
+        core.vertx().createHttpServer(settings.getHttpOptions())
                 .requestHandler(router)
-                .listen(settings.get().getPort(), getBindAddress(), listen -> {
+                .listen(settings.getPort(), getBindAddress(), listen -> {
                     if (listen.succeeded()) {
-                        settings.get().addListenPort(listen.result().actualPort());
+                        settings.addListenPort(listen.result().actualPort());
                         handler.start(start);
                     } else {
                         start.fail(listen.cause());
@@ -90,12 +90,12 @@ public class RestListener implements CoreListener {
     }
 
     private void packet(RoutingContext context) {
-        handler.handle(new RestRequest(context, settings.get()));
+        handler.handle(new RestRequest(context, settings));
     }
 
     @Override
     public String toString() {
         return handler.getClass().getSimpleName() + LOG_AT + handler.address() + " port :" +
-                settings.get().getPort();
+                settings.getPort();
     }
 }

@@ -23,7 +23,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  * Websocket transport listener.
  */
 public class WebsocketListener implements CoreListener {
-    private Supplier<ListenerSettings> settings = ListenerSettings::getDefaultSettings;
+    private ListenerSettings settings = ListenerSettings.getDefaultSettings();
     private CoreContext core;
     private CoreHandler handler;
 
@@ -34,7 +34,7 @@ public class WebsocketListener implements CoreListener {
     }
 
     @Override
-    public CoreListener settings(Supplier<ListenerSettings> settings) {
+    public CoreListener settings(ListenerSettings settings) {
         this.settings = settings;
         return this;
     }
@@ -53,7 +53,7 @@ public class WebsocketListener implements CoreListener {
     private void listen(Future<Void> start) {
         Router router = Router.router(core.vertx());
         router.route().handler(BodyHandler.create());
-        RestHelper.addHeaders(router, settings.get().isSecure());
+        RestHelper.addHeaders(router, settings.isSecure());
 
         router.routeWithRegex(".*").handler(request -> {
             // handle all attempts at performing a HTTP request.
@@ -65,7 +65,7 @@ public class WebsocketListener implements CoreListener {
                             .encodePrettily());
         });
 
-        core.vertx().createHttpServer(settings.get().getHttpOptions())
+        core.vertx().createHttpServer(settings.getHttpOptions())
                 .websocketHandler(socket -> {
                     Connection connection = connected(socket);
 
@@ -76,9 +76,9 @@ public class WebsocketListener implements CoreListener {
                     socket.closeHandler(closed -> connection.runCloseHandlers());
 
                 }).requestHandler(router)
-                .listen(settings.get().getPort(), getBindAddress(), listen -> {
+                .listen(settings.getPort(), getBindAddress(), listen -> {
                     if (listen.succeeded()) {
-                        settings.get().addListenPort(listen.result().actualPort());
+                        settings.addListenPort(listen.result().actualPort());
                         handler.start(start);
                     } else {
                         start.fail(listen.cause());
@@ -87,7 +87,7 @@ public class WebsocketListener implements CoreListener {
     }
 
     private Connection connected(ServerWebSocket socket) {
-        boolean isBinary = settings.get().isBinaryWebsockets();
+        boolean isBinary = settings.isBinaryWebsockets();
         return new Connection((msg) -> {
             Buffer buffer = Response.buffer(msg);
             if (isBinary) {
@@ -104,12 +104,12 @@ public class WebsocketListener implements CoreListener {
     }
 
     private void handle(Connection connection, Buffer buffer) {
-        handler.handle(new WebsocketRequest(connection, buffer, settings.get()));
+        handler.handle(new WebsocketRequest(connection, buffer, settings));
     }
 
     @Override
     public String toString() {
         return handler.getClass().getSimpleName() + LOG_AT + handler.address() + " port :" +
-                settings.get().getPort();
+                settings.getPort();
     }
 }

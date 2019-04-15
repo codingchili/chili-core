@@ -153,7 +153,7 @@ public class SystemContext implements CoreContext {
                 return listener(() -> {
                     CoreListener listener = (CoreListener) deployment.get();
                     listener.handler(new BusRouter());
-                    listener.settings(ListenerSettings::new);
+                    listener.settings(new ListenerSettings());
                     return listener;
                 });
             } else if (CoreService.class.isAssignableFrom(theClass)) {
@@ -179,7 +179,7 @@ public class SystemContext implements CoreContext {
         ListenerSettings settings = new ListenerSettings();
         Future<String> future = Future.future();
         deployN(() -> new ClusterListener()
-                .settings(() -> settings)
+                .settings(settings)
                 .handler(handler.get()), future);
         return future;
     }

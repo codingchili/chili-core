@@ -1,7 +1,6 @@
 package com.codingchili.core;
 
 import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.Delay;
 import com.codingchili.core.context.LaunchContext;
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.listener.*;
@@ -22,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import static com.codingchili.core.configuration.CoreStrings.DEPLOY;
 import static com.codingchili.core.files.Configurations.system;
@@ -189,8 +187,8 @@ public class LauncherIT {
         }
 
         @Override
-        public CoreListener settings(Supplier<ListenerSettings> settings) {
-            this.settings = settings.get();
+        public CoreListener settings(ListenerSettings settings) {
+            this.settings = settings;
             return this;
         }
 

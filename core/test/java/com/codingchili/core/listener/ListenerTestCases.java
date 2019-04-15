@@ -70,7 +70,7 @@ public abstract class ListenerTestCases {
                 .setHttpOptions(new HttpServerOptions().setCompressionSupported(false))
                 .addMapping(PATCHING_ROOT, new Endpoint(NODE_PATCHING));
 
-        context.listener(() -> listener.get().settings(() -> settings).handler(new TestHandler())).setHandler(deploy -> {
+        context.listener(() -> listener.get().settings(settings).handler(new TestHandler())).setHandler(deploy -> {
             if (deploy.failed()) {
                 deploy.cause().printStackTrace();
                 test.fail(deploy.cause());

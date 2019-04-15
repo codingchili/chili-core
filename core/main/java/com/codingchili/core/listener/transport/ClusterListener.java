@@ -2,7 +2,6 @@ package com.codingchili.core.listener.transport;
 
 import io.vertx.core.Future;
 
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import com.codingchili.core.context.CoreContext;
@@ -27,7 +26,7 @@ public class ClusterListener implements CoreListener, DeploymentAware {
     }
 
     @Override
-    public CoreListener settings(Supplier<ListenerSettings> settings) {
+    public CoreListener settings(ListenerSettings settings) {
         return this;
     }
 

@@ -16,7 +16,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  * TCP listener implementation.
  */
 public class TcpListener implements CoreListener {
-    private Supplier<ListenerSettings> settings = ListenerSettings::getDefaultSettings;
+    private ListenerSettings settings = ListenerSettings.getDefaultSettings();
     private CoreContext core;
     private CoreHandler handler;
 
@@ -27,7 +27,7 @@ public class TcpListener implements CoreListener {
     }
 
     @Override
-    public CoreListener settings(Supplier<ListenerSettings> settings) {
+    public CoreListener settings(ListenerSettings settings) {
         this.settings = settings;
         return this;
     }
@@ -40,7 +40,7 @@ public class TcpListener implements CoreListener {
 
     @Override
     public void start(Future<Void> start) {
-        core.vertx().createNetServer(settings.get().getHttpOptions())
+        core.vertx().createNetServer(settings.getHttpOptions())
                 .connectHandler(socket -> {
                     Connection connection = connected(socket);
 
@@ -50,9 +50,9 @@ public class TcpListener implements CoreListener {
                     // close the connection.
                     socket.closeHandler((v) -> connection.runCloseHandlers());
 
-                }).listen(settings.get().getPort(), getBindAddress(), listen -> {
+                }).listen(settings.getPort(), getBindAddress(), listen -> {
             if (listen.succeeded()) {
-                settings.get().addListenPort(listen.result().actualPort());
+                settings.addListenPort(listen.result().actualPort());
                 handler.start(start);
             } else {
                 start.fail(listen.cause());
@@ -73,12 +73,12 @@ public class TcpListener implements CoreListener {
     }
 
     private void packet(Connection connection, Buffer data) {
-        handler.handle(new TcpRequest(connection, data, settings.get()));
+        handler.handle(new TcpRequest(connection, data, settings));
     }
 
     @Override
     public String toString() {
         return handler.getClass().getSimpleName() + LOG_AT + handler.address() + " port :" +
-                settings.get().getPort();
+                settings.getPort();
     }
 }

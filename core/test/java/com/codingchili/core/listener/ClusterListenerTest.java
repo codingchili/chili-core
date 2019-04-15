@@ -47,7 +47,7 @@ public class ClusterListenerTest {
         Async async = test.async();
         this.context = new ContextMock();
         this.handler = new TestHandler(context, REPLY_ADDRESS);
-        this.cluster = new ClusterListener().handler(handler).settings(ListenerSettings::new);
+        this.cluster = new ClusterListener().handler(handler).settings(new ListenerSettings());
 
         context.listener(() -> cluster).setHandler(done -> {
             if (done.failed()) {

@@ -1,21 +1,21 @@
 package com.codingchili.core.listener.transport;
 
-import io.vertx.core.Future;
-import io.vertx.core.datagram.DatagramPacket;
-
-import java.util.function.Supplier;
-
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.DeploymentAware;
-import com.codingchili.core.listener.*;
+import com.codingchili.core.listener.CoreHandler;
+import com.codingchili.core.listener.CoreListener;
+import com.codingchili.core.listener.ListenerSettings;
+import static com.codingchili.core.configuration.CoreStrings.LOG_AT;
+import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
 
-import static com.codingchili.core.configuration.CoreStrings.*;
+import io.vertx.core.Future;
+import io.vertx.core.datagram.DatagramPacket;
 
 /**
  * UDP transport listener.
  */
 public class UdpListener implements CoreListener, DeploymentAware {
-    private Supplier<ListenerSettings> settings = ListenerSettings::getDefaultSettings;
+    private ListenerSettings settings = ListenerSettings.getDefaultSettings();
     private CoreHandler handler;
     private CoreContext core;
 
@@ -26,7 +26,7 @@ public class UdpListener implements CoreListener, DeploymentAware {
     }
 
     @Override
-    public CoreListener settings(Supplier<ListenerSettings> settings) {
+    public CoreListener settings(ListenerSettings settings) {
         this.settings = settings;
         return this;
     }
@@ -39,9 +39,9 @@ public class UdpListener implements CoreListener, DeploymentAware {
 
     @Override
     public void start(Future<Void> start) {
-        core.vertx().createDatagramSocket().listen(settings.get().getPort(), getBindAddress(), listen -> {
+        core.vertx().createDatagramSocket().listen(settings.getPort(), getBindAddress(), listen -> {
             if (listen.succeeded()) {
-                settings.get().addListenPort(listen.result().localAddress().port());
+                settings.addListenPort(listen.result().localAddress().port());
                 listen.result().handler(this::handle);
                 handler.start(start);
             } else {
@@ -56,7 +56,7 @@ public class UdpListener implements CoreListener, DeploymentAware {
     }
 
     private void handle(DatagramPacket connection) {
-        handler.handle(new UdpRequest(core, settings.get(), connection));
+        handler.handle(new UdpRequest(core, settings, connection));
     }
 
     @Override
@@ -67,6 +67,6 @@ public class UdpListener implements CoreListener, DeploymentAware {
     @Override
     public String toString() {
         return handler.getClass().getSimpleName() + LOG_AT + handler.address() + " port :" +
-                settings.get().getPort();
+                settings.getPort();
     }
 }
