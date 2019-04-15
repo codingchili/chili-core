@@ -1,6 +1,5 @@
 package com.codingchili.core.logging;
 
-import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 
 import java.time.Instant;
@@ -12,7 +11,6 @@ import java.util.logging.LogRecord;
 
 import com.codingchili.core.configuration.Environment;
 import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.Delay;
 import com.codingchili.core.listener.CoreListener;
 import com.codingchili.core.listener.CoreService;
 
@@ -98,10 +96,9 @@ public abstract class DefaultLogger extends Handler implements Logger {
     }
 
     @Override
-    public void onServiceStopped(Future<Void> future, CoreService service) {
+    public void onServiceStopped(CoreService service) {
         event(LOG_SERVICE_STOP, Level.ERROR)
                 .put(ID_NAME, service.name()).send();
-        Delay.forShutdown(future);
     }
 
     @Override

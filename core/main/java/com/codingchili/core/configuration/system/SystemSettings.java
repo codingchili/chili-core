@@ -20,8 +20,7 @@ public class SystemSettings implements Configurable {
     private int handlers = 1;
     private int listeners = 1;
     private int deployTimeout = 3000;
-    private int shutdownLogTimeout = 3000;
-    private int shutdownHookTimeout = 3000;
+    private int shutdownHookTimeout = 5000;
     private int configurationPoll = 1500;
     private int cachedFilePoll = 1500;
     private boolean consoleLogging = true;
@@ -81,24 +80,6 @@ public class SystemSettings implements Configurable {
      */
     public SystemSettings setDeployTimeout(int deployTimeout) {
         this.deployTimeout = deployTimeout;
-        return this;
-    }
-
-    /**
-     * @return the timeout in MS which the log handler has to report to a remote
-     * or local log repository, before the name shuts down.
-     */
-    public int getShutdownLogTimeout() {
-        return shutdownLogTimeout;
-    }
-
-    /**
-     * @param shutdownLogTimeout sets the time in MS which the log handler has to report
-     *                           to a remote or local log repository before the name is shut down.
-     * @return fluent
-     */
-    public SystemSettings setShutdownLogTimeout(int shutdownLogTimeout) {
-        this.shutdownLogTimeout = shutdownLogTimeout;
         return this;
     }
 
