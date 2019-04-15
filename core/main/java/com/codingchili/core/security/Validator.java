@@ -20,8 +20,8 @@ import io.vertx.core.json.JsonObject;
  */
 public class Validator implements Configurable {
     private static final String VALIDATION_FAILED_FOR_VALIDATOR = "Validation failed for validator '%s'.";
-    private static final String REGEX_PLAINTEXT = "[A-Za-z0-9 \\-:&].*";
-    private static final String REGEX_SPECIAL_CHARS = "[^A-Za-z0-9 \\-:&]";
+    private static final String REGEX_PLAINTEXT = "[A-Za-z0-9 ]*";
+    private static final String REGEX_SPECIAL_CHARS = "[^A-Za-z0-9 ]";
     private Set<ValidatorSettings> settings = new HashSet<>();
 
     public Validator() {
@@ -48,17 +48,27 @@ public class Validator implements Configurable {
     /**
      * Adds a validator.
      *
-     * @param settings the settings for the validation to apply.
-     * @return fluent
+     * @param name the name of the new validation ruleset.
+     * @return a reference to the new validator settings.
      */
-    public Validator add(ValidatorSettings settings) {
+    public ValidatorSettings add(String name) {
+        ValidatorSettings settings = new ValidatorSettings(name);
         this.settings.add(settings);
+        return settings;
+    }
+
+    /**
+     * @param validator validation ruleset to add.
+     * @return fluent.
+     */
+    public Validator add(ValidatorSettings validator) {
+        settings.add(validator);
         return this;
     }
 
     /**
      * tests if a comparable objects string format contains characters that are not
-     * in the accepted plaintext range of A-Z, a-z, 0-9, whitespace, dash, colon or ampersand.
+     * in the accepted plaintext range of A-Z, a-z, 0-9 and whitespace.
      *
      * @param value the value to test.
      * @return true if the value is plaintext.
@@ -71,7 +81,7 @@ public class Validator implements Configurable {
      * Converts a string into a plaintext string, stripping any potential unsafe characters.
      *
      * @param input the string to be sanitized.
-     * @return a plaintext string consisting of only A-Z, a-z, 0-9, whitespace, dash, colon or ampersand.
+     * @return a plaintext string consisting of only A-Z, a-z, 0-9, whitespace.
      */
     public static String toPlainText(String input) {
         return input.replaceAll(REGEX_SPECIAL_CHARS, "");
