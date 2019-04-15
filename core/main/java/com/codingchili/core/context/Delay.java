@@ -37,13 +37,4 @@ public abstract class Delay {
     public static void forMS(Future<Void> future, long ms) {
         Delay.future(future, ms);
     }
-
-    /**
-     * Delays the given future with the shutdown-log timeout defined in system configuration.
-     *
-     * @param future the future to be delayed.
-     */
-    public static void forShutdown(Future<Void> future) {
-        Delay.future(future, context().system().getShutdownLogTimeout());
-    }
 }

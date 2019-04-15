@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 /**
  * Tests for the CQEngine indexed storage.
  */
-//@Ignore("Slow to execute.")
+@Ignore("blocked by concurrency issues in sqlite/cqengine #229")
 @RunWith(VertxUnitRunner.class)
 public class IndexedMapPersistedTest extends MapTestCases {
 

@@ -1,14 +1,14 @@
 package com.codingchili.core.context;
 
-import com.codingchili.core.configuration.system.SystemSettings;
-import com.codingchili.core.context.exception.SystemNotInitializedException;
-import com.codingchili.core.testing.ContextMock;
 import io.vertx.core.Future;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
+
+import com.codingchili.core.context.exception.SystemNotInitializedException;
+import com.codingchili.core.testing.ContextMock;
 
 /**
  * Verifies that the STARTUP_DELAY system is working, is required for some tests.
@@ -19,14 +19,7 @@ public class DelayTest {
 
     @BeforeClass
     public static void setUp() {
-        context = new ContextMock() {
-            @Override
-            public SystemSettings system() {
-                SystemSettings settings = new SystemSettings();
-                settings.setShutdownLogTimeout(1);
-                return settings;
-            }
-        };
+        context = new ContextMock();
     }
 
     @AfterClass
@@ -40,15 +33,6 @@ public class DelayTest {
         future.setHandler(result -> async.complete());
 
         Delay.forMS(future, 1);
-    }
-
-    @Test
-    public void testDelayForShutdown(TestContext test) {
-        Async async = test.async();
-        Future<Void> future = Future.future();
-        future.setHandler(result -> async.complete());
-
-        Delay.forShutdown(future);
     }
 
     @Test

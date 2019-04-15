@@ -2,8 +2,7 @@ package com.codingchili.core;
 
 import io.vertx.core.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Supplier;
 
 import com.codingchili.core.configuration.CoreStrings;
@@ -90,7 +89,7 @@ public class Launcher implements CoreService {
         // no vertx context is initialized yet - but some thread pools
         // might need to be shut down after running the command.
         if (this.core == null) {
-            ShutdownListener.publish();
+            ShutdownListener.publish(null);
         } else {
             this.core.close();
         }
@@ -119,7 +118,6 @@ public class Launcher implements CoreService {
             if (deployed.failed()) {
                 throw new RuntimeException(deployed.cause());
             } else {
-                addShutdownHook();
                 deployServices(nodes);
             }
         });
@@ -165,18 +163,5 @@ public class Launcher implements CoreService {
             exit();
             return false;
         }
-    }
-
-    private void addShutdownHook() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            logger.log(LAUNCHER_SHUTDOWN_STARTED, Level.ERROR);
-            try {
-                ShutdownListener.publish();
-                Thread.sleep(system().getShutdownHookTimeout());
-                logger.log(LAUNCHER_SHUTDOWN_COMPLETED, Level.ERROR);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }));
     }
 }

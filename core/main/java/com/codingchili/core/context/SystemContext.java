@@ -8,6 +8,7 @@ import io.vertx.ext.dropwizard.MetricsService;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import com.codingchili.core.configuration.CoreStrings;
@@ -15,10 +16,9 @@ import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.*;
 import com.codingchili.core.listener.transport.ClusterListener;
-import com.codingchili.core.logging.Logger;
-import com.codingchili.core.logging.RemoteLogger;
+import com.codingchili.core.logging.*;
 
-import static com.codingchili.core.configuration.CoreStrings.getUnsupportedDeployment;
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 
 /**
@@ -27,9 +27,15 @@ import static com.codingchili.core.configuration.CoreStrings.getUnsupportedDeplo
 public class SystemContext implements CoreContext {
     private static AtomicBoolean initialized = new AtomicBoolean(false);
     private Map<String, List<String>> deployments = new HashMap<>();
-    private WorkerExecutor executor;
     private RemoteLogger logger;
     protected Vertx vertx;
+
+    /**
+     * Creates a new vertx instance to be used for this context.
+     */
+    public SystemContext() {
+        this(Vertx.vertx(Configurations.system().getOptions().setClustered(false)));
+    }
 
     /**
      * Creates a new system context that shares vertx instance with the given context.
@@ -40,17 +46,11 @@ public class SystemContext implements CoreContext {
         this(context.vertx());
     }
 
-    /**
-     * Creates a new vertx instance to be used for this context.
-     */
-    public SystemContext() {
-        this(Vertx.vertx(Configurations.system().getOptions().setClustered(false)));
-    }
-
 
     private SystemContext(Vertx vertx) {
         this.vertx = vertx;
         this.logger = new RemoteLogger(this, SystemContext.class);
+        this.shutdownHandler();
         initialize();
     }
 
@@ -70,7 +70,6 @@ public class SystemContext implements CoreContext {
     }
 
     private void initialize() {
-        executor = vertx.createSharedWorkerExecutor("chili-core-blocking-pool", system().getWorkerPoolSize());
         vertx.exceptionHandler(throwable -> logger.onError(throwable));
 
         if (!initialized.get()) {
@@ -252,7 +251,7 @@ public class SystemContext implements CoreContext {
 
     @Override
     public <T> void blocking(Handler<Future<T>> sync, boolean ordered, Handler<AsyncResult<T>> result) {
-        executor.executeBlocking(sync, ordered, result);
+        vertx.executeBlocking(sync, ordered, result);
     }
 
     @Override
@@ -263,6 +262,7 @@ public class SystemContext implements CoreContext {
     @Override
     public void close() {
         close(closed -> {
+
         });
     }
 
@@ -270,9 +270,39 @@ public class SystemContext implements CoreContext {
     public void close(Handler<AsyncResult<Void>> handler) {
         initialized.set(false);
         vertx.close((close) -> {
-            ShutdownListener.publish();
             handler.handle(Future.succeededFuture());
         });
+    }
+
+    private void shutdownHandler() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            AtomicInteger timeout = new AtomicInteger(system().getShutdownHookTimeout());
+            logger.log(LAUNCHER_SHUTDOWN_STARTED, Level.WARNING);
+            try {
+                // emit the shutdown event before closing.
+                ShutdownListener.publish(this).setHandler(listeners -> {
+                    if (listeners.failed()) {
+                        logger.onError(listeners.cause());
+                    }
+
+                    // close the vertx instance.
+                    vertx.close((done) -> {
+                        if (done.failed()) {
+                            logger.onError(done.cause());
+                        }
+                        timeout.set(0);
+                    });
+                });
+
+                while (timeout.decrementAndGet() > 0) {
+                    Thread.sleep(1L);
+                }
+                logger.close(); // flush pending tasks and enter sync mode.
+                logger.log(LAUNCHER_SHUTDOWN_COMPLETED, Level.WARNING);
+            } catch (InterruptedException e) {
+                logger.onError(e);
+            }
+        }));
     }
 
     @Override

@@ -105,7 +105,7 @@ public class AuthenticationGeneratorIT {
     }
 
     @Test
-    @Ignore("unstable on travis, please investigate.")
+    @Ignore("file/test based race conditions.")
     public void testGenerateTokens(TestContext test) {
         Async async = test.async();
         generator.all().setHandler(done -> {

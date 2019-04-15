@@ -11,7 +11,6 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.ShutdownListener;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
@@ -20,6 +19,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  */
 public class ConsoleLogger extends DefaultLogger implements StringLogger {
     public static final String RESET = "\u001B[0m";
+    private static final int FLUSH_TIMEOUT_MS = 16;
     private final AtomicBoolean enabled = new AtomicBoolean(true);
     private static final Set<String> filtered = new HashSet<>(Arrays.asList(
             ID_TOKEN, LOG_EVENT, LOG_APPLICATION, LOG_CONTEXT, LOG_HOST, LOG_VERSION
@@ -35,8 +35,16 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
         }
     });
 
-    static {
-        ShutdownListener.subscribe(executor::shutdown);
+    @Override
+    public void close() throws SecurityException {
+        executor.shutdownNow().forEach(Runnable::run);
+        try {
+            // ensures that pending tasks are completed before any synchronous events
+            // are submitted after the executor has shut down.
+            Thread.sleep(FLUSH_TIMEOUT_MS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public ConsoleLogger() {

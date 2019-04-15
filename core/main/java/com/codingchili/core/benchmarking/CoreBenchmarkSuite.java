@@ -75,7 +75,7 @@ public class CoreBenchmarkSuite {
         add.accept(JsonMap.class);
         add.accept(PrivateMap.class);
         add.accept(SharedMap.class);
-        add.accept(IndexedMapPersisted.class);
+        //add.accept(IndexedMapPersisted.class);
         add.accept(IndexedMapVolatile.class);
         add.accept(HazelMap.class);
         /*add.accept(ElasticMap.class); requires external servers.
