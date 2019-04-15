@@ -59,11 +59,11 @@ class CoreVerticle implements Verticle, CoreDeployment {
         future.setHandler(done -> {
             if (done.succeeded()) {
                 if (deployment instanceof CoreService) {
-                    logger.onServiceStopped(stop, (CoreService) deployment);
+                    logger.onServiceStopped((CoreService) deployment);
                 } else if (deployment instanceof CoreListener) {
                     logger.onListenerStopped((CoreListener) deployment);
-                    stop.complete();
                 }
+                stop.complete();
             } else {
                 stop.fail(done.cause());
             }

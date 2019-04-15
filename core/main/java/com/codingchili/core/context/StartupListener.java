@@ -14,9 +14,9 @@ public class StartupListener {
     private static CoreContext core;
 
     static {
-        ShutdownListener.subscribe(() -> {
+        ShutdownListener.subscribe((core) -> {
             // unset the core so that listeners are not called with closed contexts.
-            core = null;
+            StartupListener.core = null;
             return Future.succeededFuture();
         });
     }

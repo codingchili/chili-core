@@ -272,7 +272,6 @@ public class SystemContext implements CoreContext {
     public void close(Handler<AsyncResult<Void>> handler) {
         initialized.set(false);
         vertx.close((close) -> {
-            ShutdownListener.publish();
             handler.handle(Future.succeededFuture());
         });
     }
@@ -282,21 +281,28 @@ public class SystemContext implements CoreContext {
             AtomicInteger timeout = new AtomicInteger(system().getShutdownHookTimeout());
             logger.log(LAUNCHER_SHUTDOWN_STARTED, Level.WARNING);
             try {
-                ShutdownListener.publish().setHandler(listeners -> {
+                // emit the shutdown event before closing.
+                ShutdownListener.publish(this).setHandler(listeners -> {
                     if (listeners.failed()) {
                         logger.onError(listeners.cause());
                     }
-                    vertx.close((done) -> timeout.set(0));
+                    // close the vertx instance.
+                    vertx.close((done) -> {
+                        if (done.failed()) {
+                            logger.onError(done.cause());
+                        }
+                        timeout.set(0);
+                    });
                 });
 
                 while (timeout.decrementAndGet() > 0) {
                     Thread.sleep(1L);
                 }
 
-                logger.close(); // flush pending tasks.
+                logger.close(); // flush pending tasks and enter sync mode.
                 logger.log(LAUNCHER_SHUTDOWN_COMPLETED, Level.WARNING);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.onError(e);
             }
         }));
     }
