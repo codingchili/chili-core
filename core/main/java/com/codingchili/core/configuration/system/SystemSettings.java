@@ -24,10 +24,12 @@ public class SystemSettings implements Configurable {
     private int configurationPoll = 1500;
     private int cachedFilePoll = 1500;
     private boolean consoleLogging = true;
-    private int workerPoolSize = 24;
     private int clusterTimeout = 3000;
     private long blockedThreadChecker = VertxOptions.DEFAULT_BLOCKED_THREAD_CHECK_INTERVAL;
     private long maxEventLoopExecuteTime = VertxOptions.DEFAULT_MAX_EVENT_LOOP_EXECUTE_TIME / (1000 * 1000);
+    private int workerPoolSize = Math.min(
+            Runtime.getRuntime().availableProcessors() * 8, // up to 8 core.
+            32 + Runtime.getRuntime().availableProcessors() * 4); // over 8 cores.
 
     @Override
     public String getPath() {
@@ -59,7 +61,7 @@ public class SystemSettings implements Configurable {
 
     /**
      * @param handlers get the number of handlers to deploy for each name.
-     *                 This is a recommendataion based on the available processors.
+     *                 This is a recommendation based on the available processors.
      * @return fluent
      */
     public SystemSettings setHandlers(int handlers) {
@@ -162,6 +164,7 @@ public class SystemSettings implements Configurable {
             return new VertxOptions()
                     .setMetricsOptions(new MetricsOptions().setEnabled(isMetrics()))
                     .setClusterHost(Environment.address())
+                    .setWorkerPoolSize(workerPoolSize)
                     .setBlockedThreadCheckInterval(blockedThreadChecker)
                     .setMaxEventLoopExecuteTime(maxEventLoopExecuteTime * 1000 * 1000);
         } else {

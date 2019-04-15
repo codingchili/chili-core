@@ -27,7 +27,6 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 public class SystemContext implements CoreContext {
     private static AtomicBoolean initialized = new AtomicBoolean(false);
     private Map<String, List<String>> deployments = new HashMap<>();
-    private WorkerExecutor executor;
     private RemoteLogger logger;
     protected Vertx vertx;
 
@@ -71,7 +70,6 @@ public class SystemContext implements CoreContext {
     }
 
     private void initialize() {
-        executor = vertx.createSharedWorkerExecutor("chili-core-blocking-pool", system().getWorkerPoolSize());
         vertx.exceptionHandler(throwable -> logger.onError(throwable));
 
         if (!initialized.get()) {
@@ -253,7 +251,7 @@ public class SystemContext implements CoreContext {
 
     @Override
     public <T> void blocking(Handler<Future<T>> sync, boolean ordered, Handler<AsyncResult<T>> result) {
-        executor.executeBlocking(sync, ordered, result);
+        vertx.executeBlocking(sync, ordered, result);
     }
 
     @Override
@@ -286,6 +284,7 @@ public class SystemContext implements CoreContext {
                     if (listeners.failed()) {
                         logger.onError(listeners.cause());
                     }
+
                     // close the vertx instance.
                     vertx.close((done) -> {
                         if (done.failed()) {
@@ -298,7 +297,6 @@ public class SystemContext implements CoreContext {
                 while (timeout.decrementAndGet() > 0) {
                     Thread.sleep(1L);
                 }
-
                 logger.close(); // flush pending tasks and enter sync mode.
                 logger.log(LAUNCHER_SHUTDOWN_COMPLETED, Level.WARNING);
             } catch (InterruptedException e) {
