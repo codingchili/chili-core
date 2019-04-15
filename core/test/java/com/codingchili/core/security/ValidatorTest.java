@@ -8,7 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.configuration.RegexComponent;
 import com.codingchili.core.configuration.system.ValidatorSettings;
 import com.codingchili.core.protocol.exception.RequestValidationException;
 import static com.codingchili.core.configuration.CoreStrings.*;
@@ -61,12 +60,12 @@ public class ValidatorTest {
     public void testPlainText(TestContext test) {
         test.assertTrue(plaintext("abc102"));
         test.assertTrue(plaintext("abc 102"));
-        test.assertTrue(plaintext("abc-102"));
+        test.assertFalse(plaintext("abc-102"));
         test.assertTrue(plaintext(1000));
         test.assertTrue(plaintext(1000L));
         test.assertTrue(plaintext(Byte.valueOf("0")));
 
-        String[] invalid = {"?", "_", "%", "^", ".", "*"};
+        String[] invalid = {"?", "_", "%", "^", ".", "*", "-", "!", ";", ",", "$", "&", "<"};
 
         for (String character : invalid) {
             test.assertFalse(plaintext(character));
@@ -189,29 +188,24 @@ public class ValidatorTest {
         settings.add(new ValidatorSettings("user-name")
             .addKeys(ID_USERNAME, ID_NAME)
             .length(4, 32)
-            .addRegex(new RegexComponent()
-                .setAction(ACCEPT)
-                .setExpression("[A-Z,a-z,0-9]*"))
+            .addRegex(ACCEPT, "[A-Z,a-z,0-9]*")
         );
 
 
         settings.add(new ValidatorSettings("chat-messages")
             .addKey(ID_MESSAGE)
             .length(1, 76)
-            .addRegex(new RegexComponent()
-                .setAction(SUBSTITUTE)
-                .setExpression("(f..(c|k))")
-                .setSubstitution("*^$#!?"))
+            .addRegex(SUBSTITUTE, "(f..(c|k))", "*^$#!?")
         );
 
         settings.add(new ValidatorSettings("reject")
-            .addRegex(new RegexComponent()
-                .setAction(REJECT)
-                .setExpression("[!]")));
+            .addRegex(REJECT, ("[!]"))
+        );
 
         settings.add(new ValidatorSettings("nested-length")
             .addKey(KEY)
-            .length(2, 4));
+            .length(2, 4)
+        );
 
         return settings;
     }

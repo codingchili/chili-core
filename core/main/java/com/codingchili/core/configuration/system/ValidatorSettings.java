@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.codingchili.core.configuration.RegexComponent;
+import com.codingchili.core.security.RegexAction;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -115,7 +116,7 @@ public class ValidatorSettings {
      */
     @JsonIgnore
     public ValidatorSettings addKeys(String... keys) {
-        for (String key: keys) {
+        for (String key : keys) {
             addKey(key);
         }
         return this;
@@ -134,12 +135,27 @@ public class ValidatorSettings {
     }
 
     /**
-     * @param component the regular expression configuration used to match input.
+     * @param action     {@link #addRegex(RegexAction, String, String)}
+     * @param expression the regular expression configuration used to match input.
      * @return fluent.
      */
     @JsonIgnore
-    public ValidatorSettings addRegex(RegexComponent component) {
-        regex.add(component);
+    public ValidatorSettings addRegex(RegexAction action, String expression) {
+        return addRegex(action, expression, "");
+    }
+
+    /**
+     * @param action       the action to take when the expression matches the input.
+     * @param expression   the regular expression configuration used to match input.
+     * @param substitution used when {@link RegexAction#SUBSTITUTE} is set.
+     * @return fluent.
+     */
+    @JsonIgnore
+    public ValidatorSettings addRegex(RegexAction action, String expression, String substitution) {
+        regex.add(new RegexComponent()
+            .setAction(action)
+            .setExpression(expression)
+            .setSubstitution(substitution));
         return this;
     }
 
@@ -151,5 +167,18 @@ public class ValidatorSettings {
     @JsonIgnore
     public boolean isFieldValidated(String field) {
         return keys.isEmpty() || keys.contains(field);
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ValidatorSettings) {
+            return ((ValidatorSettings) obj).name.equals(name);
+        }
+        return false;
     }
 }
