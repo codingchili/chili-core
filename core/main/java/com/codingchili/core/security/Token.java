@@ -1,12 +1,14 @@
 package com.codingchili.core.security;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import com.codingchili.core.files.Configurations;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Used to authenticate requests between services and with clients.
@@ -16,7 +18,7 @@ public class Token implements Serializable {
     private String domain = UUID.randomUUID().toString();
     private String key = "";
     private long expiry = Instant.now().getEpochSecond() +
-            Configurations.security().getTokenttl();
+        Configurations.security().getTokenttl();
 
     /**
      * Creates a new empty unverified token.
@@ -62,6 +64,18 @@ public class Token implements Serializable {
      */
     public Token setExpiry(long expiry) {
         this.expiry = expiry;
+        return this;
+    }
+
+    /**
+     * Sets the expiry date of the token.
+     *
+     * @param value the number of time units the token is valid for from now.
+     * @param unit  the time unit of the given value.
+     * @return fluent.
+     */
+    public Token expires(long value, TimeUnit unit) {
+        this.expiry = System.currentTimeMillis() + (unit.toMillis(value));
         return this;
     }
 

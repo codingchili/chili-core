@@ -1,7 +1,5 @@
 package com.codingchili.core.listener;
 
-import java.util.function.Supplier;
-
 /**
  * Listeners handles incoming messages and forwards them to a handler.
  */
@@ -11,7 +9,7 @@ public interface CoreListener extends CoreDeployment {
      * @param settings listener settings for the listener.
      * @return fluent
      */
-    CoreListener settings(Supplier<ListenerSettings> settings);
+    CoreListener settings(ListenerSettings settings);
 
     /**
      * @param handler the handler to invoke when the listener is triggered

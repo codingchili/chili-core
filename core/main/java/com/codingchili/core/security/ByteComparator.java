@@ -23,7 +23,7 @@ public abstract class ByteComparator {
      * @param second the second array.
      * @return true if both arrays are of equal size and content.
      */
-    static boolean compare(byte[] first, byte[] second) {
+    public static boolean compare(byte[] first, byte[] second) {
         int result = 0;
 
         if (first.length != second.length)

@@ -21,6 +21,7 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
  */
 @RunWith(VertxUnitRunner.class)
 public class TokenFactoryTest {
+    private static final String TEST_KEYSTORE = "test_key.jks";
     private static CoreContext context;
     private static TokenFactory tokenFactory;
     private static TokenFactory tokenFactory2;
@@ -161,7 +162,7 @@ public class TokenFactoryTest {
     public void generateSignedToken(TestContext test) {
         Async async = test.async();
         Token token = getTokenWithProperties();
-        tokenFactory.sign(token, "test_key.jks").setHandler(sign -> {
+        tokenFactory.sign(token, TEST_KEYSTORE).setHandler(sign -> {
            test.assertNotNull(token.getKey());
            test.assertTrue(sign.succeeded());
            async.complete();
@@ -173,7 +174,7 @@ public class TokenFactoryTest {
         Async async = test.async();
         Token token = getTokenWithProperties();
 
-        tokenFactory.sign(token, "test_key.jks").setHandler(sign -> {
+        tokenFactory.sign(token, TEST_KEYSTORE).setHandler(sign -> {
             test.assertTrue(sign.succeeded());
             test.assertNotNull(token.getKey());
 
