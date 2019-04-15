@@ -102,10 +102,15 @@ It's possible to use the following listeners to be notified when the context
 lifecycle state changes.
 
 ```java
-// listener invoked when the context shuts down.
-ShutdownListener.subscribe(() -> {
-    // do something here.
+ShutdownListener.subscribe((core) -> {
+    // core is an optional reference to the core context.
+    // it will be missing if the shutdown hook is invoked
+    // before there is a context, during launch for example.
+    
+    // the listener is optionally async.
+    return Future.succeededFuture();
 });
+```
 
 // listener invoked when a context is started.
 StartupListener.subscribe(core -> {
@@ -199,3 +204,11 @@ core.vertx();
 ```java
 SystemSettings system = core.system();
 ```
+
+### The shutdown hook 
+The shutdown hook will be exeucted when the JVM is shutting down.
+
+All subscribers in the `ShutdownListener` will be invoked before the context will close and undeploy services. 
+
+The stop method in any running `CoreDeployable` will be invoked from the shutdown hook and has a configured timeout. The close operation will be cancelled if the 
+stop method takes more than 5s to complete by default. The shutdown hook timeout can be configured in the system config.

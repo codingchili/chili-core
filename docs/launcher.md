@@ -134,10 +134,3 @@ The types that can be returned from a `Command`
 |SHUTDOWN|The application will be terminated by the Launcher.|
 
 Note that it is possible to use the `CommandExecutor` implementations without the use of a `Launcher`. In this case it is up to the caller to interpret the result of the command execution.
-
-
-### The shutdown hook 
-The shutdown hook will only be used if the launcher is used for deployments.
-
-The stop method in any running `CoreDeployable` will be invoked from the shutdown hook and has a configured timeout. The close operation will be cancelled if the 
-stop method takes more than 3s to complete. The shutdown hook timeout can be configured in the system config.
