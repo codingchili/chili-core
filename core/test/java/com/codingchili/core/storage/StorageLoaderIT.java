@@ -73,19 +73,6 @@ public class StorageLoaderIT {
         loadStoragePlugin(test, SharedMap.class);
     }
 
-    @Ignore("Requires clustering - not interesting in this test case.")
-    @Test
-    public void testLoadHazelAsyncMap(TestContext test) {
-        loadStoragePlugin(test, HazelMap.class);
-    }
-
-    @Ignore("Requires an available MongoDB database.")
-    @Test
-    public void testLoadMongoMap(TestContext test) {
-        loadStoragePlugin(test, MongoDBMap.class);
-
-    }
-
     private void loadStoragePlugin(TestContext test, Class<? extends AsyncStorage> plugin) {
         Future<AsyncStorage<StorableString>> future = Future.future();
         Async async = test.async();

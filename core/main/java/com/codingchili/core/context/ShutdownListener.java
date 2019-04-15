@@ -19,14 +19,14 @@ public class ShutdownListener {
      *
      * @param runnable listener.
      */
-    public static void subscribe(Supplier<Future<Void>> runnable) {
+    public synchronized static void subscribe(Supplier<Future<Void>> runnable) {
         listeners.add(runnable);
     }
 
     /**
      * Emits a shutdown event to all subscribers.
      */
-    public static Future<Void> publish() {
+    public synchronized static Future<Void> publish() {
         Future<Void> future = Future.future();
         CompositeFuture.all(listeners.stream()
                 .map(Supplier::get)
