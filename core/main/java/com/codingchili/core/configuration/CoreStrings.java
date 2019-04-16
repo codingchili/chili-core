@@ -190,8 +190,8 @@ public abstract class CoreStrings {
     public static final String ERROR_NOT_CLUSTERED = "Running in non-clustered mode.";
     public static final String ERROR_NOT_AUTHORIZED = "Failed to authorize request.";
     public static final String ERROR_LAUNCHER_STARTUP = "Failed to start the launcher with clustering.";
-    public static final String LAUNCHER_SHUTDOWN_STARTED = "system shutdown initiated..";
-    public static final String LAUNCHER_SHUTDOWN_COMPLETED = "system has been shut down.";
+    public static final String LAUNCHER_SHUTDOWN_STARTED = "context shutdown initiated..";
+    public static final String LAUNCHER_SHUTDOWN_COMPLETED = "context has been shut down.";
     public static final String ERROR_VALIDATION_FAILURE = "Provided data did not pass validation.";
     public static final String ERROR_CONFIGURATION_MISMATCH = "configuration mismatches with currently loaded.";
     public static final String ERROR_ALREADY_INITIALIZED = "Error already initialized.";
