@@ -6,7 +6,7 @@ import io.vertx.core.json.JsonObject;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
@@ -133,12 +133,11 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public void values(Handler<AsyncResult<Collection<Value>>> handler) {
+    public void values(Handler<AsyncResult<Stream<Value>>> handler) {
         context.blocking((blocking) -> {
             blocking.complete(db.stream()
                     .map(entry -> (JsonObject) entry.getValue())
-                    .map(json -> context.toValue(json))
-                    .collect(Collectors.toList()));
+                    .map(json -> context.toValue(json)));
 
         }, handler);
     }

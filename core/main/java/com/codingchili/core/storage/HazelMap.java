@@ -8,6 +8,7 @@ import io.vertx.core.shareddata.AsyncMap;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Stream;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.FutureHelper;
@@ -122,9 +123,9 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public void values(Handler<AsyncResult<Collection<Value>>> handler) {
-        context.<Collection<Value>>blocking(blocked -> {
-            blocked.complete(imap.values());
+    public void values(Handler<AsyncResult<Stream<Value>>> handler) {
+        context.<Stream<Value>>blocking(blocked -> {
+            blocked.complete(imap.values().stream());
         }, completed -> {
             handler.handle(result(completed.result()));
         });

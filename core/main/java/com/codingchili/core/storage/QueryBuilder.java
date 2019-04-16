@@ -63,6 +63,11 @@ public interface QueryBuilder<Value extends Storable> {
      */
     QueryBuilder<Value> or(String attribute);
 
+    /**
+     * The attribute to be queried.
+     * @param attribute the name of the queried attribute.
+     * @return fluent
+     */
     QueryBuilder<Value> on(String attribute);
 
     /**

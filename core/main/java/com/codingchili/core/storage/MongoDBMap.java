@@ -8,6 +8,7 @@ import io.vertx.ext.mongo.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
@@ -133,10 +134,10 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public void values(Handler<AsyncResult<Collection<Value>>> handler) {
+    public void values(Handler<AsyncResult<Stream<Value>>> handler) {
         client.find(collection, new JsonObject(), found -> {
             if (found.succeeded()) {
-                handler.handle(result(toList(found.result())));
+                handler.handle(result(found.result().stream().map(json -> context.toValue(json))));
             } else {
                 handler.handle(Future.failedFuture(found.cause()));
             }
@@ -179,7 +180,7 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public QueryBuilder<Value> query() {
-        return new AbstractQueryBuilder<Value>(this) {
+        return new AbstractQueryBuilder<>(this) {
             JsonArray statements = new JsonArray();
             JsonArray builder = new JsonArray();
 
@@ -205,7 +206,9 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
                 return this;
             }
 
-            /** Applies the current state of the builder to the final query. */
+            /**
+             * Applies the current state of the builder to the final query.
+             */
             private void apply() {
                 statements.add(new JsonObject().put(AND, builder));
                 builder = new JsonArray();
@@ -214,9 +217,9 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
             @Override
             public QueryBuilder<Value> between(Long minimum, Long maximum) {
                 builder.add(new JsonObject()
-                        .put(attribute(), new JsonObject()
-                                .put(GTE, minimum)
-                                .put(LTE, maximum)));
+                    .put(attribute(), new JsonObject()
+                        .put(GTE, minimum)
+                        .put(LTE, maximum)));
                 return this;
             }
 
@@ -224,9 +227,9 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
             public QueryBuilder<Value> like(String text) {
                 text = Validator.toPlainText(text);
                 builder.add(new JsonObject()
-                        .put(attribute(), new JsonObject()
-                                .put(REGEX, "^.*" + text + ".*$")
-                                .put(OPTIONS, "i")));
+                    .put(attribute(), new JsonObject()
+                        .put(REGEX, "^.*" + text + ".*$")
+                        .put(OPTIONS, "i")));
                 return this;
             }
 
@@ -234,8 +237,8 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
             public QueryBuilder<Value> startsWith(String text) {
                 text = Validator.toPlainText(text);
                 builder.add(new JsonObject()
-                        .put(attribute(), new JsonObject()
-                                .put(REGEX, "^" + text + ".*")));
+                    .put(attribute(), new JsonObject()
+                        .put(REGEX, "^" + text + ".*")));
                 return this;
             }
 
@@ -244,8 +247,8 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
                 List<Comparable> list = new ArrayList<>(Arrays.asList(comparables));
 
                 builder.add(new JsonObject()
-                        .put(attribute(), new JsonObject()
-                                .put(IN, list)));
+                    .put(attribute(), new JsonObject()
+                        .put(IN, list)));
                 return this;
             }
 
@@ -258,8 +261,8 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
             @Override
             public QueryBuilder<Value> matches(String regex) {
                 builder.add(new JsonObject()
-                        .put(attribute(), new JsonObject()
-                                .put(REGEX, regex)));
+                    .put(attribute(), new JsonObject()
+                        .put(REGEX, regex)));
                 return this;
             }
 
@@ -278,9 +281,9 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
 
             private FindOptions getOptions() {
                 return new FindOptions()
-                        .setLimit(pageSize)
-                        .setSkip(pageSize * page)
-                        .setSort(getSortOptions());
+                    .setLimit(pageSize)
+                    .setSkip(pageSize * page)
+                    .setSort(getSortOptions());
             }
 
             private JsonObject getSortOptions() {

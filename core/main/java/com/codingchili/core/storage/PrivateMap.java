@@ -4,6 +4,7 @@ import io.vertx.core.*;
 
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
@@ -89,8 +90,8 @@ public class PrivateMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public void values(Handler<AsyncResult<Collection<Value>>> handler) {
-        handler.handle(Future.succeededFuture(map.values()));
+    public void values(Handler<AsyncResult<Stream<Value>>> handler) {
+        handler.handle(Future.succeededFuture(map.values().stream()));
 
     }
 

@@ -3,7 +3,7 @@ package com.codingchili.core.storage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.apache.http.HttpHost;
@@ -272,7 +272,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public void values(Handler<AsyncResult<Collection<Value>>> handler) {
+    public void values(Handler<AsyncResult<Stream<Value>>> handler) {
         SearchRequest request = new SearchRequest()
                 .indices(index)
                 .source(new SearchSourceBuilder()
@@ -281,15 +281,14 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                         .fetchSource(true));
 
 
-        client.searchAsync(request, RequestOptions.DEFAULT, new ActionListener<SearchResponse>() {
+        client.searchAsync(request, RequestOptions.DEFAULT, new ActionListener<>() {
             @Override
             public void onResponse(SearchResponse search) {
                 if (search.getHits() != null) {
                     handler.handle(result(StreamSupport.stream(search.getHits().spliterator(), false)
-                            .map(source -> context.toValue(source.getSourceAsString()))
-                            .collect(Collectors.toList())));
+                        .map(source -> context.toValue(source.getSourceAsString()))));
                 } else {
-                    handler.handle(result(new ArrayList<>()));
+                    handler.handle(result(Stream.empty()));
                 }
             }
 

@@ -3,7 +3,7 @@ package com.codingchili.core.storage;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
-import java.util.Collection;
+import java.util.stream.Stream;
 
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.storage.exception.ValueMissingException;
@@ -83,12 +83,12 @@ public interface AsyncStorage<Value extends Storable> {
     void update(Value value, Handler<AsyncResult<Void>> handler);
 
     /**
-     * Get all values contained within the storage.
+     * Get all values contained within the storage as a stream.
      * Not recommended to use on large maps.
      *
      * @param handler callback
      */
-    void values(Handler<AsyncResult<Collection<Value>>> handler);
+    void values(Handler<AsyncResult<Stream<Value>>> handler);
 
     /**
      * removes all existing entries from the storage.

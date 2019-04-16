@@ -9,6 +9,7 @@ import io.vertx.core.Handler;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.protocol.Serializer;
@@ -194,8 +195,8 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
 
     @Override
     @SuppressWarnings("unchecked")
-    public void values(Handler<AsyncResult<Collection<Value>>> handler) {
-        handler.handle(succeededFuture(db));
+    public void values(Handler<AsyncResult<Stream<Value>>> handler) {
+        handler.handle(succeededFuture(db.stream()));
     }
 
     @Override
