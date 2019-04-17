@@ -1,7 +1,6 @@
 package com.codingchili.core.storage;
 
-import com.codingchili.core.context.CoreRuntimeException;
-import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.context.*;
 import com.codingchili.core.security.Account;
 
 import io.vertx.core.Future;
@@ -108,7 +107,7 @@ public class QueryTest {
         }
         try {
             new Query<>().on("x").poll((storable) -> {
-            }, () -> 0);
+            }, TimerSource.of(0));
             test.fail("did not throw exception when storage null");
         } catch (CoreRuntimeException e) {
         }

@@ -2,6 +2,7 @@ package com.codingchili.core.files;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.Delay;
+import com.codingchili.core.context.TimerSource;
 import com.codingchili.core.testing.ContextMock;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
@@ -120,7 +121,7 @@ public class FileWatcherIT {
     private void listenFiles(FileStoreListener listener) {
         new FileWatcherBuilder(context)
                 .onDirectory(CoreStrings.testDirectory(FILE_WATCHER_TEST))
-                .rate(() -> 25)
+                .rate(TimerSource.of(25))
                 .withListener(listener)
                 .build();
     }

@@ -1,6 +1,7 @@
 package com.codingchili.core.storage;
 
 import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.context.TimerSource;
 import com.codingchili.core.testing.StorageObject;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -49,7 +50,7 @@ public class EntryWatcherTest {
                 getQuery().poll(entry -> entry.forEach(item -> {
                     storage.remove(item.getId(), removed -> {
                     });
-                }), () -> REMOVE_INTERVAL);
+                }), TimerSource.of(REMOVE_INTERVAL));
 
                 storage.put(object, put -> {
                     test.assertTrue(put.succeeded());

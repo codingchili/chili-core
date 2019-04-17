@@ -113,7 +113,7 @@ public class SystemContextTest {
         AtomicInteger countdown = new AtomicInteger(3);
         int interval = 50;
 
-        context.periodic(() -> interval, "test", event -> {
+        context.periodic(TimerSource.of(interval).setName("test"), event -> {
             countdown.getAndDecrement();
         });
 
@@ -136,7 +136,7 @@ public class SystemContextTest {
         });
 
         // executes once, timer changes, executes again, notices change.
-        context.periodic(interval::get, "test", event -> {
+        context.periodic(TimerSource.of(interval::get).setName("test"), event -> {
             interval.set(1000);
             countdown.decrementAndGet();
         });

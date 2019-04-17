@@ -12,9 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.context.SystemContext;
+import com.codingchili.core.context.*;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.storage.exception.NothingToRemoveException;
@@ -99,7 +97,7 @@ public class MapTestCases {
             Assert.assertTrue(clear.succeeded());
             AtomicInteger inserted = new AtomicInteger(0);
 
-            context.periodic(() -> 50, "startup timer", handler -> {
+            context.periodic(TimerSource.of(50).setName("startup timer"), handler -> {
                 if (inserted.get() == TEST_ITEM_COUNT) {
                     context.timer(STARTUP_DELAY, event -> {
                         async.complete();
@@ -765,7 +763,7 @@ public class MapTestCases {
             if (countdown.decrementAndGet() == 0) {
                 async.complete();
             }
-        }, () -> 50);
+        }, TimerSource.of(50));
     }
 
     @Test

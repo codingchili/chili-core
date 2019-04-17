@@ -40,11 +40,10 @@ public interface CoreContext {
     /**
      * Set a periodic timer that uses a timersource to adjust interval during runtime.
      *
-     * @param delay   a timersource that may change STARTUP_DELAY during runtime.
-     * @param name    the name of the periodic timer to log changes to STARTUP_DELAY configuration.
+     * @param delay   a timer source that may change period during runtime.
      * @param handler the handler to be invoked when each interval ends.
      */
-    void periodic(TimerSource delay, String name, Handler<Long> handler);
+    void periodic(TimerSource delay, Handler<Long> handler);
 
     /**
      * Sets a timer that executes the given handler after the given time.
@@ -102,6 +101,8 @@ public interface CoreContext {
      * @param deploymentId the id of the deployment to undeploy.
      */
     void stop(String deploymentId);
+
+    Future<CompositeFuture> stop();
 
     /**
      * Call to execute the given blocking handler on a worker thread that is

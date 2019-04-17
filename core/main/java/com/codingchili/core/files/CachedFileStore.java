@@ -12,6 +12,7 @@ import com.codingchili.core.configuration.CachedFileStoreSettings;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.exception.ConfigurationMismatchException;
 import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.TimerSource;
 import com.codingchili.core.files.exception.FileMissingException;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.Serializer;
@@ -79,7 +80,7 @@ public final class CachedFileStore implements FileStoreListener {
     private void watchDirectory() {
         new FileWatcherBuilder(context)
                 .onDirectory(settings.getDirectory())
-                .rate(context.system()::getCachedFilePoll)
+                .rate(TimerSource.of(context.system()::getCachedFilePoll))
                 .withListener(this)
                 .build();
     }

@@ -17,6 +17,7 @@ import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.exception.InvalidConfigurableException;
 import com.codingchili.core.configuration.system.*;
 import com.codingchili.core.context.StartupListener;
+import com.codingchili.core.context.TimerSource;
 import com.codingchili.core.files.exception.*;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
@@ -49,7 +50,7 @@ public abstract class Configurations {
             } else {
                 logger = core.logger(Configurations.class);
                 new FileWatcherBuilder(core)
-                        .rate(Configurations::getConfigurationPoll)
+                        .rate(TimerSource.of(Configurations::getConfigurationPoll))
                         .onDirectory(Paths.get(launcher().getConfigurationDirectory()).toString())
                         .withListener(new ConfigurationFileWatcher())
                         .build();

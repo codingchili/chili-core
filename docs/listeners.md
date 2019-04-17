@@ -61,7 +61,7 @@ public class SmsListener implements CoreListener {
     
     @Override
     public void start(Future<Void> start) {
-        core.periodic(() -> 1000, "smsGatewayPoll", (id) -> {
+        core.periodic(TimerSource.ofMS(1000, "smsGatewayPoll"), (id) -> {
             if (running) {
                 List<JsonObject> smses = smsGateway.fetchUnread();
                 

@@ -3,13 +3,13 @@ package com.codingchili.core.storage;
 import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
-import com.codingchili.core.context.FutureHelper;
-import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.context.*;
 import com.codingchili.core.files.ConfigurationFactory;
 import com.codingchili.core.files.exception.NoSuchResourceException;
 import com.codingchili.core.logging.Logger;
@@ -64,13 +64,15 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     private void enableSave() {
-        context.periodic(() -> context.storage().getPersistInterval(),
-                context.identifier(), event -> {
-                    if (dirty.get()) {
-                        save();
-                        dirty.set(false);
-                    }
-                });
+        TimerSource timer = TimerSource.of(context.storage()::getPersistInterval)
+                .setName(context.identifier());
+
+        context.periodic(timer, event -> {
+            if (dirty.get()) {
+                save();
+                dirty.set(false);
+            }
+        });
     }
 
     @Override

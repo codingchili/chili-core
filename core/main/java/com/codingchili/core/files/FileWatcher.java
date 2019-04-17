@@ -30,8 +30,21 @@ public class FileWatcher {
         this.logger = context.logger(getClass());
     }
 
+    /**
+     * Creates a new file watcher builder.
+     *
+     * @param core the core context to run on.
+     * @return a new builder instance.
+     */
     public static FileWatcherBuilder builder(CoreContext core) {
         return new FileWatcherBuilder(core);
+    }
+
+    /**
+     * Stops the filewatcher.
+     */
+    public void stop() {
+        running.set(false);
     }
 
     void initialize() {
@@ -55,17 +68,13 @@ public class FileWatcher {
     }
 
     private void start() {
-        context.periodic(rate, this.getClass().getSimpleName(), event -> {
+        context.periodic(rate.setName(getClass().getSimpleName()), event -> {
             if (running.get()) {
                 poll();
             } else {
                 context.cancel(event);
             }
         });
-    }
-
-    public void stop() {
-        running.set(false);
     }
 
     private void poll() {

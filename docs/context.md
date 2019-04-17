@@ -131,7 +131,7 @@ FileSystem fs = core.fileSystem();
 - Scheduling support
 
 ```java
-core.periodic(TimerSource.ofMs(100, "10xPoll"), (id) -> {
+core.periodic(TimerSource.ofMS(100, "10xPoll"), (id) -> {
     // invoked every 100ms, the interval is a supplier that can be modified during runtime.
     
     // the periodic tasks id can be used to cancel it.
@@ -144,6 +144,31 @@ long timerTask = core.timer(250, (id) -> {
 
 // may be invoked before the timer task is triggered to cancel it.
 core.cancel(timerTask);
+
+
+// Examples for TimerSource
+TimerSource source = TimerSource.of(4, TimeUnit.DAYS);
+
+// when paused the scheduled operation will not be invoked.
+source.pause();
+source.isPaused();
+source.unpause();
+
+// when terminated the task will be removed from the scheduler.
+// the task cannot recover from this state.
+source.terminate();
+source.isTerminated();
+
+// names can be set for the source, logging an info message when the period changes.
+source.setName("poll-storage");
+
+// the TimeSource can use a dynamic period provider
+source.setProvider(Supplier<String>);
+
+// whenever the provider changes the next time the scheduled task is invoked
+// it will be rescheduled at the new interval after executing once.
+TimerSource.of(Configurations::someDynamicValueThatChanges);
+
 ```
 
 - Running blocking code

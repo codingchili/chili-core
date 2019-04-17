@@ -81,7 +81,7 @@ public class SystemContext implements CoreContext {
         if (!initialized.get()) {
             MetricsService metrics = MetricsService.create(vertx);
 
-            periodic(TimerSource.ofMS(getMetricTimer(), CoreStrings.LOG_METRICS), handler -> {
+            periodic(TimerSource.of(getMetricTimer()).setName(CoreStrings.LOG_METRICS), handler -> {
                 if (system().isMetrics()) {
                     JsonObject json = metrics.getMetricsSnapshot(vertx);
                     this.onMetricsSnapshot(json);
@@ -120,12 +120,15 @@ public class SystemContext implements CoreContext {
             if (timeout.getMS() != initial) {
                 vertx.cancelTimer(event);
 
-                if (timeout.getMS() > 0) {
+                if (!timeout.isTerminated()) {
                     periodic(timeout, handler);
                 }
                 logger.onTimerSourceChanged(timeout.getName(), initial, timeout.getMS());
             }
-            handler.handle(event);
+
+            if (!timeout.isPaused()) {
+                handler.handle(event);
+            }
         });
     }
 

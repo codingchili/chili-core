@@ -80,7 +80,7 @@ public class EntryWatcher<Value extends Storable> {
         this.consumer = consumer;
         active.set(true);
 
-        context.periodic(timer, getClass().getName(), (handler) -> {
+        context.periodic(timer.setName(getClass().getName()), (handler) -> {
             if (active.get()) {
                 execute();
             }
