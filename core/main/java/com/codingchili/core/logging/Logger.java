@@ -170,4 +170,9 @@ public interface Logger extends JsonLogger, StringLogger {
      * @return fluent.
      */
     Logger setMetadata(String key, Supplier<String> value);
+
+    /**
+     * Shuts down the logger instance, frees any resources such as files or thread pools.
+     */
+    void close();
 }

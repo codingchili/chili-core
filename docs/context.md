@@ -131,7 +131,7 @@ FileSystem fs = core.fileSystem();
 - Scheduling support
 
 ```java
-core.periodic(() -> 100, "10xPoll", (id) -> {
+core.periodic(TimerSource.ofMs(100, "10xPoll"), (id) -> {
     // invoked every 100ms, the interval is a supplier that can be modified during runtime.
     
     // the periodic tasks id can be used to cancel it.
@@ -206,9 +206,10 @@ SystemSettings system = core.system();
 ```
 
 ### The shutdown hook 
-The shutdown hook will be exeucted when the JVM is shutting down.
+The shutdown hook will be executed when the JVM is shutting down.
 
 All subscribers in the `ShutdownListener` will be invoked before the context will close and undeploy services. 
 
-The stop method in any running `CoreDeployable` will be invoked from the shutdown hook and has a configured timeout. The close operation will be cancelled if the 
-stop method takes more than 5s to complete by default. The shutdown hook timeout can be configured in the system config.
+The stop method in any running `CoreDeployable` will be invoked from the shutdown hook unaffected by the shutdown timeout. 
+The hook will wait for the blocking executor to drain for the duration of the specified shutdown hook timeout. 
+The shutdown hook timeout can be configured in the system config.

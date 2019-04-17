@@ -2,23 +2,26 @@ package com.codingchili.core.context;
 
 import io.vertx.core.*;
 import io.vertx.core.eventbus.EventBus;
+import io.vertx.core.impl.VertxImpl;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.dropwizard.MetricsService;
 
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.*;
 import com.codingchili.core.listener.transport.ClusterListener;
-import com.codingchili.core.logging.*;
+import com.codingchili.core.logging.Logger;
+import com.codingchili.core.logging.RemoteLogger;
 
-import static com.codingchili.core.configuration.CoreStrings.*;
+import static com.codingchili.core.configuration.CoreStrings.getUnsupportedDeployment;
 
 
 /**
@@ -50,7 +53,10 @@ public class SystemContext implements CoreContext {
     private SystemContext(Vertx vertx) {
         this.vertx = vertx;
         this.logger = new RemoteLogger(this, SystemContext.class);
-        this.shutdownHandler();
+
+        // add a shutdown hook for gracefully shutting down the context.
+        ShutdownHookHandler.register(this);
+
         initialize();
     }
 
@@ -75,7 +81,7 @@ public class SystemContext implements CoreContext {
         if (!initialized.get()) {
             MetricsService metrics = MetricsService.create(vertx);
 
-            periodic(this::getMetricTimer, CoreStrings.LOG_METRICS, handler -> {
+            periodic(TimerSource.ofMS(getMetricTimer(), CoreStrings.LOG_METRICS), handler -> {
                 if (system().isMetrics()) {
                     JsonObject json = metrics.getMetricsSnapshot(vertx);
                     this.onMetricsSnapshot(json);
@@ -107,7 +113,7 @@ public class SystemContext implements CoreContext {
     }
 
     @Override
-    public void periodic(TimerSource timeout, String name, Handler<Long> handler) {
+    public void periodic(TimerSource timeout, Handler<Long> handler) {
         final int initial = timeout.getMS();
 
         vertx.setPeriodic(timeout.getMS(), event -> {
@@ -115,9 +121,9 @@ public class SystemContext implements CoreContext {
                 vertx.cancelTimer(event);
 
                 if (timeout.getMS() > 0) {
-                    periodic(timeout, name, handler);
+                    periodic(timeout, handler);
                 }
-                logger.onTimerSourceChanged(name, initial, timeout.getMS());
+                logger.onTimerSourceChanged(timeout.getName(), initial, timeout.getMS());
             }
             handler.handle(event);
         });
@@ -245,6 +251,24 @@ public class SystemContext implements CoreContext {
     }
 
     @Override
+    public Future<CompositeFuture> stop() {
+        List<Future> futures = deployments.values()
+                .stream()
+                .flatMap(Collection::stream)
+                .map((id) -> {
+                    Future<Void> future = Future.future();
+                    vertx.undeploy(id, future);
+                    return future;
+                })
+                .collect(Collectors.toList());
+        return CompositeFuture.all(futures);
+    }
+
+    ExecutorService getBlockingExecutor() {
+        return ((VertxImpl) vertx).getWorkerPool();
+    }
+
+    @Override
     public <T> void blocking(Handler<Future<T>> sync, Handler<AsyncResult<T>> result) {
         blocking(sync, false, result);
     }
@@ -268,41 +292,14 @@ public class SystemContext implements CoreContext {
 
     @Override
     public void close(Handler<AsyncResult<Void>> handler) {
+        // the shutdown hook will only run on JVM exit. closing it directly will
+        // kill it without waiting for the blocking pool to clear etc.
+        ShutdownHookHandler.unregister(this);
+
         initialized.set(false);
         vertx.close((close) -> {
             handler.handle(Future.succeededFuture());
         });
-    }
-
-    private void shutdownHandler() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            AtomicInteger timeout = new AtomicInteger(system().getShutdownHookTimeout());
-            logger.log(LAUNCHER_SHUTDOWN_STARTED, Level.WARNING);
-            try {
-                // emit the shutdown event before closing.
-                ShutdownListener.publish(this).setHandler(listeners -> {
-                    if (listeners.failed()) {
-                        logger.onError(listeners.cause());
-                    }
-
-                    // close the vertx instance.
-                    vertx.close((done) -> {
-                        if (done.failed()) {
-                            logger.onError(done.cause());
-                        }
-                        timeout.set(0);
-                    });
-                });
-
-                while (timeout.decrementAndGet() > 0) {
-                    Thread.sleep(1L);
-                }
-                logger.close(); // flush pending tasks and enter sync mode.
-                logger.log(LAUNCHER_SHUTDOWN_COMPLETED, Level.WARNING);
-            } catch (InterruptedException e) {
-                logger.onError(e);
-            }
-        }));
     }
 
     @Override

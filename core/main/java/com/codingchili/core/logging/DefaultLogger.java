@@ -97,7 +97,7 @@ public abstract class DefaultLogger extends Handler implements Logger {
 
     @Override
     public void onServiceStopped(CoreService service) {
-        event(LOG_SERVICE_STOP, Level.ERROR)
+        event(LOG_SERVICE_STOP, Level.WARNING)
                 .put(ID_NAME, service.name()).send();
     }
 
@@ -109,7 +109,7 @@ public abstract class DefaultLogger extends Handler implements Logger {
 
     @Override
     public void onListenerStopped(CoreListener listener) {
-        event(LOG_LISTENER_STOP, Level.ERROR)
+        event(LOG_LISTENER_STOP, Level.WARNING)
                 .put(ID_HANDLER, listener.toString()).send();
     }
 
