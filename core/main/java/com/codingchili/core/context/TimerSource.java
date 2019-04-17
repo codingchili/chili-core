@@ -87,6 +87,7 @@ public class TimerSource {
 
     /**
      * @param provider another dynamic source of timing, configuration etc.
+     * @return fluent
      */
     public TimerSource setProvider(Supplier<Integer> provider) {
         this.provider = provider;

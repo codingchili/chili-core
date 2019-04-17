@@ -35,6 +35,7 @@ public class ShutdownListener {
      * Emits a shutdown event to all subscribers.
      *
      * @param core the context that was shut down.
+     * @return future completed when all handlers succeeded or failed.
      */
     public synchronized static Future<Void> publish(CoreContext core) {
         Future<Void> future = Future.future();
@@ -49,5 +50,9 @@ public class ShutdownListener {
                     }
                 });
         return future;
+    }
+
+    public synchronized static void clear() {
+        listeners.clear();
     }
 }

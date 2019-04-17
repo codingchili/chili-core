@@ -106,6 +106,7 @@ public class ConfigurationFactory {
      * Lists all items in the given directory of type file.
      *
      * @param directory the directory to enumerate
+     * @param subdirs   include subdirectories to the given directory.
      * @return a list of absolute file paths.
      */
     public static Stream<String> enumerate(String directory, boolean subdirs) {

@@ -44,7 +44,11 @@ public class ShutdownHookHandler extends Thread {
      * @param context the context to unregister shutdown hooks for.
      */
     static synchronized void unregister(SystemContext context) {
-        Runtime.getRuntime().removeShutdownHook(contexts.remove(context));
+        ShutdownHookHandler handler = contexts.remove(context);
+
+        if (handler != null) {
+            Runtime.getRuntime().removeShutdownHook(handler);
+        }
     }
 
     /**
@@ -100,6 +104,7 @@ public class ShutdownHookHandler extends Thread {
             while (timeout.decrementAndGet() > 0) {
                 Thread.sleep(1L);
             }
+            ShutdownListener.clear();
             logger.close(); // flush pending tasks and enter sync mode.
             logger.log(LAUNCHER_SHUTDOWN_COMPLETED, Level.WARNING);
         } catch (InterruptedException e) {
