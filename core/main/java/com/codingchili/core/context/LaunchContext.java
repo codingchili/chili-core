@@ -19,6 +19,7 @@ import static com.codingchili.core.configuration.CoreStrings.ID_DEFAULT;
  */
 public class LaunchContext {
     private static final String BLOCK_DEFAULT = "default";
+    private static final String LOCALHOST = "localhost";
     private CommandExecutor executor = new LauncherCommandExecutor();
     private Logger console = new ConsoleLogger(getClass());
     private String[] args;
@@ -122,12 +123,16 @@ public class LaunchContext {
     private String findBlockByEnvironment() {
         Optional<String> hostname = Environment.hostname();
 
+        // prefer hostname match as network interface enumeration is slow. (~200ms)
         if (hostname.isPresent() && isRemoteBlock(hostname.get())) {
             return hostname.get();
         } else {
-            for (String address : Environment.addresses()) {
-                if (isRemoteBlock(address)) {
-                    return address;
+            // guard against checking network interfaces if there are no remotes configured.
+            if (settings().getHosts().size() > 0) {
+                for (String address : Environment.addresses()) {
+                    if (isRemoteBlock(address)) {
+                        return address;
+                    }
                 }
             }
         }

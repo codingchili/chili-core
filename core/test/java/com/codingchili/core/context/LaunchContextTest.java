@@ -1,15 +1,13 @@
 package com.codingchili.core.context;
 
-import com.codingchili.core.configuration.Environment;
-import com.codingchili.core.configuration.exception.BlockNotConfiguredException;
-import com.codingchili.core.configuration.exception.NoServicesConfiguredForBlock;
-import com.codingchili.core.configuration.exception.RemoteBlockNotConfiguredException;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
+
+import com.codingchili.core.configuration.Environment;
+import com.codingchili.core.configuration.exception.NoServicesConfiguredForBlock;
+import com.codingchili.core.configuration.exception.RemoteBlockNotConfiguredException;
 
 import static com.codingchili.core.configuration.CoreStrings.getNoServicesConfiguredForBlock;
 import static com.codingchili.core.context.LaunchContextMock.*;
@@ -19,11 +17,11 @@ import static com.codingchili.core.context.LaunchContextMock.*;
  */
 @RunWith(VertxUnitRunner.class)
 public class LaunchContextTest {
-    private LaunchContext context;
+    private static LaunchContext context;
 
-    @Before
-    public void setUp() {
-        this.context = new LaunchContextMock(new String[]{});
+    @BeforeClass
+    public static void setUp() {
+        context = new LaunchContextMock(new String[]{});
     }
 
     @Test
@@ -86,7 +84,7 @@ public class LaunchContextTest {
     @Test
     public void testGetRemoteBlockByIP(TestContext test) throws CoreException {
         if (Environment.addresses().size() > 0) {
-            test.assertTrue(context.block(Environment.addresses().get(0)).contains(SERVICE_2));
+            test.assertTrue(context.block(INTERFACE_ADDRESS).contains(SERVICE_2));
         }
     }
 }

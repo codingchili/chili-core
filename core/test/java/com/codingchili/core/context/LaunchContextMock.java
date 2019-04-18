@@ -1,19 +1,18 @@
 package com.codingchili.core.context;
 
+import java.util.*;
+
 import com.codingchili.core.configuration.Environment;
 import com.codingchili.core.configuration.system.LauncherSettings;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.testing.LoggerMock;
 import com.codingchili.core.testing.MockLogListener;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 /**
  * Mock of a launcher context.
  */
 class LaunchContextMock extends LaunchContext {
+    static final String INTERFACE_ADDRESS = getFirstAddress();
     static final String HOST_1 = "host1";
     static final String HOST_2 = "host2";
     static final String HOST_3 = "host3";
@@ -26,12 +25,17 @@ class LaunchContextMock extends LaunchContext {
     static final String SERVICE_2 = "service_2";
     private LoggerMock logger;
 
+    static String getFirstAddress() {
+        return Environment.addresses().stream()
+                .findFirst().orElse("localhost");
+    }
+
     LaunchContextMock(String[] args) {
         super(args);
     }
 
     public LaunchContextMock(MockLogListener listener) {
-        super(new String[]{});
+        super();
         this.logger = new LoggerMock(listener);
     }
 
@@ -49,9 +53,7 @@ class LaunchContextMock extends LaunchContext {
             hosts.put(Environment.hostname().get(), BLOCK_2);
         }
 
-        if (Environment.addresses().size() > 0) {
-            hosts.put(Environment.addresses().get(0), BLOCK_2);
-        }
+        hosts.put(INTERFACE_ADDRESS, BLOCK_2);
 
         List<String> services1 = new ArrayList<>();
         List<String> services2 = new ArrayList<>();
