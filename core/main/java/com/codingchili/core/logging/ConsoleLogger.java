@@ -43,7 +43,7 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
             // are submitted after the executor has shut down.
             Thread.sleep(FLUSH_TIMEOUT_MS);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            onError(e);
         }
     }
 

@@ -2,7 +2,8 @@ package com.codingchili.core;
 
 import io.vertx.core.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 import com.codingchili.core.configuration.CoreStrings;
@@ -12,7 +13,6 @@ import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
-import static com.codingchili.core.files.Configurations.system;
 
 /**
  * Launches all the components of the system on a single host. An application can be started using the
@@ -90,6 +90,7 @@ public class Launcher implements CoreService {
         // might need to be shut down after running the command.
         if (this.core == null) {
             ShutdownListener.publish(null);
+            logger.close();
         } else {
             this.core.close();
         }
