@@ -1,13 +1,14 @@
 package com.codingchili.core.context;
 
+import io.vertx.core.Vertx;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.codingchili.core.logging.Level;
-import com.codingchili.core.logging.Logger;
+import com.codingchili.core.logging.*;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.files.Configurations.system;
@@ -16,7 +17,7 @@ import static com.codingchili.core.files.Configurations.system;
  * Registered as a shutdown hook for the JVM and is used to clean up the context.
  */
 public class ShutdownHookHandler extends Thread {
-    private static final Map<SystemContext, ShutdownHookHandler> contexts = new HashMap<>();
+    private static final Map<Vertx, ShutdownHookHandler> contexts = new HashMap<>();
     private SystemContext context;
     private Logger logger;
 
@@ -25,14 +26,14 @@ public class ShutdownHookHandler extends Thread {
      * will be closed gracefully on JVM exit.
      *
      * @param context the context to register the hook on, if a hook is already registered
-     *                for the given context then an {@link IllegalStateException} is thrown.
+     *                it has no effect.
      */
     static synchronized void register(SystemContext context) {
-        if (contexts.containsKey(context)) {
-            throw new IllegalStateException("Failed to register shutdown hook for context, hook already set.");
+        if (contexts.containsKey(context.vertx)) {
+            // context already registered - no action.
         } else {
             ShutdownHookHandler hook = new ShutdownHookHandler(context);
-            contexts.put(context, hook);
+            contexts.put(context.vertx, hook);
             Runtime.getRuntime().addShutdownHook(hook);
         }
     }
@@ -44,7 +45,7 @@ public class ShutdownHookHandler extends Thread {
      * @param context the context to unregister shutdown hooks for.
      */
     static synchronized void unregister(SystemContext context) {
-        ShutdownHookHandler handler = contexts.remove(context);
+        ShutdownHookHandler handler = contexts.remove(context.vertx);
 
         if (handler != null) {
             Runtime.getRuntime().removeShutdownHook(handler);
@@ -66,7 +67,7 @@ public class ShutdownHookHandler extends Thread {
      */
     public ShutdownHookHandler(SystemContext context) {
         this.context = context;
-        this.logger = context.logger(getClass());
+        this.logger = new RemoteLogger(context, getClass());
     }
 
     @Override
