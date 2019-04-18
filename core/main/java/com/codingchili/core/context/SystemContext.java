@@ -295,10 +295,6 @@ public class SystemContext implements CoreContext {
 
     @Override
     public void close(Handler<AsyncResult<Void>> handler) {
-        // the shutdown hook will only run on JVM exit. closing it directly will
-        // kill it without waiting for the blocking pool to clear etc.
-        ShutdownHookHandler.unregister(this);
-
         initialized.set(false);
         vertx.close((close) -> {
             handler.handle(Future.succeededFuture());

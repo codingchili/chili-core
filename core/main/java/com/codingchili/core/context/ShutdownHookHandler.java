@@ -105,7 +105,11 @@ public class ShutdownHookHandler extends Thread {
             while (timeout.decrementAndGet() > 0) {
                 Thread.sleep(1L);
             }
+
+            // cleanup of listeners.
             ShutdownListener.clear();
+            contexts.clear();
+
             logger.close(); // flush pending tasks and enter sync mode.
             logger.log(LAUNCHER_SHUTDOWN_COMPLETED, Level.WARNING);
         } catch (InterruptedException e) {
