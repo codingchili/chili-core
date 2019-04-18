@@ -20,7 +20,6 @@ import static org.fusesource.jansi.Ansi.ansi;
  * Implementation of a console logger, filters some key/value combinations to better display the messages.
  */
 public class ConsoleLogger extends DefaultLogger implements StringLogger {
-    public static final String RESET = "\u001B[0m";
     private static final int FLUSH_TIMEOUT_MS = 16;
     private final AtomicBoolean enabled = new AtomicBoolean(true);
     private static final Set<String> filtered = new HashSet<>(Arrays.asList(
@@ -49,18 +48,38 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
         }
     }
 
+    /**
+     * Specifies its own class name as the logging class.
+     * prefer {@link #ConsoleLogger(Class)}
+     */
     public ConsoleLogger() {
         super(ConsoleLogger.class);
     }
 
+    /**
+     * @param aClass the class that uses this logger.
+     */
     public ConsoleLogger(Class aClass) {
         this(null, aClass);
     }
 
+    /**
+     * @param context the context the logger is used on.
+     * @param aClass  the class that uses this logger.
+     */
     public ConsoleLogger(CoreContext context, Class aClass) {
         super(context, aClass);
         logger = this;
         AnsiConsole.systemInstall();
+    }
+
+    /**
+     * @param enabled disable/enable output of the logger.
+     * @return fluent
+     */
+    public Logger setEnabled(boolean enabled) {
+        this.enabled.set(enabled);
+        return this;
     }
 
     private Consumer<JsonObject> log = (json) -> {
@@ -89,7 +108,7 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
     private void write(String line) {
         line = replaceTags(line, LOG_HIDDEN_TAGS);
         AnsiConsole.out.println(line);
-        AnsiConsole.out.flush();
+        //AnsiConsole.out.flush();
     }
 
     protected String parseJsonLog(JsonObject data, String event) {
@@ -97,6 +116,7 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
         String message = consume(data, LOG_MESSAGE);
 
         Ansi ansi = ansi()
+                .reset()
                 .fg(level.getColor())
                 .a(level.getName())
                 .reset()
@@ -121,14 +141,14 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
                         .a(entry.getValue().toString());
             }
         });
-        return ansi.toString();
+        return ansi.reset().toString();
     }
 
     private static boolean hasValue(String text) {
         return (text != null && !text.equals(""));
     }
 
-    private LogLevel consumeLevel(JsonObject data) {
+    protected LogLevel consumeLevel(JsonObject data) {
         String name = (String) data.remove(LOG_LEVEL);
 
         return Optional.ofNullable(LogLevel.registered.get(name))
@@ -203,10 +223,5 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
             }
         }
         return text.toString();
-    }
-
-    public Logger setEnabled(boolean enabled) {
-        this.enabled.set(enabled);
-        return this;
     }
 }

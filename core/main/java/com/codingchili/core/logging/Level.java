@@ -28,6 +28,7 @@ public enum Level implements LogLevel {
 
     Level(Ansi.Color color) {
         this.color = color;
+        LogLevel.register(this);
     }
 
     @Override
