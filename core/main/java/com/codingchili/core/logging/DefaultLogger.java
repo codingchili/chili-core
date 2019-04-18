@@ -60,10 +60,10 @@ public abstract class DefaultLogger extends Handler implements Logger {
     }
 
     @Override
-    public LogMessage event(String name, Level level) {
+    public LogMessage event(String name, LogLevel level) {
         JsonObject event = new JsonObject()
                 .put(LOG_EVENT, name)
-                .put(LOG_LEVEL, level)
+                .put(LOG_LEVEL, level.getName())
                 .put(LOG_TIME, Instant.now().toEpochMilli());
         addMetadata(event);
         return new LogMessage(this, event);
@@ -207,7 +207,7 @@ public abstract class DefaultLogger extends Handler implements Logger {
     }
 
     @Override
-    public Logger log(String line, Level level) {
+    public Logger log(String line, LogLevel level) {
         event(LOG_MESSAGE, level).put(LOG_MESSAGE, line).send();
         return this;
     }

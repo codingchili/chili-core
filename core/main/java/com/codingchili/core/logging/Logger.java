@@ -28,7 +28,7 @@ public interface Logger extends JsonLogger, StringLogger {
      * @param level the level.
      * @return a LogMessage with a generated event, level, timestamp and context.
      */
-    LogMessage event(String name, Level level);
+    LogMessage event(String name, LogLevel level);
 
     /**
      * Emit when multiple attempts to initialize singleton.

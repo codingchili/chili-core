@@ -20,7 +20,7 @@ public class LoggerMock extends ConsoleLogger {
     }
 
     @Override
-    public Logger log(String line, Level level) {
+    public Logger log(String line, LogLevel level) {
         listener.onLogged(line);
         return this;
     }

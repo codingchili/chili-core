@@ -15,5 +15,5 @@ interface StringLogger {
      * @param level the logging level to log with.
      * @return fluent
      */
-    Logger log(String line, Level level);
+    Logger log(String line, LogLevel level);
 }
