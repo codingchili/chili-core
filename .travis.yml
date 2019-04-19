@@ -25,7 +25,6 @@ deploy:
   file_glob: true
   file:
     - core/build/libs/*
-    - storage/elastic/build/libs/*
   skip_cleanup: true
   overwrite: true
   on:
