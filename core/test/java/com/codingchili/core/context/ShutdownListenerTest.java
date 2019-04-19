@@ -38,11 +38,13 @@ public class ShutdownListenerTest {
     @Test
     public void shutdownNotifiedJVMBreaker(TestContext test) {
         Async async = test.async();
+        ShutdownListener.clear();
         ShutdownListener.subscribe((core) -> {
             test.assertFalse(core.isPresent());
             async.complete();
             return Future.succeededFuture();
         });
         ShutdownListener.publish(null);
+        ShutdownListener.clear();
     }
 }

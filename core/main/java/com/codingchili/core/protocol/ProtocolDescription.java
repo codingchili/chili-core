@@ -18,8 +18,9 @@ public class ProtocolDescription<T> {
 
     /**
      * @param template the class template to use as a base for all requests.
+     * @return fluent
      */
-    @JsonInclude
+    @JsonIgnore
     public ProtocolDescription<T> setTemplate(Class<?> template) {
         if (template != null) {
             model = Serializer.describe(template);

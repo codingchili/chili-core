@@ -28,8 +28,6 @@ public class ProtocolDescriptionTest {
         // verify that it's serializable.
         String yaml = Serializer.yaml(protocol);
 
-        System.out.println(yaml);
-
         // verify that it's also deserializable.
         Serializer.unyaml(yaml, ProtocolDescription.class);
     }

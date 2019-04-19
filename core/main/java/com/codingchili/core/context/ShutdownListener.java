@@ -52,6 +52,9 @@ public class ShutdownListener {
         return future;
     }
 
+    /**
+     * Removes all shutdown listeners.
+     */
     public synchronized static void clear() {
         listeners.clear();
     }

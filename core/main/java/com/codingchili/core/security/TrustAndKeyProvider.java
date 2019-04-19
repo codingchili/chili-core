@@ -14,8 +14,7 @@ import com.codingchili.core.context.CoreRuntimeException;
  * both contain trustOptions and keyCertOptions but these methods are not contained in
  * a common interface.
  */
-public class TrustAndKeyProvider implements KeyCertOptions, TrustOptions {
-    private static final String KEY_TYPE = "RSA";
+public class TrustAndKeyProvider {
     private static final String KEYSTORE_TYPE = "jks";
     private TrustOptions trust;
     private KeyCertOptions keyCert;
@@ -130,11 +129,5 @@ public class TrustAndKeyProvider implements KeyCertOptions, TrustOptions {
      */
     public KeyCertOptions keyCertOptions() {
         return keyCert;
-    }
-
-    @Override
-    public TrustAndKeyProvider clone() {
-        // we don't really need to clone it.
-        return this;
     }
 }

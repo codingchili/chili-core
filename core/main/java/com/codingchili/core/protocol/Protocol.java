@@ -86,6 +86,7 @@ public class Protocol<RequestType> {
 
     /**
      * @param endpoint sets the endpoint of the api, this is only used for documentation purposes.
+     * @return fluent
      */
     public Protocol<RequestType> endpoint(String endpoint) {
         this.target = endpoint;
