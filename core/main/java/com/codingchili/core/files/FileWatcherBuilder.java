@@ -1,6 +1,6 @@
 package com.codingchili.core.files;
 
-import com.hazelcast.util.Preconditions;
+import java.util.Objects;
 
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.TimerSource;
@@ -54,9 +54,9 @@ public class FileWatcherBuilder {
      * @return fluent
      */
     public FileWatcher build() {
-        Preconditions.checkNotNull(watcher.directory);
-        Preconditions.checkNotNull(watcher.listener);
-        Preconditions.checkNotNull(watcher.rate);
+        Objects.requireNonNull(watcher.directory, "Directory is not set for the file watcher.");
+        Objects.requireNonNull(watcher.listener, "No listener is set for the file watcher.");
+        Objects.requireNonNull(watcher.rate, "No polling rate is set for the file watcher.");
         watcher.initialize();
         return watcher;
     }
