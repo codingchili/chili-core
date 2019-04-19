@@ -31,7 +31,7 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
         public Thread newThread(Runnable runnable) {
             Thread thread = new Thread(runnable);
             thread.setName(getClass().getName());
-            thread.setDaemon(false);
+            thread.setDaemon(true);
             return thread;
         }
     });
@@ -115,29 +115,35 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
         LogLevel level = consumeLevel(data);
         String message = consume(data, LOG_MESSAGE);
 
-        Ansi ansi = ansi()
-                .reset()
-                .fg(level.getColor())
+        Ansi ansi = ansi().reset();
+
+        level.apply(ansi)
                 .a(level.getName())
                 .reset()
                 .a("\t[")
-                .fg(Ansi.Color.MAGENTA)
+                .fgBright(Ansi.Color.MAGENTA)
                 .a(consumeTimestamp(data))
                 .reset()
                 .a("] ")
                 .a((hasValue(event)) ? pad(event, 15) : "")
-                .a(" [")
-                .fg(level.getColor())
+                .a(" [");
+
+        level.apply(ansi)
                 .a(pad(consume(data, LOG_SOURCE), 15))
                 .reset()
-                .a("] ")
-                .a((hasValue(message) ? message + " " : ""));
+                .a("]");
+
+        if (hasValue(message)) {
+            ansi.a(" ").a(message);
+        }
 
         data.forEach(entry -> {
             if (entry.getValue() != null && !filtered.contains(entry.getKey())) {
-                ansi.fg(level.getColor())
+                level.apply(ansi)
+                        .a(" ")
                         .a(entry.getKey())
                         .reset()
+                        .a("=")
                         .a(entry.getValue().toString());
             }
         });
@@ -165,9 +171,9 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
                     }
 
                     @Override
-                    public Ansi.Color getColor() {
+                    public Ansi apply(Ansi ansi) {
                         // default to info color.
-                        return Level.INFO.color;
+                        return Level.INFO.apply(ansi);
                     }
 
                     @Override

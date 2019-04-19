@@ -61,8 +61,8 @@ public class ConsoleLoggerTest {
             }
 
             @Override
-            public Ansi.Color getColor() {
-                return Ansi.Color.BLUE;
+            public Ansi apply(Ansi ansi) {
+                return ansi.fg(Ansi.Color.BLUE);
             }
         };
     }

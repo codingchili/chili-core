@@ -2,7 +2,8 @@ package com.codingchili.core.logging;
 
 import org.fusesource.jansi.Ansi;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This interface allows for custom defined logging levels.
@@ -20,7 +21,9 @@ public interface LogLevel {
     String getName();
 
     /**
-     * @return the ANSI color to use for this level.
+     * @param ansi the ansi instance to apply styling to, see
+     *             {@link Ansi#fg(Ansi.Color)} or {@link Ansi#fgBright(Ansi.Color)}.
+     * @return ansi instance with color updated.
      */
-    Ansi.Color getColor();
+    Ansi apply(Ansi ansi);
 }

@@ -32,7 +32,8 @@ public class StringLogger extends ConsoleLogger {
     protected String parseJsonLog(JsonObject data, String event) {
         String message = data.getString(LOG_MESSAGE);
         LogLevel level = consumeLevel(data);
-        return Ansi.ansi().fg(level.getColor())
+
+        return level.apply(Ansi.ansi())
                 .a(message)
                 .reset()
                 .toString();

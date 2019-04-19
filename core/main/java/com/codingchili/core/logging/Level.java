@@ -37,7 +37,9 @@ public enum Level implements LogLevel {
     }
 
     @Override
-    public Ansi.Color getColor() {
-        return color;
+    public Ansi apply(Ansi ansi) {
+        // default to always use the bright color as windows has major issues with the others.
+        // for example, magenta is blue and yellow is white.
+        return ansi.fgBright(color);
     }
 }
