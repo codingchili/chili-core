@@ -28,6 +28,7 @@ public class StreamQuery<Value extends Storable, Streaming> {
     private StorageContext<Value> context;
 
     // if no mapper is set, the streaming source must be the same as the value.
+    @SuppressWarnings("unchecked")
     private Function<Streaming, Value> mapper = (v) -> (Value) v;
 
     StreamQuery(AsyncStorage<Value> storage, StreamSource<Streaming> stream) {

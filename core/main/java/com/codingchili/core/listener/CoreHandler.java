@@ -1,5 +1,6 @@
 package com.codingchili.core.listener;
 
+import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.protocol.Address;
 
 /**
@@ -21,7 +22,7 @@ public interface CoreHandler extends Receiver<Request>, CoreDeployment {
         if (annotation != null) {
             return annotation.value();
         } else {
-            throw new RuntimeException("Class " + getClass().getName() + " does not" +
+            throw new CoreRuntimeException("Class " + getClass().getName() + " does not" +
                     " implement CoreHandler::address nor is annotated with @Address.");
         }
     }
