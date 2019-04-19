@@ -15,14 +15,14 @@ public enum Level implements LogLevel {
     NONE(Ansi.Color.WHITE),
     SEVERE(Ansi.Color.RED);
 
-    public Ansi.Color color;
+    private Ansi.Color color;
 
     /**
      * Changes the default color of the log level to the given.
      *
-     * @param color defined as an ANSI escape code.
+     * @param color see {@link Ansi.Color}
      */
-    void setColor(Ansi.Color color) {
+    public void setColor(Ansi.Color color) {
         this.color = color;
     }
 

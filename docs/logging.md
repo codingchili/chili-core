@@ -92,6 +92,37 @@ Severe is meant to signal that a critical component of the application is malfun
 
 It is recommended to set up log indexing, visualization and alerting based on these levels.
 
+##### Defining custom logging levels
+
+It's possible to customize the available logging levels.
+
+Adding a new logging level
+
+```java
+public static LogLevel OVER_9000 = new LogLevel() {
+    
+    {
+        // needs to be registered before use as the ConsoleLogger also supports
+        // parsing logging events from json, which only include the level name.
+        LogLevel.register(this);
+    }
+    
+    @Override
+    public String getName() {
+        return "OVER9000!!"
+    }
+    
+    @Override
+    public Ansi apply(Ansi ansi) {
+        // bright bold red text.
+        return ansi.fgBright(Ansi.Color.RED).bold();
+    }
+}
+
+Logger logger = context.logger(getClass());
+logger.event("testing", OVER_9000).send();
+```
+
 ### Performance metrics
 
 When performance monitoring is enabled a remote logger will be used to send the metrics snapshot to the logging node. The logging node should index this event as any other event. 
