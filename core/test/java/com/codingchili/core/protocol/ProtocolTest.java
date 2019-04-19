@@ -173,14 +173,14 @@ public abstract class ProtocolTest {
 
     @Test
     public void testHandlerIsDocumented(TestContext test) {
-        test.assertEquals(DOCSTRING_TEXT, protocol.getDescription().getText());
+        test.assertEquals(DOCSTRING_TEXT, protocol.getDescription().getDescription());
     }
 
     @Test
     public void testRouteIsDocumented(TestContext test) {
         AtomicBoolean hasAtleastOneDocumentedRoute = new AtomicBoolean(false);
         ProtocolDescription<?> list = protocol.getDescription();
-        list.getRoutes().forEach(route -> {
+        list.getRoutes().values().forEach(route -> {
             if (route.getDescription() != null) {
                 hasAtleastOneDocumentedRoute.set(true);
             }
@@ -192,8 +192,8 @@ public abstract class ProtocolTest {
 
     @Test
     public void testRouteDataModel(TestContext test) {
-        protocol.getDescription().getRoutes().forEach(route -> {
-            if (route.getName().equals(defaultRolePublic)) {
+        protocol.getDescription().getRoutes().values().forEach(route -> {
+            if (route.getRoute().equals(defaultRolePublic)) {
                 test.assertNotEquals(0, route.getModel().values().size());
             }
         });
@@ -211,8 +211,8 @@ public abstract class ProtocolTest {
 
     private boolean routeIsListed(String route) {
         AtomicBoolean listed = new AtomicBoolean(false);
-        protocol.getDescription().getRoutes().forEach(entry -> {
-            if (entry.getName().equals(route))
+        protocol.getDescription().getRoutes().values().forEach(entry -> {
+            if (entry.getRoute().equals(route))
                 listed.set(true);
         });
         return listed.get();

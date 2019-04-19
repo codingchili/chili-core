@@ -2,17 +2,19 @@ package com.codingchili.core.protocol;
 
 import com.esotericsoftware.reflectasm.MethodAccess;
 import io.vertx.core.Future;
+import io.vertx.core.buffer.Buffer;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.context.StartupListener;
-import com.codingchili.core.listener.Receiver;
-import com.codingchili.core.listener.Request;
+import com.codingchili.core.listener.*;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
@@ -38,8 +40,10 @@ public class Protocol<RequestType> {
     private Function<Request, String> routeMapper = Request::route;
     private boolean emitDocumentation = false;
     private Route<RequestType> lastAddedRoute;
+    private AtomicBoolean dirty = new AtomicBoolean(true);
     private Class<?> dataModel;
     private Logger logger = new ConsoleLogger(getClass());
+    private String target;
 
     {
         StartupListener.subscribe(core -> {
@@ -68,6 +72,24 @@ public class Protocol<RequestType> {
     public Protocol<RequestType> annotated(Receiver<RequestType> handler) {
         setHandlerProperties(handler.getClass());
         setHandlerRoutes(handler);
+
+        if (handler instanceof CoreHandler) {
+            try {
+                this.target = ((CoreHandler) handler).address();
+            } catch (CoreRuntimeException e) {
+                // if address actually needs to be implemented depends on the listener.
+            }
+        }
+        dirty.set(true);
+        return this;
+    }
+
+    /**
+     * @param endpoint sets the endpoint of the api, this is only used for documentation purposes.
+     */
+    public Protocol<RequestType> endpoint(String endpoint) {
+        this.target = endpoint;
+        dirty.set(true);
         return this;
     }
 
@@ -160,6 +182,7 @@ public class Protocol<RequestType> {
      */
     public Protocol<RequestType> setDataModel(Class<?> model) {
         this.dataModel = model;
+        dirty.set(true);
         return this;
     }
 
@@ -173,6 +196,7 @@ public class Protocol<RequestType> {
      */
     public Protocol<RequestType> setRole(RoleType... role) {
         this.defaultRoles = role;
+        dirty.set(true);
         return this;
     }
 
@@ -220,6 +244,7 @@ public class Protocol<RequestType> {
     public Protocol<RequestType> use(String route, RequestHandler<RequestType> handler, RoleType... role) {
         lastAddedRoute = new Route<>(route, handler, role);
         authorizer.use(lastAddedRoute);
+        dirty.set(true);
         return this;
     }
 
@@ -254,13 +279,24 @@ public class Protocol<RequestType> {
             if (emitDocumentation && route.equals(CoreStrings.PROTOCOL_DOCUMENTATION)) {
                 return request -> {
                     if (request instanceof Request) {
-                        ((Request) request).write(getDescription());
+                        ((Request) request).write(description());
                     }
                 };
             } else {
                 throw new HandlerMissingException(route);
             }
         }
+    }
+
+    // Cache the generated documentation and the serialization operation, as this could be
+    // a potentially expensive operation for big api's.
+    private Buffer descriptionCache;
+
+    private Buffer description() {
+        if (dirty.getAndSet(false)) {
+            descriptionCache = Buffer.buffer(Serializer.yaml(getDescription()));
+        }
+        return descriptionCache;
     }
 
     /**
@@ -330,6 +366,7 @@ public class Protocol<RequestType> {
     public Protocol<RequestType> document(String routeDescription) {
         Objects.requireNonNull(lastAddedRoute, CoreStrings.cannotDocumentBeforeUse());
         lastAddedRoute.setDescription(routeDescription);
+        dirty.set(true);
         return this;
     }
 
@@ -341,7 +378,8 @@ public class Protocol<RequestType> {
      */
     public Protocol<RequestType> model(Class<?> model) {
         Objects.requireNonNull(lastAddedRoute, CoreStrings.cannotSetModelBeforeUse());
-        lastAddedRoute.setModel(model);
+        lastAddedRoute.setTemplate(model);
+        dirty.set(true);
         return this;
     }
 
@@ -349,7 +387,11 @@ public class Protocol<RequestType> {
      * @return returns a list of all registered routes on the protoocol.
      */
     public ProtocolDescription<RequestType> getDescription() {
-        return new ProtocolDescription<>(dataModel, authorizer.list(), description);
+        return new ProtocolDescription<RequestType>()
+                .setDescription(description)
+                .setTemplate(dataModel)
+                .setRoutes(authorizer.list())
+                .setTarget(target);
     }
 
     /**
@@ -363,6 +405,7 @@ public class Protocol<RequestType> {
     public Protocol<RequestType> setDescription(String description) {
         this.description = description;
         this.emitDocumentation = true;
+        dirty.set(true);
         return this;
     }
 
@@ -370,6 +413,6 @@ public class Protocol<RequestType> {
      * @return a list of all registered routes in the protocol.
      */
     public Set<String> available() {
-        return authorizer.list().stream().map(Route::getName).collect(Collectors.toSet());
+        return authorizer.list().stream().map(Route::getRoute).collect(Collectors.toSet());
     }
 }

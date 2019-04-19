@@ -24,13 +24,13 @@ public class SimpleAuthorizationHandler<T> implements AuthorizationHandler<T> {
 
     @Override
     public void use(Route<T> route) {
-        for (RoleType role : route.getRole()) {
+        for (RoleType role : route.getRoles()) {
             if (!handlers.containsKey(role)) {
                 handlers.put(role, new HashMap<>());
             }
-            handlers.get(role).put(route.getName(), route);
+            handlers.get(role).put(route.getRoute(), route);
         }
-        routes.add(route.getName());
+        routes.add(route.getRoute());
     }
 
     @Override

@@ -364,7 +364,7 @@ public class Serializer {
             model = cache.get(className);
         } else {
             for (Field field : template.getDeclaredFields()) {
-                if ((field.getModifiers() & Modifier.STATIC) == 0) {
+                if ((field.getModifiers() & Modifier.STATIC) == 0 && !field.isSynthetic()) {
                     String generic = field.getGenericType().getTypeName();
                     model.put(field.getName(), generic);
                 }

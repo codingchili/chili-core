@@ -90,10 +90,10 @@ public class Launcher implements CoreService {
         // might need to be shut down after running the command.
         if (this.core == null) {
             ShutdownListener.publish(null);
-            logger.close();
         } else {
             this.core.close();
         }
+        logger.close();
     }
 
     private void clusterIfEnabled(LaunchContext launcher) {
