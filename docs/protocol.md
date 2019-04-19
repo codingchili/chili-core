@@ -166,66 +166,91 @@ It is also possible to register multiple classes onto the same protocol.
 
 ##### Example
 
-The current format looks like this, from zapperfly-asm.
+The current format looks like this, from the highscore sample
 
 ```yaml
-model:
-  request: "com.codingchili.core.listener.Request"
-text: "Handles configuration and build requests."
+description: "A simple highscore API."
+target: "api"
 routes:
-- model: {}
-  description: "Cancels a scheduled build"
-  role:
-  - "USER"
-  name: "cancel"
-- model: {}
-  description: "Schedules a new build on the given repo and branch."
-  role:
-  - "PUBLIC"
-  name: "submit"
-- model: {}
-  description: "Retrieves the build log for the running build with the given line\
-    \ offset."
-  role:
-  - "USER"
-  name: "log"
-- model: {}
-  description: "Lists all executors/instances that has joined the cluster at some\
-    \ point."
-  role:
-  - "PUBLIC"
-  name: "instances"
-- model: {}
-  description: "Lists all jobs that have been queued."
-  role:
-  - "PUBLIC"
-  name: "queued"
-- model: {}
-  description: "Clears the build history"
-  role:
-  - "ADMIN"
-  name: "clear"
-- model: {}
-  description: "Lists all builds that has been executed on the server."
-  role:
-  - "PUBLIC"
-  name: "list"
-- model: {}
-  description: "Deletes the build files for the given job."
-  role:
-  - "USER"
-  name: "remove"
-- model: {}
-  description: "Lists artifacts available for download."
-  role:
-  - "USER"
-  name: "artifacts"
-- model: {}
-  description: "Returns the build status for the given build ID without the build\
-    \ log."
-  role:
-  - "PUBLIC"
-  name: "status"
+  update:
+    description: "Updates the highscore entries with the given entry."
+    model:
+      score: "java.lang.Integer"
+      player: "java.lang.String"
+    roles:
+    - "PUBLIC"
+  list:
+    description: "Returns a list of the current highscore selection."
+    roles:
+    - "PUBLIC"
 ```
 
-The documentation feature is a work in progress obviously :)
+It resembles OpenAPI 3, which means that adding support for it should be easy. Consider 
+implementing codegen from API descriptions. 
+
+
+The protocol description API can also be used programmatically
+
+```java
+class Main {
+    public static void main(String[] args){
+      ProtocolDescription<TestPayload> protocol = new ProtocolDescription<>();
+      
+      protocol.setDescription("a testing api")
+              .setTarget("master")
+              .setTemplate(Authentication.class);
+      
+      Route<TestPayload> route = new Route<TestPayload>("info")
+              .setDescription("retrieves the info")
+              .setRoles(Role.ADMIN)
+              .setTemplate(TestPayload.class);
+      
+      protocol.addRoute(route);
+      
+      Serializer.yaml(protocol);
+    }
+    
+    private class Authentication {
+        public String token;
+    }
+    
+    private class TestPayload {
+        public String details;
+    }
+}
+
+```
+
+outputs;
+
+```yaml
+description: "a testing api"
+target: "master"
+model:
+  token: "java.lang.String"
+routes:
+  info:
+    description: "retrieves the info"
+    model:
+      details: "java.lang.String"
+    roles:
+    - "ADMIN"
+```
+
+Deserializing a protocol description
+
+```java
+ProtocolDescription<Request> description = Serializer.unyaml(description, ProtocolDescription.class);
+```
+
+The protocol description can also be retrieved directly from any Protocol.
+
+```java
+Protocol<Request> protocol = new Protocol<>();
+ProtocolDescription description = protocol.getDescription();
+```
+
+When using #getDescription the generation of API metadata is not cached as it is when 
+the /api/document route is invoked during request processing. The Protocol instance
+internally keeps track of when the protocol definition changes and flushes the cache. This
+means that changes to the protocol during runtime will always be reflected in the documentation.
