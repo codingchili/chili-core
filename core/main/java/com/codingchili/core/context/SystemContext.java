@@ -37,7 +37,13 @@ public class SystemContext implements CoreContext {
      * Creates a new vertx instance to be used for this context.
      */
     public SystemContext() {
-        this(Vertx.vertx(Configurations.system().getOptions().setClustered(false)));
+        this(Vertx.vertx(getOptions()));
+    }
+
+    private static VertxOptions getOptions() {
+        VertxOptions options = Configurations.system().getOptions();
+        options.getEventBusOptions().setClustered(false);
+        return options;
     }
 
     /**

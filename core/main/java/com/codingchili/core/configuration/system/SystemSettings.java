@@ -161,15 +161,15 @@ public class SystemSettings implements Configurable {
         // mode it will set clustered = true, if creating a new instance without clustering
         // an exception will be thrown. This causes most test cases to fail.
         if (options == null) {
-            return new VertxOptions()
+            options = new VertxOptions()
                     .setMetricsOptions(new MetricsOptions().setEnabled(isMetrics()))
-                    .setClusterHost(Environment.address())
                     .setWorkerPoolSize(workerPoolSize)
                     .setBlockedThreadCheckInterval(blockedThreadChecker)
                     .setMaxEventLoopExecuteTime(maxEventLoopExecuteTime * 1000 * 1000);
-        } else {
-            return options;
+
+            options.getEventBusOptions().setHost(Environment.address());
         }
+        return options;
     }
 
     @JsonIgnore
