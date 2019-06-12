@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.codingchili.core.configuration.CoreStrings;
@@ -43,7 +44,7 @@ public class Protocol<RequestType> {
     private AtomicBoolean dirty = new AtomicBoolean(true);
     private Class<?> dataModel;
     private Logger logger = new ConsoleLogger(getClass());
-    private String target;
+    private Supplier<String> target = () -> null;
 
     {
         StartupListener.subscribe(core -> {
@@ -74,11 +75,14 @@ public class Protocol<RequestType> {
         setHandlerRoutes(handler);
 
         if (handler instanceof CoreHandler) {
-            try {
-                this.target = ((CoreHandler) handler).address();
-            } catch (CoreRuntimeException e) {
-                // if address actually needs to be implemented depends on the listener.
-            }
+            this.target = () -> {
+                try {
+                    return ((CoreHandler) handler).address();
+                } catch (CoreRuntimeException e) {
+                    // if address needs to be implemented depends on the listener.
+                    return null;
+                }
+            };
         }
         dirty.set(true);
         return this;
@@ -89,7 +93,7 @@ public class Protocol<RequestType> {
      * @return fluent
      */
     public Protocol<RequestType> endpoint(String endpoint) {
-        this.target = endpoint;
+        this.target = () -> endpoint;
         dirty.set(true);
         return this;
     }
@@ -392,7 +396,7 @@ public class Protocol<RequestType> {
                 .setDescription(description)
                 .setTemplate(dataModel)
                 .setRoutes(authorizer.list())
-                .setTarget(target);
+                .setTarget(target.get());
     }
 
     /**
