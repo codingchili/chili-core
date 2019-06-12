@@ -4,7 +4,7 @@ A handler implements the business logic of the API. Listeners forwarads requests
 handler may register the API's of other handlers on it's protocol, as a proxy-handler or simply define its own API.
 
 ### Implementing a handler
-The dpeloyment of a handler requires at least a `CoreService`, see [listeners](listeners) for a set of listeners that
+The deployment of a handler requires at least a `CoreService`, see [listeners](listeners) for a set of listeners that
 are included in the framework.
 
 ```java
