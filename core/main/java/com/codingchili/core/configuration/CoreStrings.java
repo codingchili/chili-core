@@ -27,7 +27,7 @@ public abstract class CoreStrings {
     // Author.
     public static String VERSION;
     public static final String GITHUB = "https://github.com/codingchili";
-    public static final String AUTHOR = "Robin Duda \u00a9 2017";
+    public static final String AUTHOR = "Robin Duda \u00a9 2019";
 
     static {
         VERSION = CoreStrings.class.getPackage().getImplementationVersion();
