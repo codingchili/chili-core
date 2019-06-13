@@ -9,13 +9,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.context.StartupListener;
-import com.codingchili.core.listener.*;
+import com.codingchili.core.listener.Receiver;
+import com.codingchili.core.listener.Request;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
@@ -27,7 +26,7 @@ import static com.codingchili.core.protocol.RoleMap.*;
 /**
  * Maps packet data to authorizer and manages authentication status for authorizer.
  * <p>
- * Route documentation and listing may be retrieved using #{@link #getDescription()}
+ * Route documentation and listing may be retrieved using #{@link #getSchema()}
  * or by calling the protocol with the #{@link CoreStrings#PROTOCOL_DOCUMENTATION}
  * route. The documentation route is enabled whenever a handler class or route
  * is documented using either #{@link #document(String)}, #{@link #setDescription(String)}
@@ -44,7 +43,7 @@ public class Protocol<RequestType> {
     private AtomicBoolean dirty = new AtomicBoolean(true);
     private Class<?> dataModel;
     private Logger logger = new ConsoleLogger(getClass());
-    private Supplier<String> target = () -> null;
+    private String target = "";
 
     {
         StartupListener.subscribe(core -> {
@@ -74,15 +73,10 @@ public class Protocol<RequestType> {
         setHandlerProperties(handler.getClass());
         setHandlerRoutes(handler);
 
-        if (handler instanceof CoreHandler) {
-            this.target = () -> {
-                try {
-                    return ((CoreHandler) handler).address();
-                } catch (CoreRuntimeException e) {
-                    // if address needs to be implemented depends on the listener.
-                    return null;
-                }
-            };
+        Address address = handler.getClass().getAnnotation(Address.class);
+
+        if (address != null) {
+            target = address.value();
         }
         dirty.set(true);
         return this;
@@ -93,7 +87,7 @@ public class Protocol<RequestType> {
      * @return fluent
      */
     public Protocol<RequestType> endpoint(String endpoint) {
-        this.target = () -> endpoint;
+        this.target = endpoint;
         dirty.set(true);
         return this;
     }
@@ -299,7 +293,7 @@ public class Protocol<RequestType> {
 
     private Buffer description() {
         if (dirty.getAndSet(false)) {
-            descriptionCache = Buffer.buffer(Serializer.yaml(getDescription()));
+            descriptionCache = Buffer.buffer(Serializer.yaml(getSchema()));
         }
         return descriptionCache;
     }
@@ -391,12 +385,12 @@ public class Protocol<RequestType> {
     /**
      * @return returns a list of all registered routes on the protoocol.
      */
-    public ProtocolDescription<RequestType> getDescription() {
+    public ProtocolDescription<RequestType> getSchema() {
         return new ProtocolDescription<RequestType>()
                 .setDescription(description)
                 .setTemplate(dataModel)
                 .setRoutes(authorizer.list())
-                .setTarget(target.get());
+                .setTarget(target);
     }
 
     /**

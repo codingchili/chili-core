@@ -173,13 +173,13 @@ public abstract class ProtocolTest {
 
     @Test
     public void testHandlerIsDocumented(TestContext test) {
-        test.assertEquals(DOCSTRING_TEXT, protocol.getDescription().getDescription());
+        test.assertEquals(DOCSTRING_TEXT, protocol.getSchema().getDescription());
     }
 
     @Test
     public void testRouteIsDocumented(TestContext test) {
         AtomicBoolean hasAtleastOneDocumentedRoute = new AtomicBoolean(false);
-        ProtocolDescription<?> list = protocol.getDescription();
+        ProtocolDescription<?> list = protocol.getSchema();
         list.getRoutes().values().forEach(route -> {
             if (route.getDescription() != null) {
                 hasAtleastOneDocumentedRoute.set(true);
@@ -192,7 +192,7 @@ public abstract class ProtocolTest {
 
     @Test
     public void testRouteDataModel(TestContext test) {
-        protocol.getDescription().getRoutes().values().forEach(route -> {
+        protocol.getSchema().getRoutes().values().forEach(route -> {
             if (route.getRoute().equals(defaultRolePublic)) {
                 test.assertNotEquals(0, route.getModel().values().size());
             }
@@ -201,7 +201,7 @@ public abstract class ProtocolTest {
 
     @Test
     public void testListRoutes(TestContext test) {
-        ProtocolDescription<Request> mapping = protocol.getDescription();
+        ProtocolDescription<Request> mapping = protocol.getSchema();
         test.assertTrue(routeIsListed(documentedRoute));
         test.assertTrue(routeIsListed(defaultRolePublic));
         test.assertTrue(routeIsListed(adminRoleRoute));
@@ -211,7 +211,7 @@ public abstract class ProtocolTest {
 
     private boolean routeIsListed(String route) {
         AtomicBoolean listed = new AtomicBoolean(false);
-        protocol.getDescription().getRoutes().values().forEach(entry -> {
+        protocol.getSchema().getRoutes().values().forEach(entry -> {
             if (entry.getRoute().equals(route))
                 listed.set(true);
         });
