@@ -1,7 +1,6 @@
 package com.codingchili.core.storage;
 
 import com.googlecode.cqengine.ConcurrentIndexedCollection;
-import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.index.disk.DiskIndex;
 import com.googlecode.cqengine.persistence.disk.DiskPersistence;
@@ -23,6 +22,16 @@ import com.codingchili.core.context.StorageContext;
  */
 public class IndexedMapPersisted<Value extends Storable> extends IndexedMap<Value> {
 
+    static {
+        // as indexes are not loaded by cqengine on startup, objects added before the
+        // call to addIndex (when the index already exists) does not index any attributes.
+        // this leads to objects not being found and cannot be removed/updated.
+        //
+        // this happens when the application is restarted and add is called before any queries are made.
+        // this incurs a performance penalty, as the index will be rebuilt when the application is restarted.
+        System.setProperty("cqengine.reinit.preexisting.indexes", Boolean.TRUE.toString());
+    }
+
     public IndexedMapPersisted(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
         super((idField) -> {
             synchronized (IndexedMapPersisted.class) {
@@ -31,9 +40,8 @@ public class IndexedMapPersisted<Value extends Storable> extends IndexedMap<Valu
                 if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
                     throw new RuntimeException("Failed to create dirs for DB " + file.toPath().toAbsolutePath());
                 }
-                IndexedCollection<Value> db = new ConcurrentIndexedCollection<>(
+                return new ConcurrentIndexedCollection<>(
                         DiskPersistence.onPrimaryKeyInFile(idField, file));
-                return db;
             }
         }, context);
 

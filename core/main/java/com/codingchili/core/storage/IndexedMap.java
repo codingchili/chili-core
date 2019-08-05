@@ -143,10 +143,17 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
             try (ResultSet<Value> result = db.retrieve(equal(FIELD_ID, value.getId()))) {
                 if (result.isEmpty()) {
                     db.add(mapper.apply(value));
+                    blocking.complete();
                 } else {
-                    db.update(Collections.singleton(result.iterator().next()), Collections.singleton(mapper.apply(value)));
+                    boolean updated = db.update(Collections.singleton(result.iterator().next()),
+                            Collections.singleton(mapper.apply(value)));
+
+                    if (updated) {
+                        blocking.complete();
+                    } else {
+                        blocking.fail(new NothingToRemoveException(value.getId()));
+                    }
                 }
-                blocking.complete();
             }
         }, handler);
     }
@@ -170,8 +177,12 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
         context.blocking(blocking -> {
             try (ResultSet<Value> result = db.retrieve(equal(FIELD_ID, key))) {
                 if (result.isNotEmpty()) {
-                    result.stream().forEach(db::remove);
-                    blocking.complete();
+                    result.stream().forEach(entry -> {
+                        if (!db.remove(entry)) {
+                            blocking.tryFail(new NothingToRemoveException(key));
+                        }
+                    });
+                    blocking.tryComplete();
                 } else {
                     blocking.fail(new NothingToRemoveException(key));
                 }
@@ -184,8 +195,13 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
         context.blocking(blocking -> {
             try (ResultSet<Value> result = db.retrieve(equal(FIELD_ID, value.getId()))) {
                 if (result.isNotEmpty()) {
-                    db.update(Collections.singleton(result.iterator().next()), Collections.singleton(mapper.apply(value)));
-                    blocking.complete();
+                    boolean updated = db.update(Collections.singleton(result.iterator().next()), Collections.singleton(mapper.apply(value)));
+
+                    if (updated) {
+                        blocking.complete();
+                    } else {
+                        blocking.fail(new NothingToRemoveException(value.getId()));
+                    }
                 } else {
                     blocking.fail(new NothingToUpdateException(value.getId()));
                 }
