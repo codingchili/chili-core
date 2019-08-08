@@ -83,9 +83,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void createIndex(String fieldName, boolean multiValued) {
-
         if (!holder.indexed.contains(fieldName)) {
             synchronized (maps) {
                 if (!holder.indexed.contains(fieldName)) {
@@ -210,7 +208,6 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void values(Handler<AsyncResult<Stream<Value>>> handler) {
         handler.handle(succeededFuture(db.stream()));
     }

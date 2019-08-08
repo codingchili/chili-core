@@ -557,6 +557,10 @@ public abstract class CoreStrings {
         return "Keystore not configured: generating self signed certificate.";
     }
 
+    public static String getEmptyKeyStore(String keystorePath) {
+        return String.format("Could not find any keys in keystore at '%s'.", keystorePath);
+    }
+
     public static String getSecurityDependencyMissing(String target, String identifier) {
         return "Error: missing security identifier '" + identifier +
                 "' in service configuration for '" + target + "'.";
@@ -639,6 +643,10 @@ public abstract class CoreStrings {
 
     public static String getRestNotSupportedByWebsocketListener() {
         return "REST Requests are not supported by the websocket listener.";
+    }
+
+    public static String getKeystoreTooManyEntries(String path) {
+        return String.format("Keystore at '%s' contains too many entries, only one entry supported.", path);
     }
 
     private enum IPVersion {IP4, IP6;}

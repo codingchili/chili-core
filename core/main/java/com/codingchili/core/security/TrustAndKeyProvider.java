@@ -6,7 +6,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.*;
 import java.security.cert.CertificateException;
+import java.util.Enumeration;
+import java.util.NoSuchElementException;
 
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreRuntimeException;
 
 /**
@@ -35,12 +38,20 @@ public class TrustAndKeyProvider {
         try {
             KeyStore store = KeyStore.getInstance(KEYSTORE_TYPE);
 
-            // we use null as the password here - this is because the JksOptions getValue
-            // handles decryption internally.
-            store.load(new ByteArrayInputStream(jks.getValue().getBytes()), null);
+            // JksOptions no longer handles decryption internally.
+            store.load(new ByteArrayInputStream(jks.getValue().getBytes()), jks.getPassword().toCharArray());
 
             // only support one alias per keystore.
-            alias = store.aliases().nextElement();
+            Enumeration<String> aliases = store.aliases();
+            if (aliases.hasMoreElements()) {
+                alias = aliases.nextElement();
+                if (aliases.hasMoreElements()) {
+                    // ensure that the single alias is chosen deterministically.
+                    throw new IllegalStateException(CoreStrings.getKeystoreTooManyEntries(jks.getPath()));
+                }
+            } else {
+                throw new NoSuchElementException(CoreStrings.getEmptyKeyStore(jks.getPath()));
+            }
 
             // attempt to load the public key if available.
             if (store.isCertificateEntry(alias)) {
