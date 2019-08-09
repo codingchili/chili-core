@@ -40,7 +40,7 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
      * to use the storage loader instead of invoking this constructor.
      *
      * @param future completed when the storage is loaded and ready.
-     * @param context
+     * @param context contains metadata about the stored objects.
      */
     public JsonMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
         this.context = context;

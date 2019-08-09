@@ -27,7 +27,7 @@ public class SharedMap<Value extends Storable> implements AsyncStorage<Value> {
      * multiple workers/verticles. It's recommended to use the storage loader to instantiate it.
      *
      * @param future  completed when the storage is ready.
-     * @param context the storage context to set up file locations etc.
+     * @param context the storage context contains metadata about the stored objects.
      */
     public SharedMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
         this.context = context;
