@@ -280,9 +280,9 @@ Aiming to keep up to the latest versions, current support is
 
 |Storage|Version|
 |---|---|
-|ElasticSeach|7.0.0|
+|ElasticSeach|7.3.0|
 |MongoDB |4.0.8|
 |Hazelcast|3.10.5|
-|CQEngine|3.0.0|
+|CQEngine|3.4.0|
 
 Please submit a feature request with any ideas on how to improve the APIs or to request support for another storage.
