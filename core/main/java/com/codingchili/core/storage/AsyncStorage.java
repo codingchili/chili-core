@@ -112,6 +112,12 @@ public interface AsyncStorage<Value extends Storable> {
     StorageContext<Value> context();
 
     /**
+     * @param field the path to the attribute to index, must include the array token in
+     *              #{@link com.codingchili.core.configuration.CoreStrings#STORAGE_ARRAY}.
+     */
+    void addIndex(String field);
+
+    /**
      * initialize the construction of a query.
      *
      * @return a builder String for constructing the query.

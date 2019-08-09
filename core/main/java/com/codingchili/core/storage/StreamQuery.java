@@ -134,8 +134,8 @@ public class StreamQuery<Value extends Storable, Streaming> {
 
                     task.complete(results().stream()
                             .sorted(this::sortByAttribute)
-                            .skip(page * pageSize)
-                            .limit(pageSize)
+                            .skip(getPage() * getPageSize())
+                            .limit(getPageSize())
                             .map(mapper)
                             .collect(Collectors.toList()));
 

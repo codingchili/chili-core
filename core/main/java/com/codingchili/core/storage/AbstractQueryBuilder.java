@@ -19,10 +19,10 @@ import static com.codingchili.core.protocol.Serializer.getValueByPath;
  * with the specified notation.
  */
 public abstract class AbstractQueryBuilder<Value extends Storable> implements QueryBuilder<Value> {
-    boolean isOrdered = false;
-    SortOrder sortOrder = SortOrder.ASCENDING;
-    int pageSize = Configurations.storage().getMaxResults();
-    int page = 0;
+    private boolean isOrdered = false;
+    private SortOrder sortOrder = SortOrder.ASCENDING;
+    private int pageSize = Configurations.storage().getMaxResults();
+    private int page = 0;
     private AsyncStorage<Value> storage;
     private String name = UUID.randomUUID().toString();
     private boolean isAttributeArray = false;
@@ -145,5 +145,33 @@ public abstract class AbstractQueryBuilder<Value extends Storable> implements Qu
             default:
                 return 1;
         }
+    }
+
+    public boolean isOrdered() {
+        return isOrdered;
+    }
+
+    public SortOrder getSortOrder() {
+        return sortOrder;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public int getPage() {
+        return page;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getArrayNotation() {
+        return arrayNotation;
+    }
+
+    public String getAttribute() {
+        return attribute;
     }
 }

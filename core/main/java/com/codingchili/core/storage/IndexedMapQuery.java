@@ -54,7 +54,6 @@ public class IndexedMapQuery<Value extends Storable> extends AbstractQueryBuilde
     private void prepareField(String attribute) {
         setAttribute(attribute);
         field = storage.getAttribute(attribute, isAttributeArray());
-        storage.createIndex(attribute, isAttributeArray());
     }
 
     private void next() {
@@ -124,8 +123,8 @@ public class IndexedMapQuery<Value extends Storable> extends AbstractQueryBuilde
         storage.context.blocking(blocking -> {
             try (ResultSet<Value> values = storage.db.retrieve(builder, getQueryOptions())) {
                 blocking.complete(StreamSupport.stream(values.spliterator(), false)
-                        .skip(pageSize * page)
-                        .limit(pageSize)
+                        .skip(getPageSize() * getPage())
+                        .limit(getPageSize())
                         .map(mapper).collect(Collectors.toList()));
             } catch (Exception e) {
                 blocking.fail(e);
@@ -140,12 +139,11 @@ public class IndexedMapQuery<Value extends Storable> extends AbstractQueryBuilde
 
 
     private QueryOptions getQueryOptions() {
-        if (isOrdered) {
-            storage.createIndex(getOrderByAttribute(), isAttributeArray());
+        if (isOrdered()) {
             AttributeOrder<Value> order;
 
             // no need to support sorting on multivalued fields.
-            if (sortOrder.equals(SortOrder.ASCENDING)) {
+            if (getSortOrder().equals(SortOrder.ASCENDING)) {
                 order = ascending(missingLast(storage.getAttribute(getOrderByAttribute(), false)));
             } else {
                 order = descending(missingLast(storage.getAttribute(getOrderByAttribute(), false)));

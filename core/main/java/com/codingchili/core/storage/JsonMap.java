@@ -35,7 +35,13 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     private JsonObject db = new JsonObject();
     private StorageContext<Value> context;
 
-    @SuppressWarnings("unchecked")
+    /**
+     * Creates a new possibly shared instance of the JsonMap storage plugin. It's recommended
+     * to use the storage loader instead of invoking this constructor.
+     *
+     * @param future completed when the storage is loaded and ready.
+     * @param context
+     */
     public JsonMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
         this.context = context;
         Logger logger = context.logger(getClass());
@@ -162,6 +168,11 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     @Override
     public StorageContext<Value> context() {
         return context;
+    }
+
+    @Override
+    public void addIndex(String field) {
+        // no-op.
     }
 
     @Override

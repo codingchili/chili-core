@@ -16,6 +16,7 @@ import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Validator;
 import com.codingchili.core.storage.exception.*;
 
+import static com.codingchili.core.configuration.CoreStrings.STORAGE_ARRAY;
 import static com.codingchili.core.context.FutureHelper.*;
 
 /**
@@ -42,14 +43,7 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
         this.collection = context.collection();
         this.context = context;
 
-        addIndex(ID, done -> {
-            future.complete(this);
-        });
-    }
-
-    private IndexOptions index() {
-        return new IndexOptions()
-                .unique(true);
+        addIndex(ID, done -> future.complete(this));
     }
 
     @Override
@@ -166,14 +160,15 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
         });
     }
 
-    private void addIndex(String field) {
-        addIndex(field, (result) -> {
-        });
+    @Override
+    public void addIndex(String field) {
+        addIndex(field, (result) -> { });
     }
 
     private void addIndex(String field, Handler<AsyncResult<Void>> handler) {
         if (!indexed.contains(field)) {
             indexed.add(field);
+            field = field.replace(STORAGE_ARRAY, "");
             client.createIndex(context.collection(), new JsonObject().put(field, ""), handler);
         }
     }
@@ -186,21 +181,18 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
 
             @Override
             public QueryBuilder<Value> on(String attribute) {
-                addIndex(attribute);
                 setAttribute(attribute);
                 return this;
             }
 
             @Override
             public QueryBuilder<Value> and(String attribute) {
-                addIndex(attribute);
                 setAttribute(attribute);
                 return this;
             }
 
             @Override
             public QueryBuilder<Value> or(String attribute) {
-                addIndex(attribute);
                 setAttribute(attribute);
                 apply();
                 return this;
@@ -281,13 +273,13 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
 
             private FindOptions getOptions() {
                 return new FindOptions()
-                    .setLimit(pageSize)
-                    .setSkip(pageSize * page)
+                    .setLimit(getPageSize())
+                    .setSkip(getPageSize() * getPage())
                     .setSort(getSortOptions());
             }
 
             private JsonObject getSortOptions() {
-                if (isOrdered) {
+                if (isOrdered()) {
                     return new JsonObject().put(getOrderByAttribute(), getSortDirection());
                 } else {
                     return new JsonObject();

@@ -2,7 +2,6 @@ package com.codingchili.core.storage;
 
 import io.vertx.core.*;
 
-import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
@@ -114,5 +113,10 @@ public class PrivateMap<Value extends Storable> implements AsyncStorage<Value> {
     @Override
     public StorageContext<Value> context() {
         return context;
+    }
+
+    @Override
+    public void addIndex(String field) {
+        // no-op.
     }
 }

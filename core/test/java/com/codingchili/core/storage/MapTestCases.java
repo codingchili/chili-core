@@ -721,9 +721,7 @@ public class MapTestCases {
         Async async = test.async();
         store.values(result -> {
             test.assertTrue(result.succeeded());
-            test.assertEquals(result.result()
-                    .collect(Collectors.toList())
-                    .size(),
+            test.assertEquals((int) result.result().count(),
                 TEST_ITEM_COUNT.intValue());
 
             async.complete();
@@ -764,6 +762,22 @@ public class MapTestCases {
                 async.complete();
             }
         }, TimerSource.of(50));
+    }
+
+    @Test
+    public void testAddIndexTwice() {
+        store.addIndex("name");
+        store.addIndex("name");
+    }
+
+    @Test
+    public void testAddNestedIndex() {
+        store.addIndex("nested.name");
+    }
+
+    @Test
+    public void testAddArrayIndex() {
+        store.addIndex("keywords");
     }
 
     @Test

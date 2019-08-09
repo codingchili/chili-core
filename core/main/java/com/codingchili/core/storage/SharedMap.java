@@ -22,6 +22,13 @@ public class SharedMap<Value extends Storable> implements AsyncStorage<Value> {
     private StorageContext<Value> context;
     private LocalMap<String, Value> map;
 
+    /**
+     * Creates a shared vertx map that is thread safe and can be concurrently accessed from
+     * multiple workers/verticles. It's recommended to use the storage loader to instantiate it.
+     *
+     * @param future  completed when the storage is ready.
+     * @param context the storage context to set up file locations etc.
+     */
     public SharedMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
         this.context = context;
         this.map = context.vertx().sharedData().getLocalMap(context.database() + "." + context.collection());
@@ -103,5 +110,10 @@ public class SharedMap<Value extends Storable> implements AsyncStorage<Value> {
     @Override
     public StorageContext<Value> context() {
         return context;
+    }
+
+    @Override
+    public void addIndex(String field) {
+        // no-op.
     }
 }

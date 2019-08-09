@@ -1,16 +1,9 @@
 package com.codingchili.core.storage;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
+import io.vertx.core.*;
 import org.apache.http.HttpHost;
 import org.elasticsearch.ElasticsearchStatusException;
-import org.elasticsearch.action.ActionListener;
-import org.elasticsearch.action.DocWriteRequest;
-import org.elasticsearch.action.DocWriteResponse;
+import org.elasticsearch.action.*;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -23,39 +16,28 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
-import org.elasticsearch.client.IndicesClient;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.indices.CreateIndexRequest;
-import org.elasticsearch.client.indices.CreateIndexResponse;
-import org.elasticsearch.client.indices.GetIndexRequest;
+import org.elasticsearch.client.*;
+import org.elasticsearch.client.indices.*;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.IndexNotFoundException;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.RegexpFlag;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
+import java.util.*;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Validator;
-import com.codingchili.core.storage.exception.NothingToRemoveException;
-import com.codingchili.core.storage.exception.NothingToUpdateException;
-import com.codingchili.core.storage.exception.StorageFailureException;
-import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
-import com.codingchili.core.storage.exception.ValueMissingException;
-import static com.codingchili.core.context.FutureHelper.error;
-import static com.codingchili.core.context.FutureHelper.result;
+import com.codingchili.core.storage.exception.*;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
+import static com.codingchili.core.context.FutureHelper.*;
 
 /**
  * Map implementation that uses ElasticSearch.
@@ -97,8 +79,8 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     private String constructIndexName(StorageContext<Value> context) {
         if (context.collection() != null) {
             return String.format("%s.%s",
-                context.database().toLowerCase(),
-                context.collection().toLowerCase());
+                    context.database().toLowerCase(),
+                    context.collection().toLowerCase());
         } else {
             return context.database();
         }
@@ -286,7 +268,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
             public void onResponse(SearchResponse search) {
                 if (search.getHits() != null) {
                     handler.handle(result(StreamSupport.stream(search.getHits().spliterator(), false)
-                        .map(source -> context.toValue(source.getSourceAsString()))));
+                            .map(source -> context.toValue(source.getSourceAsString()))));
                 } else {
                     handler.handle(result(Stream.empty()));
                 }
@@ -450,8 +432,8 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                         .size(MAX_RESULTS)
                         .fetchSource(true);
 
-                if (isOrdered) {
-                    switch (sortOrder) {
+                if (isOrdered()) {
+                    switch (getSortOrder()) {
                         case ASCENDING:
                             source.sort(new FieldSortBuilder(getOrderByAttribute()).order(SortOrder.ASC));
                             break;
@@ -459,8 +441,8 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                             source.sort(new FieldSortBuilder(getOrderByAttribute()).order(SortOrder.DESC));
                     }
                 }
-                source.size(pageSize);
-                source.from(pageSize * page);
+                source.size(getPageSize());
+                source.from(getPageSize()* getPage());
                 return source;
             }
         };
@@ -469,6 +451,11 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     @Override
     public StorageContext<Value> context() {
         return context;
+    }
+
+    @Override
+    public void addIndex(String field) {
+        // no-op: all fields are indexed.
     }
 
     private List<Value> listFrom(SearchHit[] hits) {

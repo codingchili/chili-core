@@ -15,6 +15,7 @@ import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.storage.exception.*;
 
+import static com.codingchili.core.configuration.CoreStrings.STORAGE_ARRAY;
 import static com.googlecode.cqengine.query.QueryFactory.*;
 import static io.vertx.core.Future.succeededFuture;
 
@@ -84,10 +85,13 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
         }
     }
 
-    public void createIndex(String fieldName, boolean multiValued) {
+    @Override
+    public void addIndex(String fieldName) {
         if (!holder.indexed.contains(fieldName)) {
             synchronized (maps) {
                 if (!holder.indexed.contains(fieldName)) {
+                    boolean multiValued = fieldName.contains(STORAGE_ARRAY);
+                    fieldName = fieldName.replace(STORAGE_ARRAY, "");
                     try {
                         Attribute<Value, String> attribute = getAttribute(fieldName, multiValued);
                         holder.attributes.put(fieldName, attribute);

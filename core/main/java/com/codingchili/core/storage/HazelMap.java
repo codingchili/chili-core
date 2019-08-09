@@ -154,7 +154,8 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
         });
     }
 
-    private void addIndex(String field) {
+    @Override
+    public void addIndex(String field) {
         if (!indexed.contains(field)) {
             indexed.add(field);
             imap.addIndex(field.replace(STORAGE_ARRAY, HAZEL_ARRAY), false);
@@ -163,36 +164,32 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public QueryBuilder<Value> query() {
-
-        return new AbstractQueryBuilder<Value>(this, HAZEL_ARRAY) {
+        return new AbstractQueryBuilder<>(this, HAZEL_ARRAY) {
             private List<Predicate<String, Value>> predicates = new ArrayList<>();
             private Predicate<String, Value> predicate;
             private BooleanOperator operator = BooleanOperator.AND;
 
             @Override
             public QueryBuilder<Value> on(String attribute) {
-                addIndex(attribute);
                 setAttribute(attribute);
                 return this;
             }
 
             @Override
             public QueryBuilder<Value> and(String attribute) {
-                addIndex(attribute);
                 apply(BooleanOperator.AND, attribute);
                 return this;
             }
 
             @Override
             public QueryBuilder<Value> or(String attribute) {
-                addIndex(attribute);
                 apply(BooleanOperator.OR, attribute);
                 return this;
             }
 
             @SuppressWarnings("unchecked")
             private void apply(BooleanOperator operator, String attribute) {
-                Predicate<String, Value> current = Predicates.and(predicates.toArray(new Predicate[predicates.size()]));
+                Predicate<String, Value> current = Predicates.and(predicates.toArray(new Predicate[0]));
 
                 if (predicate == null) {
                     predicate = current;
@@ -271,16 +268,16 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
             private Predicate getPredicateWithPager() {
                 PagingPredicate<String, Value> paging;
 
-                if (isOrdered) {
+                if (isOrdered()) {
                     String orderBy = getOrderByAttribute();
                     int sortDirection = getSortDirection();
                     paging = new PagingPredicate<>(predicate, (Serializable & Comparator<Map.Entry<String, Value>>) (first, second) -> {
                         return first.getValue().compareToAttribute(second.getValue(), orderBy) * sortDirection;
-                    }, pageSize);
+                    }, getPageSize());
                 } else {
-                    paging = new PagingPredicate<>(predicate, pageSize);
+                    paging = new PagingPredicate<>(predicate, getPageSize());
                 }
-                paging.setPage(page);
+                paging.setPage(getPage());
                 return paging;
             }
         };

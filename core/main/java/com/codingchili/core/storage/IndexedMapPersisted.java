@@ -7,7 +7,10 @@ import com.googlecode.cqengine.persistence.disk.DiskPersistence;
 import io.vertx.core.Future;
 
 import java.io.File;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.context.StorageContext;
 
 /**
@@ -21,20 +24,19 @@ import com.codingchili.core.context.StorageContext;
  * composite PK.
  */
 public class IndexedMapPersisted<Value extends Storable> extends IndexedMap<Value> {
+    private static final AtomicBoolean LOADED = new AtomicBoolean(false);
 
-    static {
-        // as indexes are not loaded by cqengine on startup, objects added before the
-        // call to addIndex (when the index already exists) does not index any attributes.
-        // this leads to objects not being found and cannot be removed/updated.
-        //
-        // this happens when the application is restarted and add is called before any queries are made.
-        // this incurs a performance penalty, as the index will be rebuilt when the application is restarted.
-        System.setProperty("cqengine.reinit.preexisting.indexes", Boolean.TRUE.toString());
-    }
-
+    /**
+     * Creates a possibly shared instance of the persisted IndexedMap. It is recommended
+     * to not call this directly and instead use the storage loader.
+     *
+     * @param future  completed when the storage is ready.
+     * @param context the storage context to set up file locations etc.
+     */
     public IndexedMapPersisted(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
         super((idField) -> {
             synchronized (IndexedMapPersisted.class) {
+                LOADED.set(true);
 
                 File file = new File(dbPath(context));
                 if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
@@ -53,7 +55,31 @@ public class IndexedMapPersisted<Value extends Storable> extends IndexedMap<Valu
     }
 
     @Override
-    protected void addIndexesForAttribute(Attribute<Value, String> attribute) {
+    public void addIndexesForAttribute(Attribute<Value, String> attribute) {
         db.addIndex(DiskIndex.onAttribute(attribute));
+    }
+
+    /**
+     * Disk indexes are not discovered by CQEngine at startup. This means that CQEngine
+     * will not update existing indexes unless AsyncStorage#addIndex is called before any
+     * items are added.
+     * <p>
+     * To work around this there are two options,
+     * <p>
+     * a) Always add all indexes before inserting ANY items.
+     * b) Call this method before loading the IndexedMapPersisted plugin. Then items
+     * can be added before adding an index. Because when the index is added later it
+     * will be rebuilt. In the window between adding the object and adding the index
+     * the object will not be visible in the affected indexes.
+     * <p>
+     * If this method is called after an instance of IndexedMapPersisted has been loaded
+     * through the storage loader an exception is thrown.
+     */
+    public static void reindex() {
+        if (LOADED.get()) {
+            throw new CoreRuntimeException(CoreStrings.ERROR_ALREADY_INITIALIZED);
+        } else {
+            System.setProperty("cqengine.reinit.preexisting.indexes", Boolean.TRUE.toString());
+        }
     }
 }
