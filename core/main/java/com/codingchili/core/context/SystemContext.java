@@ -278,12 +278,12 @@ public class SystemContext implements CoreContext {
     }
 
     @Override
-    public <T> void blocking(Handler<Future<T>> sync, Handler<AsyncResult<T>> result) {
+    public <T> void blocking(Handler<Promise<T>> sync, Handler<AsyncResult<T>> result) {
         blocking(sync, false, result);
     }
 
     @Override
-    public <T> void blocking(Handler<Future<T>> sync, boolean ordered, Handler<AsyncResult<T>> result) {
+    public <T> void blocking(Handler<Promise<T>> sync, boolean ordered, Handler<AsyncResult<T>> result) {
         vertx.executeBlocking(sync, ordered, result);
     }
 

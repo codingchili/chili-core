@@ -112,7 +112,7 @@ public interface CoreContext {
      * @param result   handler for the result of the blocking execution.
      * @param <T>      type parameter.
      */
-    <T> void blocking(Handler<Future<T>> blocking, Handler<AsyncResult<T>> result);
+    <T> void blocking(Handler<Promise<T>> blocking, Handler<AsyncResult<T>> result);
 
     /**
      * Call to execute the given blocking handler on a worker thread that is
@@ -123,7 +123,7 @@ public interface CoreContext {
      * @param ordered  if true, indicates that the tasks must be completed in the same order as they are started.
      * @param result   handler for the result that is called asynchronously
      */
-    <T> void blocking(Handler<Future<T>> blocking, boolean ordered, Handler<AsyncResult<T>> result);
+    <T> void blocking(Handler<Promise<T>> blocking, boolean ordered, Handler<AsyncResult<T>> result);
 
     /**
      * @param aClass added as metadata to all logged events.

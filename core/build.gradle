@@ -28,24 +28,24 @@ artifacts {
 }
 
 dependencies {
-    compile 'io.vertx:vertx-core:3.7.1'
-    compile 'io.vertx:vertx-web:3.7.1'
-    compile 'io.vertx:vertx-hazelcast:3.7.1'
-    compile 'io.vertx:vertx-mongo-client:3.7.1'
-    compile 'io.vertx:vertx-dropwizard-metrics:3.7.1'
+    compile 'io.vertx:vertx-core:3.8.0'
+    compile 'io.vertx:vertx-web:3.8.0'
+    compile 'io.vertx:vertx-hazelcast:3.8.0'
+    compile 'io.vertx:vertx-mongo-client:3.8.0'
+    compile 'io.vertx:vertx-dropwizard-metrics:3.8.0'
 
     compile 'de.neuland-bfi:jade4j:1.2.7'
     compile 'de.mkammerer:argon2-jvm:2.5'
-    compile 'org.fusesource.jansi:jansi:1.17.1'
-    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.7'
+    compile 'org.fusesource.jansi:jansi:1.18'
+    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.9'
 
-    compile 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.0.0-rc1'
+    compile 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.3.0'
     compile 'com.googlecode.cqengine:cqengine:3.4.0'
 
     /* keep these in sync with cqengine, used internally. */
     compile 'com.esotericsoftware:reflectasm:1.11.7'
     compile 'com.esotericsoftware:kryo:5.0.0-RC1'
 
-    testCompile 'io.vertx:vertx-unit:3.7.1'
+    testCompile 'io.vertx:vertx-unit:3.8.0'
     testCompile 'junit:junit:4.12'
 }
