@@ -1,35 +1,25 @@
 package com.codingchili.core.storage;
 
-import java.util.Collection;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import com.codingchili.core.context.*;
-import com.codingchili.core.logging.ConsoleLogger;
-import com.codingchili.core.protocol.Serializer;
-import com.codingchili.core.storage.exception.NothingToRemoveException;
-import com.codingchili.core.storage.exception.NothingToUpdateException;
-import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
-import com.codingchili.core.storage.exception.ValueMissingException;
-import com.codingchili.core.testing.StorageObject;
-import static com.codingchili.core.configuration.CoreStrings.ID_NAME;
-import static com.codingchili.core.logging.Level.WARNING;
-
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
+import io.vertx.core.*;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.*;
+import org.junit.runner.RunWith;
+
+import java.util.Collection;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import com.codingchili.core.context.*;
+import com.codingchili.core.logging.ConsoleLogger;
+import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.storage.exception.*;
+import com.codingchili.core.testing.StorageObject;
+
+import static com.codingchili.core.configuration.CoreStrings.ID_NAME;
+import static com.codingchili.core.logging.Level.WARNING;
 
 
 /**
@@ -79,17 +69,17 @@ public class MapTestCases {
         Async async = test.async();
 
         new StorageLoader<StorageObject>(context)
-            .withDB(plugin.getSimpleName(), COLLECTION)
-            .withValue(StorageObject.class)
-            .withPlugin(plugin)
-            .build(result -> {
-                if (result.succeeded()) {
-                    store = result.result();
-                    prepareStore(async);
-                } else {
-                    test.fail(result.cause());
-                }
-            });
+                .withDB(plugin.getSimpleName(), COLLECTION)
+                .withValue(StorageObject.class)
+                .withPlugin(plugin)
+                .build(result -> {
+                    if (result.succeeded()) {
+                        store = result.result();
+                        prepareStore(async);
+                    } else {
+                        test.fail(result.cause());
+                    }
+                });
     }
 
     private void prepareStore(Async async) {
@@ -355,8 +345,8 @@ public class MapTestCases {
 
             query.result().stream().forEach(item -> {
                 test.assertInRange(SNOWFLAKE_BASE_LEVEL,
-                    item.getLevel(),
-                    SNOWFLAKE_MAX_LEVEL - SNOWFLAKE_BASE_LEVEL);
+                        item.getLevel(),
+                        SNOWFLAKE_MAX_LEVEL - SNOWFLAKE_BASE_LEVEL);
             });
 
             async.complete();
@@ -414,15 +404,15 @@ public class MapTestCases {
         int pageSize = 10;
 
         store.query(NAME)
-            .matches(REGEX_ALL)
-            .pageSize(pageSize)
-            .orderBy(LEVEL)
-            .order(mode)
-            .execute(query -> {
-                test.assertTrue(query.succeeded(), errorText(query));
-                test.assertEquals(pageSize, query.result().size());
-                handler.handle(Future.succeededFuture(query.result()));
-            });
+                .matches(REGEX_ALL)
+                .pageSize(pageSize)
+                .orderBy(LEVEL)
+                .order(mode)
+                .execute(query -> {
+                    test.assertTrue(query.succeeded(), errorText(query));
+                    test.assertEquals(pageSize, query.result().size());
+                    handler.handle(Future.succeededFuture(query.result()));
+                });
     }
 
     private boolean sortedByLevel(Collection<StorageObject> items, SortOrder order) {
@@ -430,11 +420,11 @@ public class MapTestCases {
 
         for (StorageObject item : items) {
             if (item.getLevel() < lastLevel && order.equals(SortOrder.ASCENDING) ||
-                item.getLevel() > lastLevel && order.equals(SortOrder.DESCENDING)) {
+                    item.getLevel() > lastLevel && order.equals(SortOrder.DESCENDING)) {
                 new ConsoleLogger(getClass())
-                    .log("Sort verification error!", WARNING)
-                    .log("Last level was " + lastLevel + " using sortmode " + order.name(), WARNING)
-                    .log(Serializer.json(item).encodePrettily(), WARNING);
+                        .log("Sort verification error!", WARNING)
+                        .log("Last level was " + lastLevel + " using sortmode " + order.name(), WARNING)
+                        .log(Serializer.json(item).encodePrettily(), WARNING);
                 return false;
             }
             lastLevel = item.getLevel();
@@ -447,15 +437,15 @@ public class MapTestCases {
         Async async = test.async();
 
         store.query(NAME)
-            .matches(REGEX_ALL)
-            .or(NAME)
-            .matches(REGEX_ALL)
-            .pageSize(TEST_ITEM_COUNT.intValue())
-            .execute(query -> {
-                test.assertTrue(query.succeeded(), errorText(query));
-                test.assertEquals(TEST_ITEM_COUNT.intValue(), query.result().size());
-                async.complete();
-            });
+                .matches(REGEX_ALL)
+                .or(NAME)
+                .matches(REGEX_ALL)
+                .pageSize(TEST_ITEM_COUNT.intValue())
+                .execute(query -> {
+                    test.assertTrue(query.succeeded(), errorText(query));
+                    test.assertEquals(TEST_ITEM_COUNT.intValue(), query.result().size());
+                    async.complete();
+                });
     }
 
     @Test
@@ -463,16 +453,16 @@ public class MapTestCases {
         Async async = test.async();
 
         store.query(LEVEL)
-            .between(0L, SNOWFLAKE_BASE_LEVEL + 5)
-            .and(NAME)
-            .equalTo(ONE)
-            .or(NAME)
-            .equalTo(TWO)
-            .execute(query -> {
-                test.assertTrue(query.succeeded(), errorText(query));
-                test.assertEquals(2, query.result().size());
-                async.complete();
-            });
+                .between(0L, SNOWFLAKE_BASE_LEVEL + 5)
+                .and(NAME)
+                .equalTo(ONE)
+                .or(NAME)
+                .equalTo(TWO)
+                .execute(query -> {
+                    test.assertTrue(query.succeeded(), errorText(query));
+                    test.assertEquals(2, query.result().size());
+                    async.complete();
+                });
     }
 
     @Test
@@ -480,19 +470,19 @@ public class MapTestCases {
         Async async = test.async();
 
         store.query(LEVEL)
-            .between(0L, 0L)
-            .or(LEVEL)
-            .between(5L, 5L)
-            .execute(query -> {
-                test.assertTrue(query.succeeded(), errorText(query));
-                test.assertNotEquals(0, query.result().size());
+                .between(0L, 0L)
+                .or(LEVEL)
+                .between(5L, 5L)
+                .execute(query -> {
+                    test.assertTrue(query.succeeded(), errorText(query));
+                    test.assertNotEquals(0, query.result().size());
 
-                for (StorageObject item : query.result()) {
-                    test.assertTrue(item.getLevel() == 5 || item.getLevel() == 0);
-                }
+                    for (StorageObject item : query.result()) {
+                        test.assertTrue(item.getLevel() == 5 || item.getLevel() == 0);
+                    }
 
-                async.complete();
-            });
+                    async.complete();
+                });
     }
 
     @Test
@@ -500,15 +490,15 @@ public class MapTestCases {
         Async async = test.async();
 
         store.query(NAME).startsWith(SNOWFLAKE_NAME_PREFIX)
-            .execute(query -> {
-                test.assertTrue(query.succeeded(), errorText(query));
-                test.assertEquals(SNOWFLAKE_COUNT.intValue(), query.result().size());
+                .execute(query -> {
+                    test.assertTrue(query.succeeded(), errorText(query));
+                    test.assertEquals(SNOWFLAKE_COUNT.intValue(), query.result().size());
 
-                for (StorageObject item : query.result()) {
-                    test.assertTrue(item.getId().startsWith(SNOWFLAKE_NAME_PREFIX));
-                }
-                async.complete();
-            });
+                    for (StorageObject item : query.result()) {
+                        test.assertTrue(item.getId().startsWith(SNOWFLAKE_NAME_PREFIX));
+                    }
+                    async.complete();
+                });
     }
 
     @Test
@@ -516,18 +506,18 @@ public class MapTestCases {
         Async async = test.async();
 
         store.query(NAME)
-            .matches(".*e0")
-            .and(NAME)
-            .matches(SNOWFLAKE_NAME_PREFIX + ".*")
-            .execute(query -> {
-                test.assertTrue(query.succeeded(), errorText(query));
-                test.assertNotEquals(0, query.result().size());
+                .matches(".*e0")
+                .and(NAME)
+                .matches(SNOWFLAKE_NAME_PREFIX + ".*")
+                .execute(query -> {
+                    test.assertTrue(query.succeeded(), errorText(query));
+                    test.assertNotEquals(0, query.result().size());
 
-                for (StorageObject item : query.result()) {
-                    test.assertTrue(item.getId().matches(SNOWFLAKE_NAME_PREFIX + ".*[0-9]"));
-                }
-                async.complete();
-            });
+                    for (StorageObject item : query.result()) {
+                        test.assertTrue(item.getId().matches(SNOWFLAKE_NAME_PREFIX + ".*[0-9]"));
+                    }
+                    async.complete();
+                });
     }
 
     @Test
@@ -535,16 +525,16 @@ public class MapTestCases {
         Async async = test.async();
 
         store.query(NAME)
-            .in(ONE, TWO)
-            .execute(query -> {
-                test.assertTrue(query.succeeded(), errorText(query));
-                test.assertEquals(2, query.result().size());
+                .in(ONE, TWO)
+                .execute(query -> {
+                    test.assertTrue(query.succeeded(), errorText(query));
+                    test.assertEquals(2, query.result().size());
 
-                for (StorageObject item : query.result()) {
-                    test.assertTrue(item.getId().equals(ONE) || item.getId().equals(TWO));
-                }
-                async.complete();
-            });
+                    for (StorageObject item : query.result()) {
+                        test.assertTrue(item.getId().equals(ONE) || item.getId().equals(TWO));
+                    }
+                    async.complete();
+                });
     }
 
     @Test
@@ -552,20 +542,20 @@ public class MapTestCases {
         Async async = test.async();
 
         store.query(NAME)
-            .matches(REGEX_ALL)
-            .page(3) // skip all level 0 and 1.
-            .pageSize(LEVEL_BUCKET_SIZE)
-            .orderBy(LEVEL)
-            .order(SortOrder.ASCENDING)
-            .execute(query -> {
-                test.assertTrue(query.succeeded(), errorText(query));
-                test.assertNotEquals(0, query.result().size());
+                .matches(REGEX_ALL)
+                .page(3) // skip all level 0 and 1.
+                .pageSize(LEVEL_BUCKET_SIZE)
+                .orderBy(LEVEL)
+                .order(SortOrder.ASCENDING)
+                .execute(query -> {
+                    test.assertTrue(query.succeeded(), errorText(query));
+                    test.assertNotEquals(0, query.result().size());
 
-                for (StorageObject item : query.result()) {
-                    test.assertEquals(2, item.getLevel());
-                }
-                async.complete();
-            });
+                    for (StorageObject item : query.result()) {
+                        test.assertEquals(2, item.getLevel());
+                    }
+                    async.complete();
+                });
     }
 
     @Test
@@ -585,17 +575,17 @@ public class MapTestCases {
         Async async = test.async();
 
         store.query("nested.name")
-            .startsWith(StorageObject.NESTED_PREFIX)
-            .or(NAME)
-            .startsWith(SNOWFLAKE_NAME_PREFIX)
-            .or(NAME)
-            .startsWith(NAME)
-            .pageSize(TEST_ITEM_COUNT.intValue())
-            .execute(query -> {
-                test.assertTrue(query.succeeded(), errorText(query));
-                test.assertEquals(TEST_ITEM_COUNT.intValue(), query.result().size());
-                async.complete();
-            });
+                .startsWith(StorageObject.NESTED_PREFIX)
+                .or(NAME)
+                .startsWith(SNOWFLAKE_NAME_PREFIX)
+                .or(NAME)
+                .startsWith(NAME)
+                .pageSize(TEST_ITEM_COUNT.intValue())
+                .execute(query -> {
+                    test.assertTrue(query.succeeded(), errorText(query));
+                    test.assertEquals(TEST_ITEM_COUNT.intValue(), query.result().size());
+                    async.complete();
+                });
     }
 
     @Test
@@ -603,19 +593,19 @@ public class MapTestCases {
         Async async = test.async();
 
         store.query("nested.name")
-            .order(SortOrder.ASCENDING)
-            .matches(REGEX_ALL)
-            .execute(query -> {
-                test.assertTrue(query.succeeded(), errorText(query));
-                test.assertNotEquals(0, query.result().size());
+                .order(SortOrder.ASCENDING)
+                .matches(REGEX_ALL)
+                .execute(query -> {
+                    test.assertTrue(query.succeeded(), errorText(query));
+                    test.assertNotEquals(0, query.result().size());
 
-                String last = "";
-                for (StorageObject item : query.result()) {
-                    test.assertTrue(last.compareTo(item.getNested().getName()) <= 0);
-                    last = item.getNested().getName();
-                }
-                async.complete();
-            });
+                    String last = "";
+                    for (StorageObject item : query.result()) {
+                        test.assertTrue(last.compareTo(item.getNested().getName()) <= 0);
+                        last = item.getNested().getName();
+                    }
+                    async.complete();
+                });
     }
 
     @Test
@@ -649,11 +639,11 @@ public class MapTestCases {
         Async async = test.async();
 
         store.query(NAME).like(SNOWFLAKE_NAME_PREFIX.substring(1, SNOWFLAKE_NAME_PREFIX.length() - 2))
-            .execute(query -> {
-                test.assertTrue(query.succeeded(), errorText(query));
-                test.assertNotEquals(0, query.result().size());
-                async.complete();
-            });
+                .execute(query -> {
+                    test.assertTrue(query.succeeded(), errorText(query));
+                    test.assertNotEquals(0, query.result().size());
+                    async.complete();
+                });
     }
 
     @Test
@@ -708,12 +698,12 @@ public class MapTestCases {
     public void testArrayIdentifierInSubstatement(TestContext test) {
         Async async = test.async();
         store.query("nested.numbers[]").between(10L, 42L)
-            .and("nested.numbers[]").between(0L, 10L)
-            .execute(query -> {
-                test.assertTrue(query.succeeded(), errorText(query));
-                test.assertNotEquals(0, query.result().size());
-                async.complete();
-            });
+                .and("nested.numbers[]").between(0L, 10L)
+                .execute(query -> {
+                    test.assertTrue(query.succeeded(), errorText(query));
+                    test.assertNotEquals(0, query.result().size());
+                    async.complete();
+                });
     }
 
     @Test
@@ -722,7 +712,7 @@ public class MapTestCases {
         store.values(result -> {
             test.assertTrue(result.succeeded());
             test.assertEquals((int) result.result().count(),
-                TEST_ITEM_COUNT.intValue());
+                    TEST_ITEM_COUNT.intValue());
 
             async.complete();
         });
@@ -734,9 +724,9 @@ public class MapTestCases {
         int expectedHits = SNOWFLAKE_COUNT.intValue() / 2;
 
         QueryBuilder<StorageObject> builder = store
-            .query(NAME).startsWith(SNOWFLAKE_NAME_PREFIX)
-            .page(1)
-            .pageSize(expectedHits); // important to verify that the pager is reset.
+                .query(NAME).startsWith(SNOWFLAKE_NAME_PREFIX)
+                .page(1)
+                .pageSize(expectedHits); // important to verify that the pager is reset.
 
         builder.execute(query -> {
             test.assertTrue(query.succeeded());
@@ -777,7 +767,7 @@ public class MapTestCases {
 
     @Test
     public void testAddArrayIndex() {
-        store.addIndex("keywords");
+        store.addIndex("keywords[]");
     }
 
     @Test
@@ -787,18 +777,18 @@ public class MapTestCases {
 
         // creates a new storage using another context with the same DB/colletion
         new StorageLoader<StorageObject>(context2)
-            .withDB(plugin.getSimpleName(), COLLECTION)
-            .withValue(StorageObject.class)
-            .withPlugin(plugin)
-            .build(result -> {
-                AsyncStorage<StorageObject> newStorage = result.result();
-                store.size(size -> {
-                    newStorage.size(newSize -> {
-                        test.assertEquals(size.result(), newSize.result());
-                        test.assertEquals(newSize.result(), TEST_ITEM_COUNT.intValue());
-                        async.complete();
+                .withDB(plugin.getSimpleName(), COLLECTION)
+                .withValue(StorageObject.class)
+                .withPlugin(plugin)
+                .build(result -> {
+                    AsyncStorage<StorageObject> newStorage = result.result();
+                    store.size(size -> {
+                        newStorage.size(newSize -> {
+                            test.assertEquals(size.result(), newSize.result());
+                            test.assertEquals(newSize.result(), TEST_ITEM_COUNT.intValue());
+                            async.complete();
+                        });
                     });
                 });
-            });
     }
 }
