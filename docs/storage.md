@@ -4,7 +4,7 @@ Implementations for persistent and not-so-persistent (aka in-memory) data stores
 
 The storage API's and query DSL are designed primarily for use with NoSQL databases and only support storing homogeneous objects. The storage implementations are standalone and are optional, it's entirely possible to use MongoDB for example directly, or with the Vert.x APIs.
 
-The API is modeled around a "queryable" map and inspired by the Hazelcast IMap interface. This results in a very convenient object store with a fast lookup on the primary key, while also supporting queries with indexes. Most implementations will create an index on-the-fly when that attribute is queried.
+The API is modeled around a "queryable" map and inspired by the Hazelcast IMap interface. This results in a very convenient object store with a fast lookup on the primary key, while also supporting queries with indexes.
 
 All examples uses the `Account` class which implements `Storable`.
 
@@ -12,14 +12,14 @@ Storage implementations
 
 |Class|Persistence|Scope|Description|
 |---|---|---|---|
-| HazelMap| memory/disk* | Cluster | ? |
-| ElasticMap | memory/disk | Server | ? |
-| MongoDBMap | memory*/disk | Server | ? |
-| IndexedMapPersisted | disk | JVM | ? |
-| IndexedMapVolatile| memory| JVM | ? |
-| SharedMap | memory | JVM | ? |
-| JsonMap | memory | JVM | ? |
-| PrivateMap | memory | Instance | ? |
+| HazelMap| memory/disk* | Cluster | Distributed cluster, backed by an IMap. |
+| ElasticMap | memory/disk | Server | Elasticsearch high-level transport client.  |
+| MongoDBMap | memory*/disk | Server | MongoDB async client driver. |
+| IndexedMapPersisted | disk | JVM | CQEngine backed with SQLite persistence. |
+| IndexedMapVolatile| memory| JVM | CQEngine with in memory store and indexes. |
+| SharedMap | memory | JVM | Thread/Verticle concurrency safe plain map. |
+| JsonMap | memory | JVM | No serialization required for JsonObjects. |
+| PrivateMap | memory | Instance | A map that isn't shared across loaders. |
 
 *) Not included in the free/community version.
 
@@ -156,7 +156,23 @@ clear(done -> {
 size((done) -> {
     int count = done.result();
 });
+
+// add an index for a regular attribute {"petstore": {owner: "jess"}}
+addIndex("petstore.owner");
+
+// add an index for a multi-valued attribute {"petstore": {petNames: ["kitty1", "kitty2"]}}
+addIndex("petstore.petNames[]");
 ```
+
+It is recommended to add all indexes to CQEngine based disk-persistence stores, before adding any objects. As indexes
+are not loaded from the SQLite database on startup, as these require special accessor implementations, "Attributes".
+If the application is shut down, started and an object is added without calling .addIndex that object will not be added
+to any indexes and cannot be found using attributes for which indexes exists for.
+
+To solve this, call `IndexedMapPersisted.reindex()` before instantiating the IndexedMapPersisted storage plugin. Objects
+added before the index was added with `.addIndex` can then be re-indexed, this will be done the next time `.addIndex`
+is called and this incurs a performance penalty as the whole collection will be re-indexed. To avoid this, add all
+indexes any time the application is started.
 
 ### Query API
 

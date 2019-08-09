@@ -24,6 +24,15 @@ Recommended reading order
 12. [Testing](testing)
 13. [Files](files)
 14. [Benchmarking](benchmarking)
+
+Other related documentation
+
+- [Vertx](https://vertx.io/docs/vertx-core/java/)
+- [Hazelcast](https://docs.hazelcast.org/docs/3.12.2/manual/html-single/index.html)
+- [CQEngine](https://github.com/npgall/cqengine/tree/master/documentation)
+- [Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/client/java-api/current/index.html)
+- [MongoDB](https://docs.mongodb.com/)
+ 
  
 ##### Documentation overview
 
