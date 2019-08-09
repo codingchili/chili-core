@@ -49,6 +49,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
                 holder = maps.get(context.identifier());
             } else {
                 holder = new IndexedMapHolder<>(supplier.apply(FIELD_ID));
+                holder.attributes.put(Storable.idField, FIELD_ID);
                 maps.put(context.identifier(), holder);
             }
             db = holder.db;
