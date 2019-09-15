@@ -2,6 +2,7 @@ package com.codingchili.core.protocol;
 
 
 import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.util.Pool;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
@@ -71,6 +72,25 @@ public class Serializer {
         T object = kryo.apply(instance);
         pool.free(instance);
         return object;
+    }
+
+    /**
+     * Configures the current kryo instance to skip copying and serializing of transient fields.
+     * If the serializer configuration is already up to date then no changes will be committed.
+     *
+     * @param kryo     the kryo instance to apply the configuration to.
+     * @param theClass the class for which the serializer configuration is to be changed.
+     */
+    public static void skipTransient(Kryo kryo, Class theClass) {
+        FieldSerializer serializer = (FieldSerializer) kryo.getSerializer(theClass);
+        FieldSerializer.FieldSerializerConfig config = serializer.getFieldSerializerConfig();
+
+        if (config.getCopyTransient()) {
+            // avoid calling updateFields if transient fields are already disabled.
+            config.setCopyTransient(false);
+            config.setSerializeTransient(false);
+            serializer.updateFields();
+        }
     }
 
     /**

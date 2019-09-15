@@ -44,7 +44,7 @@ dependencies {
 
     /* keep these in sync with cqengine, used internally. */
     compile 'com.esotericsoftware:reflectasm:1.11.7'
-    compile 'com.esotericsoftware:kryo:5.0.0-RC1'
+    compile 'com.esotericsoftware:kryo:5.0.0-RC5'
 
     testCompile 'io.vertx:vertx-unit:3.8.0'
     testCompile 'junit:junit:4.12'
