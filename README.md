@@ -118,12 +118,17 @@ The complete feature list may change during development.
 The core uses some great software, such as
 
 * [eclipse/vert.x](https://github.com/eclipse/vert.x) - reactive: eventbus, clustering and networking
+* [EsotericSoftware/kryo](https://github.com/EsotericSoftware/kryo) - serialization library
+* [EsotericSoftware/reflectasm](https://github.com/EsotericSoftware/reflectasm) - fast reflections library
+
+Optional dependencies
+
 * [hazelcast/hazelcast](https://github.com/hazelcast/hazelcast) - cluster management, data store
 * [npgall/cqengine](https://github.com/npgall/cqengine) - in-vm indexed collections with query support
 * [elastic/elasticsearch](https://github.com/elastic/elasticsearch) - distributed data indexing
 * [mongodb/mongo](https://github.com/mongodb/mongo) - document database
-* [EsotericSoftware/kryo](https://github.com/EsotericSoftware/kryo) - serialization library
-* [EsotericSoftware/reflectasm](https://github.com/EsotericSoftware/reflectasm) - fast reflections library
+
+Read the documentation to learn more about optional dependencies.
 
 Applications currently using chili-core
 
