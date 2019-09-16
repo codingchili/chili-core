@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    compile "com.github.codingchili.chili-core:core:1.1.0"
+    compile "com.github.codingchili.chili-core:core:1.3.0"
 }
 ```
 
