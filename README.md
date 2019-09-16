@@ -50,7 +50,7 @@ public static void main(String[] args) {
     CoreContext core = new SystemContext();
 
     core.listener(() -> new RestListener()
-            .settings(() -> settings)
+            .settings(settings)
             .handler(new MyHandler()));
 }
 ```
