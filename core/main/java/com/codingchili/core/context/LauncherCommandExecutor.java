@@ -36,7 +36,7 @@ public class LauncherCommandExecutor extends DefaultCommandExecutor {
     private void registerCommands() {
         CoreBenchmarkSuite suite = new CoreBenchmarkSuite();
 
-        super.add((executor) -> CommandResult.CONTINUE, DEPLOY, getDeployDescription());
+        super.add((executor) -> LauncherCommandResult.CONTINUE, DEPLOY, getDeployDescription());
         add(Configurations::reset, RECONFIGURE, getReconfigureDescription());
 
         add(generator(AuthenticationGenerator::preshare), GENERATE_PRESHARED, getGeneratePresharedDescription());
@@ -61,7 +61,7 @@ public class LauncherCommandExecutor extends DefaultCommandExecutor {
     private void add(Runnable runnable, String name, String description) {
         super.add((executor) -> {
             runnable.run();
-            return CommandResult.SHUTDOWN;
+            return LauncherCommandResult.SHUTDOWN;
         }, name, description);
     }
 

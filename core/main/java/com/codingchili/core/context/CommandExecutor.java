@@ -2,8 +2,7 @@ package com.codingchili.core.context;
 
 import io.vertx.core.Future;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -60,6 +59,13 @@ public interface CommandExecutor {
      * @return the property as a string value
      */
     Optional<String> getProperty(String name);
+
+    /**
+     * Get a commandline property passed to the Executor.
+     * @param name the name of the property to get
+     * @return a list of all the property values.
+     */
+    List<String> getAllProperties(String name);
 
     /**
      * Registers a new command to the CommandExecutor.

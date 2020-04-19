@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 import java.util.Optional;
 
 import static com.codingchili.core.configuration.CoreStrings.HELP;
-import static com.codingchili.core.context.CommandResult.SHUTDOWN;
 import static org.junit.Assert.fail;
 
 /**
@@ -36,7 +35,7 @@ public class CommandExecutorTest {
     public void setUp() {
         executor.add((executor) -> {
             executed = true;
-            return SHUTDOWN;
+            return LauncherCommandResult.SHUTDOWN;
         }, HELP, "");
 
         executor.add(((future, executor1) -> {
@@ -132,14 +131,14 @@ public class CommandExecutorTest {
             test.assertTrue(executor.getProperty(PROPERTY).isPresent());
             test.assertEquals(VALUE, executor.getProperty(PROPERTY).get());
             async.complete();
-            return SHUTDOWN;
+            return LauncherCommandResult.SHUTDOWN;
         }, TEST_COMMAND, "").execute(TEST_COMMANDLINE_WITH_PARAM.split(" "));
     }
 
     @Test
     public void testThrowsErrorIfAlreadyExists(TestContext test) {
         try {
-            executor.add((executor) -> SHUTDOWN, HELP, "");
+            executor.add((executor) -> LauncherCommandResult.SHUTDOWN, HELP, "");
             test.fail("Test did not fail when adding an existing command.");
         } catch (CommandAlreadyExistsException ignored) {
         }
@@ -159,7 +158,7 @@ public class CommandExecutorTest {
         Async async = test.async();
         executor.add((executor) -> {
             async.complete();
-            return SHUTDOWN;
+            return LauncherCommandResult.SHUTDOWN;
         }, COMMAND, "");
         executor.execute(COMMAND);
     }

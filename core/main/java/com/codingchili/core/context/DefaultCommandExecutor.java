@@ -12,8 +12,6 @@ import com.codingchili.core.context.exception.NoSuchCommandException;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.Logger;
 
-import static com.codingchili.core.configuration.CoreStrings.COMMAND_PREFIX;
-
 /**
  * Parses and executes commands from the command line.
  */
@@ -21,9 +19,8 @@ public class DefaultCommandExecutor implements CommandExecutor {
     private static final String UNDEFINED = "undefined";
     protected LauncherSettings settings = Configurations.launcher();
     protected Map<String, Command> commands = new HashMap<>();
-    protected Map<String, String> properties = new HashMap<>();
     protected Logger logger = new StringLogger(getClass());
-    private String command;
+    private CommandParser parser = new CommandParser();
 
     /**
      * uses a ConsoleLogger as default.
@@ -40,7 +37,7 @@ public class DefaultCommandExecutor implements CommandExecutor {
 
     @Override
     public CommandExecutor execute(Future<CommandResult> future, String... commandLine) {
-        parseCommandLine(commandLine);
+        parser.parse(commandLine);
         Optional<String> command = getCommand();
 
         if (command.isPresent() && commands.containsKey(command.get())) {
@@ -65,57 +62,34 @@ public class DefaultCommandExecutor implements CommandExecutor {
         }
     }
 
-    private void parseCommandLine(String[] line) {
-        String parameter = null;
-
-        if (line.length > 0) {
-            command = line[0];
-        }
-
-        for (int i = 1; i < line.length; i++) {
-            String item = line[i];
-
-            if (item.startsWith(COMMAND_PREFIX)) {
-                parameter = item;
-                properties.put(parameter, null);
-            } else {
-                if (parameter != null) {
-                    properties.put(parameter, item);
-                }
-            }
-        }
-    }
-
     @Override
     public Optional<String> getCommand() {
-        if (command == null) {
-            return Optional.empty();
-        } else {
-            return Optional.of(command);
-        }
+        return parser.getCommand();
+    }
+
+    public CommandParser getParser() {
+        return parser;
     }
 
     @Override
     public CommandExecutor addProperty(String key, String value) {
-        properties.put(key, value);
+        parser.addProperty(key, value);
         return this;
     }
 
     @Override
     public boolean hasProperty(String name) {
-        return properties.containsKey(name);
+        return parser.hasProperty(name);
     }
 
     @Override
     public Optional<String> getProperty(String name) {
-        if (properties.containsKey(name)) {
-            String value = properties.get(name);
+        return parser.getValue(name);
+    }
 
-            if (value != null) {
-                return Optional.of(properties.get(name));
-            }
-        }
-        return Optional.empty();
+    @Override
+    public List<String> getAllProperties(String name) {
+        return parser.getAllValues(name);
     }
 
     @Override

@@ -54,7 +54,7 @@ public class CoreBenchmarkSuite {
         }
         template.ifPresent(report::template);
         report.display();
-        future.complete(CommandResult.SHUTDOWN);
+        future.complete(LauncherCommandResult.SHUTDOWN);
     }
 
     /**

@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
 import java.util.ArrayList;
 
 import static com.codingchili.core.configuration.CoreStrings.HELP;
-import static com.codingchili.core.context.CommandResult.SHUTDOWN;
+import static com.codingchili.core.context.LauncherCommandResult.SHUTDOWN;
 
 /**
  * Tests the command parsing functionality.

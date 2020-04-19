@@ -43,12 +43,12 @@ public class Launcher implements CoreService {
             CommandResult result = done.result();
             try {
                 if (done.succeeded()) {
-                    if (CommandResult.CONTINUE.equals(result)) {
+                    if (LauncherCommandResult.CONTINUE.equals(result)) {
                         nodes = context.block(context.args());
                         nodes = new ArrayList<>(nodes);
                         clusterIfEnabled(context);
                     }
-                    if (CommandResult.SHUTDOWN.equals(result)) {
+                    if (LauncherCommandResult.SHUTDOWN.equals(result)) {
                         exit();
                     }
                 } else {
