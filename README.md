@@ -134,7 +134,7 @@ Applications currently using chili-core
 
 |application|description|
 |---|---|
-|[flashcards](https://flashcardsalligator.com/)|Progressive web app for studying  with flashcards.|
+|[flashcards](https://github.com/codingchili/flashcards-webapp)|Progressive web app for studying  with flashcards.|
 |[ethereum-ingest](https://github.com/codingchili/ethereum-ingest)|Ethereum block/transaction import utility.|
 |[zapperfly-asm](https://github.com/codingchili/zapperfly-asm)|Extra simple clustered build servers.|
 |[chili-game-ext](https://github.com/codingchili/chili-game-ext)|2D MMORPG game in development.|
