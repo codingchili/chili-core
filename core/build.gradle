@@ -40,11 +40,11 @@ dependencies {
     compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.9'
 
     compile 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.3.0'
-    compile 'com.googlecode.cqengine:cqengine:3.4.0'
+    compile 'com.googlecode.cqengine:cqengine:3.5.0'
 
     /* keep these in sync with cqengine, used internally. */
-    compile 'com.esotericsoftware:reflectasm:1.11.7'
-    compile 'com.esotericsoftware:kryo:5.0.0-RC5'
+    compile 'com.esotericsoftware:reflectasm:1.11.9'
+    compile 'com.esotericsoftware:kryo:5.0.0-RC6'
 
     testCompile 'io.vertx:vertx-unit:3.8.0'
     testCompile 'junit:junit:4.12'

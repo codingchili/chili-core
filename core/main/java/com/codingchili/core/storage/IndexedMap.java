@@ -2,6 +2,7 @@ package com.codingchili.core.storage;
 
 import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.attribute.*;
+import com.googlecode.cqengine.attribute.support.SimpleFunction;
 import com.googlecode.cqengine.query.option.QueryOptions;
 import com.googlecode.cqengine.resultset.ResultSet;
 import io.vertx.core.AsyncResult;
@@ -61,7 +62,6 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
         return db;
     }
 
-    @SuppressWarnings("unchecked")
     public Attribute<Value, String> getAttribute(String fieldName, boolean multiValue) {
         if (holder.attributes.containsKey(fieldName)) {
             return holder.attributes.get(fieldName);
@@ -69,7 +69,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
             Attribute<Value, String> attribute;
 
             if (multiValue) {
-                attribute = new MultiValueAttribute<>((Class<Value>) Generic.class, String.class, fieldName) {
+                attribute = new MultiValueAttribute<>(context.valueClass(), String.class, fieldName) {
                     @Override
                     public Iterable<String> getValues(Value indexing, QueryOptions queryOptions) {
                         return Serializer.getValueByPath(indexing, fieldName).stream()
@@ -77,8 +77,10 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
                     }
                 };
             } else {
-                attribute = attribute(fieldName, (indexing) ->
-                        (Serializer.getValueByPath(indexing, fieldName).iterator().next() + ""));
+                attribute = attribute(context.valueClass(), String.class, fieldName,
+                        (SimpleFunction<Value, String>) (indexing) ->
+                                Serializer.getValueByPath(indexing, fieldName).iterator().next() + ""
+                );
             }
             holder.attributes.put(fieldName, attribute);
             return attribute;
@@ -117,14 +119,6 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
      */
     public void setMapper(Function<Value, Value> mapper) {
         this.mapper = mapper;
-    }
-
-    /**
-     * when creating an index on a multivalued attribute a reflective operation is invoked.
-     * This reflective invocation fails since Value is of generic type. To circumvent this,
-     * a class that implements Storable, which is the common interface with Value is used.
-     */
-    private abstract class Generic implements Storable {
     }
 
     @Override
