@@ -91,25 +91,25 @@ public abstract class DefaultLogger extends Handler implements Logger {
 
     @Override
     public void onServiceStarted(CoreService service) {
-        event(LOG_SERVICE_START, Level.STARTUP)
+        event(LOG_SERVICE_START)
                 .put(ID_NAME, service.name()).send();
     }
 
     @Override
     public void onServiceStopped(CoreService service) {
-        event(LOG_SERVICE_STOP, Level.WARNING)
+        event(LOG_SERVICE_STOP)
                 .put(ID_NAME, service.name()).send();
     }
 
     @Override
     public void onListenerStarted(CoreListener listener) {
-        event(LOG_LISTENER_START, Level.STARTUP)
+        event(LOG_LISTENER_START)
                 .put(ID_HANDLER, listener.toString()).send();
     }
 
     @Override
     public void onListenerStopped(CoreListener listener) {
-        event(LOG_LISTENER_STOP, Level.WARNING)
+        event(LOG_LISTENER_STOP)
                 .put(ID_HANDLER, listener.toString()).send();
     }
 

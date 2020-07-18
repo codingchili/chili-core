@@ -8,7 +8,6 @@ import org.fusesource.jansi.Ansi;
 public enum Level implements LogLevel {
     INFO(Ansi.Color.CYAN),
     WARNING(Ansi.Color.YELLOW),
-    STARTUP(Ansi.Color.GREEN),
     ERROR(Ansi.Color.RED),
     SPECIAL(Ansi.Color.MAGENTA),
     RESERVED(Ansi.Color.BLUE),

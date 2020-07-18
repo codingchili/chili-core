@@ -36,7 +36,7 @@ public class Launcher implements CoreService {
     public Launcher(LaunchContext context) {
         Future<CommandResult> future = Future.future();
 
-        logger.log(CoreStrings.getStartupText(), Level.STARTUP);
+        logger.log(CoreStrings.getStartupText());
 
         context.getExecutor().execute(future, context.args());
         future.setHandler(done -> {
