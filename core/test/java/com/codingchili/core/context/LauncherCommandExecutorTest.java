@@ -1,6 +1,7 @@
 package com.codingchili.core.context;
 
 import com.codingchili.core.configuration.system.LauncherSettings;
+import com.codingchili.core.context.exception.NoSuchCommandException;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.testing.MockLogListener;
 import io.vertx.core.Future;
@@ -61,16 +62,25 @@ public class LauncherCommandExecutorTest {
 
     @Test
     public void testGetHelpMessage(TestContext test) {
-        try {
-            execute(MISSING_COMMAND);
-        } catch (CoreRuntimeException e) {
+        Async async = test.async();
+        Future<CommandResult> future = Future.future();
+
+        future.setHandler(done -> {
+            test.assertFalse(done.succeeded());
+            Throwable e = done.cause();
             test.assertTrue(e.getMessage().contains(HELP));
             test.assertTrue(e.getMessage().contains(MISSING_COMMAND));
-        }
+            async.complete();
+        });
+
+        new LauncherCommandExecutor(
+                new LaunchContextMock((line) -> {}).logger())
+                .execute(future, MISSING_COMMAND);
     }
 
     @Test
     public void testConfiguredBlocksListed(TestContext test) {
+        System.err.println(getOutput(HELP));
         test.assertTrue(getOutput(HELP).contains(BLOCK_1));
         test.assertTrue(getOutput(HELP).contains(BLOCK_2));
     }
@@ -97,7 +107,7 @@ public class LauncherCommandExecutorTest {
 
 
         execute(arg, logged -> {
-            message[0] += logged;
+            message[0] += logged + "\n";
         });
 
         return message[0];
