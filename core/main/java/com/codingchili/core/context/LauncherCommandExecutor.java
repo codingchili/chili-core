@@ -1,14 +1,14 @@
 package com.codingchili.core.context;
 
 import io.vertx.core.Future;
+import org.fusesource.jansi.Ansi;
 
 import java.util.*;
 import java.util.function.Function;
 
 import com.codingchili.core.benchmarking.CoreBenchmarkSuite;
-import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.files.Configurations;
-import com.codingchili.core.logging.*;
+import com.codingchili.core.logging.Logger;
 import com.codingchili.core.security.AuthenticationGenerator;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
@@ -17,6 +17,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  * Command executor that registers launch commands to a CommandExecutor.
  */
 public class LauncherCommandExecutor extends DefaultCommandExecutor {
+    private Ansi ansi = Ansi.ansi();
 
     /**
      * constructs an instance with the default logger
@@ -74,25 +75,45 @@ public class LauncherCommandExecutor extends DefaultCommandExecutor {
         }
     }
 
-    private void help() {
-        int align = 24;
+    private void printCommand(String text, String description, int align) {
+        ansi.fgBright(Ansi.Color.CYAN)
+                .a(String.format("\t%s", pad(text, align)))
+                .reset()
+                .a(description)
+                .newline();
+    }
 
-        for (String line : getCommandExecutorText()) {
-            logger.log(line, Level.STARTUP);
-        }
+    private void printExecutorHelpText(int align) {
+        ansi.fgBright(Ansi.Color.GREEN)
+                .a(" HELP ")
+                .newline()
+                .reset();
+
+        printCommand("<block-name>", "deploys the services configured in the given block.", align);
+        printCommand("<remote-name>", "deploys configured blocks on a remote host.", align);
+    }
+
+    private void help() {
+        final int DEFAULT_SPACING = 18;
+        final int COMMAND_PADDING = 4;
+
+        // find the longest command and add some padding to it.
+        int align = commands.values().stream()
+                .map(command -> command.getName().length() + COMMAND_PADDING)
+                .reduce(Math::max)
+                .orElse(DEFAULT_SPACING);
+
+        printExecutorHelpText(align);
 
         for (Command command : commands.values()) {
-            int space = align - command.getName().length();
-
             if (command.isVisible()) {
-                logger.log("\t\t" + command.getName() +
-                        String.join("", Collections.nCopies(space, " ")) +
-                        command.getDescription(), Level.STARTUP);
+                printCommand(command.getName(), command.getDescription(), align);
             }
         }
 
         List<BlockRow> blocks = new ArrayList<>();
-        logger.log("\n\t\t" + CoreStrings.CONFIGURED_BLOCKS + "\t\t" + getRemotesAvailable(), Level.WARNING);
+        ansi.a(String.format("\n\t%s\n\n", CONFIGURED_BLOCKS));
+
         settings.getBlocks().keySet()
                 .forEach(block -> {
                     BlockRow row = new BlockRow(block);
@@ -102,7 +123,8 @@ public class LauncherCommandExecutor extends DefaultCommandExecutor {
                             .forEach(row.remotes::add);
                     blocks.add(row);
                 });
-        blocks.forEach(block -> logger.log(block.toString(), Level.SPECIAL));
+        blocks.forEach(block -> block.toAnsi(ansi, align));
+        logger.log(ansi.toString());
     }
 
     private class BlockRow {
@@ -113,25 +135,25 @@ public class LauncherCommandExecutor extends DefaultCommandExecutor {
             this.block = block;
         }
 
-        @Override
-        public String toString() {
-            int align = 36;
-            String string = "\t\t" + block + String.join("",
-                    Collections.nCopies(align - block.length(), " "));
+        public void toAnsi(Ansi ansi, int align) {
+            ansi.fgBright(Ansi.Color.CYAN)
+                    .a(pad("\t" + block, align))
+                    .reset();
 
             for (int i = 0; i < remotes.size(); i++) {
                 if (i == 0)
-                    string += "[";
+                    ansi.a("[");
 
-                string += remotes.get(i);
+                ansi.fgBright(Ansi.Color.CYAN)
+                        .a(remotes.get(i))
+                        .reset();
 
                 if (i < remotes.size() - 1)
-                    string += ", ";
+                    ansi.a(", ");
                 if (i == remotes.size() - 1)
-                    string += "]";
+                    ansi.a("]");
             }
-
-            return string;
+            ansi.newline();
         }
     }
 }

@@ -9,7 +9,6 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import com.codingchili.core.context.CoreContext;
 
@@ -111,6 +110,7 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
         //AnsiConsole.out.flush();
     }
 
+    private static final int SPACES = 15;
     protected String parseJsonLog(JsonObject data, String event) {
         LogLevel level = consumeLevel(data);
         String message = consume(data, LOG_MESSAGE);
@@ -125,11 +125,11 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
                 .a(consumeTimestamp(data))
                 .reset()
                 .a("] ")
-                .a((hasValue(event)) ? pad(event, 15) : "")
+                .a((hasValue(event)) ? pad(event, SPACES) : "")
                 .a(" [");
 
         level.apply(ansi)
-                .a(pad(consume(data, LOG_SOURCE), 15))
+                .a(pad(consume(data, LOG_SOURCE), SPACES))
                 .reset()
                 .a("]");
 
@@ -196,15 +196,6 @@ public class ConsoleLogger extends DefaultLogger implements StringLogger {
             return timestamp(Long.parseLong(data.remove(LOG_TIME).toString()));
         } else {
             return timestamp(Instant.now().toEpochMilli()) + "";
-        }
-    }
-
-    private String pad(String text, int spaces) {
-        int padding = spaces - text.length();
-        if (padding > 0) {
-            return text + Collections.nCopies(padding, " ").stream().collect(Collectors.joining());
-        } else {
-            return text;
         }
     }
 

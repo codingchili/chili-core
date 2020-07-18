@@ -27,7 +27,7 @@ public abstract class CoreStrings {
     // Author.
     public static String VERSION;
     public static final String GITHUB = "https://github.com/codingchili";
-    public static final String AUTHOR = "Robin Duda \u00a9 2019";
+    public static final String AUTHOR = "Robin Duda \u00a9 2020";
 
     static {
         VERSION = CoreStrings.class.getPackage().getImplementationVersion();
@@ -196,7 +196,7 @@ public abstract class CoreStrings {
     public static final String ERROR_CONFIGURATION_MISMATCH = "configuration mismatches with currently loaded.";
     public static final String ERROR_ALREADY_INITIALIZED = "Error already initialized.";
     public static final String ERROR_STORAGE_EXCEPTION = "Failed to perform a storage operation.";
-    public static final String CONFIGURED_BLOCKS = "Configured deployment blocks";
+    public static final String CONFIGURED_BLOCKS = "Configured deployment blocks and remotes available";
     public static final String ERROR_PATCH_RELOADED = "The patch version changed during patch session.";
     public static final String[] BENCHMARK_CONSOLE_REPORT_COLUMNS =
             {"[GROUP]", "[IMPLEMENTATION]", "[BENCHMARK]", "[OP/s]", "[TIME]"};
@@ -491,10 +491,6 @@ public abstract class CoreStrings {
         return "prints this help text.";
     }
 
-    public static String getRemotesAvailable() {
-        return "remotes available";
-    }
-
     public static String getBenchmarkDescription() {
         return "Executes benchmarks. [--iterations ?, --html]";
     }
@@ -539,14 +535,6 @@ public abstract class CoreStrings {
 
     public static String formatAsPercent(Double value) {
         return new DecimalFormat("#.00").format(value);
-    }
-
-    public static List<String> getCommandExecutorText() {
-        List<String> list = new ArrayList<>();
-        list.add("================================ HELP ================================");
-        list.add("\t\t<block-name>\t\t\tdeploys the services configured in the given block.");
-        list.add("\t\t<remote-name>\t\t\tdeploys configured blocks on a remote host.");
-        return list;
     }
 
     public static String getMissingEntity(String key) {
@@ -647,6 +635,19 @@ public abstract class CoreStrings {
 
     public static String getKeystoreTooManyEntries(String path) {
         return String.format("Keystore at '%s' contains too many entries, only one entry supported.", path);
+    }
+
+    public static String pad(String text, int spaces) {
+        int padding = spaces - text.length();
+        if (padding > 0) {
+            return text + String.join("", Collections.nCopies(padding, " "));
+        } else {
+            return text;
+        }
+    }
+
+    public static String leftPad(String text, int spaces) {
+        return pad("", spaces) + text;
     }
 
     private enum IPVersion {IP4, IP6;}
