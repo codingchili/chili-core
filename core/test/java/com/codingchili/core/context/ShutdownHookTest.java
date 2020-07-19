@@ -16,7 +16,7 @@ import com.codingchili.core.listener.CoreService;
  * Tests for the shutdown hook handler.
  */
 @RunWith(VertxUnitRunner.class)
-public class ShutdownHookHandlerTest {
+public class ShutdownHookTest {
     private SystemContext context;
 
     @Before
@@ -125,7 +125,7 @@ public class ShutdownHookHandlerTest {
      * Simulate the JVM shutdown hook.
      */
     private void shutdown() {
-        new ShutdownHookHandler(context).start();
+        new ShutdownHook(context).start();
     }
 
     private void untilVertxClosed(Async async) {

@@ -16,8 +16,8 @@ import static com.codingchili.core.files.Configurations.system;
 /**
  * Registered as a shutdown hook for the JVM and is used to clean up the context.
  */
-public class ShutdownHookHandler extends Thread {
-    private static final Map<Vertx, ShutdownHookHandler> contexts = new HashMap<>();
+public class ShutdownHook extends Thread {
+    private static final Map<Vertx, ShutdownHook> contexts = new HashMap<>();
     private SystemContext context;
     private Logger logger;
 
@@ -32,7 +32,7 @@ public class ShutdownHookHandler extends Thread {
         if (contexts.containsKey(context.vertx)) {
             // context already registered - no action.
         } else {
-            ShutdownHookHandler hook = new ShutdownHookHandler(context);
+            ShutdownHook hook = new ShutdownHook(context);
             contexts.put(context.vertx, hook);
             Runtime.getRuntime().addShutdownHook(hook);
         }
@@ -45,7 +45,7 @@ public class ShutdownHookHandler extends Thread {
      * @param context the context to unregister shutdown hooks for.
      */
     static synchronized void unregister(SystemContext context) {
-        ShutdownHookHandler handler = contexts.remove(context.vertx);
+        ShutdownHook handler = contexts.remove(context.vertx);
 
         if (handler != null) {
             Runtime.getRuntime().removeShutdownHook(handler);
@@ -65,7 +65,7 @@ public class ShutdownHookHandler extends Thread {
     /**
      * @param context the context that is to be shut down on JVM exit.
      */
-    public ShutdownHookHandler(SystemContext context) {
+    public ShutdownHook(SystemContext context) {
         this.context = context;
         this.logger = new RemoteLogger(context, getClass());
     }

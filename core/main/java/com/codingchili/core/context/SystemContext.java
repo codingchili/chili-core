@@ -61,7 +61,7 @@ public class SystemContext implements CoreContext {
         this.logger = new RemoteLogger(this, SystemContext.class);
 
         // add a shutdown hook for gracefully shutting down the context.
-        ShutdownHookHandler.register(this);
+        ShutdownHook.register(this);
 
         initialize();
     }
