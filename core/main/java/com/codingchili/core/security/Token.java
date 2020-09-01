@@ -17,8 +17,7 @@ public class Token implements Serializable {
     private Map<String, Object> properties = new HashMap<>();
     private String domain = UUID.randomUUID().toString();
     private String key = "";
-    private long expiry = Instant.now().getEpochSecond() +
-        Configurations.security().getTokenttl();
+    private Long expiry;
 
     /**
      * Creates a new empty unverified token.
@@ -55,6 +54,10 @@ public class Token implements Serializable {
      * @return the time of expiry in epoch seconds.
      */
     public long getExpiry() {
+        if (expiry == null) {
+            expiry = Instant.now().getEpochSecond() +
+                    Configurations.security().getTokenttl();
+        }
         return expiry;
     }
 
