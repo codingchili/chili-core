@@ -126,6 +126,15 @@ public class Protocol<RequestType> {
 
     private void setHandlerRoutes(Receiver<RequestType> handler) {
         for (Method method : handler.getClass().getDeclaredMethods()) {
+            if (!getClass().getModule().isNamed()) {
+                handler.getClass().getModule().addOpens(
+                        handler.getClass().getPackageName(),
+                        getClass().getModule()
+                );
+            }
+            // improve reflection performance by up to 50%.
+            method.setAccessible(true);
+
             readMapper(method, handler);
             readAuthenticator(method, handler);
             readApi(method, handler);
@@ -211,17 +220,16 @@ public class Protocol<RequestType> {
     }
 
     private void wrap(String route, Receiver<RequestType> handler, Method method, RoleType[] role) {
-        use(route, request -> {
-            try {
-                method.invoke(handler, request);
-            } catch (Throwable e) {
-                if (e instanceof RuntimeException) {
-                    throw (RuntimeException) e;
-                } else {
-                    throw new RuntimeException(e);
-                }
-            }
-        }, role);
+        use(route, request -> invokeMethod(method, handler, request), role);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <E> E invokeMethod(Method method, Object instance, Object argument) {
+        try {
+            return (E) method.invoke(instance, argument);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
