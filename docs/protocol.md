@@ -5,8 +5,11 @@ features role-based access control through an AuthorizationHandler.
 
 Javadoc can be found [here](javadoc/com/codingchili/core/protocol/package-summary.html).
 
-The dynamic invocation when using annotations uses ReflectASM and is pretty fast. If the programmatic
-API is used instead, reflection will not be used at all.
+The dynamic invocation when using annotations uses Java reflection and is pretty fast. Previous
+versions of chili-core used reflectasm but as of J11 Java reflection is 10% faster, or 50% faster
+if `setAccessible(true)` is called. 
+
+If the programmatic API is used instead, reflection will not be used at all.
 
 ### Registering a protocol
 There are two ways of creating a protocol mapping, lets create the protocol instance first.

@@ -1,18 +1,23 @@
 package com.codingchili.core.listener;
 
-import io.vertx.core.*;
+import com.codingchili.core.listener.transport.RestRequest;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
+import io.vertx.core.MultiMap;
+import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.Cookie;
 import io.vertx.core.http.*;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetSocket;
 import io.vertx.core.net.SocketAddress;
 import io.vertx.ext.auth.User;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-import io.vertx.ext.web.*;
 import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 import io.vertx.ext.web.Locale;
 import io.vertx.ext.web.Session;
+import io.vertx.ext.web.*;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,8 +26,6 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
 import javax.security.cert.X509Certificate;
 import java.util.*;
-
-import com.codingchili.core.listener.transport.RestRequest;
 
 import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_ROUTE;
 import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_TARGET;
@@ -332,6 +335,21 @@ public class RestRequestTest {
                 public HttpServerRequest streamPriorityHandler(Handler<StreamPriority> handler) {
                     return this;
                 }
+
+                @Override
+                public Cookie getCookie(String name) {
+                    return null;
+                }
+
+                @Override
+                public int cookieCount() {
+                    return 0;
+                }
+
+                @Override
+                public Map<String, Cookie> cookieMap() {
+                    return null;
+                }
             };
         }
 
@@ -401,7 +419,7 @@ public class RestRequestTest {
         }
 
         @Override
-        public Cookie getCookie(String s) {
+        public io.vertx.ext.web.Cookie getCookie(String name) {
             return null;
         }
 
@@ -411,12 +429,12 @@ public class RestRequestTest {
         }
 
         @Override
-        public Cookie removeCookie(String s) {
+        public RoutingContext addCookie(io.vertx.ext.web.Cookie cookie) {
             return null;
         }
 
         @Override
-        public Cookie removeCookie(String name, boolean invalidate) {
+        public io.vertx.ext.web.Cookie removeCookie(String name, boolean invalidate) {
             return null;
         }
 
@@ -426,9 +444,15 @@ public class RestRequestTest {
         }
 
         @Override
-        public Set<Cookie> cookies() {
+        public Set<io.vertx.ext.web.Cookie> cookies() {
             return null;
         }
+
+        @Override
+        public Map<String, Cookie> cookieMap() {
+            return null;
+        }
+
 
         @Override
         public String getBodyAsString() {
@@ -463,6 +487,11 @@ public class RestRequestTest {
         @Override
         public Session session() {
             return null;
+        }
+
+        @Override
+        public boolean isSessionAccessed() {
+            return false;
         }
 
         @Override
@@ -507,6 +536,16 @@ public class RestRequestTest {
 
         @Override
         public boolean removeBodyEndHandler(int i) {
+            return false;
+        }
+
+        @Override
+        public int addEndHandler(Handler<AsyncResult<Void>> handler) {
+            return 0;
+        }
+
+        @Override
+        public boolean removeEndHandler(int handlerID) {
             return false;
         }
 

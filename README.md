@@ -119,7 +119,6 @@ The core uses some great software, such as
 
 * [eclipse/vert.x](https://github.com/eclipse/vert.x) - reactive: eventbus, clustering and networking
 * [EsotericSoftware/kryo](https://github.com/EsotericSoftware/kryo) - serialization library
-* [EsotericSoftware/reflectasm](https://github.com/EsotericSoftware/reflectasm) - fast reflections library
 
 Optional dependencies
 

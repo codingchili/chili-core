@@ -1,9 +1,9 @@
 package com.codingchili.core.protocol;
 
-import com.esotericsoftware.reflectasm.MethodAccess;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.Set;
@@ -31,6 +31,9 @@ import static com.codingchili.core.protocol.RoleMap.*;
  * route. The documentation route is enabled whenever a handler class or route
  * is documented using either #{@link #document(String)}, #{@link #setDescription(String)}
  * or by adding the #{@link Description} annotation to the class or handler method.
+ * <p>
+ * Aug, 2020 - removed use of reflectasm as method reflection in J11 is 10% faster.
+ * If setAccessible(true) is called then J11 reflection is 50% faster.
  */
 public class Protocol<RequestType> {
     private AuthorizationHandler<RequestType> authorizer = new SimpleAuthorizationHandler<>();
@@ -133,9 +136,13 @@ public class Protocol<RequestType> {
         RouteMapper mapper = method.getAnnotation(RouteMapper.class);
 
         if (mapper != null) {
-            MethodAccess access = MethodAccess.get(handler.getClass());
-            int index = access.getIndex(method.getName());
-            this.routeMapper = (request) -> (String) access.invoke(handler, index, request);
+            this.routeMapper = (request) -> {
+                try {
+                    return (String) method.invoke(handler, request);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                }
+            };
         }
     }
 
@@ -144,9 +151,13 @@ public class Protocol<RequestType> {
         Authenticator authenticator = method.getAnnotation(Authenticator.class);
 
         if (authenticator != null) {
-            MethodAccess access = MethodAccess.get(handler.getClass());
-            int index = access.getIndex(method.getName());
-            this.authenticator = (request) -> (Future<RoleType>) access.invoke(handler, index, request);
+            this.authenticator = (request) -> {
+                try {
+                    return (Future<RoleType>) method.invoke(handler, request);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                }
+            };
         }
     }
 
@@ -200,12 +211,9 @@ public class Protocol<RequestType> {
     }
 
     private void wrap(String route, Receiver<RequestType> handler, Method method, RoleType[] role) {
-        MethodAccess access = MethodAccess.get(handler.getClass());
-
-        int index = access.getIndex(method.getName());
         use(route, request -> {
             try {
-                access.invoke(handler, index, request);
+                method.invoke(handler, request);
             } catch (Throwable e) {
                 if (e instanceof RuntimeException) {
                     throw (RuntimeException) e;
