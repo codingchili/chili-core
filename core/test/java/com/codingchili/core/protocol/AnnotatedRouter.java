@@ -1,5 +1,7 @@
 package com.codingchili.core.protocol;
 
+import com.codingchili.core.context.CoreException;
+import com.codingchili.core.context.CoreRuntimeException;
 import io.vertx.core.Future;
 
 import com.codingchili.core.listener.CoreHandler;
@@ -49,6 +51,11 @@ public class AnnotatedRouter implements CoreHandler {
     @Api(CUSTOM_ROLE)
     public void customRoleOnRoute(Request request) {
         request.write(customRoleOnRoute);
+    }
+
+    @Api(PUBLIC)
+    public void throwMappedException(Request request) {
+        throw new CoreRuntimeException("Core runtime exception retains message");
     }
 
     @Override

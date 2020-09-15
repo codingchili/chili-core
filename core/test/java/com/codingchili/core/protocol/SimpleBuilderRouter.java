@@ -1,5 +1,6 @@
 package com.codingchili.core.protocol;
 
+import com.codingchili.core.context.CoreRuntimeException;
 import io.vertx.core.Future;
 
 import com.codingchili.core.listener.CoreHandler;
@@ -26,6 +27,7 @@ public class SimpleBuilderRouter implements CoreHandler {
                     .use(adminRoleRoute, this::adminRoleRoute, ADMIN)
                     .use(userRoleRoute, this::userRoleRoute, USER)
                     .use(specialRoute, this::customRouteName)
+                    .use(mappedException, this::throwMappedExcepetion)
                     .use(multipleUserRoute, this::multipleUserRoute, USER, ADMIN)
                     .use(customRoleOnRoute, this::customRoleOnRoute, RoleMap.get(CUSTOM_ROLE));
     }
@@ -40,6 +42,10 @@ public class SimpleBuilderRouter implements CoreHandler {
 
     public Protocol<Request> getProtocol() {
         return protocol;
+    }
+
+    public void throwMappedExcepetion(Request request) {
+        throw new CoreRuntimeException("mapped runtime exception");
     }
 
     public void documentedRoute(Request request) {

@@ -46,7 +46,7 @@ public class QueryTest {
 
     @Test
     public void testGenerateQueryString(TestContext test) {
-        String query = new Query().on("cat.type")
+        String query = new Query<>().on("cat.type")
                 .in("siamese", "perser", "ragdoll")
                 .and("cat.color").equalTo("white")
                 .or("cat.lifestyle").in("amphibians", "wateranimal").matches("[water].*")
@@ -56,7 +56,6 @@ public class QueryTest {
                 .setName("findCatsQ")
                 .toString();
     }
-
 
     @Test
     public void testParseQueryString(TestContext test) {

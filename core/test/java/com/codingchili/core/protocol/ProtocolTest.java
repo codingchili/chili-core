@@ -1,5 +1,6 @@
 package com.codingchili.core.protocol;
 
+import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
@@ -36,7 +37,8 @@ public abstract class ProtocolTest {
     static final String specialRoute = "specialRoute";
     static final String CUSTOM_ROLE = "CUSTOM_ROLE";
     private static final String MISSING = "missing";
-    private static final int ROUTE_COUNT = 7;
+    public static final String mappedException = "throwMappedException";
+    private static final int ROUTE_COUNT = 8;
 
     static {
         RoleMap.put(CUSTOM_ROLE, new RoleType() {
@@ -70,7 +72,6 @@ public abstract class ProtocolTest {
     @Test
     public void testHandlerMissing(TestContext test) throws Exception {
         Async async = test.async();
-
         try {
             protocol.get(MISSING);
             test.fail("Should throw handler missing exception.");
@@ -131,6 +132,18 @@ public abstract class ProtocolTest {
     @Test
     public void testCustomRouteName(TestContext test) {
         protocol.get(specialRoute, PUBLIC).submit(onWrite(test.async(), specialRoute));
+    }
+
+    @Test
+    public void testMappedException(TestContext test) {
+        Async async = test.async();
+        try {
+            protocol.get(mappedException, PUBLIC)
+                    .submit(onWrite(async, mappedException));
+            test.fail("Did not throw exception.");
+        } catch (CoreRuntimeException e) {
+            async.complete();
+        }
     }
 
     @Test

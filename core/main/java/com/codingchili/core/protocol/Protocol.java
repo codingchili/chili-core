@@ -1,5 +1,6 @@
 package com.codingchili.core.protocol;
 
+import com.codingchili.core.context.CoreRuntimeException;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 
@@ -226,10 +227,23 @@ public class Protocol<RequestType> {
     @SuppressWarnings("unchecked")
     private <E> E invokeMethod(Method method, Object instance, Object argument) {
         try {
-            return (E) method.invoke(instance, argument);
+            if (method.getParameterCount() == 0) {
+                return (E) method.invoke(instance);
+            } else {
+                return (E) method.invoke(instance, argument);
+            }
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
+            throw throwAny(e.getCause()); // thrown inside throwAny method.
         }
+    }
+
+    public static RuntimeException throwAny(final Throwable throwable) {
+        Protocol.<RuntimeException>throwAsUnchecked(throwable);
+        throw new AssertionError("Internal error in exception rewrite.");
+    }
+
+    public static <T extends Exception> void throwAsUnchecked(Throwable throwable) throws T {
+        throw (T) throwable;
     }
 
     /**
