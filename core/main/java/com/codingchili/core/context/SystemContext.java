@@ -85,9 +85,11 @@ public class SystemContext implements CoreContext {
         vertx.exceptionHandler(throwable -> logger.onError(throwable));
 
         if (!initialized.get()) {
-            MetricsService metrics = MetricsService.create(vertx);
+            var metrics = MetricsService.create(vertx);
+            var timer = TimerSource.of(getMetricTimer())
+                    .setName(CoreStrings.LOG_METRICS);
 
-            periodic(TimerSource.of(getMetricTimer()).setName(CoreStrings.LOG_METRICS), handler -> {
+            periodic(timer, handler -> {
                 if (system().isMetrics()) {
                     JsonObject json = metrics.getMetricsSnapshot(vertx);
                     this.onMetricsSnapshot(json);

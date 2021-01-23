@@ -3,7 +3,8 @@ package com.codingchili.core.logging;
 import io.vertx.core.json.JsonObject;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.logging.Handler;
@@ -46,21 +47,19 @@ public abstract class AbstractLogger extends Handler implements Logger {
 
     @Override
     public Logger setMetadata(String name, Supplier<JsonObject> value) {
-        if (value == null) {
-            metadata.remove(name);
-        } else {
-            metadata.put(name, (json) -> json.mergeIn(value.get()));
-        }
+        metadata.put(name, (json) -> json.mergeIn(value.get()));
         return this;
     }
 
     @Override
     public Logger setMetadataValue(String key, Supplier<String> value) {
-        if (value == null) {
-            metadata.remove(key);
-        } else {
-            metadata.put(key, (json) -> json.put(key, value.get()));
-        }
+        metadata.put(key, (json) -> json.put(key, value.get()));
+        return this;
+    }
+
+    @Override
+    public Logger removeMetadata(String nameOrKey) {
+        metadata.remove(nameOrKey);
         return this;
     }
 
