@@ -11,7 +11,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 /**
  * A logger that logs to a remote host.
  */
-public class RemoteLogger extends DefaultLogger {
+public class RemoteLogger extends AbstractLogger {
     private DeliveryOptions options = new DeliveryOptions().setSendTimeout(8000);
     private ConsoleLogger console = new ConsoleLogger(aClass);
 

@@ -164,12 +164,21 @@ public interface Logger extends JsonLogger, StringLogger {
     /**
      * Sets a metadata value on the logger.
      *
-     * @param key   the value key
+     * @param key   the value key, if null removes existing metadata.
      * @param value a supplier invoked when an event is created, if null then the given
      *              key will be removed from the existing metadata.
      * @return fluent.
      */
-    Logger setMetadata(String key, Supplier<String> value);
+    Logger setMetadataValue(String key, Supplier<String> value);
+
+    /**
+     * Sets a metadata value on the logger.
+     *
+     * @param value a supplier to a metadata object that will be merged into
+     *              the root node.
+     * @return fluent.
+     */
+    Logger setMetadata(String name, Supplier<JsonObject> value);
 
     /**
      * Shuts down the logger instance, frees any resources such as files or thread pools.

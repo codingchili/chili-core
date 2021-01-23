@@ -13,12 +13,12 @@ public class LogMessage {
 
     /**
      * Creates a new logging message. Constructor typically invoked indirectly
-     * from the #{@link DefaultLogger} implementation using the #{@link Logger#event} method.
+     * from the #{@link AbstractLogger} implementation using the #{@link Logger#event} method.
      *
      * @param logger the logger on which to send the final message.
      * @param event  the type of event in the log message.
      */
-    LogMessage(DefaultLogger logger, JsonObject event) {
+    LogMessage(AbstractLogger logger, JsonObject event) {
         this.event = event;
         this.logger = logger;
     }

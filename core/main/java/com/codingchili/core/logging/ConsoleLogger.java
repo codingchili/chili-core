@@ -18,7 +18,7 @@ import static org.fusesource.jansi.Ansi.ansi;
 /**
  * Implementation of a console logger, filters some key/value combinations to better display the messages.
  */
-public class ConsoleLogger extends DefaultLogger implements StringLogger {
+public class ConsoleLogger extends AbstractLogger implements StringLogger {
     private static final int FLUSH_TIMEOUT_MS = 16;
     private final AtomicBoolean enabled = new AtomicBoolean(true);
     private static final Set<String> filtered = new HashSet<>(Arrays.asList(

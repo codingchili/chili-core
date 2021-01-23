@@ -7,6 +7,11 @@ This section covers logging, both local and remote logging can be used and prefe
 
 Javadoc [here](javadoc/com/codingchili/core/logging/package-summary.html)
 
+Note: when logging make sure that the log data does not change
+after it is submitted, as this will cause a concurrent modification exception. To improve
+performance the logging class does not perform copying before submitting to 
+the executor.
+
 ##### Local
 
 A local logger will write its output to the terminal, or a file if stdout is redirected.
@@ -64,6 +69,27 @@ Logging an error with a stacktrace
 ```java
 logger.onError(throwable);
 ```
+
+Attaching metadata to the logger, the value may change.
+```java
+logger.setMedataValue("key", () -> "value");
+logger.setMetadata("name", () -> {
+    // return new JsonObject().put("test", true);
+    // or ...
+    return Serializer.json(object);
+})
+```
+
+When using setMetadata the returned JSON object will be merged into
+the root of the log event. This can be used to apply authentication
+tokens etc, for remote logging. By default, the following metadata is set
+
+* `timestamp` in epoch millis.
+* `event` as the name of the logging event.
+* `level` of the event.
+* `application` as configured in system config.
+* `source` class that generated the event.
+* `version` application version from system config.
 
 Additionally there are some pre-defined events that can be used.
 
