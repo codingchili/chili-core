@@ -242,6 +242,7 @@ public class Protocol<RequestType> {
         throw new AssertionError("Internal error in exception rewrite.");
     }
 
+    @SuppressWarnings("unchecked")
     public static <T extends Exception> void throwAsUnchecked(Throwable throwable) throws T {
         throw (T) throwable;
     }

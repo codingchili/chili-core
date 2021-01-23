@@ -19,7 +19,7 @@ public enum Level implements LogLevel {
     /**
      * Changes the default color of the log level to the given.
      *
-     * @param color see {@link Ansi.Color}
+     * @param color see Ansi.Color
      */
     public void setColor(Ansi.Color color) {
         this.color = color;
