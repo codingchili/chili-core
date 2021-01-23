@@ -99,7 +99,7 @@ public class SystemContext implements CoreContext {
     private void processMetrics() {
         SystemSettings system = system();
 
-        if (system.isMetrics()) {
+        if (system.getMetrics().isEnabled()) {
             var filters = system.getMetrics().getFilters();
 
             if (filters.isEmpty()) {

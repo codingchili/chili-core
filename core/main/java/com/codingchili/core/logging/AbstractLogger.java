@@ -130,7 +130,9 @@ public abstract class AbstractLogger extends Handler implements Logger {
 
     @Override
     public void onMetricsSnapshot(JsonObject metrics) {
-        event(LOG_METRICS).put(ID_DATA, metrics).send();
+        LogMessage message = event(LOG_METRICS);
+        message.toJson().mergeIn(metrics);
+        message.send();
     }
 
     @Override

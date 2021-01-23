@@ -134,26 +134,6 @@ public class SystemSettings implements Configurable {
     }
 
     /**
-     * @return returns true if metrics are configured.
-     */
-    public boolean isMetrics() {
-        return metrics.isEnabled();
-    }
-
-    /**
-     * @param metrics if true enables the gathering of metrics, metrics are then logged
-     *                to the configured logger.
-     * @return fluent
-     */
-    public SystemSettings setMetrics(boolean metrics) {
-        if (options != null) {
-            options.getMetricsOptions().setEnabled(metrics);
-        }
-        this.metrics.setEnabled(metrics);
-        return this;
-    }
-
-    /**
      * @return a set of VertxOptions used for deployment.
      */
     @JsonIgnore
@@ -163,7 +143,7 @@ public class SystemSettings implements Configurable {
         // an exception will be thrown. This causes most test cases to fail.
         if (options == null) {
             options = new VertxOptions()
-                    .setMetricsOptions(new MetricsOptions().setEnabled(isMetrics()))
+                    .setMetricsOptions(new MetricsOptions().setEnabled(metrics.isEnabled()))
                     .setWorkerPoolSize(workerPoolSize)
                     .setBlockedThreadCheckInterval(blockedThreadChecker)
                     .setMaxEventLoopExecuteTime(maxEventLoopExecuteTime * 1000 * 1000);
