@@ -126,7 +126,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     private void configureMapping(CreateIndexRequest request) {
-        JsonObject properties = context.storage().getProperties();
+        JsonObject properties = context.properties();
         if (properties.containsKey(ID_MAPPINGS)) {
             request.mapping(
                     properties.getJsonObject(ID_MAPPINGS).encodePrettily(),
@@ -136,7 +136,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     private void configureSettings(CreateIndexRequest request) {
-        JsonObject properties = context.storage().getProperties();
+        JsonObject properties = context.properties();
         if (properties.containsKey(ID_SETTINGS)) {
             request.settings(
                     properties.getJsonObject(ID_SETTINGS).encodePrettily(),
