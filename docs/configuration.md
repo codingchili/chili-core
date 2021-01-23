@@ -260,33 +260,41 @@ A remote storage configuration contains the following properties
 |database|the name of the storage file on disk, a collection or a database/schema.|
 |persisted|some implementations support both in-memory and persisted mode.|
 |persistInterval|some implementations that support persistence will persist at this interval.|
+|properties|storage configuration per-implementation extra options.|
 
 Sample configuration
 ```yaml
 storage:
   com.codingchili.core.storage.ElasticMap:
-    host: localhost
-    db_name: DEFAULT_DB
+    host: 'localhost'
+    db_name: 'db'
     port: 9300
+    properties:
+      mappings:
+        properties:
+          timestamp:
+            type: 'date'
+      settings:
+        index.mapping.total_fields.limit: 1000
   com.codingchili.core.storage.LocalMap:
-    host: localhost
-    db_name: DEFAULT_DB
+    host: 'localhost'
+    db_name: 'db'
     port: 27017
   com.codingchili.core.storage.PrivateMap:
-    host: localhost
-    db_name: DEFAULT_DB
+    host: 'localhost'
+    db_name: 'db'
     port: 27017
   com.codingchili.core.storage.MongoDBMap:
-    host: localhost
-    db_name: spinach
+    host: 'localhost'
+    db_name: 'db'
     port: 27017
   com.codingchili.core.storage.HazelMap:
-    host: localhost
-    db_name: DEFAULT_DB
+    host: 'localhost'
+    db_name: 'db'
     port: 27017
   com.codingchili.core.storage.JsonMap:
-    host: localhost
-    db_name: DEFAULT_DB
+    host: 'localhost'
+    db_name: 'db'
     port: 27017
 maxResults: 32
 minFeedbackChars: 3

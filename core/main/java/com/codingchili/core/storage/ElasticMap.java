@@ -1,6 +1,7 @@
 package com.codingchili.core.storage;
 
 import io.vertx.core.*;
+import io.vertx.core.json.JsonObject;
 import org.apache.http.HttpHost;
 import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.*;
@@ -45,6 +46,8 @@ import static com.codingchili.core.context.FutureHelper.*;
  * Does not support ordering nested fields without server configuration
  */
 public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
+    private static final String ID_MAPPINGS = "mappings";
+    private static final String ID_SETTINGS = "settings";
     private static final int MAX_RESULTS = 10000;
     public static final String ARRAY_NOTATION = "";
     private StorageContext<Value> context;
@@ -90,13 +93,15 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
         Future<Void> future = Future.future();
         IndicesClient indices = client.indices();
 
-        indices.existsAsync(new GetIndexRequest(index), RequestOptions.DEFAULT, new ActionListener<Boolean>() {
+        indices.existsAsync(new GetIndexRequest(index), RequestOptions.DEFAULT, new ActionListener<>() {
             @Override
             public void onResponse(Boolean exists) {
                 if (!exists) {
                     CreateIndexRequest request = new CreateIndexRequest(index);
+                    configureMapping(request);
+                    configureSettings(request);
 
-                    indices.createAsync(request, RequestOptions.DEFAULT, new ActionListener<CreateIndexResponse>() {
+                    indices.createAsync(request, RequestOptions.DEFAULT, new ActionListener<>() {
                         @Override
                         public void onResponse(CreateIndexResponse createIndexResponse) {
                             future.complete();
@@ -120,13 +125,33 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
         return future;
     }
 
+    private void configureMapping(CreateIndexRequest request) {
+        JsonObject properties = context.storage().getProperties();
+        if (properties.containsKey(ID_MAPPINGS)) {
+            request.mapping(
+                    properties.getJsonObject(ID_MAPPINGS).encodePrettily(),
+                    XContentType.JSON
+            );
+        }
+    }
+
+    private void configureSettings(CreateIndexRequest request) {
+        JsonObject properties = context.storage().getProperties();
+        if (properties.containsKey(ID_SETTINGS)) {
+            request.settings(
+                    properties.getJsonObject(ID_SETTINGS).encodePrettily(),
+                    XContentType.JSON
+            );
+        }
+    }
+
     @Override
     public void get(String key, Handler<AsyncResult<Value>> handler) {
         GetRequest request = new GetRequest()
                 .index(index)
                 .id(key);
 
-        client.getAsync(request, RequestOptions.DEFAULT, new ActionListener<GetResponse>() {
+        client.getAsync(request, RequestOptions.DEFAULT, new ActionListener<>() {
             @Override
             public void onResponse(GetResponse document) {
                 if (document.isExists()) {
@@ -154,7 +179,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                 .source(Serializer.buffer(value).getBytes(), XContentType.JSON)
                 .id(value.getId());
 
-        client.indexAsync(request, RequestOptions.DEFAULT, new ActionListener<IndexResponse>() {
+        client.indexAsync(request, RequestOptions.DEFAULT, new ActionListener<>() {
             @Override
             public void onResponse(IndexResponse index) {
                 handler.handle(result());
@@ -174,7 +199,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                 .source(Serializer.buffer(value).getBytes(), XContentType.JSON)
                 .id(value.getId());
 
-        client.indexAsync(request.opType(DocWriteRequest.OpType.CREATE), RequestOptions.DEFAULT, new ActionListener<IndexResponse>() {
+        client.indexAsync(request.opType(DocWriteRequest.OpType.CREATE), RequestOptions.DEFAULT, new ActionListener<>() {
             @Override
             public void onResponse(IndexResponse response) {
                 if (response.getResult().equals(DocWriteResponse.Result.CREATED)) {
@@ -203,7 +228,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                 .index(index)
                 .id(key);
 
-        client.deleteAsync(request, RequestOptions.DEFAULT, new ActionListener<DeleteResponse>() {
+        client.deleteAsync(request, RequestOptions.DEFAULT, new ActionListener<>() {
             @Override
             public void onResponse(DeleteResponse response) {
                 if (response.getResult().equals(DocWriteResponse.Result.DELETED)) {
@@ -227,7 +252,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                 .doc(Serializer.buffer(value).getBytes(), XContentType.JSON)
                 .id(value.getId());
 
-        client.updateAsync(request, RequestOptions.DEFAULT, new ActionListener<UpdateResponse>() {
+        client.updateAsync(request, RequestOptions.DEFAULT, new ActionListener<>() {
             @Override
             public void onResponse(UpdateResponse response) {
                 if (response.getResult().equals(DocWriteResponse.Result.UPDATED)) {
@@ -286,7 +311,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
         DeleteIndexRequest request = new DeleteIndexRequest(index);
 
-        client.indices().deleteAsync(request, RequestOptions.DEFAULT, new ActionListener<AcknowledgedResponse>() {
+        client.indices().deleteAsync(request, RequestOptions.DEFAULT, new ActionListener<>() {
             @Override
             public void onResponse(AcknowledgedResponse response) {
                 if (response.isAcknowledged()) {
@@ -316,7 +341,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
         request.source(source);
 
-        client.searchAsync(request, RequestOptions.DEFAULT, new ActionListener<SearchResponse>() {
+        client.searchAsync(request, RequestOptions.DEFAULT, new ActionListener<>() {
             @Override
             public void onResponse(SearchResponse response) {
                 if (response.status().equals(RestStatus.OK)) {
@@ -335,7 +360,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public QueryBuilder<Value> query() {
-        return new AbstractQueryBuilder<Value>(this, ARRAY_NOTATION) {
+        return new AbstractQueryBuilder<>(this, ARRAY_NOTATION) {
             List<BoolQueryBuilder> statements = new ArrayList<>();
             BoolQueryBuilder builder = new BoolQueryBuilder();
 
@@ -442,7 +467,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                     }
                 }
                 source.size(getPageSize());
-                source.from(getPageSize()* getPage());
+                source.from(getPageSize() * getPage());
                 return source;
             }
         };

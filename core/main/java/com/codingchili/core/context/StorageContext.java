@@ -18,6 +18,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  * context used by storage plugins.
  */
 public class StorageContext<Value> extends SystemContext {
+    private JsonObject properties;
     private Class<? extends AsyncStorage> plugin;
     private Class<Value> valueClass;
     private Logger logger = logger(getClass());
@@ -35,8 +36,8 @@ public class StorageContext<Value> extends SystemContext {
     @Override
     public Logger logger(Class aClass) {
         return super.logger(aClass)
-                .setMetadata(ID_COLLECTION, () -> collection)
-                .setMetadata(ID_DB, () -> database);
+                .setMetadataValue(ID_COLLECTION, () -> collection)
+                .setMetadataValue(ID_DB, () -> database);
     }
 
     /**
@@ -51,6 +52,16 @@ public class StorageContext<Value> extends SystemContext {
      */
     public RemoteStorage storage() {
         return settings().getSettingsForPlugin(plugin);
+    }
+
+    public JsonObject properties() {
+        // fallback to storage settings if unset, this ensures that properties
+        // can be updated during runtime.
+        if (properties == null) {
+            return storage().getProperties();
+        } else {
+            return properties;
+        }
     }
 
     /**
@@ -254,6 +265,15 @@ public class StorageContext<Value> extends SystemContext {
      */
     public StorageContext<Value> setDatabase(String database) {
         this.database = database;
+        return this;
+    }
+
+    /**
+     * @param properties implementation specific configuration options.
+     * @return fluent
+     */
+    public StorageContext<Value> setProperties(JsonObject properties) {
+        this.properties = properties;
         return this;
     }
 

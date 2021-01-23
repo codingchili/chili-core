@@ -1,16 +1,19 @@
 package com.codingchili.core.configuration.system;
 
+import io.vertx.core.json.JsonObject;
+
 import com.codingchili.core.configuration.CoreStrings;
 
 /**
  * configuration settings for a remote storage.
  */
 public class RemoteStorage {
-    private boolean persisted = false;
+    private JsonObject properties = new JsonObject();
     private String host = CoreStrings.LOCALHOST;
     private String database = CoreStrings.DEFAULT_DB;
     private Integer port = 27017;
     private int persistInterval = 3000;
+    private boolean persisted = false;
     private boolean secure = false;
 
     /**
@@ -131,4 +134,20 @@ public class RemoteStorage {
     public void setSecure(boolean secure) {
         this.secure = secure;
     }
+
+    /**
+     * @return extra configuration properties used to customize the database.
+     */
+    public JsonObject getProperties() {
+        return properties;
+    }
+
+    /**
+     * @param properties extra configuration properties used to customize the database.
+     */
+    public void setProperties(JsonObject properties) {
+        this.properties = properties;
+    }
+
+
 }

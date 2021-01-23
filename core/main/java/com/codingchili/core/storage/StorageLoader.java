@@ -1,6 +1,7 @@
 package com.codingchili.core.storage;
 
 import io.vertx.core.*;
+import io.vertx.core.json.JsonObject;
 
 import java.util.Objects;
 
@@ -17,6 +18,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  * Builder to load storage plugins.
  */
 public class StorageLoader<Value extends Storable> {
+    private JsonObject properties;
     private Class<? extends AsyncStorage> plugin;
     private Class<Value> valueClass;
     private CoreContext context;
@@ -48,7 +50,8 @@ public class StorageLoader<Value extends Storable> {
                         .setDatabase(database)
                         .setCollection(collection)
                         .setClass(valueClass)
-                        .setPlugin(plugin);
+                        .setPlugin(plugin)
+                        .setProperties(properties);
 
                 plugin.getConstructor(Future.class, StorageContext.class)
                         .<Value>newInstance(future, storage);
@@ -82,7 +85,6 @@ public class StorageLoader<Value extends Storable> {
         if (database == null) {
             database = Configurations.storage().getSettingsForPlugin(plugin).getDatabase();
         }
-
         checkIsSet(plugin, ID_PLUGIN);
     }
 
@@ -112,6 +114,15 @@ public class StorageLoader<Value extends Storable> {
      */
     public StorageLoader<Value> withValue(Class<Value> valueClass) {
         this.valueClass = valueClass;
+        return this;
+    }
+
+    /**
+     * @param properties implementation specific configuration options.
+     * @return fluent.
+     */
+    public StorageLoader<Value> withProperties(JsonObject properties) {
+        this.properties = properties;
         return this;
     }
 
