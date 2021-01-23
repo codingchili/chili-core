@@ -13,9 +13,8 @@ import static com.codingchili.core.configuration.CoreStrings.PATH_SYSTEM;
  * Contains settings for the core system.
  */
 public class SystemSettings implements Configurable {
+    private MetricSettings metrics = new MetricSettings();
     private VertxOptions options = null;
-    private boolean metrics = false;
-    private int metricRate = 15000;
     private int services = 1;
     private int handlers = 1;
     private int listeners = 1;
@@ -37,19 +36,21 @@ public class SystemSettings implements Configurable {
     }
 
     /**
-     * @return the interval in MS which metrics are gathered.
+     * @return metric settings with paths and includes.
      */
-    public int getMetricRate() {
-        return metricRate;
+    public MetricSettings getMetrics() {
+        return metrics;
+    }
+
+    public void setMetrics(MetricSettings metrics) {
+        this.metrics = metrics;
     }
 
     /**
-     * @param metricRate sets the interval in MS which metrics are collected.
-     * @return fluent
+     * @return the interval in MS which metrics are gathered.
      */
-    public SystemSettings setMetricRate(int metricRate) {
-        this.metricRate = metricRate;
-        return this;
+    public int getMetricRate() {
+        return metrics.getRate();
     }
 
     /**
@@ -136,7 +137,7 @@ public class SystemSettings implements Configurable {
      * @return returns true if metrics are configured.
      */
     public boolean isMetrics() {
-        return metrics;
+        return metrics.isEnabled();
     }
 
     /**
@@ -148,7 +149,7 @@ public class SystemSettings implements Configurable {
         if (options != null) {
             options.getMetricsOptions().setEnabled(metrics);
         }
-        this.metrics = metrics;
+        this.metrics.setEnabled(metrics);
         return this;
     }
 
@@ -175,7 +176,7 @@ public class SystemSettings implements Configurable {
     @JsonIgnore
     public SystemSettings setOptions(VertxOptions options) {
         this.options = options;
-        this.metrics = options.getMetricsOptions().isEnabled();
+        this.metrics.setEnabled(options.getMetricsOptions().isEnabled());
         return this;
     }
 

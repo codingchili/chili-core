@@ -31,7 +31,7 @@ public class SystemContextTest {
     public void setUp() {
         this.settings = new SystemSettings();
 
-        settings.setMetricRate(100);
+        settings.getMetrics().setRate(100);
         settings.setMetrics(true);
 
         this.context = new ContextMock() {

@@ -30,6 +30,7 @@ import static com.codingchili.core.configuration.CoreStrings.getUnsupportedDeplo
 public class SystemContext implements CoreContext {
     private static AtomicBoolean initialized = new AtomicBoolean(false);
     private Map<String, List<String>> deployments = new HashMap<>();
+    private MetricsService metrics;
     private RemoteLogger logger;
     protected Vertx vertx;
 
@@ -85,18 +86,32 @@ public class SystemContext implements CoreContext {
         vertx.exceptionHandler(throwable -> logger.onError(throwable));
 
         if (!initialized.get()) {
-            var metrics = MetricsService.create(vertx);
+            this.metrics = MetricsService.create(vertx);
             var timer = TimerSource.of(getMetricTimer())
                     .setName(CoreStrings.LOG_METRICS);
 
-            periodic(timer, handler -> {
-                if (system().isMetrics()) {
-                    JsonObject json = metrics.getMetricsSnapshot(vertx);
-                    this.onMetricsSnapshot(json);
-                }
-            });
+            periodic(timer, handler -> this.processMetrics());
             StartupListener.publish(this);
             initialized.set(true);
+        }
+    }
+
+    private void processMetrics() {
+        SystemSettings system = system();
+
+        if (system.isMetrics()) {
+            var filters = system.getMetrics().getFilters();
+
+            if (filters.isEmpty()) {
+                this.onMetricsSnapshot(metrics.getMetricsSnapshot(vertx));
+            } else {
+                final JsonObject root = new JsonObject();
+                filters.forEach(filter -> {
+                    var capture = metrics.getMetricsSnapshot(filter.getPath());
+                    filter.apply(capture, root);
+                });
+                this.onMetricsSnapshot(root);
+            }
         }
     }
 
