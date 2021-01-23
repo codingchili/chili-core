@@ -20,7 +20,7 @@ public class ListenerSettings {
     private HttpServerOptions httpOptions = null;
     private Map<String, Endpoint> api = new HashMap<>();
     private WireType type = WireType.REST;
-    private Set<Integer> actualPorts = new HashSet<>();
+    private final Set<Integer> actualPorts = new HashSet<>();
     private String defaultTarget = "default";
     private String keystore = CoreStrings.DEFAULT_KEYSTORE;
     private String basePath = null;
@@ -197,8 +197,8 @@ public class ListenerSettings {
 
         if (httpOptions == null) {
             httpOptions = new HttpServerOptions()
-                    .setMaxWebsocketFrameSize(maxRequestBytes)
-                    .setUseAlpn(alpn && secure)
+                    .setMaxWebSocketFrameSize(maxRequestBytes)
+                    .setUseAlpn(alpn)
                     .setCompressionSupported(true)
                     .setSsl(secure);
 
