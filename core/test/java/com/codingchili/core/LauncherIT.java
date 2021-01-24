@@ -63,7 +63,7 @@ public class LauncherIT {
     public void testMetricsEnabled(TestContext test) {
         LauncherIT.test = test;
         async = test.async();
-        system().setMetrics(true);
+        system().getMetrics().setEnabled(true);
         onStart = (vx) -> test.assertTrue(vx.isMetricsEnabled());
         launchWithSuccess(TestService.class);
     }
@@ -71,7 +71,7 @@ public class LauncherIT {
     @Test
     public void testMetricsDisabled(TestContext test) {
         async = test.async();
-        system().setMetrics(false);
+        system().getMetrics().setEnabled(false);
         onStart = (vx) -> test.assertFalse(vx.isMetricsEnabled());
         launchWithSuccess(TestService.class);
     }

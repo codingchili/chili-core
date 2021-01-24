@@ -2,7 +2,6 @@ package com.codingchili.core.configuration.system;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.vertx.core.VertxOptions;
-import io.vertx.core.metrics.MetricsOptions;
 
 import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.configuration.Environment;
@@ -23,12 +22,17 @@ public class SystemSettings implements Configurable {
     private int configurationPoll = 1500;
     private int cachedFilePoll = 1500;
     private boolean consoleLogging = true;
+    private boolean unsafe = false;
     private int clusterTimeout = 3000;
     private long blockedThreadChecker = VertxOptions.DEFAULT_BLOCKED_THREAD_CHECK_INTERVAL;
     private long maxEventLoopExecuteTime = VertxOptions.DEFAULT_MAX_EVENT_LOOP_EXECUTE_TIME / (1000 * 1000);
     private int workerPoolSize = Math.min(
             Runtime.getRuntime().availableProcessors() * 8, // up to 8 core.
             32 + Runtime.getRuntime().availableProcessors() * 4); // over 8 cores.
+
+    {
+        System.setProperty("kryo.unsafe", String.valueOf(unsafe));
+    }
 
     @Override
     public String getPath() {
@@ -44,13 +48,6 @@ public class SystemSettings implements Configurable {
 
     public void setMetrics(MetricSettings metrics) {
         this.metrics = metrics;
-    }
-
-    /**
-     * @return the interval in MS which metrics are gathered.
-     */
-    public int getMetricRate() {
-        return metrics.getRate();
     }
 
     /**
@@ -143,7 +140,7 @@ public class SystemSettings implements Configurable {
         // an exception will be thrown. This causes most test cases to fail.
         if (options == null) {
             options = new VertxOptions()
-                    .setMetricsOptions(new MetricsOptions().setEnabled(metrics.isEnabled()))
+                    .setMetricsOptions(metrics.createVertxOptions())
                     .setWorkerPoolSize(workerPoolSize)
                     .setBlockedThreadCheckInterval(blockedThreadChecker)
                     .setMaxEventLoopExecuteTime(maxEventLoopExecuteTime * 1000 * 1000);
@@ -262,5 +259,18 @@ public class SystemSettings implements Configurable {
     public SystemSettings setServices(int services) {
         this.services = services;
         return this;
+    }
+
+    public boolean isUnsafe() {
+        return unsafe;
+    }
+
+    /**
+     * @param unsafe true if access to Unsafe should be attempted.
+     *               this will trigger a warning on most recent JVM's.
+     */
+    public void setUnsafe(Boolean unsafe) {
+        this.unsafe = unsafe;
+        System.setProperty("kryo.unsafe", unsafe.toString());
     }
 }

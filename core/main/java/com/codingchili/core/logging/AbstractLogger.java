@@ -235,4 +235,8 @@ public abstract class AbstractLogger extends Handler implements Logger {
     @Override
     public void flush() {
     }
+
+    @Override
+    public void close() {
+    }
 }

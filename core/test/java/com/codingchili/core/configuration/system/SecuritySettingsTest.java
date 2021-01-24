@@ -8,7 +8,6 @@ import com.codingchili.core.security.*;
 import com.codingchili.core.testing.ContextMock;
 
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.net.SelfSignedCertificate;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;

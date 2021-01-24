@@ -1,5 +1,6 @@
 package com.codingchili.core.configuration.system;
 
+import com.codingchili.core.files.Configurations;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.vertx.core.json.JsonObject;
 
@@ -10,9 +11,10 @@ import java.util.Set;
  * Configuration used to filter metrics.
  */
 public class MetricFilter {
+    private Set<String> include = new HashSet<>();
+    private Set<String> exclude = new HashSet<>();
     private String path;
     private String alias;
-    private Set<String> include = new HashSet<>();
 
     /**
      * @return the path to the metric, for example 'vertx.eventbus.handlers'.
@@ -56,13 +58,37 @@ public class MetricFilter {
         return include;
     }
 
-    public MetricFilter include(String include) {
-        this.include.add(include);
+    public void setInclude(Set<String> include) {
+        this.include = include;
+    }
+
+    public Set<String> getExclude() {
+        return exclude;
+    }
+
+    /**
+     * @param exclude a list of keys to ignore from metric events matching the filter.
+     */
+    public void setExclude(Set<String> exclude) {
+        this.exclude = exclude;
+    }
+
+    /**
+     * @param key the key to include from entries matching the filter.
+     * @return fluent.
+     */
+    public MetricFilter include(String key) {
+        include.add(key);
         return this;
     }
 
-    public void setInclude(Set<String> include) {
-        this.include = include;
+    /**
+     * @param key the key to exclude from entries matching the filter.
+     * @return fluent.
+     */
+    public MetricFilter exclude(String key) {
+        exclude.add(key);
+        return this;
     }
 
     /**
@@ -72,6 +98,8 @@ public class MetricFilter {
      * @param root    the root object to attach filtered metrics to.
      */
     public void apply(JsonObject capture, JsonObject root) {
+        var settings = Configurations.system().getMetrics();
+
         // iterate over captured metrics objects.
         capture.forEach(entry -> {
             // iterate over individual metric objects.
@@ -80,7 +108,12 @@ public class MetricFilter {
             // filter fields in each metric.
             while (iterator.hasNext()) {
                 var next = iterator.next();
-                if (!include.contains(next.getKey())) {
+                var key = next.getKey();
+
+                var included = (settings.getIncludes().contains(key) && !exclude.contains(key))
+                        || include.contains(key);
+
+                if (!included) {
                     iterator.remove();
                 }
             }

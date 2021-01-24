@@ -1,10 +1,15 @@
 package com.codingchili.core.context;
 
+import com.codingchili.core.configuration.system.SystemSettings;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.listener.*;
+import com.codingchili.core.listener.transport.ClusterListener;
+import com.codingchili.core.logging.Logger;
+import com.codingchili.core.logging.RemoteLogger;
+import com.codingchili.core.metrics.MetricCollector;
 import io.vertx.core.*;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.impl.VertxImpl;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.dropwizard.MetricsService;
 
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -12,14 +17,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.configuration.system.SystemSettings;
-import com.codingchili.core.files.Configurations;
-import com.codingchili.core.listener.*;
-import com.codingchili.core.listener.transport.ClusterListener;
-import com.codingchili.core.logging.Logger;
-import com.codingchili.core.logging.RemoteLogger;
 
 import static com.codingchili.core.configuration.CoreStrings.getUnsupportedDeployment;
 
@@ -30,7 +27,7 @@ import static com.codingchili.core.configuration.CoreStrings.getUnsupportedDeplo
 public class SystemContext implements CoreContext {
     private static AtomicBoolean initialized = new AtomicBoolean(false);
     private Map<String, List<String>> deployments = new HashMap<>();
-    private MetricsService metrics;
+    private MetricCollector metrics;
     private RemoteLogger logger;
     protected Vertx vertx;
 
@@ -55,7 +52,6 @@ public class SystemContext implements CoreContext {
     protected SystemContext(CoreContext context) {
         this(context.vertx());
     }
-
 
     private SystemContext(Vertx vertx) {
         this.vertx = vertx;
@@ -82,46 +78,23 @@ public class SystemContext implements CoreContext {
         });
     }
 
+    /**
+     * @return the metrics collector.
+     */
+    public MetricCollector metrics() {
+        if (this.metrics == null) {
+            this.metrics = new MetricCollector(this);
+        }
+        return metrics;
+    }
+
     private void initialize() {
         vertx.exceptionHandler(throwable -> logger.onError(throwable));
 
         if (!initialized.get()) {
-            this.metrics = MetricsService.create(vertx);
-            var timer = TimerSource.of(getMetricTimer())
-                    .setName(CoreStrings.LOG_METRICS);
-
-            periodic(timer, handler -> this.processMetrics());
+            this.metrics();
             StartupListener.publish(this);
             initialized.set(true);
-        }
-    }
-
-    private void processMetrics() {
-        SystemSettings system = system();
-
-        if (system.getMetrics().isEnabled()) {
-            var filters = system.getMetrics().getFilters();
-
-            if (filters.isEmpty()) {
-                this.onMetricsSnapshot(metrics.getMetricsSnapshot(vertx));
-            } else {
-                final JsonObject root = new JsonObject();
-                filters.forEach(filter -> {
-                    var capture = metrics.getMetricsSnapshot(filter.getPath());
-                    filter.apply(capture, root);
-                });
-                this.onMetricsSnapshot(root);
-            }
-        }
-    }
-
-    private int getMetricTimer() {
-        return system().getMetricRate();
-    }
-
-    protected void onMetricsSnapshot(JsonObject json) {
-        if (json != null) {
-            logger.onMetricsSnapshot(json);
         }
     }
 
