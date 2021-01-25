@@ -22,10 +22,10 @@ public class OsMetricGauge implements MetricSet {
     @Override
     public Map<String, Metric> getMetrics() {
         var metrics = new HashMap<String, Metric>();
-        metrics.put("os.processors", (Gauge<Integer>) os::getAvailableProcessors);
-        metrics.put("os.name", (Gauge<String>) os::getName);
-        metrics.put("os.arch", (Gauge<String>) os::getArch);
-        metrics.put("os.version", (Gauge<String>) os::getVersion);
+        metrics.put("processors", (Gauge<Integer>) os::getAvailableProcessors);
+        metrics.put("name", (Gauge<String>) os::getName);
+        metrics.put("arch", (Gauge<String>) os::getArch);
+        metrics.put("version", (Gauge<String>) os::getVersion);
         return metrics;
     }
 }

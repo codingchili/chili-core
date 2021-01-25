@@ -6,9 +6,7 @@ import com.codahale.metrics.Timer;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.Environment;
 import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.context.TimerSource;
-import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.Logger;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
@@ -20,7 +18,7 @@ import static com.codingchili.core.configuration.CoreStrings.ID_TYPE;
  * Implementation of metric collection backed by micrometer.
  */
 public class MetricCollector {
-    public static final String PROCESS_NAME = "process.name";
+    public static final String PROCESS_NAME = "process.identifier";
     private static final String METRICS_OVERHEAD = "metrics.overhead";
     private final JsonObject metadata = new JsonObject();
     private final MetricRegistry registry;
@@ -30,17 +28,10 @@ public class MetricCollector {
     private Timer overhead;
 
     {
-        metadata.put(PROCESS_NAME, String.format("%s@%s",
+        metadata.put(PROCESS_NAME, String.format("%s/%s",
                 ProcessHandle.current().pid(),
                 Environment.hostname().orElse("n/a"))
         );
-    }
-
-    public static void main(String[] args) {
-        Configurations.system().getMetrics()
-                .jvm(JvmMetric.process, JvmMetric.os)
-                .setEnabled(true);
-        var context = new SystemContext();
     }
 
     /**
@@ -84,7 +75,7 @@ public class MetricCollector {
                 var instance = jvm.getMetricImplementation()
                         .getConstructor().newInstance();
 
-                registry.registerAll(instance);
+                registry.registerAll(jvm.getNamespace(), instance);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

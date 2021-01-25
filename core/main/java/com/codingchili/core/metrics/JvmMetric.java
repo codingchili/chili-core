@@ -1,51 +1,44 @@
 package com.codingchili.core.metrics;
 
-import com.codahale.metrics.Metric;
 import com.codahale.metrics.MetricSet;
-import com.codahale.metrics.jvm.*;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.codahale.metrics.jvm.ClassLoadingGaugeSet;
+import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
+import com.codahale.metrics.jvm.JvmAttributeGaugeSet;
+import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
 
 /**
  * Maps implementations used to collect jvm/process/os metrics.
  */
 public enum JvmMetric {
-    threads(ThreadStatesGaugeSetNoDeadlock.class),
-    classes(ClassLoadingGaugeSet.class),
-    gc(GarbageCollectorMetricSet.class),
-    memory(MemoryUsageGaugeSet.class),
-    jvm(JvmAttributeGaugeSet.class),
-    cpu(CpuMetricGauge.class),
-    process(ProcessMetrics.class),
-    os(OsMetricGauge.class);
+    threads(ThreadStateGauge.class, "threads"),
+    classes(ClassLoadingGaugeSet.class, "classes"),
+    gc(GarbageCollectorMetricSet.class, "gc"),
+    memory(MemoryUsageGaugeSet.class, "memory"),
+    jvm(JvmAttributeGaugeSet.class, "jvm"),
+    cpu(CpuMetricGauge.class, "cpu"),
+    process(ProcessMetrics.class, "process"),
+    os(OsMetricGauge.class, "os");
 
     private Class<MetricSet> impl;
+    private String namespace;
 
+    /**
+     * @return the namespace which the metric registers under.
+     */
+    public String getNamespace() {
+        return namespace;
+    }
+
+    /**
+     * @return the metric implementation class.
+     */
     public Class<MetricSet> getMetricImplementation() {
         return impl;
     }
 
     @SuppressWarnings("unchecked")
-    JvmMetric(Class<? extends MetricSet> implClass) {
+    JvmMetric(Class<? extends MetricSet> implClass, String namespace) {
         this.impl = (Class<MetricSet>) implClass;
-    }
-
-    static class ThreadStatesGaugeSetNoDeadlock extends ThreadStatesGaugeSet {
-        private static final String THREAD_MONITOR_DEADLOCK_KEY = "deadlocks";
-
-        @Override
-        public Map<String, Metric> getMetrics() {
-            var current = super.getMetrics();
-            var filtered = new HashMap<String, Metric>();
-            // deadlocks returns an emptySet which cannot be converted
-            // to json in vertx-dropwizard-metrics/helper.
-            current.forEach((key, value) -> {
-                if (!key.equals(THREAD_MONITOR_DEADLOCK_KEY)) {
-                    filtered.put(key, value);
-                }
-            });
-            return filtered;
-        }
+        this.namespace = namespace;
     }
 }

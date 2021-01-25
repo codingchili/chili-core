@@ -25,10 +25,10 @@ public class CpuMetricGauge implements MetricSet {
 
         if (os instanceof com.sun.management.OperatingSystemMXBean) {
             var sun = (com.sun.management.OperatingSystemMXBean) os;
-            metrics.put("cpu.system", (Gauge<Double>) sun::getSystemCpuLoad);
-            metrics.put("cpu.process", (Gauge<Double>) sun::getProcessCpuLoad);
+            metrics.put("system", (Gauge<Double>) sun::getSystemCpuLoad);
+            metrics.put("process", (Gauge<Double>) sun::getProcessCpuLoad);
         } else {
-            metrics.put("cpu.system", (Gauge<Double>) os::getSystemLoadAverage);
+            metrics.put("system", (Gauge<Double>) os::getSystemLoadAverage);
         }
         return metrics;
     }

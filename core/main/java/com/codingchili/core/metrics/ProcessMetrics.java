@@ -22,10 +22,10 @@ public class ProcessMetrics implements MetricSet {
     @Override
     public Map<String, Metric> getMetrics() {
         var metrics = new HashMap<String, Metric>();
-        metrics.put("process.pid", (Gauge<Long>) runtime::getPid);
-        metrics.put("process.name", (Gauge<String>) runtime::getName);
-        metrics.put("process.jvm", (Gauge<String>) runtime::getVmName);
-        metrics.put("process.uptime", (Gauge<Long>) runtime::getUptime);
+        metrics.put("pid", (Gauge<Long>) runtime::getPid);
+        metrics.put("name", (Gauge<String>) runtime::getName);
+        metrics.put("jvm", (Gauge<String>) runtime::getVmName);
+        metrics.put("uptime", (Gauge<Long>) runtime::getUptime);
         return metrics;
     }
 }
