@@ -123,7 +123,7 @@ public class LauncherIT {
     public LaunchContext getLaunchContextFor(String node) {
         return new LaunchContext(DEPLOY) {
             @Override
-            protected List<String> block(String block) {
+            protected List<String> services(List<String> block) {
                 List<String> list = new ArrayList<>();
                 list.add(node);
                 return list;

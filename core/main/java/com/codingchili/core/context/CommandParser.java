@@ -59,6 +59,9 @@ public class CommandParser {
             } else {
                 if (parameter != null) {
                     addOrUpdate(parameter, item);
+                } else {
+                    // place as property when default parameter.
+                    addOrUpdate(line[i - 1], item);
                 }
             }
         }
@@ -137,6 +140,6 @@ public class CommandParser {
      * @return all property values for the given property name.
      */
     public List<String> getAllValues(String name) {
-        return properties.getOrDefault(name, Collections.emptyList());
+        return properties.getOrDefault(name, new ArrayList<>());
     }
 }

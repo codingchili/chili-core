@@ -26,20 +26,20 @@ public class LaunchContextTest {
 
     @Test
     public void testGetBlock() throws CoreException {
-        Assert.assertTrue(context.block(BLOCK_1).contains(SERVICE_1));
-        Assert.assertTrue(context.block(BLOCK_2).contains(SERVICE_2));
+        Assert.assertTrue(context.service(BLOCK_1).contains(SERVICE_1));
+        Assert.assertTrue(context.service(BLOCK_2).contains(SERVICE_2));
     }
 
     @Test
     public void testGetHostBlock() throws CoreException {
-        Assert.assertTrue(context.block(HOST_1).contains(SERVICE_1));
-        Assert.assertTrue(context.block(HOST_2).contains(SERVICE_1));
+        Assert.assertTrue(context.service(HOST_1).contains(SERVICE_1));
+        Assert.assertTrue(context.service(HOST_2).contains(SERVICE_1));
     }
 
     @Test
     public void testGetMissingBlock() throws CoreException {
         try {
-            Assert.assertTrue(context.block(BLOCK_NULL).isEmpty());
+            Assert.assertTrue(context.service(BLOCK_NULL).isEmpty());
         } catch (NoServicesConfiguredForBlock e) {
             Assert.assertTrue(e.getMessage().contains(BLOCK_NULL));
         }
@@ -48,7 +48,7 @@ public class LaunchContextTest {
     @Test
     public void testGetMissingHost() throws CoreException {
         try {
-            context.block(HOST_3).contains(SERVICE_1);
+            context.service(HOST_3).contains(SERVICE_1);
         } catch (RemoteBlockNotConfiguredException e) {
             Assert.assertTrue(e.getMessage().contains(HOST_3));
             Assert.assertTrue(e.getMessage().contains(BLOCK_NULL));
@@ -58,7 +58,7 @@ public class LaunchContextTest {
     @Test
     public void testGetEmptyBlockThrows(TestContext test) throws CoreException {
         try {
-            context.block(BLOCK_EMPTY);
+            context.service(BLOCK_EMPTY);
             test.fail("Should throw exception when block is empty.");
         } catch (NoServicesConfiguredForBlock e) {
             test.assertEquals(getNoServicesConfiguredForBlock(BLOCK_EMPTY), e.getMessage());
@@ -68,7 +68,7 @@ public class LaunchContextTest {
     @Test
     public void testGetDefaultBlockWhenNoArgs(TestContext test) throws CoreException {
         try {
-            context.block(new String[]{});
+            context.services();
         } catch (NoServicesConfiguredForBlock e) {
             test.assertTrue(e.getMessage().contains(BLOCK_DEFAULT));
         }
@@ -77,14 +77,14 @@ public class LaunchContextTest {
     @Test
     public void testGetRemoteBlockByHostname(TestContext test) throws CoreException {
         if (Environment.hostname().isPresent()) {
-            test.assertTrue(context.block(Environment.hostname().get()).contains(SERVICE_2));
+            test.assertTrue(context.service(Environment.hostname().get()).contains(SERVICE_2));
         }
     }
 
     @Test
     public void testGetRemoteBlockByIP(TestContext test) throws CoreException {
         if (Environment.addresses().size() > 0) {
-            test.assertTrue(context.block(INTERFACE_ADDRESS).contains(SERVICE_2));
+            test.assertTrue(context.service(INTERFACE_ADDRESS).contains(SERVICE_2));
         }
     }
 }

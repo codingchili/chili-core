@@ -24,48 +24,11 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  * directly on that object.
  */
 public class Launcher implements CoreService {
+    private static Launcher instance;
     private static final ConsoleLogger logger = new ConsoleLogger(Launcher.class);
     private static List<String> nodes = new ArrayList<>();
+    private LaunchContext context;
     private CoreContext core;
-
-    /**
-     * Creates a new launcher with the given launcher context.
-     *
-     * @param context the launcher context to use.
-     */
-    public Launcher(LaunchContext context) {
-        Future<CommandResult> future = Future.future();
-
-        logger.log(CoreStrings.getStartupText());
-
-        context.getExecutor().execute(future, context.args());
-        future.setHandler(done -> {
-            CommandResult result = done.result();
-            try {
-                if (done.succeeded()) {
-                    if (LauncherCommandResult.CONTINUE.equals(result)) {
-                        nodes = context.block(context.args());
-                        nodes = new ArrayList<>(nodes);
-                        clusterIfEnabled(context);
-                    }
-                    if (LauncherCommandResult.SHUTDOWN.equals(result)) {
-                        exit();
-                    }
-                } else {
-                    if (done.cause() != null) {
-                        throw done.cause();
-                    } else {
-                        throw new CoreRuntimeException("Unknown cause: ");
-                    }
-                }
-                // else: the future succeeded with "true" - no action.
-            } catch (Throwable e) {
-                logger.log(throwableToString(e), Level.ERROR);
-                logger.log(getCommandError(context.getCommand()), Level.INFO);
-                exit();
-            }
-        });
-    }
 
     /**
      * Starts the launcher with the given arguments.
@@ -83,6 +46,63 @@ public class Launcher implements CoreService {
      */
     public static void start(LaunchContext context) {
         new Launcher(context);
+    }
+
+    /**
+     * Creates a new launcher with the given launcher context.
+     *
+     * @param context the launcher context to use.
+     */
+    public Launcher(LaunchContext context) {
+        this.context = context;
+
+        Future<CommandResult> future = Future.future();
+
+        logger.log(CoreStrings.getStartupText());
+
+        context.getExecutor().execute(future, context.args());
+        future.setHandler(done -> {
+            CommandResult result = done.result();
+            try {
+                if (done.succeeded()) {
+                    if (LauncherCommandResult.CONTINUE.equals(result)) {
+                        nodes = new ArrayList<>(context.services());
+                        clusterIfEnabled(context);
+                    }
+                    if (LauncherCommandResult.SHUTDOWN.equals(result)) {
+                        exit();
+                    }
+                } else {
+                    if (done.cause() != null) {
+                        throw done.cause();
+                    } else {
+                        throw new CoreRuntimeException("Unknown cause: ");
+                    }
+                }
+                // else: the future succeeded with "true" - no action.
+            } catch (Throwable e) {
+                logger.log(throwableToString(e), Level.ERROR);
+                logger.log(getCommandError(context.getCommand().orElse("")), Level.INFO);
+                exit();
+            }
+        });
+        instance = this;
+    }
+
+    /**
+     * @return the launcher that started the application, null if not started
+     * using the default Launcher.
+     */
+    public static Launcher instance() {
+        return instance;
+    }
+
+    /**
+     * @return the launch context used to start the launcher, null if not started
+     * using the default launcher.
+     */
+    public LaunchContext context() {
+        return context;
     }
 
     void exit() {

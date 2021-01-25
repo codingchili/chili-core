@@ -1,7 +1,6 @@
 package com.codingchili.core.context;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import com.codingchili.core.Launcher;
 import com.codingchili.core.configuration.Environment;
@@ -70,27 +69,38 @@ public class LaunchContext {
     }
 
     /**
+     * see #{@link LaunchContext#services(List)}
+     */
+    protected List<String> service(String block) throws CoreException {
+        return services(List.of(block));
+    }
+
+    /**
      * Get the configured services for the given block or remote identifier.
      *
-     * @param block the handler of the configured block or the hostname.
+     * @param blocks the handler of the configured block or the hostname.
      * @return a list of configured services for the given block or host.
      * @throws RemoteBlockNotConfiguredException when no block is configured for given host.
      * @throws BlockNotConfiguredException       when no block is configured for given block-handler.
      */
-    protected List<String> block(String block) throws CoreException {
-        List<String> blocks;
+    protected List<String> services(List<String> blocks) throws CoreException {
+        Set<String> services = new HashSet<>();
 
-        if (isRemoteBlock(block)) {
-            blocks = getBlockForRemote(block);
-        } else {
-            blocks = getBlock(block);
+
+        for (String block : blocks) {
+            List<String> list;
+            if (isRemoteBlock(block)) {
+                list = getBlockForRemote(block);
+            } else {
+                list = getBlock(block);
+            }
+            if (list.isEmpty()) {
+                throw new NoServicesConfiguredForBlock(String.join(",", blocks));
+            } else {
+                services.addAll(list);
+            }
         }
-
-        if (blocks.size() == 0) {
-            throw new NoServicesConfiguredForBlock(block);
-        }
-
-        return blocks;
+        return new ArrayList<>(services);
     }
 
     /**
@@ -105,13 +115,24 @@ public class LaunchContext {
      * argument then the block is inferred from the host-to-block mappings. if there is no such mapping
      * the 'default' block is deployed, if one is specified.
      *
-     * @param args the arguments that was passed to the launcher.
      * @return a list of services to be deployed for the given arguments.
      * @throws CoreException when the specified block does not exist or when no blocks are specified
      *                       that match the host and the 'default' block is missing.
      */
-    public List<String> block(String[] args) throws CoreException {
-        return block((args.length < 2) ? findBlockByEnvironment() : args[1]);
+    public List<String> services() throws CoreException {
+        return services(blockNames());
+    }
+
+    /**
+     * @return the name of the block being deployed.
+     */
+    public List<String> blockNames() {
+        List<String> blocks = executor.getAllProperties("deploy");
+        if (blocks.size() == 0) {
+            return List.of(findBlockByEnvironment());
+        } else {
+            return blocks;
+        }
     }
 
     /**
@@ -142,12 +163,8 @@ public class LaunchContext {
     /**
      * @return the command that was passed to the launcher if existing.
      */
-    public String getCommand() {
-        if (args.length > 0) {
-            return args[0];
-        } else {
-            return BLOCK_DEFAULT;
-        }
+    public Optional<String> getCommand() {
+        return executor.getCommand();
     }
 
     /**

@@ -16,7 +16,7 @@ import com.codingchili.core.logging.Logger;
  * Parses and executes commands from the command line.
  */
 public class DefaultCommandExecutor implements CommandExecutor {
-    private static final String UNDEFINED = "undefined";
+    public static final String UNDEFINED = "undefined";
     protected LauncherSettings settings = Configurations.launcher();
     protected Map<String, Command> commands = new HashMap<>();
     protected Logger logger = new StringLogger(getClass());
@@ -45,7 +45,7 @@ public class DefaultCommandExecutor implements CommandExecutor {
             commands.get(command.get()).execute(execution, this);
             execution.setHandler(future);
         } else {
-            future.fail(new NoSuchCommandException(getCommand().orElse(UNDEFINED)));
+            future.fail(new NoSuchCommandException(getCommand().orElse("")));
         }
         return this;
     }
