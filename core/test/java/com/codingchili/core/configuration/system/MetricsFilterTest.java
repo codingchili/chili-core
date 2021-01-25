@@ -1,6 +1,8 @@
 package com.codingchili.core.configuration.system;
 
-import io.vertx.core.json.JsonObject;
+import com.codahale.metrics.Metric;
+import com.codahale.metrics.Timer;
+import com.codingchili.core.metrics.MetricFilter;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Assert;
 import org.junit.Test;
@@ -10,40 +12,28 @@ import org.junit.runner.RunWith;
 public class MetricsFilterTest {
     private static final String ALIAS = "alias";
     private static final String HANDLERS = "vertx.eventbus.handlers";
+    private Metric timer = new Timer();
 
     @Test
     public void filterUnwantedProperties() {
-        var root = new JsonObject();
-        var capture = new JsonObject()
-                .put(HANDLERS, new JsonObject()
-                        .put("type", "metric")
-                        .put("count", 12_000)
-                        .put("ignored", true)
-                );
-
-        filter().include("count")
-                .apply(capture, root);
+        var root = filter()
+                .include("count")
+                .exclude("fifteenMinuteRate")
+                .apply(timer, "vertx.eventbus.handlers");
 
         var metric = root.getJsonObject(HANDLERS);
         Assert.assertTrue(metric.containsKey("count"));
-        Assert.assertFalse(metric.containsKey("ignored"));
+        Assert.assertFalse(metric.containsKey("fifteenMinuteRate"));
     }
 
     @Test
     public void mapMultiplePathsWithAlias() {
-        var root = new JsonObject();
-        var capture = new JsonObject()
-                .put("vertx.net.handlers", new JsonObject())
-                .put("vertx.net.socket", new JsonObject());
-
-        filter()
-                .setPath("vertx.net")
-                .setAlias(ALIAS).apply(capture, root);
+        var root = filter().setPath("vertx.eventbus")
+                .setAlias(ALIAS).apply(timer, "vertx.eventbus.handlers");
 
         // verify only maps substring of path.
         Assert.assertFalse(root.containsKey(ALIAS));
         Assert.assertTrue(root.containsKey(ALIAS + ".handlers"));
-        Assert.assertTrue(root.containsKey(ALIAS + ".socket"));
     }
 
     private MetricFilter filter() {

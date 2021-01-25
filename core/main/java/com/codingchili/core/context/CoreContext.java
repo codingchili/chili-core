@@ -1,5 +1,6 @@
 package com.codingchili.core.context;
 
+import com.codingchili.core.metrics.MetricCollector;
 import io.vertx.core.*;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.file.FileSystem;
@@ -24,6 +25,19 @@ public interface CoreContext {
      * @return get the EventBus attached to the vertx instance.
      */
     EventBus bus();
+
+    /**
+     * @return the metrics collector.
+     */
+    MetricCollector metrics();
+
+    /**
+     * Creates a new metric namespace using the registryName.
+     *
+     * @param registryName the name of the registry to attach metrics to.
+     * @return a new metric collector using the default timer.
+     */
+    MetricCollector metrics(String registryName);
 
     /**
      * @return get filesystem access.

@@ -1,5 +1,6 @@
 package com.codingchili.core.configuration.system;
 
+import com.codingchili.core.metrics.MetricSettings;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.vertx.core.VertxOptions;
 

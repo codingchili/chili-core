@@ -1,5 +1,6 @@
 package com.codingchili.core.context;
 
+import com.codingchili.core.metrics.MetricSettings;
 import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.*;
@@ -50,16 +51,12 @@ public class SystemContext implements CoreContext {
      * @param context context to clone vertx instance from.
      */
     protected SystemContext(CoreContext context) {
-        this(context.vertx());
+        this.vertx = context.vertx();
+        this.metrics = context.metrics();
     }
 
     private SystemContext(Vertx vertx) {
         this.vertx = vertx;
-        this.logger = new RemoteLogger(this, SystemContext.class);
-
-        // add a shutdown hook for gracefully shutting down the context.
-        ShutdownHook.register(this);
-
         initialize();
     }
 
@@ -78,21 +75,34 @@ public class SystemContext implements CoreContext {
         });
     }
 
-    /**
-     * @return the metrics collector.
-     */
+    @Override
     public MetricCollector metrics() {
-        if (this.metrics == null) {
-            this.metrics = new MetricCollector(this);
-        }
         return metrics;
     }
 
+    @Override
+    public MetricCollector metrics(String registryName) {
+        return new MetricCollector(
+                this,
+                new MetricSettings().setEnabled(true),
+                registryName
+        );
+    }
+
     private void initialize() {
+        this.logger = new RemoteLogger(this, SystemContext.class);
+
+        // add a shutdown hook for gracefully shutting down the context.
+        ShutdownHook.register(this);
+
         vertx.exceptionHandler(throwable -> logger.onError(throwable));
 
         if (!initialized.get()) {
-            this.metrics();
+            this.metrics = new MetricCollector(
+                    this,
+                    Configurations.system().getMetrics(),
+                    MetricSettings.REGISTRY_NAME
+            );
             StartupListener.publish(this);
             initialized.set(true);
         }

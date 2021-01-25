@@ -1,37 +1,24 @@
-package com.codingchili.core.configuration.system;
+package com.codingchili.core.metrics;
 
 import com.codingchili.core.files.Configurations;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.metrics.MetricsOptions;
 import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Settings for the generation of metrics.
  */
 public class MetricSettings {
     public static final String REGISTRY_NAME = "default";
+    private Set<String> includes = MetricFilter.defaultIncludes();
     private List<MetricFilter> filters = new ArrayList<>();
-    private boolean classloader;
-    private boolean memory;
-    private boolean gc;
-    private boolean threads;
-    private boolean cpu;
-    private boolean jvm;
+    private List<JvmMetric> jvm = new ArrayList<>();
+    private boolean overhead;
     private boolean enabled = false;
     private int rate = 15000;
-    private List<String> includes = List.of("value",
-            "count",
-            "mean",
-            "min",
-            "max",
-            "median",
-            "oneMinuteRate",
-            "fiveMinuteRate",
-            "95%",
-            "99.9%");
 
     /**
      * @return true if metrics should be collected.
@@ -49,15 +36,25 @@ public class MetricSettings {
         return this;
     }
 
-    public List<String> getIncludes() {
+    public Set<String> getIncludes() {
         return includes;
     }
 
     /**
      * @param includes a list of default includes for the filters.
      */
-    public void setIncludes(List<String> includes) {
+    public MetricSettings setIncludes(Set<String> includes) {
         this.includes = includes;
+        return this;
+    }
+
+    /**
+     * @param include a property to include for matching metrics.
+     * @return fluent.
+     */
+    public MetricSettings include(String include) {
+        this.includes.add(include);
+        return this;
     }
 
     /**
@@ -90,81 +87,29 @@ public class MetricSettings {
         return this;
     }
 
-    public boolean isClassloader() {
-        return classloader;
-    }
-
     /**
-     * @param classloader true if metrics are to be collected
+     * Adds a new filter to the metric configuration.
+     *
+     * @param consumer the configurator.
      * @return fluent.
      */
-    public MetricSettings setClassloader(boolean classloader) {
-        this.classloader = classloader;
+    public MetricSettings addFilter(Consumer<MetricFilter> consumer) {
+        var filter = new MetricFilter();
+        filter.getInclude().addAll(includes);
+        consumer.accept(filter);
+        filters.add(filter);
         return this;
     }
 
-    public boolean isMemory() {
-        return memory;
+    public boolean isOverhead() {
+        return overhead;
     }
 
     /**
-     * @param memory true if metrics are to be collected
-     * @return fluent.
+     * @param overhead true if reporting overhead should be recorded.
      */
-    public MetricSettings setMemory(boolean memory) {
-        this.memory = memory;
-        return this;
-    }
-
-    public boolean isGc() {
-        return gc;
-    }
-
-    /**
-     * @param gc true if metrics are to be collected
-     * @return fluent.
-     */
-    public MetricSettings setGc(boolean gc) {
-        this.gc = gc;
-        return this;
-    }
-
-    /**
-     * @param enabled true if metrics are to be collected.
-     * @return fluent.
-     */
-    public MetricSettings setJvmAttributes(boolean enabled) {
-        this.jvm = enabled;
-        return this;
-    }
-
-    public boolean isJvmAttributes() {
-        return jvm;
-    }
-
-    public boolean isThreads() {
-        return threads;
-    }
-
-    /**
-     * @param threads true if metrics are to be collected
-     * @return fluent.
-     */
-    public MetricSettings setThreads(boolean threads) {
-        this.threads = threads;
-        return this;
-    }
-
-    public boolean isCpu() {
-        return cpu;
-    }
-
-    /**
-     * @param enabled true if metris are to be collected.
-     * @return fluent.
-     */
-    public MetricSettings setCpu(boolean enabled) {
-        this.cpu = enabled;
+    public MetricSettings setOverhead(boolean overhead) {
+        this.overhead = overhead;
         return this;
     }
 
@@ -174,12 +119,29 @@ public class MetricSettings {
      * @return fluent.
      */
     public MetricSettings allJvm() {
-        threads = true;
-        jvm = true;
-        gc = true;
-        classloader = true;
-        memory = true;
-        cpu = true;
+        jvm.addAll(Arrays.asList(JvmMetric.values()));
+        return this;
+    }
+
+    public List<JvmMetric> getJvm() {
+        return jvm;
+    }
+
+    /**
+     * @param jvm a set of jvm metrics to enable.
+     * @return fluent.
+     */
+    public MetricSettings setJvm(List<JvmMetric> jvm) {
+        this.jvm = jvm;
+        return this;
+    }
+
+    /**
+     * @param metrics a list of jvm metrics to enable.
+     * @return fluent.
+     */
+    public MetricSettings jvm(JvmMetric... metrics) {
+        Collections.addAll(jvm, metrics);
         return this;
     }
 

@@ -1,17 +1,20 @@
-package com.codingchili.core.configuration.system;
+package com.codingchili.core.metrics;
 
-import com.codingchili.core.files.Configurations;
+import com.codahale.metrics.Metric;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.dropwizard.impl.Helper;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Configuration used to filter metrics.
  */
 public class MetricFilter {
-    private Set<String> include = new HashSet<>();
+    private Set<String> include = defaultIncludes();
     private Set<String> exclude = new HashSet<>();
     private String path;
     private String alias;
@@ -77,8 +80,8 @@ public class MetricFilter {
      * @param key the key to include from entries matching the filter.
      * @return fluent.
      */
-    public MetricFilter include(String key) {
-        include.add(key);
+    public MetricFilter include(String... key) {
+        include.addAll(Arrays.asList(key));
         return this;
     }
 
@@ -86,43 +89,65 @@ public class MetricFilter {
      * @param key the key to exclude from entries matching the filter.
      * @return fluent.
      */
-    public MetricFilter exclude(String key) {
-        exclude.add(key);
+    public MetricFilter exclude(String... key) {
+        exclude.addAll(Arrays.asList(key));
         return this;
     }
 
     /**
      * Applies the filtering logic to a metrics object.
      *
-     * @param capture the metrics object to filter out keys from.
-     * @param root    the root object to attach filtered metrics to.
+     * @param metric converted to json and filtered.
+     * @param path   the full path of the metrics object.
+     * @return a converted metrics object with filtered properties.
      */
-    public void apply(JsonObject capture, JsonObject root) {
-        var settings = Configurations.system().getMetrics();
+    public JsonObject apply(Metric metric, String path) {
+        var capture = Helper.convertMetric(metric, TimeUnit.SECONDS, TimeUnit.MILLISECONDS);
 
-        // iterate over captured metrics objects.
-        capture.forEach(entry -> {
-            // iterate over individual metric objects.
-            var iterator = capture.getJsonObject(entry.getKey()).iterator();
+        // iterate over individual metric objects.
+        var iterator = capture.iterator();
 
-            // filter fields in each metric.
-            while (iterator.hasNext()) {
-                var next = iterator.next();
-                var key = next.getKey();
+        // filter fields in each metric.
+        while (iterator.hasNext()) {
+            var next = iterator.next();
+            var key = next.getKey();
 
-                var included = (settings.getIncludes().contains(key) && !exclude.contains(key))
-                        || include.contains(key);
-
-                if (!included) {
-                    iterator.remove();
-                }
+            if (exclude.contains(key) || !include.contains(key)) {
+                iterator.remove();
             }
-            // rename the key of the metrics object if alias is set.
-            if (alias != null) {
-                root.put(entry.getKey().replace(path, alias), entry.getValue());
-            } else {
-                root.put(entry.getKey(), entry.getValue());
-            }
-        });
+        }
+        return new JsonObject().put(
+                (alias != null) ? path.replace(this.path, alias) : path,
+                capture
+        );
+    }
+
+    /**
+     * @param metric a metric to convert to a json object.
+     * @param path   the path to the metric, used as the key for the data.
+     * @return a json object where the path is mapped to an object containing the metric data.
+     */
+    public static JsonObject convert(Metric metric, String path) {
+        var capture = Helper.convertMetric(metric, TimeUnit.SECONDS, TimeUnit.MILLISECONDS);
+        return new JsonObject().put(path, capture);
+    }
+
+    /**
+     * @return a list of default includes for dropwizard.
+     * Use includes and excludes to modify this with filters.
+     */
+    public static Set<String> defaultIncludes() {
+        return new HashSet<>(Set.of(
+                "value",
+                "count",
+                "mean",
+                "min",
+                "max",
+                "median",
+                "oneMinuteRate",
+                "fiveMinuteRate",
+                "95%",
+                "99.9%")
+        );
     }
 }

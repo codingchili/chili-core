@@ -10,26 +10,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Collects CPU metrics using the operating system mx bean.
+ * Collects information about the operating system.
  */
-public class CpuMetricGauge implements MetricSet {
+public class OsMetricGauge implements MetricSet {
     private OperatingSystemMXBean os;
 
-    public CpuMetricGauge() {
+    public OsMetricGauge() {
         os = ManagementFactory.getOperatingSystemMXBean();
     }
 
     @Override
     public Map<String, Metric> getMetrics() {
         var metrics = new HashMap<String, Metric>();
-
-        if (os instanceof com.sun.management.OperatingSystemMXBean) {
-            var sun = (com.sun.management.OperatingSystemMXBean) os;
-            metrics.put("cpu.system", (Gauge<Double>) sun::getSystemCpuLoad);
-            metrics.put("cpu.process", (Gauge<Double>) sun::getProcessCpuLoad);
-        } else {
-            metrics.put("cpu.system", (Gauge<Double>) os::getSystemLoadAverage);
-        }
+        metrics.put("os.processors", (Gauge<Integer>) os::getAvailableProcessors);
+        metrics.put("os.name", (Gauge<String>) os::getName);
+        metrics.put("os.arch", (Gauge<String>) os::getArch);
+        metrics.put("os.version", (Gauge<String>) os::getVersion);
         return metrics;
     }
 }

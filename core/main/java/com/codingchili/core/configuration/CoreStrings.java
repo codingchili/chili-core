@@ -27,7 +27,7 @@ public abstract class CoreStrings {
     // Author.
     public static String VERSION;
     public static final String GITHUB = "https://github.com/codingchili";
-    public static final String AUTHOR = "Robin Duda \u00a9 2020";
+    public static final String AUTHOR = "Robin Duda \u00a9 2021";
 
     static {
         VERSION = CoreStrings.class.getPackage().getImplementationVersion();
@@ -84,17 +84,17 @@ public abstract class CoreStrings {
 
     // launcher commands.
     public static final String COMMAND_PREFIX = "--";
-    public static final String GENERATE_SECRETS = getCommand("generate-secrets");
-    public static final String GENERATE_TOKENS = getCommand("generate-tokens");
-    public static final String GENERATE_PRESHARED = getCommand("generate-preshared");
-    public static final String GENERATE = getCommand("generate");
-    public static final String RECONFIGURE = getCommand("reconfigure");
-    public static final String HELP = getCommand("help");
-    public static final String BENCHMARK = getCommand("benchmark");
-    public static final String PARAM_ITERATIONS = getCommand("iterations");
-    public static final String PARAM_HTML = getCommand("html");
-    public static final String PARAM_TEMPLATE = getCommand("template");
-    public static final String DEPLOY = getCommand("deploy");
+    public static final String GENERATE_SECRETS = "generate-secrets";
+    public static final String GENERATE_TOKENS = "generate-tokens";
+    public static final String GENERATE_PRESHARED = "generate-preshared";
+    public static final String GENERATE = "generate";
+    public static final String RECONFIGURE = "reconfigure";
+    public static final String HELP = "help";
+    public static final String BENCHMARK = "benchmark";
+    public static final String PARAM_ITERATIONS = "iterations";
+    public static final String PARAM_HTML = getParam("html");
+    public static final String PARAM_TEMPLATE = getParam("template");
+    public static final String DEPLOY = "deploy";
 
     // keys used in json objects.
     public static final String ID_TOKEN = "token";
@@ -231,7 +231,7 @@ public abstract class CoreStrings {
         return String.format("Maximum request size of %d bytes exceeded.", maxRequestBytes);
     }
 
-    public static String getCommand(String command) {
+    public static String getParam(String command) {
         return COMMAND_PREFIX + command;
     }
 
@@ -352,7 +352,7 @@ public abstract class CoreStrings {
     }
 
     public static String getCommandError(String command) {
-        return "Failed to execute command '" + command + "', list available with --help";
+        return "Failed to execute command '" + command + "', list available with '" + HELP + "'";
     }
 
     public static String generatedToken(String owner, String secret, String service) {
@@ -464,7 +464,7 @@ public abstract class CoreStrings {
     }
 
     public static String getDeployDescription() {
-        return "deploys the services in the given block. example: --deploy blockName";
+        return "deploys the services in the given block. example: deploy blockName";
     }
 
     public static String getDescriptionMissing() {
