@@ -1,5 +1,6 @@
 package com.codingchili.core;
 
+import com.codingchili.core.configuration.exception.NoServicesConfiguredForBlock;
 import io.vertx.core.*;
 
 import java.util.ArrayList;
@@ -26,7 +27,6 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 public class Launcher implements CoreService {
     private static Launcher instance;
     private static final ConsoleLogger logger = new ConsoleLogger(Launcher.class);
-    private static List<String> nodes = new ArrayList<>();
     private LaunchContext context;
     private CoreContext core;
 
@@ -56,35 +56,20 @@ public class Launcher implements CoreService {
     public Launcher(LaunchContext context) {
         this.context = context;
 
-        Future<CommandResult> future = Future.future();
-
         logger.log(CoreStrings.getStartupText());
 
-        context.getExecutor().execute(future, context.args());
-        future.setHandler(done -> {
-            CommandResult result = done.result();
-            try {
-                if (done.succeeded()) {
-                    if (LauncherCommandResult.CONTINUE.equals(result)) {
-                        nodes = new ArrayList<>(context.services());
-                        clusterIfEnabled(context);
-                    }
-                    if (LauncherCommandResult.SHUTDOWN.equals(result)) {
-                        exit();
-                    }
-                } else {
-                    if (done.cause() != null) {
-                        throw done.cause();
-                    } else {
-                        throw new CoreRuntimeException("Unknown cause: ");
-                    }
-                }
-                // else: the future succeeded with "true" - no action.
-            } catch (Throwable e) {
-                logger.log(throwableToString(e), Level.ERROR);
-                logger.log(getCommandError(context.getCommand().orElse("")), Level.INFO);
+        var future = context.execute();
+        future.onSuccess(result -> {
+            if (LauncherCommandResult.CONTINUE.equals(result)) {
+                clusterIfEnabled(context);
+            }
+            if (LauncherCommandResult.SHUTDOWN.equals(result)) {
                 exit();
             }
+        }).onFailure(e -> {
+            logger.log(throwableToString(e), Level.ERROR);
+            logger.log(getCommandError(context.getCommand().orElse("")), Level.INFO);
+            exit();
         });
         instance = this;
     }
@@ -117,25 +102,33 @@ public class Launcher implements CoreService {
     }
 
     private void clusterIfEnabled(LaunchContext launcher) {
-        if (launcher.settings().isClustered()) {
-            SystemContext.clustered(clustered -> {
-                if (clustered.succeeded()) {
-                    start(clustered.result());
-                } else {
-                    logger.log(ERROR_LAUNCHER_STARTUP, Level.ERROR);
-                    exit();
-                }
-            });
-        } else {
-            start(new SystemContext());
+        try {
+            var nodes = new ArrayList<>(context.services());
+
+            if (launcher.settings().isClustered()) {
+                SystemContext.clustered(clustered -> {
+                    if (clustered.succeeded()) {
+                        start(clustered.result(), nodes);
+                    } else {
+                        logger.log(ERROR_LAUNCHER_STARTUP, Level.ERROR);
+                        exit();
+                    }
+                });
+            } else {
+                start(new SystemContext(), nodes);
+            }
+        } catch (Exception e) {
+            logger.log(throwableToString(e), Level.ERROR);
+            logger.log(getCommandError(context.getCommand().orElse("")), Level.INFO);
+            exit();
         }
     }
 
-    private void start(CoreContext core) {
+    private void start(CoreContext core, List<String> nodes) {
         this.core = core;
 
         // the Launcher is a good example of a service.
-        core.service(() -> this).setHandler(deployed -> {
+        core.service(() -> this).onComplete(deployed -> {
             if (deployed.failed()) {
                 throw new RuntimeException(deployed.cause());
             } else {

@@ -125,7 +125,7 @@ public class LauncherSettings implements Configurable {
      */
     public LauncherSettings addHost(String host, String block) {
         if (blocks.containsKey(block)) {
-            this.hosts.put(block, host);
+            this.hosts.put(host, block);
         } else {
             throw new IllegalArgumentException(getBlockNotConfigured(block));
         }
@@ -204,7 +204,7 @@ public class LauncherSettings implements Configurable {
      */
     private HashMap<String, String> defaultHostConfiguration() {
         HashMap<String, String> map = new HashMap<>();
-        map.put("localhost", "default");
+        // map.put("localhost", "default");
         return map;
     }
 

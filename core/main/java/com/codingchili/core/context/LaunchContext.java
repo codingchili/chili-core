@@ -1,14 +1,18 @@
 package com.codingchili.core.context;
 
-import java.util.*;
-
 import com.codingchili.core.Launcher;
 import com.codingchili.core.configuration.Environment;
-import com.codingchili.core.configuration.exception.*;
+import com.codingchili.core.configuration.exception.BlockNotConfiguredException;
+import com.codingchili.core.configuration.exception.NoServicesConfiguredForBlock;
+import com.codingchili.core.configuration.exception.RemoteBlockNotConfiguredException;
 import com.codingchili.core.configuration.system.LauncherSettings;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
+
+import java.util.*;
 
 import static com.codingchili.core.configuration.CoreStrings.ID_DEFAULT;
 
@@ -76,7 +80,7 @@ public class LaunchContext {
     }
 
     /**
-     * Get the configured services for the given block or remote identifier.
+     * Get the configured services for the given blocks or remote identifier.
      *
      * @param blocks the handler of the configured block or the hostname.
      * @return a list of configured services for the given block or host.
@@ -85,7 +89,6 @@ public class LaunchContext {
      */
     protected List<String> services(List<String> blocks) throws CoreException {
         Set<String> services = new HashSet<>();
-
 
         for (String block : blocks) {
             List<String> list;
@@ -150,7 +153,12 @@ public class LaunchContext {
         } else {
             // guard against checking network interfaces if there are no remotes configured.
             if (settings().getHosts().size() > 0) {
-                for (String address : Environment.addresses()) {
+                var interfaces = Environment.addresses();
+
+                // add last as a default.
+                interfaces.add(LOCALHOST);
+
+                for (String address : interfaces) {
                     if (isRemoteBlock(address)) {
                         return address;
                     }
@@ -194,6 +202,15 @@ public class LaunchContext {
     public LaunchContext setCommandExecutor(CommandExecutor executor) {
         this.executor = executor;
         return this;
+    }
+
+    /**
+     * @return future resolved when the command executor for the launch context has executed.
+     */
+    public Future<CommandResult> execute() {
+        var promise = Promise.<CommandResult>promise();
+        executor.execute(promise.future(), args);
+        return promise.future();
     }
 
     /**

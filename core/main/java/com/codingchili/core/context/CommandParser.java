@@ -67,10 +67,10 @@ public class CommandParser {
         }
     }
 
-    private void addOrUpdate(String property, String value) {
+    private void addOrUpdate(String property, String values) {
         properties.computeIfAbsent(property, (key) -> new ArrayList<>());
         properties.computeIfPresent(property, (key, list) -> {
-            list.add(value);
+            list.addAll(Arrays.asList(values.split(",")));
             return list;
         });
     }

@@ -37,12 +37,7 @@ public class LauncherCommandExecutor extends DefaultCommandExecutor {
     private void registerCommands() {
         CoreBenchmarkSuite suite = new CoreBenchmarkSuite();
 
-        super.add((executor) -> {
-            executor.getProperty("deploy").ifPresent(x -> {
-                System.out.println("DEPLOY IS === " + x);
-            });
-            return LauncherCommandResult.CONTINUE;
-        }, DEPLOY, getDeployDescription());
+        super.add((executor) -> LauncherCommandResult.CONTINUE, DEPLOY, getDeployDescription());
         add(Configurations::reset, RECONFIGURE, getReconfigureDescription());
 
         add(generator(AuthenticationGenerator::preshare), GENERATE_PRESHARED, getGeneratePresharedDescription());
