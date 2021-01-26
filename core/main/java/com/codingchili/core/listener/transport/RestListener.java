@@ -1,61 +1,48 @@
 package com.codingchili.core.listener.transport;
 
+import com.codingchili.core.configuration.RestHelper;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.listener.CoreHandler;
+import com.codingchili.core.listener.CoreListener;
+import com.codingchili.core.listener.ListenerSettings;
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
-import io.vertx.ext.web.handler.StaticHandler;
 
-import java.util.Objects;
-import java.util.function.Supplier;
-
-import com.codingchili.core.configuration.RestHelper;
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.listener.*;
-
-import static com.codingchili.core.configuration.CoreStrings.*;
+import static com.codingchili.core.configuration.CoreStrings.LOG_AT;
+import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
 
 /**
  * HTTP/REST transport listener.
  */
 public class RestListener implements CoreListener {
     private ListenerSettings settings = ListenerSettings.getDefaultSettings();
-    private String path;
-    private String regex;
+    private final Promise<Router> onRouter = Promise.promise();
     private CoreContext core;
     private CoreHandler handler;
     private Router router;
-
 
     @Override
     public void init(CoreContext core) {
         router = Router.router(core.vertx());
         router.route().handler(BodyHandler.create().setBodyLimit(settings.getMaxRequestBytes()));
         RestHelper.addHeaders(router, settings.isSecure());
-
-        // enable routing for static resources.
-        if (regex != null && path != null) {
-            router.routeWithRegex(regex).handler(StaticHandler.create() // caching enabled by static handler.
-                    //.setCachingEnabled(false) -- set in HttpOptions.
-                    .setWebRoot(path));
-        }
-
         router.route().handler(this::packet);
         handler.init(core);
         this.core = core;
+
+        // invoke the callback when router is created from the context.
+        onRouter.complete(router);
     }
 
     /**
-     * @param path  a directory from which to serve static resources.
-     * @param regex a regular expression that maps request routes to the static handler.
-     * @return fluent.
+     * @return exposes the router object for further configuration, manual route setups, fallbacks
+     * and support for adding a static handler.
      */
-    public RestListener setResources(String path, String regex) {
-        Objects.requireNonNull(path);
-        Objects.requireNonNull(regex);
-        this.path = path;
-        this.regex = regex;
-        return this;
+    public Future<Router> router() {
+        return onRouter.future();
     }
 
     @Override
