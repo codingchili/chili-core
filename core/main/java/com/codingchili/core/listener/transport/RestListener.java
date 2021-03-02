@@ -27,9 +27,12 @@ public class RestListener implements CoreListener {
     @Override
     public void init(CoreContext core) {
         router = Router.router(core.vertx());
-        router.route().handler(BodyHandler.create().setBodyLimit(settings.getMaxRequestBytes()));
         RestHelper.addHeaders(router, settings.isSecure());
-        router.route().handler(this::packet);
+
+        router.route()
+                .handler(BodyHandler.create().setBodyLimit(settings.getMaxRequestBytes()))
+                .handler(this::packet);
+
         handler.init(core);
         this.core = core;
 
