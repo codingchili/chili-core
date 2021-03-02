@@ -1,6 +1,6 @@
 package com.codingchili.core.security;
 
-import io.vertx.core.Future;
+import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 
 import java.util.*;
@@ -115,38 +115,44 @@ public class AuthenticationGenerator {
      * @return callback
      */
     public Future<Void> tokens() {
-        Future<Void> future = Future.future();
+        var all = new ArrayList<Future>();
 
-        configurations((settings, config, path, save) -> {
-            andPathMatchesKeyRegex(settings, path).forEach(dependency -> {
-                AtomicInteger latch = new AtomicInteger(dependency.getTokens().size());
+        configurations((settings, config, path, save) ->
+                andPathMatchesKeyRegex(settings, path)
+                        .forEach(dependency ->
+                                all.add(generateTokens(dependency, config, path)
+                                        .setHandler(result -> save.run()))));
 
-                dependency.getTokens().forEach((key, identifier) -> {
-                    Optional<TokenFactory> factory = getFactory(identifier);
+        return CompositeFuture.all(all).map(v -> null);
+    }
 
-                    if (factory.isPresent()) {
-                        Token token = new Token(getIdentity(config));
+    private Future<Void> generateTokens(AuthenticationDependency dependant, JsonObject config, String path) {
+        var latch = new AtomicInteger(dependant.getTokens().size());
+        var future = (latch.get() > 0) ? Promise.<Void>promise().future() : Future.<Void>succeededFuture();
 
-                        factory.get().hmac(token).setHandler(done -> {
-                            if (done.succeeded()) {
-                                logger.log(CoreStrings.generatedToken(identifier.getService(), key, path));
+        dependant.getTokens().forEach((key, identifier) -> {
+            Optional<TokenFactory> factory = getFactory(identifier);
 
-                                config.put(key, json(token));
-                                save.run();
+            if (factory.isPresent()) {
+                Token token = new Token(getIdentity(config));
 
-                                if (latch.decrementAndGet() == 0) {
-                                    future.tryComplete();
-                                }
-                            } else {
-                                future.fail(done.cause());
-                            }
-                        });
+                factory.get().hmac(token).setHandler(done -> {
+                    if (done.succeeded()) {
+                        logger.log(CoreStrings.generatedToken(identifier.getService(), key, path));
+
+                        config.put(key, json(token));
+
+                        if (latch.decrementAndGet() == 0) {
+                            future.complete();
+                        }
                     } else {
-                        logger.onSecurityDependencyMissing(identifier.getService(), identifier.getSecret());
-                        throw new SecurityMissingDependencyException(identifier.getService(), identifier.getSecret());
+                        future.fail(done.cause());
                     }
                 });
-            });
+            } else {
+                logger.onSecurityDependencyMissing(identifier.getService(), identifier.getSecret());
+                throw new SecurityMissingDependencyException(identifier.getService(), identifier.getSecret());
+            }
         });
         return future;
     }
