@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunWith(VertxUnitRunner.class)
 public class SystemContextTest {
     private SystemContext context;
-    private OnMetricListener listener;
+    private OnMetricListener listener = metrics -> { };
     private SystemSettings settings;
 
     @Rule
