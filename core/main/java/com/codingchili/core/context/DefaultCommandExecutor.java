@@ -41,7 +41,7 @@ public class DefaultCommandExecutor implements CommandExecutor {
 
         if (command.isPresent() && commands.containsKey(command.get())) {
             Future<CommandResult> execution = Future.future();
-            commands.get(command.get()).execute(execution, this);
+            commands.get(command.get()).execute(execution,  this);
             execution.setHandler(future);
         } else {
             future.fail(new NoSuchCommandException(getCommand().orElse("")));

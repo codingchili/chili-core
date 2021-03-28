@@ -1,9 +1,12 @@
 package com.codingchili.core.security;
 
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.util.Enumeration;
@@ -18,7 +21,6 @@ import com.codingchili.core.context.CoreRuntimeException;
  * a common interface.
  */
 public class TrustAndKeyProvider {
-    private static final String KEYSTORE_TYPE = "jks";
     private TrustOptions trust;
     private KeyCertOptions keyCert;
     private PrivateKey privateKey;
@@ -29,17 +31,23 @@ public class TrustAndKeyProvider {
     /**
      * Creates a new trust/key provider using the given jks options.
      *
-     * @param jks jks options with trust and/or key configuration.
+     * @param reference options with trust and/or key configuration.
      */
-    private TrustAndKeyProvider(JksOptions jks) {
-        this.trust = jks;
-        this.keyCert = jks;
-        this.path = jks.getPath();
+    private TrustAndKeyProvider(KeyStoreReference reference) {
+        this.trust = reference;
+        this.keyCert = reference;
+        this.path = reference.getPath();
         try {
-            KeyStore store = KeyStore.getInstance(KEYSTORE_TYPE);
+            KeyStore store = KeyStore.getInstance(reference.getType());
 
-            // JksOptions no longer handles decryption internally.
-            store.load(new ByteArrayInputStream(jks.getValue().getBytes()), jks.getPassword().toCharArray());
+            // load the keystore from disk.
+            reference.setValue(Buffer.buffer(
+                    Files.readAllBytes(Paths.get(reference.getPath()).toAbsolutePath()))
+            );
+
+            // load the keystore, will be loaded twice - this is to be able to grab a reference to the keypair.
+            // the other load is internal to KeyStoreOptionsBase/KeyStoreHelper.
+            store.load(new ByteArrayInputStream(reference.getValue().getBytes()), reference.getPassword().toCharArray());
 
             // only support one alias per keystore.
             Enumeration<String> aliases = store.aliases();
@@ -47,10 +55,10 @@ public class TrustAndKeyProvider {
                 alias = aliases.nextElement();
                 if (aliases.hasMoreElements()) {
                     // ensure that the single alias is chosen deterministically.
-                    throw new IllegalStateException(CoreStrings.getKeystoreTooManyEntries(jks.getPath()));
+                    throw new IllegalStateException(CoreStrings.getKeystoreTooManyEntries(reference.getPath()));
                 }
             } else {
-                throw new NoSuchElementException(CoreStrings.getEmptyKeyStore(jks.getPath()));
+                throw new NoSuchElementException(CoreStrings.getEmptyKeyStore(reference.getPath()));
             }
 
             // attempt to load the public key if available.
@@ -63,7 +71,7 @@ public class TrustAndKeyProvider {
                 this.publicKey = store.getCertificate(alias).getPublicKey();
 
                 // we re-use the jks password for the private key.
-                this.privateKey = (PrivateKey) store.getKey(alias, jks.getPassword().toCharArray());
+                this.privateKey = (PrivateKey) store.getKey(alias, reference.getPassword().toCharArray());
             }
         } catch (UnrecoverableKeyException | CertificateException | KeyStoreException | NoSuchAlgorithmException | IOException e) {
             throw new CoreRuntimeException(e.getMessage());
@@ -124,7 +132,7 @@ public class TrustAndKeyProvider {
      * @param jks a java keystore to get trust and keycert options from.
      * @return a new TrustAndKeyProvider instance.
      */
-    public static TrustAndKeyProvider of(JksOptions jks) {
+    public static TrustAndKeyProvider of(KeyStoreReference jks) {
         return new TrustAndKeyProvider(jks);
     }
 

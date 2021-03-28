@@ -1,19 +1,16 @@
 package com.codingchili.core.configuration.system;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.net.JksOptions;
-
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
-
 import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.StartupListener;
-import com.codingchili.core.logging.*;
+import com.codingchili.core.logging.ConsoleLogger;
+import com.codingchili.core.logging.Level;
+import com.codingchili.core.logging.Logger;
 import com.codingchili.core.security.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.util.*;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
@@ -36,14 +33,11 @@ public class SecuritySettings implements Configurable {
     private ArgonSettings argon = new ArgonSettings();
     private String hmacAlgorithm = "HmacSHA512";
     private String signatureAlgorithm = "SHA256withRSA";
-
     private int secretBytes = 64;
     private int tokenttl = 3600 * 24 * 7;
 
     static {
-        StartupListener.subscribe(core -> {
-            logger = core.logger(SecuritySettings.class);
-        });
+        StartupListener.subscribe(core -> logger = core.logger(SecuritySettings.class));
     }
 
     @Override
@@ -77,7 +71,7 @@ public class SecuritySettings implements Configurable {
             if (store.isPresent()) {
                 loadKeystore(store.get().setShortName(storeId));
             } else {
-                loadedKeyStores.put(storeId, generateSelfSigned());
+                loadedKeyStores.put(storeId, generateSelfSigned(storeId));
             }
         }
         return loadedKeyStores.get(storeId);
@@ -100,11 +94,7 @@ public class SecuritySettings implements Configurable {
 
     private void loadKeystore(KeyStoreReference store) {
         try {
-            loadedKeyStores.put(store.getShortName(),
-                    TrustAndKeyProvider.of(new JksOptions()
-                            .setPath(store.getPath())
-                            .setValue(Buffer.buffer(Files.readAllBytes(Paths.get(store.getPath()).toAbsolutePath())))
-                            .setPassword(store.getPassword())));
+            loadedKeyStores.put(store.getShortName(), TrustAndKeyProvider.of(store));
         } catch (Throwable e) {
             // failed to load keystore due to wrong password or missing file etc.
             // cannot recover from this in a safe manner: shut down.
@@ -113,8 +103,8 @@ public class SecuritySettings implements Configurable {
         }
     }
 
-    private TrustAndKeyProvider generateSelfSigned() {
-        logger.event(LOG_SECURITY, Level.WARNING).send(getMissingKeyStore());
+    private TrustAndKeyProvider generateSelfSigned(String shortNameMissing) {
+        logger.event(LOG_SECURITY, Level.WARNING).send(getMissingKeyStore(shortNameMissing));
         return TrustAndKeyProvider.of(new TestCertificate(CoreStrings.GITHUB));
     }
 

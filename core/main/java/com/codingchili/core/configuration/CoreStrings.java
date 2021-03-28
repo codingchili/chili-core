@@ -343,6 +343,11 @@ public abstract class CoreStrings {
                 CoreHandler.class.getSimpleName(), Verticle.class.getSimpleName());
     }
 
+    public static String getUnableToDetermineKeystoreType(String path) {
+        return String.format("Unable to determine keystore type for keystore at '%s', make sure" +
+                "the filename ends with a known file extension. (.p12/.jks)", path);
+    }
+
     public static String getNodeNotFound(String node) {
         return "Error: Configured node in service block not found '" + node + "'.";
     }
@@ -541,8 +546,8 @@ public abstract class CoreStrings {
         return "Error: could not get '" + key + "' in storage.";
     }
 
-    public static String getMissingKeyStore() {
-        return "Keystore not configured: generating self signed certificate.";
+    public static String getMissingKeyStore(String shortNameMissing) {
+        return String.format("Keystore '%s' not configured: generating self signed certificate.", shortNameMissing);
     }
 
     public static String getEmptyKeyStore(String keystorePath) {

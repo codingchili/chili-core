@@ -1,60 +1,20 @@
 package com.codingchili.core.security;
 
-import java.io.File;
-
 import com.codingchili.core.configuration.system.SecuritySettings;
+import io.vertx.core.net.KeyStoreOptionsBase;
+
+import java.io.File;
 
 /**
  * Used in #{@link SecuritySettings} to contain references to keystores.
  */
-public class KeyStoreReference {
-    private String password = "changeit";
-    private String path;
+public class KeyStoreReference extends KeyStoreOptionsBase {
+    public static final String TYPE_JKS = "JKS";
+    public static final String TYPE_PKCS12 = "PKCS12";
     private String shortName;
 
-    /**
-     * @return keystore password
-     */
-    public String getPassword() {
-        return password;
-    }
-
-    /**
-     * @param password set keystore password. If unset reads the password from console.
-     * @return fluent
-     */
-    public KeyStoreReference setPassword(String password) {
-        this.password = password;
-        return this;
-    }
-
-    /**
-     * @return path to the keystore.
-     */
-    public String getPath() {
-        return path;
-    }
-
-    /**
-     * @param path path to the keystore.
-     * @return fluent
-     */
-    public KeyStoreReference setPath(String path) {
-        this.path = path;
-        if (shortName == null) {
-            this.shortName = new File(path).getName();
-        }
-        return this;
-    }
-
-    @Override
-    public int hashCode() {
-        return path.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        return ((KeyStoreReference) other).getPath().equals(path);
+    public KeyStoreReference() {
+        setType(TYPE_JKS);
     }
 
     /**
@@ -71,5 +31,62 @@ public class KeyStoreReference {
      */
     public String getShortName() {
         return shortName;
+    }
+
+    /**
+     * @param path path to the keystore.
+     * @return fluent
+     */
+    public KeyStoreReference setPath(String path) {
+        super.setPath(path);
+        if (shortName == null) {
+            this.shortName = new File(path).getName();
+        }
+        return this;
+    }
+
+    // modify visibility for existing methods.
+    @Override
+    public KeyStoreOptionsBase setType(String type) {
+        return super.setType(type);
+    }
+
+    @Override
+    public String getType() {
+        return super.getType();
+    }
+
+    @Override
+    protected String getProvider() {
+        return super.getProvider();
+    }
+
+    @Override
+    protected KeyStoreOptionsBase setProvider(String provider) {
+        return super.setProvider(provider);
+    }
+
+    @Override
+    public int hashCode() {
+        return getPath().hashCode();
+    }
+
+    private KeyStoreReference(KeyStoreReference copy) {
+        this.setPath(copy.getPath());
+        this.setPassword(copy.getPassword());
+        this.setType(copy.getType());
+        this.setShortName(copy.getShortName());
+        this.setValue(copy.getValue());
+        this.setProvider(copy.getProvider());
+    }
+
+    @Override
+    public KeyStoreOptionsBase clone() {
+        return new KeyStoreReference(this);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return ((KeyStoreReference) other).getPath().equals(getPath());
     }
 }
