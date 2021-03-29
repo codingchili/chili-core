@@ -42,6 +42,7 @@ public class MetricSettings {
 
     /**
      * @param includes a list of default includes for the filters.
+     * @return fluent
      */
     public MetricSettings setIncludes(Set<String> includes) {
         this.includes = includes;
@@ -107,6 +108,7 @@ public class MetricSettings {
 
     /**
      * @param overhead true if reporting overhead should be recorded.
+     * @return fluent
      */
     public MetricSettings setOverhead(boolean overhead) {
         this.overhead = overhead;

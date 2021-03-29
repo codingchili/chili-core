@@ -175,6 +175,7 @@ public interface Logger extends JsonLogger, StringLogger {
      *
      * @param name a supplier to a metadata object that will be merged into
      *              the root node when an event is created..
+     * @param value the dynamic metadata to add to log events.
      * @return fluent.
      */
     Logger setMetadata(String name, Supplier<JsonObject> value);

@@ -1,6 +1,9 @@
 package com.codingchili.core.security;
 
 import com.codingchili.core.configuration.system.SecuritySettings;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.KeyStoreOptionsBase;
 
 import java.io.File;
@@ -59,6 +62,12 @@ public class KeyStoreReference extends KeyStoreOptionsBase {
     @Override
     protected String getProvider() {
         return super.getProvider();
+    }
+
+    @JsonIgnore
+    @Override
+    public Buffer getValue() {
+        return super.getValue();
     }
 
     @Override

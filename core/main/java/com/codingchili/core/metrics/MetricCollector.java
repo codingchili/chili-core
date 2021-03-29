@@ -36,6 +36,8 @@ public class MetricCollector {
 
     /**
      * @param core the context to collect metrics from.
+     * @param settings settings for the metric collector.
+     * @param registryName the name of the metric registry to use.
      */
     public MetricCollector(CoreContext core, MetricSettings settings, String registryName) {
         this.core = core;

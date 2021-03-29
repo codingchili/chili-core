@@ -25,7 +25,6 @@ public class SecuritySettingsTest {
     private static final String KEYSTORE_JKS = CoreStrings.testFile(KEY_JKS);
     private static final String TRUST_JKS = "test_trust.jks";
     private static final String TRUSTSTORE_JKS = CoreStrings.testFile(TRUST_JKS);
-    private static final String IDENTIFIER = "defaultjks";
     private static final String ALGORITHM_RSA = "RSA";
     private static final String PWD = "password";
     private CoreContext context;
@@ -98,6 +97,6 @@ public class SecuritySettingsTest {
         KeyStoreReference store = settings.getByName(KEY_JKS).get();
         test.assertEquals(KEYSTORE_JKS, store.getPath());
         test.assertEquals(KEY_JKS, store.getShortName());
-        test.assertEquals(PWD, store.getKeystoreSecret());
+        test.assertEquals(PWD, store.getPassword());
     }
 }

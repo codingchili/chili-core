@@ -73,7 +73,10 @@ public class LaunchContext {
     }
 
     /**
-     * see #{@link LaunchContext#services(List)}
+     * @see #services(List)
+     * @param block see link.
+     * @return see link.
+     * @throws CoreException see link.
      */
     protected List<String> service(String block) throws CoreException {
         return services(List.of(block));
