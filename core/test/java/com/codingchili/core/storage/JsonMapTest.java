@@ -1,23 +1,20 @@
 package com.codingchili.core.storage;
 
-import com.codingchili.core.files.ConfigurationFactory;
-import com.codingchili.core.files.exception.NoSuchResourceException;
-import com.codingchili.core.protocol.Serializer;
-import com.codingchili.core.testing.StorageObject;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.nio.file.Paths;
 
-import static com.codingchili.core.configuration.CoreStrings.getDBIdentifier;
-import static com.codingchili.core.configuration.CoreStrings.getDBPath;
+import com.codingchili.core.files.ConfigurationFactory;
+import com.codingchili.core.files.exception.NoSuchResourceException;
+import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.testing.StorageObject;
+
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * Tests for the storage providers in core. Reuse these tests when new

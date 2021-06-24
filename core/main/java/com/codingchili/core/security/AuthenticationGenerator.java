@@ -23,6 +23,7 @@ import com.codingchili.core.security.exception.SecurityMissingDependencyExceptio
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.files.Configurations.security;
 import static com.codingchili.core.protocol.Serializer.json;
+import static io.vertx.core.json.impl.JsonUtil.BASE64_DECODER;
 
 /**
  * Generates service security configuration based on system security mappings.
@@ -121,14 +122,14 @@ public class AuthenticationGenerator {
                 andPathMatchesKeyRegex(settings, path)
                         .forEach(dependency ->
                                 all.add(generateTokens(dependency, config, path)
-                                        .setHandler(result -> save.run()))));
+                                        .onComplete(result -> save.run()))));
 
         return CompositeFuture.all(all).map(v -> null);
     }
 
     private Future<Void> generateTokens(AuthenticationDependency dependant, JsonObject config, String path) {
         var latch = new AtomicInteger(dependant.getTokens().size());
-        var future = (latch.get() > 0) ? Promise.<Void>promise().future() : Future.<Void>succeededFuture();
+        var promise = Promise.<Void>promise();
 
         dependant.getTokens().forEach((key, identifier) -> {
             Optional<TokenFactory> factory = getFactory(identifier);
@@ -136,17 +137,17 @@ public class AuthenticationGenerator {
             if (factory.isPresent()) {
                 Token token = new Token(getIdentity(config));
 
-                factory.get().hmac(token).setHandler(done -> {
+                factory.get().hmac(token).onComplete(done -> {
                     if (done.succeeded()) {
                         logger.log(CoreStrings.generatedToken(identifier.getService(), key, path));
 
                         config.put(key, json(token));
 
                         if (latch.decrementAndGet() == 0) {
-                            future.complete();
+                            promise.complete();
                         }
                     } else {
-                        future.fail(done.cause());
+                        promise.fail(done.cause());
                     }
                 });
             } else {
@@ -154,14 +155,17 @@ public class AuthenticationGenerator {
                 throw new SecurityMissingDependencyException(identifier.getService(), identifier.getSecret());
             }
         });
-        return future;
+        if (dependant.getTokens().size() == 0) {
+            promise.complete();
+        }
+        return promise.future();
     }
 
     private Optional<TokenFactory> getFactory(TokenIdentifier identifier) {
         JsonObject issuer = ConfigurationFactory.readObject(getService(identifier.getService()));
 
         if (issuer.containsKey(identifier.getSecret())) {
-            byte[] secret = Base64.getDecoder().decode(issuer.getString(identifier.getSecret()));
+            byte[] secret = BASE64_DECODER.decode(issuer.getString(identifier.getSecret()));
             return Optional.of(new TokenFactory(core, secret));
         } else {
             return Optional.empty();

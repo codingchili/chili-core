@@ -1,6 +1,7 @@
 package com.codingchili.core.context;
 
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -35,11 +36,11 @@ public class ShutdownHookTest {
 
         context.service(() -> new CoreService() {
             @Override
-            public void stop(Future<Void> stop) {
+            public void stop(Promise<Void> stop) {
                 stop.complete();
                 async.complete();
             }
-        }).setHandler(done -> {
+        }).onComplete(done -> {
             if (done.succeeded()) {
                 shutdown();
             } else {
@@ -103,7 +104,7 @@ public class ShutdownHookTest {
 
         context.service(() -> new CoreService() {
             @Override
-            public void stop(Future<Void> stop) {
+            public void stop(Promise<Void> stop) {
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
@@ -112,7 +113,7 @@ public class ShutdownHookTest {
                 stop.complete();
                 untilVertxClosed(async);
             }
-        }).setHandler(done -> {
+        }).onComplete(done -> {
             if (done.succeeded()) {
                 shutdown();
             } else {
@@ -137,7 +138,7 @@ public class ShutdownHookTest {
                 });
             } catch (InterruptedException e) {
                 //
-            } catch (RejectedExecutionException e) {
+            } catch (IllegalStateException | RejectedExecutionException e) {
                 async.complete();
                 break;
             }

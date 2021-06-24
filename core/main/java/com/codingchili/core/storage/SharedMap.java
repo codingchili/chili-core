@@ -26,13 +26,13 @@ public class SharedMap<Value extends Storable> implements AsyncStorage<Value> {
      * Creates a shared vertx map that is thread safe and can be concurrently accessed from
      * multiple workers/verticles. It's recommended to use the storage loader to instantiate it.
      *
-     * @param future  completed when the storage is ready.
+     * @param promise  completed when the storage is ready.
      * @param context the storage context contains metadata about the stored objects.
      */
-    public SharedMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
+    public SharedMap(Promise<AsyncStorage<Value>> promise, StorageContext<Value> context) {
         this.context = context;
         this.map = context.vertx().sharedData().getLocalMap(context.database() + "." + context.collection());
-        future.complete(this);
+        promise.complete(this);
     }
 
     @Override

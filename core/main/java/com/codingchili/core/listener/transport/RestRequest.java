@@ -31,7 +31,6 @@ public class RestRequest implements Request {
      * @param settings listener settings for the listener that created the request.
      */
     public RestRequest(RoutingContext context, ListenerSettings settings) {
-        this.size = context.getBody().length();
         this.request = context.request();
         this.settings = settings;
 
@@ -68,11 +67,18 @@ public class RestRequest implements Request {
     private void parseData(RoutingContext context) {
         Buffer body = context.getBody();
 
-        if (body != null && body.length() != 0) {
-            data = new JsonObject(body);
+        if (body != null) {
+            this.size = context.getBody().length();
+
+            if (body.length() != 0) {
+                data = new JsonObject(body);
+            } else {
+                data = new JsonObject();
+            }
         } else {
             data = new JsonObject();
         }
+
 
         request.params().forEach(entry -> data.put(entry.getKey(), entry.getValue()));
         parseApi(context);

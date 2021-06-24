@@ -341,7 +341,7 @@ public class Protocol<RequestType> {
     @SuppressWarnings("unchecked")
     public void process(Request request) {
         try {
-            authenticator.apply(request).setHandler(done -> {
+            authenticator.apply(request).onComplete(done -> {
                 if (done.succeeded()) {
                     try {
                         get(routeMapper.apply(request), done.result()).submit((RequestType) request);

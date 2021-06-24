@@ -61,7 +61,7 @@ public class RestListener implements CoreListener {
     }
 
     @Override
-    public void start(Future<Void> start) {
+    public void start(Promise<Void> start) {
         core.vertx().createHttpServer(settings.getHttpOptions())
                 .requestHandler(router)
                 .listen(settings.getPort(), getBindAddress(), listen -> {
@@ -75,7 +75,7 @@ public class RestListener implements CoreListener {
     }
 
     @Override
-    public void stop(Future<Void> stop) {
+    public void stop(Promise<Void> stop) {
         handler.stop(stop);
     }
 

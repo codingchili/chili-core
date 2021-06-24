@@ -1,15 +1,14 @@
 package com.codingchili.core.configuration;
 
-import com.codingchili.core.protocol.Serializer;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.util.HashMap;
 import java.util.Optional;
+
+import com.codingchili.core.protocol.Serializer;
 
 /**
  * Tests the implementation of attributes.

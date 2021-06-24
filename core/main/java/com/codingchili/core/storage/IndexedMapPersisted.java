@@ -5,6 +5,7 @@ import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.index.disk.DiskIndex;
 import com.googlecode.cqengine.persistence.disk.DiskPersistence;
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
 
 import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -30,10 +31,10 @@ public class IndexedMapPersisted<Value extends Storable> extends IndexedMap<Valu
      * Creates a possibly shared instance of the persisted IndexedMap. It is recommended
      * to not call this directly and instead use the storage loader.
      *
-     * @param future  completed when the storage is ready.
+     * @param promise  completed when the storage is ready.
      * @param context the storage context to set up file locations etc.
      */
-    public IndexedMapPersisted(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
+    public IndexedMapPersisted(Promise<AsyncStorage<Value>> promise, StorageContext<Value> context) {
         super((idField) -> {
             synchronized (IndexedMapPersisted.class) {
                 LOADED.set(true);
@@ -47,7 +48,7 @@ public class IndexedMapPersisted<Value extends Storable> extends IndexedMap<Valu
             }
         }, context);
 
-        future.complete(this);
+        promise.complete(this);
     }
 
     private static String dbPath(StorageContext ctx) {

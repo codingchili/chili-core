@@ -1,16 +1,15 @@
 package com.codingchili.core.context;
 
-import com.codingchili.core.context.exception.CommandAlreadyExistsException;
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.util.Optional;
+
+import com.codingchili.core.context.exception.CommandAlreadyExistsException;
 
 import static com.codingchili.core.configuration.CoreStrings.HELP;
 import static org.junit.Assert.fail;
@@ -55,8 +54,10 @@ public class CommandExecutorTest {
         executor.execute(getCompleter(test.async()), HELP_ASYNC);
     }
 
-    private Future<CommandResult> getCompleter(Async async) {
-        return Future.<CommandResult>future().setHandler(done -> async.complete());
+    private Promise<CommandResult> getCompleter(Async async) {
+        Promise<CommandResult> promise = Promise.<CommandResult>promise();
+        promise.future().onComplete(done -> async.complete());
+        return promise;
     }
 
     @Test
@@ -70,10 +71,10 @@ public class CommandExecutorTest {
 
     @Test
     public void testErrorWhenCommandMissingAsync(TestContext test) {
-        Future<CommandResult> future = Future.future();
+        Promise<CommandResult> promise = Promise.promise();
         Async async = test.async();
 
-        future.setHandler(done -> {
+        promise.future().onComplete(done -> {
             if (done.failed()) {
                 test.assertFalse(executed);
                 async.complete();
@@ -81,7 +82,7 @@ public class CommandExecutorTest {
                 test.fail("Test did not fail for missing command.");
             }
         });
-        executor.execute(future, MISSING_COMMAND);
+        executor.execute(promise, MISSING_COMMAND);
     }
 
     @Test

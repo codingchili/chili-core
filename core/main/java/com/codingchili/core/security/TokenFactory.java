@@ -1,6 +1,7 @@
 package com.codingchili.core.security;
 
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -16,6 +17,7 @@ import com.codingchili.core.files.Configurations;
 import com.codingchili.core.protocol.Serializer;
 
 import static com.codingchili.core.configuration.CoreStrings.ERROR_TOKEN_FACTORY;
+import static io.vertx.core.json.impl.JsonUtil.*;
 
 /**
  * Verifies and generates tokens for access.
@@ -68,10 +70,10 @@ public class TokenFactory {
     }
 
     private Future<Void> verifyHmac(Token token) {
-        Future<Void> future = Future.future();
+        Promise<Void> promise = Promise.promise();
         core.blocking((blocking) -> {
             try {
-                byte[] result = Base64.getEncoder().encode(hmacKey(token));
+                byte[] result = BASE64_ENCODER.encode(hmacKey(token));
                 if (ByteComparator.compare(result, token.getKey().getBytes())) {
                     blocking.complete();
                 } else {
@@ -80,8 +82,8 @@ public class TokenFactory {
             } catch (Exception e) {
                 blocking.fail(e);
             }
-        }, future);
-        return future;
+        }, promise);
+        return promise.future();
     }
 
     private byte[] hmacKey(Token token) throws NoSuchAlgorithmException, InvalidKeyException {
@@ -102,17 +104,17 @@ public class TokenFactory {
      * @return callback.
      */
     public Future<Void> hmac(Token token) {
-        Future<Void> future = Future.future();
+        Promise<Void> promise = Promise.promise();
         core.blocking((blocking) -> {
             try {
                 token.addProperty(CRYPTO_TYPE, Configurations.security().getHmacAlgorithm());
-                token.setKey(Base64.getEncoder().encodeToString(hmacKey(token)));
+                token.setKey(BASE64_ENCODER.encodeToString(hmacKey(token)));
                 blocking.complete();
             } catch (InvalidKeyException | NoSuchAlgorithmException e) {
                 blocking.fail(ERROR_TOKEN_FACTORY);
             }
-        }, future);
-        return future;
+        }, promise);
+        return promise.future();
     }
 
     /**
@@ -124,17 +126,17 @@ public class TokenFactory {
      * @return callback
      */
     public Future<Void> sign(Token token, String keystore) {
-        Future<Void> future = Future.future();
+        Promise<Void> promise = Promise.promise();
         core.blocking((blocking) -> {
             try {
                 byte[] key = signedKey(token, keystore);
-                token.setKey(Base64.getEncoder().encodeToString(key));
+                token.setKey(BASE64_ENCODER.encodeToString(key));
                 blocking.complete();
             } catch (Throwable e) {
                 blocking.fail(e);
             }
-        }, future);
-        return future;
+        }, promise);
+        return promise.future();
     }
 
     private byte[] signedKey(Token token, String keystore) {
@@ -154,11 +156,11 @@ public class TokenFactory {
     }
 
     private Future<Void> verifySignature(Token token) {
-        Future<Void> future = Future.future();
+        Promise<Void> promise = Promise.promise();
         String alias = token.getProperty(ALIAS);
 
         if (alias == null) {
-            future.fail(String.format("token is missing property '%s' - unable to verify.", ALIAS));
+            promise.fail(String.format("token is missing property '%s' - unable to verify.", ALIAS));
         } else {
             core.blocking((blocking) -> {
                 TrustAndKeyProvider provider = Configurations.security().getKeystore(alias);
@@ -166,7 +168,7 @@ public class TokenFactory {
                     Signature signature = Signature.getInstance(Configurations.security().getSignatureAlgorithm());
                     signature.initVerify(provider.getPublicKey());
                     canonicalizeTokenWithCrypto(token, signature::update);
-                    if (signature.verify(Base64.getDecoder().decode(token.getKey()))) {
+                    if (signature.verify(BASE64_DECODER.decode(token.getKey()))) {
                         blocking.complete();
                     } else {
                         blocking.fail("Failed to verify token signature.");
@@ -174,9 +176,9 @@ public class TokenFactory {
                 } catch (SignatureException | InvalidKeyException | NoSuchAlgorithmException e) {
                     blocking.fail(e);
                 }
-            }, future);
+            }, promise);
         }
-        return future;
+        return promise.future();
     }
 
     /**

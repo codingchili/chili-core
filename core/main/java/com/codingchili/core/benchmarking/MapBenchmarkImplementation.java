@@ -48,9 +48,9 @@ public class MapBenchmarkImplementation extends BenchmarkImplementationBuilder {
     }
 
     @Override
-    public void next(Future<Void> future) {
+    public void next(Promise<Void> promise) {
         counter = new AtomicInteger(0);
-        future.complete();
+        promise.complete();
     }
 
     @Override
@@ -59,16 +59,16 @@ public class MapBenchmarkImplementation extends BenchmarkImplementationBuilder {
     }
 
     @Override
-    public void shutdown(Future<Void> future) {
-        storage.clear(future);
+    public void shutdown(Promise<Void> promise) {
+        storage.clear(promise);
     }
 
     /**
      * Measures time taken to put all entries into the map one by one.
      */
-    private void putOne(Future<Void> future) {
+    private void putOne(Promise<Void> promise) {
         int id = counter.getAndIncrement();
-        storage.put(new StorageObject(getName(id), id), done -> future.complete());
+        storage.put(new StorageObject(getName(id), id), done -> promise.complete());
     }
 
     private String getName(int id) {
@@ -78,68 +78,68 @@ public class MapBenchmarkImplementation extends BenchmarkImplementationBuilder {
     /**
      * Measures the time taken to get all entries one by one by their primary key.
      */
-    private void getOne(Future<Void> future) {
-        storage.get(getName(counter.getAndIncrement()), done -> future.complete());
+    private void getOne(Promise<Void> promise) {
+        storage.get(getName(counter.getAndIncrement()), done -> promise.complete());
     }
 
     /**
      * Measures the time taken to get all entries starting with the given string.
      * The query does not target the primary key.
      */
-    private void startsWithQuery(Future<Void> future) {
+    private void startsWithQuery(Promise<Void> promise) {
         storage.query()
                 .on(ID_NAME)
                 .startsWith(counter.getAndIncrement() + "")
-                .execute(done -> future.complete());
+                .execute(done -> promise.complete());
     }
 
     /**
      * Measures the time taken to get all entries that equally matches the given string.
      * The query does not target the primary key.
      */
-    private void equalToQuery(Future<Void> future) {
+    private void equalToQuery(Promise<Void> promise) {
         storage.query()
                 .on(ID_NAME)
                 .equalTo(getName(counter.getAndIncrement()))
-                .execute(done -> future.complete());
+                .execute(done -> promise.complete());
     }
 
     /**
      * Measures the time taken to get all entries that contains a specified value within
      * a given range. The query does not target the primary key.
      */
-    private void betweenQuery(Future<Void> future) {
+    private void betweenQuery(Promise<Void> promise) {
         int low = counter.getAndIncrement();
         storage.query()
                 .on(StorageObject.levelField)
                 .between((long) (low - 1), (long) (low + 1))
-                .execute(done -> future.complete());
+                .execute(done -> promise.complete());
     }
 
     /**
      * Measures the time taken to return all values stored in the map.
      */
-    private void values(Future<Void> future) {
-        storage.values(done -> future.complete());
+    private void values(Promise<Void> promise) {
+        storage.values(done -> promise.complete());
     }
 
     /**
      * Measures the time taken to get all entries that matches the given regular expression.
      * The query does not target the primary key.
      */
-    private void regexpQuery(Future<Void> future) {
+    private void regexpQuery(Promise<Void> promise) {
         storage.query()
                 .on(ID_NAME).matches(".*")
-                .execute(done -> future.complete());
+                .execute(done -> promise.complete());
     }
 
     /**
      * Measures the time taken to get all entries that are equal to the given primary key.
      */
-    private void equalToPrimaryKey(Future<Void> future) {
+    private void equalToPrimaryKey(Promise<Void> promise) {
         storage.query()
                 .on(Storable.idField)
                 .equalTo(counter.getAndIncrement() + "")
-                .execute(done -> future.complete());
+                .execute(done -> promise.complete());
     }
 }

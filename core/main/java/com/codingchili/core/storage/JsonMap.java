@@ -39,10 +39,10 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
      * Creates a new possibly shared instance of the JsonMap storage plugin. It's recommended
      * to use the storage loader instead of invoking this constructor.
      *
-     * @param future completed when the storage is loaded and ready.
+     * @param promise completed when the storage is loaded and ready.
      * @param context contains metadata about the stored objects.
      */
-    public JsonMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
+    public JsonMap(Promise<AsyncStorage<Value>> promise, StorageContext<Value> context) {
         this.context = context;
         Logger logger = context.logger(getClass());
 
@@ -58,7 +58,7 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
         }
         this.fileWriter = context.vertx().createSharedWorkerExecutor(JSONMAP_WORKERS);
         this.enableSave();
-        future.complete(this);
+        promise.complete(this);
     }
 
     private String dbPath() {

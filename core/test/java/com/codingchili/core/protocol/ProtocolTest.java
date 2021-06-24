@@ -1,22 +1,21 @@
 package com.codingchili.core.protocol;
 
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.Timeout;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.*;
+import org.junit.runner.RunWith;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
 import com.codingchili.core.testing.EmptyRequest;
-import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.Timeout;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.codingchili.core.protocol.Role.*;
 

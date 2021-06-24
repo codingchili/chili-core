@@ -1,14 +1,14 @@
-apply plugin: 'java'
 apply plugin: 'idea'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'java-library'
 
-project.version = "1.3.6"
-project.group = 'com.github.codingchili.chili-core'
+project.version = "1.4.0"
+project.group = 'com.github.codingchili'
 
 subprojects {
-    apply plugin: 'java'
-    apply plugin: 'maven'
     apply plugin: 'idea'
+    apply plugin: 'maven-publish'
+    apply plugin: 'java-library'
 
     version = rootProject.version
     group = rootProject.group
@@ -48,7 +48,7 @@ subprojects {
         testLogging {
             exceptionFormat "full"
         }
-        reports.html.enabled = false
+        reports.html.required = false
     }
 }
 
@@ -63,7 +63,7 @@ task copyJavadoc(type: Copy, dependsOn: alljavadoc) {
 }
 
 task javadocJar(type: Jar, dependsOn: alljavadoc) {
-    classifier = 'javadoc'
+    archiveClassifier = 'javadoc'
     from alljavadoc.destinationDir
 }
 
@@ -73,12 +73,16 @@ task testReport(type: TestReport, dependsOn: 'build') {
 }
 
 task archiveTestReport(type: Zip, dependsOn: testReport) {
-    baseName = 'testreport'
+    archiveBaseName = 'testreport'
     from fileTree(file("$buildDir/reports/allTests"))
 }
 
 javadoc.dependsOn javadocJar
 
+javadoc {
+    options.addBooleanOption('html5', true)
+}
+
 artifacts {
-    archives javadocJar
+    javadocJar
 }

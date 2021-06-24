@@ -1,10 +1,6 @@
 package com.codingchili.core.context;
 
-import com.codingchili.core.configuration.system.LauncherSettings;
-import com.codingchili.core.context.exception.NoSuchCommandException;
-import com.codingchili.core.files.Configurations;
-import com.codingchili.core.testing.MockLogListener;
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -13,6 +9,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
+
+import com.codingchili.core.configuration.system.LauncherSettings;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.testing.MockLogListener;
 
 import static com.codingchili.core.configuration.CoreStrings.HELP;
 import static com.codingchili.core.context.LauncherCommandResult.SHUTDOWN;
@@ -63,9 +63,9 @@ public class LauncherCommandExecutorTest {
     @Test
     public void testGetHelpMessage(TestContext test) {
         Async async = test.async();
-        Future<CommandResult> future = Future.future();
+        Promise<CommandResult> promise = Promise.promise();
 
-        future.setHandler(done -> {
+        promise.future().onComplete(done -> {
             test.assertFalse(done.succeeded());
             Throwable e = done.cause();
             test.assertTrue(e.getMessage().contains(HELP));
@@ -75,7 +75,7 @@ public class LauncherCommandExecutorTest {
 
         new LauncherCommandExecutor(
                 new LaunchContextMock((line) -> {}).logger())
-                .execute(future, MISSING_COMMAND);
+                .execute(promise, MISSING_COMMAND);
     }
 
     @Test
@@ -99,7 +99,7 @@ public class LauncherCommandExecutorTest {
 
     private CommandExecutor execute(String arg, MockLogListener listener) {
         return new LauncherCommandExecutor(
-                new LaunchContextMock(listener).logger()).execute(Future.future(), arg);
+                new LaunchContextMock(listener).logger()).execute(Promise.promise(), arg);
     }
 
     private String getOutput(String arg) {

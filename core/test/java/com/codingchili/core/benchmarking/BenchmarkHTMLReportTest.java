@@ -1,7 +1,5 @@
 package com.codingchili.core.benchmarking;
 
-import com.codingchili.core.benchmarking.reporting.BenchmarkHTMLReport;
-import com.codingchili.core.files.exception.NoSuchResourceException;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Before;
@@ -11,6 +9,9 @@ import org.junit.runner.RunWith;
 import java.awt.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import com.codingchili.core.benchmarking.reporting.BenchmarkHTMLReport;
+import com.codingchili.core.files.exception.NoSuchResourceException;
 
 /**
  * Tests for the HTML reporter

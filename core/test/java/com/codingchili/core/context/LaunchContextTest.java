@@ -1,9 +1,5 @@
 package com.codingchili.core.context;
 
-import com.codingchili.core.configuration.system.LauncherSettings;
-import com.codingchili.core.files.Configurations;
-import io.vertx.core.Future;
-import io.vertx.core.Promise;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
@@ -13,9 +9,7 @@ import com.codingchili.core.configuration.Environment;
 import com.codingchili.core.configuration.exception.NoServicesConfiguredForBlock;
 import com.codingchili.core.configuration.exception.RemoteBlockNotConfiguredException;
 
-import java.util.List;
-
-import static com.codingchili.core.configuration.CoreStrings.*;
+import static com.codingchili.core.configuration.CoreStrings.getNoServicesConfiguredForBlock;
 import static com.codingchili.core.context.LaunchContextMock.*;
 
 /**

@@ -9,6 +9,7 @@ import static com.codingchili.core.configuration.CoreStrings.LOG_AT;
 import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
 
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.datagram.DatagramPacket;
 
 /**
@@ -38,7 +39,7 @@ public class UdpListener implements CoreListener, DeploymentAware {
     }
 
     @Override
-    public void start(Future<Void> start) {
+    public void start(Promise<Void> start) {
         core.vertx().createDatagramSocket().listen(settings.getPort(), getBindAddress(), listen -> {
             if (listen.succeeded()) {
                 settings.addListenPort(listen.result().localAddress().port());
@@ -51,7 +52,7 @@ public class UdpListener implements CoreListener, DeploymentAware {
     }
 
     @Override
-    public void stop(Future<Void> stop) {
+    public void stop(Promise<Void> stop) {
         handler.stop(stop);
     }
 

@@ -1,15 +1,14 @@
 package com.codingchili.core.protocol;
 
-import com.codingchili.core.context.CoreRuntimeException;
 import io.vertx.core.Future;
 
+import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.testing.StorageObject;
 
 import static com.codingchili.core.protocol.ProtocolTest.*;
-import static com.codingchili.core.protocol.Role.ADMIN;
-import static com.codingchili.core.protocol.Role.USER;
+import static com.codingchili.core.protocol.Role.*;
 
 public class SimpleBuilderRouter implements CoreHandler {
     private Protocol<Request> protocol = new Protocol<>();

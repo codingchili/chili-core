@@ -2,6 +2,7 @@ package com.codingchili.core;
 
 import com.codingchili.core.configuration.exception.NoServicesConfiguredForBlock;
 import io.vertx.core.*;
+import org.apache.commons.jexl2.JexlEngine;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -146,12 +147,12 @@ public class Launcher implements CoreService {
 
         for (String node : nodes) {
             if (isDeployable(node)) {
-                Future<String> future = Future.future();
-                core.deploy(node).setHandler(future);
-                deployments.add(future);
+                Promise<String> promise = Promise.promise();
+                core.deploy(node).onComplete(promise);
+                deployments.add(promise.future());
             }
         }
-        CompositeFuture.all(deployments).setHandler(deployed -> {
+        CompositeFuture.all(deployments).onComplete(deployed -> {
             if (deployed.failed()) {
                 logger.onError(deployed.cause());
                 exit();

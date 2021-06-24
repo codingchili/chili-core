@@ -1,4 +1,4 @@
-install.dependsOn jar
+publishToMavenLocal.dependsOn jar
 
 jar {
     /*from {
@@ -8,7 +8,7 @@ jar {
     }*/
     manifest {
         attributes 'Implementation-Title': 'chili-core',
-                'Implementation-Version': version,
+                'Implementation-Version': project.version,
                 'Main-Class': 'com.codingchili.core.Launcher'
     }
 }
@@ -22,38 +22,46 @@ test {
     // if the tests needs more than this there's a memory leak.
     maxHeapSize = "512m"
     reports {
-        junitXml.enabled = false
-        html.enabled = true
+        junitXml.required = false
+        html.required = true
     }
 }
 
-artifacts {
-    archives sourcesJar
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            artifact tasks.sourcesJar
+            artifact rootProject.tasks.javadocJar
+        }
+    }
 }
 
 dependencies {
-    compile 'io.vertx:vertx-core:3.9.5'
-    compile 'io.vertx:vertx-web:3.9.5'
-    compile 'io.vertx:vertx-hazelcast:3.9.5'
-    compile 'io.vertx:vertx-mongo-client:3.9.5'
-    compile 'io.vertx:vertx-dropwizard-metrics:3.9.5'
-    compile 'io.dropwizard.metrics:metrics-jvm:4.1.17'
+    api('io.vertx:vertx-core:4.1.0')
+    api('io.vertx:vertx-web:4.1.0')
 
-    compile 'de.neuland-bfi:jade4j:1.3.2'
-    compile 'de.mkammerer:argon2-jvm:2.9'
-    compile 'org.fusesource.jansi:jansi:2.2.0'
-    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.1'
+    implementation('io.dropwizard.metrics:metrics-jvm:4.2.2')
+    implementation('com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.1')
 
-    compile 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.10.2'
-    compile 'com.googlecode.cqengine:cqengine:3.6.0'
+    implementation('io.vertx:vertx-hazelcast:4.1.0')
+    implementation('io.vertx:vertx-mongo-client:4.1.0')
+    implementation('io.vertx:vertx-dropwizard-metrics:4.1.0')
+
+    implementation('de.neuland-bfi:jade4j:1.3.2')
+    implementation('de.mkammerer:argon2-jvm:2.10.1')
+    implementation('org.fusesource.jansi:jansi:2.3.3')
+
+    implementation('org.elasticsearch.client:elasticsearch-rest-high-level-client:7.13.2')
+    implementation('com.googlecode.cqengine:cqengine:3.6.0')
 
     /* keep these in sync with cqengine, used internally. */
-    compile 'com.esotericsoftware:kryo:5.0.3'
+    implementation('com.esotericsoftware:kryo:5.1.1')
 
     /* used to hide warnings about missing slf. */
-    compile 'org.slf4j:slf4j-api:1.7.30'
-    compile 'org.slf4j:slf4j-simple:1.7.30'
+    implementation('org.slf4j:slf4j-api:1.7.30')
+    implementation('org.slf4j:slf4j-simple:1.7.30')
 
-    testCompile 'io.vertx:vertx-unit:3.9.5'
-    testCompile 'junit:junit:4.13.1'
+    testImplementation 'io.vertx:vertx-unit:4.1.0'
+    testImplementation 'junit:junit:4.13.2'
 }

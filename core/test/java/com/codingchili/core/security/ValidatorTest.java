@@ -1,22 +1,20 @@
 package com.codingchili.core.security;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import com.codingchili.core.configuration.system.ValidatorSettings;
-import com.codingchili.core.protocol.exception.RequestValidationException;
-import static com.codingchili.core.configuration.CoreStrings.*;
-import static com.codingchili.core.security.RegexAction.*;
-
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.*;
+import org.junit.runner.RunWith;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import com.codingchili.core.configuration.system.ValidatorSettings;
+import com.codingchili.core.protocol.exception.RequestValidationException;
+
+import static com.codingchili.core.configuration.CoreStrings.*;
+import static com.codingchili.core.security.RegexAction.*;
 
 /**
  * Tests the validation mechanism.

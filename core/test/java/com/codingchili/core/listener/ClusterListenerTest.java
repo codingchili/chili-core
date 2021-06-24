@@ -1,27 +1,25 @@
 package com.codingchili.core.listener;
 
-import com.codingchili.core.context.*;
-import com.codingchili.core.listener.transport.ClusterListener;
-import com.codingchili.core.protocol.Serializer;
-import com.codingchili.core.testing.ContextMock;
-import com.codingchili.core.testing.EmptyRequest;
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.listener.transport.ClusterListener;
+import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.testing.ContextMock;
+import com.codingchili.core.testing.EmptyRequest;
 
 import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_STATUS;
 import static com.codingchili.core.files.Configurations.system;
@@ -49,7 +47,7 @@ public class ClusterListenerTest {
         this.handler = new TestHandler(context, REPLY_ADDRESS);
         this.cluster = new ClusterListener().handler(handler).settings(new ListenerSettings());
 
-        context.listener(() -> cluster).setHandler(done -> {
+        context.listener(() -> cluster).onComplete(done -> {
             if (done.failed()) {
                 done.cause().printStackTrace();
             }
@@ -121,7 +119,7 @@ public class ClusterListenerTest {
             ClusterHelper.reply(msg, object);
         });
 
-        context.bus().send(address, new JsonObject(), msg -> {
+        context.bus().request(address, new JsonObject(), msg -> {
             assertion.accept(msg.result().body());
             async.complete();
         });
@@ -163,17 +161,17 @@ public class ClusterListenerTest {
         }
 
         @Override
-        public void stop(Future<Void> future) {
+        public void stop(Promise<Void> promise) {
             if (stop != null) {
                 stop.countDown();
             }
-            future.complete();
+            promise.complete();
         }
 
         @Override
-        public void start(Future<Void> future) {
+        public void start(Promise<Void> promise) {
             startCalled = true;
-            future.complete();
+            promise.complete();
         }
 
         void setStopHandler(Async stop) {

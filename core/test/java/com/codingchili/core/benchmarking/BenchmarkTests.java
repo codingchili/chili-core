@@ -1,19 +1,18 @@
 package com.codingchili.core.benchmarking;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.SystemContext;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
+
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.SystemContext;
 
 /**
  * Tests base implementations of benchmark groups, implementations and benchmarks.
@@ -46,7 +45,7 @@ public class BenchmarkTests {
     }
 
     private void execute(Handler<AsyncResult<List<BenchmarkGroup>>> result) {
-        executor.start(groups).setHandler(result);
+        executor.start(groups).onComplete(result);
     }
 
     @Test

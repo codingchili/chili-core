@@ -1,16 +1,5 @@
 package com.codingchili.core.security;
 
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.configuration.system.AuthenticationDependency;
-import com.codingchili.core.configuration.system.SecuritySettings;
-import com.codingchili.core.context.CoreRuntimeException;
-import com.codingchili.core.context.SystemContext;
-import com.codingchili.core.files.Configurations;
-import com.codingchili.core.files.ConfigurationFactory;
-import com.codingchili.core.protocol.Serializer;
-import com.codingchili.core.security.exception.SecurityMissingDependencyException;
-import com.codingchili.core.testing.ContextMock;
-
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -20,6 +9,17 @@ import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.util.HashMap;
+
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.configuration.system.AuthenticationDependency;
+import com.codingchili.core.configuration.system.SecuritySettings;
+import com.codingchili.core.context.CoreRuntimeException;
+import com.codingchili.core.context.SystemContext;
+import com.codingchili.core.files.ConfigurationFactory;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.security.exception.SecurityMissingDependencyException;
+import com.codingchili.core.testing.ContextMock;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
@@ -108,7 +108,7 @@ public class AuthenticationGeneratorIT {
     @Ignore("file/test based race conditions.")
     public void testGenerateTokens(TestContext test) {
         Async async = test.async();
-        generator.all().setHandler(done -> {
+        generator.all().onComplete(done -> {
             test.assertTrue(done.succeeded());
 
             byte[] service1secret = getService1().getBinary(SERVICE_1_SECRET);
@@ -120,12 +120,12 @@ public class AuthenticationGeneratorIT {
             Token service1token = Serializer.unpack(getService1().getJsonObject(SERVICE_1_TOKEN), Token.class);
             Token service2token = Serializer.unpack(getService2().getJsonObject(SERVICE_2_TOKEN), Token.class);
 
-            service1factory.verify(service2token).setHandler(verify -> {
+            service1factory.verify(service2token).onComplete(verify -> {
                 if (!verify.succeeded()) {
                     throw new CoreRuntimeException(verify.cause());
                 }
 
-                service2factory.verify(service1token).setHandler(verify2 -> {
+                service2factory.verify(service1token).onComplete(verify2 -> {
                     if (!verify.succeeded()) {
                         throw new CoreRuntimeException(verify.cause());
                     }

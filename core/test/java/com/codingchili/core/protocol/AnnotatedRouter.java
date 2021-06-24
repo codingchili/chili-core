@@ -1,9 +1,8 @@
 package com.codingchili.core.protocol;
 
-import com.codingchili.core.context.CoreException;
-import com.codingchili.core.context.CoreRuntimeException;
 import io.vertx.core.Future;
 
+import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.testing.StorageObject;

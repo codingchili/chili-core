@@ -1,21 +1,13 @@
 package com.codingchili.core.storage;
 
-import com.codingchili.core.context.*;
-import com.codingchili.core.security.Account;
-
-import io.vertx.core.Future;
-import io.vertx.ext.unit.Async;
+import io.vertx.core.Promise;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
-import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.StreamSupport;
-
-import static com.codingchili.core.storage.QueryParser.next;
+import com.codingchili.core.context.*;
+import com.codingchili.core.security.Account;
 
 /**
  * Tests the standalone query builder.
@@ -41,7 +33,7 @@ public class QueryTest {
 
     @Before
     public void setUp() {
-        parser = new QueryParser<>(new JsonMap<>(Future.future(), context)::query);
+        parser = new QueryParser<>(new JsonMap<>(Promise.promise(), context)::query);
     }
 
     @Test

@@ -64,7 +64,7 @@ public class HashFactory {
      * @return callback
      */
     public Future<String> hash(String plaintext) {
-        Future<String> future = Future.future();
+        Promise<String> promise = Promise.promise();
         context.<String>blocking(blocking -> {
             blocking.complete(argon2.hash(
                     settings.getIterations(),
@@ -73,12 +73,12 @@ public class HashFactory {
                     plaintext));
         }, result -> {
             if (result.succeeded()) {
-                future.complete(result.result());
+                promise.complete(result.result());
             } else {
-                future.fail(new HashMismatchException());
+                promise.fail(new HashMismatchException());
             }
         });
-        return future;
+        return promise.future();
     }
 
     /**

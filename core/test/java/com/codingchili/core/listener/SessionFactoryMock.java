@@ -1,10 +1,12 @@
 package com.codingchili.core.listener;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.storage.QueryBuilder;
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
 
 import java.util.*;
+
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.storage.QueryBuilder;
 
 /**
  * Mock implementation of a session store.
@@ -24,32 +26,32 @@ public class SessionFactoryMock implements SessionFactory<ClusteredSession> {
 
     @Override
     public Future<ClusteredSession> create(String home, String connectionId) {
-        Future<ClusteredSession> future = Future.future();
+        Promise<ClusteredSession> promise = Promise.promise();
         ClusteredSession session = new ClusteredSession(this, home, connectionId);
         sessions.put(session.getId(), session);
-        future.complete(session);
-        return future;
+        promise.complete(session);
+        return promise.future();
     }
 
     @Override
     public Future<Void> update(ClusteredSession session) {
-        Future<Void> future = Future.future();
+        Promise<Void> promise = Promise.promise();
         sessions.put(session.getId(), session);
-        return future;
+        return promise.future();
     }
 
     @Override
     public Future<Void> destroy(ClusteredSession session) {
-        Future<Void> future = Future.future();
+        Promise<Void> promise = Promise.promise();
         sessions.remove(session.getId());
-        return future;
+        return promise.future();
     }
 
     @Override
     public Future<Boolean> isActive(ClusteredSession session) {
-        Future<Boolean> future = Future.future();
-        future.complete(sessions.containsKey(session.getId()));
-        return future;
+        Promise<Boolean> promise = Promise.promise();
+        promise.complete(sessions.containsKey(session.getId()));
+        return promise.future();
     }
 
     @Override

@@ -159,6 +159,7 @@ public abstract class CoreStrings {
     public static final String LOG_SERVICE_FAIL = "service.fail";
     public static final String LOG_LISTENER_STOP = "listener.stop";
     public static final String LOG_LISTENER_START = "listener.start";
+    public static final String LOG_LISTENER = "listener";
     public static final String LOG_MESSAGE = "message";
     public static final String LOG_LEVEL = "level";
     public static final String LOG_VERTX = "vertx";

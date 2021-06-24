@@ -1,13 +1,1 @@
-{
-  "local" : "696TbexaeieBblMLb0p6Eq27Y7VNcZIbJmQEZ1g2C/SOIJJpBOEbmk2U8mLK0FJ41Lr7euMyCSkadBArcKDULg==",
-  "global" : "/KkTcSosWUuCiQXzQz3w3aprwxE1/4LE8/MQoKlGtHbsnspak1iTkOa2yejzEPw+CMjRk77SjUcYVpihrRwqDA==",
-  "node" : "undefined.node",
-  "service2token" : {
-    "properties" : {
-      "type" : "HmacSHA512"
-    },
-    "domain" : "undefined",
-    "key" : "oToPzSfHLvDFqmUHBL0DMUUBmqvgH666mziyWeK/01+AdQWLSEUyyX024lPwdiNBK2lkQLRi9epbiWcsTVqmSg==",
-    "expiry" : 1612128595
-  }
-}
+{ }

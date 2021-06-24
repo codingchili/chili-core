@@ -1,6 +1,7 @@
 package com.codingchili.core.context;
 
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -18,7 +19,7 @@ public interface CommandExecutor {
      * @param commandLine the commands/properties to execute.
      * @return fluent
      */
-    CommandExecutor execute(Future<CommandResult> future, String... commandLine);
+    CommandExecutor execute(Promise<CommandResult> future, String... commandLine);
 
     /**
      * Executes the given command synchronously.
@@ -83,7 +84,7 @@ public interface CommandExecutor {
      * @param description the description of the command
      * @return fluent
      */
-    CommandExecutor add(BiFunction<Future<CommandResult>, CommandExecutor, Void> executor, String name, String
+    CommandExecutor add(BiFunction<Promise<CommandResult>, CommandExecutor, Void> executor, String name, String
             description);
 
     /**

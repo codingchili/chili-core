@@ -1,11 +1,11 @@
 package com.codingchili.core.listener;
 
-import com.codingchili.core.listener.transport.TcpListener;
-
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetSocket;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.runner.RunWith;
+
+import com.codingchili.core.listener.transport.TcpListener;
 
 /**
  * Test cases for UDP transport.

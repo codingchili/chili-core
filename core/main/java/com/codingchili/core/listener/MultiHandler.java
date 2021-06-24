@@ -1,7 +1,6 @@
 package com.codingchili.core.listener;
 
-import io.vertx.core.CompositeFuture;
-import io.vertx.core.Future;
+import io.vertx.core.*;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -63,7 +62,7 @@ public class MultiHandler implements CoreHandler {
      * is already deployed. If the MultiHandler is not deployed - the future is completed.
      */
     public Future<Void> add(CoreHandler handler) {
-        Future<Void> future = Future.future();
+        Promise<Void> promise = Promise.promise();
 
         // if already started - start up the handler.
         if (started.get()) {
@@ -71,12 +70,12 @@ public class MultiHandler implements CoreHandler {
                 throw new CoreRuntimeException("A deployed handler already exists with address: " + handler.address());
             } else {
                 handler.init(core);
-                handler.start(future);
+                handler.start(promise);
             }
         }
         map.put(handler.address(), handler);
-        future.complete();
-        return future;
+        promise.complete();
+        return promise.future();
     }
 
     /**
@@ -88,18 +87,18 @@ public class MultiHandler implements CoreHandler {
      * not yet started - then the future will be completed.
      */
     public Future<Void> remove(String address) {
-        Future<Void> future = Future.future();
+        Promise<Void> promise = Promise.promise();
 
         if (started.get()) {
             // we are started and the handler exists.
             if (map.containsKey(address)) {
-                map.get(address).stop(future);
+                map.get(address).stop(promise);
                 map.remove(address);
-                return future;
+                return promise.future();
             }
         }
-        future.complete();
-        return future;
+        promise.complete();
+        return promise.future();
     }
 
     @Override
@@ -108,37 +107,37 @@ public class MultiHandler implements CoreHandler {
     }
 
     @Override
-    public void start(Future<Void> start) {
+    public void start(Promise<Void> start) {
         started.getAndSet(true);
         forAll((handler, future) -> {
             handler.init(core);
             handler.start(future);
-        }).setHandler(start);
+        }).onComplete(start);
     }
 
-    private Future<Void> forAll(BiConsumer<CoreHandler, Future<Void>> consumer) {
-        Future<Void> all = Future.future();
+    private Future<Void> forAll(BiConsumer<CoreHandler, Promise<Void>> consumer) {
+        Promise<Void> all = Promise.promise();
         List<Future> futures = new ArrayList<>();
 
         map.values().forEach((handler) -> {
-            Future<Void> future = Future.future();
-            consumer.accept(handler, future);
-            futures.add(future);
+            Promise<Void> promise = Promise.promise();
+            consumer.accept(handler, promise);
+            futures.add(promise.future());
         });
 
-        CompositeFuture.all(futures).setHandler(done -> {
+        CompositeFuture.all(futures).onComplete(done -> {
             if (done.succeeded()) {
                 all.complete();
             } else {
                 all.fail(done.cause());
             }
         });
-        return all;
+        return all.future();
     }
 
     @Override
-    public void stop(Future<Void> stop) {
-        forAll(CoreDeployment::stop).setHandler(stop);
+    public void stop(Promise<Void> stop) {
+        forAll(CoreDeployment::stop).onComplete(stop);
     }
 
     @Override

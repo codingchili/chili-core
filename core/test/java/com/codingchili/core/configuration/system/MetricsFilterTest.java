@@ -2,11 +2,12 @@ package com.codingchili.core.configuration.system;
 
 import com.codahale.metrics.Metric;
 import com.codahale.metrics.Timer;
-import com.codingchili.core.metrics.MetricFilter;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import com.codingchili.core.metrics.MetricFilter;
 
 @RunWith(VertxUnitRunner.class)
 public class MetricsFilterTest {

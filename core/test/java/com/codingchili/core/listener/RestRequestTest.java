@@ -1,13 +1,9 @@
 package com.codingchili.core.listener;
 
-import com.codingchili.core.listener.transport.RestRequest;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
-import io.vertx.core.MultiMap;
-import io.vertx.core.Vertx;
+import io.vertx.core.*;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.Cookie;
 import io.vertx.core.http.*;
+import io.vertx.core.http.impl.headers.HeadersMultiMap;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetSocket;
@@ -15,7 +11,6 @@ import io.vertx.core.net.SocketAddress;
 import io.vertx.ext.auth.User;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import io.vertx.ext.web.Locale;
 import io.vertx.ext.web.Session;
 import io.vertx.ext.web.*;
 import org.junit.After;
@@ -25,10 +20,12 @@ import org.junit.runner.RunWith;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
 import javax.security.cert.X509Certificate;
+import java.nio.charset.Charset;
 import java.util.*;
 
-import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_ROUTE;
-import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_TARGET;
+import com.codingchili.core.listener.transport.RestRequest;
+
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * Tests to verify that parsing of HTTP target/route representations are working as expected.
@@ -173,11 +170,6 @@ public class RestRequestTest {
                 }
 
                 @Override
-                public String rawMethod() {
-                    return null;
-                }
-
-                @Override
                 public boolean isSSL() {
                     return false;
                 }
@@ -219,7 +211,7 @@ public class RestRequestTest {
 
                 @Override
                 public MultiMap headers() {
-                    return new CaseInsensitiveHeaders();
+                    return new HeadersMultiMap();
                 }
 
                 @Override
@@ -234,7 +226,7 @@ public class RestRequestTest {
 
                 @Override
                 public MultiMap params() {
-                    MultiMap map = new CaseInsensitiveHeaders();
+                    MultiMap map = new HeadersMultiMap();
 
                     if (path.contains("?")) {
                         String qs = path.substring(path.lastIndexOf("?"), path.length());
@@ -282,7 +274,17 @@ public class RestRequestTest {
                 }
 
                 @Override
-                public NetSocket netSocket() {
+                public Future<Buffer> body() {
+                    return null;
+                }
+
+                @Override
+                public Future<Void> end() {
+                    return null;
+                }
+
+                @Override
+                public Future<NetSocket> toNetSocket() {
                     return null;
                 }
 
@@ -312,7 +314,7 @@ public class RestRequestTest {
                 }
 
                 @Override
-                public ServerWebSocket upgrade() {
+                public Future<ServerWebSocket> toWebSocket() {
                     return null;
                 }
 
@@ -389,6 +391,11 @@ public class RestRequestTest {
         }
 
         @Override
+        public <T> T get(String key, T defaultValue) {
+            return null;
+        }
+
+        @Override
         public <T> T remove(String s) {
             return null;
         }
@@ -419,7 +426,12 @@ public class RestRequestTest {
         }
 
         @Override
-        public io.vertx.ext.web.Cookie getCookie(String name) {
+        public String normalizedPath() {
+            return null;
+        }
+
+        @Override
+        public Cookie getCookie(String name) {
             return null;
         }
 
@@ -429,23 +441,13 @@ public class RestRequestTest {
         }
 
         @Override
-        public RoutingContext addCookie(io.vertx.ext.web.Cookie cookie) {
-            return null;
-        }
-
-        @Override
-        public io.vertx.ext.web.Cookie removeCookie(String name, boolean invalidate) {
+        public Cookie removeCookie(String name, boolean invalidate) {
             return null;
         }
 
         @Override
         public int cookieCount() {
             return 0;
-        }
-
-        @Override
-        public Set<io.vertx.ext.web.Cookie> cookies() {
-            return null;
         }
 
         @Override
@@ -461,6 +463,16 @@ public class RestRequestTest {
 
         @Override
         public String getBodyAsString(String s) {
+            return null;
+        }
+
+        @Override
+        public JsonObject getBodyAsJson(int maxAllowedLength) {
+            return null;
+        }
+
+        @Override
+        public JsonArray getBodyAsJsonArray(int maxAllowedLength) {
             return null;
         }
 
@@ -590,17 +602,7 @@ public class RestRequestTest {
         }
 
         @Override
-        public List<Locale> acceptableLocales() {
-            return null;
-        }
-
-        @Override
         public List<LanguageHeader> acceptableLanguages() {
-            return null;
-        }
-
-        @Override
-        public Locale preferredLocale() {
             return null;
         }
 
@@ -621,6 +623,11 @@ public class RestRequestTest {
 
         @Override
         public MultiMap queryParams() {
+            return null;
+        }
+
+        @Override
+        public MultiMap queryParams(Charset encoding) {
             return null;
         }
 

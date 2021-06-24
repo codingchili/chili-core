@@ -1,6 +1,6 @@
 package com.codingchili.core.listener;
 
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 
 import com.codingchili.core.context.CoreContext;
 
@@ -20,14 +20,14 @@ public interface CoreDeployment {
     /**
      * @param stop complete when asynchronous shutdown is completed.
      */
-    default void stop(Future<Void> stop) {
+    default void stop(Promise<Void> stop) {
         stop.complete();
     }
 
     /**
      * @param start complete when asynchronous startup is completed.
      */
-    default void start(Future<Void> start) {
+    default void start(Promise<Void> start) {
         start.complete();
     }
 

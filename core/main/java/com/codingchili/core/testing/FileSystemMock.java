@@ -24,9 +24,19 @@ public class FileSystemMock implements FileSystem {
     }
 
     @Override
+    public Future<Void> copy(String from, String to) {
+        return null;
+    }
+
+    @Override
     public FileSystem copy(String from, String to, CopyOptions options, Handler<AsyncResult<Void>> handler) {
         fs.copy(from, to, options, handler);
         return this;
+    }
+
+    @Override
+    public Future<Void> copy(String from, String to, CopyOptions options) {
+        return null;
     }
 
     @Override
@@ -42,6 +52,11 @@ public class FileSystemMock implements FileSystem {
     }
 
     @Override
+    public Future<Void> copyRecursive(String from, String to, boolean recursive) {
+        return null;
+    }
+
+    @Override
     public FileSystem copyRecursiveBlocking(String from, String to, boolean recursive) {
         fs.copyRecursiveBlocking(from, to, recursive);
         return this;
@@ -54,9 +69,19 @@ public class FileSystemMock implements FileSystem {
     }
 
     @Override
+    public Future<Void> move(String from, String to) {
+        return null;
+    }
+
+    @Override
     public FileSystem move(String from, String to, CopyOptions options, Handler<AsyncResult<Void>> handler) {
         fs.move(from, to, options, handler);
         return this;
+    }
+
+    @Override
+    public Future<Void> move(String from, String to, CopyOptions options) {
+        return null;
     }
 
     @Override
@@ -72,6 +97,11 @@ public class FileSystemMock implements FileSystem {
     }
 
     @Override
+    public Future<Void> truncate(String path, long len) {
+        return null;
+    }
+
+    @Override
     public FileSystem truncateBlocking(String path, long len) {
         fs.truncateBlocking(path, len);
         return this;
@@ -81,6 +111,11 @@ public class FileSystemMock implements FileSystem {
     public FileSystem chmod(String path, String perms, Handler<AsyncResult<Void>> handler) {
         fs.chmod(path, perms, handler);
         return this;
+    }
+
+    @Override
+    public Future<Void> chmod(String path, String perms) {
+        return null;
     }
 
     @Override
@@ -96,6 +131,11 @@ public class FileSystemMock implements FileSystem {
     }
 
     @Override
+    public Future<Void> chmodRecursive(String path, String perms, String dirPerms) {
+        return null;
+    }
+
+    @Override
     public FileSystem chmodRecursiveBlocking(String path, String perms, String dirPerms) {
         fs.chmodRecursiveBlocking(path, perms, dirPerms);
         return this;
@@ -104,6 +144,11 @@ public class FileSystemMock implements FileSystem {
     @Override
     public FileSystem chown(String path, String user, String group, Handler<AsyncResult<Void>> handler) {
         return this;
+    }
+
+    @Override
+    public Future<Void> chown(String path, String user, String group) {
+        return null;
     }
 
     @Override
@@ -117,6 +162,11 @@ public class FileSystemMock implements FileSystem {
     }
 
     @Override
+    public Future<FileProps> props(String path) {
+        return null;
+    }
+
+    @Override
     public FileProps propsBlocking(String path) {
         return null;
     }
@@ -124,6 +174,11 @@ public class FileSystemMock implements FileSystem {
     @Override
     public FileSystem lprops(String path, Handler<AsyncResult<FileProps>> handler) {
         return this;
+    }
+
+    @Override
+    public Future<FileProps> lprops(String path) {
+        return null;
     }
 
     @Override
@@ -137,6 +192,11 @@ public class FileSystemMock implements FileSystem {
     }
 
     @Override
+    public Future<Void> link(String link, String existing) {
+        return null;
+    }
+
+    @Override
     public FileSystem linkBlocking(String link, String existing) {
         return this;
     }
@@ -144,6 +204,11 @@ public class FileSystemMock implements FileSystem {
     @Override
     public FileSystem symlink(String link, String existing, Handler<AsyncResult<Void>> handler) {
         return this;
+    }
+
+    @Override
+    public Future<Void> symlink(String link, String existing) {
+        return null;
     }
 
     @Override
@@ -157,6 +222,11 @@ public class FileSystemMock implements FileSystem {
     }
 
     @Override
+    public Future<Void> unlink(String link) {
+        return null;
+    }
+
+    @Override
     public FileSystem unlinkBlocking(String link) {
         return this;
     }
@@ -164,6 +234,11 @@ public class FileSystemMock implements FileSystem {
     @Override
     public FileSystem readSymlink(String link, Handler<AsyncResult<String>> handler) {
         return this;
+    }
+
+    @Override
+    public Future<String> readSymlink(String link) {
+        return null;
     }
 
     @Override
@@ -177,6 +252,11 @@ public class FileSystemMock implements FileSystem {
     }
 
     @Override
+    public Future<Void> delete(String path) {
+        return null;
+    }
+
+    @Override
     public FileSystem deleteBlocking(String path) {
         return this;
     }
@@ -184,6 +264,11 @@ public class FileSystemMock implements FileSystem {
     @Override
     public FileSystem deleteRecursive(String path, boolean recursive, Handler<AsyncResult<Void>> handler) {
         return this;
+    }
+
+    @Override
+    public Future<Void> deleteRecursive(String path, boolean recursive) {
+        return null;
     }
 
     @Override
@@ -197,6 +282,11 @@ public class FileSystemMock implements FileSystem {
     }
 
     @Override
+    public Future<Void> mkdir(String path) {
+        return null;
+    }
+
+    @Override
     public FileSystem mkdirBlocking(String path) {
         return this;
     }
@@ -204,6 +294,11 @@ public class FileSystemMock implements FileSystem {
     @Override
     public FileSystem mkdir(String path, String perms, Handler<AsyncResult<Void>> handler) {
         return this;
+    }
+
+    @Override
+    public Future<Void> mkdir(String path, String perms) {
+        return null;
     }
 
     @Override
@@ -217,6 +312,11 @@ public class FileSystemMock implements FileSystem {
     }
 
     @Override
+    public Future<Void> mkdirs(String path) {
+        return null;
+    }
+
+    @Override
     public FileSystem mkdirsBlocking(String path) {
         return this;
     }
@@ -224,6 +324,11 @@ public class FileSystemMock implements FileSystem {
     @Override
     public FileSystem mkdirs(String path, String perms, Handler<AsyncResult<Void>> handler) {
         return this;
+    }
+
+    @Override
+    public Future<Void> mkdirs(String path, String perms) {
+        return null;
     }
 
     @Override
@@ -237,6 +342,11 @@ public class FileSystemMock implements FileSystem {
     }
 
     @Override
+    public Future<List<String>> readDir(String path) {
+        return null;
+    }
+
+    @Override
     public List<String> readDirBlocking(String path) {
         return null;
     }
@@ -244,6 +354,11 @@ public class FileSystemMock implements FileSystem {
     @Override
     public FileSystem readDir(String path, String filter, Handler<AsyncResult<List<String>>> handler) {
         return this;
+    }
+
+    @Override
+    public Future<List<String>> readDir(String path, String filter) {
+        return null;
     }
 
     @Override
@@ -258,6 +373,11 @@ public class FileSystemMock implements FileSystem {
     }
 
     @Override
+    public Future<Buffer> readFile(String path) {
+        return null;
+    }
+
+    @Override
     public Buffer readFileBlocking(String path) {
         return fs.readFileBlocking(path);
     }
@@ -265,6 +385,11 @@ public class FileSystemMock implements FileSystem {
     @Override
     public FileSystem writeFile(String path, Buffer data, Handler<AsyncResult<Void>> handler) {
         return fs.writeFile(path, data, handler);
+    }
+
+    @Override
+    public Future<Void> writeFile(String path, Buffer data) {
+        return null;
     }
 
     @Override
@@ -278,6 +403,11 @@ public class FileSystemMock implements FileSystem {
     }
 
     @Override
+    public Future<AsyncFile> open(String path, OpenOptions options) {
+        return null;
+    }
+
+    @Override
     public AsyncFile openBlocking(String path, OpenOptions options) {
         return fs.openBlocking(path, options);
     }
@@ -285,6 +415,11 @@ public class FileSystemMock implements FileSystem {
     @Override
     public FileSystem createFile(String path, Handler<AsyncResult<Void>> handler) {
         return fs.createFile(path, handler);
+    }
+
+    @Override
+    public Future<Void> createFile(String path) {
+        return null;
     }
 
     @Override
@@ -298,6 +433,11 @@ public class FileSystemMock implements FileSystem {
     }
 
     @Override
+    public Future<Void> createFile(String path, String perms) {
+        return null;
+    }
+
+    @Override
     public FileSystem createFileBlocking(String path, String perms) {
         return fs.createFileBlocking(path, perms);
     }
@@ -308,6 +448,11 @@ public class FileSystemMock implements FileSystem {
     }
 
     @Override
+    public Future<Boolean> exists(String path) {
+        return null;
+    }
+
+    @Override
     public boolean existsBlocking(String path) {
         return fs.existsBlocking(path);
     }
@@ -315,6 +460,11 @@ public class FileSystemMock implements FileSystem {
     @Override
     public FileSystem fsProps(String path, Handler<AsyncResult<FileSystemProps>> handler) {
         return fs.fsProps(path, handler);
+    }
+
+    @Override
+    public Future<FileSystemProps> fsProps(String path) {
+        return null;
     }
 
     @Override
@@ -329,6 +479,11 @@ public class FileSystemMock implements FileSystem {
     }
 
     @Override
+    public Future<String> createTempDirectory(String prefix) {
+        return null;
+    }
+
+    @Override
     public String createTempDirectoryBlocking(String prefix) {
         return "none";
     }
@@ -337,6 +492,11 @@ public class FileSystemMock implements FileSystem {
     public FileSystem createTempDirectory(String prefix, String perms, Handler<AsyncResult<String>> handler) {
         handler.handle(Future.succeededFuture());
         return this;
+    }
+
+    @Override
+    public Future<String> createTempDirectory(String prefix, String perms) {
+        return null;
     }
 
     @Override
@@ -351,6 +511,11 @@ public class FileSystemMock implements FileSystem {
     }
 
     @Override
+    public Future<String> createTempDirectory(String dir, String prefix, String perms) {
+        return null;
+    }
+
+    @Override
     public String createTempDirectoryBlocking(String dir, String prefix, String perms) {
         return "none";
     }
@@ -359,6 +524,11 @@ public class FileSystemMock implements FileSystem {
     public FileSystem createTempFile(String prefix, String suffix, Handler<AsyncResult<String>> handler) {
         handler.handle(Future.succeededFuture());
         return this;
+    }
+
+    @Override
+    public Future<String> createTempFile(String prefix, String suffix) {
+        return null;
     }
 
     @Override
@@ -373,6 +543,11 @@ public class FileSystemMock implements FileSystem {
     }
 
     @Override
+    public Future<String> createTempFile(String prefix, String suffix, String perms) {
+        return null;
+    }
+
+    @Override
     public String createTempFileBlocking(String prefix, String suffix, String perms) {
         return "none";
     }
@@ -381,6 +556,11 @@ public class FileSystemMock implements FileSystem {
     public FileSystem createTempFile(String dir, String prefix, String suffix, String perms, Handler<AsyncResult<String>> handler) {
         handler.handle(Future.succeededFuture());
         return this;
+    }
+
+    @Override
+    public Future<String> createTempFile(String dir, String prefix, String suffix, String perms) {
+        return null;
     }
 
     @Override

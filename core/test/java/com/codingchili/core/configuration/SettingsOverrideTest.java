@@ -1,13 +1,13 @@
 package com.codingchili.core.configuration;
 
-import com.codingchili.core.files.Configurations;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static com.codingchili.core.configuration.CoreStrings.testDirectory;
-import static com.codingchili.core.configuration.CoreStrings.testFile;
+import com.codingchili.core.files.Configurations;
+
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * test case for the configuration system to check if configuration can be overridden.

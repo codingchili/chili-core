@@ -76,13 +76,13 @@ public class ShutdownHook extends Thread {
         logger.log(LAUNCHER_SHUTDOWN_STARTED, Level.WARNING);
         try {
             // emit the shutdown event before closing.
-            ShutdownListener.publish(context).setHandler(listeners -> {
+            ShutdownListener.publish(context).onComplete(listeners -> {
                 if (listeners.failed()) {
                     logger.onError(listeners.cause());
                 }
 
                 // stop all deployed services - prevent scheduling of new blocked tasks.
-                context.stop().setHandler(stop -> {
+                context.stop().onComplete(stop -> {
                     try {
                         // wait for all blocking tasks that are scheduled to complete.
                         ExecutorService executor = context.getBlockingExecutor();

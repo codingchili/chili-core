@@ -1,9 +1,5 @@
 package com.codingchili.core.listener;
 
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.listener.*;
-import com.codingchili.core.protocol.ResponseStatus;
-import com.codingchili.core.testing.ContextMock;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonObject;
@@ -16,6 +12,10 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.protocol.ResponseStatus;
+import com.codingchili.core.testing.ContextMock;
 
 /**
  * Contains test cases for transport implementations.
@@ -70,7 +70,7 @@ public abstract class ListenerTestCases {
                 .setHttpOptions(new HttpServerOptions().setCompressionSupported(false))
                 .addMapping(PATCHING_ROOT, new Endpoint(NODE_PATCHING));
 
-        context.listener(() -> listener.get().settings(settings).handler(new TestHandler())).setHandler(deploy -> {
+        context.listener(() -> listener.get().settings(settings).handler(new TestHandler())).onComplete(deploy -> {
             if (deploy.failed()) {
                 deploy.cause().printStackTrace();
                 test.fail(deploy.cause());

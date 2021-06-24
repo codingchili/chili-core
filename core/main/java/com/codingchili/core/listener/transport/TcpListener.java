@@ -1,13 +1,13 @@
 package com.codingchili.core.listener.transport;
 
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetSocket;
 
-import java.util.function.Supplier;
-
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.listener.*;
+import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.Response;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
@@ -19,10 +19,13 @@ public class TcpListener implements CoreListener {
     private ListenerSettings settings = ListenerSettings.getDefaultSettings();
     private CoreContext core;
     private CoreHandler handler;
+    private Logger logger;
 
     @Override
     public void init(CoreContext core) {
         this.core = core;
+        this.logger = core.logger(handler.getClass())
+            .setMetadataValue(LOG_LISTENER, getClass()::getSimpleName);
         handler.init(core);
     }
 
@@ -39,16 +42,14 @@ public class TcpListener implements CoreListener {
     }
 
     @Override
-    public void start(Future<Void> start) {
+    public void start(Promise<Void> start) {
         core.vertx().createNetServer(settings.getHttpOptions())
                 .connectHandler(socket -> {
                     Connection connection = connected(socket);
 
-                    // handle incoming data.
                     socket.handler(data -> packet(connection, data));
-
-                    // close the connection.
                     socket.closeHandler((v) -> connection.runCloseHandlers());
+                    socket.exceptionHandler((v) -> logger.onError(v));
 
                 }).listen(settings.getPort(), getBindAddress(), listen -> {
             if (listen.succeeded()) {
@@ -68,7 +69,7 @@ public class TcpListener implements CoreListener {
     }
 
     @Override
-    public void stop(Future<Void> stop) {
+    public void stop(Promise<Void> stop) {
         handler.stop(stop);
     }
 

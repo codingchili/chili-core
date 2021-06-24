@@ -1,7 +1,6 @@
 package com.codingchili.core.context;
 
-import io.vertx.core.CompositeFuture;
-import io.vertx.core.Future;
+import io.vertx.core.*;
 
 import java.util.*;
 import java.util.function.Function;
@@ -38,18 +37,18 @@ public class ShutdownListener {
      * @return future completed when all handlers succeeded or failed.
      */
     public synchronized static Future<Void> publish(CoreContext core) {
-        Future<Void> future = Future.future();
+        Promise<Void> promise = Promise.promise();
         CompositeFuture.all(listeners.stream()
                 .map(listener -> listener.apply(Optional.ofNullable(core)))
                 .collect(Collectors.toList()))
-                .setHandler((done) -> {
+                .onComplete((done) -> {
                     if (done.succeeded()) {
-                        future.complete();
+                        promise.complete();
                     } else {
-                        future.fail(done.cause());
+                        promise.fail(done.cause());
                     }
                 });
-        return future;
+        return promise.future();
     }
 
     /**

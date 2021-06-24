@@ -1,6 +1,6 @@
 package com.codingchili.core.context;
 
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -29,16 +29,15 @@ public class DelayTest {
     @Test
     public void testDelayFuture(TestContext test) {
         Async async = test.async();
-        Future<Void> future = Future.future();
-        future.setHandler(result -> async.complete());
-
-        Delay.forMS(future, 1);
+        Promise<Void> promise = Promise.promise();
+        promise.future().onComplete(result -> async.complete());
+        Delay.forMS(promise, 1);
     }
 
     @Test
     public void testDelayNotInitialized(TestContext test) {
         try {
-            Delay.forMS(Future.future(), 1);
+            Delay.forMS(Promise.promise(), 1);
         } catch (SystemNotInitializedException e) {
             test.assertTrue(e.getMessage().contains(Delay.class.getSimpleName()));
         }

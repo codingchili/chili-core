@@ -1,6 +1,6 @@
 package com.codingchili.core.benchmarking;
 
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 
 /**
  * Benchmark operation called when benchmarking.
@@ -10,7 +10,7 @@ public interface BenchmarkOperation {
     /**
      * Returns a future so that benchmark operations may be composed in order.
      *
-     * @param future a future to be completed when the operation is done.
+     * @param promise a future to be completed when the operation is done.
      */
-    void perform(Future<Void> future);
+    void perform(Promise<Void> promise);
 }

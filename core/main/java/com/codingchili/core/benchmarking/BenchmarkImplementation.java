@@ -25,7 +25,7 @@ public interface BenchmarkImplementation {
      *
      * @param future callback
      */
-    void next(Future<Void> future);
+    void next(Promise<Void> future);
 
     /**
      * Called after the warmup phase has completed.
@@ -39,7 +39,7 @@ public interface BenchmarkImplementation {
      *
      * @param future callback
      */
-    void shutdown(Future<Void> future);
+    void shutdown(Promise<Void> future);
 
     /**
      * Adds a new benchmark created from an operation and name.

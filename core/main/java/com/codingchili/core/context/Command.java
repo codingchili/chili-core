@@ -1,7 +1,7 @@
 package com.codingchili.core.context;
 
 
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 
 /**
  * A command that may be executed by the CommandExecutor.
@@ -20,10 +20,10 @@ public interface Command {
     /**
      * Executes a command.
      *
-     * @param future   callback: complete with true to abort startup.
+     * @param promise   callback: complete with true to abort startup.
      * @param executor the executor executing the command, can be used to get properties.
      */
-    void execute(Future<CommandResult> future, CommandExecutor executor);
+    void execute(Promise<CommandResult> promise, CommandExecutor executor);
 
     /**
      * @return the command description.

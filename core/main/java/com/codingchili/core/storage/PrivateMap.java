@@ -29,9 +29,9 @@ public class PrivateMap<Value extends Storable> implements AsyncStorage<Value> {
         this.context = context;
     }
 
-    public PrivateMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
+    public PrivateMap(Promise<AsyncStorage<Value>> promise, StorageContext<Value> context) {
         this.context = context;
-        future.complete(this);
+        promise.complete(this);
     }
 
     @Override

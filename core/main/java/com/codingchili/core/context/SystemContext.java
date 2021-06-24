@@ -40,9 +40,7 @@ public class SystemContext implements CoreContext {
     }
 
     private static VertxOptions getOptions() {
-        VertxOptions options = Configurations.system().getOptions();
-        options.getEventBusOptions().setClustered(false);
-        return options;
+        return Configurations.system().getOptions();
     }
 
     /**
@@ -183,36 +181,36 @@ public class SystemContext implements CoreContext {
     }
 
     private Future<String> deployN(String verticle) {
-        Future<String> future = Future.future();
-        vertx.deployVerticle(verticle, new DeploymentOptions().setInstances(system().getHandlers()), future);
-        return future;
+        Promise<String> promise = Promise.promise();
+        vertx.deployVerticle(verticle, new DeploymentOptions().setInstances(system().getHandlers()), promise);
+        return promise.future();
     }
 
     @Override
     public Future<String> handler(Supplier<CoreHandler> handler) {
         ListenerSettings settings = new ListenerSettings();
-        Future<String> future = Future.future();
+        Promise<String> promise = Promise.promise();
         deployN(() -> new ClusterListener()
                 .settings(settings)
-                .handler(handler.get()), future);
-        return future;
+                .handler(handler.get()), promise);
+        return promise.future();
     }
 
     @Override
     public Future<String> listener(Supplier<CoreListener> listener) {
-        Future<String> future = Future.future();
-        deployN(listener::get, future);
-        return future;
+        Promise<String> promise = Promise.promise();
+        deployN(listener::get, promise);
+        return promise.future();
     }
 
     @Override
     public Future<String> service(Supplier<CoreService> service) {
-        Future<String> future = Future.future();
-        deployN(service::get, future);
-        return future;
+        Promise<String> promise = Promise.promise();
+        deployN(service::get, promise);
+        return promise.future();
     }
 
-    private void deployN(Supplier<CoreDeployment> supplier, Future<String> done) {
+    private void deployN(Supplier<CoreDeployment> supplier, Promise<String> done) {
         CoreDeployment deployment = supplier.get();
         int handlerCount = getHandlerCount(deployment);
         CountDownLatch latch = new CountDownLatch(handlerCount);
@@ -265,9 +263,9 @@ public class SystemContext implements CoreContext {
                 .stream()
                 .flatMap(Collection::stream)
                 .map((id) -> {
-                    Future<Void> future = Future.future();
-                    vertx.undeploy(id, future);
-                    return future;
+                    Promise<Void> promise = Promise.promise();
+                    vertx.undeploy(id, promise);
+                    return promise.future();
                 })
                 .collect(Collectors.toList());
         return CompositeFuture.all(futures);

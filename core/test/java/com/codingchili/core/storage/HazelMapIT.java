@@ -1,16 +1,13 @@
 package com.codingchili.core.storage;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.SystemContext;
-
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.*;
 import org.junit.runner.RunWith;
+
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.SystemContext;
 
 /**
  * Tests for the storage providers in core. Reuse these tests when new

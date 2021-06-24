@@ -1,6 +1,7 @@
 package com.codingchili.core.context;
 
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
 
 /**
  * Helper method to simplify working with handlers and asyncresult.
@@ -48,10 +49,10 @@ public abstract class FutureHelper {
      * @param <T>   inferred future type
      * @return a generic future with a handler set.
      */
-    public static <T> Future<T> untyped(Future<?> typed) {
-        Future<T> future = Future.future();
+    public static <T> Promise<T> untyped(Promise<?> typed) {
+        Promise<T> promise = Promise.promise();
 
-        future.setHandler(done -> {
+        promise.future().onComplete(done -> {
             if (done.succeeded()) {
                 typed.complete();
             } else {
@@ -59,6 +60,6 @@ public abstract class FutureHelper {
             }
         });
 
-        return future;
+        return promise;
     }
 }

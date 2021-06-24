@@ -1,6 +1,6 @@
 package com.codingchili.core.benchmarking;
 
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
@@ -35,8 +35,12 @@ public class BenchmarkIT {
         Async async = test.async();
 
         SystemContext.clustered(clustering -> {
-            context = clustering.result();
-            async.complete();
+            if (clustering.succeeded()) {
+                context = clustering.result();
+                async.complete();
+            } else {
+                test.fail(clustering.cause());
+            }
         });
     }
 
@@ -58,7 +62,7 @@ public class BenchmarkIT {
         MockListener listener = new MockListener(test);
 
         new CoreBenchmarkSuite().setIterations(ITERATIONS).maps(context, listener)
-                .setHandler(done -> {
+                .onComplete(done -> {
                     test.assertTrue(done.succeeded());
                     test.assertTrue(done.result().size() > 0);
                     listener.assertAllEventsTriggered();
@@ -73,12 +77,15 @@ public class BenchmarkIT {
     public void testExecuteSuiteAsCommand(TestContext test) {
         CommandExecutor executor = new DefaultCommandExecutor();
         Async async = test.async();
-        Future<CommandResult> future = Future.<CommandResult>future().setHandler(done -> {
+        Promise<CommandResult> promise = Promise.promise();
+
+        promise.future().onComplete(done -> {
             test.assertTrue(done.succeeded());
             async.complete();
         });
+
         executor.addProperty(PARAM_ITERATIONS, STRING_ITERATIONS);
-        new CoreBenchmarkSuite().execute(future, executor);
+        new CoreBenchmarkSuite().execute(promise, executor);
     }
 
     @Test
@@ -89,8 +96,8 @@ public class BenchmarkIT {
 
         BiConsumer<BenchmarkGroup, String> addOneOperation = (group, implementation) -> {
             group.implementation(implementation)
-                    .add("sleep1x", Future::complete)
-                    .add("sleep2x", Future::complete);
+                    .add("sleep1x", Promise::complete)
+                    .add("sleep2x", Promise::complete);
         };
 
         BiConsumer<String, Integer> addOneGroup = (name, iterations) -> {
@@ -106,7 +113,7 @@ public class BenchmarkIT {
 
         new BenchmarkExecutor(context)
                 //.setListener(new BenchmarkConsoleListener())
-                .start(groups).setHandler(done -> {
+                .start(groups).onComplete(done -> {
             new BenchmarkHTMLReport(done.result())
                     .saveTo("wowza.html");
 

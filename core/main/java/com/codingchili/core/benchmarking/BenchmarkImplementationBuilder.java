@@ -44,8 +44,8 @@ public class BenchmarkImplementationBuilder implements BenchmarkImplementation {
     }
 
     @Override
-    public void next(Future<Void> future) {
-        future.complete();
+    public void next(Promise<Void> promise) {
+        promise.complete();
     }
 
     @Override
@@ -54,8 +54,8 @@ public class BenchmarkImplementationBuilder implements BenchmarkImplementation {
     }
 
     @Override
-    public void shutdown(Future<Void> future) {
-        future.complete();
+    public void shutdown(Promise<Void> promise) {
+        promise.complete();
     }
 
     @Override

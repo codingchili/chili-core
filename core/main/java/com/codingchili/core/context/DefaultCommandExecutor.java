@@ -1,6 +1,7 @@
 package com.codingchili.core.context;
 
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -35,14 +36,14 @@ public class DefaultCommandExecutor implements CommandExecutor {
     }
 
     @Override
-    public CommandExecutor execute(Future<CommandResult> future, String... commandLine) {
+    public CommandExecutor execute(Promise<CommandResult> future, String... commandLine) {
         parser.parse(commandLine);
         Optional<String> command = getCommand();
 
         if (command.isPresent() && commands.containsKey(command.get())) {
-            Future<CommandResult> execution = Future.future();
+            Promise<CommandResult> execution = Promise.promise();
             commands.get(command.get()).execute(execution,  this);
-            execution.setHandler(future);
+            execution.future().onComplete(future);
         } else {
             future.fail(new NoSuchCommandException(getCommand().orElse("")));
         }
@@ -51,13 +52,13 @@ public class DefaultCommandExecutor implements CommandExecutor {
 
     @Override
     public CommandResult execute(String... command) {
-        Future<CommandResult> future = Future.future();
-        execute(future, command);
+        Promise<CommandResult> promise = Promise.promise();
+        execute(promise, command);
 
-        if (future.failed()) {
-            throw new CoreRuntimeException(future.cause().getMessage());
+        if (promise.future().failed()) {
+            throw new CoreRuntimeException(promise.future().cause().getMessage());
         } else {
-            return future.result();
+            return promise.future().result();
         }
     }
 
@@ -102,7 +103,7 @@ public class DefaultCommandExecutor implements CommandExecutor {
     }
 
     @Override
-    public CommandExecutor add(BiFunction<Future<CommandResult>, CommandExecutor, Void> executor, String name, String
+    public CommandExecutor add(BiFunction<Promise<CommandResult>, CommandExecutor, Void> executor, String name, String
             description) {
         return add(new BaseCommand(executor, name, description));
     }

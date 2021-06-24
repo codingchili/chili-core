@@ -1,14 +1,13 @@
 package com.codingchili.core.listener;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.SystemContext;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
+
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.SystemContext;
 
 /**
  * Tests for the clustered session store.
@@ -24,7 +23,7 @@ public class ClusteredSessionFactoryTest {
     public void setUp(TestContext test) {
         Async async = test.async();
 
-        ClusteredSessionFactory.get(core).setHandler(get -> {
+        ClusteredSessionFactory.get(core).onComplete(get -> {
             factory = get.result();
             async.complete();
         });
@@ -39,10 +38,10 @@ public class ClusteredSessionFactoryTest {
     public void testCreateSession(TestContext test) {
         Async async = test.async();
 
-        factory.create(home, connection).setHandler(done -> {
+        factory.create(home, connection).onComplete(done -> {
             test.assertTrue(done.succeeded());
 
-            factory.isActive(done.result()).setHandler(active -> {
+            factory.isActive(done.result()).onComplete(active -> {
                 test.assertTrue(active.result());
                 async.complete();
             });
@@ -53,14 +52,14 @@ public class ClusteredSessionFactoryTest {
     public void testDestroySession(TestContext test) {
         Async async = test.async();
 
-        factory.create(home, connection).setHandler(done -> {
+        factory.create(home, connection).onComplete(done -> {
             ClusteredSession session = done.result();
             test.assertTrue(done.succeeded());
 
-            factory.destroy(session).setHandler(destroyed -> {
+            factory.destroy(session).onComplete(destroyed -> {
                 test.assertTrue(destroyed.succeeded());
 
-                factory.isActive(session).setHandler(active -> {
+                factory.isActive(session).onComplete(active -> {
                     test.assertFalse(active.result());
                     async.complete();
                 });
@@ -72,12 +71,12 @@ public class ClusteredSessionFactoryTest {
     public void testUpdateSession(TestContext test) {
         Async async = test.async();
 
-        factory.create(home, connection).setHandler(done -> {
+        factory.create(home, connection).onComplete(done -> {
             Session session = done.result();
             test.assertTrue(done.succeeded());
 
             session.asJson().put("meow", true);
-            session.update().setHandler(updated -> {
+            session.update().onComplete(updated -> {
                 test.assertTrue(updated.succeeded());
 
                 factory.query("data.meow").equalTo(true).execute(query -> {

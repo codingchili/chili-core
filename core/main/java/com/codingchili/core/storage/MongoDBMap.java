@@ -37,13 +37,13 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
     private MongoClient client;
     private String collection;
 
-    public MongoDBMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
+    public MongoDBMap(Promise<AsyncStorage<Value>> promise, StorageContext<Value> context) {
         client = MongoClient.createShared(context.vertx(), Serializer.json(context.storage()));
 
         this.collection = context.collection();
         this.context = context;
 
-        addIndex(ID, done -> future.complete(this));
+        addIndex(ID, done -> promise.complete(this));
     }
 
     @Override

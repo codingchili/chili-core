@@ -1,17 +1,18 @@
 package com.codingchili.core.listener;
 
-import com.codingchili.core.context.CoreException;
-import com.codingchili.core.listener.transport.Connection;
-import com.codingchili.core.protocol.ResponseStatus;
-import com.codingchili.core.protocol.Serializer;
-import com.codingchili.core.protocol.exception.UnmappedException;
-import com.codingchili.core.security.Token;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import com.codingchili.core.context.CoreException;
+import com.codingchili.core.listener.transport.Connection;
+import com.codingchili.core.protocol.ResponseStatus;
+import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.protocol.exception.UnmappedException;
+import com.codingchili.core.security.Token;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.listener.Request.TARGET_UNDEFINED;

@@ -30,7 +30,11 @@ public class WebsocketRequest implements Request {
 
     @Override
     public void write(Object object) {
-        connection.write(Response.buffer(target(), route(), object));
+        try {
+            connection.write(Response.buffer(target(), route(), object));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

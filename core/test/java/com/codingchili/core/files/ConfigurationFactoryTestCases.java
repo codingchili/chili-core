@@ -1,22 +1,19 @@
 package com.codingchili.core.files;
 
-import com.codingchili.core.files.exception.NoSuchResourceException;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.codingchili.core.configuration.CoreStrings.testDirectory;
-import static com.codingchili.core.configuration.CoreStrings.testFile;
+import com.codingchili.core.files.exception.NoSuchResourceException;
+
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * Tests the JSON file store.

@@ -1,23 +1,21 @@
 package com.codingchili.core.context;
 
-import com.codingchili.core.configuration.system.SystemSettings;
-import com.codingchili.core.files.Configurations;
-import com.codingchili.core.logging.AbstractLogger;
-import com.codingchili.core.logging.Logger;
-import com.codingchili.core.testing.ContextMock;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import com.codingchili.core.configuration.system.SystemSettings;
+import com.codingchili.core.files.Configurations;
+import com.codingchili.core.logging.AbstractLogger;
+import com.codingchili.core.logging.Logger;
+import com.codingchili.core.testing.ContextMock;
 
 /**
  * Tests the timers and metrics in the system context.

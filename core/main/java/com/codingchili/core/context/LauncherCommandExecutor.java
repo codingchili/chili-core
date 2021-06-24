@@ -52,7 +52,7 @@ public class LauncherCommandExecutor extends DefaultCommandExecutor {
     private Runnable generator(Function<AuthenticationGenerator, Future<Void>> function) {
         return () -> {
             CoreContext core = new SystemContext();
-            function.apply(new AuthenticationGenerator(core)).setHandler(done -> {
+            function.apply(new AuthenticationGenerator(core)).onComplete(done -> {
                 core.close();
             });
         };

@@ -46,7 +46,7 @@ public class BusRouter implements CoreHandler {
     protected void send(Request request, String target) {
         DeliveryOptions options = new DeliveryOptions().setSendTimeout(request.timeout());
 
-        core.bus().send(target, request.data(), options, send -> {
+        core.bus().request(target, request.data(), options, send -> {
             if (send.succeeded()) {
                 request.write(send.result().body());
             } else {

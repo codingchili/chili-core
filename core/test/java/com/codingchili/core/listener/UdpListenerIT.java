@@ -1,11 +1,11 @@
 package com.codingchili.core.listener;
 
-import com.codingchili.core.listener.transport.UdpListener;
-
+import io.vertx.core.datagram.DatagramSocket;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.runner.RunWith;
 
+import com.codingchili.core.listener.transport.UdpListener;
 
 /**
  * Test cases for UDP transport.
@@ -19,10 +19,9 @@ public class UdpListenerIT extends ListenerTestCases {
 
     @Override
     public void sendRequest(ResponseListener listener, JsonObject data) {
-        context.vertx().createDatagramSocket().send(data.encode(), port, HOST, handler -> {
-            if (handler.succeeded()) {
-                handler.result().handler(response -> handleBody(listener, response.data()));
-            }
-        });
+        DatagramSocket socket = context.vertx().createDatagramSocket();
+
+        socket.handler(packet -> handleBody(listener, packet.data()));
+        socket.send(data.encode(), port, HOST);
     }
 }

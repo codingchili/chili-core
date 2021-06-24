@@ -11,6 +11,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.*;
+import io.vertx.core.json.jackson.*;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -32,14 +33,14 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  */
 public class Serializer {
     // use vertx's objectmapper, it comes with custom serializer modules.
-    public static ObjectMapper json = Json.mapper;
+    public static ObjectMapper json = DatabindCodec.mapper();
     public static ObjectMapper yaml = new ObjectMapper(new YAMLFactory()
-            .configure(YAMLGenerator.Feature.LITERAL_BLOCK_STYLE, true));
+            .configure(YAMLGenerator.Feature.LITERAL_BLOCK_STYLE, true)
+    );
 
     static {
         // enable pretty printing for all json.
-        Json.mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-
+        json.configure(SerializationFeature.INDENT_OUTPUT, true);
         json.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         json.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         json.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -49,6 +50,9 @@ public class Serializer {
         yaml.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         yaml.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         yaml.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+        // vertx does not provide a yaml mapper, configure with the same serializers.
+        yaml = VertxSerializerModules.registerTypes(yaml);
     }
 
     private static Pool<Kryo> pool = new Pool<Kryo>(true, true, 128) {
@@ -193,7 +197,7 @@ public class Serializer {
                 throw new SerializerPayloadException("null", clazz);
             } else {
                 try {
-                    return json.mapTo(clazz);
+                    return Serializer.json.convertValue(json, clazz);
                 } catch (Throwable e) {
                     throw new SerializerPayloadException(e.getMessage(), clazz);
                 }

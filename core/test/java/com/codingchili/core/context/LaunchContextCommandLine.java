@@ -1,8 +1,5 @@
 package com.codingchili.core.context;
 
-import com.codingchili.core.configuration.Environment;
-import com.codingchili.core.configuration.system.LauncherSettings;
-import com.codingchili.core.files.Configurations;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -11,6 +8,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.List;
+
+import com.codingchili.core.configuration.Environment;
+import com.codingchili.core.configuration.system.LauncherSettings;
+import com.codingchili.core.files.Configurations;
 
 /**
  * Tests for argument/parsing and block/remote mapping.

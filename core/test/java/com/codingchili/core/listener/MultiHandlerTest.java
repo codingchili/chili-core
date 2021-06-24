@@ -1,11 +1,13 @@
 package com.codingchili.core.listener;
 
-import java.util.stream.Stream;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.*;
 import org.junit.runner.RunWith;
+
+import java.util.stream.Stream;
 
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.SystemContext;
@@ -13,11 +15,6 @@ import com.codingchili.core.listener.transport.ClusterRequest;
 import com.codingchili.core.protocol.ResponseStatus;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
-
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 @RunWith(VertxUnitRunner.class)
 public class MultiHandlerTest {
@@ -45,12 +42,12 @@ public class MultiHandlerTest {
                 new TestHandler(TWO)
         ).setAddress(getClass().getSimpleName());
 
-        context.handler(() -> multi).setHandler(done -> {
+        context.handler(() -> multi).onComplete(done -> {
             test.assertTrue(done.succeeded());
 
             Stream.of(ONE, TWO).forEach(address -> {
 
-                context.bus().send(getClass().getSimpleName(),
+                context.bus().request(getClass().getSimpleName(),
                         new JsonObject()
                                 .put(PROTOCOL_ROUTE, ANY)
                                 .put(PROTOCOL_TARGET, address),
@@ -74,11 +71,11 @@ public class MultiHandlerTest {
                 new TestHandler(THREE)
         ).setAddress(getClass().getSimpleName());
 
-        context.handler(() -> multi).setHandler(done -> {
+        context.handler(() -> multi).onComplete(done -> {
             test.assertTrue(done.succeeded());
 
-            multi.remove(THREE).setHandler(removed -> {
-                context.bus().send(getClass().getSimpleName(),
+            multi.remove(THREE).onComplete(removed -> {
+                context.bus().request(getClass().getSimpleName(),
                         new JsonObject()
                                 .put(PROTOCOL_TARGET, THREE),
                         (response) -> {

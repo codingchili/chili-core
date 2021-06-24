@@ -1,7 +1,6 @@
 package com.codingchili.core.testing;
 
-import io.vertx.core.Handler;
-import io.vertx.core.MultiMap;
+import io.vertx.core.*;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
@@ -102,13 +101,24 @@ public class MessageMock implements Message<Object> {
 
     }
 
+
     @Override
-    public void reply(Object message, DeliveryOptions options, Handler replyHandler) {
+    public <R> void replyAndRequest(Object message, Handler<AsyncResult<Message<R>>> replyHandler) {
 
     }
 
     @Override
-    public void reply(Object message, Handler replyHandler) {
+    public <R> Future<Message<R>> replyAndRequest(Object message) {
+        return null;
+    }
 
+    @Override
+    public <R> void replyAndRequest(Object message, DeliveryOptions options, Handler<AsyncResult<Message<R>>> replyHandler) {
+
+    }
+
+    @Override
+    public <R> Future<Message<R>> replyAndRequest(Object message, DeliveryOptions options) {
+        return null;
     }
 }

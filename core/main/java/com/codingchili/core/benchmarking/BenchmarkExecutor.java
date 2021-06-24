@@ -36,9 +36,9 @@ public class BenchmarkExecutor {
      * @return future completed when benchmarks are done.
      */
     public Future<List<BenchmarkGroup>> start(BenchmarkGroup group) {
-        Future<List<BenchmarkGroup>> future = Future.future();
-        start(Collections.singletonList(group)).setHandler(future);
-        return future;
+        Promise<List<BenchmarkGroup>> promise = Promise.promise();
+        start(Collections.singletonList(group)).onComplete(promise);
+        return promise.future();
     }
 
     /**
@@ -46,30 +46,30 @@ public class BenchmarkExecutor {
      * @return future completed when benchmarks are done.
      */
     public Future<List<BenchmarkGroup>> start(List<BenchmarkGroup> groups) {
-        Future<List<BenchmarkGroup>> future = Future.future();
+        Promise<List<BenchmarkGroup>> promise = Promise.promise();
         Future<BenchmarkGroup> allGroups = Future.succeededFuture();
 
         for (BenchmarkGroup group : groups) {
             allGroups = allGroups.compose(v -> {
-                Future<BenchmarkGroup> benchmark = Future.future();
+                Promise<BenchmarkGroup> benchmark = Promise.promise();
                 listener.onGroupStarted(group);
                 executeImplementations(benchmark, group);
-                return benchmark;
+                return benchmark.future();
             });
         }
         allGroups.compose(done -> {
-            future.complete(groups);
+            promise.complete(groups);
             return Future.succeededFuture();
         });
-        return future;
+        return promise.future();
     }
 
-    private void executeImplementations(Future<BenchmarkGroup> future, BenchmarkGroup group) {
+    private void executeImplementations(Promise<BenchmarkGroup> future, BenchmarkGroup group) {
         Future<Void> allImplementations = Future.succeededFuture();
 
         for (BenchmarkImplementation implementation : group.getImplementations()) {
             allImplementations = allImplementations.compose(v -> {
-                Future<Void> execution = Future.future();
+                Promise<Void> execution = Promise.promise();
 
                 // on initialization: perform a warmup run that executes all benchmarks once
                 // and then call #reset on the implementation, to prepare for a recorded test run.
@@ -77,10 +77,10 @@ public class BenchmarkExecutor {
                         initialized -> warmup(group, implementation,
                                 warmed -> benchmark(group, implementation,
                                         benched -> implementation.shutdown(execution))));
-                return execution;
+                return execution.future();
             });
         }
-        allImplementations.setHandler(done -> {
+        allImplementations.onComplete(done -> {
             listener.onGroupCompleted(group);
             future.complete(group);
         });
@@ -95,16 +95,16 @@ public class BenchmarkExecutor {
      */
     private void warmup(BenchmarkGroup group, BenchmarkImplementation implementation, Handler<AsyncResult<Void>>
             handler) {
-        Future<Void> future = Future.future();
+        Promise<Void> promise = Promise.promise();
         warmup.set(true);
         listener.onImplementationWarmup(implementation);
 
-        future.setHandler(done -> {
+        promise.future().onComplete(done -> {
             warmup.set(false);
             listener.onImplementationWarmupComplete(implementation);
             implementation.reset(reset -> handler.handle(Future.succeededFuture()));
         });
-        benchmark(group, implementation, future);
+        benchmark(group, implementation, promise);
     }
 
     /**
@@ -124,9 +124,9 @@ public class BenchmarkExecutor {
         Future<Void> allTests = Future.succeededFuture();
         for (Benchmark benchmark : benchmarks) {
             allTests = allTests.compose(v -> {
-                Future<Void> next = Future.future();
+                Promise<Void> next = Promise.promise();
                 implementation.next(next);
-                return next.compose(n -> doBench(group, benchmark));
+                return next.future().compose(n -> doBench(group, benchmark));
             });
         }
         allTests.compose(result -> {
@@ -146,17 +146,18 @@ public class BenchmarkExecutor {
      * @return a future that is completed when the benchmark is completed.
      */
     private Future<Void> doBench(BenchmarkGroup group, Benchmark benchmark) {
-        Future<Void> future = Future.future();
+        Promise<Void> promise = Promise.promise();
         AtomicInteger completed = new AtomicInteger(0);
         benchmark.start();
 
         for (int i = 0; i < group.getIterations(); i++) {
-            Future<Void> iteration = Future.<Void>future().setHandler(done -> {
+            Promise<Void> iteration = Promise.promise();
+            iteration.future().onComplete(done -> {
                 if (completed.incrementAndGet() == group.getIterations()) {
                     if (!warmup.get()) {
                         listener.onBenchmarkCompleted(benchmark);
                     }
-                    if (future.tryComplete()) {
+                    if (promise.tryComplete()) {
                         benchmark.finish();
                     }
                 } else if (completed.get() % group.getProgressInterval() == 0) {
@@ -165,7 +166,7 @@ public class BenchmarkExecutor {
             });
             benchmark.getOperation().perform(iteration);
         }
-        return future;
+        return promise.future();
     }
 
     /**

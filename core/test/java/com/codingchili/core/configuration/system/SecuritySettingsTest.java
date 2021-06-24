@@ -1,17 +1,17 @@
 package com.codingchili.core.configuration.system;
 
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.*;
+import org.junit.runner.RunWith;
+
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.files.ConfigurationFactory;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.*;
 import com.codingchili.core.testing.ContextMock;
-
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.*;
-import org.junit.runner.RunWith;
 
 import static com.codingchili.core.configuration.CoreStrings.PATH_SECURITY;
 import static com.codingchili.core.files.Configurations.security;

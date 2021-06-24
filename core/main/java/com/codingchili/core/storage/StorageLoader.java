@@ -40,10 +40,10 @@ public class StorageLoader<Value extends Storable> {
     }
 
     private void load(Handler<AsyncResult<AsyncStorage<Value>>> handler) {
-        Future<AsyncStorage<Value>> future = Future.future();
+        Promise<AsyncStorage<Value>> promise = Promise.promise();
         context.blocking(blocking -> {
             try {
-                future.setHandler(handler);
+                promise.future().onComplete(handler);
 
                 prepare();
                 StorageContext<Value> storage = new StorageContext<Value>(context)
@@ -53,8 +53,8 @@ public class StorageLoader<Value extends Storable> {
                         .setPlugin(plugin)
                         .setProperties(properties);
 
-                plugin.getConstructor(Future.class, StorageContext.class)
-                        .<Value>newInstance(future, storage);
+                plugin.getConstructor(Promise.class, StorageContext.class)
+                        .<Value>newInstance(promise, storage);
                 blocking.complete();
 
             } catch (Throwable e) {
@@ -64,7 +64,7 @@ public class StorageLoader<Value extends Storable> {
             }
         }, (done) -> {
             if (done.failed()) {
-                future.tryFail(done.cause());
+                promise.tryFail(done.cause());
             }
         });
     }

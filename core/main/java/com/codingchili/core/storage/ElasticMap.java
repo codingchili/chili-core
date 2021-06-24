@@ -54,7 +54,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     private RestHighLevelClient client;
     private String index;
 
-    public ElasticMap(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
+    public ElasticMap(Promise<AsyncStorage<Value>> promise, StorageContext<Value> context) {
         this.context = context;
         this.index = constructIndexName(context);
 
@@ -63,15 +63,15 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                     RestClient.builder(
                             new HttpHost(context.host(), context.port(), scheme(context))));
 
-            createIndexIfNotExists().setHandler(done -> {
+            createIndexIfNotExists().onComplete(done -> {
                 if (done.succeeded()) {
-                    future.complete(ElasticMap.this);
+                    promise.complete(ElasticMap.this);
                 } else {
-                    future.fail(done.cause());
+                    promise.fail(done.cause());
                 }
             });
         } catch (Throwable e) {
-            future.fail(e);
+            promise.fail(e);
         }
     }
 
@@ -90,7 +90,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     private Future<Void> createIndexIfNotExists() {
-        Future<Void> future = Future.future();
+        Promise<Void> promise = Promise.promise();
         IndicesClient indices = client.indices();
 
         indices.existsAsync(new GetIndexRequest(index), RequestOptions.DEFAULT, new ActionListener<>() {
@@ -104,25 +104,25 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                     indices.createAsync(request, RequestOptions.DEFAULT, new ActionListener<>() {
                         @Override
                         public void onResponse(CreateIndexResponse createIndexResponse) {
-                            future.complete();
+                            promise.complete();
                         }
 
                         @Override
                         public void onFailure(Exception e) {
-                            future.tryFail(e);
+                            promise.tryFail(e);
                         }
                     });
                 } else {
-                    future.complete();
+                    promise.complete();
                 }
             }
 
             @Override
             public void onFailure(Exception e) {
-                future.tryFail(e);
+                promise.tryFail(e);
             }
         });
-        return future;
+        return promise.future();
     }
 
     private void configureMapping(CreateIndexRequest request) {

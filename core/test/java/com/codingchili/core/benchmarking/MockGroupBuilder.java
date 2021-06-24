@@ -1,6 +1,6 @@
 package com.codingchili.core.benchmarking;
 
-import java.util.*;
+import java.util.Collection;
 
 import com.codingchili.core.context.CoreContext;
 

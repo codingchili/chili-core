@@ -8,6 +8,7 @@ import com.googlecode.cqengine.index.radix.RadixTreeIndex;
 import com.googlecode.cqengine.index.unique.UniqueIndex;
 import com.googlecode.cqengine.persistence.onheap.OnHeapPersistence;
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
 
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.protocol.Serializer;
@@ -20,13 +21,13 @@ import com.codingchili.core.protocol.Serializer;
 public class IndexedMapVolatile<Value extends Storable> extends IndexedMap<Value> {
 
     @SuppressWarnings("unchecked")
-    public IndexedMapVolatile(Future<AsyncStorage<Value>> future, StorageContext<Value> context) {
+    public IndexedMapVolatile(Promise<AsyncStorage<Value>> promise, StorageContext<Value> context) {
         super((idField) -> {
             IndexedCollection<Value> db = new ConcurrentIndexedCollection<>(OnHeapPersistence.onPrimaryKey(idField));
             db.addIndex(UniqueIndex.onAttribute(idField));
             return db;
         }, context);
-        future.complete(this);
+        promise.complete(this);
 
         // we perform this expensive operation to simplify clients - otherwise
         // clients would need to copy objects when using this storage and not

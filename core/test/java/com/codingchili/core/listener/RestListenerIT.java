@@ -1,14 +1,16 @@
 package com.codingchili.core.listener;
 
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.listener.transport.RestListener;
-
+import io.vertx.core.http.HttpClientRequest;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.listener.transport.RestListener;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
@@ -35,8 +37,11 @@ public class RestListenerIT extends ListenerTestCases {
     }
 
     private void sendGetRequest(String action, ResponseListener listener) {
-        context.vertx().createHttpClient().getNow(port, HOST, action, handler -> {
-            handler.bodyHandler(body -> handleBody(listener, body));
+        context.vertx().createHttpClient().request(HttpMethod.GET, port, HOST, action, handler -> {
+
+            handler.result().send().onComplete(response -> {
+                response.result().bodyHandler(body -> handleBody(listener, body));
+            });
         });
     }
 
@@ -53,8 +58,14 @@ public class RestListenerIT extends ListenerTestCases {
             data.remove(PROTOCOL_ROUTE);
         }
 
-        context.vertx().createHttpClient().post(port, HOST, target, handler -> {
-            handler.bodyHandler(body -> handleBody(listener, body));
-        }).end(data.encode());
+        context.vertx().createHttpClient().request(HttpMethod.POST, port, HOST, target, handler -> {
+            HttpClientRequest request = handler.result();
+
+            request.end(data.encode());
+
+            request.response().onComplete(response -> {
+                response.result().bodyHandler(body -> handleBody(listener, body));
+            });
+        });
     }
 }

@@ -1,19 +1,17 @@
 package com.codingchili.core.security;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.SystemContext;
 import io.vertx.core.WorkerExecutor;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.SystemContext;
 
 /**
  * Tests for the HashHelper
@@ -44,8 +42,8 @@ public class HashFactoryTest {
     public void testHashesAreUnique(TestContext test) {
         Async async = test.async();
 
-        hasher.hash(PLAINTEXT).setHandler(hash1 -> {
-            hasher.hash(PLAINTEXT).setHandler(hash2 -> {
+        hasher.hash(PLAINTEXT).onComplete(hash1 -> {
+            hasher.hash(PLAINTEXT).onComplete(hash2 -> {
                 test.assertNotNull(hash1.result());
                 test.assertTrue(hash1.result().length() != 0);
                 test.assertNotEquals(hash1.result(), PLAINTEXT);
@@ -58,8 +56,8 @@ public class HashFactoryTest {
     @Test
     public void testFailVerifyWrongPassword(TestContext test) {
         Async async = test.async();
-        hasher.hash(PLAINTEXT).setHandler(hash -> {
-            hasher.hash(PLAINTEXT_WRONG).setHandler(wrong -> {
+        hasher.hash(PLAINTEXT).onComplete(hash -> {
+            hasher.hash(PLAINTEXT_WRONG).onComplete(wrong -> {
 
                 test.assertNotEquals(hash.result(), wrong.result());
                 test.assertNotNull(hash.result());
@@ -79,7 +77,7 @@ public class HashFactoryTest {
     @Test
     public void testVerifySuccess(TestContext test) {
         Async async = test.async();
-        hasher.hash(PLAINTEXT).setHandler(hash -> {
+        hasher.hash(PLAINTEXT).onComplete(hash -> {
             hasher.verify(result -> {
                 test.assertTrue(result.succeeded());
                 async.complete();
@@ -95,7 +93,7 @@ public class HashFactoryTest {
 
         for (int i = 0; i < 100; i++) {
             executor.<String>executeBlocking((blocking) -> {
-                hasher.hash(PLAINTEXT).setHandler(blocking);
+                hasher.hash(PLAINTEXT).onComplete(blocking);
             }, false, (result) -> {
                 if (countdown.decrementAndGet() == 0) {
                     long time = getTimeMS() - start;
@@ -111,7 +109,7 @@ public class HashFactoryTest {
     public void testCheckHashingWithWorkerPool(TestContext test) {
         Async async = test.async();
 
-        hasher.hash(PLAINTEXT).setHandler(hash -> {
+        hasher.hash(PLAINTEXT).onComplete(hash -> {
             test.assertTrue(hash.succeeded());
             test.assertNotNull(hash.result());
             async.complete();

@@ -1,6 +1,7 @@
 package com.codingchili.core.listener;
 
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
 
 import java.util.Queue;
 import java.util.UUID;
@@ -17,7 +18,7 @@ import com.codingchili.core.storage.*;
  */
 public class ClusteredSessionFactory implements SessionFactory<ClusteredSession> {
     private static AtomicBoolean loading = new AtomicBoolean();
-    private static Future<Void> loader = Future.future();
+    private static Promise<Void> loader = Promise.<Void>promise();
     private static Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
     private static ClusteredSessionFactory storage;
     private static AsyncStorage<ClusteredSession> sessions;
@@ -25,20 +26,20 @@ public class ClusteredSessionFactory implements SessionFactory<ClusteredSession>
     private static Logger logger;
 
     public static Future<ClusteredSessionFactory> get(CoreContext core) {
-        Future<ClusteredSessionFactory> future = Future.future();
+        Promise<ClusteredSessionFactory> promise = Promise.promise();
 
-        if (loader.isComplete()) {
-            future.complete(storage);
+        if (loader.future().isComplete()) {
+            promise.complete(storage);
         } else {
-            queue.add(() -> future.complete(storage));
+            queue.add(() -> promise.complete(storage));
 
             if (!loading.getAndSet(true)) {
-                loader.setHandler(done -> queue.forEach(Runnable::run));
+                loader.future().onComplete(done -> queue.forEach(Runnable::run));
                 ClusteredSessionFactory.core = core;
                 create(loader);
             }
         }
-        return future;
+        return promise.future();
     }
 
     private ClusteredSessionFactory(AsyncStorage<ClusteredSession> sessions) {
@@ -48,9 +49,9 @@ public class ClusteredSessionFactory implements SessionFactory<ClusteredSession>
 
     @Override
     public Future<Boolean> isActive(ClusteredSession session) {
-        Future<Boolean> future = Future.future();
-        sessions.contains(session.getId(), future);
-        return future;
+        Promise<Boolean> promise = Promise.promise();
+        sessions.contains(session.getId(), promise);
+        return promise.future();
     }
 
     @Override
@@ -63,16 +64,16 @@ public class ClusteredSessionFactory implements SessionFactory<ClusteredSession>
 
     @Override
     public Future<Void> destroy(ClusteredSession session) {
-        Future<Void> future = Future.future();
-        sessions.remove(session.getId(), future);
-        return future;
+        Promise<Void> promise = Promise.promise();
+        sessions.remove(session.getId(), promise);
+        return promise.future();
     }
 
     @Override
     public Future<Void> update(ClusteredSession session) {
-        Future<Void> future = Future.future();
-        sessions.put(session, future);
-        return future;
+        Promise<Void> promise = Promise.promise();
+        sessions.put(session, promise);
+        return promise.future();
     }
 
     @Override
@@ -87,30 +88,30 @@ public class ClusteredSessionFactory implements SessionFactory<ClusteredSession>
 
     @Override
     public Future<ClusteredSession> create(String home, String id) {
-        Future<ClusteredSession> future = Future.future();
+        Promise<ClusteredSession> promise = Promise.promise();
         ClusteredSession session = new ClusteredSession(this, home, id);
 
-        update(session).setHandler(update -> {
+        update(session).onComplete(update -> {
             if (update.failed()) {
-                future.fail(update.cause());
+                promise.fail(update.cause());
             } else {
-                future.complete(session);
+                promise.complete(session);
             }
         });
 
-        return future;
+        return promise.future();
     }
 
-    private static void create(Future<Void> future) {
+    private static void create(Promise<Void> promise) {
         new StorageLoader<ClusteredSession>(core)
                 .withPlugin(getPluginWithSelector())
                 .withValue(ClusteredSession.class)
                 .build(load -> {
                     if (load.succeeded()) {
                         storage = new ClusteredSessionFactory(load.result());
-                        future.complete();
+                        promise.complete();
                     } else {
-                        future.fail(load.cause());
+                        promise.fail(load.cause());
                     }
                 });
     }

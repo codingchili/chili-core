@@ -1,6 +1,7 @@
 package com.codingchili.core.listener.transport;
 
 import io.vertx.core.Future;
+import io.vertx.core.Promise;
 
 import java.util.stream.Stream;
 
@@ -37,7 +38,7 @@ public class ClusterListener implements CoreListener, DeploymentAware {
     }
 
     @Override
-    public void start(Future<Void> start) {
+    public void start(Promise<Void> start) {
         Stream.of(handler.address().split(","))
                 .forEach(address -> {
                     core.bus().consumer(handler.address())
@@ -47,7 +48,7 @@ public class ClusterListener implements CoreListener, DeploymentAware {
     }
 
     @Override
-    public void stop(Future<Void> stop) {
+    public void stop(Promise<Void> stop) {
         handler.stop(stop);
     }
 

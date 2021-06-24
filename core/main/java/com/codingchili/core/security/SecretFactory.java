@@ -3,6 +3,8 @@ package com.codingchili.core.security;
 import java.security.SecureRandom;
 import java.util.Base64;
 
+import static io.vertx.core.json.impl.JsonUtil.BASE64_ENCODER;
+
 /**
  * Generates and verifies secret keys.
  */
@@ -18,7 +20,7 @@ public abstract class SecretFactory {
     public static String generate(int bytes) {
         byte[] secret = new byte[bytes];
         random.nextBytes(secret);
-        return Base64.getEncoder().encodeToString(secret);
+        return BASE64_ENCODER.encodeToString(secret);
     }
 
     /**

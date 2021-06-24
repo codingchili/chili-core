@@ -1,8 +1,8 @@
 package com.codingchili.core.benchmarking;
 
-import com.codingchili.core.context.CoreContext;
-
 import java.util.concurrent.atomic.AtomicInteger;
+
+import com.codingchili.core.context.CoreContext;
 
 /**
  * Mock implementation for a benchmark implementation.

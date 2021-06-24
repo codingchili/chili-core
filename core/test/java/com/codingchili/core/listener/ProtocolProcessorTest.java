@@ -1,13 +1,5 @@
 package com.codingchili.core.listener;
 
-import com.codingchili.core.listener.transport.Connection;
-import com.codingchili.core.protocol.Protocol;
-import com.codingchili.core.protocol.Role;
-import com.codingchili.core.protocol.exception.HandlerMissingException;
-import com.codingchili.core.testing.ContextMock;
-import com.codingchili.core.testing.RequestMock;
-import com.codingchili.core.testing.ResponseListener;
-
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -16,6 +8,12 @@ import org.junit.runner.RunWith;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import com.codingchili.core.listener.transport.Connection;
+import com.codingchili.core.protocol.Protocol;
+import com.codingchili.core.protocol.Role;
+import com.codingchili.core.protocol.exception.HandlerMissingException;
+import com.codingchili.core.testing.*;
 
 import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_STATUS;
 import static com.codingchili.core.protocol.ResponseStatus.*;

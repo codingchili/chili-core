@@ -1,20 +1,17 @@
 package com.codingchili.core.security;
 
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.*;
+import org.junit.runner.RunWith;
+
 import java.time.Instant;
 import java.util.Arrays;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.SystemContext;
 import com.codingchili.core.protocol.Serializer;
-
-import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
 
 /**
  * Tests for the Token Factory
@@ -47,7 +44,7 @@ public class TokenFactoryTest {
         Async async = test.async();
         tokenFactory.hmac(new Token()
                 .setDomain(domain)
-                .setExpiry(now)).setHandler(done -> {
+                .setExpiry(now)).onComplete(done -> {
                     test.assertTrue(done.succeeded());
                     async.complete();
         });
@@ -59,11 +56,11 @@ public class TokenFactoryTest {
         Async async = test.async();
         TokenFactory another = new TokenFactory(context, secret);
         Token token = getTokenWithProperties();
-        tokenFactory.hmac(token).setHandler(hmac -> {
+        tokenFactory.hmac(token).onComplete(hmac -> {
             test.assertTrue(hmac.succeeded());
 
             // test verifying with another factory with the same secret.
-            another.verify(token).setHandler(done -> {
+            another.verify(token).onComplete(done -> {
                 test.assertTrue(done.succeeded());
                 async.complete();
             });
@@ -75,13 +72,13 @@ public class TokenFactoryTest {
         Token token = new Token(domain);
         Async async = test.async();
 
-        tokenFactory.hmac(token).setHandler(hmac -> {
+        tokenFactory.hmac(token).onComplete(hmac -> {
             test.assertTrue(hmac.succeeded());
 
-            tokenFactory.verify(token).setHandler(ok -> {
+            tokenFactory.verify(token).onComplete(ok -> {
                 test.assertTrue(ok.succeeded());
 
-                tokenFactory2.verify(token).setHandler(fail -> {
+                tokenFactory2.verify(token).onComplete(fail -> {
                     test.assertTrue(fail.failed());
                     async.complete();
                 });
@@ -94,11 +91,11 @@ public class TokenFactoryTest {
         Async async = test.async();
         Token token = new Token(domain);
 
-        tokenFactory.hmac(token).setHandler(hmac -> {
+        tokenFactory.hmac(token).onComplete(hmac -> {
             test.assertTrue(hmac.succeeded());
             token.setDomain("domain2");
 
-            tokenFactory.verify(token).setHandler(verify -> {
+            tokenFactory.verify(token).onComplete(verify -> {
                 test.assertTrue(verify.failed());
                 async.complete();
             });
@@ -110,8 +107,8 @@ public class TokenFactoryTest {
         Async async = test.async();
         Token token = new Token(domain).setExpiry(-10);
 
-        tokenFactory.hmac(token).setHandler(hmac -> {
-            tokenFactory.verify(token).setHandler(verify -> {
+        tokenFactory.hmac(token).onComplete(hmac -> {
+            tokenFactory.verify(token).onComplete(verify -> {
                 test.assertTrue(verify.failed());
                 async.complete();
             });
@@ -121,7 +118,7 @@ public class TokenFactoryTest {
     @Test
     public void failVerifyNullToken(TestContext test) {
         Async async = test.async();
-        tokenFactory.verify(null).setHandler(done -> {
+        tokenFactory.verify(null).onComplete(done -> {
             test.assertTrue(done.failed());
             async.complete();
         });
@@ -131,14 +128,14 @@ public class TokenFactoryTest {
     public void testVerifyFailTokenPropertiesModified(TestContext test) {
         Async async = test.async();
         Token token = getTokenWithProperties();
-        tokenFactory.hmac(token).setHandler(hmac -> {
+        tokenFactory.hmac(token).onComplete(hmac -> {
             test.assertTrue(hmac.succeeded());
 
-            tokenFactory.verify(token).setHandler(verify -> {
+            tokenFactory.verify(token).onComplete(verify -> {
                 test.assertTrue(verify.succeeded());
                 token.addProperty("roles", Arrays.asList("programmer", "root", "sysadmin"));
 
-                tokenFactory.verify(token).setHandler(done2 -> {
+                tokenFactory.verify(token).onComplete(done2 -> {
                     test.assertFalse(done2.succeeded());
                     async.complete();
                 });
@@ -151,7 +148,7 @@ public class TokenFactoryTest {
         Async async = test.async();
         Token token = getTokenWithProperties();
         token.addProperty("account", new Account().setUsername("robba"));
-        tokenFactory.hmac(token).setHandler(hmac -> {
+        tokenFactory.hmac(token).onComplete(hmac -> {
             test.assertTrue(hmac.succeeded());
             Serializer.pack(Serializer.unpack(Serializer.pack(token), Token.class));
             async.complete();
@@ -162,7 +159,7 @@ public class TokenFactoryTest {
     public void generateSignedToken(TestContext test) {
         Async async = test.async();
         Token token = getTokenWithProperties();
-        tokenFactory.sign(token, TEST_KEYSTORE).setHandler(sign -> {
+        tokenFactory.sign(token, TEST_KEYSTORE).onComplete(sign -> {
            test.assertNotNull(token.getKey());
            test.assertTrue(sign.succeeded());
            async.complete();
@@ -174,11 +171,11 @@ public class TokenFactoryTest {
         Async async = test.async();
         Token token = getTokenWithProperties();
 
-        tokenFactory.sign(token, TEST_KEYSTORE).setHandler(sign -> {
+        tokenFactory.sign(token, TEST_KEYSTORE).onComplete(sign -> {
             test.assertTrue(sign.succeeded());
             test.assertNotNull(token.getKey());
 
-            tokenFactory.verify(token).setHandler(verify -> {
+            tokenFactory.verify(token).onComplete(verify -> {
                 test.assertTrue(verify.succeeded());
                 async.complete();
             });

@@ -1,6 +1,8 @@
 package com.codingchili.core.storage;
 
+import com.hazelcast.config.IndexType;
 import com.hazelcast.core.*;
+import com.hazelcast.map.IMap;
 import com.hazelcast.query.*;
 import io.vertx.core.*;
 import io.vertx.core.impl.ConcurrentHashSet;
@@ -23,8 +25,8 @@ import static com.codingchili.core.context.FutureHelper.*;
  */
 public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
     private static final String HAZEL_ARRAY = "[any]";
-    private Set<String> indexed = new ConcurrentHashSet<>();
-    private StorageContext<Value> context;
+    private final Set<String> indexed = new ConcurrentHashSet<>();
+    private final StorageContext<Value> context;
     private AsyncMap<String, Value> map;
     private IMap<String, Value> imap;
 
@@ -32,9 +34,9 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
      * Initializes a new hazel async map.
      *
      * @param context the context requesting the map to be created.
-     * @param future  called when the map is created.
+     * @param promise  called when the map is created.
      */
-    public HazelMap(Future<AsyncStorage> future, StorageContext<Value> context) {
+    public HazelMap(Promise<AsyncStorage> promise, StorageContext<Value> context) {
         this.context = context;
 
         context.vertx().sharedData().<String, Value>getClusterWideMap(context.collection(), cluster -> {
@@ -47,12 +49,12 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
                     HazelcastInstance instance = hazel.get();
                     imap = instance.getMap(context.collection());
                     addIndex(Storable.idField);
-                    future.complete(this);
+                    promise.complete(this);
                 } else {
-                    future.fail(CoreStrings.ERROR_NOT_CLUSTERED);
+                    promise.fail(CoreStrings.ERROR_NOT_CLUSTERED);
                 }
             } else {
-                future.fail(cluster.cause());
+                promise.fail(cluster.cause());
             }
         });
     }
@@ -158,14 +160,14 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
     public void addIndex(String field) {
         if (!indexed.contains(field)) {
             indexed.add(field);
-            imap.addIndex(field.replace(STORAGE_ARRAY, HAZEL_ARRAY), false);
+            imap.addIndex(IndexType.SORTED, field.replace(STORAGE_ARRAY, HAZEL_ARRAY));
         }
     }
 
     @Override
     public QueryBuilder<Value> query() {
         return new AbstractQueryBuilder<>(this, HAZEL_ARRAY) {
-            private List<Predicate<String, Value>> predicates = new ArrayList<>();
+            private final List<Predicate<String, Value>> predicates = new ArrayList<>();
             private Predicate<String, Value> predicate;
             private BooleanOperator operator = BooleanOperator.AND;
 
@@ -187,7 +189,6 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
                 return this;
             }
 
-            @SuppressWarnings("unchecked")
             private void apply(BooleanOperator operator, String attribute) {
                 Predicate<String, Value> current = Predicates.and(predicates.toArray(new Predicate[0]));
 
@@ -209,42 +210,36 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
             }
 
             @Override
-            @SuppressWarnings("unchecked")
             public QueryBuilder<Value> between(Long minimum, Long maximum) {
                 predicates.add(Predicates.between(attribute(), minimum, maximum));
                 return this;
             }
 
             @Override
-            @SuppressWarnings("unchecked")
             public QueryBuilder<Value> like(String text) {
                 predicates.add(Predicates.ilike(attribute(), "%" + text + "%"));
                 return this;
             }
 
             @Override
-            @SuppressWarnings("unchecked")
             public QueryBuilder<Value> startsWith(String text) {
                 predicates.add(Predicates.ilike(attribute(), text + "%"));
                 return this;
             }
 
             @Override
-            @SuppressWarnings("unchecked")
             public QueryBuilder<Value> in(Comparable... list) {
                 predicates.add(Predicates.in(attribute(), list));
                 return this;
             }
 
             @Override
-            @SuppressWarnings("unchecked")
             public QueryBuilder<Value> equalTo(Comparable match) {
                 predicates.add(Predicates.equal(attribute(), match));
                 return this;
             }
 
             @Override
-            @SuppressWarnings("unchecked")
             public QueryBuilder<Value> matches(String regex) {
                 predicates.add(Predicates.regex(attribute(), regex));
                 return this;
@@ -265,17 +260,20 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
                 });
             }
 
-            private Predicate getPredicateWithPager() {
+            private PagingPredicate<String, Value> getPredicateWithPager() {
                 PagingPredicate<String, Value> paging;
 
                 if (isOrdered()) {
                     String orderBy = getOrderByAttribute();
                     int sortDirection = getSortDirection();
-                    paging = new PagingPredicate<>(predicate, (Serializable & Comparator<Map.Entry<String, Value>>) (first, second) -> {
-                        return first.getValue().compareToAttribute(second.getValue(), orderBy) * sortDirection;
-                    }, getPageSize());
+
+                    paging = Predicates.pagingPredicate(predicate,
+                            (Serializable & Comparator<Map.Entry<String, Value>>) (first, second) ->
+                                    first.getValue().compareToAttribute(second.getValue(), orderBy) * sortDirection,
+                            getPageSize()
+                    );
                 } else {
-                    paging = new PagingPredicate<>(predicate, getPageSize());
+                    paging = Predicates.pagingPredicate(predicate, getPageSize());
                 }
                 paging.setPage(getPage());
                 return paging;

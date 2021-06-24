@@ -1,6 +1,6 @@
 package com.codingchili.core.context;
 
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 
 import com.codingchili.core.context.exception.SystemNotInitializedException;
 
@@ -24,8 +24,8 @@ public abstract class Delay {
         }
     }
 
-    private static void future(Future future, long ms) {
-        context().timer(ms, handler -> future.complete());
+    private static void future(Promise<Void> promise, long ms) {
+        context().timer(ms, handler -> promise.complete());
     }
 
     /**
@@ -34,7 +34,7 @@ public abstract class Delay {
      * @param future the future to be delayed.
      * @param ms     milliseconds to wait before completing the future.
      */
-    public static void forMS(Future<Void> future, long ms) {
+    public static void forMS(Promise<Void> future, long ms) {
         Delay.future(future, ms);
     }
 }

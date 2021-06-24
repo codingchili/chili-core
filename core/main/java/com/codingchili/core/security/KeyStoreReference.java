@@ -71,6 +71,11 @@ public class KeyStoreReference extends KeyStoreOptionsBase {
     }
 
     @Override
+    public KeyStoreOptionsBase copy() {
+        return this;
+    }
+
+    @Override
     protected KeyStoreOptionsBase setProvider(String provider) {
         return super.setProvider(provider);
     }

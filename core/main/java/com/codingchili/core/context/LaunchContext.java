@@ -212,7 +212,7 @@ public class LaunchContext {
      */
     public Future<CommandResult> execute() {
         var promise = Promise.<CommandResult>promise();
-        executor.execute(promise.future(), args);
+        executor.execute(promise, args);
         return promise.future();
     }
 

@@ -1,26 +1,20 @@
 package com.codingchili.core;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.LaunchContext;
-import com.codingchili.core.context.SystemContext;
-import com.codingchili.core.listener.*;
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
-import io.vertx.core.Vertx;
+import io.vertx.core.*;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+
+import com.codingchili.core.context.*;
+import com.codingchili.core.listener.*;
 
 import static com.codingchili.core.configuration.CoreStrings.DEPLOY;
 import static com.codingchili.core.files.Configurations.system;
@@ -143,7 +137,7 @@ public class LauncherIT {
         }
 
         @Override
-        public void stop(Future<Void> stop) {
+        public void stop(Promise<Void> stop) {
             core.timer(500, handler -> {
                 System.err.println("Service has been shut down");
                 stop.complete();
@@ -151,7 +145,7 @@ public class LauncherIT {
         }
 
         @Override
-        public void start(Future<Void> start) {
+        public void start(Promise<Void> start) {
             test.assertNotNull(core);
             onStart.accept(core.vertx());
             async.complete();
@@ -199,7 +193,7 @@ public class LauncherIT {
         }
 
         @Override
-        public void start(Future<Void> start) {
+        public void start(Promise<Void> start) {
             test.assertNotNull(settings);
             test.assertNotNull(core);
             test.assertNotNull(handler);
@@ -208,7 +202,7 @@ public class LauncherIT {
         }
 
         @Override
-        public void stop(Future<Void> stop) {
+        public void stop(Promise<Void> stop) {
             stop.complete();
         }
     }
@@ -218,7 +212,7 @@ public class LauncherIT {
      */
     public static class TestNodeVerticle extends AbstractVerticle {
         @Override
-        public void start(Future<Void> future) {
+        public void start(Promise<Void> future) {
             async.countDown();
             onStart.accept(vertx);
             future.complete();

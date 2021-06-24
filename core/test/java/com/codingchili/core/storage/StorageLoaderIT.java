@@ -1,8 +1,6 @@
 package com.codingchili.core.storage;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.SystemContext;
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
@@ -12,6 +10,9 @@ import org.junit.runner.RunWith;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.SystemContext;
 
 /**
  * Tests the loading of the available storage plugins.
@@ -74,16 +75,16 @@ public class StorageLoaderIT {
     }
 
     private void loadStoragePlugin(TestContext test, Class<? extends AsyncStorage> plugin) {
-        Future<AsyncStorage<StorableString>> future = Future.future();
+        Promise<AsyncStorage<StorableString>> promise = Promise.promise();
         Async async = test.async();
 
         new StorageLoader<StorableString>(context)
                 .withPlugin(plugin)
                 .withDB(TEST_DB, UUID.randomUUID().toString())
                 .withValue(StorableString.class)
-                .build(future);
+                .build(promise);
 
-        future.setHandler(done -> {
+        promise.future().onComplete(done -> {
             if (done.succeeded()) {
                 async.complete();
             }

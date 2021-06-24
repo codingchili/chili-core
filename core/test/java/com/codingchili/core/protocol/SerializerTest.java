@@ -1,10 +1,8 @@
 package com.codingchili.core.protocol;
 
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.security.Token;
-import com.codingchili.core.security.TokenFactory;
-import com.codingchili.core.testing.NestedObject;
-import com.codingchili.core.testing.StorageObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -12,7 +10,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
+
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.security.SecretFactory;
+import com.codingchili.core.security.Token;
+import com.codingchili.core.testing.NestedObject;
+import com.codingchili.core.testing.StorageObject;
+
+import static io.vertx.core.json.impl.JsonUtil.BASE64_ENCODER;
 
 /**
  * Tests for the serializer.
@@ -110,5 +117,28 @@ public class SerializerTest {
         StorageObject yamlStorable = Serializer.unyaml(yaml, StorageObject.class);
 
         test.assertEquals(Serializer.pack(storable), Serializer.pack(yamlStorable));
+    }
+
+    @Test
+    public void vertxModules(TestContext test) {
+        var mapper = new ObjectMapper(new YAMLFactory());
+        VertxSerializerModules.registerTypes(mapper);
+
+        var type = new SerializedType();
+        var string = Serializer.yaml(type);
+        var json = new JsonObject(Serializer.unyaml(string, Map.class));
+
+        json.put("bytes", SecretFactory.generate(32));
+        Serializer.unpack(json, SerializedType.class);
+    }
+
+    private static class SerializedType {
+        private byte[] bytes;
+        public void setBytes(byte[] bytes) {
+            this.bytes = bytes;
+        }
+        public byte[] getBytes() {
+            return bytes;
+        }
     }
 }

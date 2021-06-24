@@ -1,22 +1,19 @@
 package com.codingchili.core.files;
 
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.context.Delay;
-import com.codingchili.core.context.TimerSource;
-import com.codingchili.core.testing.ContextMock;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
+
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.context.TimerSource;
+import com.codingchili.core.testing.ContextMock;
 
 
 /**

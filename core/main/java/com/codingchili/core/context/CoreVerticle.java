@@ -33,10 +33,10 @@ class CoreVerticle implements Verticle, CoreDeployment {
     }
 
     @Override
-    public void start(Future<Void> start) {
-        Future<Void> future = Future.future();
+    public void start(Promise<Void> start) {
+        Promise<Void> promise = Promise.promise();
 
-        future.setHandler(done -> {
+        promise.future().onComplete(done -> {
             if (done.succeeded()) {
                 if (deployment instanceof CoreService) {
                     logger.onServiceStarted((CoreService) deployment);
@@ -49,14 +49,14 @@ class CoreVerticle implements Verticle, CoreDeployment {
             }
         });
 
-        deployment.start(future);
+        deployment.start(promise);
     }
 
     @Override
-    public void stop(Future<Void> stop) {
-        Future<Void> future = Future.future();
+    public void stop(Promise<Void> stop) {
+        Promise<Void> promise = Promise.promise();
 
-        future.setHandler(done -> {
+        promise.future().onComplete(done -> {
             if (done.succeeded()) {
                 if (deployment instanceof CoreService) {
                     logger.onServiceStopped((CoreService) deployment);
@@ -69,6 +69,6 @@ class CoreVerticle implements Verticle, CoreDeployment {
             }
         });
 
-        deployment.stop(future);
+        deployment.stop(promise);
     }
 }

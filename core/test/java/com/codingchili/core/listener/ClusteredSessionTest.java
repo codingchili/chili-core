@@ -1,16 +1,15 @@
 package com.codingchili.core.listener;
 
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.context.SystemContext;
-import com.codingchili.core.protocol.Serializer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
+
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.SystemContext;
+import com.codingchili.core.protocol.Serializer;
 
 /**
  * Tests for the clustered session, makes sure it calls the sessionfactory.
@@ -29,7 +28,7 @@ public class ClusteredSessionTest {
         core = new SystemContext();
         sessionFactory = new SessionFactoryMock(core);
 
-        sessionFactory.create(home, connectionId).setHandler(created -> {
+        sessionFactory.create(home, connectionId).onComplete(created -> {
             session = created.result();
             async.complete();
         });
@@ -45,7 +44,7 @@ public class ClusteredSessionTest {
         test.assertEquals(home, session.getHome());
         test.assertEquals(connectionId, session.getId());
 
-        sessionFactory.isActive(session).setHandler(active -> {
+        sessionFactory.isActive(session).onComplete(active -> {
             test.assertTrue(active.result());
         });
     }
@@ -53,7 +52,7 @@ public class ClusteredSessionTest {
     @Test
     public void testUpdate(TestContext test) {
         session.asJson().put("pass", true);
-        session.update().setHandler(updated -> {
+        session.update().onComplete(updated -> {
             test.assertTrue(updated.succeeded());
             test.assertTrue(SessionFactoryMock.sessions.get(session.getId()).asJson().containsKey("pass"));
         });
@@ -75,8 +74,8 @@ public class ClusteredSessionTest {
 
     @Test
     public void testDestroy(TestContext test) {
-        session.destroy().setHandler(destroyed -> {
-            session.isActive().setHandler(active -> {
+        session.destroy().onComplete(destroyed -> {
+            session.isActive().onComplete(active -> {
                 test.assertFalse(active.result());
             });
         });

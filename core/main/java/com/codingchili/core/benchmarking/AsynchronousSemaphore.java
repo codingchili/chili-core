@@ -42,17 +42,19 @@ public class AsynchronousSemaphore {
      * @param timeoutMS the maximum time to wait for a permit.
      */
     public synchronized void acquire(Handler<AsyncResult<Void>> handler, int timeoutMS) {
-        Future<Void> future = Future.<Void>future().setHandler(handler);
+        Promise<Void> promise = Promise.<Void>promise();
+        promise.future().onComplete(handler);
+
         if (permits == 0) {
-            SemaphoreWaiter waiter = new SemaphoreWaiter(future);
+            SemaphoreWaiter waiter = new SemaphoreWaiter(promise);
             waiters.add(waiter);
             context.timer(timeoutMS, event -> {
                 waiter.expired.set(true);
-                future.tryFail(getSemaphoreTimeout(timeoutMS));
+                promise.tryFail(getSemaphoreTimeout(timeoutMS));
             });
         } else if (permits > 0) {
             permits--;
-            future.complete();
+            promise.complete();
         }
     }
 
@@ -66,7 +68,7 @@ public class AsynchronousSemaphore {
             SemaphoreWaiter waiter;
             while ((waiter = waiters.poll()) != null && permits > 0) {
                 if (!waiter.expired.get()) {
-                    if (waiter.future.tryComplete()) {
+                    if (waiter.promise.tryComplete()) {
                         permits--;
                     }
                 }
@@ -74,12 +76,12 @@ public class AsynchronousSemaphore {
         }
     }
 
-    private class SemaphoreWaiter {
-        private Future<Void> future;
-        private AtomicBoolean expired = new AtomicBoolean(false);
+    private static class SemaphoreWaiter {
+        private final AtomicBoolean expired = new AtomicBoolean(false);
+        private final Promise<Void> promise;
 
-        SemaphoreWaiter(Future<Void> future) {
-            this.future = future;
+        SemaphoreWaiter(Promise<Void> promise) {
+            this.promise = promise;
         }
     }
 }
