@@ -106,8 +106,8 @@ public class ConsoleLogger extends AbstractLogger implements StringLogger {
 
     private void write(String line) {
         line = replaceTags(line, LOG_HIDDEN_TAGS);
-        AnsiConsole.out.println(line);
-        //AnsiConsole.out.flush();
+        AnsiConsole.out().println(line);
+        AnsiConsole.out().flush();
     }
 
     private static final int SPACES = 15;

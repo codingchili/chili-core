@@ -1,7 +1,6 @@
 package com.codingchili.core.listener.transport;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
-import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.ServerWebSocket;

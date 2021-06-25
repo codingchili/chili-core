@@ -17,6 +17,7 @@ import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.files.ConfigurationFactory;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.files.exception.NoSuchResourceException;
+import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.security.exception.SecurityMissingDependencyException;
 
@@ -47,7 +48,7 @@ public class AuthenticationGenerator {
      */
     public AuthenticationGenerator(CoreContext core, String directory) {
         this.core = core;
-        this.logger = core.logger(getClass());
+        this.logger = new ConsoleLogger(getClass());
         this.security = Configurations.security();
         this.directory = directory;
     }

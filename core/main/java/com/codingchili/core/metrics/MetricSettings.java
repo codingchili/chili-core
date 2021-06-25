@@ -1,12 +1,13 @@
 package com.codingchili.core.metrics;
 
-import com.codingchili.core.files.Configurations;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.metrics.MetricsOptions;
 import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
 
 import java.util.*;
 import java.util.function.Consumer;
+
+import com.codingchili.core.files.Configurations;
 
 /**
  * Settings for the generation of metrics.

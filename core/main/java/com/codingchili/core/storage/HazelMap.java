@@ -1,7 +1,8 @@
 package com.codingchili.core.storage;
 
 import com.hazelcast.config.IndexType;
-import com.hazelcast.core.*;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import com.hazelcast.query.*;
 import io.vertx.core.*;

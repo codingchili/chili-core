@@ -1,6 +1,5 @@
 package com.codingchili.core.context;
 
-import io.vertx.core.Future;
 import io.vertx.core.Promise;
 
 import java.util.*;

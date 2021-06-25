@@ -1,16 +1,15 @@
 package com.codingchili.core.metrics;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
-import com.codahale.metrics.Timer;
+import com.codahale.metrics.*;
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
+import io.vertx.core.json.JsonObject;
+
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.Environment;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.TimerSource;
 import com.codingchili.core.logging.Logger;
-import io.vertx.core.Future;
-import io.vertx.core.Promise;
-import io.vertx.core.json.JsonObject;
 
 import static com.codingchili.core.configuration.CoreStrings.ID_TYPE;
 

@@ -1,10 +1,7 @@
 package com.codingchili.core.metrics;
 
 import com.codahale.metrics.MetricSet;
-import com.codahale.metrics.jvm.ClassLoadingGaugeSet;
-import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
-import com.codahale.metrics.jvm.JvmAttributeGaugeSet;
-import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
+import com.codahale.metrics.jvm.*;
 
 /**
  * Maps implementations used to collect jvm/process/os metrics.
