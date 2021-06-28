@@ -11,7 +11,7 @@ import java.util.Map;
  * Collects CPU metrics using the operating system mx bean.
  */
 public class CpuMetricGauge implements MetricSet {
-    private OperatingSystemMXBean os;
+    private final OperatingSystemMXBean os;
 
     public CpuMetricGauge() {
         os = ManagementFactory.getOperatingSystemMXBean();

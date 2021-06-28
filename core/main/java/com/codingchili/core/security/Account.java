@@ -12,13 +12,13 @@ import com.codingchili.core.storage.Storable;
 public class Account implements Storable {
     private Map<String, Object> properties = new HashMap<>();
     private String username = "";
-    private String password = "";
+    private char[] password = "".toCharArray();
     private String email = "";
 
     public Account() {
     }
 
-    public Account(String username, String password) {
+    public Account(String username, char[] password) {
         this.username = username;
         this.password = password;
     }
@@ -43,11 +43,11 @@ public class Account implements Storable {
      *
      * @return a copy of the raw char array as a string.
      */
-    public String getPassword() {
+    public char[] getPassword() {
         return password;
     }
 
-    public Account setPassword(String password) {
+    public Account setPassword(char[] password) {
         this.password = password;
         return this;
     }
