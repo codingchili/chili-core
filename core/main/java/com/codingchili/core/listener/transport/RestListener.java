@@ -1,18 +1,17 @@
 package com.codingchili.core.listener.transport;
 
-import com.codingchili.core.configuration.RestHelper;
-import com.codingchili.core.context.CoreContext;
-import com.codingchili.core.listener.CoreHandler;
-import com.codingchili.core.listener.CoreListener;
-import com.codingchili.core.listener.ListenerSettings;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 
-import static com.codingchili.core.configuration.CoreStrings.LOG_AT;
-import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
+import com.codingchili.core.configuration.RestHelper;
+import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.listener.*;
+import com.codingchili.core.logging.Logger;
+
+import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
  * HTTP/REST transport listener.
@@ -20,18 +19,24 @@ import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
 public class RestListener implements CoreListener {
     private ListenerSettings settings = ListenerSettings.getDefaultSettings();
     private final Promise<Router> onRouter = Promise.promise();
+    private Logger logger;
     private CoreContext core;
     private CoreHandler handler;
     private Router router;
 
     @Override
     public void init(CoreContext core) {
+        logger = ListenerExceptionLogger.create(core, this, handler);
         router = Router.router(core.vertx());
         RestHelper.addHeaders(router, settings.isSecure());
 
         router.route()
-                .handler(BodyHandler.create().setBodyLimit(settings.getMaxRequestBytes()))
-                .handler(this::packet);
+                .handler(
+                        BodyHandler.create()
+                                .setBodyLimit(settings.getMaxRequestBytes())
+                                .setDeleteUploadedFilesOnEnd(true)
+                                .setHandleFileUploads(false)
+                ).handler(this::packet);
 
         handler.init(core);
         this.core = core;
@@ -64,6 +69,7 @@ public class RestListener implements CoreListener {
     public void start(Promise<Void> start) {
         core.vertx().createHttpServer(settings.getHttpOptions())
                 .requestHandler(router)
+                .exceptionHandler(logger::onError)
                 .listen(settings.getPort(), getBindAddress(), listen -> {
                     if (listen.succeeded()) {
                         settings.addListenPort(listen.result().actualPort());

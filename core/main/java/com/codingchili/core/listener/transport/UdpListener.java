@@ -5,6 +5,8 @@ import com.codingchili.core.context.DeploymentAware;
 import com.codingchili.core.listener.CoreHandler;
 import com.codingchili.core.listener.CoreListener;
 import com.codingchili.core.listener.ListenerSettings;
+import com.codingchili.core.logging.Logger;
+
 import static com.codingchili.core.configuration.CoreStrings.LOG_AT;
 import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
 
@@ -19,10 +21,12 @@ public class UdpListener implements CoreListener, DeploymentAware {
     private ListenerSettings settings = ListenerSettings.getDefaultSettings();
     private CoreHandler handler;
     private CoreContext core;
+    private Logger logger;
 
     @Override
     public void init(CoreContext core) {
         this.core = core;
+        this.logger = ListenerExceptionLogger.create(core, this, handler);
         handler.init(core);
     }
 
@@ -43,7 +47,9 @@ public class UdpListener implements CoreListener, DeploymentAware {
         core.vertx().createDatagramSocket().listen(settings.getPort(), getBindAddress(), listen -> {
             if (listen.succeeded()) {
                 settings.addListenPort(listen.result().localAddress().port());
-                listen.result().handler(this::handle);
+                listen.result()
+                        .handler(this::handle)
+                        .exceptionHandler(logger::onError);
                 handler.start(start);
             } else {
                 start.fail(listen.cause());

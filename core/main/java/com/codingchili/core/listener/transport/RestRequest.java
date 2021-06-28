@@ -20,10 +20,11 @@ import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_CONNECTION
  * HTTP/REST request object.
  */
 public class RestRequest implements Request {
-    private HttpServerRequest request;
+    private static final String HEADERS_SENT = "headersSent";
+    private final HttpServerRequest request;
+    private final ListenerSettings settings;
     private Connection connection;
-    private JsonObject data = new JsonObject();
-    private ListenerSettings settings;
+    private JsonObject data;
     private int size;
 
     /**
@@ -44,9 +45,9 @@ public class RestRequest implements Request {
             connection = new Connection((object) -> {
 
                 // write the status code if not already written.
-                connection.getProperty("headersSent").orElseGet(() -> {
+                connection.getProperty(HEADERS_SENT).orElseGet(() -> {
                     request.response().setStatusCode(HttpResponseStatus.OK.code());
-                    connection.setProperty("headersSent", "1");
+                    connection.setProperty(HEADERS_SENT, "1");
 
                     connection.onCloseHandler(() -> {
                         // commit the response when the connection is (pre-)closed.

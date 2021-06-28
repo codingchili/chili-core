@@ -3,6 +3,7 @@ package com.codingchili.core.listener.transport;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
+import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.listener.ListenerSettings;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.Response;
@@ -11,10 +12,10 @@ import com.codingchili.core.protocol.Response;
  * Websocket request object.
  */
 public class WebsocketRequest implements Request {
-    private int size;
-    private Connection connection;
-    private ListenerSettings settings;
-    private JsonObject data;
+    private final ListenerSettings settings;
+    private final Connection connection;
+    private final JsonObject data;
+    private final int size;
 
     WebsocketRequest(Connection connection, Buffer buffer, ListenerSettings settings) {
         this.connection = connection;
@@ -33,7 +34,7 @@ public class WebsocketRequest implements Request {
         try {
             connection.write(Response.buffer(target(), route(), object));
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new CoreRuntimeException(e);
         }
     }
 

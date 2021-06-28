@@ -15,6 +15,7 @@ import com.codingchili.core.listener.*;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.Response;
 import com.codingchili.core.protocol.ResponseStatus;
+import com.codingchili.core.protocol.exception.RequestPayloadSizeException;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
@@ -30,8 +31,7 @@ public class WebsocketListener implements CoreListener {
     @Override
     public void init(CoreContext core) {
         this.core = core;
-        this.logger = core.logger(handler.getClass())
-                .setMetadataValue(LOG_LISTENER, getClass()::getSimpleName);
+        this.logger = ListenerExceptionLogger.create(core, this, handler);
         handler.init(core);
     }
 
@@ -54,7 +54,10 @@ public class WebsocketListener implements CoreListener {
 
     private void listen(Promise<Void> start) {
         Router router = Router.router(core.vertx());
-        router.route().handler(BodyHandler.create());
+        router.route().handler(BodyHandler.create()
+                .setBodyLimit(settings.getMaxRequestBytes())
+                .setHandleFileUploads(false)
+        );
         RestHelper.addHeaders(router, settings.isSecure());
 
         router.routeWithRegex(".*").handler(request -> {
@@ -68,12 +71,13 @@ public class WebsocketListener implements CoreListener {
         });
 
         core.vertx().createHttpServer(settings.getHttpOptions())
+                .exceptionHandler(logger::onError)
                 .webSocketHandler(socket -> {
                     Connection connection = connected(socket);
 
                     socket.handler(data -> handle(connection, data));
                     socket.closeHandler(closed -> connection.runCloseHandlers());
-                    socket.exceptionHandler(e -> logger.onError(e));
+                    socket.exceptionHandler(logger::onError);
 
                 }).requestHandler(router)
                 .listen(settings.getPort(), getBindAddress(), listen -> {
@@ -104,7 +108,13 @@ public class WebsocketListener implements CoreListener {
     }
 
     private void handle(Connection connection, Buffer buffer) {
-        handler.handle(new WebsocketRequest(connection, buffer, settings));
+        var request = new WebsocketRequest(connection, buffer, settings);
+
+        if (buffer.length() <= settings.getMaxRequestBytes()) {
+            handler.handle(request);
+        } else {
+            request.error(new RequestPayloadSizeException(settings.getMaxRequestBytes()));
+        }
     }
 
     @Override

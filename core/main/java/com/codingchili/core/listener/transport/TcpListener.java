@@ -1,6 +1,5 @@
 package com.codingchili.core.listener.transport;
 
-import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetSocket;
@@ -24,8 +23,7 @@ public class TcpListener implements CoreListener {
     @Override
     public void init(CoreContext core) {
         this.core = core;
-        this.logger = core.logger(handler.getClass())
-            .setMetadataValue(LOG_LISTENER, getClass()::getSimpleName);
+        this.logger = ListenerExceptionLogger.create(core, this, handler);
         handler.init(core);
     }
 
@@ -44,12 +42,13 @@ public class TcpListener implements CoreListener {
     @Override
     public void start(Promise<Void> start) {
         core.vertx().createNetServer(settings.getHttpOptions())
+                .exceptionHandler(logger::onError)
                 .connectHandler(socket -> {
                     Connection connection = connected(socket);
 
                     socket.handler(data -> packet(connection, data));
                     socket.closeHandler((v) -> connection.runCloseHandlers());
-                    socket.exceptionHandler((v) -> logger.onError(v));
+                    socket.exceptionHandler(logger::onError);
 
                 }).listen(settings.getPort(), getBindAddress(), listen -> {
             if (listen.succeeded()) {

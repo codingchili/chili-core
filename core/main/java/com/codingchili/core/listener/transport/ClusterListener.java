@@ -9,6 +9,7 @@ import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.DeploymentAware;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.*;
+import com.codingchili.core.logging.Logger;
 
 import static com.codingchili.core.configuration.CoreStrings.LOG_AT;
 
@@ -19,10 +20,12 @@ import static com.codingchili.core.configuration.CoreStrings.LOG_AT;
 public class ClusterListener implements CoreListener, DeploymentAware {
     private CoreHandler handler;
     private CoreContext core;
+    private Logger logger;
 
     @Override
     public void init(CoreContext core) {
         this.core = core;
+        this.logger = ListenerExceptionLogger.create(core, this, handler);
         handler.init(core);
     }
 
@@ -42,6 +45,7 @@ public class ClusterListener implements CoreListener, DeploymentAware {
         Stream.of(handler.address().split(","))
                 .forEach(address -> {
                     core.bus().consumer(handler.address())
+                            .exceptionHandler(logger::onError)
                             .handler(message -> handler.handle(new ClusterRequest(message)));
                 });
         handler.start(start);
