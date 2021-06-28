@@ -11,6 +11,7 @@ com.codingchili.core.files.exception
 com.codingchili.core.listener
 com.codingchili.core.listener.transport
 com.codingchili.core.logging
+com.codingchili.core.metrics
 com.codingchili.core.protocol
 com.codingchili.core.protocol.exception
 com.codingchili.core.security

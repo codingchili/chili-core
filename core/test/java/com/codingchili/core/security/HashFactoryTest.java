@@ -20,8 +20,8 @@ import com.codingchili.core.context.SystemContext;
 public class HashFactoryTest {
     private static final int HASH_TIME_LIMIT = 10000;
     private static final int HASH_TIME_MIN = 100;
-    private static final String PLAINTEXT_WRONG = "wrong";
-    private static final String PLAINTEXT = "pass";
+    private static final char[] PLAINTEXT_WRONG = "wrong".toCharArray();
+    private static final char[] PLAINTEXT = "pass".toCharArray();
     private CoreContext context;
     private WorkerExecutor executor;
     private HashFactory hasher;
@@ -68,7 +68,7 @@ public class HashFactoryTest {
                 hasher.verify(result -> {
                     Assert.assertTrue(result.failed());
                     async.complete();
-                }, PLAINTEXT, "other");
+                }, hash.result(), "pass".toCharArray());
 
             });
         });

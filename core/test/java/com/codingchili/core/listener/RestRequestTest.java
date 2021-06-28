@@ -30,6 +30,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 /**
  * Tests to verify that parsing of HTTP target/route representations are working as expected.
  */
+@SuppressWarnings("deprecation")
 @RunWith(VertxUnitRunner.class)
 public class RestRequestTest {
     private static final String DEFAULT_TARGET = "defaultTarget";
@@ -41,7 +42,7 @@ public class RestRequestTest {
     private static final String QUERYSTRING_ROUTE = "?target=accounts&route=view/history";
     private static final String TARGET = "accounts";
     private static final String ROUTE = "view/history";
-    private JsonObject BODY_ROUTE = new JsonObject()
+    private final JsonObject BODY_ROUTE = new JsonObject()
             .put(PROTOCOL_TARGET, TARGET)
             .put(PROTOCOL_ROUTE, ROUTE)
             .put(PAYLOAD, JESUS);
@@ -99,9 +100,9 @@ public class RestRequestTest {
         return new RestRequest(new RoutingContextMock(path), settings);
     }
 
-    private class RoutingContextMock implements RoutingContext {
-        private Buffer body;
-        private String path;
+    private static class RoutingContextMock implements RoutingContext {
+        private final Buffer body;
+        private final String path;
 
         /**
          * @param path the path that will be returned by request().path().
@@ -229,7 +230,7 @@ public class RestRequestTest {
                     MultiMap map = new HeadersMultiMap();
 
                     if (path.contains("?")) {
-                        String qs = path.substring(path.lastIndexOf("?"), path.length());
+                        String qs = path.substring(path.lastIndexOf("?"));
 
                         Arrays.stream(qs.split("([?&])"))
                                 .map(line -> line.split("="))

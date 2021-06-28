@@ -18,9 +18,9 @@ import com.codingchili.core.security.exception.HashMismatchException;
  */
 
 public class HashFactory {
-    private static ArgonSettings settings = Configurations.security().getArgon();
-    private static Argon2 argon2;
-    private CoreContext context;
+    private static final ArgonSettings settings = Configurations.security().getArgon();
+    private static final Argon2 argon2;
+    private final CoreContext context;
 
     static {
         argon2 = Argon2Factory.create(
@@ -45,7 +45,7 @@ public class HashFactory {
      * @param expected  the expected outcome of the hash operation.
      * @param plaintext the plaintext password to be hashed and compared to expected.
      */
-    public void verify(Handler<AsyncResult<Void>> future, String expected, String plaintext) {
+    public void verify(Handler<AsyncResult<Void>> future, String expected, char[] plaintext) {
         context.<Boolean>blocking(blocked -> {
             blocked.complete(argon2.verify(expected, plaintext));
         }, hashed -> {
@@ -63,15 +63,16 @@ public class HashFactory {
      * @param plaintext plaintext password to be hashed.
      * @return callback
      */
-    public Future<String> hash(String plaintext) {
+    public Future<String> hash(char[] plaintext) {
         Promise<String> promise = Promise.promise();
-        context.<String>blocking(blocking -> {
-            blocking.complete(argon2.hash(
-                    settings.getIterations(),
-                    settings.getMemory(),
-                    settings.getParallelism(),
-                    plaintext));
-        }, result -> {
+        context.<String>blocking(blocking -> blocking.complete(
+                argon2.hash(
+                        settings.getIterations(),
+                        settings.getMemory(),
+                        settings.getParallelism(),
+                        plaintext
+                )
+        ), result -> {
             if (result.succeeded()) {
                 promise.complete(result.result());
             } else {
