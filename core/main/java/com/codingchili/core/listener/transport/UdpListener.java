@@ -10,7 +10,6 @@ import com.codingchili.core.logging.Logger;
 import static com.codingchili.core.configuration.CoreStrings.LOG_AT;
 import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
 
-import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.datagram.DatagramPacket;
 

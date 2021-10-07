@@ -2,6 +2,7 @@ package com.codingchili.core.listener.transport;
 
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.datagram.DatagramPacket;
+import io.vertx.core.datagram.DatagramSocket;
 import io.vertx.core.json.JsonObject;
 
 import com.codingchili.core.context.CoreContext;
@@ -16,11 +17,12 @@ import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_CONNECTION
  */
 public class UdpRequest implements Request {
     private Connection connection;
-    private int size;
-    private DatagramPacket packet;
-    private CoreContext context;
-    private ListenerSettings settings;
+    private final DatagramPacket packet;
+    private final CoreContext context;
+    private final ListenerSettings settings;
+    private final int size;
     private JsonObject data;
+    private DatagramSocket socket;
 
     public UdpRequest(CoreContext context, ListenerSettings settings, DatagramPacket packet) {
         this.size = packet.data().length();
@@ -43,14 +45,23 @@ public class UdpRequest implements Request {
         } else {
             buffer = Response.buffer(message);
         }
-        context.vertx().createDatagramSocket()
-                .send(buffer,
-                        packet.sender().port(),
-                        packet.sender().host(), sent -> {
-                            if (sent.failed()) {
-                                throw new RuntimeException(sent.cause());
-                            }
-                        });
+
+        synchronized (this) {
+            createOrGet().send(buffer,
+                    packet.sender().port(),
+                    packet.sender().host(), sent -> {
+                        if (sent.failed()) {
+                            throw new RuntimeException(sent.cause());
+                        }
+                    });
+        }
+    }
+
+    private DatagramSocket createOrGet() {
+        if (socket == null) {
+            socket = context.vertx().createDatagramSocket();
+        }
+        return socket;
     }
 
     @Override

@@ -13,10 +13,10 @@ import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_CONNECTION
  * client may only live during a single request.
  */
 public class Connection implements Messageable {
-    private Map<String, String> properties = new HashMap<>();
-    private Map<String, Runnable> closeHandlers = new HashMap<>();
+    private final Map<String, String> properties = new HashMap<>();
+    private final Map<String, Runnable> closeHandlers = new HashMap<>();
+    private final Consumer<Object> writer;
     private static final String ID = "id";
-    private Consumer<Object> writer;
 
     /**
      * Creates a new stateful connection that properly implements the ID method.
