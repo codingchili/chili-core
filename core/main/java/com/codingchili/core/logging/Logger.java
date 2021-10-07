@@ -168,7 +168,7 @@ public interface Logger extends JsonLogger, StringLogger {
      * @param value a supplier invoked when an event is created.
      * @return fluent.
      */
-    Logger setMetadataValue(String key, Supplier<String> value);
+    Logger setMetadataValue(String key, Supplier<Object> value);
 
     /**
      * Sets a metadata value on the logger.
@@ -178,7 +178,7 @@ public interface Logger extends JsonLogger, StringLogger {
      * @param value the dynamic metadata to add to log events.
      * @return fluent.
      */
-    Logger setMetadata(String name, Supplier<JsonObject> value);
+    Logger setMetadata(String name, Supplier<Object> value);
 
     /**
      * @param nameOrKey removes metadata with a matching name or key.

@@ -14,6 +14,7 @@ import com.codingchili.core.configuration.Environment;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.listener.CoreListener;
 import com.codingchili.core.listener.CoreService;
+import com.codingchili.core.protocol.Serializer;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.files.Configurations.launcher;
@@ -46,13 +47,13 @@ public abstract class AbstractLogger extends Handler implements Logger {
     }
 
     @Override
-    public Logger setMetadata(String name, Supplier<JsonObject> value) {
-        metadata.put(name, (json) -> json.mergeIn(value.get()));
+    public Logger setMetadata(String name, Supplier<Object> value) {
+        metadata.put(name, (json) -> json.put(name, Serializer.json(value.get())));
         return this;
     }
 
     @Override
-    public Logger setMetadataValue(String key, Supplier<String> value) {
+    public Logger setMetadataValue(String key, Supplier<Object> value) {
         metadata.put(key, (json) -> json.put(key, value.get()));
         return this;
     }
