@@ -1,12 +1,12 @@
 package com.codingchili.core.security;
 
+import io.vertx.core.json.impl.JsonUtil;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Base64;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * Tests the generation and verification of secret keys in SecretFactory
@@ -32,7 +32,7 @@ public class SecretFactoryTest {
     @Test
     public void testSecretEntropy(TestContext test) {
         String secret = SecretFactory.generate(512);
-        test.assertEquals(512, Base64.getDecoder().decode(secret).length);
+        test.assertEquals(512, JsonUtil.BASE64_DECODER.decode(secret).length);
     }
 
     @Test

@@ -66,9 +66,9 @@ public class HashFactoryTest {
                 test.assertTrue(wrong.result().length() != 0);
 
                 hasher.verify(result -> {
-                    Assert.assertTrue(result.failed());
+                    test.assertTrue(result.failed());
                     async.complete();
-                }, hash.result(), "pass".toCharArray());
+                }, hash.result(), PLAINTEXT_WRONG);
 
             });
         });
