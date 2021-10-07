@@ -1,5 +1,6 @@
 package com.codingchili.core.listener;
 
+import io.netty.handler.codec.DecoderResult;
 import io.vertx.core.*;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.*;
@@ -275,13 +276,33 @@ public class RestRequestTest {
                 }
 
                 @Override
+                public HttpServerRequest bodyHandler(Handler<Buffer> bodyHandler) {
+                    return null;
+                }
+
+                @Override
+                public HttpServerRequest body(Handler<AsyncResult<Buffer>> handler) {
+                    return null;
+                }
+
+                @Override
                 public Future<Buffer> body() {
                     return null;
                 }
 
                 @Override
+                public void end(Handler<AsyncResult<Void>> handler) {
+
+                }
+
+                @Override
                 public Future<Void> end() {
                     return null;
+                }
+
+                @Override
+                public void toNetSocket(Handler<AsyncResult<NetSocket>> handler) {
+
                 }
 
                 @Override
@@ -315,6 +336,16 @@ public class RestRequestTest {
                 }
 
                 @Override
+                public int streamId() {
+                    return 0;
+                }
+
+                @Override
+                public void toWebSocket(Handler<AsyncResult<ServerWebSocket>> handler) {
+
+                }
+
+                @Override
                 public Future<ServerWebSocket> toWebSocket() {
                     return null;
                 }
@@ -335,8 +366,18 @@ public class RestRequestTest {
                 }
 
                 @Override
+                public StreamPriority streamPriority() {
+                    return null;
+                }
+
+                @Override
                 public HttpServerRequest streamPriorityHandler(Handler<StreamPriority> handler) {
                     return this;
+                }
+
+                @Override
+                public DecoderResult decoderResult() {
+                    return null;
                 }
 
                 @Override
@@ -351,6 +392,11 @@ public class RestRequestTest {
 
                 @Override
                 public Map<String, Cookie> cookieMap() {
+                    return null;
+                }
+
+                @Override
+                public HttpServerRequest routed(String route) {
                     return null;
                 }
             };
