@@ -5,8 +5,7 @@ import com.googlecode.cqengine.attribute.*;
 import com.googlecode.cqengine.attribute.support.SimpleFunction;
 import com.googlecode.cqengine.query.option.QueryOptions;
 import com.googlecode.cqengine.resultset.ResultSet;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
+import io.vertx.core.*;
 
 import java.util.*;
 import java.util.function.Function;
@@ -30,12 +29,14 @@ import static io.vertx.core.Future.succeededFuture;
 public abstract class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
     // new mode of attribute generation to avoid json serialization: does not yet work with nested objects.
     private static final Map<String, IndexedMapHolder> maps = new HashMap<>();
+    private static final String INDEXED_MAP_TX = "indexed-map-tx";
 
     protected final SimpleAttribute<Value, String> FIELD_ID;
     protected final StorageContext<Value> context;
     protected final IndexedCollection<Value> db;
 
-    private IndexedMapHolder<Value> holder;
+    private final WorkerExecutor executor;
+    private final IndexedMapHolder<Value> holder;
     private Function<Value, Value> mapper = Function.identity();
 
     @SuppressWarnings("unchecked")
@@ -43,6 +44,8 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
                       StorageContext<Value> context) {
 
         this.context = context;
+        this.executor = context.vertx().createSharedWorkerExecutor(INDEXED_MAP_TX, 1);
+
         FIELD_ID = attribute(context.valueClass(), String.class, Storable.idField, Storable::getId);
 
         // share collections that share the same identifier.
@@ -109,6 +112,10 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
         }
     }
 
+    protected <T> void blocking(Handler<Promise<T>> blocking, Handler<AsyncResult<T>> result) {
+        executor.executeBlocking(blocking, result);
+    }
+
     /**
      * @param attribute the attribute to add an index for based on implementation.
      */
@@ -123,7 +130,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
 
     @Override
     public void get(String key, Handler<AsyncResult<Value>> handler) {
-        context.blocking(blocking -> {
+        blocking(blocking -> {
             try (ResultSet<Value> result = db.retrieve(equal(FIELD_ID, key))) {
                 if (result.isNotEmpty()) {
                     blocking.complete(mapper.apply(result.iterator().next()));
@@ -136,7 +143,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
 
     @Override
     public void put(Value value, Handler<AsyncResult<Void>> handler) {
-        context.blocking(blocking -> {
+        blocking(blocking -> {
             try (ResultSet<Value> result = db.retrieve(equal(FIELD_ID, value.getId()))) {
                 if (result.isEmpty()) {
                     db.add(mapper.apply(value));
@@ -157,7 +164,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
 
     @Override
     public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
-        context.blocking(blocking -> {
+        blocking(blocking -> {
             try (ResultSet<Value> result = db.retrieve(equal(FIELD_ID, value.getId()))) {
                 if (result.isNotEmpty()) {
                     blocking.fail(new ValueAlreadyPresentException(value.getId()));
@@ -171,7 +178,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
 
     @Override
     public void remove(String key, Handler<AsyncResult<Void>> handler) {
-        context.blocking(blocking -> {
+        blocking(blocking -> {
             try (ResultSet<Value> result = db.retrieve(equal(FIELD_ID, key))) {
                 if (result.isNotEmpty()) {
                     result.stream().forEach(entry -> {
@@ -189,7 +196,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
 
     @Override
     public void update(Value value, Handler<AsyncResult<Void>> handler) {
-        context.blocking(blocking -> {
+        blocking(blocking -> {
             try (ResultSet<Value> result = db.retrieve(equal(FIELD_ID, value.getId()))) {
                 if (result.isNotEmpty()) {
                     boolean updated = db.update(Collections.singleton(result.iterator().next()), Collections.singleton(mapper.apply(value)));
@@ -213,7 +220,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
 
     @Override
     public void clear(Handler<AsyncResult<Void>> handler) {
-        context.blocking(blocking -> {
+        blocking(blocking -> {
             db.clear();
             blocking.complete();
         }, handler);
@@ -221,7 +228,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
 
     @Override
     public void size(Handler<AsyncResult<Integer>> handler) {
-        context.blocking(blocking -> blocking.complete(db.size()), handler);
+        blocking(blocking -> blocking.complete(db.size()), handler);
     }
 
     @Override

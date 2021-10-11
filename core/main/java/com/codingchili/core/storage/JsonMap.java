@@ -29,11 +29,11 @@ import static com.codingchili.core.context.FutureHelper.*;
  */
 public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     private static final String JSONMAP_WORKERS = "asyncjsonmap.workers";
-    private static Map<String, JsonObject> maps = new ConcurrentHashMap<>();
-    private static AtomicBoolean dirty = new AtomicBoolean(false);
-    private WorkerExecutor fileWriter;
+    private static final Map<String, JsonObject> maps = new ConcurrentHashMap<>();
+    private static final AtomicBoolean dirty = new AtomicBoolean(false);
+    private final WorkerExecutor fileWriter;
+    private final StorageContext<Value> context;
     private JsonObject db = new JsonObject();
-    private StorageContext<Value> context;
 
     /**
      * Creates a new possibly shared instance of the JsonMap storage plugin. It's recommended
