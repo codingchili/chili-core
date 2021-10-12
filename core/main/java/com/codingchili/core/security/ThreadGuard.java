@@ -35,10 +35,6 @@ public class ThreadGuard {
     private final int limit;
     private Boolean active = true;
 
-    public enum GuardMode {
-        concurrency, watcher
-    }
-
     /**
      * @return a thread guard that guards against concurrent access.
      */
