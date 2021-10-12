@@ -29,7 +29,7 @@ import static io.vertx.core.Future.succeededFuture;
 public abstract class IndexedMap<Value extends Storable> implements AsyncStorage<Value> {
     // new mode of attribute generation to avoid json serialization: does not yet work with nested objects.
     private static final Map<String, IndexedMapHolder> maps = new HashMap<>();
-    private static final String INDEXED_MAP_TX = "indexed-map-tx";
+    private static final String INDEXED_MAP_TX = "indexedmap-tx-%s-%s";
 
     protected final SimpleAttribute<Value, String> FIELD_ID;
     protected final StorageContext<Value> context;
@@ -44,7 +44,9 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
                       StorageContext<Value> context) {
 
         this.context = context;
-        this.executor = context.vertx().createSharedWorkerExecutor(INDEXED_MAP_TX, 1);
+        this.executor = context.vertx().createSharedWorkerExecutor(
+                String.format(INDEXED_MAP_TX, context.database(), context.collection()), 1
+        );
 
         FIELD_ID = attribute(context.valueClass(), String.class, Storable.idField, Storable::getId);
 
