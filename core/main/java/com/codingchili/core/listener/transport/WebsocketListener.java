@@ -95,14 +95,11 @@ public class WebsocketListener implements CoreListener {
         return new Connection((msg) -> {
             Buffer buffer = Response.buffer(msg);
 
-            synchronized (this) {
-                if (isBinary) {
-                    socket.write(buffer);
-                } else {
-                    socket.writeTextMessage(buffer.toString());
-                }
+            if (isBinary) {
+                socket.write(buffer);
+            } else {
+                socket.writeTextMessage(buffer.toString());
             }
-
         }, socket.textHandlerID()).setProperty(PROTOCOL_CONNECTION, socket.remoteAddress().host());
     }
 

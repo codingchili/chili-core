@@ -46,15 +46,13 @@ public class UdpRequest implements Request {
             buffer = Response.buffer(message);
         }
 
-        synchronized (this) {
-            createOrGet().send(buffer,
-                    packet.sender().port(),
-                    packet.sender().host(), sent -> {
-                        if (sent.failed()) {
-                            throw new RuntimeException(sent.cause());
-                        }
-                    });
-        }
+        createOrGet().send(buffer,
+                packet.sender().port(),
+                packet.sender().host(), sent -> {
+                    if (sent.failed()) {
+                        throw new RuntimeException(sent.cause());
+                    }
+                });
     }
 
     private DatagramSocket createOrGet() {

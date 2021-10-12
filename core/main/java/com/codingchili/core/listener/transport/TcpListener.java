@@ -61,12 +61,7 @@ public class TcpListener implements CoreListener {
     }
 
     public Connection connected(NetSocket socket) {
-        return new Connection((msg) -> {
-            var buffer = Response.buffer(msg);
-            synchronized (this) {
-                socket.write(buffer);
-            }
-        }, socket.writeHandlerID())
+        return new Connection((msg) -> socket.write(Response.buffer(msg)), socket.writeHandlerID())
                 .setProperty(PROTOCOL_CONNECTION, socket.remoteAddress().host());
     }
 
