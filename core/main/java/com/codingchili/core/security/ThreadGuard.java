@@ -48,6 +48,7 @@ public class ThreadGuard {
 
     /**
      * @return a thread guard that watches for limit number of different threads.
+     * @param limit the maximum number of threads observed before guard is considered violated.
      */
     public static ThreadGuard watcher(int limit) {
         return new ThreadGuard(GuardMode.watcher, limit);
