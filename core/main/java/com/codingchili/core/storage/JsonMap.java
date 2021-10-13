@@ -3,8 +3,7 @@ package com.codingchili.core.storage;
 import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
@@ -29,7 +28,7 @@ import static com.codingchili.core.context.FutureHelper.*;
  */
 public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     private static final String JSONMAP_WORKERS = "asyncjsonmap.workers";
-    private static final Map<String, JsonObject> maps = new ConcurrentHashMap<>();
+    private static final Map<String, JsonObject> maps = new HashMap<>();
     private static final AtomicBoolean dirty = new AtomicBoolean(false);
     private final WorkerExecutor fileWriter;
     private final StorageContext<Value> context;
@@ -44,17 +43,20 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
      */
     public JsonMap(Promise<AsyncStorage<Value>> promise, StorageContext<Value> context) {
         this.context = context;
-        Logger logger = context.logger(getClass());
+        var logger = context.logger(getClass());
+        var path = dbPath();
 
-        if (maps.containsKey(context.identifier())) {
-            this.db = maps.get(context.identifier());
-        } else {
-            try {
-                this.db = ConfigurationFactory.readObject(dbPath());
-            } catch (NoSuchResourceException e) {
-                logger.log(getFileReadError(dbPath()));
+        synchronized (JsonMap.class) {
+            if (maps.containsKey(context.identifier())) {
+                this.db = maps.get(context.identifier());
+            } else {
+                try {
+                    this.db = ConfigurationFactory.readObject(path);
+                } catch (NoSuchResourceException e) {
+                    logger.log(getFileReadError(path));
+                }
+                maps.put(context.identifier(), db);
             }
-            maps.put(context.identifier(), db);
         }
         this.fileWriter = context.vertx().createSharedWorkerExecutor(JSONMAP_WORKERS);
         this.enableSave();
@@ -145,7 +147,7 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
         context.blocking((blocking) -> {
             blocking.complete(db.stream()
                     .map(entry -> (JsonObject) entry.getValue())
-                    .map(json -> context.toValue(json)));
+                    .map(context::toValue));
 
         }, handler);
     }
