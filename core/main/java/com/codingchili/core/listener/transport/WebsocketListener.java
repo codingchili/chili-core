@@ -100,12 +100,8 @@ public class WebsocketListener implements CoreListener {
             } else {
                 socket.writeTextMessage(buffer.toString());
             }
-        }, socket.textHandlerID()).setProperty(PROTOCOL_CONNECTION, socket.remoteAddress().host());
-    }
-
-    @Override
-    public void stop(Promise<Void> stop) {
-        handler.stop(stop);
+        }, socket.textHandlerID())
+                .setProperty(PROTOCOL_CONNECTION, socket.remoteAddress().host());
     }
 
     private void handle(Connection connection, Buffer buffer) {
@@ -116,6 +112,11 @@ public class WebsocketListener implements CoreListener {
         } else {
             request.error(new RequestPayloadSizeException(settings.getMaxRequestBytes()));
         }
+    }
+
+    @Override
+    public void stop(Promise<Void> stop) {
+        handler.stop(stop);
     }
 
     @Override

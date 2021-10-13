@@ -1,6 +1,7 @@
 package com.codingchili.core.listener.transport;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import com.codingchili.core.listener.Messageable;
@@ -15,8 +16,9 @@ import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_CONNECTION
 public class Connection implements Messageable {
     private final Map<String, String> properties = new HashMap<>();
     private final Map<String, Runnable> closeHandlers = new HashMap<>();
-    private final Consumer<Object> writer;
     private static final String ID = "id";
+    private final Consumer<Object> writer;
+    private BiConsumer<Consumer<Object>, Object> proxy;
 
     /**
      * Creates a new stateful connection that properly implements the ID method.
@@ -29,9 +31,24 @@ public class Connection implements Messageable {
         properties.put(ID, id);
     }
 
+    /**
+     * Allows all writing to this connection to be handled by a proxy.
+     *
+     * @param proxy the method that will invoke the writer.
+     * @return fluent.
+     */
+    public Connection proxy(BiConsumer<Consumer<Object>, Object> proxy) {
+        this.proxy = proxy;
+        return this;
+    }
+
     @Override
     public void write(Object object) {
-        writer.accept(object);
+        if (proxy == null) {
+            writer.accept(object);
+        } else {
+            proxy.accept(writer, object);
+        }
     }
 
     /**
@@ -112,5 +129,19 @@ public class Connection implements Messageable {
     public Connection setProperty(String key, String value) {
         properties.put(key, value);
         return this;
+    }
+
+    @Override
+    public int hashCode() {
+        return id().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof Connection) {
+            return ((Connection) other).id().equals(id());
+        } else {
+            return false;
+        }
     }
 }
