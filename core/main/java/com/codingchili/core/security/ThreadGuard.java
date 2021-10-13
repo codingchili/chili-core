@@ -1,7 +1,6 @@
 package com.codingchili.core.security;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -22,15 +21,11 @@ import com.codingchili.core.security.exception.ThreadGuardException;
  * <p>
  * If no handlers are set then the ThreadGuard will throw a ThreadGuardException.
  * The guard must be reset after it has been triggered.
- * <p>
- * Note that the guard incurs a performance overhead and should only be
- * used for development/debugging purposes as each guarded block captures the
- * current stack trace to get an accurate trace.
  */
 public class ThreadGuard {
     private static final Logger logger = Logger.getLogger(ThreadGuard.class.getName());
     private final Set<GuardedThread> threads = new HashSet<>();
-    private final Set<Consumer<Set<GuardedThread>>> handlers = new HashSet<>();
+    private final Set<Consumer<Collection<GuardedThread>>> handlers = new HashSet<>();
     private final GuardMode mode;
     private final int limit;
     private Boolean active = true;
@@ -55,14 +50,14 @@ public class ThreadGuard {
      *
      * @param threads a set of threads reported by the guard.
      */
-    public static void log(Set<GuardedThread> threads) {
+    public static void log(Collection<GuardedThread> threads) {
         logger.severe(format(threads));
     }
 
-    public static String format(Set<GuardedThread> threads) {
+    public static String format(Collection<GuardedThread> threads) {
         return String.format("Multiple threads (%d) accessed guarded block\n%s",
                 threads.size(),
-                threads.stream().map(item -> String.format("\n == == == == == \nthread - %s - group %s\n",
+                threads.stream().map(item -> String.format("\nthread - %s - group %s\n",
                                 item.thread().getName(),
                                 item.thread().getThreadGroup().getName()
                         ) + item.frames().stream()
@@ -96,7 +91,7 @@ public class ThreadGuard {
      * @param handler invoked when the guard is violated.
      * @return fluent.
      */
-    public ThreadGuard error(Consumer<Set<GuardedThread>> handler) {
+    public ThreadGuard error(Consumer<Collection<GuardedThread>> handler) {
         synchronized (this) {
             this.handlers.add(handler);
         }
@@ -125,6 +120,7 @@ public class ThreadGuard {
                     active = false;
 
                     if (handlers.size() > 0) {
+                        // invoke error handlers.
                         handlers.forEach(handler -> handler.accept(threads));
                     } else {
                         throw new ThreadGuardException(threads, mode);
