@@ -424,8 +424,14 @@ public abstract class CoreStrings {
         return "[" + name + "] Error: '" + ID_NODE + "' must be configured for token generation.";
     }
 
-    public static String getStorageLoaderError(Class plugin, String database, String collection) {
-        return "Error: Failed to load storage plugin '" + plugin.getSimpleName() + "' for '" + database + DIR_SEPARATOR + collection + "'.";
+    public static String getStorageLoaderError(String plugin, String database, String collection) {
+        return String.format(
+                "Error: Failed to load storage plugin '%s' for '%s%s%s'.",
+                plugin,
+                database,
+                DIR_SEPARATOR,
+                collection
+        );
     }
 
     public static String getErrorCreateDirectory(String target) {
