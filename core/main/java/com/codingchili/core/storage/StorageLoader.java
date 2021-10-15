@@ -46,6 +46,7 @@ public class StorageLoader<Value extends Storable> {
                 promise.future().onComplete(handler);
 
                 prepare();
+
                 StorageContext<Value> storage = new StorageContext<Value>(context)
                         .setDatabase(database)
                         .setCollection(collection)
@@ -58,7 +59,7 @@ public class StorageLoader<Value extends Storable> {
                 blocking.complete();
 
             } catch (Throwable e) {
-                logger.log(CoreStrings.getStorageLoaderError(plugin, database, collection), Level.ERROR);
+                logger.log(CoreStrings.getStorageLoaderError(pluginString, database, collection), Level.ERROR);
                 logger.onError(e);
                 blocking.fail(e);
             }
@@ -71,12 +72,11 @@ public class StorageLoader<Value extends Storable> {
 
     @SuppressWarnings("unchecked")
     private void prepare() throws ClassNotFoundException {
-        checkIsSet(context, ID_CONTEXT);
-        checkIsSet(valueClass, ID_CLASS);
-
-        if (pluginString != null)
+        if (plugin == null) {
             this.plugin = (Class<? extends AsyncStorage>) Class.forName(pluginString);
-
+        } else if (pluginString == null) {
+            this.pluginString = plugin.getSimpleName();
+        }
 
         if (collection == null) {
             this.collection = valueClass.getSimpleName();
@@ -85,6 +85,9 @@ public class StorageLoader<Value extends Storable> {
         if (database == null) {
             database = Configurations.storage().getSettingsForPlugin(plugin).getDatabase();
         }
+
+        checkIsSet(context, ID_CONTEXT);
+        checkIsSet(valueClass, ID_CLASS);
         checkIsSet(plugin, ID_PLUGIN);
     }
 
