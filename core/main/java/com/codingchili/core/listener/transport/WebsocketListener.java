@@ -70,24 +70,26 @@ public class WebsocketListener implements CoreListener {
                             .encodePrettily());
         });
 
-        core.vertx().createHttpServer(settings.getHttpOptions())
-                .exceptionHandler(logger::onError)
-                .webSocketHandler(socket -> {
-                    Connection connection = connected(socket);
+        start.future().onSuccess((v) -> {
+            core.vertx().createHttpServer(settings.getHttpOptions())
+                    .exceptionHandler(logger::onError)
+                    .webSocketHandler(socket -> {
+                        Connection connection = connected(socket);
 
-                    socket.handler(data -> handle(connection, data));
-                    socket.closeHandler(closed -> connection.runCloseHandlers());
-                    socket.exceptionHandler(logger::onError);
+                        socket.handler(data -> handle(connection, data));
+                        socket.closeHandler(closed -> connection.runCloseHandlers());
+                        socket.exceptionHandler(logger::onError);
 
-                }).requestHandler(router)
-                .listen(settings.getPort(), getBindAddress(), listen -> {
-                    if (listen.succeeded()) {
-                        settings.addListenPort(listen.result().actualPort());
-                        handler.start(start);
-                    } else {
-                        start.fail(listen.cause());
-                    }
-                });
+                    }).requestHandler(router)
+                    .listen(settings.getPort(), getBindAddress(), listen -> {
+                        if (listen.succeeded()) {
+                            settings.addListenPort(listen.result().actualPort());
+                        } else {
+                            start.fail(listen.cause());
+                        }
+                    });
+        });
+        handler.start(start);
     }
 
     private Connection connected(ServerWebSocket socket) {

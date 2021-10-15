@@ -41,23 +41,25 @@ public class TcpListener implements CoreListener {
 
     @Override
     public void start(Promise<Void> start) {
-        core.vertx().createNetServer(settings.getHttpOptions())
-                .exceptionHandler(logger::onError)
-                .connectHandler(socket -> {
-                    Connection connection = connected(socket);
+        start.future().onSuccess((v) -> {
+            core.vertx().createNetServer(settings.getHttpOptions())
+                    .exceptionHandler(logger::onError)
+                    .connectHandler(socket -> {
+                        Connection connection = connected(socket);
 
-                    socket.handler(data -> packet(connection, data));
-                    socket.closeHandler((v) -> connection.runCloseHandlers());
-                    socket.exceptionHandler(logger::onError);
+                        socket.handler(data -> packet(connection, data));
+                        socket.closeHandler((close) -> connection.runCloseHandlers());
+                        socket.exceptionHandler(logger::onError);
 
-                }).listen(settings.getPort(), getBindAddress(), listen -> {
-            if (listen.succeeded()) {
-                settings.addListenPort(listen.result().actualPort());
-                handler.start(start);
-            } else {
-                start.fail(listen.cause());
-            }
+                    }).listen(settings.getPort(), getBindAddress(), listen -> {
+                        if (listen.succeeded()) {
+                            settings.addListenPort(listen.result().actualPort());
+                        } else {
+                            start.fail(listen.cause());
+                        }
+                    });
         });
+        handler.start(start);
     }
 
     public Connection connected(NetSocket socket) {

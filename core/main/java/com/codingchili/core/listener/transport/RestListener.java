@@ -67,17 +67,19 @@ public class RestListener implements CoreListener {
 
     @Override
     public void start(Promise<Void> start) {
-        core.vertx().createHttpServer(settings.getHttpOptions())
-                .requestHandler(router)
-                .exceptionHandler(logger::onError)
-                .listen(settings.getPort(), getBindAddress(), listen -> {
-                    if (listen.succeeded()) {
-                        settings.addListenPort(listen.result().actualPort());
-                        handler.start(start);
-                    } else {
-                        start.fail(listen.cause());
-                    }
-                });
+        start.future().onSuccess((v) -> {
+            core.vertx().createHttpServer(settings.getHttpOptions())
+                    .requestHandler(router)
+                    .exceptionHandler(logger::onError)
+                    .listen(settings.getPort(), getBindAddress(), listen -> {
+                        if (listen.succeeded()) {
+                            settings.addListenPort(listen.result().actualPort());
+                        } else {
+                            start.fail(listen.cause());
+                        }
+                    });
+        });
+        handler.start(start);
     }
 
     @Override
