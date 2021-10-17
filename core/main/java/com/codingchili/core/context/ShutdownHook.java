@@ -18,8 +18,8 @@ import static com.codingchili.core.files.Configurations.system;
  */
 public class ShutdownHook extends Thread {
     private static final Map<Vertx, ShutdownHook> contexts = new HashMap<>();
-    private SystemContext context;
-    private Logger logger;
+    private final SystemContext context;
+    private final Logger logger;
 
     /**
      * Registers a context for graceful shutdown as a JVM hook so that the context

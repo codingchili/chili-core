@@ -89,9 +89,7 @@ public class MapTestCases {
 
             context.periodic(TimerSource.of(50).setName("startup timer"), handler -> {
                 if (inserted.get() == TEST_ITEM_COUNT) {
-                    context.timer(STARTUP_DELAY, event -> {
-                        async.complete();
-                    });
+                    context.timer(STARTUP_DELAY, event -> async.complete());
                     context.cancel(handler);
                 }
             });

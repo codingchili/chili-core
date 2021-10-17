@@ -4,21 +4,17 @@ import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 import org.apache.http.HttpHost;
 import org.elasticsearch.ElasticsearchStatusException;
-import org.elasticsearch.action.*;
+import org.elasticsearch.action.DocWriteRequest;
+import org.elasticsearch.action.DocWriteResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.delete.DeleteRequest;
-import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.action.update.UpdateRequest;
-import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.*;
-import org.elasticsearch.client.indices.*;
+import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.IndexNotFoundException;
@@ -29,6 +25,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -50,9 +47,9 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     private static final String ID_SETTINGS = "settings";
     private static final int MAX_RESULTS = 10000;
     public static final String ARRAY_NOTATION = "";
-    private StorageContext<Value> context;
+    private final StorageContext<Value> context;
+    private final String index;
     private RestHighLevelClient client;
-    private String index;
 
     public ElasticMap(Promise<AsyncStorage<Value>> promise, StorageContext<Value> context) {
         this.context = context;
@@ -91,37 +88,21 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     private Future<Void> createIndexIfNotExists() {
         Promise<Void> promise = Promise.promise();
-        IndicesClient indices = client.indices();
-
-        indices.existsAsync(new GetIndexRequest(index), RequestOptions.DEFAULT, new ActionListener<>() {
-            @Override
-            public void onResponse(Boolean exists) {
+        context.blocking((done) -> {
+            IndicesClient indices = client.indices();
+            try {
+                var exists = indices.exists(new GetIndexRequest(index), RequestOptions.DEFAULT);
                 if (!exists) {
-                    CreateIndexRequest request = new CreateIndexRequest(index);
+                    var request = new CreateIndexRequest(index);
                     configureMapping(request);
                     configureSettings(request);
-
-                    indices.createAsync(request, RequestOptions.DEFAULT, new ActionListener<>() {
-                        @Override
-                        public void onResponse(CreateIndexResponse createIndexResponse) {
-                            promise.complete();
-                        }
-
-                        @Override
-                        public void onFailure(Exception e) {
-                            promise.tryFail(e);
-                        }
-                    });
-                } else {
-                    promise.complete();
+                    indices.create(request, RequestOptions.DEFAULT);
                 }
+                done.complete();
+            } catch (Throwable e) {
+                done.fail(e);
             }
-
-            @Override
-            public void onFailure(Exception e) {
-                promise.tryFail(e);
-            }
-        });
+        }, promise);
         return promise.future();
     }
 
@@ -147,221 +128,199 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void get(String key, Handler<AsyncResult<Value>> handler) {
-        GetRequest request = new GetRequest()
-                .index(index)
-                .id(key);
-
-        client.getAsync(request, RequestOptions.DEFAULT, new ActionListener<>() {
-            @Override
-            public void onResponse(GetResponse document) {
+        context.blocking((done) -> {
+            GetRequest request = new GetRequest()
+                    .index(index)
+                    .id(key);
+            try {
+                var document = client.get(request, RequestOptions.DEFAULT);
                 if (document.isExists()) {
-                    handler.handle(result(context.toValue(document.getSourceAsString())));
+                    done.handle(result(context.toValue(document.getSourceAsString())));
                 } else {
-                    handler.handle(error(new ValueMissingException(key)));
+                    done.handle(error(new ValueMissingException(key)));
+                }
+            } catch (Throwable e) {
+                if (e instanceof IndexNotFoundException) {
+                    done.fail(new ValueMissingException(key));
+                } else {
+                    done.fail(e);
                 }
             }
-
-            @Override
-            public void onFailure(Exception e) {
-                if (e.getCause() instanceof IndexNotFoundException) {
-                    handler.handle(error(new ValueMissingException(key)));
-                } else {
-                    handler.handle(error(e));
-                }
-            }
-        });
+        }, handler);
     }
 
     @Override
     public void put(Value value, Handler<AsyncResult<Void>> handler) {
-        IndexRequest request = new IndexRequest()
-                .index(index)
-                .source(Serializer.buffer(value).getBytes(), XContentType.JSON)
-                .id(value.getId());
-
-        client.indexAsync(request, RequestOptions.DEFAULT, new ActionListener<>() {
-            @Override
-            public void onResponse(IndexResponse index) {
-                handler.handle(result());
+        context.blocking(done -> {
+            IndexRequest request = new IndexRequest()
+                    .index(index)
+                    .source(Serializer.buffer(value).getBytes(), XContentType.JSON)
+                    .id(value.getId());
+            try {
+                client.index(request, RequestOptions.DEFAULT);
+                done.complete();
+            } catch (Throwable e) {
+                done.fail(e);
             }
-
-            @Override
-            public void onFailure(Exception e) {
-                handler.handle(error(e));
-            }
-        });
+        }, handler);
     }
 
     @Override
     public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
-        IndexRequest request = new IndexRequest()
-                .index(index)
-                .source(Serializer.buffer(value).getBytes(), XContentType.JSON)
-                .id(value.getId());
-
-        client.indexAsync(request.opType(DocWriteRequest.OpType.CREATE), RequestOptions.DEFAULT, new ActionListener<>() {
-            @Override
-            public void onResponse(IndexResponse response) {
+        context.blocking(done -> {
+            IndexRequest request = new IndexRequest()
+                    .index(index)
+                    .source(Serializer.buffer(value).getBytes(), XContentType.JSON)
+                    .id(value.getId())
+                    .opType(DocWriteRequest.OpType.CREATE);
+            try {
+                var response = client.index(request, RequestOptions.DEFAULT);
                 if (response.getResult().equals(DocWriteResponse.Result.CREATED)) {
-                    handler.handle(result());
+                    done.complete();
                 } else {
-                    handler.handle(error(new ValueAlreadyPresentException(value.getId())));
+                    done.fail(new ValueAlreadyPresentException(value.getId()));
+                }
+            } catch (Throwable e) {
+                if (matches(e, RestStatus.CONFLICT)) {
+                    done.fail(new ValueAlreadyPresentException(value.getId()));
+                } else {
+                    done.fail(e);
                 }
             }
+        }, handler);
+    }
 
-            @Override
-            public void onFailure(Exception e) {
-                if (e instanceof ElasticsearchStatusException) {
-                    ElasticsearchStatusException es = (ElasticsearchStatusException) e;
-                    if (es.status().equals(RestStatus.CONFLICT)) {
-                        handler.handle(error(new ValueAlreadyPresentException(value.getId())));
-                    }
-                }
-                handler.handle(error(e));
-            }
-        });
+    private boolean matches(Throwable e, RestStatus status) {
+        if (e instanceof ElasticsearchStatusException) {
+            return ((ElasticsearchStatusException) e).status().equals(status);
+        } else {
+            return false;
+        }
     }
 
     @Override
     public void remove(String key, Handler<AsyncResult<Void>> handler) {
-        DeleteRequest request = new DeleteRequest()
-                .index(index)
-                .id(key);
+        context.blocking(done -> {
+            DeleteRequest request = new DeleteRequest()
+                    .index(index)
+                    .id(key);
+            try {
+                var response = client.delete(request, RequestOptions.DEFAULT);
 
-        client.deleteAsync(request, RequestOptions.DEFAULT, new ActionListener<>() {
-            @Override
-            public void onResponse(DeleteResponse response) {
                 if (response.getResult().equals(DocWriteResponse.Result.DELETED)) {
-                    handler.handle(result());
+                    done.complete();
                 } else {
-                    handler.handle(error(new NothingToRemoveException(key)));
+                    done.fail(new NothingToRemoveException(key));
                 }
+            } catch (Throwable e) {
+                done.fail(e);
             }
-
-            @Override
-            public void onFailure(Exception e) {
-                handler.handle(error(e));
-            }
-        });
+        }, handler);
     }
 
     @Override
     public void update(Value value, Handler<AsyncResult<Void>> handler) {
-        UpdateRequest request = new UpdateRequest()
-                .index(index)
-                .doc(Serializer.buffer(value).getBytes(), XContentType.JSON)
-                .id(value.getId());
+        context.blocking(done -> {
+            UpdateRequest request = new UpdateRequest()
+                    .index(index)
+                    .doc(Serializer.buffer(value).getBytes(), XContentType.JSON)
+                    .id(value.getId());
+            try {
+                var response = client.update(request, RequestOptions.DEFAULT);
 
-        client.updateAsync(request, RequestOptions.DEFAULT, new ActionListener<>() {
-            @Override
-            public void onResponse(UpdateResponse response) {
                 if (response.getResult().equals(DocWriteResponse.Result.UPDATED)) {
-                    handler.handle(result());
+                    done.complete();
                 } else {
-                    handler.handle(error(new NothingToUpdateException(value.getId())));
+                    done.fail(new NothingToUpdateException(value.getId()));
+                }
+            } catch (Throwable e) {
+                if (matches(e, RestStatus.NOT_FOUND)) {
+                    done.fail(new NothingToUpdateException(value.getId()));
+                } else {
+                    done.fail(e);
                 }
             }
-
-            @Override
-            public void onFailure(Exception e) {
-                if (e instanceof ElasticsearchStatusException) {
-                    ElasticsearchStatusException es = (ElasticsearchStatusException) e;
-                    if (es.status().equals(RestStatus.NOT_FOUND)) {
-                        handler.handle(error(new NothingToUpdateException(value.getId())));
-                    } else {
-                        handler.handle(error(e));
-                    }
-                } else {
-                    handler.handle(error(e));
-                }
-            }
-        });
+        }, handler);
     }
 
     @Override
     public void values(Handler<AsyncResult<Stream<Value>>> handler) {
-        SearchRequest request = new SearchRequest()
-                .indices(index)
-                .source(new SearchSourceBuilder()
-                        .query(QueryBuilders.matchAllQuery())
-                        .size(MAX_RESULTS)
-                        .fetchSource(true));
+        context.blocking(done -> {
+            SearchRequest request = new SearchRequest()
+                    .indices(index)
+                    .source(new SearchSourceBuilder()
+                            .query(QueryBuilders.matchAllQuery())
+                            .size(MAX_RESULTS)
+                            .fetchSource(true));
 
+            try {
+                var search = client.search(request, RequestOptions.DEFAULT);
 
-        client.searchAsync(request, RequestOptions.DEFAULT, new ActionListener<>() {
-            @Override
-            public void onResponse(SearchResponse search) {
                 if (search.getHits() != null) {
-                    handler.handle(result(StreamSupport.stream(search.getHits().spliterator(), false)
-                            .map(source -> context.toValue(source.getSourceAsString()))));
+                    done.complete(StreamSupport.stream(search.getHits().spliterator(), false)
+                            .map(source -> context.toValue(source.getSourceAsString())));
                 } else {
-                    handler.handle(result(Stream.empty()));
+                    done.complete(Stream.empty());
                 }
+            } catch (Throwable e) {
+                done.fail(e);
             }
-
-            @Override
-            public void onFailure(Exception e) {
-                handler.handle(error(e));
-            }
-        });
+        }, handler);
     }
 
     @Override
     public void clear(Handler<AsyncResult<Void>> handler) {
+        context.blocking(done -> {
+            DeleteIndexRequest request = new DeleteIndexRequest(index);
+            try {
+                var response = client.indices().delete(request, RequestOptions.DEFAULT);
 
-        DeleteIndexRequest request = new DeleteIndexRequest(index);
-
-        client.indices().deleteAsync(request, RequestOptions.DEFAULT, new ActionListener<>() {
-            @Override
-            public void onResponse(AcknowledgedResponse response) {
                 if (response.isAcknowledged()) {
-                    handler.handle(result());
+                    done.complete();
                 } else {
-                    handler.handle(error(new StorageFailureException()));
+                    done.fail(new StorageFailureException());
+                }
+            } catch (Throwable e) {
+                if (matches(e, RestStatus.NOT_FOUND)) {
+                    // attempted to delete an index that does not exist should succeed.
+                    done.complete();
+                } else {
+                    done.fail(e);
                 }
             }
-
-            @Override
-            public void onFailure(Exception e) {
-                handler.handle(result());
-                //handler.handle(error(e));
-            }
-        });
+        }, handler);
     }
 
     @Override
     public void size(Handler<AsyncResult<Integer>> handler) {
-        SearchRequest request = new SearchRequest()
-                .indices(index);
+        context.blocking(done -> {
+            SearchRequest request = new SearchRequest()
+                    .indices(index);
 
-        SearchSourceBuilder source = new SearchSourceBuilder()
-                .fetchSource(false)
-                .size(0)
-                .query(QueryBuilders.matchAllQuery());
+            SearchSourceBuilder source = new SearchSourceBuilder()
+                    .fetchSource(false)
+                    .size(0)
+                    .query(QueryBuilders.matchAllQuery());
 
-        request.source(source);
+            request.source(source);
+            try {
+                var response = client.search(request, RequestOptions.DEFAULT);
 
-        client.searchAsync(request, RequestOptions.DEFAULT, new ActionListener<>() {
-            @Override
-            public void onResponse(SearchResponse response) {
                 if (response.status().equals(RestStatus.OK)) {
-                    handler.handle(result((int) response.getHits().getTotalHits().value));
+                    done.complete((int) response.getHits().getTotalHits().value);
                 } else {
-                    handler.handle(result(0));
+                    done.complete(0);
                 }
+            } catch (Throwable e) {
+                done.fail(e);
             }
-
-            @Override
-            public void onFailure(Exception e) {
-                handler.handle(error(e));
-            }
-        });
+        }, handler);
     }
 
     @Override
     public QueryBuilder<Value> query() {
         return new AbstractQueryBuilder<>(this, ARRAY_NOTATION) {
-            List<BoolQueryBuilder> statements = new ArrayList<>();
+            final List<BoolQueryBuilder> statements = new ArrayList<>();
             BoolQueryBuilder builder = new BoolQueryBuilder();
 
             @Override
@@ -425,31 +384,27 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
             @Override
             public void execute(Handler<AsyncResult<Collection<Value>>> handler) {
-                if (!builder.equals(new BoolQueryBuilder())) {
-                    statements.add(builder);
-                }
-
-                BoolQueryBuilder query = new BoolQueryBuilder().minimumShouldMatch(1);
-                for (BoolQueryBuilder statement : statements) {
-                    query.should(statement);
-                }
-
-                SearchSourceBuilder source = getRequestWithOptions().query(query);
-                SearchRequest request = new SearchRequest()
-                        .indices(index)
-                        .source(source);
-
-                client.searchAsync(request, RequestOptions.DEFAULT, new ActionListener<SearchResponse>() {
-                    @Override
-                    public void onResponse(SearchResponse searchResponse) {
-                        handler.handle(result(listFrom(searchResponse.getHits().getHits())));
+                context.blocking(done -> {
+                    if (!builder.equals(new BoolQueryBuilder())) {
+                        statements.add(builder);
                     }
 
-                    @Override
-                    public void onFailure(Exception e) {
-                        handler.handle(error(e));
+                    BoolQueryBuilder query = new BoolQueryBuilder().minimumShouldMatch(1);
+                    for (BoolQueryBuilder statement : statements) {
+                        query.should(statement);
                     }
-                });
+
+                    SearchSourceBuilder source = getRequestWithOptions().query(query);
+                    SearchRequest request = new SearchRequest()
+                            .indices(index)
+                            .source(source);
+                    try {
+                        var response = client.search(request, RequestOptions.DEFAULT);
+                        done.complete(listFrom(response.getHits().getHits()));
+                    } catch (Throwable e) {
+                        done.fail(e);
+                    }
+                }, handler);
             }
 
             private SearchSourceBuilder getRequestWithOptions() {
