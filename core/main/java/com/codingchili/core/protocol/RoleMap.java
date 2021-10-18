@@ -15,7 +15,7 @@ public class RoleMap {
     public static final String USER = "user";
     public static final String PUBLIC = "public";
     public static final String UNSET = "unset";
-    private static Map<String, RoleType> roleMap = new HashMap<>();
+    private static final Map<String, RoleType> roleMap = new HashMap<>();
 
     static {
         put(ADMIN, Role.ADMIN);

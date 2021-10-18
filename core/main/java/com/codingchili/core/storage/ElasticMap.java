@@ -30,6 +30,7 @@ import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import com.codingchili.core.context.ShutdownListener;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Validator;
@@ -54,7 +55,6 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     public ElasticMap(Promise<AsyncStorage<Value>> promise, StorageContext<Value> context) {
         this.context = context;
         this.index = constructIndexName(context);
-
         try {
             client = new RestHighLevelClient(
                     RestClient.builder(
@@ -64,7 +64,13 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                 if (done.succeeded()) {
                     promise.complete(ElasticMap.this);
                 } else {
-                    promise.fail(done.cause());
+                    try {
+                        this.client.close();
+                    } catch (Throwable ignored) {
+
+                    } finally {
+                        promise.fail(done.cause());
+                    }
                 }
             });
         } catch (Throwable e) {

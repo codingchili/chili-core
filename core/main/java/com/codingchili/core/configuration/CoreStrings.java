@@ -137,6 +137,7 @@ public abstract class CoreStrings {
     public static final String ID_OPTIONS = "options";
     public static final String ID_HANDLER = "handler";
     public static final String ID_UNDEFINED = "undefined";
+    public static final String ID_STATISTICS = "statistics";
 
     // Storage constants
     public static final String DEFAULT_DB = "db";

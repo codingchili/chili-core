@@ -1,6 +1,5 @@
 package com.codingchili.core.protocol;
 
-import com.codingchili.core.context.CoreRuntimeException;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 
@@ -44,7 +43,7 @@ public class Protocol<RequestType> {
     private Function<Request, String> routeMapper = Request::route;
     private boolean emitDocumentation = false;
     private Route<RequestType> lastAddedRoute;
-    private AtomicBoolean dirty = new AtomicBoolean(true);
+    private final AtomicBoolean dirty = new AtomicBoolean(true);
     private Class<?> dataModel;
     private Logger logger = new ConsoleLogger(getClass());
     private String target = "";
