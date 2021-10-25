@@ -70,7 +70,8 @@ public class WebsocketListener implements CoreListener {
                             .encodePrettily());
         });
 
-        start.future().onSuccess((v) -> {
+        var handlerPromise = Promise.<Void>promise();
+        handlerPromise.future().onSuccess((v) -> {
             core.vertx().createHttpServer(settings.getHttpOptions())
                     .exceptionHandler(logger::onError)
                     .webSocketHandler(socket -> {
@@ -88,8 +89,8 @@ public class WebsocketListener implements CoreListener {
                             start.fail(listen.cause());
                         }
                     });
-        });
-        handler.start(start);
+        }).onFailure(start::fail);
+        handler.start(handlerPromise);
     }
 
     private Connection connected(ServerWebSocket socket) {

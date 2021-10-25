@@ -41,7 +41,9 @@ public class TcpListener implements CoreListener {
 
     @Override
     public void start(Promise<Void> start) {
-        start.future().onSuccess((v) -> {
+        var handlerPromise = Promise.<Void>promise();
+
+        handlerPromise.future().onSuccess((v) -> {
             core.vertx().createNetServer(settings.getHttpOptions())
                     .exceptionHandler(logger::onError)
                     .connectHandler(socket -> {
@@ -54,12 +56,14 @@ public class TcpListener implements CoreListener {
                     }).listen(settings.getPort(), getBindAddress(), listen -> {
                         if (listen.succeeded()) {
                             settings.addListenPort(listen.result().actualPort());
+                            start.complete();
                         } else {
                             start.fail(listen.cause());
                         }
                     });
-        });
-        handler.start(start);
+        }).onFailure(start::fail);
+
+        handler.start(handlerPromise);
     }
 
     public Connection connected(NetSocket socket) {
