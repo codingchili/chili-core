@@ -155,7 +155,7 @@ public class Launcher implements CoreService {
                     var future = deployments.get(i);
 
                     if (future.failed()) {
-                        logger.event(LOG_SERVICE_FAIL)
+                        logger.event(LOG_SERVICE_FAIL, Level.SEVERE)
                                 .put(ID_SERVICE, nodes.get(i))
                                 .put(LOG_ERROR, throwableToString(future.cause()))
                                 .send();
