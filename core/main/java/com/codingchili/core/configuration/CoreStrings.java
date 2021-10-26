@@ -110,6 +110,7 @@ public abstract class CoreStrings {
     public static final String ID_UPDATED = "updated";
     public static final String ID_SIZE = "size";
     public static final String ID_DOMAIN = "domain";
+    public static final String ID_SERVICE = "service";
     public static final String ID_PING = "ping";
     public static final String ID_BUFFER = "buffer";
     public static final String ID_TYPE = "type";
@@ -161,6 +162,7 @@ public abstract class CoreStrings {
     public static final String LOG_LISTENER_STOP = "listener.stop";
     public static final String LOG_LISTENER_START = "listener.start";
     public static final String LOG_LISTENER = "listener";
+    public static final String LOG_SERVICE = "service";
     public static final String LOG_MESSAGE = "message";
     public static final String LOG_LEVEL = "level";
     public static final String LOG_VERTX = "vertx";

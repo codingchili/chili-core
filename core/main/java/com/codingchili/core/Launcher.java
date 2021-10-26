@@ -141,7 +141,6 @@ public class Launcher implements CoreService {
      */
     private void deployServices(List<String> nodes) {
         List<Future> deployments = new ArrayList<>();
-        //String node = nodes.get(0);
 
         for (String node : nodes) {
             if (isDeployable(node)) {
@@ -152,7 +151,16 @@ public class Launcher implements CoreService {
         }
         CompositeFuture.all(deployments).onComplete(deployed -> {
             if (deployed.failed()) {
-                logger.onError(deployed.cause());
+                for (var i = 0; i < deployments.size(); i++) {
+                    var future = deployments.get(i);
+
+                    if (future.failed()) {
+                        logger.event(LOG_SERVICE_FAIL)
+                                .put(ID_SERVICE, nodes.get(i))
+                                .put(LOG_ERROR, throwableToString(future.cause()))
+                                .send();
+                    }
+                }
                 exit();
             }
         });
