@@ -60,8 +60,9 @@ dependencies {
 
     /* used to hide warnings about missing slf. */
     implementation('org.slf4j:slf4j-api:1.7.32')
-    implementation('org.slf4j:slf4j-simple:1.7.32')
-    implementation 'org.apache.logging.log4j:log4j-core:2.14.1'
+    implementation('org.slf4j:slf4j-jdk14:1.7.32')
+    implementation('org.apache.logging.log4j:log4j-to-slf4j:2.16.0')
+    //implementation('org.slf4j:slf4j-simple:1.7.32')
 
     testImplementation 'io.vertx:vertx-unit:4.2.1'
     testImplementation 'junit:junit:4.13.2'
