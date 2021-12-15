@@ -386,12 +386,27 @@ public class RestRequestTest {
                 }
 
                 @Override
+                public Cookie getCookie(String name, String domain, String path) {
+                    return null;
+                }
+
+                @Override
                 public int cookieCount() {
                     return 0;
                 }
 
                 @Override
                 public Map<String, Cookie> cookieMap() {
+                    return null;
+                }
+
+                @Override
+                public Set<Cookie> cookies(String name) {
+                    return null;
+                }
+
+                @Override
+                public Set<Cookie> cookies() {
                     return null;
                 }
 
