@@ -7,6 +7,7 @@ import com.esotericsoftware.kryo.util.Pool;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import io.vertx.core.buffer.Buffer;
@@ -24,6 +25,7 @@ import java.util.zip.GZIPOutputStream;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.protocol.exception.SerializerPayloadException;
+import com.codingchili.core.storage.JsonStorable;
 import com.codingchili.core.storage.Storable;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
@@ -47,6 +49,14 @@ public class Serializer {
         json.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
         json.configure(SerializationFeature.INDENT_OUTPUT, true);
 
+        // this configuration method is deprecated; vertx doesn't internally use the new builder pattern
+        // for the mapper which means that the upgraded way is not accessible here.
+        // In 3.x this behavior will be the default so this could then be removed
+        // regardless if the builder is made available from vertx or not.
+        // this configures a default polymorphic type validator (3.10), which will deny
+        // deserialization into weakly typed (and known dangerous) field types such as 'object' etc.
+        json.configure(MapperFeature.BLOCK_UNSAFE_POLYMORPHIC_BASE_TYPES, true);
+
         yaml.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         yaml.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         yaml.setSerializationInclusion(JsonInclude.Include.NON_NULL);
@@ -55,7 +65,7 @@ public class Serializer {
         yaml = VertxSerializerModules.registerTypes(yaml);
     }
 
-    private static Pool<Kryo> pool = new Pool<Kryo>(true, true, 128) {
+    private static final Pool<Kryo> pool = new Pool<Kryo>(true, true, 128) {
         protected Kryo create() {
             Kryo kryo = new Kryo();
             // this instance should not be used for de-serializing arbitrary classes.
@@ -258,9 +268,8 @@ public class Serializer {
         }
     }
 
-
     // stores fields that has been set as accessible for the given class.
-    private static Map<Class<?>, Map<String, Field>> reflectCache = new HashMap<>();
+    private static final Map<Class<?>, Map<String, Field>> reflectCache = new HashMap<>();
 
     /**
      * Gets a value by the given path for an object.

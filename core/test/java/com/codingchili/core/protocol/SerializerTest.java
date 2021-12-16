@@ -1,17 +1,16 @@
 package com.codingchili.core.protocol;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.util.*;
 
 import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.protocol.exception.SerializerPayloadException;
 import com.codingchili.core.security.SecretFactory;
 import com.codingchili.core.security.Token;
 import com.codingchili.core.testing.NestedObject;
@@ -113,6 +112,18 @@ public class SerializerTest {
         StorageObject yamlStorable = Serializer.unyaml(yaml, StorageObject.class);
 
         test.assertEquals(Serializer.pack(storable), Serializer.pack(yamlStorable));
+    }
+
+    @Test
+    public void polymorphicThrows() {
+        Assert.assertThrows(SerializerPayloadException.class, () -> {
+            Serializer.unpack(new JsonObject().encode(), Banned.class);
+        });
+    }
+
+    public static class Banned {
+        @JsonTypeInfo(use= JsonTypeInfo.Id.CLASS)
+        Object object;
     }
 
     @Test
