@@ -56,6 +56,7 @@ public class Serializer {
         // this configures a default polymorphic type validator (3.10), which will deny
         // deserialization into weakly typed (and known dangerous) field types such as 'object' etc.
         json.configure(MapperFeature.BLOCK_UNSAFE_POLYMORPHIC_BASE_TYPES, true);
+        json.registerModule(new JsonTypesModule());
 
         yaml.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         yaml.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);

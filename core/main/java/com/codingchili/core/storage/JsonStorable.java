@@ -2,8 +2,7 @@ package com.codingchili.core.storage;
 
 import io.vertx.core.json.JsonObject;
 
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Extends the JsonObject making it storable.
@@ -34,6 +33,13 @@ public class JsonStorable extends JsonObject implements Storable {
         if (!json.containsKey(idField)) {
             json.put(idField, UUID.randomUUID().toString());
         }
+    }
+
+    /**
+     * @param map a key-value pairing representing a json structure.
+     */
+    public JsonStorable(Map<String, Object> map) {
+        super(map);
     }
 
     /**
