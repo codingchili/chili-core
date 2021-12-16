@@ -133,10 +133,10 @@ Applications currently using chili-core
 
 |application|description|
 |---|---|
-|[flashcards](https://github.com/codingchili/flashcards-webapp)|Progressive web app for studying  with flashcards.|
-|[ethereum-ingest](https://github.com/codingchili/ethereum-ingest)|Ethereum block/transaction import utility.|
+|[mutable-bunnies](https://github.com/codingchili/mutable-bunnies-server)|2D MMORPG game in development.|
 |[zapperfly-asm](https://github.com/codingchili/zapperfly-asm)|Extra simple clustered build servers.|
-|[chili-game-ext](https://github.com/codingchili/chili-game-ext)|2D MMORPG game in development.|
+|[ethereum-ingest](https://github.com/codingchili/ethereum-ingest)|Ethereum block/transaction import utility.|
+|[flashcards](https://github.com/codingchili/flashcards-webapp)|Progressive web app for studying  with flashcards.|
 
 ## Contributing
 Issues and PR's are welcome with :blue_heart:.
