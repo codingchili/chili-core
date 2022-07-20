@@ -15,9 +15,11 @@
   ~ under the License.
   -->
 
-<hazelcast xsi:schemaLocation="http://www.hazelcast.com/schema/config hazelcast-config-3.8.xsd"
-           xmlns="http://www.hazelcast.com/schema/config"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<hazelcast xmlns="http://www.hazelcast.com/schema/config"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.hazelcast.com/schema/config
+           https://www.hazelcast.com/schema/config/hazelcast-config-4.2.xsd">
+
     <properties>
         <property name="hazelcast.mancenter.enabled">false</property>
         <property name="hazelcast.memcache.enabled">false</property>
@@ -39,13 +41,12 @@
         <max-idle-seconds>31556926</max-idle-seconds>
         <eviction eviction-policy="LRU" max-size-policy="USED_HEAP_PERCENTAGE" size="95"/>
         <in-memory-format>OBJECT</in-memory-format>
-        <merge-policy>com.hazelcast.map.merge.PutIfAbsentMapMergePolicy</merge-policy>
+        <merge-policy>PutIfAbsentMergePolicy</merge-policy>
     </map>
 
     <cluster-name>chili</cluster-name>
     <instance-name>core</instance-name>
 
-    <management-center scripting-enabled="false">http://localhost:8080/mancenter</management-center>
     <network>
         <port auto-increment="true" port-count="10000">5701</port>
         <outbound-ports>
@@ -99,6 +100,7 @@
             <iteration-count>19</iteration-count>
         </symmetric-encryption>
     </network>
+
     <partition-group enabled="false"/>
     <executor-service name="default">
         <pool-size>16</pool-size>
