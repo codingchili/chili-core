@@ -16,8 +16,7 @@ import com.codingchili.core.context.CoreRuntimeException;
  * Implementation is pluggable.
  */
 public class QueryParser<T extends Storable> implements StringQueryParser<T> {
-    private static final String DECIMAL_SEPARATOR =
-            new DecimalFormatSymbols(Locale.getDefault()).getDecimalSeparator() + "";
+    private static final String DECIMAL_SEPARATOR = String.valueOf(Double.valueOf(1.0).toString().charAt(1));
 
     private static Map<String, BiConsumer<QueryBuilder<?>, Matcher>> operations = new ConcurrentHashMap<>();
     // matches a regex and everything within the following parenthesis, quoted strings and regular tokens.
