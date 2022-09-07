@@ -21,12 +21,12 @@ import static com.codingchili.core.files.Configurations.security;
  */
 @RunWith(VertxUnitRunner.class)
 public class SecuritySettingsTest {
-    private static final String KEY_JKS = "test_key.jks";
-    private static final String KEYSTORE_JKS = CoreStrings.testFile(KEY_JKS);
-    private static final String TRUST_JKS = "test_trust.jks";
-    private static final String TRUSTSTORE_JKS = CoreStrings.testFile(TRUST_JKS);
+    public static final String TRUST_JKS = "test_trust.jks";
+    public static final String TRUSTSTORE_JKS = CoreStrings.testFile(TRUST_JKS);
+    public static final String KEY_JKS = "test_key.jks";
+    public static final String KEYSTORE_JKS = CoreStrings.testFile(KEY_JKS);
+    public static final String PWD = "password";
     private static final String ALGORITHM_RSA = "RSA";
-    private static final String PWD = "password";
     private CoreContext context;
 
     @Before
