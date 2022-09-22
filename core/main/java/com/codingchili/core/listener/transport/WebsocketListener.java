@@ -85,6 +85,7 @@ public class WebsocketListener implements CoreListener {
                     .listen(settings.getPort(), getBindAddress(), listen -> {
                         if (listen.succeeded()) {
                             settings.addListenPort(listen.result().actualPort());
+                            start.complete();
                         } else {
                             start.fail(listen.cause());
                         }

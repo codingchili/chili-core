@@ -1,5 +1,7 @@
 package com.codingchili.core.security;
 
+import com.codingchili.core.configuration.system.SecuritySettingsTest;
+import com.codingchili.core.files.Configurations;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -32,6 +34,12 @@ public class TokenFactoryTest {
         context = new SystemContext();
         tokenFactory = new TokenFactory(context, secret);
         tokenFactory2 = new TokenFactory(context, secret2);
+        Configurations.security()
+                .addKeystore()
+                .setPath(SecuritySettingsTest.KEYSTORE_JKS)
+                .setPassword(SecuritySettingsTest.PWD)
+                .build()
+                .save();
     }
 
     @AfterClass
