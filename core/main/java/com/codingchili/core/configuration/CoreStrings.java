@@ -373,7 +373,7 @@ public abstract class CoreStrings {
     }
 
     public static String getService(String config) {
-        return CoreStrings.DIR_SERVICES + config;
+        return CoreStrings.DIR_SERVICES + config + EXT_YAML;
     }
 
     public static String format(Path path) {

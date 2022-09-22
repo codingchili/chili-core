@@ -8,6 +8,8 @@ import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.protocol.Response;
 
+import static com.codingchili.core.configuration.CoreStrings.*;
+
 /**
  * A request in the cluster.
  * <p>
@@ -56,6 +58,8 @@ public class ClusterRequest implements Request {
             connection = new Connection((message) -> {
                 throw new UnsupportedOperationException("Cannot write to the connection of Cluster requests, use #write instead.");
             }, "");
+            connection.setProperty(PROTOCOL_CONNECTION, json.getString(PROTOCOL_CONNECTION));
+            connection.setProperty(Connection.ID, json.getString(Connection.ID));
         }
         return connection;
     }

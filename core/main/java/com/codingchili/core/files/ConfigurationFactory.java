@@ -21,7 +21,7 @@ import com.codingchili.core.files.exception.NoSuchResourceException;
  */
 public class ConfigurationFactory {
     private static final String HIDDEN_FILE_PREFIX = ".";
-    private static Map<String, FileStore> implementations = new HashMap<>();
+    private static final Map<String, FileStore> implementations = new HashMap<>();
 
     static {
         add(new JsonFileStore());
@@ -79,9 +79,9 @@ public class ConfigurationFactory {
         Optional<Buffer> buffer = new Resource(path).read();
 
         // not found - attempt all supported extensions.
-        if (!buffer.isPresent()) {
+        if (buffer.isEmpty()) {
             // but only if the path does not include an extension.
-            if (!extension(path).isPresent()) {
+            if (extension(path).isEmpty()) {
                 buffer = supported().stream()
                         .map(extension -> {
                             detectedExtension.set(extension);
@@ -91,7 +91,7 @@ public class ConfigurationFactory {
                         .findFirst().orElse(Optional.empty());
             }
 
-            if (!buffer.isPresent()) {
+            if (buffer.isEmpty()) {
                 throw new NoSuchResourceException(path);
             }
         }
@@ -118,15 +118,13 @@ public class ConfigurationFactory {
             return Arrays.stream(files)
                     .parallel()
                     .filter(file -> !file.getName().startsWith(HIDDEN_FILE_PREFIX))
-                    .map(file -> {
+                    .flatMap(file -> {
                         if (file.isDirectory()) {
                             return enumerate(file.getPath(), subdirs);
                         } else {
                             return Stream.of(file.getPath());
                         }
-                    })
-                    .flatMap(Function.identity())
-                    .filter(Objects::nonNull);
+                    }).filter(Objects::nonNull);
         }
     }
 
@@ -200,7 +198,7 @@ public class ConfigurationFactory {
         boolean exists = Paths.get(path).toFile().exists();
 
         // make sure to check all supported file extensions if none is provided.
-        if (!extension(path).isPresent()) {
+        if (extension(path).isEmpty()) {
             exists = supported().stream()
                     .anyMatch(ext -> Paths.get(path + ext)
                             .toFile().exists()

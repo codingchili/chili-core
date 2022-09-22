@@ -14,9 +14,9 @@ import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_CONNECTION
  * client may only live during a single request.
  */
 public class Connection implements Messageable {
+    public static final String ID = "id";
     private final Map<String, String> properties = new HashMap<>();
     private final Map<String, Runnable> closeHandlers = new HashMap<>();
-    private static final String ID = "id";
     private final Consumer<Object> writer;
     private BiConsumer<Consumer<Object>, Object> proxy;
 
