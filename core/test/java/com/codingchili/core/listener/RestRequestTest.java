@@ -227,6 +227,16 @@ public class RestRequestTest {
                 }
 
                 @Override
+                public HttpServerRequest setParamsCharset(String charset) {
+                    return null;
+                }
+
+                @Override
+                public String getParamsCharset() {
+                    return null;
+                }
+
+                @Override
                 public MultiMap params() {
                     MultiMap map = new HeadersMultiMap();
 
@@ -554,7 +564,12 @@ public class RestRequestTest {
         }
 
         @Override
-        public Set<FileUpload> fileUploads() {
+        public RequestBody body() {
+            return null;
+        }
+
+        @Override
+        public List<FileUpload> fileUploads() {
             return null;
         }
 

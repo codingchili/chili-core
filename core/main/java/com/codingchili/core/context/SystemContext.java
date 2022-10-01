@@ -273,7 +273,7 @@ public class SystemContext implements CoreContext {
     }
 
     ExecutorService getBlockingExecutor() {
-        return ((VertxImpl) vertx).getWorkerPool();
+        return ((VertxImpl) vertx).getWorkerPool().executor();
     }
 
     @Override

@@ -16,7 +16,6 @@ import org.elasticsearch.client.*;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.bytes.BytesReference;
-import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.IndexNotFoundException;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.rest.RestStatus;
@@ -24,13 +23,12 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
+import org.elasticsearch.xcontent.XContentType;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.codingchili.core.context.ShutdownListener;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Validator;
@@ -56,9 +54,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
         this.context = context;
         this.index = constructIndexName(context);
         try {
-            client = new RestHighLevelClient(
-                    RestClient.builder(
-                            new HttpHost(context.host(), context.port(), scheme(context))));
+            client = new RestHighLevelClient(RestClient.builder(new HttpHost(context.host(), context.port(), scheme(context))));
 
             createIndexIfNotExists().onComplete(done -> {
                 if (done.succeeded()) {
@@ -84,9 +80,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     private String constructIndexName(StorageContext<Value> context) {
         if (context.collection() != null) {
-            return String.format("%s.%s",
-                    context.database().toLowerCase(),
-                    context.collection().toLowerCase());
+            return String.format("%s.%s", context.database().toLowerCase(), context.collection().toLowerCase());
         } else {
             return context.database();
         }
@@ -115,29 +109,21 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     private void configureMapping(CreateIndexRequest request) {
         JsonObject properties = context.properties();
         if (properties.containsKey(ID_MAPPINGS)) {
-            request.mapping(
-                    properties.getJsonObject(ID_MAPPINGS).encodePrettily(),
-                    XContentType.JSON
-            );
+            request.mapping(properties.getJsonObject(ID_MAPPINGS).encodePrettily(), XContentType.JSON);
         }
     }
 
     private void configureSettings(CreateIndexRequest request) {
         JsonObject properties = context.properties();
         if (properties.containsKey(ID_SETTINGS)) {
-            request.settings(
-                    properties.getJsonObject(ID_SETTINGS).encodePrettily(),
-                    XContentType.JSON
-            );
+            request.settings(properties.getJsonObject(ID_SETTINGS).encodePrettily(), XContentType.JSON);
         }
     }
 
     @Override
     public void get(String key, Handler<AsyncResult<Value>> handler) {
         context.blocking((done) -> {
-            GetRequest request = new GetRequest()
-                    .index(index)
-                    .id(key);
+            GetRequest request = new GetRequest().index(index).id(key);
             try {
                 var document = client.get(request, RequestOptions.DEFAULT);
                 if (document.isExists()) {
@@ -158,10 +144,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     @Override
     public void put(Value value, Handler<AsyncResult<Void>> handler) {
         context.blocking(done -> {
-            IndexRequest request = new IndexRequest()
-                    .index(index)
-                    .source(Serializer.buffer(value).getBytes(), XContentType.JSON)
-                    .id(value.getId());
+            IndexRequest request = new IndexRequest().index(index).source(Serializer.buffer(value).getBytes(), XContentType.JSON).id(value.getId());
             try {
                 client.index(request, RequestOptions.DEFAULT);
                 done.complete();
@@ -174,11 +157,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     @Override
     public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
         context.blocking(done -> {
-            IndexRequest request = new IndexRequest()
-                    .index(index)
-                    .source(Serializer.buffer(value).getBytes(), XContentType.JSON)
-                    .id(value.getId())
-                    .opType(DocWriteRequest.OpType.CREATE);
+            IndexRequest request = new IndexRequest().index(index).source(Serializer.buffer(value).getBytes(), XContentType.JSON).id(value.getId()).opType(DocWriteRequest.OpType.CREATE);
             try {
                 var response = client.index(request, RequestOptions.DEFAULT);
                 if (response.getResult().equals(DocWriteResponse.Result.CREATED)) {
@@ -207,9 +186,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     @Override
     public void remove(String key, Handler<AsyncResult<Void>> handler) {
         context.blocking(done -> {
-            DeleteRequest request = new DeleteRequest()
-                    .index(index)
-                    .id(key);
+            DeleteRequest request = new DeleteRequest().index(index).id(key);
             try {
                 var response = client.delete(request, RequestOptions.DEFAULT);
 
@@ -227,10 +204,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     @Override
     public void update(Value value, Handler<AsyncResult<Void>> handler) {
         context.blocking(done -> {
-            UpdateRequest request = new UpdateRequest()
-                    .index(index)
-                    .doc(Serializer.buffer(value).getBytes(), XContentType.JSON)
-                    .id(value.getId());
+            UpdateRequest request = new UpdateRequest().index(index).doc(Serializer.buffer(value).getBytes(), XContentType.JSON).id(value.getId());
             try {
                 var response = client.update(request, RequestOptions.DEFAULT);
 
@@ -252,19 +226,13 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     @Override
     public void values(Handler<AsyncResult<Stream<Value>>> handler) {
         context.blocking(done -> {
-            SearchRequest request = new SearchRequest()
-                    .indices(index)
-                    .source(new SearchSourceBuilder()
-                            .query(QueryBuilders.matchAllQuery())
-                            .size(MAX_RESULTS)
-                            .fetchSource(true));
+            SearchRequest request = new SearchRequest().indices(index).source(new SearchSourceBuilder().query(QueryBuilders.matchAllQuery()).size(MAX_RESULTS).fetchSource(true));
 
             try {
                 var search = client.search(request, RequestOptions.DEFAULT);
 
                 if (search.getHits() != null) {
-                    done.complete(StreamSupport.stream(search.getHits().spliterator(), false)
-                            .map(source -> context.toValue(source.getSourceAsString())));
+                    done.complete(StreamSupport.stream(search.getHits().spliterator(), false).map(source -> context.toValue(source.getSourceAsString())));
                 } else {
                     done.complete(Stream.empty());
                 }
@@ -300,13 +268,9 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     @Override
     public void size(Handler<AsyncResult<Integer>> handler) {
         context.blocking(done -> {
-            SearchRequest request = new SearchRequest()
-                    .indices(index);
+            SearchRequest request = new SearchRequest().indices(index);
 
-            SearchSourceBuilder source = new SearchSourceBuilder()
-                    .fetchSource(false)
-                    .size(0)
-                    .query(QueryBuilders.matchAllQuery());
+            SearchSourceBuilder source = new SearchSourceBuilder().fetchSource(false).size(0).query(QueryBuilders.matchAllQuery());
 
             request.source(source);
             try {
@@ -401,9 +365,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                     }
 
                     SearchSourceBuilder source = getRequestWithOptions().query(query);
-                    SearchRequest request = new SearchRequest()
-                            .indices(index)
-                            .source(source);
+                    SearchRequest request = new SearchRequest().indices(index).source(source);
                     try {
                         var response = client.search(request, RequestOptions.DEFAULT);
                         done.complete(listFrom(response.getHits().getHits()));
@@ -414,9 +376,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
             }
 
             private SearchSourceBuilder getRequestWithOptions() {
-                SearchSourceBuilder source = new SearchSourceBuilder()
-                        .size(MAX_RESULTS)
-                        .fetchSource(true);
+                SearchSourceBuilder source = new SearchSourceBuilder().size(MAX_RESULTS).fetchSource(true);
 
                 if (isOrdered()) {
                     switch (getSortOrder()) {

@@ -1,13 +1,13 @@
 {
-  "local" : "IkszmdB5tvbwDsfnni274agUfQJO7Ac763trLD3IVwLJ5BSRX7zDTvq_o5JpQFLBYPcR1_OvkEAg7VNYm472wg",
-  "global" : "fy61QHMS-DSUWMOeIofvOtPFXUS88HDzUHUApc8zkVFPq-ko_GHCGoRogfZaRHMhiDjocr8usORVwhVzAPICeg",
+  "local" : "dJCEYDHRg2cI0cvZXFwYhrhBndnWd1IY3EKbTR3CKrnMA0_i1DFvoL8aytFC2i6HH4iTH8iIEOo5LOPP8PEFuw",
+  "global" : "57vEcR0MLHNAFw5ZiP_i93Iv2awRIh1cOh53pWe2tc8hW_jjLrzzUjdFLLE9Su52rTTTnWugcVFZoGpXP3HLGA",
   "node" : "undefined.node",
   "service2token" : {
     "properties" : {
       "type" : "HmacSHA512"
     },
-    "domain" : "undefined",
-    "key" : "yukS2VAlPHqVFG1Mg5EF1rKDVbsAp3h_iDBr8j1iiFps7HryV0GdumJ3xAwmAmmZJypSQr9PLRjrwu5_jbxF6g",
-    "expiry" : 1634558254
+    "domain" : "undefined.node",
+    "key" : "__SRps6nZ-JpbUq-nCSXNtR7ZPdjiSXq5HK7x8QFRsK3DQcEUaI9uaDVyTIu7A61uqupElxdku5pud53l81Ksg",
+    "expiry" : 1665242565
   }
 }

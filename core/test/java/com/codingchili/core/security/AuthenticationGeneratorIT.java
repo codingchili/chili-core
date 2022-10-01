@@ -53,6 +53,7 @@ public class AuthenticationGeneratorIT {
 
     @After
     public void tearDown(TestContext test) {
+        Configurations.reset();
         context.close(test.asyncAssertSuccess());
     }
 
