@@ -1,1 +1,14 @@
-{ }
+{
+  "service1secret" : "esi0Bz5NK_o2seIJScyuxh7H4j_aeXHy5uI66RZUGvWhdAcglhREKRqMVuQawi0DF71r-DRX3u0OZejWqp5MuQ",
+  "local" : "LUMhbtjyn2eFSS1ReoYvoo-aa8xoYKo4CECh01hllF-QrnQoZv-Khqq7jHR0bfMghygkdaUj3wEifEIXxOEuhg",
+  "global" : "57vEcR0MLHNAFw5ZiP_i93Iv2awRIh1cOh53pWe2tc8hW_jjLrzzUjdFLLE9Su52rTTTnWugcVFZoGpXP3HLGA",
+  "node" : "undefined.node",
+  "service1token" : {
+    "properties" : {
+      "type" : "HmacSHA512"
+    },
+    "domain" : "undefined.node",
+    "key" : "AEVQ6IVXZVgbMwqYBAQVUzsGasZTO4FHT6N3a7bJiWfvY7DL_VqcECv2aLU8tS83Wzvz5IuTmKAhrgf_03eD_w",
+    "expiry" : 1665242565
+  }
+}

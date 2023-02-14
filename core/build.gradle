@@ -59,9 +59,9 @@ dependencies {
     implementation('com.esotericsoftware:kryo:5.2.0')
 
     /* used to hide warnings about missing slf. */
-    implementation('org.slf4j:slf4j-api:1.7.32')
-    implementation('org.slf4j:slf4j-jdk14:1.7.32')
-    implementation('org.apache.logging.log4j:log4j-to-slf4j:2.16.0')
+    implementation('org.slf4j:slf4j-api:2.0.1')
+    implementation('org.slf4j:slf4j-jdk14:2.0.0')
+    implementation('org.apache.logging.log4j:log4j-to-slf4j:2.19.0')
     //implementation('org.slf4j:slf4j-simple:1.7.32')
 
     testImplementation 'io.vertx:vertx-unit:4.3.8'

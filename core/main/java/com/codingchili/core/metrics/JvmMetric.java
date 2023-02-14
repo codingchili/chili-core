@@ -16,8 +16,8 @@ public enum JvmMetric {
     process(ProcessMetrics.class, "process"),
     os(OsMetricGauge.class, "os");
 
-    private Class<MetricSet> impl;
-    private String namespace;
+    private final Class<MetricSet> impl;
+    private final String namespace;
 
     /**
      * @return the namespace which the metric registers under.

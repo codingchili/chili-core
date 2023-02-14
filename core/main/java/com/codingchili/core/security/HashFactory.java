@@ -18,11 +18,11 @@ import com.codingchili.core.security.exception.HashMismatchException;
  */
 
 public class HashFactory {
-    private static final ArgonSettings settings = Configurations.security().getArgon();
     private static final Argon2 argon2;
     private final CoreContext context;
 
     static {
+        var settings = Configurations.security().getArgon();
         argon2 = Argon2Factory.create(
                 settings.getSaltLength(),
                 settings.getHashLength()
@@ -64,6 +64,8 @@ public class HashFactory {
      * @return callback
      */
     public Future<String> hash(char[] plaintext) {
+        var settings = settings();
+
         Promise<String> promise = Promise.promise();
         context.<String>blocking(blocking -> blocking.complete(
                 argon2.hash(
@@ -89,5 +91,9 @@ public class HashFactory {
      */
     public void wipe(char[] sensitive) {
         argon2.wipeArray(sensitive);
+    }
+
+    private ArgonSettings settings() {
+        return Configurations.security().getArgon();
     }
 }
