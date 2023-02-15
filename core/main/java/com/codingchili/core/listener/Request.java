@@ -91,7 +91,7 @@ public interface Request extends Messageable {
         String target = data().getString(PROTOCOL_TARGET);
 
         if (target == null) {
-            target = TARGET_UNDEFINED;
+            //target = TARGET_UNDEFINED;
         }
         return target;
     }
