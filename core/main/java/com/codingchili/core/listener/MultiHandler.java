@@ -18,16 +18,16 @@ import com.codingchili.core.protocol.exception.HandlerMissingException;
  * the processed request is found, then a #{@link HandlerMissingException}
  * is thrown.
  */
-public class MultiHandler implements CoreHandler {
-    private Map<String, CoreHandler> map = new HashMap<>();
-    private AtomicBoolean started = new AtomicBoolean(false);
+public class MultiHandler<T extends Request> implements CoreHandler<T> {
+    private final Map<String, CoreHandler<T>> map = new HashMap<>();
+    private final AtomicBoolean started = new AtomicBoolean(false);
     private CoreContext core;
     private String address;
 
     /**
      * @param handlers same as @see #MultiHandler(CoreHandler...)
      */
-    public MultiHandler(List<CoreHandler> handlers) {
+    public MultiHandler(List<CoreHandler<T>> handlers) {
         handlers.forEach(this::add);
     }
 
@@ -36,8 +36,8 @@ public class MultiHandler implements CoreHandler {
      *                 When a request is processed the requests target
      *                 will be used to lookup a CoreHandler with a matching address.
      */
-    public MultiHandler(CoreHandler... handlers) {
-        for (CoreHandler handler : handlers) {
+    public MultiHandler(CoreHandler<T>... handlers) {
+        for (var handler : handlers) {
             add(handler);
         }
     }
@@ -48,7 +48,7 @@ public class MultiHandler implements CoreHandler {
      * @param address the address to listen on.
      * @return fluent.
      */
-    public MultiHandler setAddress(String address) {
+    public MultiHandler<T> setAddress(String address) {
         this.address = address;
         return this;
     }
@@ -61,7 +61,7 @@ public class MultiHandler implements CoreHandler {
      * @return a Future that will be completed when the handler is started if the MultiHandler
      * is already deployed. If the MultiHandler is not deployed - the future is completed.
      */
-    public Future<Void> add(CoreHandler handler) {
+    public Future<Void> add(CoreHandler<T> handler) {
         Promise<Void> promise = Promise.promise();
 
         // if already started - start up the handler.
@@ -115,7 +115,7 @@ public class MultiHandler implements CoreHandler {
         }).onComplete(start);
     }
 
-    private Future<Void> forAll(BiConsumer<CoreHandler, Promise<Void>> consumer) {
+    private Future<Void> forAll(BiConsumer<CoreHandler<T>, Promise<Void>> consumer) {
         Promise<Void> all = Promise.promise();
         List<Future> futures = new ArrayList<>();
 
@@ -141,7 +141,7 @@ public class MultiHandler implements CoreHandler {
     }
 
     @Override
-    public void handle(Request request) {
+    public void handle(T request) {
         if (map.containsKey(request.target())) {
             map.get(request.target()).handle(request);
         } else {
