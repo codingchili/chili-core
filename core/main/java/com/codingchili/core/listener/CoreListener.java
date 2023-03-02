@@ -17,7 +17,7 @@ public interface CoreListener extends CoreDeployment {
      *                the implementing class.
      * @return fluent
      */
-    CoreListener handler(CoreHandler handler);
+    CoreListener handler(CoreHandler<?> handler);
 
     /**
      * @return the name of the listener.
