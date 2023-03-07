@@ -8,6 +8,8 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 
+import java.util.UUID;
+
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.RestHelper;
 import com.codingchili.core.context.CoreContext;
@@ -96,6 +98,7 @@ public class WebsocketListener implements CoreListener {
 
     private Connection connected(ServerWebSocket socket) {
         boolean isBinary = settings.isBinaryWebsockets();
+
         return new Connection((msg) -> {
             Buffer buffer = Response.buffer(msg);
 
@@ -104,7 +107,7 @@ public class WebsocketListener implements CoreListener {
             } else {
                 socket.writeTextMessage(buffer.toString());
             }
-        }, socket.textHandlerID())
+        }, UUID.randomUUID().toString())
                 .setProperty(PROTOCOL_CONNECTION, socket.remoteAddress().host());
     }
 
