@@ -278,6 +278,14 @@ public class Protocol<RequestType> {
     }
 
     /**
+     * @param route to check if it exists.
+     * @return true if the route is registered.
+     */
+    public boolean contains(String route) {
+        return authorizer.contains(route);
+    }
+
+    /**
      * Returns the route handler for the given target route and its access level.
      *
      * @param route the handler route to find.
