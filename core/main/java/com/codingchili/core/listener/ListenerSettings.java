@@ -197,7 +197,6 @@ public class ListenerSettings {
 
         if (httpOptions == null) {
             httpOptions = new HttpServerOptions()
-                    .setMaxWebSocketFrameSize(maxRequestBytes)
                     .setUseAlpn(alpn)
                     .setCompressionSupported(true)
                     .setSsl(secure);
