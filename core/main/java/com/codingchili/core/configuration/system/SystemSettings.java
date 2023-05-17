@@ -23,6 +23,7 @@ public class SystemSettings implements Configurable {
     private int configurationPoll = 1500;
     private int cachedFilePoll = 1500;
     private boolean consoleLogging = true;
+    private boolean prettyEncoding = true;
     private boolean unsafe = false;
     private int clusterTimeout = 3000;
     private long blockedThreadChecker = VertxOptions.DEFAULT_BLOCKED_THREAD_CHECK_INTERVAL;
@@ -273,5 +274,13 @@ public class SystemSettings implements Configurable {
     public void setUnsafe(Boolean unsafe) {
         this.unsafe = unsafe;
         System.setProperty("kryo.unsafe", unsafe.toString());
+    }
+
+    public boolean isPrettyEncoding() {
+        return prettyEncoding;
+    }
+
+    public void setPrettyEncoding(boolean prettyEncoding) {
+        this.prettyEncoding = prettyEncoding;
     }
 }

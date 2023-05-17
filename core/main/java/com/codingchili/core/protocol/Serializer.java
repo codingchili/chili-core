@@ -1,6 +1,7 @@
 package com.codingchili.core.protocol;
 
 
+import com.codingchili.core.files.Configurations;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.util.Pool;
@@ -42,7 +43,8 @@ public class Serializer {
 
     static {
         // enable pretty printing for all json.
-        json.configure(SerializationFeature.INDENT_OUTPUT, true);
+        json.configure(SerializationFeature.INDENT_OUTPUT,
+                Configurations.system().isPrettyEncoding());
         json.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         json.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         json.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
