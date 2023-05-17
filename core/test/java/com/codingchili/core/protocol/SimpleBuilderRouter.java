@@ -10,7 +10,7 @@ import com.codingchili.core.testing.StorageObject;
 import static com.codingchili.core.protocol.ProtocolTest.*;
 import static com.codingchili.core.protocol.Role.*;
 
-public class SimpleBuilderRouter implements CoreHandler {
+public class SimpleBuilderRouter implements CoreHandler<Request> {
     private Protocol<Request> protocol = new Protocol<>();
 
     public SimpleBuilderRouter() {

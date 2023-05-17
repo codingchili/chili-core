@@ -1,7 +1,9 @@
 package com.codingchili.core.configuration.system;
 
 import com.codingchili.core.metrics.MetricSettings;
+import com.codingchili.core.protocol.Serializer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import io.vertx.core.VertxOptions;
 
 import com.codingchili.core.configuration.Configurable;
@@ -281,6 +283,7 @@ public class SystemSettings implements Configurable {
     }
 
     public void setPrettyEncoding(boolean prettyEncoding) {
+        Serializer.json.configure(SerializationFeature.INDENT_OUTPUT, prettyEncoding);
         this.prettyEncoding = prettyEncoding;
     }
 }

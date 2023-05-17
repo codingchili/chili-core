@@ -13,7 +13,7 @@ import static com.codingchili.core.protocol.RoleMap.*;
 @Roles(PUBLIC)
 @Description(ProtocolTest.DOCSTRING_TEXT)
 @Address(ADDRESS)
-public class AnnotatedRouter implements CoreHandler {
+public class AnnotatedRouter implements CoreHandler<Request> {
 
     @Api
     @Description(DOC_PUBLIC)

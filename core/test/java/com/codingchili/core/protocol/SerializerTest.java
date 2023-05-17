@@ -1,5 +1,6 @@
 package com.codingchili.core.protocol;
 
+import com.codingchili.core.files.Configurations;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
@@ -101,6 +102,20 @@ public class SerializerTest {
     }
 
     @Test
+    public void prettyConfiguredBySystem(TestContext test) {
+        var json = new JsonObject()
+                .put("testing", true)
+                .put("init", true);
+
+        Configurations.system().setPrettyEncoding(true);
+        var pretty = Serializer.pack(json);
+        Configurations.system().setPrettyEncoding(false);
+        var not_pretty = Serializer.pack(json);
+
+        test.assertNotEquals(pretty.length(), not_pretty.length());
+    }
+
+    @Test
     public void testSerializeYaml(TestContext test) {
         StorageObject storable = new StorageObject();
         NestedObject nested = new NestedObject().setName("anjah");
@@ -122,7 +137,7 @@ public class SerializerTest {
     }
 
     public static class Banned {
-        @JsonTypeInfo(use= JsonTypeInfo.Id.CLASS)
+        @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
         Object object;
     }
 
@@ -139,9 +154,11 @@ public class SerializerTest {
 
     private static class SerializedType {
         private byte[] bytes;
+
         public void setBytes(byte[] bytes) {
             this.bytes = bytes;
         }
+
         public byte[] getBytes() {
             return bytes;
         }

@@ -113,7 +113,7 @@ public class ProtocolProcessorTest {
         };
     }
 
-    private class TestHandler implements CoreHandler {
+    private class TestHandler implements CoreHandler<Request> {
         private Protocol<Request> protocol = new Protocol<Request>().setRole(Role.PUBLIC);
         private Consumer<Request> handler;
 

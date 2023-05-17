@@ -92,7 +92,7 @@ public class MultiHandlerTest {
     }
 
 
-    private class TestHandler implements CoreHandler {
+    private class TestHandler implements CoreHandler<Request> {
         private String address;
 
         /**

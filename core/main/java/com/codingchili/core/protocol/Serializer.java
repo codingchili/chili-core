@@ -118,7 +118,11 @@ public class Serializer {
      */
     public static String pack(Object object) {
         if (object instanceof JsonObject) {
-            return ((JsonObject) object).encodePrettily();
+            if (json.isEnabled(SerializationFeature.INDENT_OUTPUT)) {
+                return ((JsonObject) object).encodePrettily();
+            } else {
+                return ((JsonObject) object).encode();
+            }
         } else {
             try {
                 return json.writeValueAsString(object);
