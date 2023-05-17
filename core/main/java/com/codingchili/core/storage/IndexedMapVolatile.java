@@ -40,7 +40,7 @@ public class IndexedMapVolatile<Value extends Storable> extends IndexedMap<Value
 
     @Override
     public void addIndexesForAttribute(Attribute<Value, String> attribute) {
-        db.addIndex(NavigableIndex.onAttribute(attribute));
-        db.addIndex(RadixTreeIndex.onAttribute(attribute));
+        db.<Value>addIndex(NavigableIndex.onAttribute(attribute));
+        db.<Value>addIndex(RadixTreeIndex.onAttribute(attribute));
     }
 }

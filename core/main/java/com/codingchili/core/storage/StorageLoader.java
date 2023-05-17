@@ -116,6 +116,12 @@ public class StorageLoader<Value extends Storable> {
      * @return fluent.
      */
     public StorageLoader<Value> withValue(Class<Value> valueClass) {
+        try {
+            // trigger static init for value class.
+            Class.forName(valueClass.getName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         this.valueClass = valueClass;
         return this;
     }

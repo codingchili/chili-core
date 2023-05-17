@@ -1,22 +1,28 @@
 package com.codingchili.core.storage;
 
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.storage.exception.NothingToRemoveException;
+import com.codingchili.core.storage.exception.NothingToUpdateException;
+import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
+import com.codingchili.core.storage.exception.ValueMissingException;
 import com.googlecode.cqengine.IndexedCollection;
-import com.googlecode.cqengine.attribute.*;
-import com.googlecode.cqengine.attribute.support.SimpleFunction;
-import com.googlecode.cqengine.query.option.QueryOptions;
+import com.googlecode.cqengine.attribute.Attribute;
+import com.googlecode.cqengine.attribute.SimpleAttribute;
 import com.googlecode.cqengine.resultset.ResultSet;
-import io.vertx.core.*;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
+import io.vertx.core.Promise;
+import io.vertx.core.WorkerExecutor;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.protocol.Serializer;
-import com.codingchili.core.storage.exception.*;
-
 import static com.codingchili.core.configuration.CoreStrings.STORAGE_ARRAY;
-import static com.googlecode.cqengine.query.QueryFactory.*;
+import static com.googlecode.cqengine.query.QueryFactory.attribute;
+import static com.googlecode.cqengine.query.QueryFactory.equal;
 import static io.vertx.core.Future.succeededFuture;
 
 /**
@@ -67,26 +73,12 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
         return db;
     }
 
-    public Attribute<Value, String> getAttribute(String fieldName, boolean multiValue) {
+    @SuppressWarnings("unchecked")
+    public Attribute<Value, String> getAttribute(String fieldName) {
         if (holder.attributes.containsKey(fieldName)) {
             return holder.attributes.get(fieldName);
         } else {
-            Attribute<Value, String> attribute;
-
-            if (multiValue) {
-                attribute = new MultiValueAttribute<>(context.valueClass(), String.class, fieldName) {
-                    @Override
-                    public Iterable<String> getValues(Value indexing, QueryOptions queryOptions) {
-                        return Serializer.getValueByPath(indexing, fieldName).stream()
-                                .map(item -> (item + ""))::iterator;
-                    }
-                };
-            } else {
-                attribute = attribute(context.valueClass(), String.class, fieldName,
-                        (SimpleFunction<Value, String>) (indexing) ->
-                                Serializer.getValueByPath(indexing, fieldName).iterator().next() + ""
-                );
-            }
+            var attribute = AttributeRegistry.<Value>get(context.valueClass(), fieldName);
             holder.attributes.put(fieldName, attribute);
             return attribute;
         }
@@ -94,14 +86,13 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
 
     @Override
     public void addIndex(String fieldName) {
-        boolean multiValued = fieldName.contains(STORAGE_ARRAY);
         fieldName = fieldName.replace(STORAGE_ARRAY, "");
 
         if (!holder.indexed.contains(fieldName)) {
             synchronized (maps) {
                 if (!holder.indexed.contains(fieldName)) {
                     try {
-                        Attribute<Value, String> attribute = getAttribute(fieldName, multiValued);
+                        var attribute = getAttribute(fieldName);
                         holder.attributes.put(fieldName, attribute);
                         addIndexesForAttribute(attribute);
                     } catch (Throwable e) {

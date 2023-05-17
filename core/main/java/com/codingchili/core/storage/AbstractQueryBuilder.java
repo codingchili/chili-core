@@ -9,7 +9,6 @@ import com.codingchili.core.context.TimerSource;
 import com.codingchili.core.files.Configurations;
 
 import static com.codingchili.core.configuration.CoreStrings.STORAGE_ARRAY;
-import static com.codingchili.core.protocol.Serializer.getValueByPath;
 
 /**
  * Base class for the query builder.
@@ -133,7 +132,9 @@ public abstract class AbstractQueryBuilder<Value extends Storable> implements Qu
     }
 
     private String getSortValue(Object object) {
-        return getValueByPath(object, getOrderByAttribute()).iterator().next().toString();
+        return AttributeRegistry.get(object.getClass(), getOrderByAttribute())
+                .getValues(object, null)
+                .iterator().next();
     }
 
     int getSortDirection() {

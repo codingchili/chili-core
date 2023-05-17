@@ -243,109 +243,6 @@ public class Serializer {
     }
 
     /**
-     * Extract the value at the given path from the given jsonobject.
-     * The path is formatted by delimiting fields with a dot.
-     *
-     * @param json the json object to extract a value from
-     * @param path the path of the value, for example "person.name.last", last
-     *             may be an array or regular field. when extracting values
-     *             from arrays only plain fields are allowed, no objects in arrays.
-     * @param <T>  free class cast.
-     * @return the extracted value type casted to the type parameter.
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> Collection<T> getValueByPath(JsonObject json, String path) {
-        String[] fields = path.replace(STORAGE_ARRAY, "").split("\\.");
-        String targetField = fields[fields.length - 1];
-
-        for (int i = 0; i < fields.length - 1; i++) {
-            json = json.getJsonObject(fields[i]);
-        }
-
-        Object targetValue = json.getValue(targetField);
-        if (targetValue instanceof JsonArray) {
-            Comparable[] objects = new Comparable[((JsonArray) targetValue).size()];
-
-            for (int i = 0; i < objects.length; i++) {
-                objects[i] = (Comparable) ((JsonArray) targetValue).getValue(i);
-            }
-            return Arrays.asList((T[]) objects);
-        } else {
-            return Collections.singleton((T) targetValue);
-        }
-    }
-
-    // stores fields that has been set as accessible for the given class.
-    private static final Map<Class<?>, Map<String, Field>> reflectCache = new HashMap<>();
-
-    /**
-     * Gets a value by the given path for an object.
-     *
-     * @param object the object to get the path value of.
-     * @param path   the path to the field to retrieve the value of, may be an object or collection.
-     * @param <T>    the type of the field to retrieve.
-     * @return a list of values matching the path.
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> Collection<T> getValueByPath(Object object, String path) {
-        if (object instanceof JsonObject) {
-            return getValueByPath((JsonObject) object, path);
-        } else {
-            String[] fields = path.replace(STORAGE_ARRAY, "").split("\\.");
-
-            for (String fieldName : fields) {
-                if (object == null) {
-                    throw new CoreRuntimeException(CoreStrings.getValueByPathContainsNull(fieldName, fields));
-                }
-
-                if (object instanceof Storable && fieldName.equals(Storable.idField)) {
-                    return Collections.singleton((T) ((Storable) object).getId());
-                } else if (object instanceof Map) {
-                    object = ((Map) object).get(fieldName);
-                } else if (object instanceof JsonObject) {
-                    object = ((JsonObject) object).getValue(fieldName);
-                } else {
-                    try {
-                        Class<?> origin = object.getClass();
-                        boolean found = false;
-
-                        for (Class<?> iterator = origin; iterator != Object.class; iterator = iterator.getSuperclass()) {
-                            Map<String, Field> fieldSet = reflectCache.computeIfAbsent(iterator, (k) -> new TreeMap<>());
-                            Field field = fieldSet.get(fieldName);
-
-                            if (field == null) {
-                                for (Field member : iterator.getDeclaredFields()) {
-                                    if (member.getName().equals(fieldName)) {
-                                        member.setAccessible(true);
-                                        fieldSet.put(fieldName, field);
-                                        field = member;
-                                        found = true;
-                                    }
-                                }
-                            }
-                            if (field != null) {
-                                object = field.get(object);
-                            }
-                        }
-                        if (!found) {
-                            throw new CoreRuntimeException(String.format("Not able to find field '%s' from class '%s'.",
-                                    fieldName, origin.getName()));
-
-                        }
-                    } catch (Throwable e) {
-                        throw new CoreRuntimeException(CoreStrings.getReflectionErrorInSerializer(path));
-                    }
-                }
-            }
-            if (object instanceof Collection) {
-                return (Collection<T>) object;
-            } else {
-                return Collections.singleton((T) object);
-            }
-        }
-    }
-
-    /**
      * Compresses a byte array using gzip.
      *
      * @param data data to be compressed.
@@ -414,5 +311,5 @@ public class Serializer {
         return model;
     }
 
-    private static Map<String, Map<String, String>> cache = new HashMap<>();
+    private static final Map<String, Map<String, String>> cache = new HashMap<>();
 }

@@ -1,18 +1,16 @@
 package com.codingchili.core.storage;
 
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.context.CoreRuntimeException;
+import com.codingchili.core.context.StorageContext;
 import com.googlecode.cqengine.ConcurrentIndexedCollection;
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.index.disk.DiskIndex;
 import com.googlecode.cqengine.persistence.disk.DiskPersistence;
-import io.vertx.core.Future;
 import io.vertx.core.Promise;
 
 import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.context.CoreRuntimeException;
-import com.codingchili.core.context.StorageContext;
 
 /**
  * Adds disk persistence to IndexedMap.

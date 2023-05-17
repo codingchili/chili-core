@@ -88,20 +88,6 @@ public class SerializerTest {
     }
 
     @Test
-    public void testGetJsonValueByPath(TestContext test) {
-        Optional<String> value = Serializer.<String>getValueByPath(Serializer.json(token), PROPERTIES_OWNER).stream().findFirst();
-        test.assertTrue(value.isPresent());
-        test.assertEquals(getClass().getSimpleName(), value.get());
-    }
-
-    @Test
-    public void testGetObjectValueByPath(TestContext test) {
-        Optional<String> value = Serializer.<String>getValueByPath(token, PROPERTIES_OWNER).stream().findFirst();
-        test.assertTrue(value.isPresent());
-        test.assertEquals(getClass().getSimpleName(), value.get());
-    }
-
-    @Test
     public void prettyConfiguredBySystem(TestContext test) {
         var json = new JsonObject()
                 .put("testing", true)

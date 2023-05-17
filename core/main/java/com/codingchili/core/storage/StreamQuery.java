@@ -169,7 +169,10 @@ public class StreamQuery<Value extends Storable, Streaming> {
 
             // match function that tests all elements in an array if statement.attribute points to one.
             private boolean anyMatch(Streaming entry, StatementPredicate statement) {
-                for (Comparable comparable : Serializer.<Comparable>getValueByPath(entry, statement.attribute)) {
+                var values = AttributeRegistry.get(entry.getClass(), statement.attribute)
+                        .getValues(entry, null);
+
+                for (String comparable : values) {
                     if (statement.predicate.test(comparable))
                         return true;
                 }

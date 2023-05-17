@@ -53,7 +53,7 @@ public class IndexedMapQuery<Value extends Storable> extends AbstractQueryBuilde
 
     private void prepareField(String attribute) {
         setAttribute(attribute);
-        field = storage.getAttribute(attribute, isAttributeArray());
+        field = storage.getAttribute(attribute);
     }
 
     private void next() {
@@ -144,9 +144,9 @@ public class IndexedMapQuery<Value extends Storable> extends AbstractQueryBuilde
 
             // no need to support sorting on multivalued fields.
             if (getSortOrder().equals(SortOrder.ASCENDING)) {
-                order = ascending(missingLast(storage.getAttribute(getOrderByAttribute(), false)));
+                order = ascending(missingLast(storage.getAttribute(getOrderByAttribute())));
             } else {
-                order = descending(missingLast(storage.getAttribute(getOrderByAttribute(), false)));
+                order = descending(missingLast(storage.getAttribute(getOrderByAttribute())));
             }
             return queryOptions(
                     QueryFactory.orderBy(order), deduplicate(DeduplicationStrategy.LOGICAL_ELIMINATION));
