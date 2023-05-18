@@ -134,18 +134,14 @@ public abstract class AbstractQueryBuilder<Value extends Storable> implements Qu
     private String getSortValue(Object object) {
         return AttributeRegistry.get(object.getClass(), getOrderByAttribute())
                 .getValues(object, null)
-                .iterator().next();
+                .iterator().next().toString();
     }
 
     int getSortDirection() {
-        switch (sortOrder) {
-            case ASCENDING:
-                return 1;
-            case DESCENDING:
-                return -1;
-            default:
-                return 1;
-        }
+        return switch (sortOrder) {
+            case ASCENDING -> 1;
+            case DESCENDING -> -1;
+        };
     }
 
     public boolean isOrdered() {

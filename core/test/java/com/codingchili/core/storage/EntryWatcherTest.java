@@ -24,7 +24,7 @@ public class EntryWatcherTest {
     private static final String DB = "entrywatcher";
     private static final String COLLECTION = "test";
     private static final String LEVEL = "level";
-    private static final int WAIT_MS = 500;
+    private static final int WAIT_MS = 1000;
     private static final int REMOVE_INTERVAL = 50;
     private static final int LEVEL_PERSIST = 50;
     private static final int LEVEL_REMOVE = 0;
@@ -45,6 +45,9 @@ public class EntryWatcherTest {
 
                 getQuery().poll(entry -> entry.forEach(item -> {
                     storage.remove(item.getId(), removed -> {
+                        if (removed.failed()) {
+                            test.fail(removed.cause());
+                        }
                     });
                 }), TimerSource.of(REMOVE_INTERVAL));
 
@@ -68,13 +71,7 @@ public class EntryWatcherTest {
                 .withPlugin(JsonMap.class)
                 .withValue(StorageObject.class)
                 .withDB(DB, COLLECTION)
-                .build(result -> {
-                    if (result.succeeded()) {
-                        future.handle(Future.succeededFuture(result.result()));
-                    } else {
-                        future.handle(Future.failedFuture(result.cause()));
-                    }
-                });
+                .build(future);
     }
 
     @After
@@ -88,16 +85,19 @@ public class EntryWatcherTest {
         });
     }
 
-    private void setRemove() {
+    private void setRemove(TestContext test) {
         object.setLevel(LEVEL_REMOVE);
         storage.update(object, result -> {
+            if (result.failed()) {
+                test.fail(result.cause());
+            }
         });
     }
 
     @Test
     public void testItemRemovedOnHandler(TestContext test) {
         Async async = test.async();
-        setRemove();
+        setRemove(test);
 
         context.timer(WAIT_MS, handler -> storage.get(TEST_NAME, event -> {
             test.assertFalse(event.succeeded());

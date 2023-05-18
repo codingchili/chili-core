@@ -1,6 +1,7 @@
 package com.codingchili.core.storage;
 
 import io.vertx.core.*;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
@@ -46,6 +47,13 @@ public class MapTestCases {
     private static final String SNOW_KEYWORD = "SNOW";
     private static final int LEVEL_BUCKET_SIZE = 10;
     protected static Integer STARTUP_DELAY = 1;
+
+    static {
+        AttributeRegistry.register(db -> {
+            db.single(js -> js.getString("name"), String.class, "name");
+            db.single(js -> js.getInteger("level"), Integer.class, "level");
+        }, JsonObject.class);
+    }
 
     @Rule
     public Timeout timeout = Timeout.seconds(60);

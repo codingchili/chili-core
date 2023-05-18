@@ -10,6 +10,7 @@ import com.googlecode.cqengine.persistence.disk.DiskPersistence;
 import io.vertx.core.Promise;
 
 import java.io.File;
+import java.util.Comparator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -54,8 +55,11 @@ public class IndexedMapPersisted<Value extends Storable> extends IndexedMap<Valu
     }
 
     @Override
-    public void addIndexesForAttribute(Attribute<Value, String> attribute) {
-        db.addIndex(DiskIndex.onAttribute(attribute));
+    @SuppressWarnings("unchecked")
+    public void addIndexesForAttribute(Attribute<Value, ?> attribute) {
+        if (attribute.getAttributeType().isAssignableFrom(Comparable.class)) {
+            db.addIndex(DiskIndex.onAttribute((Attribute<Value, Comparable>) attribute));
+        }
     }
 
     /**

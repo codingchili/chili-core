@@ -39,8 +39,14 @@ public class IndexedMapVolatile<Value extends Storable> extends IndexedMap<Value
     }
 
     @Override
-    public void addIndexesForAttribute(Attribute<Value, String> attribute) {
-        db.<Value>addIndex(NavigableIndex.onAttribute(attribute));
-        db.<Value>addIndex(RadixTreeIndex.onAttribute(attribute));
+    @SuppressWarnings("unchecked")
+    public void addIndexesForAttribute(Attribute<Value, ?> attribute) {
+        if (attribute.getAttributeType().isAssignableFrom(Comparable.class)) {
+            db.addIndex(NavigableIndex.onAttribute((Attribute<Value, Comparable>) attribute));
+        }
+
+        if (attribute.getAttributeType().equals(String.class)) {
+            db.addIndex(RadixTreeIndex.onAttribute((Attribute<Value, String>) attribute));
+        }
     }
 }

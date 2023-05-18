@@ -22,8 +22,13 @@ public class AttributeRegistry {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static <Type> void register(Consumer<AttributeRegistration<Type>> consumer, Class<Type> object) {
         var registration = new AttributeRegistration<>(object);
+
+        if (object.equals(Storable.class)) {
+            ((AttributeRegistration<Storable>) registration).single(Storable::getId, String.class, "id");
+        }
         consumer.accept(registration);
         registry.put(registration.object().getName(), registration.map());
     }

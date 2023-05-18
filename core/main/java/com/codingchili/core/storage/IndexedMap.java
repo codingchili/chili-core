@@ -62,7 +62,6 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
                 holder = maps.get(context.identifier());
             } else {
                 holder = new IndexedMapHolder<>(supplier.apply(FIELD_ID));
-                holder.attributes.put(Storable.idField, FIELD_ID);
                 maps.put(context.identifier(), holder);
             }
             db = holder.db;
@@ -75,13 +74,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
 
     @SuppressWarnings("unchecked")
     public Attribute<Value, String> getAttribute(String fieldName) {
-        if (holder.attributes.containsKey(fieldName)) {
-            return holder.attributes.get(fieldName);
-        } else {
-            var attribute = AttributeRegistry.<Value>get(context.valueClass(), fieldName);
-            holder.attributes.put(fieldName, attribute);
-            return attribute;
-        }
+        return AttributeRegistry.get(context.valueClass(), fieldName);
     }
 
     @Override
@@ -93,7 +86,6 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
                 if (!holder.indexed.contains(fieldName)) {
                     try {
                         var attribute = getAttribute(fieldName);
-                        holder.attributes.put(fieldName, attribute);
                         addIndexesForAttribute(attribute);
                     } catch (Throwable e) {
                         context.logger(getClass()).onError(e);
@@ -113,7 +105,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
     /**
      * @param attribute the attribute to add an index for based on implementation.
      */
-    protected abstract void addIndexesForAttribute(Attribute<Value, String> attribute);
+    protected abstract void addIndexesForAttribute(Attribute<Value, ?> attribute);
 
     /**
      * @param mapper a mapper that is executed on all values returned from the map.

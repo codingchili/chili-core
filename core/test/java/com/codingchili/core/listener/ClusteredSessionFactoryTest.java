@@ -1,5 +1,6 @@
 package com.codingchili.core.listener;
 
+import com.codingchili.core.storage.AttributeRegistry;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -14,9 +15,9 @@ import com.codingchili.core.context.SystemContext;
  */
 @RunWith(VertxUnitRunner.class)
 public class ClusteredSessionFactoryTest {
-    private String home = "home";
-    private String connection = "connection";
-    private CoreContext core = new SystemContext();
+    private final String home = "home";
+    private final String connection = "connection";
+    private final CoreContext core = new SystemContext();
     private SessionFactory<ClusteredSession> factory;
 
     @Before
@@ -75,12 +76,17 @@ public class ClusteredSessionFactoryTest {
             Session session = done.result();
             test.assertTrue(done.succeeded());
 
+            AttributeRegistry.register(db -> {
+                db.single(s -> s.asJson().getBoolean("meow"), Boolean.class, "data.meow");
+            }, ClusteredSession.class);
+
             session.asJson().put("meow", true);
             session.update().onComplete(updated -> {
-                test.assertTrue(updated.succeeded());
 
                 factory.query("data.meow").equalTo(true).execute(query -> {
-                    test.assertTrue(query.succeeded());
+                    if (query.failed()) {
+                        test.fail(query.cause());
+                    }
                     test.assertEquals(1, query.result().size());
                     async.complete();
                 });

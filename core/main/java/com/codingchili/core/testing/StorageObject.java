@@ -3,6 +3,8 @@ package com.codingchili.core.testing;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.codingchili.core.storage.AttributeRegistration;
+import com.codingchili.core.storage.AttributeRegistry;
 import com.codingchili.core.storage.Storable;
 
 /**
@@ -16,8 +18,19 @@ public class StorageObject implements Storable {
     public NestedObject nested;
     public List<String> keywords = new ArrayList<>();
 
+    static {
+        AttributeRegistry.register(db -> {
+            db.single(StorageObject::getId, String.class, "id");
+            db.single(StorageObject::getName, String.class, "name");
+            db.single(StorageObject::getLevel, Integer.class, "level");
+            db.multi(StorageObject::getKeywords, String.class, "keywords[]");
+            db.single(s -> s.nested.getName(), String.class, "nested.name");
+            db.multi(s -> s.nested.getNumbers(), Integer.class, "nested.numbers[]");
+        }, StorageObject.class);
+    }
+
     public StorageObject() {
-        keywords.add("Z");
+        keywords.add("keyword");
     }
 
     public StorageObject(String name, Integer level) {

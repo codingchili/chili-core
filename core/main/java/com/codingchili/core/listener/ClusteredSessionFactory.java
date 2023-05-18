@@ -18,7 +18,7 @@ import com.codingchili.core.storage.*;
  */
 public class ClusteredSessionFactory implements SessionFactory<ClusteredSession> {
     private static AtomicBoolean loading = new AtomicBoolean();
-    private static Promise<Void> loader = Promise.<Void>promise();
+    private static Promise<Void> loader = Promise.promise();
     private static Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
     private static ClusteredSessionFactory storage;
     private static AsyncStorage<ClusteredSession> sessions;

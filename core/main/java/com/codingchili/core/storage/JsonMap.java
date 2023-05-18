@@ -1,21 +1,29 @@
 package com.codingchili.core.storage;
 
-import io.vertx.core.*;
-import io.vertx.core.json.JsonObject;
+import com.codingchili.core.context.FutureHelper;
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.context.TimerSource;
+import com.codingchili.core.files.ConfigurationFactory;
+import com.codingchili.core.files.exception.NoSuchResourceException;
+import com.codingchili.core.storage.exception.NothingToRemoveException;
+import com.codingchili.core.storage.exception.NothingToUpdateException;
+import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
+import com.codingchili.core.storage.exception.ValueMissingException;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
+import io.vertx.core.Promise;
+import io.vertx.core.WorkerExecutor;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
-import com.codingchili.core.context.*;
-import com.codingchili.core.files.ConfigurationFactory;
-import com.codingchili.core.files.exception.NoSuchResourceException;
-import com.codingchili.core.logging.Logger;
-import com.codingchili.core.storage.exception.*;
-
-import static com.codingchili.core.configuration.CoreStrings.*;
-import static com.codingchili.core.context.FutureHelper.*;
+import static com.codingchili.core.configuration.CoreStrings.EXT_JSON;
+import static com.codingchili.core.configuration.CoreStrings.getFileReadError;
+import static com.codingchili.core.context.FutureHelper.error;
+import static com.codingchili.core.context.FutureHelper.result;
 
 /**
  * Map backed by a json-file.
@@ -28,11 +36,11 @@ import static com.codingchili.core.context.FutureHelper.*;
  */
 public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     private static final String JSONMAP_WORKERS = "asyncjsonmap.workers";
-    private static final Map<String, JsonObject> maps = new HashMap<>();
+    private static final Map<String, JsonDatabase<?>> maps = new ConcurrentHashMap<>();
     private static final AtomicBoolean dirty = new AtomicBoolean(false);
     private final WorkerExecutor fileWriter;
     private final StorageContext<Value> context;
-    private JsonObject db = new JsonObject();
+    private JsonDatabase<Value> db;
 
     /**
      * Creates a new possibly shared instance of the JsonMap storage plugin. It's recommended
@@ -41,6 +49,7 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
      * @param promise completed when the storage is loaded and ready.
      * @param context contains metadata about the stored objects.
      */
+    @SuppressWarnings("unchecked")
     public JsonMap(Promise<AsyncStorage<Value>> promise, StorageContext<Value> context) {
         this.context = context;
         var logger = context.logger(getClass());
@@ -48,10 +57,10 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
 
         synchronized (JsonMap.class) {
             if (maps.containsKey(context.identifier())) {
-                this.db = maps.get(context.identifier());
+                this.db = (JsonDatabase<Value>) maps.get(context.identifier());
             } else {
                 try {
-                    this.db = ConfigurationFactory.readObject(path);
+                    this.db = new JsonDatabase<>(context.valueClass(), path);
                 } catch (NoSuchResourceException e) {
                     logger.log(getFileReadError(path));
                 }
@@ -145,10 +154,7 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     @Override
     public void values(Handler<AsyncResult<Stream<Value>>> handler) {
         context.blocking((blocking) -> {
-            blocking.complete(db.stream()
-                    .map(entry -> (JsonObject) entry.getValue())
-                    .map(context::toValue));
-
+            blocking.complete(db.stream().map(Map.Entry::getValue));
         }, handler);
     }
 
@@ -161,9 +167,8 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public QueryBuilder<Value> query() {
-        return new StreamQuery<>(this, () -> db.stream().map(Map.Entry::getValue))
-                // set the mapper to only pay serialization costs for matching results.
-                .setMapper(value -> context.toValue((JsonObject) value))
+        return new StreamQuery<>(this, () -> db.stream()
+                .map(Map.Entry::getValue))
                 .query();
     }
 
@@ -183,17 +188,17 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     private Optional<Value> get(String key) {
-        JsonObject json = db.getJsonObject(key);
+        Value value = db.get(key);
 
-        if (json == null) {
+        if (value == null) {
             return Optional.empty();
         } else {
-            return Optional.of(context.toValue(json));
+            return Optional.of(value);
         }
     }
 
     private void put(Value value) {
-        db.put(value.getId(), context.toJson(value));
+        db.put(value.getId(), value);
         dirty();
     }
 
@@ -205,7 +210,7 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     private void save() {
         if (context.storage().isPersisted()) {
             fileWriter.executeBlocking(execute -> {
-                ConfigurationFactory.writeObject(db, dbPath());
+                ConfigurationFactory.writeObject(db.toJson(), dbPath());
             }, true, result -> {
             });
         }

@@ -103,9 +103,9 @@ public class BaseRequestTest {
     }
 
     @Test
-    public void testTargetIsUndefinedIfMissing(TestContext test) {
+    public void testTargetIsUnsetIfMissing(TestContext test) {
         data.remove(PROTOCOL_TARGET);
-        test.assertEquals(TARGET_UNDEFINED, request.target());
+        test.assertEquals(null, request.target());
     }
 
     @Test

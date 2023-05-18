@@ -1,9 +1,10 @@
 package com.codingchili.core.storage;
 
 import com.googlecode.cqengine.IndexedCollection;
-import com.googlecode.cqengine.attribute.Attribute;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A holder class that holds references to shared data between instantiated storages.
@@ -11,7 +12,6 @@ import java.util.*;
 public class IndexedMapHolder<Value> {
     public final Set<String> indexed = new HashSet<>(Collections.singleton(Storable.idField));
     public final IndexedCollection<Value> db;
-    public Map<String, Attribute<Value, String>> attributes = new HashMap<>();
 
     public IndexedMapHolder(IndexedCollection<Value> db) {
         this.db = db;

@@ -1,5 +1,6 @@
 package com.codingchili.core.storage;
 
+import com.googlecode.cqengine.attribute.MultiValueAttribute;
 import com.hazelcast.config.IndexType;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
@@ -35,7 +36,7 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
      * Initializes a new hazel async map.
      *
      * @param context the context requesting the map to be created.
-     * @param promise  called when the map is created.
+     * @param promise called when the map is created.
      */
     public HazelMap(Promise<AsyncStorage> promise, StorageContext<Value> context) {
         this.context = context;
@@ -158,10 +159,11 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public void addIndex(String field) {
-        if (!indexed.contains(field)) {
-            indexed.add(field);
-            imap.addIndex(IndexType.SORTED, field.replace(STORAGE_ARRAY, HAZEL_ARRAY));
+    public void addIndex(String fieldName) {
+        if (!indexed.contains(fieldName)) {
+            indexed.add(fieldName);
+
+            imap.addIndex(IndexType.SORTED, fieldName.replace(STORAGE_ARRAY, HAZEL_ARRAY));
         }
     }
 
@@ -197,12 +199,8 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
                     predicate = current;
                 } else {
                     switch (this.operator) {
-                        case AND:
-                            predicate = Predicates.and(predicate, current);
-                            break;
-                        case OR:
-                            predicate = Predicates.or(predicate, current);
-                            break;
+                        case AND -> predicate = Predicates.and(predicate, current);
+                        case OR -> predicate = Predicates.or(predicate, current);
                     }
                 }
                 predicates.clear();

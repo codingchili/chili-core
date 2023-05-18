@@ -9,7 +9,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.protocol.Serializer;
 
 /**
  * Query implementations for non-indexed json streams.
@@ -23,9 +22,9 @@ import com.codingchili.core.protocol.Serializer;
  * a mapper must be supplied to map the Streaming values to the Value type.
  */
 public class StreamQuery<Value extends Storable, Streaming> {
-    private StreamSource<Streaming> source;
-    private AsyncStorage<Value> storage;
-    private StorageContext<Value> context;
+    private final StreamSource<Streaming> source;
+    private final AsyncStorage<Value> storage;
+    private final StorageContext<Value> context;
 
     // if no mapper is set, the streaming source must be the same as the value.
     @SuppressWarnings("unchecked")
@@ -83,10 +82,14 @@ public class StreamQuery<Value extends Storable, Streaming> {
             @Override
             public QueryBuilder<Value> between(Long minimum, Long maximum) {
                 apply(value -> {
-                    if (value instanceof Integer) {
-                        return ((Integer) value >= minimum.intValue() && (Integer) value <= maximum.intValue());
-                    } else
-                        return value instanceof Long && (Long) value >= minimum && (Long) value <= maximum;
+                    if (value == null) {
+                        return false;
+                    } else if (value instanceof String string) {
+                        var parsed = Integer.parseInt(string);
+                        return parsed >= minimum && parsed <= maximum;
+                    } else {
+                        return value.compareTo(minimum) < 1 && value.compareTo(maximum) < 0;
+                    }
                 });
                 return this;
             }
@@ -107,7 +110,7 @@ public class StreamQuery<Value extends Storable, Streaming> {
             public QueryBuilder<Value> in(Comparable[] list) {
                 apply(entry -> {
                     for (Comparable comparable : list) {
-                        if (entry.equals(comparable))
+                        if (entry.equals(comparable.toString()))
                             return true;
                     }
                     return false;
@@ -117,7 +120,9 @@ public class StreamQuery<Value extends Storable, Streaming> {
 
             @Override
             public QueryBuilder<Value> equalTo(Comparable match) {
-                apply(match::equals);
+                apply(value -> {
+                    return value.compareTo(match + "") == 0;
+                });
                 return this;
             }
 
