@@ -121,7 +121,11 @@ public class StreamQuery<Value extends Storable, Streaming> {
             @Override
             public QueryBuilder<Value> equalTo(Comparable match) {
                 apply(value -> {
-                    return value.compareTo(match + "") == 0;
+                    if (value instanceof String && match instanceof String) {
+                        return match.equals(value);
+                    } else {
+                        return (match + "").equals(value);
+                    }
                 });
                 return this;
             }
