@@ -13,8 +13,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class AttributeRegistration<Type> {
-    private final Map<String, Attribute<?, String>> map = new HashMap<>();
     private final Class<Type> object;
+    private Map<String, Attribute<?, String>> map = new HashMap<>();
 
     public AttributeRegistration(Class<Type> object) {
         this.object = object;
@@ -62,6 +62,10 @@ public class AttributeRegistration<Type> {
         };
         map.put(fieldName, attribute);
         return this;
+    }
+
+    public void load(Map<String, Attribute<?, String>> map) {
+        this.map = map;
     }
 
     public Map<String, Attribute<?, String>> map() {

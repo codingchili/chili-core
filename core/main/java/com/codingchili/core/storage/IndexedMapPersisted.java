@@ -57,7 +57,7 @@ public class IndexedMapPersisted<Value extends Storable> extends IndexedMap<Valu
     @Override
     @SuppressWarnings("unchecked")
     public void addIndexesForAttribute(Attribute<Value, ?> attribute) {
-        if (attribute.getAttributeType().isAssignableFrom(Comparable.class)) {
+        if (Comparable.class.isAssignableFrom(attribute.getAttributeType())) {
             db.addIndex(DiskIndex.onAttribute((Attribute<Value, Comparable>) attribute));
         }
     }

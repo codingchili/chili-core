@@ -85,10 +85,10 @@ public class StreamQuery<Value extends Storable, Streaming> {
                     if (value == null) {
                         return false;
                     } else if (value instanceof String string) {
-                        var parsed = Integer.parseInt(string);
+                        var parsed = Long.parseLong(string);
                         return parsed >= minimum && parsed <= maximum;
                     } else {
-                        return value.compareTo(minimum) < 1 && value.compareTo(maximum) < 0;
+                        return value.compareTo(minimum) >= 0 && value.compareTo(maximum) <= 0;
                     }
                 });
                 return this;

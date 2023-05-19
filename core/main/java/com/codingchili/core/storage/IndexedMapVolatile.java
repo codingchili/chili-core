@@ -41,7 +41,7 @@ public class IndexedMapVolatile<Value extends Storable> extends IndexedMap<Value
     @Override
     @SuppressWarnings("unchecked")
     public void addIndexesForAttribute(Attribute<Value, ?> attribute) {
-        if (attribute.getAttributeType().isAssignableFrom(Comparable.class)) {
+        if (Comparable.class.isAssignableFrom(attribute.getAttributeType())) {
             db.addIndex(NavigableIndex.onAttribute((Attribute<Value, Comparable>) attribute));
         }
 

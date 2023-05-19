@@ -26,7 +26,11 @@ public class AttributeRegistry {
     public static <Type> void register(Consumer<AttributeRegistration<Type>> consumer, Class<Type> object) {
         var registration = new AttributeRegistration<>(object);
 
-        if (object.equals(Storable.class)) {
+        if (registry.containsKey(object.getName())) {
+            registration.load(registry.get(object.getName()));
+        }
+
+        if (Storable.class.isAssignableFrom(object)) {
             ((AttributeRegistration<Storable>) registration).single(Storable::getId, String.class, "id");
         }
         consumer.accept(registration);
