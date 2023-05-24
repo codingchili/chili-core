@@ -46,7 +46,7 @@ public class ClusterRequest implements Request {
     @Override
     public void write(Object msg) {
         if (msg != null) {
-            message.reply(Response.json(target(), route(), msg));
+            message.reply(Response.json(msg));
         } else {
             accept();
         }

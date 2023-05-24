@@ -30,7 +30,7 @@ public class TcpRequest implements Request {
 
     @Override
     public void write(Object object) {
-        connection.write(Response.buffer(target(), route(), object));
+        connection.write(Response.buffer(object));
     }
 
     @Override

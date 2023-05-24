@@ -2,6 +2,7 @@ package com.codingchili.core.protocol;
 
 
 import com.codingchili.core.files.Configurations;
+
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.util.Pool;
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
+import com.fasterxml.jackson.module.blackbird.BlackbirdModule;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.*;
 import io.vertx.core.json.jackson.*;
@@ -59,6 +61,7 @@ public class Serializer {
         // deserialization into weakly typed (and known dangerous) field types such as 'object' etc.
         json.configure(MapperFeature.BLOCK_UNSAFE_POLYMORPHIC_BASE_TYPES, true);
         json.registerModule(new JsonTypesModule());
+        json.registerModule(new BlackbirdModule());
 
         yaml.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         yaml.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
@@ -160,6 +163,8 @@ public class Serializer {
     public static Buffer buffer(Object object) {
         if (object instanceof JsonObject) {
             return ((JsonObject) object).toBuffer();
+        } else if (object instanceof Buffer) {
+            return (Buffer) object;
         } else {
             return Json.encodeToBuffer(object);
         }

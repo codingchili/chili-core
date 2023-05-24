@@ -4,6 +4,8 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Promise;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.ServerWebSocket;
+import io.vertx.core.http.WebSocketFrameType;
+import io.vertx.core.http.impl.ws.WebSocketFrameImpl;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -15,8 +17,7 @@ import com.codingchili.core.configuration.RestHelper;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.listener.*;
 import com.codingchili.core.logging.Logger;
-import com.codingchili.core.protocol.Response;
-import com.codingchili.core.protocol.ResponseStatus;
+import com.codingchili.core.protocol.*;
 import com.codingchili.core.protocol.exception.RequestPayloadSizeException;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
@@ -100,12 +101,19 @@ public class WebsocketListener implements CoreListener {
         boolean isBinary = settings.isBinaryWebsockets();
 
         return new Connection((msg) -> {
-            Buffer buffer = Response.buffer(msg);
-
             if (isBinary) {
-                socket.write(buffer);
+                socket.write(Response.buffer(msg));
             } else {
-                socket.writeTextMessage(buffer.toString());
+                if (msg instanceof String) {
+                    socket.writeTextMessage((String) msg);
+                } else {
+                    var buffer = Response.buffer(msg);
+                    // create a text frame directly from a buffer.
+                    socket.writeFrame(
+                            new WebSocketFrameImpl(
+                                    WebSocketFrameType.TEXT, buffer.getByteBuf(), true)
+                    );
+                }
             }
         }, UUID.randomUUID().toString())
                 .setProperty(PROTOCOL_CONNECTION, socket.remoteAddress().host());

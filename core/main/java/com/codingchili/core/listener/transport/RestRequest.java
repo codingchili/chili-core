@@ -132,7 +132,7 @@ public class RestRequest implements Request {
 
     @Override
     public void write(Object message) {
-        send(Response.buffer(target(), route(), message));
+        send(Response.buffer(message));
     }
 
     @Override

@@ -38,21 +38,23 @@ publishing {
 }
 
 dependencies {
-    api('io.vertx:vertx-core:4.4.1')
-    api('io.vertx:vertx-web:4.4.1')
+    api('io.vertx:vertx-core:4.4.2')
+    api('io.vertx:vertx-web:4.4.2')
 
     implementation('io.dropwizard.metrics:metrics-jvm:4.2.16')
-    implementation('com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.14.2')
+    implementation('com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.0')
+    implementation('com.fasterxml.jackson.module:jackson-module-blackbird:2.15.0')
 
-    implementation('io.vertx:vertx-hazelcast:4.4.1')
-    implementation('io.vertx:vertx-mongo-client:4.4.1')
-    implementation('io.vertx:vertx-dropwizard-metrics:4.4.1')
+
+    implementation('io.vertx:vertx-hazelcast:4.4.2')
+    implementation('io.vertx:vertx-mongo-client:4.4.2')
+    implementation('io.vertx:vertx-dropwizard-metrics:4.4.2')
 
     implementation('de.neuland-bfi:jade4j:1.3.2')
     implementation('de.mkammerer:argon2-jvm:2.11')
     implementation('org.fusesource.jansi:jansi:2.4.0')
 
-    implementation('org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.9')
+    implementation('org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.10')
     implementation('com.googlecode.cqengine:cqengine:3.6.0')
 
     /* keep these in sync with cqengine, used internally. */

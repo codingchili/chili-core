@@ -40,66 +40,13 @@ public abstract class Response {
                 .put(PROTOCOL_MESSAGE, e.getMessage()));
     }
 
-    /**
-     * @param message the message to be converted to a buffer.
-     * @return a message buffer.
-     * @see #buffer(Object)
-     */
-    public static Buffer buffer(Object message) {
-        return buffer(null, null, message);
+
+    public static Buffer buffer(Object object) {
+        return Serializer.buffer(object);
     }
 
-    /**
-     * Converts the given message into a serializable format used to
-     * send messages back to clients. Use this method when the context
-     * of a request is not available.
-     *
-     * @param message the message to be converted.
-     * @param target  the target header to set for the response.
-     * @param route   the route header to set for the response.
-     * @return a sendable json object without headers.
-     */
-    public static Buffer buffer(String target, String route, Object message) {
-        Buffer buffer;
-
-        if (message instanceof Buffer) {
-            buffer = ((Buffer) message);
-        } else if (message instanceof JsonObject) {
-            buffer = addHeaders(target, route, (JsonObject) message).toBuffer();
-        } else {
-            buffer = addHeaders(target, route, Serializer.json(message)).toBuffer();
-        }
-        return buffer;
-    }
-
-    /**
-     * @param message an object to be converted to a json message.
-     * @return a json message with headers set.
-     * @see #json(Object)
-     */
-    public static JsonObject json(Object message) {
-        return json(null, null, message);
-    }
-
-    /**
-     * Creates a json response message.
-     *
-     * @param target  the target header to set for the response.
-     * @param route   the route header to set for the response.
-     * @param message the message to add request headers to.
-     * @return a json object.
-     */
-    public static JsonObject json(String target, String route, Object message) {
-        JsonObject json;
-
-        if (message instanceof JsonObject) {
-            json = (JsonObject) message;
-        } else if (message instanceof Buffer) {
-            json = ((Buffer) message).toJsonObject();
-        } else {
-            json = Serializer.json(message);
-        }
-        return addHeaders(target, route, json);
+    public static JsonObject json(Object object) {
+        return Serializer.json(object);
     }
 
     /**

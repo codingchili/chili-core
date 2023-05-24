@@ -32,7 +32,7 @@ public class WebsocketRequest implements Request {
     @Override
     public void write(Object object) {
         try {
-            connection.write(Response.buffer(target(), route(), object));
+            connection.write(object);
         } catch (Exception e) {
             throw new CoreRuntimeException(e);
         }

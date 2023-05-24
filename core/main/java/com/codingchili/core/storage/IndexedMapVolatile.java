@@ -5,6 +5,7 @@ import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.index.navigable.NavigableIndex;
 import com.googlecode.cqengine.index.radix.RadixTreeIndex;
+import com.googlecode.cqengine.index.suffix.SuffixTreeIndex;
 import com.googlecode.cqengine.index.unique.UniqueIndex;
 import com.googlecode.cqengine.persistence.onheap.OnHeapPersistence;
 import io.vertx.core.Future;
@@ -46,7 +47,10 @@ public class IndexedMapVolatile<Value extends Storable> extends IndexedMap<Value
         }
 
         if (attribute.getAttributeType().equals(String.class)) {
+            // starts-with
             db.addIndex(RadixTreeIndex.onAttribute((Attribute<Value, String>) attribute));
+            // ends-width + string-contains
+            db.addIndex(SuffixTreeIndex.onAttribute((Attribute<Value, String>) attribute));
         }
     }
 }

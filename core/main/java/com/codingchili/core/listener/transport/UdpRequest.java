@@ -33,18 +33,7 @@ public class UdpRequest implements Request {
 
     @Override
     public void write(Object message) {
-        write(message, true);
-    }
-
-    private void write(Object message, boolean reflectHeaders) {
-        Buffer buffer;
-
-        // only include the request headers when replying to a request - not on a connection.
-        if (reflectHeaders) {
-            buffer = Response.buffer(target(), route(), message);
-        } else {
-            buffer = Response.buffer(message);
-        }
+        var buffer = Response.buffer(message);
 
         createOrGet().send(buffer,
                 packet.sender().port(),
@@ -65,7 +54,7 @@ public class UdpRequest implements Request {
     @Override
     public Connection connection() {
         if (connection == null) {
-            connection = new Connection((message) -> this.write(message, false), token().getDomain())
+            connection = new Connection((message) -> this.write(message), token().getDomain())
                     .setProperty(PROTOCOL_CONNECTION, packet.sender().host());
         }
         return connection;
