@@ -2,6 +2,9 @@ package com.codingchili.core.logging;
 
 import io.vertx.core.json.JsonObject;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import static com.codingchili.core.configuration.CoreStrings.*;
 
 /**
@@ -10,6 +13,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 public class LogMessage {
     private Logger logger;
     private JsonObject event;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     /**
      * Creates a new logging message. Constructor typically invoked indirectly
@@ -50,7 +54,9 @@ public class LogMessage {
      * @return the logger that was used to send the message.
      */
     public Logger send() {
-        logger.log(event);
+        executor.execute(() -> {
+            logger.log(event);
+        });
         return logger;
     }
 
