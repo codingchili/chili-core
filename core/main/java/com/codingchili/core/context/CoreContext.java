@@ -114,8 +114,11 @@ public interface CoreContext {
      *
      * @param deploymentId the id of the deployment to undeploy.
      */
-    void stop(String deploymentId);
+    Future<Void> stop(String deploymentId);
 
+    /**
+     * @return stop the context.
+     */
     Future<CompositeFuture> stop();
 
     /**

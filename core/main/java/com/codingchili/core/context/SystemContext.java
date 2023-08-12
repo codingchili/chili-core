@@ -27,8 +27,8 @@ import static com.codingchili.core.configuration.CoreStrings.getUnsupportedDeplo
  * Implementation of the CoreContext, each context gets its own worker pool.
  */
 public class SystemContext implements CoreContext {
-    private static AtomicBoolean initialized = new AtomicBoolean(false);
-    private Map<String, List<String>> deployments = new HashMap<>();
+    private static final AtomicBoolean initialized = new AtomicBoolean(false);
+    private final Map<String, List<String>> deployments = new HashMap<>();
     private MetricCollector metrics;
     private RemoteLogger logger;
     protected Vertx vertx;
@@ -250,11 +250,15 @@ public class SystemContext implements CoreContext {
     }
 
     @Override
-    public void stop(String deploymentId) {
+    public Future<Void> stop(String deploymentId) {
         if (deployments.containsKey(deploymentId)) {
-            deployments.get(deploymentId).forEach(vertx::undeploy);
+            var promises = new ArrayList<Future>();
+            deployments.get(deploymentId).forEach(deployment -> {
+                promises.add(vertx.undeploy(deployment));
+            });
+            return CompositeFuture.all(promises).mapEmpty();
         } else {
-            vertx.undeploy(deploymentId);
+            return vertx.undeploy(deploymentId);
         }
     }
 
