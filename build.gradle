@@ -2,7 +2,7 @@ apply plugin: 'idea'
 apply plugin: 'maven-publish'
 apply plugin: 'java-library'
 
-project.version = "1.4.2"
+project.version = "1.4.3"
 project.group = 'com.github.codingchili'
 
 subprojects {
