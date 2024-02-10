@@ -7,8 +7,10 @@ import io.vertx.core.http.*;
 import io.vertx.core.http.impl.headers.HeadersMultiMap;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.net.HostAndPort;
 import io.vertx.core.net.NetSocket;
 import io.vertx.core.net.SocketAddress;
+import io.vertx.core.net.impl.HostAndPortImpl;
 import io.vertx.ext.auth.User;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -194,6 +196,11 @@ public class RestRequestTest {
                 @Override
                 public String query() {
                     return null;
+                }
+
+                @Override
+                public HostAndPort authority() {
+                    return new HostAndPortImpl("none", 21);
                 }
 
                 @Override
@@ -571,6 +578,11 @@ public class RestRequestTest {
         @Override
         public List<FileUpload> fileUploads() {
             return null;
+        }
+
+        @Override
+        public void cancelAndCleanupFileUploads() {
+
         }
 
         @Override
