@@ -28,6 +28,8 @@ public class Launcher implements CoreService {
     private static final ConsoleLogger logger = new ConsoleLogger(Launcher.class);
     private LaunchContext context;
     private CoreContext core;
+    private Future<CommandResult> status;
+
 
     /**
      * Starts the launcher with the given arguments.
@@ -43,8 +45,9 @@ public class Launcher implements CoreService {
      *
      * @param context contains the launcher args and settings.
      */
-    public static void start(LaunchContext context) {
-        new Launcher(context);
+    public static Future<CommandResult> start(LaunchContext context) {
+        var launcher = new Launcher(context);
+        return launcher.status;
     }
 
     /**
@@ -57,8 +60,9 @@ public class Launcher implements CoreService {
 
         logger.log(CoreStrings.getStartupText());
 
-        var future = context.execute();
-        future.onSuccess(result -> {
+        status = context.execute();
+
+        status.onSuccess(result -> {
             if (LauncherCommandResult.CONTINUE.equals(result)) {
                 clusterIfEnabled(context);
             }

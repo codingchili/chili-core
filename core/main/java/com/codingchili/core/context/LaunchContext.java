@@ -33,6 +33,10 @@ public class LaunchContext {
         this.args = args;
     }
 
+    public LaunchContext(Collection<String> args) {
+        this.args = args.toArray(new String[0]);
+    }
+
     /**
      * @return the launcher settings, must be modified before starting the launcher.
      */
@@ -227,7 +231,7 @@ public class LaunchContext {
     /**
      * Starts the launcher using this context.
      */
-    public void start() {
-        Launcher.start(this);
+    public Future<CommandResult> start() {
+        return Launcher.start(this);
     }
 }
