@@ -11,9 +11,9 @@ import com.codingchili.core.logging.Logger;
  */
 class CoreVerticle implements Verticle, CoreDeployment {
     private Vertx vertx;
-    private CoreContext core;
-    private CoreDeployment deployment;
-    private Logger logger;
+    private final CoreContext core;
+    private final CoreDeployment deployment;
+    private final Logger logger;
 
     public CoreVerticle(CoreDeployment deployment, CoreContext core) {
         this.deployment = deployment;
@@ -30,6 +30,11 @@ class CoreVerticle implements Verticle, CoreDeployment {
     public void init(Vertx vertx, Context vcon) {
         this.vertx = vertx;
         this.deployment.init(core);
+    }
+
+    @Override
+    public Future<?> deploy(Context context) throws Exception {
+        return Future.succeededFuture();
     }
 
     @Override

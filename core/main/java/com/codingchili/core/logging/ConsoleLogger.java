@@ -1,8 +1,6 @@
 package com.codingchili.core.logging;
 
 import io.vertx.core.json.JsonObject;
-import org.fusesource.jansi.Ansi;
-import org.fusesource.jansi.AnsiConsole;
 
 import java.time.Instant;
 import java.util.*;
@@ -11,9 +9,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import com.codingchili.core.context.CoreContext;
+import org.jline.jansi.Ansi;
+import org.jline.jansi.AnsiConsole;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
-import static org.fusesource.jansi.Ansi.ansi;
 
 /**
  * Implementation of a console logger, filters some key/value combinations to better display the messages.
@@ -115,7 +114,7 @@ public class ConsoleLogger extends AbstractLogger implements StringLogger {
         LogLevel level = consumeLevel(data);
         String message = consume(data, LOG_MESSAGE);
 
-        Ansi ansi = ansi().reset();
+        Ansi ansi = Ansi.ansi().reset();
 
         level.apply(ansi)
                 .a(level.getName())

@@ -60,7 +60,7 @@ public class MapBenchmarkImplementation extends BenchmarkImplementationBuilder {
 
     @Override
     public void shutdown(Promise<Void> promise) {
-        storage.clear(promise);
+        storage.clear(promise::handle);
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.codingchili.core.logging;
 
-import org.fusesource.jansi.Ansi;
+
+import org.jline.jansi.Ansi;
 
 /**
  * logging level definitions.

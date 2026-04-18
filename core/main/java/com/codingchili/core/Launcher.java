@@ -144,7 +144,7 @@ public class Launcher implements CoreService {
      * Deploy services in the order they are defined in the service block.
      */
     private void deployServices(List<String> nodes) {
-        List<Future> deployments = new ArrayList<>();
+        List<Future<?>> deployments = new ArrayList<>();
 
         for (String node : nodes) {
             if (isDeployable(node)) {
@@ -153,7 +153,7 @@ public class Launcher implements CoreService {
                 deployments.add(promise.future());
             }
         }
-        CompositeFuture.all(deployments).onComplete(deployed -> {
+        Future.all(deployments).onComplete(deployed -> {
             if (deployed.failed()) {
                 for (var i = 0; i < deployments.size(); i++) {
                     var future = deployments.get(i);

@@ -38,7 +38,7 @@ public class ShutdownListener {
      */
     public synchronized static Future<Void> publish(CoreContext core) {
         Promise<Void> promise = Promise.promise();
-        CompositeFuture.all(listeners.stream()
+        Future.all(listeners.stream()
                 .map(listener -> listener.apply(Optional.ofNullable(core)))
                 .collect(Collectors.toList()))
                 .onComplete((done) -> {

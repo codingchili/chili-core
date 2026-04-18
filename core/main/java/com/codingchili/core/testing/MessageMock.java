@@ -101,20 +101,9 @@ public class MessageMock implements Message<Object> {
 
     }
 
-
-    @Override
-    public <R> void replyAndRequest(Object message, Handler<AsyncResult<Message<R>>> replyHandler) {
-
-    }
-
     @Override
     public <R> Future<Message<R>> replyAndRequest(Object message) {
         return null;
-    }
-
-    @Override
-    public <R> void replyAndRequest(Object message, DeliveryOptions options, Handler<AsyncResult<Message<R>>> replyHandler) {
-
     }
 
     @Override

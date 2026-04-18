@@ -99,7 +99,15 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
     }
 
     protected <T> void blocking(Handler<Promise<T>> blocking, Handler<AsyncResult<T>> result) {
-        executor.executeBlocking(blocking, result);
+        var inner = Promise.<T>promise();
+        executor.executeBlocking(() -> {
+                    blocking.handle(inner);
+                    return inner.future();
+                }, false)
+                .onComplete((outer) -> {
+                    var innerFuture = outer.result();
+                    innerFuture.onComplete(result);
+                });
     }
 
     /**

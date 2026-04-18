@@ -1,37 +1,37 @@
 package com.codingchili.core.protocol;
 
 
+import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.files.Configurations;
-
+import com.codingchili.core.protocol.exception.SerializerPayloadException;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.util.Pool;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.module.blackbird.BlackbirdModule;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.json.*;
-import io.vertx.core.json.jackson.*;
+import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import io.vertx.core.json.jackson.DatabindCodec;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.context.CoreRuntimeException;
-import com.codingchili.core.protocol.exception.SerializerPayloadException;
-import com.codingchili.core.storage.JsonStorable;
-import com.codingchili.core.storage.Storable;
-
-import static com.codingchili.core.configuration.CoreStrings.*;
+import static com.codingchili.core.configuration.CoreStrings.ID_COLLECTION;
 
 /**
  * Serializes objects to JSON or YAML and back. Utility methods for gzip and class definition generation.

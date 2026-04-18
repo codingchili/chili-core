@@ -1,10 +1,10 @@
 package com.codingchili.core.context;
 
 import io.vertx.core.json.JsonObject;
-import org.fusesource.jansi.Ansi;
 
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.LogLevel;
+import org.jline.jansi.Ansi;
 
 import static com.codingchili.core.configuration.CoreStrings.LOG_MESSAGE;
 

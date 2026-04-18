@@ -117,7 +117,7 @@ public class AuthenticationGenerator {
      * @return callback
      */
     public Future<Void> tokens() {
-        var all = new ArrayList<Future>();
+        var all = new ArrayList<Future<?>>();
 
         configurations((settings, config, path, save) ->
                 andPathMatchesKeyRegex(settings, path)
@@ -125,7 +125,7 @@ public class AuthenticationGenerator {
                                 all.add(generateTokens(dependency, config, path)
                                         .onComplete(result -> save.run()))));
 
-        return CompositeFuture.all(all).map(v -> null);
+        return Future.all(all).map(v -> null);
     }
 
     private Future<Void> generateTokens(AuthenticationDependency dependant, JsonObject config, String path) {

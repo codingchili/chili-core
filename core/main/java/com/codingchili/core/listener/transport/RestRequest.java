@@ -66,10 +66,10 @@ public class RestRequest implements Request {
     }
 
     private void parseData(RoutingContext context) {
-        Buffer body = context.getBody();
+        Buffer body = context.body().buffer();
 
         if (body != null) {
-            this.size = context.getBody().length();
+            this.size = body.length();
 
             if (body.length() != 0) {
                 data = new JsonObject(body);

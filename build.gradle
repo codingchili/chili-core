@@ -13,8 +13,10 @@ subprojects {
     version = rootProject.version
     group = rootProject.group
 
-    sourceCompatibility = 18
-    targetCompatibility = 18
+    java {
+        sourceCompatibility = JavaVersion.VERSION_25
+        targetCompatibility = JavaVersion.VERSION_25
+    }
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
@@ -52,27 +54,32 @@ subprojects {
     }
 }
 
-task alljavadoc(type: Javadoc) {
-    source subprojects.collect { it.sourceSets.main.allJava }
-    classpath = files(subprojects.collect { it.sourceSets.main.compileClasspath })
+tasks.register('alljavadoc', Javadoc) {
+    source = subprojects.collect { it.tasks.named('javadoc').map { jt -> jt.source } }
+    classpath = files(subprojects.collect { it.tasks.named('javadoc').map { jt -> jt.classpath } })
 }
 
-task copyJavadoc(type: Copy, dependsOn: alljavadoc) {
+tasks.register('copyJavadoc', Copy) {
+    dependsOn alljavadoc
+
     from(javadoc.outputs.files)
     into 'docs/javadoc'
 }
 
-task javadocJar(type: Jar, dependsOn: alljavadoc) {
+tasks.register('javadocJar', Jar) {
+    dependsOn alljavadoc
     archiveClassifier = 'javadoc'
     from alljavadoc.destinationDir
 }
 
-task testReport(type: TestReport, dependsOn: 'build') {
-    destinationDir = file("$buildDir/reports/allTests")
-    reportOn subprojects*.test
+tasks.register('testReport', TestReport) {
+    dependsOn build
+    destinationDirectory = file("$buildDir/reports/allTests")
+    testResults.from(subprojects*.test)
 }
 
-task archiveTestReport(type: Zip, dependsOn: testReport) {
+tasks.register('archiveTestReport', Zip) {
+    dependsOn testReport
     archiveBaseName = 'testreport'
     from fileTree(file("$buildDir/reports/allTests"))
 }

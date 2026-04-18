@@ -1,33 +1,39 @@
 package com.codingchili.core.storage;
 
-import com.googlecode.cqengine.attribute.MultiValueAttribute;
+import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.context.FutureHelper;
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.storage.exception.NothingToRemoveException;
+import com.codingchili.core.storage.exception.NothingToUpdateException;
+import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
+import com.codingchili.core.storage.exception.ValueMissingException;
 import com.hazelcast.config.IndexType;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
-import com.hazelcast.query.*;
-import io.vertx.core.*;
-import io.vertx.core.impl.ConcurrentHashSet;
+import com.hazelcast.query.PagingPredicate;
+import com.hazelcast.query.Predicate;
+import com.hazelcast.query.Predicates;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.shareddata.AsyncMap;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
-import com.codingchili.core.configuration.CoreStrings;
-import com.codingchili.core.context.FutureHelper;
-import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.storage.exception.*;
-
 import static com.codingchili.core.configuration.CoreStrings.STORAGE_ARRAY;
-import static com.codingchili.core.context.FutureHelper.*;
+import static com.codingchili.core.context.FutureHelper.error;
+import static com.codingchili.core.context.FutureHelper.result;
 
 /**
  * Initializes a new hazel async map.
  */
 public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
     private static final String HAZEL_ARRAY = "[any]";
-    private final Set<String> indexed = new ConcurrentHashSet<>();
+    private final Set<String> indexed = ConcurrentHashMap.newKeySet();
     private final StorageContext<Value> context;
     private AsyncMap<String, Value> map;
     private IMap<String, Value> imap;
@@ -41,7 +47,7 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
     public HazelMap(Promise<AsyncStorage> promise, StorageContext<Value> context) {
         this.context = context;
 
-        context.vertx().sharedData().<String, Value>getClusterWideMap(context.collection(), cluster -> {
+        context.vertx().sharedData().<String, Value>getClusterWideMap(context.collection()).onComplete(cluster -> {
             if (cluster.succeeded()) {
                 this.map = cluster.result();
 
@@ -63,7 +69,7 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void get(String key, Handler<AsyncResult<Value>> handler) {
-        map.get(key, get -> {
+        map.get(key).onComplete(get -> {
             if (get.succeeded()) {
                 if (get.result() != null) {
                     handler.handle(result(get.result()));
@@ -78,12 +84,12 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void put(Value value, Handler<AsyncResult<Void>> handler) {
-        map.put(value.getId(), value, handler);
+        map.put(value.getId(), value).onComplete(handler);
     }
 
     @Override
     public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
-        map.putIfAbsent(value.getId(), value, put -> {
+        map.putIfAbsent(value.getId(), value).onComplete(put -> {
             if (put.succeeded()) {
                 if (put.result() == null) {
                     handler.handle(FutureHelper.result());
@@ -98,7 +104,7 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void remove(String key, Handler<AsyncResult<Void>> handler) {
-        map.remove(key, remove -> {
+        map.remove(key).onComplete(remove -> {
             if (remove.succeeded()) {
                 if (remove.result() == null) {
                     handler.handle(error(new NothingToRemoveException(key)));
@@ -113,7 +119,7 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void update(Value value, Handler<AsyncResult<Void>> handler) {
-        map.replace(value.getId(), value, replace -> {
+        map.replace(value.getId(), value).onComplete(replace -> {
             if (replace.succeeded()) {
                 if (replace.result() == null) {
                     handler.handle(error(new NothingToUpdateException(value.getId())));
@@ -138,7 +144,7 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void clear(Handler<AsyncResult<Void>> handler) {
-        map.clear(clear -> {
+        map.clear().onComplete(clear -> {
             if (clear.succeeded()) {
                 handler.handle(FutureHelper.result());
             } else {
@@ -149,7 +155,7 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void size(Handler<AsyncResult<Integer>> handler) {
-        map.size(size -> {
+        map.size().onComplete(size -> {
             if (size.succeeded()) {
                 handler.handle(result(size.result()));
             } else {

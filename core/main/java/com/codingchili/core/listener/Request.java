@@ -1,6 +1,7 @@
 package com.codingchili.core.listener;
 
 import io.vertx.core.AsyncResult;
+import io.vertx.core.VertxException;
 import io.vertx.core.impl.NoStackTraceThrowable;
 import io.vertx.core.json.DecodeException;
 import io.vertx.core.json.JsonObject;
@@ -74,7 +75,7 @@ public interface Request extends Messageable {
     default void error(Throwable exception) {
         if (exception instanceof CoreException || exception instanceof CoreRuntimeException) {
             write(Response.error(target(), route(), ((CoreExceptionFormat) exception).status(), exception));
-        } else if (exception instanceof DecodeException || exception instanceof NoStackTraceThrowable) {
+        } else if (exception instanceof DecodeException) {
             write(Response.error(target(), route(), ResponseStatus.ERROR, exception));
         } else {
             write(Response.error(target(), route(), ResponseStatus.ERROR, new UnmappedException(exception)));

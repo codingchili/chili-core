@@ -83,22 +83,21 @@ public class ShutdownHook extends Thread {
 
                 // stop all deployed services - prevent scheduling of new blocked tasks.
                 context.stop().onComplete(stop -> {
-                    try {
+                    /*try {
                         // wait for all blocking tasks that are scheduled to complete.
                         ExecutorService executor = context.getBlockingExecutor();
                         executor.shutdown();
                         executor.awaitTermination(timeout.get(), TimeUnit.MILLISECONDS);
                     } catch (InterruptedException e) {
                         logger.onError(e);
-                    }
+                    }*/
 
                     // close the vertx instance.
-                    context.vertx().close((close) -> {
-                        if (close.failed()) {
-                            logger.onError(close.cause());
-                        }
-                        timeout.set(0);
-                    });
+                    context.vertx().close()
+                            .onFailure((e) -> {
+                                logger.onError(e);
+                                timeout.set(0);
+                            });
 
                 });
             });

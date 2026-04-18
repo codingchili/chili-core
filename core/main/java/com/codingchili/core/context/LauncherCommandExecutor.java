@@ -1,7 +1,6 @@
 package com.codingchili.core.context;
 
 import io.vertx.core.Future;
-import org.fusesource.jansi.Ansi;
 
 import java.util.*;
 import java.util.function.Function;
@@ -10,6 +9,7 @@ import com.codingchili.core.benchmarking.CoreBenchmarkSuite;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.security.AuthenticationGenerator;
+import org.jline.jansi.Ansi;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 

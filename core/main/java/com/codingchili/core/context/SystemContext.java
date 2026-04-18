@@ -1,16 +1,5 @@
 package com.codingchili.core.context;
 
-import io.vertx.core.*;
-import io.vertx.core.eventbus.EventBus;
-import io.vertx.core.impl.VertxImpl;
-
-import java.util.*;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
 import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.*;
@@ -19,6 +8,14 @@ import com.codingchili.core.logging.Logger;
 import com.codingchili.core.logging.RemoteLogger;
 import com.codingchili.core.metrics.MetricCollector;
 import com.codingchili.core.metrics.MetricSettings;
+import io.vertx.core.*;
+import io.vertx.core.eventbus.EventBus;
+
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static com.codingchili.core.configuration.CoreStrings.getUnsupportedDeployment;
 
@@ -65,13 +62,9 @@ public class SystemContext implements CoreContext {
      * @param handler called with the context on creation.
      */
     public static void clustered(Handler<AsyncResult<CoreContext>> handler) {
-        Vertx.clusteredVertx(Configurations.system().getOptions(), cluster -> {
-            if (cluster.succeeded()) {
-                handler.handle(Future.succeededFuture(new SystemContext(cluster.result())));
-            } else {
-                handler.handle(Future.failedFuture(cluster.cause()));
-            }
-        });
+        Vertx.clusteredVertx(Configurations.system().getOptions())
+                .onSuccess(vertx -> handler.handle(Future.succeededFuture(new SystemContext(vertx))))
+                .onFailure(e -> handler.handle(Future.failedFuture(e)));
     }
 
     @Override
@@ -182,9 +175,7 @@ public class SystemContext implements CoreContext {
     }
 
     private Future<String> deployN(String verticle) {
-        Promise<String> promise = Promise.promise();
-        vertx.deployVerticle(verticle, new DeploymentOptions().setInstances(system().getHandlers()), promise);
-        return promise.future();
+        return vertx.deployVerticle(verticle, new DeploymentOptions().setInstances(system().getHandlers()));
     }
 
     @Override
@@ -220,18 +211,16 @@ public class SystemContext implements CoreContext {
 
         for (int i = 0; i < handlerCount; i++) {
             CoreVerticle verticle = new CoreVerticle(deployment, this);
-            vertx.deployVerticle(verticle, deployed -> {
-                if (deployed.succeeded()) {
-                    completed.add(deployed.result());
-                    latch.countDown();
-                    if (latch.getCount() == 0) {
-                        done.complete(deploymentId);
-                        deployments.put(deploymentId, completed);
-                    }
-                } else {
-                    done.tryFail(deployed.cause());
-                }
-            });
+            vertx.deployVerticle(verticle)
+                    .onSuccess(id -> {
+                        completed.add(id);
+                        latch.countDown();
+                        if (latch.getCount() == 0) {
+                            done.complete(deploymentId);
+                            deployments.put(deploymentId, completed);
+                        }
+                    })
+                    .onFailure(done::tryFail);
             if (i < getHandlerCount(deployment) - 1)
                 deployment = supplier.get();
         }
@@ -252,11 +241,11 @@ public class SystemContext implements CoreContext {
     @Override
     public Future<Void> stop(String deploymentId) {
         if (deployments.containsKey(deploymentId)) {
-            var promises = new ArrayList<Future>();
+            var promises = new ArrayList<Future<?>>();
             deployments.get(deploymentId).forEach(deployment -> {
                 promises.add(vertx.undeploy(deployment));
             });
-            return CompositeFuture.all(promises).mapEmpty();
+            return Future.all(promises).mapEmpty();
         } else {
             return vertx.undeploy(deploymentId);
         }
@@ -264,20 +253,12 @@ public class SystemContext implements CoreContext {
 
     @Override
     public Future<CompositeFuture> stop() {
-        List<Future> futures = deployments.values()
+        List<Future<?>> futures = deployments.values()
                 .stream()
                 .flatMap(Collection::stream)
-                .map((id) -> {
-                    Promise<Void> promise = Promise.promise();
-                    vertx.undeploy(id, promise);
-                    return promise.future();
-                })
+                .map((id) -> vertx.undeploy(id))
                 .collect(Collectors.toList());
-        return CompositeFuture.all(futures);
-    }
-
-    ExecutorService getBlockingExecutor() {
-        return ((VertxImpl) vertx).getWorkerPool().executor();
+        return Future.all(futures);
     }
 
     @Override
@@ -287,7 +268,15 @@ public class SystemContext implements CoreContext {
 
     @Override
     public <T> void blocking(Handler<Promise<T>> sync, boolean ordered, Handler<AsyncResult<T>> result) {
-        vertx.executeBlocking(sync, ordered, result);
+        var inner = Promise.<T>promise();
+        vertx.executeBlocking(() -> {
+                    sync.handle(inner);
+                    return inner.future();
+                }, ordered)
+                .onComplete((outer) -> {
+                    var innerFuture = outer.result();
+                    innerFuture.onComplete(result);
+                });
     }
 
     @Override
@@ -305,9 +294,7 @@ public class SystemContext implements CoreContext {
     @Override
     public void close(Handler<AsyncResult<Void>> handler) {
         initialized.set(false);
-        vertx.close((close) -> {
-            handler.handle(Future.succeededFuture());
-        });
+        vertx.close().onComplete((v) -> handler.handle(Future.succeededFuture()));
     }
 
     @Override

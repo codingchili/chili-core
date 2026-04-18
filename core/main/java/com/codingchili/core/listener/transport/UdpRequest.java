@@ -35,12 +35,13 @@ public class UdpRequest implements Request {
     public void write(Object message) {
         var buffer = Response.buffer(message);
 
-        createOrGet().send(buffer,
-                packet.sender().port(),
-                packet.sender().host(), sent -> {
-                    if (sent.failed()) {
-                        throw new RuntimeException(sent.cause());
-                    }
+        createOrGet()
+                .send(buffer,
+                        packet.sender().port(),
+                        packet.sender().host()
+                )
+                .onFailure(e -> {
+                    throw new RuntimeException(e);
                 });
     }
 

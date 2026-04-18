@@ -209,10 +209,10 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
 
     private void save() {
         if (context.storage().isPersisted()) {
-            fileWriter.executeBlocking(execute -> {
+            fileWriter.<Void>executeBlocking(() -> {
                 ConfigurationFactory.writeObject(db.toJson(), dbPath());
-            }, true, result -> {
-            });
+                return null;
+            }, true).onComplete(result -> {});
         }
     }
 

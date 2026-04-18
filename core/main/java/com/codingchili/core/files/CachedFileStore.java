@@ -108,7 +108,7 @@ public final class CachedFileStore implements FileStoreListener {
 
     private void loadFile(Path path, boolean startup) {
         if (settings.isAsynchronous()) {
-            context.fileSystem().readFile(path.toAbsolutePath().toString(), done -> {
+            context.fileSystem().readFile(path.toAbsolutePath().toString()).onComplete(done -> {
                 if (done.succeeded()) {
                     addFile(path, done.result());
                     if (!startup)

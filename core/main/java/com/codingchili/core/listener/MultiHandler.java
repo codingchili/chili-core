@@ -117,7 +117,7 @@ public class MultiHandler<T extends Request> implements CoreHandler<T> {
 
     private Future<Void> forAll(BiConsumer<CoreHandler<T>, Promise<Void>> consumer) {
         Promise<Void> all = Promise.promise();
-        List<Future> futures = new ArrayList<>();
+        List<Future<?>> futures = new ArrayList<>();
 
         map.values().forEach((handler) -> {
             Promise<Void> promise = Promise.promise();
@@ -125,7 +125,7 @@ public class MultiHandler<T extends Request> implements CoreHandler<T> {
             futures.add(promise.future());
         });
 
-        CompositeFuture.all(futures).onComplete(done -> {
+        Future.all(futures).onComplete(done -> {
             if (done.succeeded()) {
                 all.complete();
             } else {

@@ -38,23 +38,23 @@ publishing {
 }
 
 dependencies {
-    api('io.vertx:vertx-core:4.5.3')
-    api('io.vertx:vertx-web:4.5.3')
+    api('io.vertx:vertx-core:5.0.8')
+    api('io.vertx:vertx-web:5.0.8')
 
-    implementation('io.dropwizard.metrics:metrics-jvm:4.2.16')
-    implementation('com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.0')
-    implementation('com.fasterxml.jackson.module:jackson-module-blackbird:2.15.0')
+    implementation('io.dropwizard.metrics:metrics-jvm:4.2.38')
+    implementation('com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.18.2')
+    implementation('com.fasterxml.jackson.module:jackson-module-blackbird:2.18.2')
 
 
-    implementation('io.vertx:vertx-hazelcast:4.5.3')
-    implementation('io.vertx:vertx-mongo-client:4.5.3')
-    implementation('io.vertx:vertx-dropwizard-metrics:4.4.2')
+    implementation('io.vertx:vertx-hazelcast:5.0.8')
+    implementation('io.vertx:vertx-mongo-client:5.0.8')
+    implementation('io.vertx:vertx-dropwizard-metrics:5.0.8')
 
     implementation('de.neuland-bfi:jade4j:1.3.2')
-    implementation('de.mkammerer:argon2-jvm:2.11')
-    implementation('org.fusesource.jansi:jansi:2.4.1')
+    implementation('de.mkammerer:argon2-jvm:2.12')
+    implementation('org.jline:jline:4.0.0')
 
-    implementation('org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.18')
+    implementation('org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.29')
     implementation('com.googlecode.cqengine:cqengine:3.6.0')
 
     /* keep these in sync with cqengine, used internally. */
@@ -66,6 +66,6 @@ dependencies {
     implementation('org.apache.logging.log4j:log4j-to-slf4j:2.19.0')
     //implementation('org.slf4j:slf4j-simple:1.7.32')
 
-    testImplementation 'io.vertx:vertx-unit:4.4.1'
+    testImplementation 'io.vertx:vertx-unit:5.0.8'
     testImplementation 'junit:junit:4.13.2'
 }

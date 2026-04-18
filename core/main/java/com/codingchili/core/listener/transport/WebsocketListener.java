@@ -85,7 +85,7 @@ public class WebsocketListener implements CoreListener {
                         socket.exceptionHandler(logger::onError);
 
                     }).requestHandler(router)
-                    .listen(settings.getPort(), getBindAddress(), listen -> {
+                    .listen(settings.getPort(), getBindAddress()).onComplete(listen -> {
                         if (listen.succeeded()) {
                             settings.addListenPort(listen.result().actualPort());
                             start.complete();
@@ -111,7 +111,7 @@ public class WebsocketListener implements CoreListener {
                     // create a text frame directly from a buffer.
                     socket.writeFrame(
                             new WebSocketFrameImpl(
-                                    WebSocketFrameType.TEXT, buffer.getByteBuf(), true)
+                                    WebSocketFrameType.TEXT, buffer.getBytes(), true)
                     );
                 }
             }

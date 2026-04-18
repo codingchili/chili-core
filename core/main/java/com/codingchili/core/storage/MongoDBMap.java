@@ -1,12 +1,12 @@
 package com.codingchili.core.storage;
 
 import io.vertx.core.*;
-import io.vertx.core.impl.ConcurrentHashSet;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.mongo.*;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,7 +32,7 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
     private static final String REGEX = "$regex";
     private static final String IN = "$in";
     private static final String OPTIONS = "$options";
-    private Set<String> indexed = new ConcurrentHashSet<>();
+    private Set<String> indexed = ConcurrentHashMap.newKeySet();
     private StorageContext<Value> context;
     private MongoClient client;
     private String collection;
@@ -48,7 +48,7 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void get(String key, Handler<AsyncResult<Value>> handler) {
-        client.findOne(collection, id(key), ALL_FIELDS, query -> {
+        client.findOne(collection, id(key), ALL_FIELDS).onComplete(query -> {
             if (query.succeeded()) {
                 if (query.result() != null) {
                     handler.handle(result(context.toValue(query.result())));
@@ -64,8 +64,8 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
     @Override
     public void put(Value value, Handler<AsyncResult<Void>> handler) {
         client.replaceDocumentsWithOptions(collection, id(value.getId()), document(value),
-                new UpdateOptions().setUpsert(true),
-                update -> {
+                new UpdateOptions().setUpsert(true))
+                .onComplete(update -> {
                     if (update.succeeded()) {
                         handler.handle(result());
                     } else {
@@ -80,7 +80,7 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
-        client.insert(collection, document(value), put -> {
+        client.insert(collection, document(value)).onComplete(put -> {
             if (put.succeeded()) {
                 handler.handle(FutureHelper.result());
             } else {
@@ -91,7 +91,7 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void remove(String key, Handler<AsyncResult<Void>> handler) {
-        client.removeDocument(collection, id(key), remove -> {
+        client.removeDocument(collection, id(key)).onComplete(remove -> {
             if (remove.succeeded()) {
                 if (remove.result().getRemovedCount() > 0) {
                     handler.handle(FutureHelper.result());
@@ -114,7 +114,7 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void update(Value value, Handler<AsyncResult<Void>> handler) {
-        client.replaceDocuments(collection, id(value), document(value), replace -> {
+        client.replaceDocuments(collection, id(value), document(value)).onComplete(replace -> {
             if (replace.succeeded()) {
                 if (replace.result().getDocModified() > 0) {
                     handler.handle(FutureHelper.result());
@@ -129,7 +129,7 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void values(Handler<AsyncResult<Stream<Value>>> handler) {
-        client.find(collection, new JsonObject(), found -> {
+        client.find(collection, new JsonObject()).onComplete(found -> {
             if (found.succeeded()) {
                 handler.handle(result(found.result().stream().map(json -> context.toValue(json))));
             } else {
@@ -140,7 +140,7 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void clear(Handler<AsyncResult<Void>> handler) {
-        client.dropCollection(collection, drop -> {
+        client.dropCollection(collection).onComplete(drop -> {
             if (drop.succeeded()) {
                 handler.handle(FutureHelper.result());
             } else {
@@ -151,7 +151,7 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void size(Handler<AsyncResult<Integer>> handler) {
-        client.count(collection, new JsonObject(), result -> {
+        client.count(collection, new JsonObject()).onComplete(result -> {
             if (result.succeeded()) {
                 handler.handle(result(result.result().intValue()));
             } else {
@@ -169,7 +169,9 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
         if (!indexed.contains(field)) {
             indexed.add(field);
             field = field.replace(STORAGE_ARRAY, "");
-            client.createIndex(context.collection(), new JsonObject().put(field, ""), handler);
+
+            client.createIndex(context.collection(), new JsonObject().put(field, ""))
+                    .onComplete(handler);
         }
     }
 
@@ -262,7 +264,7 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
             public void execute(Handler<AsyncResult<Collection<Value>>> handler) {
                 apply();
 
-                client.findWithOptions(collection, new JsonObject().put(OR, statements), getOptions(), find -> {
+                client.findWithOptions(collection, new JsonObject().put(OR, statements), getOptions()).onComplete(find -> {
                     if (find.succeeded()) {
                         handler.handle(result(toList(find.result())));
                     } else {

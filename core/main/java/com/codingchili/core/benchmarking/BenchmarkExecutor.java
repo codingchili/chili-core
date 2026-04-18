@@ -104,7 +104,7 @@ public class BenchmarkExecutor {
             listener.onImplementationWarmupComplete(implementation);
             implementation.reset(reset -> handler.handle(Future.succeededFuture()));
         });
-        benchmark(group, implementation, promise);
+        benchmark(group, implementation, promise::handle);
     }
 
     /**
