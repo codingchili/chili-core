@@ -63,14 +63,13 @@ public class ShutdownHookTest {
     public void blockingPoolAwaited(TestContext test) {
         Configurations.system().setShutdownHookTimeout(500);
         Async async = test.async();
-        context.blocking((blocking) -> {
+        context.blockingV2(() -> {
             try {
                 Thread.sleep(200);
-                blocking.complete();
             } catch (InterruptedException e) {
                 test.fail("Task interrupted!");
             }
-        }, done -> async.complete());
+        }).onComplete(done -> async.complete());
         shutdown();
     }
 
@@ -85,14 +84,14 @@ public class ShutdownHookTest {
     public void onBlockingPoolTimeoutForcefulExit(TestContext test) {
         Configurations.system().setShutdownHookTimeout(25);
         Async async = test.async();
-        context.blocking((blocking) -> {
+        context.blockingV2(() -> {
             try {
                 Thread.sleep(250);
                 test.fail("Blocking sleep was not forcefully interrupted.");
             } catch (InterruptedException e) {
-                blocking.complete();
+               //
             }
-        }, done -> async.complete());
+        }).onComplete(done -> async.complete());
         shutdown();
 
     }

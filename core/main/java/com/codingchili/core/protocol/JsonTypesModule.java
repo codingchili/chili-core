@@ -1,6 +1,6 @@
 package com.codingchili.core.protocol;
 
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import tools.jackson.databind.module.SimpleModule;
 import io.vertx.core.json.JsonObject;
 
 import com.codingchili.core.storage.JsonStorable;

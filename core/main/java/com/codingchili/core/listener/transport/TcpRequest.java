@@ -11,10 +11,10 @@ import com.codingchili.core.protocol.Response;
  * TCP request implementation.
  */
 public class TcpRequest implements Request {
-    private Connection connection;
-    private ListenerSettings settings;
-    private JsonObject data;
-    private int size;
+    private final Connection connection;
+    private final ListenerSettings settings;
+    private final JsonObject data;
+    private final int size;
 
     public TcpRequest(Connection connection, Buffer buffer, ListenerSettings settings) {
         this.size = buffer.length();

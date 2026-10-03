@@ -1,16 +1,19 @@
 package com.codingchili.core.listener;
 
-import io.vertx.core.eventbus.*;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
-
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.logging.Level;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.Address;
-import com.codingchili.core.protocol.exception.*;
+import com.codingchili.core.protocol.exception.NodeFailedToAcknowledge;
+import com.codingchili.core.protocol.exception.NodeNotReachableException;
+import com.codingchili.core.protocol.exception.RequestTimedOutException;
+import io.vertx.core.eventbus.DeliveryOptions;
+import io.vertx.core.eventbus.ReplyException;
+import io.vertx.core.eventbus.ReplyFailure;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static io.vertx.core.eventbus.ReplyFailure.*;
@@ -46,20 +49,16 @@ public class BusRouter implements CoreHandler<Request> {
     protected void send(Request request, String target) {
         DeliveryOptions options = new DeliveryOptions().setSendTimeout(request.timeout());
 
-        core.bus().request(target, request.data(), options, send -> {
-            if (send.succeeded()) {
-                request.write(send.result().body());
-            } else {
-                Throwable exception = send.cause();
-
-                if (exception instanceof ReplyException) {
-                    ReplyFailure status = ((ReplyException) exception).failureType();
-                    exceptionHandlers.get(status).accept(request);
-                } else {
-                    request.error(send.cause());
-                }
-            }
-        });
+        core.bus().request(target, request.data(), options)
+                .onSuccess(result -> request.write(result.body()))
+                .onFailure(e -> {
+                    if (e instanceof ReplyException) {
+                        ReplyFailure status = ((ReplyException) e).failureType();
+                        exceptionHandlers.get(status).accept(request);
+                    } else {
+                        request.error(e);
+                    }
+                });
     }
 
     protected void onRecipientFailure(Request request) {

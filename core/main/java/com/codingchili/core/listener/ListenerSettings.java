@@ -1,13 +1,16 @@
 package com.codingchili.core.listener;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.http.HttpServerConfig;
 
 import java.util.*;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.SecuritySettings;
 import com.codingchili.core.security.TrustAndKeyProvider;
+import io.vertx.core.http.HttpVersion;
+import io.vertx.core.net.ServerSSLOptions;
+import io.vertx.core.net.TcpServerConfig;
 
 import static com.codingchili.core.files.Configurations.security;
 
@@ -17,7 +20,9 @@ import static com.codingchili.core.files.Configurations.security;
 public class ListenerSettings {
     public static final int DEFAULT_TIMEOUT = 3000;
     public static final int DEFAULT_MAX_REQUEST_BYTES = 1024;
-    private HttpServerOptions httpOptions = null;
+    private HttpServerConfig httpOptions = null;
+    private ServerSSLOptions security = null;
+    private TcpServerConfig tcp = null;
     private Map<String, Endpoint> api = new HashMap<>();
     private WireType type = WireType.REST;
     private final Set<Integer> actualPorts = new HashSet<>();
@@ -189,23 +194,29 @@ public class ListenerSettings {
         this.alpn = alpn;
     }
 
+    @JsonIgnore
+    public TcpServerConfig getTcp() {
+        if (tcp != null) {
+            return tcp;
+        } else {
+            return new TcpServerConfig();
+        }
+    }
+
+    public ListenerSettings setTcp(TcpServerConfig tcp) {
+        this.tcp = tcp;
+        return this;
+    }
+
     /**
      * @return HttpOptions created from the listeners settings.
      */
     @JsonIgnore
-    public HttpServerOptions getHttpOptions() {
+    public HttpServerConfig getHttpOptions() {
 
         if (httpOptions == null) {
-            httpOptions = new HttpServerOptions()
-                    .setUseAlpn(alpn)
-                    .setCompressionSupported(true)
-                    .setSsl(secure);
-
-            if (secure) {
-                TrustAndKeyProvider provider = security().getKeystore(keystore);
-                httpOptions.setTrustOptions(provider.trustOptions())
-                        .setKeyCertOptions(provider.keyCertOptions());
-            }
+            httpOptions = new HttpServerConfig()
+                    .setVersions(secure ? HttpVersion.HTTP_3 : HttpVersion.HTTP_2);
         }
         return httpOptions;
     }
@@ -214,8 +225,26 @@ public class ListenerSettings {
      * @param httpOptions sets the HttpOptions for the listener if applicable
      * @return fluent
      */
-    public ListenerSettings setHttpOptions(HttpServerOptions httpOptions) {
+    public ListenerSettings setHttpOptions(HttpServerConfig httpOptions) {
         this.httpOptions = httpOptions;
+        return this;
+    }
+
+    @JsonIgnore
+    public ServerSSLOptions getSecurity() {
+        if (secure) {
+            ServerSSLOptions ssl = new ServerSSLOptions();
+            TrustAndKeyProvider provider = security().getKeystore(keystore);
+            ssl.setTrustOptions(provider.trustOptions())
+                    .setKeyCertOptions(provider.keyCertOptions());
+            return ssl;
+        } else {
+            return new ServerSSLOptions();
+        }
+    }
+
+    public ListenerSettings setSecurity(ServerSSLOptions ssl) {
+        this.security = ssl;
         return this;
     }
 

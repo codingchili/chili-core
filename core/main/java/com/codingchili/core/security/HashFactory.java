@@ -1,12 +1,13 @@
 package com.codingchili.core.security;
 
-import de.mkammerer.argon2.Argon2;
-import de.mkammerer.argon2.Argon2Factory;
-import io.vertx.core.*;
-
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.security.exception.HashMismatchException;
+import de.mkammerer.argon2.Argon2;
+import de.mkammerer.argon2.Argon2Factory;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
 
 /**
  * Handles the hashing of passwords and the generation
@@ -65,23 +66,17 @@ public class HashFactory {
      */
     public Future<String> hash(char[] plaintext) {
         var settings = settings();
-
-        Promise<String> promise = Promise.promise();
-        context.<String>blocking(blocking -> blocking.complete(
-                argon2.hash(
+        return context.blockingV2(() -> {
+            try {
+                return argon2.hash(
                         settings.getIterations(),
                         settings.getMemory(),
                         settings.getParallelism(),
-                        plaintext
-                )
-        ), result -> {
-            if (result.succeeded()) {
-                promise.complete(result.result());
-            } else {
-                promise.fail(new HashMismatchException());
+                        plaintext);
+            } catch (Throwable e) {
+                throw new HashMismatchException();
             }
         });
-        return promise.future();
     }
 
     /**

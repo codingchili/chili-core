@@ -578,6 +578,10 @@ public abstract class CoreStrings {
         return "Error: hash comparison has failed.";
     }
 
+    public static String getHashingFailed() {
+        return "Error: hash operation failed.";
+    }
+
     public static String getWatcherFailed(String cause) {
         return "failed: " + cause;
     }

@@ -82,7 +82,7 @@ public class StorageLoaderIT {
                 .withPlugin(plugin)
                 .withDB(TEST_DB, UUID.randomUUID().toString())
                 .withValue(StorableString.class)
-                .build(promise);
+                .build(promise::handle);
 
         promise.future().onComplete(done -> {
             if (done.succeeded()) {

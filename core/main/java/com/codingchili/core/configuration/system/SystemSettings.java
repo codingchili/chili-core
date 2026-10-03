@@ -3,7 +3,7 @@ package com.codingchili.core.configuration.system;
 import com.codingchili.core.metrics.MetricSettings;
 import com.codingchili.core.protocol.Serializer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import tools.jackson.databind.SerializationFeature;
 import io.vertx.core.VertxOptions;
 
 import com.codingchili.core.configuration.Configurable;
@@ -273,17 +273,21 @@ public class SystemSettings implements Configurable {
      * @param unsafe true if access to Unsafe should be attempted.
      *               this will trigger a warning on most recent JVM's.
      */
-    public void setUnsafe(Boolean unsafe) {
+    public SystemSettings setUnsafe(Boolean unsafe) {
         this.unsafe = unsafe;
         System.setProperty("kryo.unsafe", unsafe.toString());
+        return this;
     }
 
     public boolean isPrettyEncoding() {
         return prettyEncoding;
     }
 
-    public void setPrettyEncoding(boolean prettyEncoding) {
-        Serializer.json.configure(SerializationFeature.INDENT_OUTPUT, prettyEncoding);
+    public SystemSettings setPrettyEncoding(boolean prettyEncoding) {
+        Serializer.json = Serializer.json.rebuild()
+                .configure(SerializationFeature.INDENT_OUTPUT, true)
+                .build();
         this.prettyEncoding = prettyEncoding;
+        return this;
     }
 }

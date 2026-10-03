@@ -4,6 +4,7 @@ import io.vertx.core.*;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.file.FileSystem;
 
+import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
 import com.codingchili.core.configuration.system.SystemSettings;
@@ -130,6 +131,10 @@ public interface CoreContext {
      * @param <T>      type parameter.
      */
     <T> void blocking(Handler<Promise<T>> blocking, Handler<AsyncResult<T>> result);
+    <T> Future<T> blockingV2(Runnable blocking);
+    <T> Future<T> blockingV2(Runnable blocking, boolean ordered);
+    <T> Future<T> blockingV2(Callable<T> blocking);
+    <T> Future<T> blockingV2(Callable<T> blocking, boolean ordered);
 
     /**
      * Call to execute the given blocking handler on a worker thread that is

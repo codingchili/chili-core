@@ -1,5 +1,6 @@
 package com.codingchili.core.storage;
 
+import com.codingchili.core.context.CoreRuntimeException;
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.query.Query;
 import com.googlecode.cqengine.query.QueryFactory;
@@ -120,16 +121,17 @@ public class IndexedMapQuery<Value extends Storable> extends AbstractQueryBuilde
     public void execute(Handler<AsyncResult<Collection<Value>>> handler) {
         next();
 
-        storage.context.blocking(blocking -> {
+        storage.context.<Collection<Value>>blockingV2(() -> {
             try (ResultSet<Value> values = storage.db.retrieve(builder, getQueryOptions())) {
-                blocking.complete(StreamSupport.stream(values.spliterator(), false)
+                return StreamSupport.stream(values.spliterator(), false)
                         .skip(getPageSize() * getPage())
                         .limit(getPageSize())
-                        .map(mapper).collect(Collectors.toList()));
+                        .map(mapper)
+                        .collect(Collectors.toList());
             } catch (Exception e) {
-                blocking.fail(e);
+                throw new CoreRuntimeException(e);
             }
-        }, handler);
+        }).onComplete(handler);
     }
 
     public IndexedMapQuery<Value> setMapper(Function<Value, Value> mapper) {

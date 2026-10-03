@@ -92,9 +92,7 @@ public class HashFactoryTest {
         AtomicInteger countdown = new AtomicInteger(100);
 
         for (int i = 0; i < 100; i++) {
-            executor.<String>executeBlocking((blocking) -> {
-                hasher.hash(PLAINTEXT).onComplete(blocking);
-            }, false, (result) -> {
+            hasher.hash(PLAINTEXT).onComplete((string) -> {
                 if (countdown.decrementAndGet() == 0) {
                     long time = getTimeMS() - start;
                     test.assertTrue(time < HASH_TIME_LIMIT);

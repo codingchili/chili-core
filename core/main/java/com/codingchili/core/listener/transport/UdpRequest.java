@@ -1,6 +1,5 @@
 package com.codingchili.core.listener.transport;
 
-import io.vertx.core.buffer.Buffer;
 import io.vertx.core.datagram.DatagramPacket;
 import io.vertx.core.datagram.DatagramSocket;
 import io.vertx.core.json.JsonObject;

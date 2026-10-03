@@ -45,19 +45,18 @@ public class UdpListener implements CoreListener, DeploymentAware {
     public void start(Promise<Void> start) {
         var handlerPromise = Promise.<Void>promise();
 
-        handlerPromise.future().onSuccess((v) -> {
-            core.vertx().createDatagramSocket().listen(settings.getPort(), getBindAddress(), listen -> {
-                if (listen.succeeded()) {
-                    settings.addListenPort(listen.result().localAddress().port());
-                    listen.result()
-                            .handler(this::handle)
-                            .exceptionHandler(logger::onError);
-                    start.complete();
-                } else {
-                    start.fail(listen.cause());
-                }
-            });
-        }).onFailure(start::fail);
+        handlerPromise.future()
+                .onSuccess((v) -> {
+                    core.vertx().createDatagramSocket()
+                            .listen(settings.getPort(), getBindAddress())
+                            .onSuccess(server -> {
+                                settings.addListenPort(server.localAddress().port());
+                                server.handler(this::handle)
+                                        .exceptionHandler(logger::onError);
+                                start.complete();
+                            }).onFailure(start::fail);
+                })
+                .onFailure(start::fail);
 
         handler.start(handlerPromise);
     }

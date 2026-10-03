@@ -5,7 +5,7 @@ import io.vertx.core.Promise;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.http.WebSocketFrameType;
-import io.vertx.core.http.impl.ws.WebSocketFrameImpl;
+import io.vertx.core.http.impl.websocket.WebSocketFrameImpl;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -75,7 +75,7 @@ public class WebsocketListener implements CoreListener {
 
         var handlerPromise = Promise.<Void>promise();
         handlerPromise.future().onSuccess((v) -> {
-            core.vertx().createHttpServer(settings.getHttpOptions())
+            core.vertx().createHttpServer(settings.getHttpOptions(), settings.getSecurity())
                     .exceptionHandler(logger::onError)
                     .webSocketHandler(socket -> {
                         Connection connection = connected(socket);

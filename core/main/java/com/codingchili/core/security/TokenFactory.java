@@ -70,20 +70,18 @@ public class TokenFactory {
     }
 
     private Future<Void> verifyHmac(Token token) {
-        Promise<Void> promise = Promise.promise();
-        core.blocking((blocking) -> {
+        return core.blockingV2(() -> {
             try {
                 byte[] result = BASE64_ENCODER.encode(hmacKey(token));
                 if (ByteComparator.compare(result, token.getKey().getBytes())) {
-                    blocking.complete();
+                   // success!
                 } else {
-                    blocking.fail("Failed to verify HMAC token.");
+                    throw new CoreRuntimeException("Failed to verify HMAC token.");
                 }
             } catch (Exception e) {
-                blocking.fail(e);
+                throw new CoreRuntimeException(e);
             }
-        }, promise);
-        return promise.future();
+        });
     }
 
     private byte[] hmacKey(Token token) throws NoSuchAlgorithmException, InvalidKeyException {
@@ -104,17 +102,14 @@ public class TokenFactory {
      * @return callback.
      */
     public Future<Void> hmac(Token token) {
-        Promise<Void> promise = Promise.promise();
-        core.blocking((blocking) -> {
+        return core.blockingV2(() -> {
             try {
                 token.addProperty(CRYPTO_TYPE, Configurations.security().getHmacAlgorithm());
                 token.setKey(BASE64_ENCODER.encodeToString(hmacKey(token)));
-                blocking.complete();
             } catch (InvalidKeyException | NoSuchAlgorithmException e) {
-                blocking.fail(ERROR_TOKEN_FACTORY);
+                throw new CoreRuntimeException(ERROR_TOKEN_FACTORY);
             }
-        }, promise);
-        return promise.future();
+        });
     }
 
     /**
@@ -126,17 +121,14 @@ public class TokenFactory {
      * @return callback
      */
     public Future<Void> sign(Token token, String keystore) {
-        Promise<Void> promise = Promise.promise();
-        core.blocking((blocking) -> {
+        return core.blockingV2(() -> {
             try {
                 byte[] key = signedKey(token, keystore);
                 token.setKey(BASE64_ENCODER.encodeToString(key));
-                blocking.complete();
             } catch (Throwable e) {
-                blocking.fail(e);
+                throw new CoreRuntimeException(e);
             }
-        }, promise);
-        return promise.future();
+        });
     }
 
     private byte[] signedKey(Token token, String keystore) {
@@ -162,21 +154,21 @@ public class TokenFactory {
         if (alias == null) {
             promise.fail(String.format("token is missing property '%s' - unable to verify.", ALIAS));
         } else {
-            core.blocking((blocking) -> {
+            core.<Void>blockingV2(() -> {
                 TrustAndKeyProvider provider = Configurations.security().getKeystore(alias);
                 try {
                     Signature signature = Signature.getInstance(Configurations.security().getSignatureAlgorithm());
                     signature.initVerify(provider.getPublicKey());
                     canonicalizeTokenWithCrypto(token, signature::update);
                     if (signature.verify(BASE64_DECODER.decode(token.getKey()))) {
-                        blocking.complete();
+                        // success!
                     } else {
-                        blocking.fail("Failed to verify token signature.");
+                        throw new SignatureException("Failed to verify token signature.");
                     }
                 } catch (SignatureException | InvalidKeyException | NoSuchAlgorithmException e) {
-                    blocking.fail(e);
+                    throw new CoreRuntimeException(e);
                 }
-            }, promise);
+            }).onComplete(promise::handle);
         }
         return promise.future();
     }

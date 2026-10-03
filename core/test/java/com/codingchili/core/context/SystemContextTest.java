@@ -93,9 +93,9 @@ public class SystemContextTest {
         int poolSize = Configurations.system().getOptions().getInternalBlockingPoolSize();
         Async async = test.async(poolSize * 2);
         for (int i = 0; i < poolSize * 2; i++) {
-            context.blocking((blocking) -> {
+            context.blockingV2(() -> {
                 throw new RuntimeException();
-            }, complete -> async.countDown());
+            }).onComplete(complete -> async.countDown());
         }
     }
 

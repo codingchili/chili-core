@@ -1,9 +1,9 @@
 package com.codingchili.core.protocol;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.deser.std.StdDeserializer;
 
 import java.io.IOException;
 import java.util.Map;
@@ -26,7 +26,7 @@ public class JsonStorableDeserializer extends StdDeserializer<JsonStorable> {
     }
 
     @Override
-    public JsonStorable deserialize(final JsonParser parser, final DeserializationContext context) throws IOException {
-        return new JsonStorable(parser.getCodec().readValue(parser, types));
+    public JsonStorable deserialize(final JsonParser parser, final DeserializationContext context) {
+        return new JsonStorable(context.readValue(parser, types));
     }
 }

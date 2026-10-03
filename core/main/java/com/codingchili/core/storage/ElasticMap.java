@@ -1,5 +1,6 @@
 package com.codingchili.core.storage;
 
+import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.Validator;
@@ -42,9 +43,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
-import static com.codingchili.core.context.FutureHelper.error;
-import static com.codingchili.core.context.FutureHelper.result;
 
 /**
  * Map implementation that uses ElasticSearch.
@@ -101,8 +99,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     private Future<Void> createIndexIfNotExists() {
-        Promise<Void> promise = Promise.promise();
-        context.blocking((done) -> {
+        return context.blockingV2(() -> {
             IndicesClient indices = client.indices();
             try {
                 var exists = indices.exists(new GetIndexRequest(index), RequestOptions.DEFAULT);
@@ -112,12 +109,11 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                     configureSettings(request);
                     indices.create(request, RequestOptions.DEFAULT);
                 }
-                done.complete();
-            } catch (Throwable e) {
-                done.fail(e);
+            } catch (Exception e) {
+                throw new CoreRuntimeException(e);
             }
-        }, promise);
-        return promise.future();
+            return null;
+        });
     }
 
     private void configureMapping(CreateIndexRequest request) {
@@ -142,46 +138,46 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void get(String key, Handler<AsyncResult<Value>> handler) {
-        context.blocking((done) -> {
+        context.blockingV2(() -> {
             GetRequest request = new GetRequest()
                     .index(index)
                     .id(key);
             try {
                 var document = client.get(request, RequestOptions.DEFAULT);
                 if (document.isExists()) {
-                    done.handle(result(context.toValue(document.getSourceAsString())));
+                    return context.toValue(document.getSourceAsString());
                 } else {
-                    done.handle(error(new ValueMissingException(key)));
+                    throw new ValueMissingException(key);
                 }
             } catch (Throwable e) {
                 if (e instanceof IndexNotFoundException) {
-                    done.fail(new ValueMissingException(key));
+                    throw new ValueMissingException(key);
                 } else {
-                    done.fail(e);
+                    throw e;
                 }
             }
-        }, handler);
+        }).onComplete(handler);
     }
 
     @Override
     public void put(Value value, Handler<AsyncResult<Void>> handler) {
-        context.blocking(done -> {
+        context.<Void>blockingV2(() -> {
             IndexRequest request = new IndexRequest()
                     .index(index)
                     .source(Serializer.buffer(value).getBytes(), XContentType.JSON)
                     .id(value.getId());
             try {
                 client.index(request, RequestOptions.DEFAULT);
-                done.complete();
+                return null;
             } catch (Throwable e) {
-                done.fail(e);
+                throw new CoreRuntimeException(e);
             }
-        }, handler);
+        }).onComplete(handler);
     }
 
     @Override
     public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
-        context.blocking(done -> {
+        context.<Void>blockingV2(() -> {
             IndexRequest request = new IndexRequest()
                     .index(index)
                     .source(Serializer.buffer(value).getBytes(), XContentType.JSON)
@@ -190,18 +186,18 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
             try {
                 var response = client.index(request, RequestOptions.DEFAULT);
                 if (response.getResult().equals(DocWriteResponse.Result.CREATED)) {
-                    done.complete();
+                    return null;
                 } else {
-                    done.fail(new ValueAlreadyPresentException(value.getId()));
+                    throw new ValueAlreadyPresentException(value.getId());
                 }
             } catch (Throwable e) {
                 if (matches(e, RestStatus.CONFLICT)) {
-                    done.fail(new ValueAlreadyPresentException(value.getId()));
+                    throw new ValueAlreadyPresentException(value.getId());
                 } else {
-                    done.fail(e);
+                    throw new CoreRuntimeException(e);
                 }
             }
-        }, handler);
+        }).onComplete(handler);
     }
 
     private boolean matches(Throwable e, RestStatus status) {
@@ -214,7 +210,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void remove(String key, Handler<AsyncResult<Void>> handler) {
-        context.blocking(done -> {
+        context.<Void>blockingV2(() -> {
             DeleteRequest request = new DeleteRequest()
                     .index(index)
                     .id(key);
@@ -222,19 +218,19 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                 var response = client.delete(request, RequestOptions.DEFAULT);
 
                 if (response.getResult().equals(DocWriteResponse.Result.DELETED)) {
-                    done.complete();
+                    return null;
                 } else {
-                    done.fail(new NothingToRemoveException(key));
+                    throw new NothingToRemoveException(key);
                 }
             } catch (Throwable e) {
-                done.fail(e);
+                throw new CoreRuntimeException(e);
             }
-        }, handler);
+        }).onComplete(handler);
     }
 
     @Override
     public void update(Value value, Handler<AsyncResult<Void>> handler) {
-        context.blocking(done -> {
+        context.<Void>blockingV2(() -> {
             UpdateRequest request = new UpdateRequest()
                     .index(index)
                     .doc(Serializer.buffer(value).getBytes(), XContentType.JSON)
@@ -243,23 +239,23 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                 var response = client.update(request, RequestOptions.DEFAULT);
 
                 if (response.getResult().equals(DocWriteResponse.Result.UPDATED)) {
-                    done.complete();
+                    return null;
                 } else {
-                    done.fail(new NothingToUpdateException(value.getId()));
+                    throw new NothingToUpdateException(value.getId());
                 }
             } catch (Throwable e) {
                 if (matches(e, RestStatus.NOT_FOUND)) {
-                    done.fail(new NothingToUpdateException(value.getId()));
+                    throw new NothingToUpdateException(value.getId());
                 } else {
-                    done.fail(e);
+                    throw new CoreRuntimeException(e);
                 }
             }
-        }, handler);
+        }).onComplete(handler);
     }
 
     @Override
     public void values(Handler<AsyncResult<Stream<Value>>> handler) {
-        context.blocking(done -> {
+        context.<Stream<Value>>blockingV2(() -> {
             SearchRequest request = new SearchRequest()
                     .indices(index)
                     .source(new SearchSourceBuilder()
@@ -271,43 +267,43 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                 var search = client.search(request, RequestOptions.DEFAULT);
 
                 if (search.getHits() != null) {
-                    done.complete(StreamSupport.stream(search.getHits().spliterator(), false)
-                            .map(source -> context.toValue(source.getSourceAsString())));
+                    return StreamSupport.stream(search.getHits().spliterator(), false)
+                            .map(source -> context.toValue(source.getSourceAsString()));
                 } else {
-                    done.complete(Stream.empty());
+                    return Stream.empty();
                 }
             } catch (Throwable e) {
-                done.fail(e);
+                throw new CoreRuntimeException(e);
             }
-        }, handler);
+        }).onComplete(handler);
     }
 
     @Override
     public void clear(Handler<AsyncResult<Void>> handler) {
-        context.blocking(done -> {
+        context.<Void>blockingV2(() -> {
             DeleteIndexRequest request = new DeleteIndexRequest(index);
             try {
                 var response = client.indices().delete(request, RequestOptions.DEFAULT);
 
                 if (response.isAcknowledged()) {
-                    done.complete();
+                    return null;
                 } else {
-                    done.fail(new StorageFailureException());
+                    throw new StorageFailureException();
                 }
             } catch (Throwable e) {
                 if (matches(e, RestStatus.NOT_FOUND)) {
                     // attempted to delete an index that does not exist should succeed.
-                    done.complete();
+                    return null;
                 } else {
-                    done.fail(e);
+                    throw new CoreRuntimeException(e);
                 }
             }
-        }, handler);
+        }).onComplete(handler);
     }
 
     @Override
     public void size(Handler<AsyncResult<Integer>> handler) {
-        context.blocking(done -> {
+        context.blockingV2(() -> {
             SearchRequest request = new SearchRequest()
                     .indices(index);
 
@@ -321,14 +317,14 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                 var response = client.search(request, RequestOptions.DEFAULT);
 
                 if (response.status().equals(RestStatus.OK)) {
-                    done.complete((int) response.getHits().getTotalHits().value);
+                    return (int) response.getHits().getTotalHits().value;
                 } else {
-                    done.complete(0);
+                    return 0;
                 }
             } catch (Throwable e) {
-                done.fail(e);
+                throw new CoreRuntimeException(e);
             }
-        }, handler);
+        }).onComplete(handler);
     }
 
     @Override
@@ -398,7 +394,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
             @Override
             public void execute(Handler<AsyncResult<Collection<Value>>> handler) {
-                context.blocking(done -> {
+                context.<Collection<Value>>blockingV2(() -> {
                     if (!builder.equals(new BoolQueryBuilder())) {
                         statements.add(builder);
                     }
@@ -414,11 +410,11 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
                             .source(source);
                     try {
                         var response = client.search(request, RequestOptions.DEFAULT);
-                        done.complete(listFrom(response.getHits().getHits()));
+                        return listFrom(response.getHits().getHits());
                     } catch (Throwable e) {
-                        done.fail(e);
+                        throw new CoreRuntimeException(e);
                     }
-                }, handler);
+                }).onComplete(handler);
             }
 
             private SearchSourceBuilder getRequestWithOptions() {

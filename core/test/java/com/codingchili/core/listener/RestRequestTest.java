@@ -1,11 +1,10 @@
 package com.codingchili.core.listener;
 
+import com.codingchili.core.listener.transport.RestRequest;
 import io.netty.handler.codec.DecoderResult;
 import io.vertx.core.*;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.*;
-import io.vertx.core.http.impl.headers.HeadersMultiMap;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.HostAndPort;
 import io.vertx.core.net.NetSocket;
@@ -14,21 +13,18 @@ import io.vertx.core.net.impl.HostAndPortImpl;
 import io.vertx.ext.auth.User;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import io.vertx.ext.web.Session;
 import io.vertx.ext.web.*;
+import io.vertx.ext.web.Session;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
-import javax.security.cert.X509Certificate;
 import java.nio.charset.Charset;
 import java.util.*;
 
-import com.codingchili.core.listener.transport.RestRequest;
-
-import static com.codingchili.core.configuration.CoreStrings.*;
+import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_ROUTE;
+import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_TARGET;
 
 /**
  * Tests to verify that parsing of HTTP target/route representations are working as expected.
@@ -204,7 +200,7 @@ public class RestRequestTest {
                 }
 
                 @Override
-                public String host() {
+                public HostAndPort authority(boolean real) {
                     return null;
                 }
 
@@ -220,7 +216,7 @@ public class RestRequestTest {
 
                 @Override
                 public MultiMap headers() {
-                    return new HeadersMultiMap();
+                    return HttpHeaders.headers();
                 }
 
                 @Override
@@ -245,7 +241,7 @@ public class RestRequestTest {
 
                 @Override
                 public MultiMap params() {
-                    MultiMap map = new HeadersMultiMap();
+                    MultiMap map = HttpHeaders.headers();
 
                     if (path.contains("?")) {
                         String qs = path.substring(path.lastIndexOf("?"));
@@ -260,6 +256,11 @@ public class RestRequestTest {
                     }
 
                     return map;
+                }
+
+                @Override
+                public MultiMap params(boolean semicolonIsNormalChar) {
+                    return null;
                 }
 
                 @Override
@@ -283,11 +284,6 @@ public class RestRequestTest {
                 }
 
                 @Override
-                public X509Certificate[] peerCertificateChain() throws SSLPeerUnverifiedException {
-                    return new X509Certificate[0];
-                }
-
-                @Override
                 public String absoluteURI() {
                     return null;
                 }
@@ -297,30 +293,18 @@ public class RestRequestTest {
                     return null;
                 }
 
-                @Override
-                public HttpServerRequest body(Handler<AsyncResult<Buffer>> handler) {
-                    return null;
-                }
 
                 @Override
                 public Future<Buffer> body() {
                     return null;
                 }
 
-                @Override
-                public void end(Handler<AsyncResult<Void>> handler) {
-
-                }
 
                 @Override
                 public Future<Void> end() {
                     return null;
                 }
 
-                @Override
-                public void toNetSocket(Handler<AsyncResult<NetSocket>> handler) {
-
-                }
 
                 @Override
                 public Future<NetSocket> toNetSocket() {
@@ -352,15 +336,6 @@ public class RestRequestTest {
                     return null;
                 }
 
-                @Override
-                public int streamId() {
-                    return 0;
-                }
-
-                @Override
-                public void toWebSocket(Handler<AsyncResult<ServerWebSocket>> handler) {
-
-                }
 
                 @Override
                 public Future<ServerWebSocket> toWebSocket() {
@@ -410,11 +385,6 @@ public class RestRequestTest {
                 @Override
                 public int cookieCount() {
                     return 0;
-                }
-
-                @Override
-                public Map<String, Cookie> cookieMap() {
-                    return null;
                 }
 
                 @Override
@@ -499,73 +469,12 @@ public class RestRequestTest {
             return null;
         }
 
-        @Override
-        public String normalisedPath() {
-            return null;
-        }
 
         @Override
         public String normalizedPath() {
             return null;
         }
 
-        @Override
-        public Cookie getCookie(String name) {
-            return null;
-        }
-
-        @Override
-        public RoutingContext addCookie(Cookie cookie) {
-            return null;
-        }
-
-        @Override
-        public Cookie removeCookie(String name, boolean invalidate) {
-            return null;
-        }
-
-        @Override
-        public int cookieCount() {
-            return 0;
-        }
-
-        @Override
-        public Map<String, Cookie> cookieMap() {
-            return null;
-        }
-
-
-        @Override
-        public String getBodyAsString() {
-            return null;
-        }
-
-        @Override
-        public String getBodyAsString(String s) {
-            return null;
-        }
-
-        @Override
-        public JsonObject getBodyAsJson(int maxAllowedLength) {
-            return null;
-        }
-
-        @Override
-        public JsonArray getBodyAsJsonArray(int maxAllowedLength) {
-            return null;
-        }
-
-        @Override
-        public JsonObject getBodyAsJson() {
-            return null;
-        }
-
-        @Override
-        public JsonArray getBodyAsJsonArray() {
-            return null;
-        }
-
-        @Override
         public Buffer getBody() {
             return body;
         }
@@ -593,6 +502,11 @@ public class RestRequestTest {
         @Override
         public boolean isSessionAccessed() {
             return false;
+        }
+
+        @Override
+        public UserContext userContext() {
+            return null;
         }
 
         @Override
@@ -653,26 +567,6 @@ public class RestRequestTest {
         @Override
         public boolean failed() {
             return false;
-        }
-
-        @Override
-        public void setBody(Buffer buffer) {
-
-        }
-
-        @Override
-        public void setSession(Session session) {
-
-        }
-
-        @Override
-        public void setUser(User user) {
-
-        }
-
-        @Override
-        public void clearUser() {
-
         }
 
         @Override

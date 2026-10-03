@@ -11,6 +11,8 @@ import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.TimerSource;
 import com.codingchili.core.logging.Logger;
 
+import java.util.concurrent.Callable;
+
 import static com.codingchili.core.configuration.CoreStrings.ID_TYPE;
 
 /**
@@ -120,10 +122,8 @@ public class MetricCollector {
      * @return a generated json report with the target fields.
      */
     public Future<JsonObject> snapshot() {
-        var promise = Promise.<JsonObject>promise();
-
-        core.blocking(blocking -> {
-            var reporter = (Runnable) () -> {
+        return core.blockingV2(() -> {
+            var reporter = (Callable<JsonObject>) () -> {
                 var filters = settings.getFilters();
                 var json = new JsonObject();
 
@@ -138,15 +138,14 @@ public class MetricCollector {
                     }
                 });
                 json.mergeIn(metadata);
-                blocking.complete(json);
+                return json;
             };
 
             if (settings.isOverhead()) {
-                overhead.time(reporter);
+                return overhead.time(reporter);
             } else {
-                reporter.run();
+                return reporter.call();
             }
-        }, promise);
-        return promise.future();
+        });
     }
 }

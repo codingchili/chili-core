@@ -1,16 +1,18 @@
 package com.codingchili.core.storage;
 
-import io.vertx.core.*;
-import io.vertx.core.json.JsonObject;
-
-import java.util.Objects;
-
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.Level;
 import com.codingchili.core.logging.Logger;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.Promise;
+import io.vertx.core.json.JsonObject;
+
+import java.util.Objects;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
@@ -39,35 +41,27 @@ public class StorageLoader<Value extends Storable> {
         this.context = context;
     }
 
-    private void load(Handler<AsyncResult<AsyncStorage<Value>>> handler) {
-        Promise<AsyncStorage<Value>> promise = Promise.promise();
-        context.blocking(blocking -> {
-            try {
-                promise.future().onComplete(handler);
+    private Future<AsyncStorage<Value>> load() {
+        var promise = Promise.<AsyncStorage<Value>>promise();
+        try {
+            prepare();
 
-                prepare();
+            StorageContext<Value> storage = new StorageContext<Value>(context)
+                    .setDatabase(database)
+                    .setCollection(collection)
+                    .setClass(valueClass)
+                    .setPlugin(plugin)
+                    .setProperties(properties);
 
-                StorageContext<Value> storage = new StorageContext<Value>(context)
-                        .setDatabase(database)
-                        .setCollection(collection)
-                        .setClass(valueClass)
-                        .setPlugin(plugin)
-                        .setProperties(properties);
+            var instance = plugin.getConstructor(Promise.class, StorageContext.class)
+                    .<Value>newInstance(promise, storage);
 
-                plugin.getConstructor(Promise.class, StorageContext.class)
-                        .<Value>newInstance(promise, storage);
-                blocking.complete();
-
-            } catch (Throwable e) {
-                logger.log(CoreStrings.getStorageLoaderError(pluginString, database, collection), Level.ERROR);
-                logger.onError(e);
-                blocking.fail(e);
-            }
-        }, (done) -> {
-            if (done.failed()) {
-                promise.tryFail(done.cause());
-            }
-        });
+        } catch (Throwable e) {
+            logger.log(CoreStrings.getStorageLoaderError(pluginString, database, collection), Level.ERROR);
+            logger.onError(e);
+            promise.fail(e);
+        }
+        return promise.future();
     }
 
     @SuppressWarnings("unchecked")
@@ -173,7 +167,7 @@ public class StorageLoader<Value extends Storable> {
     @SuppressWarnings("unchecked")
     public void build(Handler<AsyncResult<AsyncStorage<Value>>> handler) {
         this.logger = context.logger(getClass());
-        this.load(handler);
+        this.load().onComplete(handler);
     }
 
     private void checkIsSet(Object object, String type) {

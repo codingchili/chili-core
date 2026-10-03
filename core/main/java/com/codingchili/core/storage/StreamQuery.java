@@ -1,14 +1,16 @@
 package com.codingchili.core.storage;
 
+import com.codingchili.core.context.StorageContext;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import com.codingchili.core.context.StorageContext;
 
 /**
  * Query implementations for non-indexed json streams.
@@ -139,16 +141,13 @@ public class StreamQuery<Value extends Storable, Streaming> {
             @SuppressWarnings("unchecked")
             @Override
             public void execute(Handler<AsyncResult<Collection<Value>>> handler) {
-                context.blocking(task -> {
-
-                    task.complete(results().stream()
-                            .sorted(this::sortByAttribute)
-                            .skip(getPage() * getPageSize())
-                            .limit(getPageSize())
-                            .map(mapper)
-                            .collect(Collectors.toList()));
-
-                }, handler);
+                context.<Collection<Value>>blockingV2(() -> results().stream()
+                                .sorted(this::sortByAttribute)
+                                .skip(getPage() * getPageSize())
+                                .limit(getPageSize())
+                                .map(mapper)
+                                .collect(Collectors.toList()))
+                        .onComplete(handler);
             }
 
             private Set<Streaming> results() {
