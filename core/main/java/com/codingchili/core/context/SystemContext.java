@@ -12,6 +12,7 @@ import io.vertx.core.*;
 import io.vertx.core.eventbus.EventBus;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
@@ -277,6 +278,28 @@ public class SystemContext implements CoreContext {
                     var innerFuture = outer.result();
                     innerFuture.onComplete(result);
                 });
+    }
+
+    public Future<Void> blockingV2(Runnable blocking) {
+        return blockingV2(() -> {
+            blocking.run();
+            return null;
+        });
+    }
+
+    public Future<Void> blockingV2(Runnable blocking, boolean ordered) {
+        return blockingV2(() -> {
+            blocking.run();
+            return null;
+        }, ordered);
+    }
+
+    public <T> Future<T> blockingV2(Callable<T> blocking) {
+        return vertx.executeBlocking(blocking);
+    }
+
+    public <T> Future<T> blockingV2(Callable<T> blocking, boolean ordered) {
+        return vertx.executeBlocking(blocking, ordered);
     }
 
     @Override

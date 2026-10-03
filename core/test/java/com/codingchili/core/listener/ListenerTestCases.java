@@ -1,6 +1,8 @@
 package com.codingchili.core.listener;
 
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.CompressionConfig;
+import io.vertx.core.http.HttpServerConfig;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
@@ -67,7 +69,7 @@ public abstract class ListenerTestCases {
                 .setType(wireType)
                 .setTimeout(7000)
                 .setDefaultTarget(NODE_WEBSERVER)
-                .setHttpOptions(new HttpServerOptions().setCompressionSupported(false))
+                .setHttpOptions(new HttpServerConfig().setCompressionConfig(new CompressionConfig().setCompressionEnabled(false)))
                 .addMapping(PATCHING_ROOT, new Endpoint(NODE_PATCHING));
 
         context.listener(() -> listener.get().settings(settings).handler(new TestHandler())).onComplete(deploy -> {

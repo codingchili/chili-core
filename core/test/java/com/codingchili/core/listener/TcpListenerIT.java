@@ -19,7 +19,7 @@ public class TcpListenerIT extends ListenerTestCases {
 
     @Override
     public void sendRequest(ResponseListener listener, JsonObject data) {
-        context.vertx().createNetClient().connect(port, HOST, connect -> {
+        context.vertx().createNetClient().connect(port, HOST).onComplete(connect -> {
             if (connect.succeeded()) {
                 NetSocket socket = connect.result();
                 socket.handler(buffer -> handleBody(listener, buffer));

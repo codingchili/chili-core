@@ -72,7 +72,7 @@ public class BusRouterTest {
 
     @After
     public void tearDown(TestContext test) {
-        core.vertx().close(test.asyncAssertSuccess());
+        core.vertx().close().onComplete((result) -> test.asyncAssertSuccess());
     }
 
     @Test

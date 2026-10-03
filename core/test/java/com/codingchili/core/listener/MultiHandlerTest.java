@@ -50,8 +50,8 @@ public class MultiHandlerTest {
                 context.bus().request(getClass().getSimpleName(),
                         new JsonObject()
                                 .put(PROTOCOL_ROUTE, ANY)
-                                .put(PROTOCOL_TARGET, address),
-                        (response) -> {
+                                .put(PROTOCOL_TARGET, address)
+                        ).onComplete((response) -> {
                             test.assertTrue(response.succeeded());
                             ClusterRequest request = new ClusterRequest(response.result());
 
@@ -77,8 +77,7 @@ public class MultiHandlerTest {
             multi.remove(THREE).onComplete(removed -> {
                 context.bus().request(getClass().getSimpleName(),
                         new JsonObject()
-                                .put(PROTOCOL_TARGET, THREE),
-                        (response) -> {
+                                .put(PROTOCOL_TARGET, THREE)).onComplete(response -> {
                             test.assertTrue(response.succeeded());
                             ClusterRequest request = new ClusterRequest(response.result());
 

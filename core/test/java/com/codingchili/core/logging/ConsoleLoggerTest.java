@@ -2,7 +2,7 @@ package com.codingchili.core.logging;
 
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.fusesource.jansi.Ansi;
+import org.jline.jansi.Ansi;
 import org.junit.*;
 import org.junit.runner.RunWith;
 

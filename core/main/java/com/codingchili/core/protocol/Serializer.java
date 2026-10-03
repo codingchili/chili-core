@@ -2,22 +2,21 @@ package com.codingchili.core.protocol;
 
 
 import com.codingchili.core.context.CoreRuntimeException;
-import com.codingchili.core.files.Configurations;
 import com.codingchili.core.protocol.exception.SerializerPayloadException;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.util.Pool;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-import com.fasterxml.jackson.module.blackbird.BlackbirdModule;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.json.jackson.DatabindCodec;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.dataformat.yaml.YAMLMapper;
+import tools.jackson.dataformat.yaml.YAMLWriteFeature;
+import tools.jackson.module.blackbird.BlackbirdModule;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -37,38 +36,18 @@ import static com.codingchili.core.configuration.CoreStrings.ID_COLLECTION;
  * Serializes objects to JSON or YAML and back. Utility methods for gzip and class definition generation.
  */
 public class Serializer {
-    // use vertx's objectmapper, it comes with custom serializer modules.
-    public static ObjectMapper json = DatabindCodec.mapper();
-    public static ObjectMapper yaml = new ObjectMapper(new YAMLFactory()
-            .configure(YAMLGenerator.Feature.LITERAL_BLOCK_STYLE, true)
-    );
+    public static ObjectMapper json = createJsonMapper();
+    public static ObjectMapper yaml = createYAMLMapper();
 
-    static {
-        // enable pretty printing for all json.
-        json.configure(SerializationFeature.INDENT_OUTPUT,
-                Configurations.system().isPrettyEncoding());
-        json.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        json.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        json.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        json.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
-        json.configure(SerializationFeature.INDENT_OUTPUT, true);
+    public static JsonMapper createJsonMapper() {
+        return VertxSerializerModules.registerTypes(JsonMapper.builder()).build();
+    }
 
-        // this configuration method is deprecated; vertx doesn't internally use the new builder pattern
-        // for the mapper which means that the upgraded way is not accessible here.
-        // In 3.x this behavior will be the default so this could then be removed
-        // regardless if the builder is made available from vertx or not.
-        // this configures a default polymorphic type validator (3.10), which will deny
-        // deserialization into weakly typed (and known dangerous) field types such as 'object' etc.
-        json.configure(MapperFeature.BLOCK_UNSAFE_POLYMORPHIC_BASE_TYPES, true);
-        json.registerModule(new JsonTypesModule());
-        json.registerModule(new BlackbirdModule());
+    public static YAMLMapper createYAMLMapper() {
+        var yaml = YAMLMapper.builder()
+                .configure(YAMLWriteFeature.LITERAL_BLOCK_STYLE, true);
 
-        yaml.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        yaml.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        yaml.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-
-        // vertx does not provide a yaml mapper, configure with the same serializers.
-        yaml = VertxSerializerModules.registerTypes(yaml);
+        return VertxSerializerModules.registerTypes(yaml).build();
     }
 
     private static final Pool<Kryo> pool = new Pool<Kryo>(true, true, 128) {

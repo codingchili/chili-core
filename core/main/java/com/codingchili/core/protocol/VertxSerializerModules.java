@@ -1,19 +1,20 @@
 package com.codingchili.core.protocol;
 
-import com.fasterxml.jackson.core.*;
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.json.jackson.*;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.*;
+import tools.jackson.databind.cfg.MapperBuilder;
+import tools.jackson.databind.module.SimpleModule;
+import tools.jackson.module.blackbird.BlackbirdModule;
 
-import java.io.IOException;
 import java.time.DateTimeException;
 import java.time.Instant;
 
-import static io.vertx.core.json.impl.JsonUtil.*;
+import static io.vertx.core.json.impl.JsonUtil.BASE64_DECODER;
+import static io.vertx.core.json.impl.JsonUtil.BASE64_ENCODER;
 import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 
 /**
@@ -25,10 +26,17 @@ public class VertxSerializerModules {
     /**
      * Registers vert.x de/serializers for the given object mapper.
      *
-     * @param mapper the mapper to register vert.x type support for.
+     * @param builder the mapper to register vert.x type support for.
      * @return the given mapper after adding a module with extended type support.
      */
-    public static ObjectMapper registerTypes(ObjectMapper mapper) {
+    public static <T extends ObjectMapper, V extends MapperBuilder<T, V>> MapperBuilder<T, V> registerTypes(MapperBuilder<T,V> builder) {
+        builder.addModule(new JsonTypesModule());
+        builder.addModule(new BlackbirdModule());
+        builder.addModule(VertxJsonTypes());
+        return builder;
+    }
+
+    public static JacksonModule VertxJsonTypes() {
         SimpleModule module = new SimpleModule(VertxSerializerModules.class.getSimpleName());
 
         module.addSerializer(JsonObject.class, new JsonObjectSerializer());
@@ -41,76 +49,77 @@ public class VertxSerializerModules {
         module.addSerializer(Buffer.class, new BufferSerializer());
         module.addDeserializer(Buffer.class, new BufferDeserializer());
 
-        return mapper.registerModule(module);
+        return module;
     }
 
-    public static class JsonObjectSerializer extends JsonSerializer<JsonObject> {
+    public static class JsonObjectSerializer extends ValueSerializer<JsonObject> {
         @Override
-        public void serialize(JsonObject value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-            jgen.writeObject(value.getMap());
+        public void serialize(JsonObject value, JsonGenerator jgen, SerializationContext provider) {
+            jgen.writePOJO(value.getMap());
         }
     }
 
-    public static class JsonArraySerializer extends JsonSerializer<JsonArray> {
+    public static class JsonArraySerializer extends ValueSerializer<JsonArray> {
         @Override
-        public void serialize(JsonArray value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-            jgen.writeObject(value.getList());
+        public void serialize(JsonArray value, JsonGenerator jgen, SerializationContext provider) {
+            jgen.writePOJO(value.getList());
         }
     }
 
-    public static class InstantSerializer extends JsonSerializer<Instant> {
+    public static class InstantSerializer extends ValueSerializer<Instant> {
         @Override
-        public void serialize(Instant value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+        public void serialize(Instant value, JsonGenerator jgen, SerializationContext provider) {
             jgen.writeString(ISO_INSTANT.format(value));
         }
     }
 
-    public static class InstantDeserializer extends JsonDeserializer<Instant> {
+    public static class InstantDeserializer extends ValueDeserializer<Instant> {
         @Override
-        public Instant deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            String text = p.getText();
+        public Instant deserialize(JsonParser p, DeserializationContext ctxt) {
+            String text;
             try {
+                text = p.getString();
                 return Instant.from(ISO_INSTANT.parse(text));
             } catch (DateTimeException e) {
-                throw new InvalidFormatException(p, "Expected an ISO 8601 formatted date time", text, Instant.class);
+                throw new RuntimeException("Expected an ISO 8601 formatted date time", e);
             }
         }
     }
 
-    public static class ByteArraySerializer extends JsonSerializer<byte[]> {
+    public static class ByteArraySerializer extends ValueSerializer<byte[]> {
         @Override
-        public void serialize(byte[] value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+        public void serialize(byte[] value, JsonGenerator jgen, SerializationContext provider) {
             jgen.writeString(BASE64_ENCODER.encodeToString(value));
         }
     }
 
-    public static class ByteArrayDeserializer extends JsonDeserializer<byte[]> {
+    public static class ByteArrayDeserializer extends ValueDeserializer<byte[]> {
         @Override
-        public byte[] deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            String text = p.getText();
+        public byte[] deserialize(JsonParser p, DeserializationContext ctxt) {
             try {
+                String text = p.getString();
                 return BASE64_DECODER.decode(text);
             } catch (IllegalArgumentException e) {
-                throw new InvalidFormatException(p, "Expected a base64 encoded byte array", text, Instant.class);
+                throw new RuntimeException("Expected a base64 encoded byte array", e);
             }
         }
     }
 
-    public static class BufferSerializer extends JsonSerializer<Buffer> {
+    public static class BufferSerializer extends ValueSerializer<Buffer> {
         @Override
-        public void serialize(Buffer value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+        public void serialize(Buffer value, JsonGenerator jgen, SerializationContext provider) {
             jgen.writeString(BASE64_ENCODER.encodeToString(value.getBytes()));
         }
     }
 
-    public static class BufferDeserializer extends JsonDeserializer<Buffer> {
+    public static class BufferDeserializer extends ValueDeserializer<Buffer> {
         @Override
-        public Buffer deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            String text = p.getText();
+        public Buffer deserialize(JsonParser p, DeserializationContext ctxt) {
             try {
+                String text = p.getText();
                 return Buffer.buffer(BASE64_DECODER.decode(text));
             } catch (IllegalArgumentException e) {
-                throw new InvalidFormatException(p, "Expected a base64 encoded byte array", text, Instant.class);
+                throw new RuntimeException("Expected a base64 encoded byte array", e);
             }
         }
     }

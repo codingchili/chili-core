@@ -37,7 +37,7 @@ public class RestListenerIT extends ListenerTestCases {
     }
 
     private void sendGetRequest(String action, ResponseListener listener) {
-        context.vertx().createHttpClient().request(HttpMethod.GET, port, HOST, action, handler -> {
+        context.vertx().createHttpClient().request(HttpMethod.GET, port, HOST, action).onComplete(handler -> {
 
             handler.result().send().onComplete(response -> {
                 response.result().bodyHandler(body -> handleBody(listener, body));
@@ -58,7 +58,7 @@ public class RestListenerIT extends ListenerTestCases {
             data.remove(PROTOCOL_ROUTE);
         }
 
-        context.vertx().createHttpClient().request(HttpMethod.POST, port, HOST, target, handler -> {
+        context.vertx().createHttpClient().request(HttpMethod.POST, port, HOST, target).onComplete(handler -> {
             HttpClientRequest request = handler.result();
 
             request.end(data.encode());

@@ -119,7 +119,7 @@ public class ClusterListenerTest {
             ClusterHelper.reply(msg, object);
         });
 
-        context.bus().request(address, new JsonObject(), msg -> {
+        context.bus().request(address, new JsonObject()).onComplete(msg -> {
             assertion.accept(msg.result().body());
             async.complete();
         });

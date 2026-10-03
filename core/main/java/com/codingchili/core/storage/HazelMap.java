@@ -44,7 +44,7 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
      * @param context the context requesting the map to be created.
      * @param promise called when the map is created.
      */
-    public HazelMap(Promise<AsyncStorage> promise, StorageContext<Value> context) {
+    public HazelMap(Promise<AsyncStorage<Value>> promise, StorageContext<Value> context) {
         this.context = context;
 
         context.vertx().sharedData().<String, Value>getClusterWideMap(context.collection()).onComplete(cluster -> {
@@ -134,11 +134,8 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void values(Handler<AsyncResult<Stream<Value>>> handler) {
-        context.<Stream<Value>>blocking(blocked -> {
-            blocked.complete(imap.values().stream());
-        }, completed -> {
-            handler.handle(result(completed.result()));
-        });
+        context.blockingV2(() -> imap.values().stream())
+                .onComplete(handler);
 
     }
 
