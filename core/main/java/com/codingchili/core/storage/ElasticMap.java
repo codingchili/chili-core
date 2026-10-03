@@ -99,7 +99,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     private Future<Void> createIndexIfNotExists() {
-        return context.blockingV2(() -> {
+        return context.blocking(() -> {
             IndicesClient indices = client.indices();
             try {
                 var exists = indices.exists(new GetIndexRequest(index), RequestOptions.DEFAULT);
@@ -138,7 +138,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void get(String key, Handler<AsyncResult<Value>> handler) {
-        context.blockingV2(() -> {
+        context.blocking(() -> {
             GetRequest request = new GetRequest()
                     .index(index)
                     .id(key);
@@ -161,7 +161,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void put(Value value, Handler<AsyncResult<Void>> handler) {
-        context.<Void>blockingV2(() -> {
+        context.<Void>blocking(() -> {
             IndexRequest request = new IndexRequest()
                     .index(index)
                     .source(Serializer.buffer(value).getBytes(), XContentType.JSON)
@@ -177,7 +177,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
-        context.<Void>blockingV2(() -> {
+        context.<Void>blocking(() -> {
             IndexRequest request = new IndexRequest()
                     .index(index)
                     .source(Serializer.buffer(value).getBytes(), XContentType.JSON)
@@ -210,7 +210,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void remove(String key, Handler<AsyncResult<Void>> handler) {
-        context.<Void>blockingV2(() -> {
+        context.<Void>blocking(() -> {
             DeleteRequest request = new DeleteRequest()
                     .index(index)
                     .id(key);
@@ -230,7 +230,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void update(Value value, Handler<AsyncResult<Void>> handler) {
-        context.<Void>blockingV2(() -> {
+        context.<Void>blocking(() -> {
             UpdateRequest request = new UpdateRequest()
                     .index(index)
                     .doc(Serializer.buffer(value).getBytes(), XContentType.JSON)
@@ -255,7 +255,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void values(Handler<AsyncResult<Stream<Value>>> handler) {
-        context.<Stream<Value>>blockingV2(() -> {
+        context.<Stream<Value>>blocking(() -> {
             SearchRequest request = new SearchRequest()
                     .indices(index)
                     .source(new SearchSourceBuilder()
@@ -280,7 +280,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void clear(Handler<AsyncResult<Void>> handler) {
-        context.<Void>blockingV2(() -> {
+        context.<Void>blocking(() -> {
             DeleteIndexRequest request = new DeleteIndexRequest(index);
             try {
                 var response = client.indices().delete(request, RequestOptions.DEFAULT);
@@ -303,7 +303,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void size(Handler<AsyncResult<Integer>> handler) {
-        context.blockingV2(() -> {
+        context.blocking(() -> {
             SearchRequest request = new SearchRequest()
                     .indices(index);
 
@@ -394,7 +394,7 @@ public class ElasticMap<Value extends Storable> implements AsyncStorage<Value> {
 
             @Override
             public void execute(Handler<AsyncResult<Collection<Value>>> handler) {
-                context.<Collection<Value>>blockingV2(() -> {
+                context.<Collection<Value>>blocking(() -> {
                     if (!builder.equals(new BoolQueryBuilder())) {
                         statements.add(builder);
                     }

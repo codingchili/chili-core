@@ -262,43 +262,27 @@ public class SystemContext implements CoreContext {
         return Future.all(futures);
     }
 
-    @Override
-    public <T> void blocking(Handler<Promise<T>> sync, Handler<AsyncResult<T>> result) {
-        blocking(sync, false, result);
-    }
 
-    @Override
-    public <T> void blocking(Handler<Promise<T>> sync, boolean ordered, Handler<AsyncResult<T>> result) {
-        var inner = Promise.<T>promise();
-        vertx.executeBlocking(() -> {
-                    sync.handle(inner);
-                    return inner.future();
-                }, ordered)
-                .onComplete((outer) -> {
-                    var innerFuture = outer.result();
-                    innerFuture.onComplete(result);
-                });
-    }
 
-    public Future<Void> blockingV2(Runnable blocking) {
-        return blockingV2(() -> {
+    public Future<Void> blocking(Runnable blocking) {
+        return blocking(() -> {
             blocking.run();
             return null;
         });
     }
 
-    public Future<Void> blockingV2(Runnable blocking, boolean ordered) {
-        return blockingV2(() -> {
+    public Future<Void> blocking(Runnable blocking, boolean ordered) {
+        return blocking(() -> {
             blocking.run();
             return null;
         }, ordered);
     }
 
-    public <T> Future<T> blockingV2(Callable<T> blocking) {
+    public <T> Future<T> blocking(Callable<T> blocking) {
         return vertx.executeBlocking(blocking);
     }
 
-    public <T> Future<T> blockingV2(Callable<T> blocking, boolean ordered) {
+    public <T> Future<T> blocking(Callable<T> blocking, boolean ordered) {
         return vertx.executeBlocking(blocking, ordered);
     }
 

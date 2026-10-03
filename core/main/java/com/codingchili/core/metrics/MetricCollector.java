@@ -2,7 +2,6 @@ package com.codingchili.core.metrics;
 
 import com.codahale.metrics.*;
 import io.vertx.core.Future;
-import io.vertx.core.Promise;
 import io.vertx.core.json.JsonObject;
 
 import com.codingchili.core.configuration.CoreStrings;
@@ -122,7 +121,7 @@ public class MetricCollector {
      * @return a generated json report with the target fields.
      */
     public Future<JsonObject> snapshot() {
-        return core.blockingV2(() -> {
+        return core.blocking(() -> {
             var reporter = (Callable<JsonObject>) () -> {
                 var filters = settings.getFilters();
                 var json = new JsonObject();

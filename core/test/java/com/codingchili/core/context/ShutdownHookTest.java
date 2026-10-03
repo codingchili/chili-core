@@ -63,7 +63,7 @@ public class ShutdownHookTest {
     public void blockingPoolAwaited(TestContext test) {
         Configurations.system().setShutdownHookTimeout(500);
         Async async = test.async();
-        context.blockingV2(() -> {
+        context.blocking(() -> {
             try {
                 Thread.sleep(200);
             } catch (InterruptedException e) {
@@ -84,7 +84,7 @@ public class ShutdownHookTest {
     public void onBlockingPoolTimeoutForcefulExit(TestContext test) {
         Configurations.system().setShutdownHookTimeout(25);
         Async async = test.async();
-        context.blockingV2(() -> {
+        context.blocking(() -> {
             try {
                 Thread.sleep(250);
                 test.fail("Blocking sleep was not forcefully interrupted.");

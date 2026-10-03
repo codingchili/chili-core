@@ -134,7 +134,7 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void values(Handler<AsyncResult<Stream<Value>>> handler) {
-        context.blockingV2(() -> imap.values().stream())
+        context.blocking(() -> imap.values().stream())
                 .onComplete(handler);
 
     }

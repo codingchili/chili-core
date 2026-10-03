@@ -66,7 +66,7 @@ public class HashFactory {
      */
     public Future<String> hash(char[] plaintext) {
         var settings = settings();
-        return context.blockingV2(() -> {
+        return context.blocking(() -> {
             try {
                 return argon2.hash(
                         settings.getIterations(),

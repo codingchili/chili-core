@@ -141,7 +141,7 @@ public class StreamQuery<Value extends Storable, Streaming> {
             @SuppressWarnings("unchecked")
             @Override
             public void execute(Handler<AsyncResult<Collection<Value>>> handler) {
-                context.<Collection<Value>>blockingV2(() -> results().stream()
+                context.<Collection<Value>>blocking(() -> results().stream()
                                 .sorted(this::sortByAttribute)
                                 .skip(getPage() * getPageSize())
                                 .limit(getPageSize())

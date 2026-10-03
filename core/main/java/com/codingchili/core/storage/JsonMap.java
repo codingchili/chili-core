@@ -153,7 +153,7 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
 
     @Override
     public void values(Handler<AsyncResult<Stream<Value>>> handler) {
-        context.blockingV2(() -> db.stream().map(Map.Entry::getValue))
+        context.blocking(() -> db.stream().map(Map.Entry::getValue))
                 .onComplete(handler);
     }
 

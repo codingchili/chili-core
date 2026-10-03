@@ -7,7 +7,6 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.*;
 import java.time.Instant;
-import java.util.Base64;
 import java.util.Objects;
 
 import com.codingchili.core.configuration.system.SecuritySettings;
@@ -70,7 +69,7 @@ public class TokenFactory {
     }
 
     private Future<Void> verifyHmac(Token token) {
-        return core.blockingV2(() -> {
+        return core.blocking(() -> {
             try {
                 byte[] result = BASE64_ENCODER.encode(hmacKey(token));
                 if (ByteComparator.compare(result, token.getKey().getBytes())) {
@@ -102,7 +101,7 @@ public class TokenFactory {
      * @return callback.
      */
     public Future<Void> hmac(Token token) {
-        return core.blockingV2(() -> {
+        return core.blocking(() -> {
             try {
                 token.addProperty(CRYPTO_TYPE, Configurations.security().getHmacAlgorithm());
                 token.setKey(BASE64_ENCODER.encodeToString(hmacKey(token)));
@@ -121,7 +120,7 @@ public class TokenFactory {
      * @return callback
      */
     public Future<Void> sign(Token token, String keystore) {
-        return core.blockingV2(() -> {
+        return core.blocking(() -> {
             try {
                 byte[] key = signedKey(token, keystore);
                 token.setKey(BASE64_ENCODER.encodeToString(key));
@@ -154,7 +153,7 @@ public class TokenFactory {
         if (alias == null) {
             promise.fail(String.format("token is missing property '%s' - unable to verify.", ALIAS));
         } else {
-            core.<Void>blockingV2(() -> {
+            core.<Void>blocking(() -> {
                 TrustAndKeyProvider provider = Configurations.security().getKeystore(alias);
                 try {
                     Signature signature = Signature.getInstance(Configurations.security().getSignatureAlgorithm());

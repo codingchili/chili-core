@@ -121,7 +121,7 @@ public class IndexedMapQuery<Value extends Storable> extends AbstractQueryBuilde
     public void execute(Handler<AsyncResult<Collection<Value>>> handler) {
         next();
 
-        storage.context.<Collection<Value>>blockingV2(() -> {
+        storage.context.<Collection<Value>>blocking(() -> {
             try (ResultSet<Value> values = storage.db.retrieve(builder, getQueryOptions())) {
                 return StreamSupport.stream(values.spliterator(), false)
                         .skip(getPageSize() * getPage())

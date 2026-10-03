@@ -127,25 +127,37 @@ public interface CoreContext {
      * scoped to the current context.
      *
      * @param blocking a method that is blocking, to be executed on worker thread.
-     * @param result   handler for the result of the blocking execution.
-     * @param <T>      type parameter.
      */
-    <T> void blocking(Handler<Promise<T>> blocking, Handler<AsyncResult<T>> result);
-    <T> Future<T> blockingV2(Runnable blocking);
-    <T> Future<T> blockingV2(Runnable blocking, boolean ordered);
-    <T> Future<T> blockingV2(Callable<T> blocking);
-    <T> Future<T> blockingV2(Callable<T> blocking, boolean ordered);
+    Future<Void> blocking(Runnable blocking);
 
     /**
+     *
+     * @param blocking
+     * @return
+     * @param <T>
+     */
+    <T> Future<T> blocking(Callable<T> blocking);
+
+
+    /**
+     *
      * Call to execute the given blocking handler on a worker thread that is
      * scoped to the current context.
      *
-     * @param <T>      type parameter for the result
      * @param blocking a handler that executes blocking code
      * @param ordered  if true, indicates that the tasks must be completed in the same order as they are started.
-     * @param result   handler for the result that is called asynchronously
      */
-    <T> void blocking(Handler<Promise<T>> blocking, boolean ordered, Handler<AsyncResult<T>> result);
+    Future<Void> blocking(Runnable blocking, boolean ordered);
+
+    /**
+     *
+     * @param blocking
+     * @param ordered
+     * @return
+     * @param <T>
+     */
+    <T> Future<T> blocking(Callable<T> blocking, boolean ordered);
+
 
     /**
      * @param aClass added as metadata to all logged events.
