@@ -7,6 +7,8 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.codingchili.core.context.CoreContext;
 import org.jline.jansi.Ansi;
@@ -19,6 +21,8 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  */
 public class ConsoleLogger extends AbstractLogger implements StringLogger {
     private static final int FLUSH_TIMEOUT_MS = 16;
+    private static final Pattern HIDDEN_TAGS = Pattern.compile(" ?(\\[(?:" + Arrays.stream(LOG_HIDDEN_TAGS)
+            .map(Pattern::quote).collect(Collectors.joining("|")) + ")\\]) ?");
     private final AtomicBoolean enabled = new AtomicBoolean(true);
     private static final Set<String> filtered = new HashSet<>(Arrays.asList(
             ID_TOKEN, LOG_EVENT, LOG_APPLICATION, LOG_CONTEXT, LOG_HOST, LOG_VERSION
@@ -104,7 +108,7 @@ public class ConsoleLogger extends AbstractLogger implements StringLogger {
     }
 
     private void write(String line) {
-        line = replaceTags(line, LOG_HIDDEN_TAGS);
+        line = HIDDEN_TAGS.matcher(line).replaceAll("");
         AnsiConsole.out().println(line);
         AnsiConsole.out().flush();
     }

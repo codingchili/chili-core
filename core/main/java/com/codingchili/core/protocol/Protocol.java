@@ -125,13 +125,13 @@ public class Protocol<RequestType> {
     }
 
     private void setHandlerRoutes(Receiver<RequestType> handler) {
-        for (Method method : handler.getClass().getDeclaredMethods()) {
-            if (!getClass().getModule().isNamed()) {
-                handler.getClass().getModule().addOpens(
-                        handler.getClass().getPackageName(),
-                        getClass().getModule()
-                );
-            }
+        Class<?> handlerClass = handler.getClass();
+
+        if (!getClass().getModule().isNamed()) {
+            handlerClass.getModule().addOpens(handlerClass.getPackageName(), getClass().getModule());
+        }
+
+        for (Method method : handlerClass.getDeclaredMethods()) {
             // improve reflection performance by up to 50%.
             method.setAccessible(true);
 
@@ -220,19 +220,20 @@ public class Protocol<RequestType> {
     }
 
     private void wrap(String route, Receiver<RequestType> handler, Method method, RoleType[] role) {
-        use(route, request -> invokeMethod(method, handler, request), role);
+        if (method.getParameterCount() == 0) {
+            use(route, request -> invokeMethod(method, handler), role);
+        } else {
+            use(route, request -> invokeMethod(method, handler, request), role);
+        }
     }
 
-    @SuppressWarnings("unchecked")
-    private <E> E invokeMethod(Method method, Object instance, Object argument) {
+    private void invokeMethod(Method method, Object instance, Object... arguments) {
         try {
-            if (method.getParameterCount() == 0) {
-                return (E) method.invoke(instance);
-            } else {
-                return (E) method.invoke(instance, argument);
-            }
-        } catch (IllegalAccessException | InvocationTargetException e) {
+            method.invoke(instance, arguments);
+        } catch (InvocationTargetException e) {
             throw throwAny(e.getCause()); // thrown inside throwAny method.
+        } catch (IllegalAccessException e) {
+            throw throwAny(e);
         }
     }
 

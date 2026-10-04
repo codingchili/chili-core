@@ -26,6 +26,7 @@ import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -68,9 +69,11 @@ public class Serializer {
      */
     public static <T> T kryo(Function<Kryo, T> kryo) {
         Kryo instance = pool.obtain();
-        T object = kryo.apply(instance);
-        pool.free(instance);
-        return object;
+        try {
+            return kryo.apply(instance);
+        } finally {
+            pool.free(instance);
+        }
     }
 
     /**
@@ -122,12 +125,8 @@ public class Serializer {
      */
     public static String yaml(Object object) {
         try {
-            if (object instanceof JsonObject) {
-                JsonNode node = new ObjectMapper().readTree(((JsonObject) object).encode());
-                return yaml.writeValueAsString(node);
-            } else {
-                return yaml.writeValueAsString(object);
-            }
+            // JsonObject is supported by the registered vert.x type serializers.
+            return yaml.writeValueAsString(object);
         } catch (Throwable e) {
             throw new CoreRuntimeException(e.getMessage());
         }
@@ -233,12 +232,10 @@ public class Serializer {
      * @return data compressed with gzip.
      */
     public static byte[] gzip(byte[] data) {
-        try {
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
-            GZIPOutputStream gzip = new GZIPOutputStream(output);
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        try (GZIPOutputStream gzip = new GZIPOutputStream(output)) {
             gzip.write(data);
-            gzip.close();
-            output.close();
+            gzip.finish();
             return output.toByteArray();
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
@@ -252,20 +249,8 @@ public class Serializer {
      * @return data decompressed with gzip.
      */
     public static byte[] ungzip(byte[] data) {
-        try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            GZIPInputStream gzip = new GZIPInputStream(new ByteArrayInputStream(data));
-            byte[] buffer = new byte[1024];
-            int len;
-
-            while ((len = gzip.read(buffer)) != -1) {
-                out.write(buffer, 0, len);
-            }
-
-            out.close();
-            gzip.close();
-
-            return out.toByteArray();
+        try (GZIPInputStream gzip = new GZIPInputStream(new ByteArrayInputStream(data))) {
+            return gzip.readAllBytes();
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -279,21 +264,16 @@ public class Serializer {
      * mapped to type.
      */
     public static Map<String, String> describe(Class<?> template) {
-        Map<String, String> model = new HashMap<>();
-        String className = template.getName();
-        if (cache.containsKey(className)) {
-            model = cache.get(className);
-        } else {
+        return cache.computeIfAbsent(template.getName(), className -> {
+            Map<String, String> model = new HashMap<>();
             for (Field field : template.getDeclaredFields()) {
                 if ((field.getModifiers() & Modifier.STATIC) == 0 && !field.isSynthetic()) {
-                    String generic = field.getGenericType().getTypeName();
-                    model.put(field.getName(), generic);
+                    model.put(field.getName(), field.getGenericType().getTypeName());
                 }
             }
-        }
-        cache.put(className, model);
-        return model;
+            return model;
+        });
     }
 
-    private static final Map<String, Map<String, String>> cache = new HashMap<>();
+    private static final Map<String, Map<String, String>> cache = new ConcurrentHashMap<>();
 }

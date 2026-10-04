@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -134,7 +135,8 @@ public class StreamQuery<Value extends Storable, Streaming> {
 
             @Override
             public QueryBuilder<Value> matches(String regex) {
-                apply(entry -> entry.toString().matches(regex));
+                Pattern pattern = Pattern.compile(regex);
+                apply(entry -> pattern.matcher(entry.toString()).matches());
                 return this;
             }
 
@@ -161,6 +163,7 @@ public class StreamQuery<Value extends Storable, Streaming> {
                             for (StatementPredicate statement : clause) {
                                 if (!anyMatch(entry, statement)) {
                                     match = false;
+                                    break;
                                 }
                             }
                             if (match) {

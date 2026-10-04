@@ -7,7 +7,6 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.listener.*;
@@ -84,29 +83,38 @@ public class RestRequest implements Request {
         request.params().forEach(entry -> data.put(entry.getKey(), entry.getValue()));
         parseApi(context);
 
-        if (!data.containsKey(CoreStrings.PROTOCOL_TARGET)) {
-            data.put(CoreStrings.PROTOCOL_TARGET,
-                    Arrays.stream(getPath().split("/"))
-                            .filter((s) -> !s.isEmpty())
-                            .findFirst()
-                            .orElse(settings.getDefaultTarget()));
-        }
+        boolean hasTarget = data.containsKey(CoreStrings.PROTOCOL_TARGET);
+        boolean hasRoute = data.containsKey(CoreStrings.PROTOCOL_ROUTE);
 
-        if (!data.containsKey(CoreStrings.PROTOCOL_ROUTE)) {
-            data.put(CoreStrings.PROTOCOL_ROUTE,
-                    Arrays.stream(getPath().split("/"))
-                            .filter(s -> !s.isEmpty())
-                            .skip(1)
-                            .collect(Collectors.joining("/")));
+        if (!hasTarget || !hasRoute) {
+            List<String> segments = Arrays.stream(getPath().split("/"))
+                    .filter(s -> !s.isEmpty())
+                    .toList();
+
+            if (!hasTarget) {
+                data.put(CoreStrings.PROTOCOL_TARGET,
+                        (segments.isEmpty()) ? settings.getDefaultTarget() : segments.getFirst());
+            }
+
+            if (!hasRoute) {
+                data.put(CoreStrings.PROTOCOL_ROUTE,
+                        String.join("/", segments.subList(Math.min(1, segments.size()), segments.size())));
+            }
         }
     }
 
     private String getPath() {
-        if (settings.getBasePath() != null) {
-            return request.path().replaceFirst(settings.getBasePath(), "");
-        } else {
-            return request.path();
+        String path = request.path();
+        String basePath = settings.getBasePath();
+
+        if (basePath != null && !basePath.isEmpty()) {
+            // literal match, avoids compiling the base path as a regex for every request.
+            int index = path.indexOf(basePath);
+            if (index != -1) {
+                return path.substring(0, index) + path.substring(index + basePath.length());
+            }
         }
+        return path;
     }
 
     private void parseApi(RoutingContext context) {

@@ -3,6 +3,7 @@ package com.codingchili.core.security;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.configuration.RegexComponent;
@@ -20,8 +21,8 @@ import io.vertx.core.json.JsonObject;
  */
 public class Validator implements Configurable {
     private static final String VALIDATION_FAILED_FOR_VALIDATOR = "Validation failed for validator '%s'.";
-    private static final String REGEX_PLAINTEXT = "[A-Za-z0-9 ]*";
-    private static final String REGEX_SPECIAL_CHARS = "[^A-Za-z0-9 ]";
+    private static final Pattern REGEX_PLAINTEXT = Pattern.compile("[A-Za-z0-9 ]*");
+    private static final Pattern REGEX_SPECIAL_CHARS = Pattern.compile("[^A-Za-z0-9 ]");
     private Set<ValidatorSettings> settings = new HashSet<>();
 
     public Validator() {
@@ -74,7 +75,7 @@ public class Validator implements Configurable {
      * @return true if the value is plaintext.
      */
     public static boolean plainText(Comparable value) {
-        return value != null && value.toString().matches(REGEX_PLAINTEXT);
+        return value != null && REGEX_PLAINTEXT.matcher(value.toString()).matches();
     }
 
     /**
@@ -84,7 +85,7 @@ public class Validator implements Configurable {
      * @return a plaintext string consisting of only A-Z, a-z, 0-9, whitespace.
      */
     public static String toPlainText(String input) {
-        return input.replaceAll(REGEX_SPECIAL_CHARS, "");
+        return REGEX_SPECIAL_CHARS.matcher(input).replaceAll("");
     }
 
     /**
@@ -151,18 +152,18 @@ public class Validator implements Configurable {
         for (RegexComponent regex : settings.getRegex()) {
             switch (regex.getAction()) {
                 case SUBSTITUTE:
-                    text = text.replaceAll(regex.getExpression(),
-                        Matcher.quoteReplacement(regex.getSubstitution()));
+                    text = regex.pattern().matcher(text)
+                            .replaceAll(Matcher.quoteReplacement(regex.getSubstitution()));
 
                     text = text.trim();
                     break;
                 case REJECT:
-                    if (text.matches(regex.getExpression())) {
+                    if (regex.pattern().matcher(text).matches()) {
                         fail(settings);
                     }
                     break;
                 case ACCEPT:
-                    if (!text.matches(regex.getExpression())) {
+                    if (!regex.pattern().matcher(text).matches()) {
                         fail(settings);
                     }
                     break;

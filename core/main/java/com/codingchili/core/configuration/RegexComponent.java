@@ -1,11 +1,14 @@
 package com.codingchili.core.configuration;
 
+import java.util.regex.Pattern;
+
 import com.codingchili.core.security.RegexAction;
 
 /**
  * Contains settings used for a single regex validator action.
  */
 public class RegexComponent {
+    private transient Pattern pattern;
     private RegexAction action;
     private String expression;
     private String substitution;
@@ -42,7 +45,20 @@ public class RegexComponent {
      */
     public RegexComponent setExpression(String expression) {
         this.expression = expression;
+        this.pattern = null;
         return this;
+    }
+
+    /**
+     * @return the expression compiled as a pattern, cached after the first invocation.
+     */
+    public Pattern pattern() {
+        Pattern compiled = pattern;
+        if (compiled == null) {
+            compiled = Pattern.compile(expression);
+            pattern = compiled;
+        }
+        return compiled;
     }
 
     /**

@@ -25,10 +25,7 @@ public class SimpleAuthorizationHandler<T> implements AuthorizationHandler<T> {
     @Override
     public void use(Route<T> route) {
         for (RoleType role : route.getRoles()) {
-            if (!handlers.containsKey(role)) {
-                handlers.put(role, new HashMap<>());
-            }
-            handlers.get(role).put(route.getRoute(), route);
+            handlers.computeIfAbsent(role, key -> new HashMap<>()).put(route.getRoute(), route);
         }
         routes.add(route.getRoute());
     }
@@ -36,16 +33,17 @@ public class SimpleAuthorizationHandler<T> implements AuthorizationHandler<T> {
     @Override
     public RequestHandler<T> get(String route, RoleType role) throws AuthorizationRequiredException, HandlerMissingException {
         if (routes.contains(route)) {
-            if (handlers.containsKey(role)) {
-                Route<T> api = handlers.get(role).get(route);
+            HashMap<String, Route<T>> roleRoutes = handlers.get(role);
+            if (roleRoutes != null) {
+                Route<T> api = roleRoutes.get(route);
                 if (api != null) {
                     return api.getHandler();
                 }
             }
             // no exact role match on ID, do a full 2nd level scan to check access level.
-            for (RoleType required : handlers.keySet()) {
-                if (required.getLevel() < role.getLevel()) {
-                    Route<T> api = handlers.get(required).get(route);
+            for (Map.Entry<RoleType, HashMap<String, Route<T>>> required : handlers.entrySet()) {
+                if (required.getKey().getLevel() < role.getLevel()) {
+                    Route<T> api = required.getValue().get(route);
                     if (api != null) {
                         return api.getHandler();
                     }
