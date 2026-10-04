@@ -32,9 +32,10 @@ Vert.x + vertx-web for anyone picking a stack today.
 
 ## Priority 0: make it trustworthy
 
-- **Green build + CI.** Fix the known failures (`RequestMockTest` Jackson 3 deserialization, `MultiHandlerTest` status,
-  `BusRouterTest` timeouts, `BenchmarkIT` Hazelcast instance name). Add a GitHub Actions workflow that runs unit tests
-  on every push and runs `*IT` with MongoDB/Elasticsearch as service containers (or Testcontainers).
+- **CI.** The suite is green locally (724 tests, 0 failures), but the `*IT` classes that need MongoDB/Elasticsearch
+  are skipped and nothing runs it automatically. Add a GitHub Actions workflow that runs unit tests on every push and
+  runs `*IT` with MongoDB/Elasticsearch as service containers (or Testcontainers). Make the persisted-map tests
+  safe to run in parallel first (see `upgrades.md`).
 - **Fix `jitpack.yml`** (JDK 27, or lower the toolchain). Consider also publishing to Maven Central. JitPack is fine for
   hobby use but enterprises often block it.
 - **Fix the High security findings** before tagging a release. The token format change breaks issued tokens, so do it

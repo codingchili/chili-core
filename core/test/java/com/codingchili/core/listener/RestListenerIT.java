@@ -38,7 +38,6 @@ public class RestListenerIT extends ListenerTestCases {
 
     private void sendGetRequest(String action, ResponseListener listener) {
         context.vertx().createHttpClient().request(HttpMethod.GET, port, HOST, action).onComplete(handler -> {
-
             handler.result().send().onComplete(response -> {
                 response.result().bodyHandler(body -> handleBody(listener, body));
             });

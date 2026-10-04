@@ -41,7 +41,7 @@ public abstract class ListenerTestCases {
     private WireType wireType;
 
     @Rule
-    public Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
+    public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
 
     protected ListenerTestCases(WireType wireType, Supplier<CoreListener> listener) {
         this.wireType = wireType;

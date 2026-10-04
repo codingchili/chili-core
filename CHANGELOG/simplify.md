@@ -47,8 +47,10 @@ Failing, and not caused by these changes:
 
 - ~~`RestRequestTest`: the mock `RoutingContext.body()` returns null, causing a `NullPointerException` in `RestRequest.parseData`.~~
   **Fixed**, see `upgrades.md` ("Tests clean up after themselves").
-- `MultiHandlerTest.ensureHandlersCallable`: the deploy succeeds, but the response's `status` field is null.
-- `BusRouterTest` (3 tests): time out. They don't deploy anything through `SystemContext`.
+- ~~`MultiHandlerTest.ensureHandlersCallable`: the deploy succeeds, but the response's `status` field is null.~~
+- ~~`BusRouterTest` (3 tests): time out. They don't deploy anything through `SystemContext`.~~
+  Both pass in the latest full run (724 tests, 0 failures, see `upgrades.md`). Which change fixed them wasn't
+  tracked down.
 - `BenchmarkIT.testExecuteSuiteAsCommand`: the test's setup already joins a cluster, and `cluster.xml` uses a fixed
   Hazelcast instance name, so the suite's second `clustered()` fails with
   `HazelcastInstance with name 'core' already exists!`. Previously this hung until the test timed out (see the NPE

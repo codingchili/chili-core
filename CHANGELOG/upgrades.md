@@ -324,10 +324,17 @@ Queued item 5.
   tracked fixtures under `core/test/resources`, which tests rewrite with identical content.
 - **Concurrent Gradle builds in this project can fail with `java.io.EOFException` in `:core:test`.** Gradle daemons
   on two JDKs (IDE and terminal) writing `core/build` at the same time. A re-run passes.
-- Full suite after this change: 723 tests, 2 failures (`RequestMockTest.testErrorStatusInBuffer` and
-  `testReplyWithBuffer`: Jackson 3 `MismatchedInputException` deserializing a `LinkedHashMap` from a string,
-  unrelated to this work), 142 skipped. Before: 9 failures. One of them, `WebsocketListenerIT.testAccepted`,
-  failed in the first full run and passed in the second.
+- **`Serializer.json(Buffer)` (bug fix):** passing a `Buffer` fell through to Jackson 3's `convertValue` as a bean and
+  failed with `MismatchedInputException` ("Cannot deserialize `LinkedHashMap` from String"). That broke
+  `ClusterRequest.write(Buffer)` (`RequestMockTest.testReplyWithBuffer`, `testErrorStatusInBuffer`). A buffer is now read
+  as JSON text, matching `Serializer.buffer(Object)`, which already passes a `Buffer` through. New test:
+  `SerializerTest.testBufferToJson`.
+- **Full suite: green.** 724 tests, 0 failures, 142 skipped (integration tests that need MongoDB/Elasticsearch, and
+  `@Ignore`d bases). Earlier in this work: 9 failures, then 2.
+- **Don't run two test JVMs in this project at the same time.** `MapTestCases` stores its SQLite database at a fixed
+  relative path (`core/IndexedMapPersisted/MapTestCases.sqlite`), so two concurrent runs (for example IDE and terminal)
+  corrupt each other: a run overlapping with another one failed 5 `IndexedMapPersistedTest` tests and left the files
+  behind. Giving each test JVM its own database directory would fix it.
 
 ## Build: Gradle 9.4.0 → 9.8.0
 
