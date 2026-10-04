@@ -7,5 +7,6 @@ public enum WireType {
     UDP,
     TCP,
     WEBSOCKET,
-    REST
+    REST,
+    QUIC
 }

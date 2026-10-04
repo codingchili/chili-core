@@ -19,7 +19,7 @@ import com.codingchili.core.context.SystemContext;
  */
 @RunWith(VertxUnitRunner.class)
 public class StorageLoaderIT {
-    private static final String TEST_DB = "test";
+    private static final String TEST_DB = "StorageLoaderIT";
     private static CoreContext context;
     @Rule
     public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
@@ -87,7 +87,11 @@ public class StorageLoaderIT {
 
         promise.future().onComplete(done -> {
             if (done.succeeded()) {
+                // the collection is unique to this test: release the database files.
+                PersistedFiles.remove(done.result());
                 async.complete();
+            } else {
+                test.fail(done.cause());
             }
         });
     }

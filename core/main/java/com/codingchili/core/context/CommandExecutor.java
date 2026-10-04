@@ -1,9 +1,8 @@
 package com.codingchili.core.context;
 
-import io.vertx.core.Promise;
+import io.vertx.core.Future;
 
 import java.util.*;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -12,21 +11,13 @@ import java.util.function.Function;
  */
 public interface CommandExecutor {
     /**
-     * Executes the given command. Sets handled to false if the command does not exist.
+     * Executes the given command.
      *
-     * @param future      callback: true if startup should be aborted.
      * @param commandLine the commands/properties to execute.
-     * @return fluent
+     * @return future completed with the result of the command, fails with a
+     * {@link com.codingchili.core.context.exception.NoSuchCommandException} if the command does not exist.
      */
-    CommandExecutor execute(Promise<CommandResult> future, String... commandLine);
-
-    /**
-     * Executes the given command synchronously.
-     *
-     * @param command the command to execute
-     * @return true if startup is to be aborted.
-     */
-    CommandResult execute(String... command);
+    Future<CommandResult> execute(String... commandLine);
 
     /**
      * Get the first command passed to the executor.
@@ -83,8 +74,8 @@ public interface CommandExecutor {
      * @param description the description of the command
      * @return fluent
      */
-    CommandExecutor add(BiFunction<Promise<CommandResult>, CommandExecutor, Void> executor, String name, String
-            description);
+    CommandExecutor addAsync(Function<CommandExecutor, Future<CommandResult>> executor, String name,
+                             String description);
 
     /**
      * Adds a new synchronous command using the default implementation.

@@ -5,9 +5,7 @@ import com.codingchili.core.files.Configurations;
 import com.codingchili.core.security.exception.HashMismatchException;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
-import io.vertx.core.Handler;
 
 /**
  * Handles the hashing of passwords and the generation
@@ -42,20 +40,14 @@ public class HashFactory {
     /**
      * Verifies a plaintext password against a hashed password.
      *
-     * @param future    callback
      * @param expected  the expected outcome of the hash operation.
      * @param plaintext the plaintext password to be hashed and compared to expected.
+     * @return future completed if the password matches, fails with {@link HashMismatchException} if not.
      */
-    public void verify(Handler<AsyncResult<Void>> future, String expected, char[] plaintext) {
-        context.<Boolean>blocking(() -> argon2.verify(expected, plaintext)).onComplete(hashed -> {
-            if (hashed.failed()) {
-                future.handle(Future.failedFuture(hashed.cause()));
-            } else if (hashed.result()) {
-                future.handle(Future.succeededFuture());
-            } else {
-                future.handle(Future.failedFuture(new HashMismatchException()));
-            }
-        });
+    public Future<Void> verify(String expected, char[] plaintext) {
+        return context.<Boolean>blocking(() -> argon2.verify(expected, plaintext)).compose(matches -> matches
+                ? Future.succeededFuture()
+                : Future.failedFuture(new HashMismatchException()));
     }
 
     /**

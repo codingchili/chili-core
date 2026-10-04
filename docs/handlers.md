@@ -34,13 +34,15 @@ public class CatHandler implements CoreHandler {
     }
     
     @Override
-    public void start(Future<Void> future) {
-        // optional override: if async setup is required.    
+    public void start(Promise<Void> start) {
+        // optional override: if async setup is required.
+        start.complete();
     }
 
     @Override
-    public void stop(Future<Void> future) {
-        // optional override: if cleanup is required.    
+    public void stop(Promise<Void> stop) {
+        // optional override: if cleanup is required.
+        stop.complete();
     }
     
     @Override

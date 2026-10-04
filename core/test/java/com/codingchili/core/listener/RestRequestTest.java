@@ -5,6 +5,7 @@ import io.netty.handler.codec.DecoderResult;
 import io.vertx.core.*;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.*;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.HostAndPort;
 import io.vertx.core.net.NetSocket;
@@ -100,7 +101,7 @@ public class RestRequestTest {
     }
 
     private static class RoutingContextMock implements RoutingContext {
-        private final Buffer body;
+        protected final Buffer body;
         private final String path;
 
         /**
@@ -296,7 +297,7 @@ public class RestRequestTest {
 
                 @Override
                 public Future<Buffer> body() {
-                    return null;
+                    return Future.succeededFuture(body);
                 }
 
 
@@ -481,7 +482,47 @@ public class RestRequestTest {
 
         @Override
         public RequestBody body() {
-            return null;
+            return new RequestBody() {
+                @Override
+                public String asString() {
+                    return body.toString();
+                }
+
+                @Override
+                public String asString(String encoding) {
+                    return body.toString(encoding);
+                }
+
+                @Override
+                public JsonObject asJsonObject(int maxAllowedLength) {
+                    return body.length() == 0 ? null : body.toJsonObject();
+                }
+
+                @Override
+                public JsonArray asJsonArray(int maxAllowedLength) {
+                    return body.length() == 0 ? null : body.toJsonArray();
+                }
+
+                @Override
+                public Buffer buffer() {
+                    return body;
+                }
+
+                @Override
+                public <R> R asPojo(Class<R> type, int maxAllowedLength) {
+                    throw new UnsupportedOperationException("POJO mapping requires Jackson 2, use the Serializer.");
+                }
+
+                @Override
+                public int length() {
+                    return body.length();
+                }
+
+                @Override
+                public boolean available() {
+                    return true;
+                }
+            };
         }
 
         @Override

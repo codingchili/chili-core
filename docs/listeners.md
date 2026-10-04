@@ -10,6 +10,7 @@ A list of default listeners
 |TcpListener|Listens for incoming TCP connections.|
 |WebsocketListener|Listens for websocket connections.|
 |UdpListener|Listens for UDP datagrams, request size limited to MTU.|
+|QuicListener|Listens for QUIC connections (not HTTP/3), one request per stream. Requires TLS.|
 |ClusterListener|Listens for messages over the local / clustered event bus.|
 
 The typical setup for distributed services is to use a gateway listener that listens for
@@ -24,11 +25,55 @@ ListenerSettings settings = new ListenerSettings()
     .setPort(8080) // not applicable to the ClusterListener.
     .setSecure(false);
 
-core.listener(() -> 
-    new RestListener()
-        .settings(() -> settings)
-        .handler(MyHandler::new)
-});
+core.listener(() -> new RestListener()
+        .settings(settings)
+        .handler(new MyHandler()));
+```
+
+### QUIC
+The `QuicListener` uses QUIC directly, without HTTP/3. Each request is sent on its own bidirectional stream:
+the client writes the JSON request and ends its side of the stream, and the response is written back on the same
+stream, which the server then ends. A client can run many requests at once over one connection without
+head-of-line blocking.
+
+```java
+ListenerSettings settings = new ListenerSettings()
+    .setPort(4433)
+    .setKeystore("main"); // QUIC always uses TLS 1.3, this also sets secure: true.
+
+core.listener(() -> new QuicListener()
+        .settings(settings)
+        .handler(new MyHandler()));
+```
+
+- Deploying with `secure: false` fails with an error.
+- Clients must negotiate the application protocol `ListenerSettings.getQuicProtocol()` (`chili` by default)
+  with ALPN.
+- Requests larger than `maxRequestBytes` are answered with `BAD` and the server sends `STOP_SENDING`
+  (error code `QuicListener.ERROR_REQUEST_TOO_LARGE`). Malformed JSON is answered with `BAD`.
+- Writes to `request.connection()` outside of the response (server push) are sent on a new unidirectional stream
+  per message. Clients only receive them if they allow the server to open unidirectional streams
+  (`QuicConfig.setInitialMaxStreamsUni` and `setInitialMaxStreamDataUni`, both 0 by default in Vert.x).
+- Transport settings (idle timeout, flow control, congestion control, ...) are set with
+  `ListenerSettings.setQuic(QuicServerConfig)`. One listener instance is deployed unless
+  `QuicServerConfig.setLoadBalanced(true)` is set, which requires `SO_REUSEPORT` (Linux and macOS).
+- QUIC runs on the native `netty-codec-native-quic` library, which chili-core includes for Linux, macOS and
+  Windows (x86_64, plus aarch_64 on Linux and macOS).
+
+A Vert.x client:
+
+```java
+QuicClient client = vertx.createQuicClient(new ClientSSLOptions()
+        .setApplicationLayerProtocols(List.of("chili")));
+
+client.connect(4433, "localhost")
+        .compose(QuicConnection::openStream)
+        .onSuccess(stream -> {
+            Buffer response = Buffer.buffer();
+            stream.handler(response::appendBuffer);
+            stream.endHandler(done -> System.out.println(response.toJsonObject()));
+            stream.end(new JsonObject().put("route", "list").toBuffer());
+        });
 ```
 
 ### Using custom listeners
@@ -60,7 +105,7 @@ public class SmsListener implements CoreListener {
     }
     
     @Override
-    public void start(Future<Void> start) {
+    public void start(Promise<Void> start) {
         core.periodic(TimerSource.ofMS(1000, "smsGatewayPoll"), (id) -> {
             if (running) {
                 List<JsonObject> smses = smsGateway.fetchUnread();
@@ -78,7 +123,7 @@ public class SmsListener implements CoreListener {
     }
     
     @Override
-    public void stop(Future<Void> stop) {
+    public void stop(Promise<Void> stop) {
         // optional override: only if cleanup is required.
         running = false;
         stop.complete();

@@ -56,16 +56,9 @@ authorized, then the RoleType of `PUBLIC` is used. It's also possible to define 
 ```java
 @Authenticator
 public Future<RoleType> authenticator(Request request) {
-    Future<RoleType> future = Future.future();
-    
-    tokenFactory.verify(request.token()).setHandler(verify -> {
-        if (verify.succeeded()) {
-            future.complete(Role.USER);
-        } else {
-            future.complete(Role.PUBLIC);
-        }
-    });
-    return future;
+    return tokenFactory.verify(request.token())
+            .map(verified -> (RoleType) Role.USER)
+            .otherwise(Role.PUBLIC);
 }
 ```
 

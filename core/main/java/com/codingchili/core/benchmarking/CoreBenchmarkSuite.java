@@ -1,7 +1,6 @@
 package com.codingchili.core.benchmarking;
 
 import io.vertx.core.Future;
-import io.vertx.core.Promise;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,27 +23,20 @@ public class CoreBenchmarkSuite {
     /**
      * Creates a clustered vertx instance on which all registered benchmarks will run.
      *
-     * @param promise   callback on completion
      * @param executor executor to invoke this as a command.
+     * @return future completed when the benchmarks are done and the report is created.
      */
-    public Void execute(Promise<CommandResult> promise, CommandExecutor executor) {
+    public Future<CommandResult> execute(CommandExecutor executor) {
         executor.getProperty(PARAM_ITERATIONS).ifPresent(iterations ->
                 this.iterations = Integer.parseInt(iterations));
 
-        SystemContext.clustered()
-                .onFailure(promise::fail)
-                .onSuccess(cluster -> maps(cluster, new BenchmarkConsoleListener()).onComplete(done -> {
-                    if (done.succeeded()) {
-                        createReport(promise, done.result(), executor);
-                    } else {
-                        promise.fail(done.cause());
-                    }
-                    cluster.close();
-                }));
-        return null;
+        return SystemContext.clustered().compose(cluster ->
+                maps(cluster, new BenchmarkConsoleListener())
+                        .map(result -> createReport(result, executor))
+                        .onComplete(done -> cluster.close()));
     }
 
-    private void createReport(Promise<CommandResult> future, List<BenchmarkGroup> result, CommandExecutor executor) {
+    private CommandResult createReport(List<BenchmarkGroup> result, CommandExecutor executor) {
         Optional<String> template = executor.getProperty(PARAM_TEMPLATE);
         BenchmarkReport report;
 
@@ -55,7 +47,7 @@ public class CoreBenchmarkSuite {
         }
         template.ifPresent(report::template);
         report.display();
-        future.complete(LauncherCommandResult.SHUTDOWN);
+        return LauncherCommandResult.SHUTDOWN;
     }
 
     /**
@@ -66,7 +58,6 @@ public class CoreBenchmarkSuite {
      * @return a future that is completed with the results of the benchmark.
      */
     public Future<List<BenchmarkGroup>> maps(CoreContext context, BenchmarkListener listener) {
-        Promise<List<BenchmarkGroup>> promise = Promise.promise();
         BenchmarkGroup group = new BenchmarkGroupBuilder(MAP_BENCHMARKS, iterations);
 
         Consumer<Class<? extends AsyncStorage>> add = (clazz) -> {
@@ -82,12 +73,9 @@ public class CoreBenchmarkSuite {
         /*add.accept(ElasticMap.class); requires external servers.
         add.accept(MongoDBMap.class);*/
 
-        new BenchmarkExecutor(context)
+        return new BenchmarkExecutor(context)
                 .setListener(listener)
-                .start(group)
-                .onComplete(promise);
-
-        return promise.future();
+                .start(group);
     }
 
     /**

@@ -61,7 +61,7 @@ context.listener(() -> {
         .settings(new ListenerSettings()
             .setKeystore("keystore.jks"))    
     }
-).setHandler(done -> {
+).onComplete(done -> {
     // started.
 });
 ```
@@ -147,20 +147,18 @@ Token token = new Token()
     .addProperty("admin", false);
 
 // async operation - no crypto stuff on the event loop.
-factory.hmac(token).setHandler(done -> {
-    if (done.succeeded()) {
-        System.out.println(token.getKey());
-        
-        factory.verify(token).setHandler(verified -> {
-            // verified.succeeded() == true
-        });
-        
-        // modify the token, no longer valid.
-        token.setProperty("admin", true);
-        factory.verify(token).setHandler(verified -> {
-            // verified.succeeded() == false
-        });
-    }
+factory.hmac(token).onSuccess(signed -> {
+    System.out.println(token.getKey());
+
+    factory.verify(token).onComplete(verified -> {
+        // verified.succeeded() == true
+    });
+
+    // modify the token, no longer valid.
+    token.addProperty("admin", true);
+    factory.verify(token).onComplete(verified -> {
+        // verified.succeeded() == false
+    });
 });
 
 ```
@@ -179,12 +177,12 @@ Token token = new Token("admin")
     .expire(2, TimeUnit.DAYS);
     
 // crypto stuff is async - don't block the event loop.
-factory.sign(token).setHandler(done -> {
+factory.sign(token, "main").onComplete(done -> {
     // if done.succeeded token is signed successfully.
 });
 
 // verified in the same way using 
-factory.verify(token).setHandler((done) -> {
+factory.verify(token).onComplete(done -> {
    // if done.succeeded token is valid. 
 });
 ```
@@ -203,23 +201,23 @@ Implements hashing of passwords using [Argon2](https://github.com/P-H-C/phc-winn
  
  Hashing a password
  
- ```java
- HashFactory hasher = new HashFactory(context);
-hasher.hash("password").setHandler(done -> {
+```java
+HashFactory hasher = new HashFactory(context);
+hasher.hash("password".toCharArray()).onComplete(done -> {
     if (done.succeeded()) {
         String hashed = done.result();
     } else {
         // handle error.
     }
 });
- ```
+```
 
-Verifying a password
+Verifying a password, fails with `HashMismatchException` if the password doesn't match.
 
 ```java
-hasher.verify(done -> {
-    boolean match = done.succeeded();
-}, hashed, "password");
+hasher.verify(hashed, "password".toCharArray())
+        .onSuccess(v -> { /* match */ })
+        .onFailure(e -> { /* no match */ });
 ```
 
 Example argon hash

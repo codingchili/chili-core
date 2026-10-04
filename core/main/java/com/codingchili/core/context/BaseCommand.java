@@ -1,44 +1,54 @@
 package com.codingchili.core.context;
 
-import io.vertx.core.Promise;
+import io.vertx.core.Future;
 
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
  * A basic
  */
 public class BaseCommand implements Command {
-    private BiFunction<Promise<CommandResult>, CommandExecutor, Void> command;
+    private Function<CommandExecutor, Future<CommandResult>> command;
     private boolean visible = true;
     private String name;
     private String description;
 
-    /**
-     * Creates a new asynchronous command.
-     *
-     * @param consumer    the function to be called when the command is executed.
-     * @param name        the handler of the command
-     * @param description the command description
-     */
-    public BaseCommand(BiFunction<Promise<CommandResult>, CommandExecutor, Void> consumer, String name, String description) {
-        this.command = consumer;
+    private BaseCommand(String name, String description) {
         this.name = name;
         this.description = description;
     }
 
     /**
-     * Creates a  new synchronous command
+     * Creates a new synchronous command, exceptions thrown by the command fail the result.
      *
      * @param runnable    executed when the command is invoked
      * @param name        the handler of the command
      * @param description the command description
      */
     public BaseCommand(Function<CommandExecutor, CommandResult> runnable, String name, String description) {
-        this((future, executor) -> {
-            future.complete(runnable.apply(executor));
-            return null;
-        }, name, description);
+        this(name, description);
+        this.command = executor -> {
+            try {
+                return Future.succeededFuture(runnable.apply(executor));
+            } catch (Throwable e) {
+                return Future.failedFuture(e);
+            }
+        };
+    }
+
+    /**
+     * Creates a new asynchronous command.
+     *
+     * @param command     the function to be called when the command is executed.
+     * @param name        the handler of the command
+     * @param description the command description
+     * @return a new command.
+     */
+    public static BaseCommand async(Function<CommandExecutor, Future<CommandResult>> command, String name,
+                                    String description) {
+        BaseCommand base = new BaseCommand(name, description);
+        base.command = command;
+        return base;
     }
 
     public Command setVisible(Boolean visible) {
@@ -52,8 +62,8 @@ public class BaseCommand implements Command {
     }
 
     @Override
-    public void execute(Promise<CommandResult> future, CommandExecutor executor) {
-        command.apply(future, executor);
+    public Future<CommandResult> execute(CommandExecutor executor) {
+        return command.apply(executor);
     }
 
     @Override

@@ -90,25 +90,32 @@ The command returns `SHUTDOWN` to indicate that the application should shut down
 
 ```java
     public static void main(String[] args) {
-        LaunchContext context = new LaunchContext(args)
-        CommandExecutor executor = new DefaultCommandExecutor();
-        
-        executor.add((future, executor) -> {
-            Integer times = Integer.parseInt(executor.getProperty("times").orElse("1"));
-        
+        LaunchContext context = new LaunchContext(args);
+        CommandExecutor executor = context.getExecutor();
+
+        executor.add(command -> {
+            int times = Integer.parseInt(command.getProperty("times").orElse("1"));
+
             for (int i = 0; i < times; i++) {
-                System.out.println(executor.hasProperty("-upper") ? "CAT" : "cat");
+                System.out.println(command.hasProperty("-upper") ? "CAT" : "cat");
             }
-            
-            executor.complete(CommandResult.SHUTDOWN);
+            return LauncherCommandResult.SHUTDOWN;
         }, "--print-cat", "prints the word cat n times.");
-        
+
         Launcher.start(context);
     }
 ```
 
-The command receives a future object to facilitate asynchronous calls as
-well as a reference to the current context.
+The command receives the executor, which gives access to the parsed properties. Commands that
+need to do asynchronous work are added with `addAsync` and return a `Future<CommandResult>`.
+
+```java
+executor.addAsync(command -> storage.clear()
+        .map(LauncherCommandResult.SHUTDOWN), "--clear", "clears the storage.");
+```
+
+`CommandExecutor.execute(String...)` returns a `Future<CommandResult>` that fails with a
+`NoSuchCommandException` when the command doesn't exist.
 
 A sample invocation would look like
 ```console

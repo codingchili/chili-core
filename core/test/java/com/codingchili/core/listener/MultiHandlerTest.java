@@ -55,7 +55,7 @@ public class MultiHandlerTest {
                             test.assertTrue(response.succeeded());
                             ClusterRequest request = new ClusterRequest(response.result());
 
-                            test.assertEquals(request.data().getString(PROTOCOL_STATUS), ResponseStatus.ACCEPTED.name());
+                            test.assertEquals(ResponseStatus.ACCEPTED.name(), request.data().getString(PROTOCOL_STATUS));
                             test.assertEquals(address, request.data().getString(ADDRESS));
 
                             async.countDown();

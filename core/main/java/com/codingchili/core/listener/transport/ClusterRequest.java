@@ -1,5 +1,6 @@
 package com.codingchili.core.listener.transport;
 
+import com.codingchili.core.protocol.ResponseStatus;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
@@ -46,7 +47,11 @@ public class ClusterRequest implements Request {
     @Override
     public void write(Object msg) {
         if (msg != null) {
-            message.reply(Response.json(msg));
+            var response = Response.json(msg);
+            if (!response.containsKey(PROTOCOL_STATUS)) {
+                response.put(PROTOCOL_STATUS, ResponseStatus.ACCEPTED);
+            }
+            message.reply(response);
         } else {
             accept();
         }
@@ -80,6 +85,7 @@ public class ClusterRequest implements Request {
     public int timeout() {
         return timeout;
     }
+
 
     @Override
     public int size() {

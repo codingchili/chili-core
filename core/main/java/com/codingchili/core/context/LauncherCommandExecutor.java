@@ -45,7 +45,7 @@ public class LauncherCommandExecutor extends DefaultCommandExecutor {
         add(generator(AuthenticationGenerator::tokens), GENERATE_TOKENS, getGenerateTokensDescription());
         add(generator(AuthenticationGenerator::all), GENERATE, getGenerateAllDescription());
 
-        add(suite::execute, BENCHMARK, getBenchmarkDescription());
+        addAsync(suite::execute, BENCHMARK, getBenchmarkDescription());
         add(this::help, HELP, getCommandExecutorHelpDescription());
     }
 

@@ -1,7 +1,5 @@
 package com.codingchili.core.benchmarking;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
@@ -9,6 +7,7 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import com.codingchili.core.context.CoreContext;
@@ -33,30 +32,28 @@ public class BenchmarkTests {
     }
 
     @After
-    public void tearDown() {
-        context.close();
+    public void tearDown(TestContext test) {
+        context.close().onComplete(test.asyncAssertSuccess());
     }
 
     @Test
-    public void testBenchmarksExecutedInOrder() {
-        execute(done -> {
-
-        });
+    public void testBenchmarksExecutedInOrder(TestContext test) {
+        execute(test, done -> test.assertEquals(groups, done));
     }
 
-    private void execute(Handler<AsyncResult<List<BenchmarkGroup>>> result) {
-        executor.start(groups).onComplete(result);
+    private void execute(TestContext test, Consumer<List<BenchmarkGroup>> assertions) {
+        executor.start(groups).onComplete(test.asyncAssertSuccess(assertions::accept));
     }
 
     @Test
     public void testAllBenchmarksExecuted(TestContext test) {
-        execute(done -> groups.stream().map(group -> (MockGroupBuilder) group)
+        execute(test, done -> groups.stream().map(group -> (MockGroupBuilder) group)
                 .forEach(group -> test.assertTrue(group.isExecuted())));
     }
 
     @Test
     public void testAllImplementationsExecuted(TestContext test) {
-        execute(done -> groups().forEach(group -> {
+        execute(test, done -> groups().forEach(group -> {
             test.assertTrue(group.getFirstImplementation().isBothBenchmarksExecuted());
             test.assertTrue(group.getSecondImplementation().isBothBenchmarksExecuted());
         }));
@@ -64,7 +61,7 @@ public class BenchmarkTests {
 
     @Test
     public void testAllGroupsExecuted(TestContext test) {
-        execute(done -> groups().forEach(group -> test.assertTrue(group.isExecuted())));
+        execute(test, done -> groups().forEach(group -> test.assertTrue(group.isExecuted())));
     }
 
     private Stream<MockGroupBuilder> groups() {
@@ -73,7 +70,7 @@ public class BenchmarkTests {
 
     @Test
     public void testVerifyBenchmarksFinished(TestContext test) {
-        execute(done -> {
+        execute(test, done -> {
             groups().forEach(group -> group.getImplementations().forEach(implementation -> {
                 implementation.getBenchmarks().forEach(benchmark -> {
                     test.assertTrue(benchmark.isFinished());
@@ -84,11 +81,12 @@ public class BenchmarkTests {
 
     @Test
     public void testVerifyNumberOfIterations(TestContext test) {
-        execute(done -> groups().forEach(group -> group.getImplementations().stream()
+        execute(test, done -> groups().forEach(group -> group.getImplementations().stream()
                 .map(implementation -> (MockImplementationBuilder) implementation)
                 .forEach(implementation -> {
-                    test.assertEquals(ITERATIONS, implementation.getFirstBenchmarkExecutions());
-                    test.assertEquals(ITERATIONS, implementation.getSecondBenchmarkExecutions());
+                    // each benchmark runs once for warmup and once recorded.
+                    test.assertEquals(ITERATIONS * 2, implementation.getFirstBenchmarkExecutions());
+                    test.assertEquals(ITERATIONS * 2, implementation.getSecondBenchmarkExecutions());
                 })));
     }
 }

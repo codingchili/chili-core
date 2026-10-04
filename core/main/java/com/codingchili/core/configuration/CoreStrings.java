@@ -81,6 +81,7 @@ public abstract class CoreStrings {
     public static final String PROTOCOL_LOGGING = "logging";
     public static final String PROTOCOL_DOCUMENTATION = "documentation";
     public static final String DEFAULT_KEYSTORE = "keystore.jks";
+    public static final String DEFAULT_QUIC_PROTOCOL = "chili";
 
     // launcher commands.
     public static final String COMMAND_PREFIX = "--";
@@ -91,7 +92,7 @@ public abstract class CoreStrings {
     public static final String RECONFIGURE = "reconfigure";
     public static final String HELP = "help";
     public static final String BENCHMARK = "benchmark";
-    public static final String PARAM_ITERATIONS = "iterations";
+    public static final String PARAM_ITERATIONS = getParam("iterations");
     public static final String PARAM_HTML = getParam("html");
     public static final String PARAM_TEMPLATE = getParam("template");
     public static final String DEPLOY = "deploy";
@@ -234,6 +235,14 @@ public abstract class CoreStrings {
 
     public static String getRequestTooLarge(int maxRequestBytes) {
         return String.format("Maximum request size of %d bytes exceeded.", maxRequestBytes);
+    }
+
+    public static String getRequestMalformed(String reason) {
+        return String.format("Malformed request: %s", reason);
+    }
+
+    public static String getQuicRequiresSecure(String listener) {
+        return String.format("QUIC requires TLS, %s must be configured with secure: true and a keystore.", listener);
     }
 
     public static String getParam(String command) {
@@ -540,9 +549,13 @@ public abstract class CoreStrings {
                 " " + progress + "%";
     }
 
+    public static String getBenchmarkReportSaved(String path) {
+        return "Benchmark report saved to " + path;
+    }
+
     public static String getBenchmarkCompleted(BenchmarkImplementation implementation, Benchmark benchmark) {
         return "Completed benchmark " + implementation.getName() +
-                "::" + benchmark.getName() + " in " + benchmark.getElapsedMS() + " ms.";
+                "::" + benchmark.getName() + " in " + benchmark.getTimeFormatted() + ".";
     }
 
     public static String getIllegalTemplateTokenCount(String token, int count) {

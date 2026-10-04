@@ -1,20 +1,17 @@
 package com.codingchili.core.benchmarking;
 
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.*;
 
 /**
  * Base implementation of a benchmark.
  */
 public class BenchmarkBuilder implements Benchmark {
-    private static final String MAX_MEASURED = "+";
     private Map<String, Object> properties = new HashMap<>();
     private BenchmarkOperation operation;
     private String name;
-    private Instant start;
+    private long start;
     private int iterations;
-    private int elapsedMS = -1;
+    private long elapsedNanos = -1;
 
     /**
      * Creates a new benchmark builder.
@@ -43,26 +40,29 @@ public class BenchmarkBuilder implements Benchmark {
 
     @Override
     public Benchmark start() {
-        this.start = Instant.now();
+        this.start = System.nanoTime();
         return this;
     }
 
     @Override
     public void finish() {
-        this.elapsedMS = (int) (Instant.now().toEpochMilli() - start.toEpochMilli());
-        if (this.elapsedMS < 0) {
-            this.elapsedMS = 0;
-        }
+        // nanoTime is monotonic, but keep at least 1ns so that the rate is defined.
+        this.elapsedNanos = Math.max(1, System.nanoTime() - start);
     }
 
     @Override
     public boolean isFinished() {
-        return (elapsedMS >= 0);
+        return (elapsedNanos >= 0);
     }
 
     @Override
     public long getElapsedMS() {
-        return elapsedMS;
+        return (elapsedNanos < 0) ? elapsedNanos : elapsedNanos / 1_000_000;
+    }
+
+    @Override
+    public long getElapsedNanos() {
+        return elapsedNanos;
     }
 
     @Override
@@ -86,34 +86,21 @@ public class BenchmarkBuilder implements Benchmark {
         return properties;
     }
 
-    /**
-     * @return time formatted as HH:mm:ss.SSS using the elapsed ms as source.
-     */
     @Override
     public String getTimeFormatted() {
-        return new SimpleDateFormat(DATE_FORMAT).format(new Date(elapsedMS - EPOCH_BASE));
+        return BenchmarkResult.formatNanos(Math.max(0, elapsedNanos));
     }
 
-    /**
-     * @return the number of operations per second as a formatted string.
-     */
     @Override
     public String getRateFormatted() {
-        if (elapsedMS == 0) {
-            return String.format("%,d", 1000 * iterations) + MAX_MEASURED;
-        } else {
-            return String.format("%,d", getRate());
-        }
+        return String.format("%,d", getRate());
     }
 
-    /**
-     * @return the number of operations per second.
-     */
     @Override
     public int getRate() {
-        if (elapsedMS == 0) {
-            return 1000 * iterations;
+        if (elapsedNanos <= 0) {
+            return 0;
         }
-        return (int) (iterations / (elapsedMS / 1000f));
+        return (int) Math.min(Integer.MAX_VALUE, iterations * 1_000_000_000L / elapsedNanos);
     }
 }

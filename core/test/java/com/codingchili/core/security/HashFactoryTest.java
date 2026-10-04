@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.SystemContext;
+import com.codingchili.core.security.exception.HashMismatchException;
 
 /**
  * Tests for the HashHelper
@@ -65,10 +66,11 @@ public class HashFactoryTest {
                 test.assertTrue(hash.result().length() != 0);
                 test.assertTrue(wrong.result().length() != 0);
 
-                hasher.verify(result -> {
+                hasher.verify(hash.result(), PLAINTEXT_WRONG).onComplete(result -> {
                     test.assertTrue(result.failed());
+                    test.assertTrue(result.cause() instanceof HashMismatchException);
                     async.complete();
-                }, hash.result(), PLAINTEXT_WRONG);
+                });
 
             });
         });
@@ -78,10 +80,10 @@ public class HashFactoryTest {
     public void testVerifySuccess(TestContext test) {
         Async async = test.async();
         hasher.hash(PLAINTEXT).onComplete(hash -> {
-            hasher.verify(result -> {
+            hasher.verify(hash.result(), PLAINTEXT).onComplete(result -> {
                 test.assertTrue(result.succeeded());
                 async.complete();
-            }, hash.result(), PLAINTEXT);
+            });
         });
     }
 

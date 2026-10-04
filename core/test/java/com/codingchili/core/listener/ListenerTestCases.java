@@ -71,6 +71,7 @@ public abstract class ListenerTestCases {
                 .setDefaultTarget(NODE_WEBSERVER)
                 .setHttpOptions(new HttpServerConfig().setCompressionConfig(new CompressionConfig().setCompressionEnabled(false)))
                 .addMapping(PATCHING_ROOT, new Endpoint(NODE_PATCHING));
+        configure(settings);
 
         context.listener(() -> listener.get().settings(settings).handler(new TestHandler())).onComplete(deploy -> {
             if (deploy.failed()) {
@@ -107,6 +108,14 @@ public abstract class ListenerTestCases {
         }, new JsonObject()
                 .put(CoreStrings.PROTOCOL_TARGET, NODE_ROUTER)
                 .put(CoreStrings.PROTOCOL_ROUTE, CoreStrings.ID_PING));
+    }
+
+    /**
+     * Override to change the listener settings before the listener is deployed.
+     *
+     * @param settings the settings used by the listener under test.
+     */
+    protected void configure(ListenerSettings settings) {
     }
 
     /**

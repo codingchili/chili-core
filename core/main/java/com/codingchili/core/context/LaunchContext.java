@@ -1,7 +1,6 @@
 package com.codingchili.core.context;
 
 import io.vertx.core.Future;
-import io.vertx.core.Promise;
 
 import java.util.*;
 
@@ -214,9 +213,7 @@ public class LaunchContext {
      * @return future resolved when the command executor for the launch context has executed.
      */
     public Future<CommandResult> execute() {
-        var promise = Promise.<CommandResult>promise();
-        executor.execute(promise, args);
-        return promise.future();
+        return executor.execute(args);
     }
 
     /**

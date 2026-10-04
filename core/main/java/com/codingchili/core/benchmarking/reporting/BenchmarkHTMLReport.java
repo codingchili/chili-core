@@ -6,15 +6,14 @@ import de.neuland.jade4j.template.JadeTemplate;
 import de.neuland.jade4j.template.TemplateLoader;
 import io.vertx.core.VertxException;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.json.JsonObject;
 
 import java.awt.*;
 import java.io.*;
 import java.nio.file.Paths;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 
 import com.codingchili.core.benchmarking.BenchmarkGroup;
 import com.codingchili.core.benchmarking.BenchmarkReport;
@@ -31,6 +30,9 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 public class BenchmarkHTMLReport implements BenchmarkReport {
     private static final String VERSION = "version";
     private static final String BENCHMARKS = "benchmarks";
+    private static final String GENERATED = "generated";
+    private static final String ENVIRONMENT = "environment";
+    private static final String SUMMARY = "summary";
     private List<BenchmarkGroup> results;
     private String template = "/benchmarking/report.jade";
 
@@ -59,35 +61,47 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
     }
 
     private Buffer render() {
-        JsonObject model = new JsonObject()
-                .put(BENCHMARKS, baseline(reorder(results)))
-                .put(VERSION, new LauncherSettings().getVersion());
-        return Buffer.buffer(Jade4J.render(getTemplate(), model.getMap(), true));
+        List<ResultGroup> groups = reorder(results);
+        Map<String, Object> model = new HashMap<>();
+        model.put(BENCHMARKS, groups);
+        model.put(SUMMARY, summary(groups));
+        model.put(ENVIRONMENT, environment());
+        // the version is unknown when running from classes instead of a packaged jar.
+        String version = new LauncherSettings().getVersion();
+        model.put(VERSION, (version == null || version.equals("n/a")) ? "" : version);
+        model.put(GENERATED, ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm z")));
+        return Buffer.buffer(Jade4J.render(getTemplate(), model, true));
     }
 
-    /**
-     * Establishes a baseline index per implementation bucket so that relative comparison
-     * may be performed.
-     *
-     * @param groups the results to calculate the baseline for
-     * @return the same list with baselines added to every benchmark result.
-     */
-    private List<ResultGroup> baseline(List<ResultGroup> groups) {
-        Function<ResultSet, Integer> max = implementation -> {
-            AtomicInteger maxRate = new AtomicInteger(0);
-            implementation.getItems().forEach(item -> {
-                if (item.getRate() > maxRate.get()) {
-                    maxRate.set(item.getRate());
-                }
-            });
-            return maxRate.get();
-        };
+    private static Map<String, String> summary(List<ResultGroup> groups) {
+        Set<String> implementations = new LinkedHashSet<>();
+        int operations = 0;
+        long measured = 0;
 
-        groups.forEach(group -> group.getSets().forEach(implementation -> {
-            int localMax = max.apply(implementation);
-            implementation.getItems().forEach(item -> item.setLocalIndex(((item.getRate() * 1.0f / localMax) * 100)));
-        }));
-        return groups;
+        for (ResultGroup group : groups) {
+            implementations.addAll(group.getImplementations());
+            operations += group.getOperations().size();
+            for (ResultSet set : group.getSets()) {
+                measured += (long) set.getItems().size() * group.getIterations();
+            }
+        }
+        Map<String, String> summary = new LinkedHashMap<>();
+        summary.put("Groups", String.valueOf(groups.size()));
+        summary.put("Implementations", String.valueOf(implementations.size()));
+        summary.put("Operations", String.valueOf(operations));
+        summary.put("Measured calls", String.format("%,d", measured));
+        return summary;
+    }
+
+    private static Map<String, String> environment() {
+        Runtime runtime = Runtime.getRuntime();
+        Map<String, String> environment = new LinkedHashMap<>();
+        environment.put("Java", System.getProperty("java.vm.name") + " " + Runtime.version());
+        environment.put("OS", System.getProperty("os.name") + " " + System.getProperty("os.version") +
+                " (" + System.getProperty("os.arch") + ")");
+        environment.put("CPU cores", String.valueOf(runtime.availableProcessors()));
+        environment.put("Max heap", (runtime.maxMemory() / (1024 * 1024)) + " MB");
+        return environment;
     }
 
     /**
@@ -107,7 +121,7 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
                 ResultSet resultSet = new ResultSet(implementation.getName());
 
                 implementation.getBenchmarks().forEach(benchmark -> {
-                    resultSet.add(new ResultItem(benchmark));
+                    resultSet.add(new ResultItem(implementation.getName(), benchmark));
                 });
 
                 operation.add(resultSet);
@@ -163,10 +177,15 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
 
     @Override
     public BenchmarkReport display() {
-        try {
-            Desktop.getDesktop().browse(Paths.get(saveToFile()).toUri());
-        } catch (IOException e) {
-            throw new CoreRuntimeException(e);
+        String file = saveToFile();
+        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            try {
+                Desktop.getDesktop().browse(Paths.get(file).toUri());
+            } catch (IOException e) {
+                throw new CoreRuntimeException(e);
+            }
+        } else {
+            System.out.println(getBenchmarkReportSaved(Paths.get(file).toAbsolutePath().toString()));
         }
         return this;
     }

@@ -49,24 +49,22 @@ Deploying a service that may in turn issue more deployments.
 
 ```java
 // deploys a service that may issue more deployments.
-core.service(new CoreServiceImpl());
+core.service(CoreServiceImpl::new);
 ```
 
 A small example that deploys a listener and a handler without any services.
 ```java
 // deploys a HTTP listener on port 8080 that uses the
 // BusForwarder to forward requests over the cluster.
-core.listener(new RestListener()
-    .settings(() -> {
-        new ListenerSettings()
-            .setPort(8080)
-            .setSecure(false)
-    })
-    .setHandler(new BusForwarder("orders")));
+core.listener(() -> new RestListener()
+    .settings(new ListenerSettings()
+        .setPort(8080)
+        .setSecure(false))
+    .handler(new BusForwarder("orders")));
 
 // deploys the handler with a cluster listener on the address
 // specified in the handler with the @Address annotation.
-core.handler(new CoreHandlerImpl());
+core.handler(CoreHandlerImpl::new);
 ```
 
 In this example, any HTTP requests to port 8080 will be published

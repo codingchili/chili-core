@@ -1,75 +1,241 @@
 doctype html
-html
-    title chili-core benchmarks #{version}
+html(lang="en")
     head
-        link(rel='stylesheet', href='https://bootswatch.com/3/superhero/bootstrap.min.css')
-        script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js')
-        script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js')
-        style(type='text/css').
-            .jumbotron {
-            text-align: center;
+        meta(charset="utf-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1")
+        title chili-core benchmarks #{version}
+        style(type="text/css").
+            .viz-root {
+                color-scheme: light;
+                --page: #f9f9f7;
+                --surface-1: #fcfcfb;
+                --text-primary: #0b0b0b;
+                --text-secondary: #52514e;
+                --text-muted: #898781;
+                --grid: #e1e0d9;
+                --baseline: #c3c2b7;
+                --border: rgba(11, 11, 11, 0.10);
+                --accent: #2a78d6;
+                --deemphasis: #898781;
+                --heat-1: #86b6ef; --heat-ink-1: #0b0b0b;
+                --heat-2: #5598e7; --heat-ink-2: #0b0b0b;
+                --heat-3: #2a78d6; --heat-ink-3: #0b0b0b;
+                --heat-4: #1c5cab; --heat-ink-4: #ffffff;
+                --heat-5: #0d366b; --heat-ink-5: #ffffff;
             }
-            .panel-heading {
-            text-align: center;
+            @media (prefers-color-scheme: dark) {
+                :root:where(:not([data-theme="light"])) .viz-root {
+                    color-scheme: dark;
+                    --page: #0d0d0d;
+                    --surface-1: #1a1a19;
+                    --text-primary: #ffffff;
+                    --text-secondary: #c3c2b7;
+                    --text-muted: #898781;
+                    --grid: #2c2c2a;
+                    --baseline: #383835;
+                    --border: rgba(255, 255, 255, 0.10);
+                    --accent: #3987e5;
+                    --deemphasis: #898781;
+                    --heat-1: #184f95; --heat-ink-1: #ffffff;
+                    --heat-2: #256abf; --heat-ink-2: #ffffff;
+                    --heat-3: #3987e5; --heat-ink-3: #0b0b0b;
+                    --heat-4: #6da7ec; --heat-ink-4: #0b0b0b;
+                    --heat-5: #b7d3f6; --heat-ink-5: #0b0b0b;
+                }
             }
-            .panel {
-                margin-bottom: 3px;
+            * { box-sizing: border-box; }
+            body {
+                margin: 0;
+                background: var(--page);
+                color: var(--text-primary);
+                font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
             }
-            .panel-primary > .panel-heading {
-                background-color: #BF4869;
+            main { max-width: 1180px; margin: 0 auto; padding: 40px 24px 64px; }
+            h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.01em; }
+            h1 { font-size: 30px; }
+            h2 { font-size: 22px; }
+            h3 { font-size: 15px; }
+            .eyebrow { color: var(--text-secondary); font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+            .sub { color: var(--text-secondary); margin: 4px 0 0; }
+            .hint { color: var(--text-muted); font-size: 13px; margin: 2px 0 14px; }
+            header { display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between; align-items: flex-end; margin-bottom: 28px; }
+            .env { display: grid; grid-template-columns: auto auto; gap: 2px 16px; margin: 0; font-size: 13px; }
+            .env dt { color: var(--text-muted); }
+            .env dd { margin: 0; color: var(--text-secondary); }
+            .card {
+                background: var(--surface-1);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 20px;
             }
-            .panel-heading:hover {
-                background-color: #502549;
+            .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 40px; }
+            .kpi-label { color: var(--text-secondary); font-size: 13px; }
+            .kpi-value { font-size: 28px; font-weight: 600; margin-top: 2px; }
+            .group { margin-bottom: 48px; }
+            .group-head { margin-bottom: 16px; }
+            .table-wrap { overflow-x: auto; }
+            table { border-collapse: collapse; width: 100%; font-size: 13px; }
+            th, td { padding: 8px 10px; text-align: right; white-space: nowrap; }
+            th:first-child, td:first-child { text-align: left; }
+            thead th { color: var(--text-secondary); font-weight: 600; border-bottom: 1px solid var(--baseline); }
+            tbody th { font-weight: 500; }
+            tbody tr + tr > * { border-top: 1px solid var(--grid); }
+            td, .bar-value { font-variant-numeric: tabular-nums; }
+            .matrix td.heat { border: 2px solid var(--surface-1); border-radius: 6px; }
+            .matrix td.heat .pct { display: block; font-size: 11px; opacity: 0.85; }
+            .heat-1 { background: var(--heat-1); color: var(--heat-ink-1); }
+            .heat-2 { background: var(--heat-2); color: var(--heat-ink-2); }
+            .heat-3 { background: var(--heat-3); color: var(--heat-ink-3); }
+            .heat-4 { background: var(--heat-4); color: var(--heat-ink-4); }
+            .heat-5 { background: var(--heat-5); color: var(--heat-ink-5); }
+            .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 14px; color: var(--text-secondary); font-size: 12px; }
+            .legend span { display: inline-flex; align-items: center; gap: 6px; }
+            .swatch { width: 14px; height: 10px; border-radius: 3px; display: inline-block; }
+            .ops { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 12px; margin: 12px 0; }
+            .op-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 12px; }
+            .badge { color: var(--text-secondary); font-size: 12px; white-space: nowrap; }
+            .badge::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-right: 6px; }
+            .bar-row {
+                position: relative;
+                display: grid;
+                grid-template-columns: 9.5em 1fr 6.5em;
+                align-items: center;
+                gap: 10px;
+                min-height: 28px;
+                border-radius: 6px;
+                outline: none;
             }
-            .progress-bar {
-                background-color: #BF4869;
+            .bar-row + .bar-row { margin-top: 2px; }
+            .bar-label { font-size: 13px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            .is-fastest .bar-label { color: var(--text-primary); font-weight: 600; }
+            .bar-track { height: 16px; border-left: 1px solid var(--baseline); }
+            .bar { height: 16px; background: var(--deemphasis); border-radius: 0 4px 4px 0; transition: filter 0.1s; }
+            .is-fastest .bar { background: var(--accent); }
+            .bar-value { font-size: 13px; text-align: right; color: var(--text-primary); }
+            .bar-row:hover .bar, .bar-row:focus-visible .bar { filter: brightness(1.15); }
+            .bar-row:focus-visible { box-shadow: 0 0 0 2px var(--accent); }
+            .tip {
+                display: none;
+                position: absolute;
+                z-index: 2;
+                left: 10em;
+                bottom: calc(100% + 4px);
+                padding: 8px 10px;
+                border-radius: 8px;
+                background: var(--surface-1);
+                border: 1px solid var(--border);
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+                font-size: 12px;
+                white-space: nowrap;
+                pointer-events: none;
             }
-            .progress {
-                margin-top: 6px;
-                margin-bottom: 0px;
+            .tip strong { display: block; font-size: 14px; }
+            .tip span { color: var(--text-secondary); }
+            .bar-row:hover .tip, .bar-row:focus-visible .tip { display: block; }
+            .axis-note { color: var(--text-muted); font-size: 12px; margin-top: 10px; }
+            details.card { padding: 0; }
+            details summary { cursor: pointer; padding: 16px 20px; font-weight: 600; }
+            details .table-wrap { padding: 0 20px 16px; }
+            footer { color: var(--text-muted); font-size: 12px; text-align: center; margin-top: 24px; }
+            @media (forced-colors: active) {
+                .bar, .is-fastest .bar { background: CanvasText; }
+                .matrix td.heat { forced-color-adjust: none; }
             }
-            table {
-                margin-top: 16px;
-            }
-    body
-        .jumbotron
-            h1 Benchmarks
-            p Benchmarks generated using #{version}
+    body.viz-root
+        main
+            header
+                div
+                    .eyebrow chili-core #{version}
+                    h1 Benchmark report
+                    p.sub Generated #{generated}
+                dl.env
+                    each value, key in environment
+                        dt= key
+                        dd= value
 
-        each group, groupId in benchmarks
-            .col-xs-8.col-xs-offset-2
-                .panel.panel-primary
-                    .panel-heading(data-toggle="collapse", href="#" + groupId) #{group.name}
-                    .panel-body.collapse(id=groupId)
-                        each set, setId in group.sets
-                            - var id = groupId + "-" + setId
-                            .panel.panel-default.col-xs-8.col-xs-offset-2
-                                .panel-heading(data-toggle="collapse", href="#" + id) #{set.name}
-                                .panel-body.collapse(id=id)
-                                    each item in set.items
-                                        .progress
-                                            .progress-bar(role='progressbar', style="width:#{item.localIndex}%;text-align: right;")
-                                                | #{item.name}&nbsp;&nbsp;
+            section.kpis(aria-label="Summary")
+                each value, key in summary
+                    .card
+                        .kpi-label= key
+                        .kpi-value= value
 
-                                    table.table.table-striped.table-hover
-                                        thead
-                                            tr
-                                                th Implementation
-                                                th Time
-                                                th Operations/s
-                                        tbody
-                                            each item in set.items
-                                                tr
-                                                    td #{item.name}
-                                                    td #{item.timeFormatted}
-                                                    td #{item.rateFormatted}
+            each group in benchmarks
+                section.group
+                    .group-head
+                        h2= group.name
+                        p.sub #{group.iterations} iterations per operation, each implementation is warmed up once before it is measured.
 
-                        div.col-xs-8.col-xs-offset-2
-                            p Parameters
-                            table.table.table-striped.table-hover
+                    .card
+                        h3 Throughput by operation
+                        p.hint Operations per second. Shade shows each result relative to the fastest implementation of the same operation.
+                        .table-wrap
+                            table.matrix
                                 thead
                                     tr
-                                        th Iterations
+                                        th(scope="col") Operation
+                                        each implementation in group.implementations
+                                            th(scope="col")= implementation
                                 tbody
+                                    each operation in group.operations
+                                        tr
+                                            th(scope="row")= operation.name
+                                            each item in operation.items
+                                                td(class="heat heat-" + item.heat, title=item.implementation + " · " + item.timeFormatted)
+                                                    | #{item.rateFormatted}
+                                                    span.pct #{item.percentOfFastest}%
+                        .legend(aria-label="Shade legend")
+                            span
+                                i.swatch.heat-5
+                                | 90–100% of fastest
+                            span
+                                i.swatch.heat-4
+                                | 70–89%
+                            span
+                                i.swatch.heat-3
+                                | 45–69%
+                            span
+                                i.swatch.heat-2
+                                | 20–44%
+                            span
+                                i.swatch.heat-1
+                                | under 20%
+
+                    .ops
+                        each operation in group.operations
+                            .card
+                                .op-head
+                                    h3= operation.name
+                                    span.badge fastest: #{operation.fastest}
+                                each item in operation.items
+                                    .bar-row(tabindex="0", class=item.fastest ? "is-fastest" : "")
+                                        .bar-label(title=item.implementation)= item.implementation
+                                        .bar-track
+                                            .bar(style="width: " + item.barWidth + "%")
+                                        .bar-value= item.rateFormatted
+                                        .tip(role="tooltip")
+                                            strong #{item.rateFormatted} ops/s
+                                            span #{item.implementation} · #{item.timeFormatted} · #{item.percentOfFastest}% of fastest
+                                p.axis-note Operations per second, bar length relative to the fastest implementation.
+
+                    details.card
+                        summary All results
+                        .table-wrap
+                            table
+                                thead
                                     tr
-                                        td #{group.iterations}
+                                        th(scope="col") Implementation
+                                        th(scope="col") Operation
+                                        th(scope="col") Operations/s
+                                        th(scope="col") Total time
+                                        th(scope="col") Of fastest
+                                tbody
+                                    each set in group.sets
+                                        each item in set.items
+                                            tr
+                                                td= item.implementation
+                                                td= item.name
+                                                td= item.rateFormatted
+                                                td= item.timeFormatted
+                                                td #{item.percentOfFastest}%
+
+            footer Generated by chili-core #{version}

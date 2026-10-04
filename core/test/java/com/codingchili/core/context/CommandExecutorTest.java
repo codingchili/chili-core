@@ -1,6 +1,6 @@
 package com.codingchili.core.context;
 
-import io.vertx.core.Promise;
+import io.vertx.core.Future;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -10,9 +10,9 @@ import org.junit.runner.RunWith;
 import java.util.Optional;
 
 import com.codingchili.core.context.exception.CommandAlreadyExistsException;
+import com.codingchili.core.context.exception.NoSuchCommandException;
 
 import static com.codingchili.core.configuration.CoreStrings.HELP;
-import static org.junit.Assert.fail;
 
 /**
  * Tests for the CommandExecutor
@@ -37,10 +37,7 @@ public class CommandExecutorTest {
             return LauncherCommandResult.SHUTDOWN;
         }, HELP, "");
 
-        executor.add(((future, executor1) -> {
-            future.complete();
-            return null;
-        }), HELP_ASYNC, "");
+        executor.addAsync(executor -> Future.succeededFuture(LauncherCommandResult.SHUTDOWN), HELP_ASYNC, "");
     }
 
     @Test
@@ -51,48 +48,31 @@ public class CommandExecutorTest {
 
     @Test
     public void testHandleSuccessfullyAsync(TestContext test) {
-        executor.execute(getCompleter(test.async()), HELP_ASYNC);
-    }
-
-    private Promise<CommandResult> getCompleter(Async async) {
-        Promise<CommandResult> promise = Promise.<CommandResult>promise();
-        promise.future().onComplete(done -> async.complete());
-        return promise;
+        executor.execute(HELP_ASYNC).onComplete(test.asyncAssertSuccess(result ->
+                test.assertEquals(LauncherCommandResult.SHUTDOWN, result)));
     }
 
     @Test
-    public void testErrorWhenCommandMissing() {
-        try {
-            executor.execute(MISSING_COMMAND);
-            fail("Executor did not throw exception when command is missing.");
-        } catch (CoreRuntimeException ignored) {
-        }
-    }
-
-    @Test
-    public void testErrorWhenCommandMissingAsync(TestContext test) {
-        Promise<CommandResult> promise = Promise.promise();
-        Async async = test.async();
-
-        promise.future().onComplete(done -> {
-            if (done.failed()) {
-                test.assertFalse(executed);
-                async.complete();
-            } else {
-                test.fail("Test did not fail for missing command.");
-            }
-        });
-        executor.execute(promise, MISSING_COMMAND);
+    public void testErrorWhenCommandMissing(TestContext test) {
+        executor.execute(MISSING_COMMAND).onComplete(test.asyncAssertFailure(e -> {
+            test.assertTrue(e instanceof NoSuchCommandException);
+            test.assertFalse(executed);
+        }));
     }
 
     @Test
     public void testCommandIsUndefined(TestContext test) {
-        try {
-            executor.execute();
-            fail("Test did not fail for missing undefined command.");
-        } catch (CoreRuntimeException e) {
-            test.assertFalse(executor.getCommand().isPresent());
-        }
+        executor.execute().onComplete(test.asyncAssertFailure(e ->
+                test.assertFalse(executor.getCommand().isPresent())));
+    }
+
+    @Test
+    public void testCommandExceptionFailsResult(TestContext test) {
+        executor.add(executor -> {
+            throw new CoreRuntimeException(COMMAND);
+        }, COMMAND, "");
+        executor.execute(COMMAND).onComplete(test.asyncAssertFailure(e ->
+                test.assertEquals(COMMAND, e.getMessage())));
     }
 
     @Test
@@ -146,12 +126,9 @@ public class CommandExecutorTest {
     }
 
     @Test
-    public void testGetErrorContainsCommandName() {
-        try {
-            executor.execute(MISSING_COMMAND);
-        } catch (CoreRuntimeException e) {
-            Assert.assertTrue(e.getMessage().contains(MISSING_COMMAND));
-        }
+    public void testGetErrorContainsCommandName(TestContext test) {
+        executor.execute(MISSING_COMMAND).onComplete(test.asyncAssertFailure(e ->
+                test.assertTrue(e.getMessage().contains(MISSING_COMMAND))));
     }
 
     @Test

@@ -1,6 +1,6 @@
 package com.codingchili.core.context;
 
-import io.vertx.core.Promise;
+import io.vertx.core.Future;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -62,20 +62,13 @@ public class LauncherCommandExecutorTest {
 
     @Test
     public void testGetHelpMessage(TestContext test) {
-        Async async = test.async();
-        Promise<CommandResult> promise = Promise.promise();
-
-        promise.future().onComplete(done -> {
-            test.assertFalse(done.succeeded());
-            Throwable e = done.cause();
-            test.assertTrue(e.getMessage().contains(HELP));
-            test.assertTrue(e.getMessage().contains(MISSING_COMMAND));
-            async.complete();
-        });
-
         new LauncherCommandExecutor(
                 new LaunchContextMock((line) -> {}).logger())
-                .execute(promise, MISSING_COMMAND);
+                .execute(MISSING_COMMAND)
+                .onComplete(test.asyncAssertFailure(e -> {
+                    test.assertTrue(e.getMessage().contains(HELP));
+                    test.assertTrue(e.getMessage().contains(MISSING_COMMAND));
+                }));
     }
 
     @Test
@@ -92,14 +85,14 @@ public class LauncherCommandExecutorTest {
         test.assertFalse(getOutput(HELP).contains(HOST_3));
     }
 
-    private CommandExecutor execute(String arg) {
+    private Future<CommandResult> execute(String arg) {
         return execute(arg, (log) -> {
         });
     }
 
-    private CommandExecutor execute(String arg, MockLogListener listener) {
+    private Future<CommandResult> execute(String arg, MockLogListener listener) {
         return new LauncherCommandExecutor(
-                new LaunchContextMock(listener).logger()).execute(Promise.promise(), arg);
+                new LaunchContextMock(listener).logger()).execute(arg);
     }
 
     private String getOutput(String arg) {

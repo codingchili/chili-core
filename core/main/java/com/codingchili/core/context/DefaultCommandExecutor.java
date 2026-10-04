@@ -1,9 +1,8 @@
 package com.codingchili.core.context;
 
-import io.vertx.core.Promise;
+import io.vertx.core.Future;
 
 import java.util.*;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import com.codingchili.core.configuration.system.LauncherSettings;
@@ -35,29 +34,14 @@ public class DefaultCommandExecutor implements CommandExecutor {
     }
 
     @Override
-    public CommandExecutor execute(Promise<CommandResult> future, String... commandLine) {
+    public Future<CommandResult> execute(String... commandLine) {
         parser.parse(commandLine);
         Optional<String> command = getCommand();
 
         if (command.isPresent() && commands.containsKey(command.get())) {
-            Promise<CommandResult> execution = Promise.promise();
-            commands.get(command.get()).execute(execution,  this);
-            execution.future().onComplete(future);
+            return commands.get(command.get()).execute(this);
         } else {
-            future.fail(new NoSuchCommandException(getCommand().orElse("")));
-        }
-        return this;
-    }
-
-    @Override
-    public CommandResult execute(String... command) {
-        Promise<CommandResult> promise = Promise.promise();
-        execute(promise, command);
-
-        if (promise.future().failed()) {
-            throw new CoreRuntimeException(promise.future().cause().getMessage());
-        } else {
-            return promise.future().result();
+            return Future.failedFuture(new NoSuchCommandException(getCommand().orElse("")));
         }
     }
 
@@ -102,9 +86,9 @@ public class DefaultCommandExecutor implements CommandExecutor {
     }
 
     @Override
-    public CommandExecutor add(BiFunction<Promise<CommandResult>, CommandExecutor, Void> executor, String name, String
-            description) {
-        return add(new BaseCommand(executor, name, description));
+    public CommandExecutor addAsync(Function<CommandExecutor, Future<CommandResult>> executor, String name,
+                                    String description) {
+        return add(BaseCommand.async(executor, name, description));
     }
 
     @Override

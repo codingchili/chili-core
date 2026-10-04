@@ -40,6 +40,20 @@ tasks.withType(JavaForkOptions).configureEach {
     jvmArgs '--sun-misc-unsafe-memory-access=allow'
 }
 
+// runs the storage benchmarks and writes an HTML report to build/benchmarks, e.g. gradlew benchmark -Piterations=5000
+tasks.register('benchmark', JavaExec) {
+    group = 'verification'
+    description = 'Runs the core storage benchmarks and writes an HTML report to build/benchmarks.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.codingchili.core.Launcher'
+    args 'benchmark', '--html', '--iterations', providers.gradleProperty('iterations').getOrElse('1000')
+    // print the report path instead of opening a browser.
+    systemProperty 'java.awt.headless', 'true'
+    def output = layout.buildDirectory.dir('benchmarks')
+    workingDir = output
+    doFirst { output.get().asFile.mkdirs() }
+}
+
 task sourcesJar(type: Jar) {
     archiveClassifier.set("sources")
     from sourceSets.main.allSource
@@ -48,6 +62,8 @@ task sourcesJar(type: Jar) {
 test {
     // if the tests needs more than this there's a memory leak.
     maxHeapSize = "512m"
+    // reports are not opened in a browser by the tests.
+    systemProperty 'java.awt.headless', 'true'
     reports {
         junitXml.required = false
         html.required = true
@@ -71,6 +87,12 @@ dependencies {
     }
     api('io.vertx:vertx-web:5.2.0') {
         exclude group: 'com.fasterxml.jackson.core'
+    }
+
+    /* native QUIC (quiche + BoringSSL) for the QuicListener, vert.x declares it optional. keep in sync with
+     * the netty version used by vert.x (gradlew :core:dependencies | grep netty-codec-classes-quic). */
+    ['linux-x86_64', 'linux-aarch_64', 'osx-x86_64', 'osx-aarch_64', 'windows-x86_64'].each { platform ->
+        runtimeOnly("io.netty:netty-codec-native-quic:4.2.18.Final:${platform}")
     }
 
     implementation('io.dropwizard.metrics:metrics-jvm:4.2.40')

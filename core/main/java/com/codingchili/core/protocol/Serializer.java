@@ -223,7 +223,8 @@ public class Serializer {
     }
 
     /**
-     * Converts an object into a json object.
+     * Converts an object into a json object. A buffer is read as json text, a collection
+     * is wrapped in an object with the items as an array.
      *
      * @param object object to be converted.
      * @return JsonObject
@@ -231,6 +232,8 @@ public class Serializer {
     public static JsonObject json(Object object) {
         if (object instanceof JsonObject) {
             return (JsonObject) object;
+        } else if (object instanceof Buffer) {
+            return ((Buffer) object).toJsonObject();
         } else if (object instanceof Collection) {
             JsonArray array = new JsonArray();
             ((Collection<?>) object).stream()

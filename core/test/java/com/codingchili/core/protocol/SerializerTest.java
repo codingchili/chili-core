@@ -2,6 +2,7 @@ package com.codingchili.core.protocol;
 
 import com.codingchili.core.files.Configurations;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -62,6 +63,14 @@ public class SerializerTest {
         JsonObject json = Serializer.json(token);
 
         context.assertEquals(TEST, json.getString(CoreStrings.ID_DOMAIN));
+    }
+
+    @Test
+    public void testBufferToJson(TestContext context) {
+        JsonObject json = Serializer.json(Serializer.buffer(token));
+
+        context.assertEquals(TEST, json.getString(CoreStrings.ID_DOMAIN));
+        context.assertEquals(json, Serializer.json(json.toBuffer()));
     }
 
     @Test

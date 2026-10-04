@@ -1,6 +1,7 @@
 package com.codingchili.core.benchmarking;
 
-import io.vertx.core.*;
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,54 +37,37 @@ public class BenchmarkExecutor {
      * @return future completed when benchmarks are done.
      */
     public Future<List<BenchmarkGroup>> start(BenchmarkGroup group) {
-        Promise<List<BenchmarkGroup>> promise = Promise.promise();
-        start(Collections.singletonList(group)).onComplete(promise);
-        return promise.future();
+        return start(Collections.singletonList(group));
     }
 
     /**
      * @param groups a list of groups of implementations that contains a set of benchmarks to be performed
-     * @return future completed when benchmarks are done.
+     * @return future completed when benchmarks are done, fails if any implementation fails to
+     * initialize, reset or shut down.
      */
     public Future<List<BenchmarkGroup>> start(List<BenchmarkGroup> groups) {
-        Promise<List<BenchmarkGroup>> promise = Promise.promise();
-        Future<BenchmarkGroup> allGroups = Future.succeededFuture();
+        Future<Void> allGroups = Future.succeededFuture();
 
         for (BenchmarkGroup group : groups) {
-            allGroups = allGroups.compose(v -> {
-                Promise<BenchmarkGroup> benchmark = Promise.promise();
-                listener.onGroupStarted(group);
-                executeImplementations(benchmark, group);
-                return benchmark.future();
-            });
+            allGroups = allGroups.compose(v -> executeImplementations(group));
         }
-        allGroups.compose(done -> {
-            promise.complete(groups);
-            return Future.succeededFuture();
-        });
-        return promise.future();
+        return allGroups.map(groups);
     }
 
-    private void executeImplementations(Promise<BenchmarkGroup> future, BenchmarkGroup group) {
+    private Future<Void> executeImplementations(BenchmarkGroup group) {
         Future<Void> allImplementations = Future.succeededFuture();
+        listener.onGroupStarted(group);
 
         for (BenchmarkImplementation implementation : group.getImplementations()) {
-            allImplementations = allImplementations.compose(v -> {
-                Promise<Void> execution = Promise.promise();
-
-                // on initialization: perform a warmup run that executes all benchmarks once
-                // and then call #reset on the implementation, to prepare for a recorded test run.
-                implementation.initialize(context,
-                        initialized -> warmup(group, implementation,
-                                warmed -> benchmark(group, implementation,
-                                        benched -> implementation.shutdown(execution))));
-                return execution.future();
-            });
+            // on initialization: perform a warmup run that executes all benchmarks once
+            // and then call #reset on the implementation, to prepare for a recorded test run.
+            allImplementations = allImplementations
+                    .compose(v -> implementation.initialize(context))
+                    .compose(initialized -> warmup(group, implementation))
+                    .compose(warmed -> benchmark(group, implementation))
+                    .compose(benched -> implementation.shutdown());
         }
-        allImplementations.onComplete(done -> {
-            listener.onGroupCompleted(group);
-            future.complete(group);
-        });
+        return allImplementations.onComplete(done -> listener.onGroupCompleted(group));
     }
 
     /**
@@ -91,50 +75,40 @@ public class BenchmarkExecutor {
      * Calls #reset on the benchmark implementation to prepare for a benchmark run.
      *
      * @param implementation the implementation to warmup.
-     * @param handler        the handler to call when completed.
+     * @return future completed when the warmup is done and the implementation is reset.
      */
-    private void warmup(BenchmarkGroup group, BenchmarkImplementation implementation, Handler<AsyncResult<Void>>
-            handler) {
-        Promise<Void> promise = Promise.promise();
+    private Future<Void> warmup(BenchmarkGroup group, BenchmarkImplementation implementation) {
         warmup.set(true);
         listener.onImplementationWarmup(implementation);
 
-        promise.future().onComplete(done -> {
+        return benchmark(group, implementation).compose(done -> {
             warmup.set(false);
             listener.onImplementationWarmupComplete(implementation);
-            implementation.reset(reset -> handler.handle(Future.succeededFuture()));
+            return implementation.reset();
         });
-        benchmark(group, implementation, promise::handle);
     }
 
     /**
      * Schedule all benchmarks for the given implementation.
      *
      * @param implementation the implementation to run benchmarks for.
-     * @param future         to complete when all benchmarks has completed.
+     * @return future completed when all benchmarks have completed.
      */
-    private void benchmark(BenchmarkGroup group, BenchmarkImplementation implementation,
-                           Handler<AsyncResult<Void>> future) {
-        List<Benchmark> benchmarks = implementation.getBenchmarks();
-
+    private Future<Void> benchmark(BenchmarkGroup group, BenchmarkImplementation implementation) {
         if (!warmup.get()) {
             listener.onImplementationTestBegin(implementation);
         }
 
         Future<Void> allTests = Future.succeededFuture();
-        for (Benchmark benchmark : benchmarks) {
-            allTests = allTests.compose(v -> {
-                Promise<Void> next = Promise.promise();
-                implementation.next(next);
-                return next.future().compose(n -> doBench(group, benchmark));
-            });
+        for (Benchmark benchmark : implementation.getBenchmarks()) {
+            allTests = allTests
+                    .compose(v -> implementation.next())
+                    .compose(n -> doBench(group, benchmark));
         }
-        allTests.compose(result -> {
+        return allTests.onSuccess(done -> {
             if (!warmup.get()) {
                 listener.onImplementationCompleted(implementation);
             }
-            future.handle(Future.succeededFuture());
-            return Future.succeededFuture();
         });
     }
 
@@ -151,20 +125,18 @@ public class BenchmarkExecutor {
         benchmark.start();
 
         for (int i = 0; i < group.getIterations(); i++) {
-            Promise<Void> iteration = Promise.promise();
-            iteration.future().onComplete(done -> {
+            // the outcome of an operation is not recorded, failures count as completed iterations.
+            benchmark.getOperation().perform().onComplete(done -> {
                 if (completed.incrementAndGet() == group.getIterations()) {
+                    benchmark.finish();
                     if (!warmup.get()) {
                         listener.onBenchmarkCompleted(benchmark);
                     }
-                    if (promise.tryComplete()) {
-                        benchmark.finish();
-                    }
+                    promise.complete();
                 } else if (completed.get() % group.getProgressInterval() == 0) {
                     listener.onProgressUpdate(benchmark, completed.get());
                 }
             });
-            benchmark.getOperation().perform(iteration);
         }
         return promise.future();
     }

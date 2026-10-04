@@ -1,6 +1,6 @@
 package com.codingchili.core.benchmarking;
 
-import io.vertx.core.*;
+import io.vertx.core.Future;
 
 import java.util.*;
 
@@ -39,23 +39,23 @@ public class BenchmarkImplementationBuilder implements BenchmarkImplementation {
     }
 
     @Override
-    public void initialize(CoreContext core, Handler<AsyncResult<Void>> future) {
-        future.handle(Future.succeededFuture());
+    public Future<Void> initialize(CoreContext core) {
+        return Future.succeededFuture();
     }
 
     @Override
-    public void next(Promise<Void> promise) {
-        promise.complete();
+    public Future<Void> next() {
+        return Future.succeededFuture();
     }
 
     @Override
-    public void reset(Handler<AsyncResult<Void>> future) {
-        future.handle(Future.succeededFuture());
+    public Future<Void> reset() {
+        return Future.succeededFuture();
     }
 
     @Override
-    public void shutdown(Promise<Void> promise) {
-        promise.complete();
+    public Future<Void> shutdown() {
+        return Future.succeededFuture();
     }
 
     @Override

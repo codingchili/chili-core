@@ -47,6 +47,8 @@ public class MapTestCases {
     private static final String SNOW_KEYWORD = "SNOW";
     private static final int LEVEL_BUCKET_SIZE = 10;
     protected static Integer STARTUP_DELAY = 1;
+    // all tests of a class share one storage instance per database, see PersistedFiles.
+    private static AsyncStorage<?> created;
 
     static {
         AttributeRegistry.register(db -> {
@@ -71,6 +73,14 @@ public class MapTestCases {
         context.close().onComplete(test.asyncAssertSuccess());
     }
 
+    @AfterClass
+    public static void removeFiles() {
+        if (created != null) {
+            PersistedFiles.remove(created);
+            created = null;
+        }
+    }
+
     protected void setUp(TestContext test, Class<? extends AsyncStorage> plugin, CoreContext context) {
         this.context = new StorageContext<>(context);
         this.plugin = plugin;
@@ -83,6 +93,7 @@ public class MapTestCases {
                 .build().onComplete(result -> {
                     if (result.succeeded()) {
                         store = result.result();
+                        created = store;
                         prepareStore(test, async);
                     } else {
                         test.fail(result.cause());
@@ -721,8 +732,12 @@ public class MapTestCases {
         Async async = test.async();
         store.values().onComplete(result -> {
             test.assertTrue(result.succeeded());
-            test.assertEquals((int) result.result().count(),
-                    TEST_ITEM_COUNT.intValue());
+            // count() does not read the stream, which leaves the database connection of a disk
+            // based storage open: the stream must be read to the end.
+            try (var values = result.result()) {
+                test.assertEquals(values.toList().size(),
+                        TEST_ITEM_COUNT.intValue());
+            }
 
             async.complete();
         });

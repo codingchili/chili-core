@@ -55,6 +55,11 @@ public interface Benchmark extends BenchmarkResult {
     long getElapsedMS();
 
     /**
+     * @return the time taken to complete the benchmark in nanoseconds, -1 if not finished.
+     */
+    long getElapsedNanos();
+
+    /**
      * @return returns true if {@link #finish()} has been called.
      */
     boolean isFinished();

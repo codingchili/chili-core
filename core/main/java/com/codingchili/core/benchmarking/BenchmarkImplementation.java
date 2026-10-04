@@ -1,6 +1,6 @@
 package com.codingchili.core.benchmarking;
 
-import io.vertx.core.*;
+import io.vertx.core.Future;
 
 import java.util.List;
 import java.util.Map;
@@ -15,31 +15,31 @@ public interface BenchmarkImplementation {
     /**
      * Prepares an implementation for testing.
      *
-     * @param core   the context to use for the benchmark
-     * @param future called when the setup is complete.
+     * @param core the context to use for the benchmark
+     * @return future completed when the setup is complete.
      */
-    void initialize(CoreContext core, Handler<AsyncResult<Void>> future);
+    Future<Void> initialize(CoreContext core);
 
     /**
      * Called before each benchmark is executed.
      *
-     * @param future callback
+     * @return future completed when the next benchmark may start.
      */
-    void next(Promise<Void> future);
+    Future<Void> next();
 
     /**
      * Called after the warmup phase has completed.
      *
-     * @param future callback
+     * @return future completed when the implementation is reset.
      */
-    void reset(Handler<AsyncResult<Void>> future);
+    Future<Void> reset();
 
     /**
      * Called after the benchmarking has completed.
      *
-     * @param future callback
+     * @return future completed when the implementation is shut down.
      */
-    void shutdown(Promise<Void> future);
+    Future<Void> shutdown();
 
     /**
      * Adds a new benchmark created from an operation and name.

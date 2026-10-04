@@ -21,6 +21,18 @@ Findings come from reading the code; no exploit tests have been written and noth
 
 ## Medium / Low
 
+- **Self-signed fallback broken (found during the QUIC work):** `SecuritySettings.generateSelfSigned` →
+  `TestCertificate` → Netty `SelfSignedCertificate` fails with "No provider succeeded to generate a self-signed
+  certificate". Netty 4.2 needs BouncyCastle or `sun.security.x509` internals that the current JDK no longer
+  has. Effects:
+  - A secure listener without a configured keystore fails to deploy. Arguably safer than serving a throwaway
+    certificate (see the next finding), but the error doesn't say what to do.
+  - The High alias-DoS finding above becomes an exception per request instead of an RSA key generation. Much
+    cheaper, but still not a rejection.
+
+  Options: add `org.bouncycastle:bcpkix-jdk18on` (about 9 MB, restores the fallback), or remove the fallback and fail
+  with "configure a keystore" (matches the next finding's suggestion).
+
 - `SecuritySettings.generateSelfSigned`: a missing or misnamed keystore only logs a warning and then a throwaway
   self-signed certificate is served. Consider failing at startup when `secure: true`.
 - `SecuritySettings.loadKeystore`: a keystore load failure calls `System.exit(0)`. Exit code 0 hides the failure from

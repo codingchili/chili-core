@@ -120,16 +120,6 @@ public class StorageContext<Value> extends SystemContext {
     }
 
     /**
-     * handles a handler successfully with the given value.
-     *
-     * @param handler the handler to be handled
-     * @param value   the value to send the handler.
-     */
-    public void handle(Handler<AsyncResult<Value>> handler, Value value) {
-        handler.handle(Future.succeededFuture(value));
-    }
-
-    /**
      * get the name of the database used by the context.
      *
      * @return the name of the database as a string

@@ -9,6 +9,7 @@ import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.SecuritySettings;
 import com.codingchili.core.security.TrustAndKeyProvider;
 import io.vertx.core.http.HttpVersion;
+import io.vertx.core.net.QuicServerConfig;
 import io.vertx.core.net.ServerSSLOptions;
 import io.vertx.core.net.TcpServerConfig;
 
@@ -23,6 +24,8 @@ public class ListenerSettings {
     private HttpServerConfig httpOptions = null;
     private ServerSSLOptions security = null;
     private TcpServerConfig tcp = null;
+    private QuicServerConfig quic = null;
+    private String quicProtocol = CoreStrings.DEFAULT_QUIC_PROTOCOL;
     private Map<String, Endpoint> api = new HashMap<>();
     private WireType type = WireType.REST;
     private final Set<Integer> actualPorts = new HashSet<>();
@@ -205,6 +208,45 @@ public class ListenerSettings {
 
     public ListenerSettings setTcp(TcpServerConfig tcp) {
         this.tcp = tcp;
+        return this;
+    }
+
+    /**
+     * @return the QUIC server configuration used by the QUIC listener. Port and host are taken
+     * from these settings, set {@link QuicServerConfig#setLoadBalanced(boolean)} to deploy one
+     * listener instance per configured listener (requires SO_REUSEPORT: Linux or macOS).
+     */
+    @JsonIgnore
+    public QuicServerConfig getQuic() {
+        if (quic == null) {
+            quic = new QuicServerConfig();
+        }
+        return quic;
+    }
+
+    /**
+     * @param quic the QUIC server configuration to use for the QUIC listener.
+     * @return fluent
+     */
+    public ListenerSettings setQuic(QuicServerConfig quic) {
+        this.quic = quic;
+        return this;
+    }
+
+    /**
+     * @return the application protocol negotiated with ALPN by QUIC clients and servers.
+     */
+    public String getQuicProtocol() {
+        return quicProtocol;
+    }
+
+    /**
+     * @param quicProtocol the application protocol negotiated with ALPN by QUIC clients and servers,
+     *                     clients must offer the same protocol to connect.
+     * @return fluent
+     */
+    public ListenerSettings setQuicProtocol(String quicProtocol) {
+        this.quicProtocol = quicProtocol;
         return this;
     }
 

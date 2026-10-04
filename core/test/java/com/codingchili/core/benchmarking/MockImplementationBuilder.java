@@ -1,5 +1,8 @@
 package com.codingchili.core.benchmarking;
 
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.codingchili.core.context.CoreContext;
@@ -23,18 +26,24 @@ public class MockImplementationBuilder extends BenchmarkImplementationBuilder {
     public MockImplementationBuilder(CoreContext context, BenchmarkGroup group, String name) {
         super(name);
         setGroup(group);
-        add("benchmark#1", future -> {
+        add("benchmark#1", () -> {
             firstBenchmarkExecuted = true;
             firstBenchmarkExecutions.incrementAndGet();
-            context.timer(10, event -> future.complete());
+            return delay(context, 10);
         });
 
-        add("benchmark#2", future -> {
+        add("benchmark#2", () -> {
             secondBenchmarkExecuted = true;
             secondBenchmarkExecutions.incrementAndGet();
-            context.timer(5, event -> future.complete());
+            return delay(context, 5);
         });
 
+    }
+
+    private static Future<Void> delay(CoreContext context, int ms) {
+        Promise<Void> promise = Promise.promise();
+        context.timer(ms, event -> promise.complete());
+        return promise.future();
     }
 
     public Benchmark getFirstBenchmark() {

@@ -268,8 +268,9 @@ QueryParser parser = new QueryParser(db::query);
 
 // parsing the expression returns a QueryBuilder<Account>
 parser.parse(expression)
-    .execute(done -> {
-        // done.result() contains matching elements.
+    .execute()
+    .onSuccess(results -> {
+        // results contains matching elements.
     });
 ```
 

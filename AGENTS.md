@@ -34,7 +34,7 @@ Packages under `com.codingchili.core`:
 |---|---|
 | `context` | `CoreContext`/`SystemContext` (entry point, deploys things, timers, blocking work), `StorageContext`, `FutureHelper`, launcher commands |
 | `listener` | `CoreService`, `CoreListener`, `CoreHandler`, `Request`, sessions, `BusRouter` |
-| `listener.transport` | `RestListener`, `WebsocketListener`, `TcpListener`, `UdpListener`, `ClusterListener` and their `*Request` types |
+| `listener.transport` | `RestListener`, `WebsocketListener`, `TcpListener`, `UdpListener`, `QuicListener`, `ClusterListener` and their `*Request` types |
 | `protocol` | `Protocol` (maps routes to handler methods), annotations (`@Api`, `@Address`, `@Role`, `@Description`), `Serializer` (JSON/Kryo), `Response` |
 | `configuration` | `Configurable` models, `CoreStrings` (all constants/messages), `system.*` settings (`SystemSettings`, `StorageSettings`, `LauncherSettings`, ...) |
 | `files` | `Configurations` (load + cache + hot reload of configs), `ConfigurationFactory`, file watching, cached file stores |
@@ -93,10 +93,10 @@ public class MyHandler implements CoreHandler {
   `write(Object)`, `error(Throwable)`, `result(AsyncResult)`.
 - Throw/return subclasses of `CoreException`/`CoreRuntimeException` to send a mapped error status to the client.
 
-## Async conventions (important — the codebase is mid-migration)
+## Async conventions
 
-The project has been upgraded to **Vert.x 5**. The direction is to **return `Future<T>`
-instead of accepting `Handler<AsyncResult<T>>` callbacks**.
+The project has been upgraded to **Vert.x 5**. Public APIs **return `Future<T>`
+instead of accepting `Handler<AsyncResult<T>>` callbacks** or a `Promise` to complete.
 
 - New and migrated APIs return `Future<T>`. Compose with `compose`, `map`, `transform`,
   `onComplete`/`onSuccess`/`onFailure`. Use `Promise<T>` only where you need to complete a future
@@ -105,9 +105,10 @@ instead of accepting `Handler<AsyncResult<T>>` callbacks**.
 - Blocking work goes through `CoreContext.blocking(Callable<T>)` / `blocking(Runnable)`
   (optionally `ordered`), which return a `Future`. The old `blocking(Handler<Promise>, Handler<AsyncResult>)`
   overloads were removed.
-- Storage (`AsyncStorage`, `QueryBuilder.execute()`, `StorageLoader.build()`) and `CoreContext.close()` are
-  fully future-based. Other handler-taking APIs may remain; when touching them, prefer migrating to `Future`
-  and update all callers, tests and `docs/`.
+- Storage (`AsyncStorage`, `QueryBuilder.execute()`, `StorageLoader.build()`), `CoreContext.close()`,
+  `HashFactory.verify`, commands (`Command`, `CommandExecutor.execute`) and benchmarking
+  (`BenchmarkImplementation`, `BenchmarkOperation`) are future-based. Don't add new callback-style APIs; when
+  changing an API, update all callers, tests and `docs/`.
 - Never block the event loop; in-memory storages may complete futures synchronously, but callers must
   always treat results as asynchronous.
 
@@ -184,9 +185,11 @@ YAML and JSON are both supported. Shared strings/paths/messages are in `CoreStri
 - `Serializer` mappers are configured in `Serializer.configure` (non-null inclusion, no failure on empty beans or
   unknown properties); `SystemSettings.setPrettyEncoding` rebuilds `Serializer.json` with `INDENT_OUTPUT`.
 - `ProtocolTest`, `ListenerTestCases` and `MapTestCases` are abstract bases; run their subclasses, not them.
+- QUIC (`QuicListener`) needs the native `netty-codec-native-quic` jar (added per platform in `core/build.gradle`)
+  and always TLS + ALPN. Vert.x QUIC clients allow 0 server-opened streams by default.
+- Netty's self-signed certificate generation doesn't work on the current JDK (no BouncyCastle), so tests that
+  need TLS must configure a keystore, e.g. the `test_key.jks` fixture (`SecuritySettingsTest.KEYSTORE_JKS`).
 
 ## Known in-progress work (as of the Vert.x 5 upgrade)
 
-- Remaining `Handler<AsyncResult>` based APIs outside storage (e.g. `BenchmarkImplementation`,
-  `HashFactory.verify`) are candidates for migration to `Future`.
 - HTTP/3 and the new `HttpConfig`/`TcpConfig` style APIs are not adopted yet.

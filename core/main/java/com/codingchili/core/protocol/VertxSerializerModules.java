@@ -116,7 +116,7 @@ public class VertxSerializerModules {
         @Override
         public Buffer deserialize(JsonParser p, DeserializationContext ctxt) {
             try {
-                String text = p.getText();
+                String text = p.getString();
                 return Buffer.buffer(BASE64_DECODER.decode(text));
             } catch (IllegalArgumentException e) {
                 throw new RuntimeException("Expected a base64 encoded byte array", e);

@@ -1,13 +1,16 @@
 package com.codingchili.core.benchmarking;
 
-import io.vertx.core.Promise;
+import io.vertx.core.Future;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -29,6 +32,9 @@ public class BenchmarkIT {
 
     @Rule
     public Timeout timeout = new Timeout(16, TimeUnit.SECONDS);
+
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     @BeforeClass
     public static void setUp(TestContext test) {
@@ -67,16 +73,8 @@ public class BenchmarkIT {
     @Test
     public void testExecuteSuiteAsCommand(TestContext test) {
         CommandExecutor executor = new DefaultCommandExecutor();
-        Async async = test.async();
-        Promise<CommandResult> promise = Promise.promise();
-
-        promise.future().onComplete(done -> {
-            test.assertTrue(done.succeeded());
-            async.complete();
-        });
-
         executor.addProperty(PARAM_ITERATIONS, STRING_ITERATIONS);
-        new CoreBenchmarkSuite().execute(promise, executor);
+        new CoreBenchmarkSuite().execute(executor).onComplete(test.asyncAssertSuccess());
     }
 
     @Test
@@ -87,8 +85,8 @@ public class BenchmarkIT {
 
         BiConsumer<BenchmarkGroup, String> addOneOperation = (group, implementation) -> {
             group.implementation(implementation)
-                    .add("sleep1x", Promise::complete)
-                    .add("sleep2x", Promise::complete);
+                    .add("sleep1x", Future::succeededFuture)
+                    .add("sleep2x", Future::succeededFuture);
         };
 
         BiConsumer<String, Integer> addOneGroup = (name, iterations) -> {
@@ -105,9 +103,10 @@ public class BenchmarkIT {
         new BenchmarkExecutor(context)
                 //.setListener(new BenchmarkConsoleListener())
                 .start(groups).onComplete(done -> {
-            new BenchmarkHTMLReport(done.result())
-                    .saveTo("wowza.html");
+            Path report = folder.getRoot().toPath().resolve("report.html");
+            new BenchmarkHTMLReport(done.result()).saveTo(report.toString());
 
+            test.assertTrue(Files.exists(report));
             async.complete();
         });
     }

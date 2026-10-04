@@ -22,7 +22,7 @@ public class MyService implements CoreService {
     }
 
     @Override
-    public void start(Future<Void> start) {
+    public void start(Promise<Void> start) {
         // complete must always be called in the start method!
         
         // perform your deployments here, then complete the future, or fail it.
@@ -32,7 +32,7 @@ public class MyService implements CoreService {
     }
     
     @Override
-    public void stop(Future<Void> stop) {
+    public void stop(Promise<Void> stop) {
         // optional override.
         stop.complete();
     }

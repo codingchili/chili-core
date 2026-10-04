@@ -45,7 +45,8 @@ deploy-related tests in `listener.*`.
 
 Failing, and not caused by these changes:
 
-- `RestRequestTest`: the mock `RoutingContext.body()` returns null, causing a `NullPointerException` in `RestRequest.parseData`.
+- ~~`RestRequestTest`: the mock `RoutingContext.body()` returns null, causing a `NullPointerException` in `RestRequest.parseData`.~~
+  **Fixed**, see `upgrades.md` ("Tests clean up after themselves").
 - `MultiHandlerTest.ensureHandlersCallable`: the deploy succeeds, but the response's `status` field is null.
 - `BusRouterTest` (3 tests): time out. They don't deploy anything through `SystemContext`.
 - `BenchmarkIT.testExecuteSuiteAsCommand`: the test's setup already joins a cluster, and `cluster.xml` uses a fixed
@@ -53,10 +54,11 @@ Failing, and not caused by these changes:
   `HazelcastInstance with name 'core' already exists!`. Previously this hung until the test timed out (see the NPE
   above); now it fails straight away. Fix by giving each instance its own name in `cluster.xml`, or by letting
   `CoreBenchmarkSuite` reuse an existing context.
+  **Fixed** by removing the instance name from `cluster.xml` (see `upgrades.md`, handler → future migration).
 
 These failures weren't checked against a clean baseline.
 
 ## Follow-ups
 
-- `docs/services.md` and `docs/context.md` still show the old `start(Future<Void>)` signature and
-  `core.service(new CoreServiceImpl())` without a supplier.
+- ~~`docs/services.md` and `docs/context.md` still show the old `start(Future<Void>)` signature and
+  `core.service(new CoreServiceImpl())` without a supplier.~~ Fixed together with the handler → future migration.

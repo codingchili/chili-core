@@ -6,7 +6,7 @@ import java.util.*;
  * "Abstract" implementation of a map group.
  */
 public class BenchmarkGroupBuilder implements BenchmarkGroup {
-    private Map<String, BenchmarkImplementation> implementations = new HashMap<>();
+    private Map<String, BenchmarkImplementation> implementations = new LinkedHashMap<>();
     private int iterations;
     private int progress;
     private String name;

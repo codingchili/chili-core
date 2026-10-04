@@ -1,6 +1,7 @@
 package com.codingchili.core.benchmarking;
 
-import io.vertx.core.*;
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -38,12 +39,11 @@ public class AsynchronousSemaphore {
      * Acquires a permit from the semaphore when ones becomes available.
      * If the timeout is expired while waiting the future will fail.
      *
-     * @param handler   the handler to be called when a permit is received.
      * @param timeoutMS the maximum time to wait for a permit.
+     * @return future completed when a permit is received.
      */
-    public synchronized void acquire(Handler<AsyncResult<Void>> handler, int timeoutMS) {
-        Promise<Void> promise = Promise.<Void>promise();
-        promise.future().onComplete(handler);
+    public synchronized Future<Void> acquire(int timeoutMS) {
+        Promise<Void> promise = Promise.promise();
 
         if (permits == 0) {
             SemaphoreWaiter waiter = new SemaphoreWaiter(promise);
@@ -56,6 +56,7 @@ public class AsynchronousSemaphore {
             permits--;
             promise.complete();
         }
+        return promise.future();
     }
 
     /**
@@ -66,7 +67,7 @@ public class AsynchronousSemaphore {
         if (permits < limit) {
             permits++;
             SemaphoreWaiter waiter;
-            while ((waiter = waiters.poll()) != null && permits > 0) {
+            while (permits > 0 && (waiter = waiters.poll()) != null) {
                 if (!waiter.expired.get()) {
                     if (waiter.promise.tryComplete()) {
                         permits--;

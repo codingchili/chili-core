@@ -45,7 +45,6 @@
     </map>
 
     <cluster-name>chili</cluster-name>
-    <instance-name>core</instance-name>
 
     <network>
         <port auto-increment="true" port-count="10000">5701</port>
