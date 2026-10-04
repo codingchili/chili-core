@@ -29,7 +29,12 @@ class CoreVerticle extends VerticleBase {
     @Override
     public Future<?> start() {
         Promise<Void> promise = Promise.promise();
-        deployment.start(promise);
+        try {
+            deployment.start(promise);
+        } catch (Throwable e) {
+            // a deployment that cannot start fails with the cause.
+            promise.tryFail(e);
+        }
 
         return promise.future().onSuccess(done -> {
             if (deployment instanceof CoreService) {
@@ -43,7 +48,11 @@ class CoreVerticle extends VerticleBase {
     @Override
     public Future<?> stop() {
         Promise<Void> promise = Promise.promise();
-        deployment.stop(promise);
+        try {
+            deployment.stop(promise);
+        } catch (Throwable e) {
+            promise.tryFail(e);
+        }
 
         return promise.future().onSuccess(done -> {
             if (deployment instanceof CoreService) {

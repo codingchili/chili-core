@@ -5,13 +5,13 @@ import io.vertx.core.json.JsonObject;
 
 import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.listener.ListenerSettings;
-import com.codingchili.core.listener.Request;
+import com.codingchili.core.listener.AbstractRequest;
 import com.codingchili.core.protocol.Response;
 
 /**
  * Websocket request object.
  */
-public class WebsocketRequest implements Request {
+public class WebsocketRequest extends AbstractRequest {
     private final ListenerSettings settings;
     private final Connection connection;
     private final JsonObject data;

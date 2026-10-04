@@ -53,7 +53,6 @@ public class SecuritySettingsTest {
     }
 
     @Test
-    @Ignore("fails on most jdks as there is no provider.")
     public void loadKeysFromSelfSigned(TestContext test) {
         TrustAndKeyProvider provider = TrustAndKeyProvider.of(new TestCertificate("fqdn"));
         test.assertEquals(provider.getPrivateKey().getAlgorithm(), ALGORITHM_RSA);

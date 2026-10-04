@@ -15,6 +15,7 @@ public class ResultItem {
     private final String implementation;
     private final String name;
     private final long elapsedNanos;
+    private final long operations;
     private final int rate;
     private int percentOfFastest;
     private boolean fastest;
@@ -30,6 +31,8 @@ public class ResultItem {
         this.rateFormatted = benchmark.getRateFormatted();
         this.elapsedNanos = benchmark.getElapsedNanos();
         this.rate = benchmark.getRate();
+        // iterations may perform batches of operations, the rate is calculated from the total.
+        this.operations = Math.round(rate * (elapsedNanos / 1_000_000_000.0));
     }
 
     /**
@@ -72,6 +75,13 @@ public class ResultItem {
 
     public int getRate() {
         return rate;
+    }
+
+    /**
+     * @return the total number of operations that were measured.
+     */
+    public long getOperations() {
+        return operations;
     }
 
     /**

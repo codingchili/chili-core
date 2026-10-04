@@ -56,6 +56,11 @@ public class QuicListener implements CoreListener, DeploymentAware {
     }
 
     @Override
+    public Class<?> configType() {
+        return QuicServerConfig.class;
+    }
+
+    @Override
     public CoreListener settings(ListenerSettings settings) {
         this.settings = settings;
         return this;

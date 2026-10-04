@@ -47,8 +47,7 @@ public class Serializer {
 
     public static JsonMapper createJsonMapper() {
         var json = JsonMapper.builder()
-                // pretty encoding is enabled by default, see SystemSettings#setPrettyEncoding.
-                .enable(SerializationFeature.INDENT_OUTPUT)
+                // output is compact by default, see SystemSettings#setPrettyEncoding to indent it.
                 .enable(JsonReadFeature.ALLOW_JAVA_COMMENTS);
 
         return VertxSerializerModules.registerTypes(configure(json)).build();

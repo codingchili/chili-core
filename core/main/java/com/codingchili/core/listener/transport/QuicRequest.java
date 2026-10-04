@@ -5,13 +5,13 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.QuicStream;
 
 import com.codingchili.core.listener.ListenerSettings;
-import com.codingchili.core.listener.Request;
+import com.codingchili.core.listener.AbstractRequest;
 import com.codingchili.core.protocol.Response;
 
 /**
  * QUIC request implementation, each request is read from and answered on its own stream.
  */
-public class QuicRequest implements Request {
+public class QuicRequest extends AbstractRequest {
     private final Connection connection;
     private final ListenerSettings settings;
     private final QuicStream stream;

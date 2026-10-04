@@ -26,6 +26,8 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  * configuration that is requested, for example a token or shared secret.
  */
 public class SecuritySettings implements Configurable {
+    // the name of the certificate that is generated when a keystore is missing, valid for localhost.
+    private static final String SELF_SIGNED_NAME = "localhost";
     private static Logger logger = new ConsoleLogger(SecuritySettings.class);
     private Map<String, AuthenticationDependency> dependencies = new HashMap<>();
     private Map<String, TrustAndKeyProvider> loadedKeyStores = new HashMap<>();
@@ -105,7 +107,7 @@ public class SecuritySettings implements Configurable {
 
     private TrustAndKeyProvider generateSelfSigned(String shortNameMissing) {
         logger.event(LOG_SECURITY, Level.WARNING).send(getMissingKeyStore(shortNameMissing));
-        return TrustAndKeyProvider.of(new TestCertificate(CoreStrings.GITHUB));
+        return TrustAndKeyProvider.of(new TestCertificate(SELF_SIGNED_NAME));
     }
 
     /**

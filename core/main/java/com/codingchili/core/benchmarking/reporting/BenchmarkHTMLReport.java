@@ -82,14 +82,14 @@ public class BenchmarkHTMLReport implements BenchmarkReport {
             implementations.addAll(group.getImplementations());
             operations += group.getOperations().size();
             for (ResultSet set : group.getSets()) {
-                measured += (long) set.getItems().size() * group.getIterations();
+                measured += set.getItems().stream().mapToLong(ResultItem::getOperations).sum();
             }
         }
         Map<String, String> summary = new LinkedHashMap<>();
         summary.put("Groups", String.valueOf(groups.size()));
         summary.put("Implementations", String.valueOf(implementations.size()));
         summary.put("Operations", String.valueOf(operations));
-        summary.put("Measured calls", String.format("%,d", measured));
+        summary.put("Measured operations", String.format("%,d", measured));
         return summary;
     }
 

@@ -24,7 +24,7 @@ which is very much production grade.
 5. **Observability is homegrown.** Custom logger, Dropwizard metrics, no tracing, no health/readiness endpoints, no
    Prometheus/OpenTelemetry.
 6. **Container friendliness.** Configuration is file-only (no env var overrides), and the default
-   `DEFAULT_MAX_REQUEST_BYTES` is 1 KiB, which surprises people.
+   `DEFAULT_MAX_REQUEST_BYTES` was 1 KiB, which surprised people (now 64 KiB).
 7. **Maintenance history.** No commits between 2023-05 and 2026-10. Users need to trust that upgrades keep coming.
 
 Fix 1–4 and it's a credible small framework. 5–6 are what separate it from Quarkus/Micronaut/Helidon/plain
@@ -73,10 +73,12 @@ biggest barrier to adoption.
     in the path or body, which doesn't fit REST conventions or OpenAPI.
   - Configurable CORS (see `security.md`), compression, request timeouts that actually cancel, and a raised
     default max body size (64 KiB?).
-- **Typed handlers.** `@Api` methods take a `Request` and call `request.data()`/`write()`. Allow
+- **Typed handlers.** Spiked, and it has legs: see `upgrades.md` ("Typed routes: a spike, and whether it has legs") for the verdict,
+  numbers and the open questions. `@Api` methods take a `Request` and call `request.data()`/`write()`. Allow
   `public Future<AccountView> get(GetAccount input)`. The protocol deserializes the input (and validates it, there's
   already `Validator`) and writes the returned future. This removes most of the boilerplate in handlers and makes
-  OpenAPI generation possible. Use `LambdaMetafactory`/`MethodHandle` instead of `Method.invoke` while you're there.
+  OpenAPI generation possible. (`LambdaMetafactory`/`MethodHandle` instead of `Method.invoke` isn't worth it on its own: measured in `upgrades.md`,
+  "Benchmark: how the protocol invokes routes".)
 - **Finish `OpenAPIGenerator`** using `@Description`, `@DataModel` and typed handlers, and serve it from the REST
   listener (`/openapi.json`). Free documentation is a big selling point.
 - **Configuration.**
@@ -95,12 +97,15 @@ biggest barrier to adoption.
   - Add pagination cursors (not only page/size) and a transaction-free "compare and set" (`update` with version).
   - A **SQL plugin** (Postgres via `vertx-pg-client`) is the most common missing backend.
 - **Graceful shutdown.** Stop accepting traffic → drain in-flight requests → undeploy → close storage, with readiness
-  flipping to "not ready" first. `ShutdownHook` already has a timeout to build on.
+  flipping to "not ready" first. Partly done: see `upgrades.md` ("Graceful shutdown fixed"). Still open: a drain delay for
+  load balancers, closing storage plugins, tracking blocking work outside `CoreContext.blocking`.
 
 ## Add: what production microservices expect
 
 - **Health and readiness**: `/health/live` and `/health/ready` on the REST listener (or a separate admin port), with
-  checks contributed by storage plugins and the cluster manager. Consider `vertx-health-check`.
+  checks contributed by storage plugins and the cluster manager. Consider `vertx-health-check`. Started: `StatusService`
+  (separate port, readiness checks, JSON report and web page), see `upgrades.md`. Still open: checks from the storage
+  plugins and the cluster manager, and the REST listener answering with real HTTP status codes.
 - **Metrics**: export to Prometheus (Micrometer via `vertx-micrometer-metrics` instead of Dropwizard). Add per-route
   latency/error counters in `Protocol.process` for free RED metrics.
 - **Tracing**: OpenTelemetry (`vertx-opentelemetry`), propagating trace context over REST headers *and* the event bus

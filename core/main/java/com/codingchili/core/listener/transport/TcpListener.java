@@ -3,6 +3,7 @@ package com.codingchili.core.listener.transport;
 import io.vertx.core.Promise;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetSocket;
+import io.vertx.core.net.TcpServerConfig;
 
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.listener.*;
@@ -28,6 +29,11 @@ public class TcpListener implements CoreListener {
     }
 
     @Override
+    public Class<?> configType() {
+        return TcpServerConfig.class;
+    }
+
+    @Override
     public CoreListener settings(ListenerSettings settings) {
         this.settings = settings;
         return this;
@@ -43,24 +49,22 @@ public class TcpListener implements CoreListener {
     public void start(Promise<Void> start) {
         var handlerPromise = Promise.<Void>promise();
 
-        handlerPromise.future().onSuccess((v) -> {
-            core.vertx().createNetServer(settings.getTcp(), settings.getSecurity())
-                    .exceptionHandler(logger::onError)
-                    .connectHandler(socket -> {
-                        Connection connection = connected(socket);
+        handlerPromise.future()
+                .compose(v -> core.vertx().createNetServer(settings.getTcp(), settings.getSecurity())
+                        .exceptionHandler(logger::onError)
+                        .connectHandler(socket -> {
+                            Connection connection = connected(socket);
 
-                        socket.handler(data -> packet(connection, data));
-                        socket.closeHandler((close) -> connection.runCloseHandlers());
-                        socket.exceptionHandler(logger::onError);
+                            socket.handler(data -> packet(connection, data));
+                            socket.closeHandler((close) -> connection.runCloseHandlers());
+                            socket.exceptionHandler(logger::onError);
 
-                    }).listen(settings.getPort(), getBindAddress())
-                    .onSuccess(result -> {
-                        settings.addListenPort(result.actualPort());
-                        start.complete();
-                    })
-                    .onFailure(start::fail);
-
-        }).onFailure(start::fail);
+                        }).listen(settings.getPort(), getBindAddress()))
+                .onSuccess(result -> {
+                    settings.addListenPort(result.actualPort());
+                    start.complete();
+                })
+                .onFailure(start::fail);
 
         handler.start(handlerPromise);
     }

@@ -30,6 +30,56 @@ core.listener(() -> new RestListener()
         .handler(new MyHandler()));
 ```
 
+### HTTP versions and TLS
+The `RestListener` and the `WebsocketListener` serve HTTP/1.1 and HTTP/2 by default. Without TLS, HTTP/2 is used by
+clients that start with it (prior knowledge). With TLS (`secure: true`, the default) HTTP/2 is negotiated with ALPN, and
+**HTTP/3 is served as well**: it uses QUIC, so UDP, on the same port number as the TCP listener. Clients connect with HTTP/1.1 or
+HTTP/2 first and are told about HTTP/3. HTTP/3 requires TLS: configuring it on a listener that is not secure fails the deployment with
+a message that says so. ALPN is enabled by default and can be turned off with `setAlpn(false)`.
+
+The versions can be chosen with the configuration of the listener, see below. When `versions` is set, HTTP/3 is not added to it.
+
+### Configuring the transport
+`ListenerSettings` has the properties of a listener that all listeners share (port, TLS, request size). The settings of the
+transport itself are the `config` property. It is read as the configuration class of Vert.x that the listener
+declares in `configType()`, and the properties are those of that class,
+
+|Listener|`config` is|
+|---|---|
+|`RestListener`, `WebsocketListener`|`HttpServerConfig`|
+|`TcpListener`|`TcpServerConfig`|
+|`QuicListener`|`QuicServerConfig`|
+|`UdpListener`|`DatagramSocketOptions`|
+|`ClusterListener`|none|
+
+```yaml
+port: 8080
+secure: true
+keystore: main
+config:
+  versions: [HTTP_1_1, HTTP_2, HTTP_3]
+  idleTimeout: PT60S
+  compressionConfig:
+    compressionEnabled: false
+  http1Config:
+    maxHeaderSize: 8192
+```
+
+`ListenerSettings` can be a property of any configuration class, and is loaded together with it, see [configuration](configuration).
+Durations are written as ISO-8601 (`PT30S`) or as a number of seconds.
+
+The properties are checked when the listener is deployed: a property that the class does not have, or an invalid value,
+fails the deployment with a message that names the class and the property, a misspelled property is not ignored.
+
+Objects that are set in code are used instead of `config`, which is useful when the configuration needs more than JSON can describe,
+
+```java
+new ListenerSettings()
+    .setHttpOptions(new HttpServerConfig().setIdleTimeout(Duration.ofSeconds(30)))
+    .setTcp(new TcpServerConfig())
+    .setSecurity(sslOptions); // TLS options to use instead of the keystore.
+```
+
 ### QUIC
 The `QuicListener` uses QUIC directly, without HTTP/3. Each request is sent on its own bidirectional stream:
 the client writes the JSON request and ends its side of the stream, and the response is written back on the same
@@ -95,14 +145,20 @@ public class SmsListener implements CoreListener {
     }
 
     @Override
-    public void settings(Supplier<ListenerSettings> settings) {
-        this.settings = settings.get();
+    public CoreListener settings(ListenerSettings settings) {
+        this.settings = settings;
+        return this;
     }
 
     @Override
-    public void handler(CoreHandler handler) {
+    public CoreListener handler(CoreHandler handler) {
         this.handler = handler;
+        return this;
     }
+
+    // optional: the class of the transport configuration that the listener reads from settings.config(..)
+    // @Override
+    // public Class<?> configType() { return SmsGatewayConfig.class; }
     
     @Override
     public void start(Promise<Void> start) {

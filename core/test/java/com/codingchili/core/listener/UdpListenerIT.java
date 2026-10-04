@@ -14,7 +14,7 @@ import com.codingchili.core.listener.transport.UdpListener;
 public class UdpListenerIT extends ListenerTestCases {
 
     public UdpListenerIT() {
-        super(WireType.UDP, UdpListener::new);
+        super(UdpListener::new);
     }
 
     @Override

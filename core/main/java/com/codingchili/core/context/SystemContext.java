@@ -27,6 +27,9 @@ import static com.codingchili.core.configuration.CoreStrings.getUnsupportedDeplo
 public class SystemContext implements CoreContext {
     private static final AtomicBoolean initialized = new AtomicBoolean(false);
     private final Set<String> deployments = ConcurrentHashMap.newKeySet();
+    // shared with the contexts that are created from this context: they use the same vertx instance.
+    private BlockingTasks blockingTasks = new BlockingTasks();
+    private AtomicBoolean shuttingDown = new AtomicBoolean(false);
     private MetricCollector metrics;
     private RemoteLogger logger;
     protected Vertx vertx;
@@ -50,6 +53,11 @@ public class SystemContext implements CoreContext {
     protected SystemContext(CoreContext context) {
         this.vertx = context.vertx();
         this.metrics = context.metrics();
+
+        if (context instanceof SystemContext parent) {
+            this.blockingTasks = parent.blockingTasks;
+            this.shuttingDown = parent.shuttingDown;
+        }
     }
 
     private SystemContext(Vertx vertx) {
@@ -253,11 +261,55 @@ public class SystemContext implements CoreContext {
     }
 
     public <T> Future<T> blocking(Callable<T> blocking) {
-        return vertx.executeBlocking(blocking);
+        return tracked(() -> vertx.executeBlocking(blocking));
     }
 
     public <T> Future<T> blocking(Callable<T> blocking, boolean ordered) {
-        return vertx.executeBlocking(blocking, ordered);
+        return tracked(() -> vertx.executeBlocking(blocking, ordered));
+    }
+
+    /**
+     * Keeps track of blocking tasks: closing vertx interrupts the tasks that are running, a graceful
+     * shutdown waits for them before closing, see {@link #drain(long)}.
+     */
+    private <T> Future<T> tracked(Supplier<Future<T>> submit) {
+        blockingTasks.begin();
+        try {
+            return submit.get().onComplete(done -> blockingTasks.end());
+        } catch (RuntimeException e) {
+            blockingTasks.end();
+            throw e;
+        }
+    }
+
+    /**
+     * Waits for the blocking tasks that have been submitted through this context, or the contexts that
+     * share its vertx instance, to complete.
+     *
+     * @param timeoutMS the maximum time to wait.
+     * @return a future completed when all tasks have completed, or when the time is up.
+     */
+    Future<Void> drain(long timeoutMS) {
+        return blockingTasks.await(vertx, timeoutMS);
+    }
+
+    @Override
+    public int blockingTasks() {
+        return blockingTasks.running();
+    }
+
+    /**
+     * Marks the context as shutting down.
+     *
+     * @return false if it was already shutting down.
+     */
+    boolean beginShutdown() {
+        return shuttingDown.compareAndSet(false, true);
+    }
+
+    @Override
+    public boolean isShuttingDown() {
+        return shuttingDown.get();
     }
 
     @Override
@@ -268,6 +320,9 @@ public class SystemContext implements CoreContext {
     @Override
     public Future<Void> close() {
         initialized.set(false);
+        shuttingDown.set(true);
+        // the context is closed before the JVM exits: there is nothing left for the hook to shut down.
+        ShutdownHook.unregister(this);
         // closing is best effort, failures are not propagated.
         return vertx.close().otherwiseEmpty();
     }

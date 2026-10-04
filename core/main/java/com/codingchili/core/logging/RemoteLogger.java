@@ -22,12 +22,18 @@ public class RemoteLogger extends AbstractLogger {
 
     @Override
     public Logger log(JsonObject data) {
-        context.bus().send(NODE_LOGGING, new JsonObject()
-                .put(PROTOCOL_ROUTE, PROTOCOL_LOGGING)
-                .put(PROTOCOL_TARGET, NODE_LOGGING)
-                .put(PROTOCOL_MESSAGE, data), options);
+        boolean sent = true;
+        try {
+            context.bus().send(NODE_LOGGING, new JsonObject()
+                    .put(PROTOCOL_ROUTE, PROTOCOL_LOGGING)
+                    .put(PROTOCOL_TARGET, NODE_LOGGING)
+                    .put(PROTOCOL_MESSAGE, data), options);
+        } catch (RuntimeException e) {
+            // logging must not fail: the event bus is closed (or closing) when a context is shut down.
+            sent = false;
+        }
 
-        if (Configurations.system().isConsoleLogging()) {
+        if (!sent || Configurations.system().isConsoleLogging()) {
             console.log(data);
         }
         return this;

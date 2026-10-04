@@ -3,6 +3,7 @@ package com.codingchili.core.listener.transport;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Promise;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.HttpServerConfig;
 import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.http.WebSocketFrameType;
 import io.vertx.core.http.impl.websocket.WebSocketFrameImpl;
@@ -36,6 +37,11 @@ public class WebsocketListener implements CoreListener {
         this.core = core;
         this.logger = ListenerExceptionLogger.create(core, this, handler);
         handler.init(core);
+    }
+
+    @Override
+    public Class<?> configType() {
+        return HttpServerConfig.class;
     }
 
     @Override
@@ -74,26 +80,23 @@ public class WebsocketListener implements CoreListener {
         });
 
         var handlerPromise = Promise.<Void>promise();
-        handlerPromise.future().onSuccess((v) -> {
-            core.vertx().createHttpServer(settings.getHttpOptions(), settings.getSecurity())
-                    .exceptionHandler(logger::onError)
-                    .webSocketHandler(socket -> {
-                        Connection connection = connected(socket);
+        handlerPromise.future()
+                .compose(v -> core.vertx().createHttpServer(settings.getHttpOptions(), settings.getSecurity())
+                        .exceptionHandler(logger::onError)
+                        .webSocketHandler(socket -> {
+                            Connection connection = connected(socket);
 
-                        socket.handler(data -> handle(connection, data));
-                        socket.closeHandler(closed -> connection.runCloseHandlers());
-                        socket.exceptionHandler(logger::onError);
+                            socket.handler(data -> handle(connection, data));
+                            socket.closeHandler(closed -> connection.runCloseHandlers());
+                            socket.exceptionHandler(logger::onError);
 
-                    }).requestHandler(router)
-                    .listen(settings.getPort(), getBindAddress()).onComplete(listen -> {
-                        if (listen.succeeded()) {
-                            settings.addListenPort(listen.result().actualPort());
-                            start.complete();
-                        } else {
-                            start.fail(listen.cause());
-                        }
-                    });
-        }).onFailure(start::fail);
+                        }).requestHandler(router)
+                        .listen(settings.getPort(), getBindAddress()))
+                .onSuccess(result -> {
+                    settings.addListenPort(result.actualPort());
+                    start.complete();
+                })
+                .onFailure(start::fail);
         handler.start(handlerPromise);
     }
 

@@ -6,7 +6,7 @@ import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 
 import com.codingchili.core.files.Configurations;
-import com.codingchili.core.listener.Request;
+import com.codingchili.core.listener.AbstractRequest;
 import com.codingchili.core.protocol.Response;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
@@ -16,7 +16,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  * <p>
  * Size does not apply to these requests.
  */
-public class ClusterRequest implements Request {
+public class ClusterRequest extends AbstractRequest {
     private Connection connection;
     private final Message message;
     private int timeout = Configurations.system().getClusterTimeout();

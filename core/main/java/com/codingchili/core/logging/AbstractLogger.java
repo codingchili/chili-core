@@ -207,6 +207,12 @@ public abstract class AbstractLogger extends Handler implements Logger {
     }
 
     @Override
+    public void onReloadDisabled(String component) {
+        event(LOG_RELOAD_DISABLED, Level.INFO)
+                .put(LOG_AGENT, component).send();
+    }
+
+    @Override
     public void onSecurityDependencyMissing(String target, String identifier) {
         event(LOG_SECURITY, Level.ERROR)
                 .put(LOG_MESSAGE, getSecurityDependencyMissing(target, identifier)).send();

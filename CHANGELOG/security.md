@@ -21,17 +21,19 @@ Findings come from reading the code; no exploit tests have been written and noth
 
 ## Medium / Low
 
-- **Self-signed fallback broken (found during the QUIC work):** `SecuritySettings.generateSelfSigned` →
-  `TestCertificate` → Netty `SelfSignedCertificate` fails with "No provider succeeded to generate a self-signed
-  certificate". Netty 4.2 needs BouncyCastle or `sun.security.x509` internals that the current JDK no longer
-  has. Effects:
-  - A secure listener without a configured keystore fails to deploy. Arguably safer than serving a throwaway
-    certificate (see the next finding), but the error doesn't say what to do.
-  - The High alias-DoS finding above becomes an exception per request instead of an RSA key generation. Much
-    cheaper, but still not a rejection.
+- **Configuration hot reload (mitigation added):** by default `Configurations` watches the configuration directory and
+  applies changes to a running application, so anything with write access to `conf/` (including the security settings and
+  keystore list) can change its behavior. `configurationReload: false` in `system.yaml` turns this off, see
+  `upgrades.md`. It's still on by default for compatibility. Consider making it off by default in a 2.0 release.
 
-  Options: add `org.bouncycastle:bcpkix-jdk18on` (about 9 MB, restores the fallback), or remove the fallback and fail
-  with "configure a keystore" (matches the next finding's suggestion).
+- **Token signatures depend on `prettyEncoding`:** the signed bytes include the JSON of `token.getProperties()` as
+  written by the global `Serializer.json` mapper, so services with different `prettyEncoding` settings can't verify each
+  other's tokens (see `upgrades.md`, "`prettyEncoding` off by default"). Resolve with the High canonicalization fix.
+
+- ~~**Self-signed fallback broken (found during the QUIC work):**~~ **Fixed**, see `upgrades.md` ("Listener configuration works as
+  documented"): `TestCertificate` generates the certificate with the JDK only. **This reopens the next finding and the High
+  alias finding**: a secure listener without a configured keystore serves a throwaway certificate again (with a warning in the log), and an
+  unknown token alias again costs an RSA key generation per request.
 
 - `SecuritySettings.generateSelfSigned`: a missing or misnamed keystore only logs a warning and then a throwaway
   self-signed certificate is served. Consider failing at startup when `secure: true`.

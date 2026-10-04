@@ -48,6 +48,45 @@ Packages under `com.codingchili.core`:
 `com.codingchili.core.Launcher` is the jar main class; it deploys "blocks" of services configured in
 `conf/system/launcher.yaml`.
 
+## Working efficiently (read this first)
+
+Context and tokens are the scarce resource: a long session here costs mostly in tool output and file reads, not in
+thinking. These rules are mandatory for agents.
+
+**Tests and builds**
+- **NEVER run the full test suite** (`gradlew test`, `:core:test` without `--tests`, `build`). It prints thousands of log
+  lines, takes 1.5+ minutes and collides with a test run in the IDE. Run only the classes or packages that your change can
+  affect: `--tests "com.codingchili.core.listener.*"`. Run a wider set only when the user asks, and then report the counts only.
+- **Minimal output, always.** Use `-q` and filter. Never print a raw Gradle or test log. Compile check:
+  `gradlew.bat compileJava -q 2>&1 | grep -E "error" -A3 | head -20`. Test result: `... -q 2>&1 | grep -E "FAILED|error:" | head`, and
+  then the counts from `core/build/reports/tests/test/index.html` (`<div class="counter">`: tests, failures, ignored).
+  Failure details: open only the failing test's html in `core/build/reports/tests/test/<class>/<test>.html` and print its
+  first line.
+- The framework logs a lot to the console (benchmarks, shutdown, listeners): add `grep` for what you need. When you
+  need test output use `-i` and `grep PROBE`, with temporary `System.err.println("PROBE ...")` lines that you remove after.
+- Temporary probes and throwaway tests (timing, debugging) are fine, but delete them before you finish, and check
+  `git status --short | grep -v "^ M"` for litter.
+- Run one Gradle test JVM at a time, and never while the IDE might be running tests: tests share files (the persisted map's
+  SQLite file, `core/conf`) and `core/build`. Look for `Gradle Test Executor` java processes if a run fails strangely.
+- Do not re-run a passing command to "verify" it, and do not run benchmarks or screenshots unless the change needs them.
+
+**Reading and searching**
+- Do not read whole files or directories. `grep -n` for the symbol first, then `sed -n 'a,bp'` or `Read` with `offset`/`limit`
+  for just that range. List with `ls` or `grep -l`, not by reading.
+- Never read `docs/javadoc/` (generated), `core/build/`, `*.lock`, or large generated files. `CHANGELOG/*.md` are long: read
+  the headings (`grep -n "^## " CHANGELOG/upgrades.md`) and only the section you need.
+- Use `grep -c` or `wc -l` to size output before printing it, and `head`/`tail` on anything that can be long.
+- For a broad question that needs many files ("where is X used"), delegate to a subagent and use its summary.
+- Don't re-read a file you just edited, the edit tool reports failures.
+
+**Editing**
+- Make targeted edits (`Edit`, or a small script) and don't rewrite files to change a few lines. Keep each file's line endings:
+  most of the repo is CRLF, scripts that read and write must preserve them.
+- Shell heredocs that contain quotes or backslashes get mangled by the tool layer (`\n` becomes a real newline,
+  quotes can end the command). Write files and multi-line scripts with the Write tool, and run them.
+- Keep the changelog entries and your answers short and factual: what changed, what was verified, what is still open. Don't
+  paste logs, diffs or file contents back to the user.
+
 ## Building
 
 Gradle wrapper, Java toolchain 27 (see root `build.gradle`).
@@ -56,7 +95,7 @@ Gradle wrapper, Java toolchain 27 (see root `build.gradle`).
 gradlew build -x test     # compile + package, skip tests
 gradlew compileJava       # main sources only
 gradlew compileTestJava   # compile tests without running them
-gradlew test              # run tests
+gradlew test --tests "com.codingchili.core.listener.*"   # run tests: ALWAYS select tests, see above
 ```
 
 On Windows use `.\gradlew.bat`. Tests named `*IT` are integration tests; some need external
@@ -187,9 +226,15 @@ YAML and JSON are both supported. Shared strings/paths/messages are in `CoreStri
 - `ProtocolTest`, `ListenerTestCases` and `MapTestCases` are abstract bases; run their subclasses, not them.
 - QUIC (`QuicListener`) needs the native `netty-codec-native-quic` jar (added per platform in `core/build.gradle`)
   and always TLS + ALPN. Vert.x QUIC clients allow 0 server-opened streams by default.
-- Netty's self-signed certificate generation doesn't work on the current JDK (no BouncyCastle), so tests that
-  need TLS must configure a keystore, e.g. the `test_key.jks` fixture (`SecuritySettingsTest.KEYSTORE_JKS`).
+- A missing keystore falls back to a self-signed certificate generated with the JDK only (`TestCertificate`,
+  `SelfSignedCertificates`): valid for localhost and the loopback addresses. Netty's own generator doesn't work on current JDKs.
+- Listener transport settings are the `config` property of `ListenerSettings`, read as the class a listener declares in
+  `CoreListener.configType()` and parsed strictly. Build servers inside `compose` in `start`: an exception thrown in an
+  `onSuccess` callback hangs the deployment instead of failing it.
+- In tests keep a reference to every Vert.x `HttpClient`/`HttpClientAgent` for the length of the test: a client that is garbage
+  collected closes its pool, and a request fails with `Pool closed`.
 
 ## Known in-progress work (as of the Vert.x 5 upgrade)
 
-- HTTP/3 and the new `HttpConfig`/`TcpConfig` style APIs are not adopted yet.
+- HTTP/3 and the `*ServerConfig` APIs are adopted (`ListenerSettings.config`, `CoreListener.configType()`). Open: no `Alt-Svc`
+  headers from chili-core, QUIC load balancing (`SO_REUSEPORT`) is Linux/macOS only.

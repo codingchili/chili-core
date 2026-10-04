@@ -11,6 +11,7 @@ public class BenchmarkBuilder implements Benchmark {
     private String name;
     private long start;
     private int iterations;
+    private int operationsPerIteration = 1;
     private long elapsedNanos = -1;
 
     /**
@@ -35,6 +36,19 @@ public class BenchmarkBuilder implements Benchmark {
 
     public BenchmarkBuilder setOperation(BenchmarkOperation operation) {
         this.operation = operation;
+        return this;
+    }
+
+    /**
+     * Operations that take nanoseconds are dominated by the cost of the benchmark itself when they are
+     * measured one iteration at a time. When an iteration performs a batch of operations this is
+     * the size of the batch, which is used to calculate the rate.
+     *
+     * @param operationsPerIteration the number of operations performed by each call of the operation.
+     * @return fluent
+     */
+    public BenchmarkBuilder setOperationsPerIteration(int operationsPerIteration) {
+        this.operationsPerIteration = operationsPerIteration;
         return this;
     }
 
@@ -101,6 +115,7 @@ public class BenchmarkBuilder implements Benchmark {
         if (elapsedNanos <= 0) {
             return 0;
         }
-        return (int) Math.min(Integer.MAX_VALUE, iterations * 1_000_000_000L / elapsedNanos);
+        return (int) Math.min(Integer.MAX_VALUE,
+                (double) iterations * operationsPerIteration * 1_000_000_000L / elapsedNanos);
     }
 }

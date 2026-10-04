@@ -16,7 +16,7 @@ import com.codingchili.core.listener.transport.WebsocketListener;
 public class WebsocketListenerIT extends ListenerTestCases {
 
     public WebsocketListenerIT() {
-        super(WireType.WEBSOCKET, WebsocketListener::new);
+        super(WebsocketListener::new);
     }
 
     @Override

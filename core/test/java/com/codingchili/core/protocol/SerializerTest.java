@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import java.util.*;
 
 import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.protocol.exception.SerializerPayloadException;
 import com.codingchili.core.security.SecretFactory;
 import com.codingchili.core.security.Token;
@@ -108,6 +109,15 @@ public class SerializerTest {
         var not_pretty = Serializer.pack(json);
 
         test.assertNotEquals(pretty.length(), not_pretty.length());
+    }
+
+    @Test
+    public void prettyEncodingIsOffByDefault(TestContext test) {
+        var json = Serializer.createJsonMapper().writeValueAsString(Map.of("testing", true));
+
+        test.assertFalse(new SystemSettings().isPrettyEncoding());
+        test.assertFalse(json.contains("\n"));
+        test.assertEquals("{\"testing\":true}", json);
     }
 
     @Test

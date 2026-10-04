@@ -95,6 +95,10 @@ public abstract class CoreStrings {
     public static final String PARAM_ITERATIONS = getParam("iterations");
     public static final String PARAM_HTML = getParam("html");
     public static final String PARAM_TEMPLATE = getParam("template");
+    public static final String PARAM_SUITE = getParam("suite");
+    public static final String SUITE_MAPS = "maps";
+    public static final String SUITE_PROTOCOL = "protocol";
+    public static final String SUITE_ALL = "all";
     public static final String DEPLOY = "deploy";
 
     // keys used in json objects.
@@ -177,6 +181,7 @@ public abstract class CoreStrings {
     public static final String LOG_CONFIG_DEFAULTED = "config.defaults";
     public static final String LOG_CONFIGURATION_INVALID = "config.error";
     public static final String LOG_CACHE_CLEARED = "cache.clear";
+    public static final String LOG_RELOAD_DISABLED = "reload.disabled";
     public static final String LOG_ERROR = "error";
     public static final String LOG_TIMER_CHANGE = "timer.changed";
     public static final String LOG_PREVIOUS = "previous";
@@ -198,6 +203,14 @@ public abstract class CoreStrings {
     public static final String ERROR_LAUNCHER_STARTUP = "Failed to start the launcher with clustering.";
     public static final String LAUNCHER_SHUTDOWN_STARTED = "context shutdown initiated..";
     public static final String LAUNCHER_SHUTDOWN_COMPLETED = "context has been shut down.";
+
+    public static String getShutdownInterrupted(int tasks, long timeoutMS) {
+        return String.format("%d blocking task(s) did not complete within %d ms and are interrupted.", tasks, timeoutMS);
+    }
+
+    public static String getShutdownTimedOut(long timeoutMS) {
+        return String.format("context shutdown did not complete within %d ms, exiting.", timeoutMS);
+    }
     public static final String ERROR_VALIDATION_FAILURE = "Provided data did not pass validation.";
     public static final String ERROR_CONFIGURATION_MISMATCH = "configuration mismatches with currently loaded.";
     public static final String ERROR_ALREADY_INITIALIZED = "Error already initialized.";
@@ -235,6 +248,14 @@ public abstract class CoreStrings {
 
     public static String getRequestTooLarge(int maxRequestBytes) {
         return String.format("Maximum request size of %d bytes exceeded.", maxRequestBytes);
+    }
+
+    public static String getInvalidListenerConfig(String type, String reason) {
+        return String.format("Invalid listener configuration, expected the properties of %s: %s", type, reason);
+    }
+
+    public static String getHttp3RequiresTls() {
+        return "HTTP/3 requires TLS: set secure: true on the listener, or remove HTTP_3 from the versions.";
     }
 
     public static String getRequestMalformed(String reason) {
@@ -517,7 +538,12 @@ public abstract class CoreStrings {
     }
 
     public static String getBenchmarkDescription() {
-        return "Executes benchmarks. [--iterations ?, --html]";
+        return "Executes benchmarks. [--iterations ?, --html, --suite maps|protocol|all]";
+    }
+
+    public static String getUnknownBenchmarkSuite(String suite) {
+        return String.format("Unknown benchmark suite '%s', expected %s, %s or %s.", suite,
+                SUITE_MAPS, SUITE_PROTOCOL, SUITE_ALL);
     }
 
     public static String getBenchmarkGroupStarted(BenchmarkGroup group) {

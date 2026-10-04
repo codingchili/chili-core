@@ -53,7 +53,9 @@ Please note that this is blocking so it's best to use it before starting the sys
 Enabling TLS for the `RestListener`, `TcpListener` or the `WebsocketListener` is done in the following way. This requires that a keystore has already been setup. To use a test certificate that is automatically generated on startup either set the keystore reference
 to something non-existing, or call .setSecure(true) without specifying a keystore.
 
-ALPN is supported for HTTP/2 but requires Netty/JVM support.
+ALPN is enabled by default, which is how clients and the `RestListener` agree on HTTP/2 over TLS. It can be turned off with
+`setAlpn(false)` on the listener settings. With TLS the `RestListener` and the `WebsocketListener` serve HTTP/3 as well,
+see [listeners](listeners).
 
 ```java
 context.listener(() -> {
@@ -71,14 +73,19 @@ Requires a keystore to be configured in the security settings. When an automatic
 Easy way for test
 
 ```java
-ListenerSettings.getDefaultSettings()
-    .setPort(443)
+ListenerSettings settings = new ListenerSettings()
+    .setPort(8443)
     .setSecure(true);
 
-context.listener(RestListener::new);
+context.listener(() -> new RestListener().settings(settings).handler(new MyHandler()));
 ```
 
-The certificate will be regenerated on each application startup, for development it is recommended to disable hostname verification for localhost using chrome://flags etc.
+The generated certificate is valid for a year, for `localhost` and for the loopback addresses (127.0.0.1 and ::1), so a client on
+the same machine can verify the host name if it trusts the certificate. It is created with the JDK only, and is regenerated on each
+application startup: clients have to be configured to trust it again, or to trust all certificates in development. Browsers
+warn about it, and for development it is recommended to allow the certificate for localhost using chrome://flags etc.
+
+To use TLS options that are not created from a keystore, set them with `ListenerSettings.setSecurity(ServerSSLOptions)`.
 
 **Notes**
 - The `UdpListener` does not support DTLS yet.

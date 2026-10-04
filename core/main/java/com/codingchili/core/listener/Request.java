@@ -98,13 +98,25 @@ public interface Request extends Messageable {
     }
 
     /**
-     * Get the request token sent with the request.
+     * Get the request token sent with the request. The token is deserialized on each call, requests that extend
+     * {@link AbstractRequest} parse it once.
      *
      * @return the requests token
      */
     default Token token() {
-        if (data().containsKey(ID_TOKEN)) {
-            return Serializer.unpack(data().getJsonObject(ID_TOKEN), Token.class);
+        return parseToken(data());
+    }
+
+    /**
+     * Deserializes the token from the data of a request, a token that is expired and has a random domain and key
+     * is returned if the request has no token.
+     *
+     * @param data the data of the request.
+     * @return the token of the request.
+     */
+    static Token parseToken(JsonObject data) {
+        if (data.containsKey(ID_TOKEN)) {
+            return Serializer.unpack(data.getJsonObject(ID_TOKEN), Token.class);
         } else {
             return new Token().setExpiry(0);
         }

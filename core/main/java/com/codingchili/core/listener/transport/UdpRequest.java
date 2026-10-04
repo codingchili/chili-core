@@ -6,7 +6,7 @@ import io.vertx.core.json.JsonObject;
 
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.listener.ListenerSettings;
-import com.codingchili.core.listener.Request;
+import com.codingchili.core.listener.AbstractRequest;
 import com.codingchili.core.protocol.Response;
 
 import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_CONNECTION;
@@ -14,7 +14,7 @@ import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_CONNECTION
 /**
  * UDP request object.
  */
-public class UdpRequest implements Request {
+public class UdpRequest extends AbstractRequest {
     private Connection connection;
     private final DatagramPacket packet;
     private final CoreContext context;

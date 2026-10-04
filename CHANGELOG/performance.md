@@ -46,12 +46,15 @@ Compiled with `gradlew build -x test` (configuration cache on). No tests have ru
 
 ## Not changed, worth considering
 
-- `prettyEncoding` defaults to `true`, so every JSON response is indented. Turning it off is the biggest remaining
-  serialization win, but it changes the output format.
-- `Request.token()` deserializes the token on every call, and the authenticator may call it more than once per request.
+- ~~`prettyEncoding` defaults to `true`, so every JSON response is indented.~~ Now `false`, see `upgrades.md`
+  ("`prettyEncoding` off by default").
+- ~~`Request.token()` deserializes the token on every call, and the authenticator may call it more than once per request.~~
+  Cached per request, see `upgrades.md` ("the token of a request is parsed once"): 510 ns per call before.
 - Each `Protocol` creates its own `ConsoleLogger`, and each `ConsoleLogger` calls `AnsiConsole.systemInstall()` in its
   constructor.
-- `Method.invoke` could be replaced with `LambdaMetafactory`-generated lambdas for faster routing (larger change).
+- ~~`Method.invoke` could be replaced with `LambdaMetafactory`-generated lambdas for faster routing.~~ Measured, see
+  `upgrades.md` ("Benchmark: how the protocol invokes routes"): 2.5 ns faster per call (about 10% of `Protocol.process`) for
+  about 17 µs per route at registration. Not worth it.
 
 ## Tests to run once the timeout issue is fixed
 

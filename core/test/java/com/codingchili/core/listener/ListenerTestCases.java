@@ -38,13 +38,11 @@ public abstract class ListenerTestCases {
     private static final String ONE_CHAR = "x";
     private static final String DATA = "data";
     private Supplier<CoreListener> listener;
-    private WireType wireType;
 
     @Rule
     public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
 
-    protected ListenerTestCases(WireType wireType, Supplier<CoreListener> listener) {
-        this.wireType = wireType;
+    protected ListenerTestCases(Supplier<CoreListener> listener) {
         this.listener = listener;
     }
 
@@ -66,7 +64,6 @@ public abstract class ListenerTestCases {
                 .setMaxRequestBytes(MAX_REQUEST_BYTES)
                 .setPort(0)
                 .setSecure(false)
-                .setType(wireType)
                 .setTimeout(7000)
                 .setDefaultTarget(NODE_WEBSERVER)
                 .setHttpOptions(new HttpServerConfig().setCompressionConfig(new CompressionConfig().setCompressionEnabled(false)))

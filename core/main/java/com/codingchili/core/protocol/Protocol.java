@@ -220,7 +220,11 @@ public class Protocol<RequestType> {
     }
 
     private void wrap(String route, Receiver<RequestType> handler, Method method, RoleType[] role) {
-        if (method.getParameterCount() == 0) {
+        if (TypedRoute.applies(method)) {
+            use(route, TypedRoute.handler(handler, method), role);
+            // the input of the route is documented by its type, @DataModel on the method overrides it.
+            lastAddedRoute.setTemplate(TypedRoute.input(method));
+        } else if (method.getParameterCount() == 0) {
             use(route, request -> invokeMethod(method, handler), role);
         } else {
             use(route, request -> invokeMethod(method, handler, request), role);

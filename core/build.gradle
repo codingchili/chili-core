@@ -46,7 +46,9 @@ tasks.register('benchmark', JavaExec) {
     description = 'Runs the core storage benchmarks and writes an HTML report to build/benchmarks.'
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'com.codingchili.core.Launcher'
-    args 'benchmark', '--html', '--iterations', providers.gradleProperty('iterations').getOrElse('1000')
+    // gradlew benchmark -Psuite=protocol: maps (default), protocol or all. iterations: protocol iterations are batches of 100,000 calls.
+    args 'benchmark', '--html', '--iterations', providers.gradleProperty('iterations').getOrElse('1000'),
+            '--suite', providers.gradleProperty('suite').getOrElse('maps')
     // print the report path instead of opening a browser.
     systemProperty 'java.awt.headless', 'true'
     def output = layout.buildDirectory.dir('benchmarks')

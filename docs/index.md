@@ -24,6 +24,7 @@ Recommended reading order
 12. [Testing](testing)
 13. [Files](files)
 14. [Benchmarking](benchmarking)
+15. [Status and readiness](status)
 
 Other related documentation
 
@@ -49,6 +50,7 @@ Other related documentation
 |yes|Logging|Contains features for logging locally and remotely over the cluster.|[com.codingchili.core.logging](https://github.com/codingchili/chili-core/tree/master/core/main/java/com/codingchili/core/logging)
 |yes|Security|Security functionality such as keystores, hashing and token verification/signing.|[com.codingchili.core.security](https://github.com/codingchili/chili-core/tree/master/core/main/java/com/codingchili/core/security)
 |yes|Storage|The storage and query API's.|[com.codingchili.core.storage](https://github.com/codingchili/chili-core/tree/master/core/main/java/com/codingchili/core/storage)
-||Benchmarking|The benchmarking API's.|[com.codingchili.core.benchmarking](https://github.com/codingchili/chili-core/tree/master/core/main/java/com/codingchili/core/benchmarking)
+|yes|Status|Readiness endpoint, status report and status page.|[com.codingchili.core.status](https://github.com/codingchili/chili-core/tree/master/core/main/java/com/codingchili/core/status)
+||Benchmarking|The benchmarking API's.[com.codingchili.core.benchmarking](https://github.com/codingchili/chili-core/tree/master/core/main/java/com/codingchili/core/benchmarking)
 ||Files|The file API's.|[com.codingchili.core.files](https://github.com/codingchili/chili-core/tree/master/core/main/java/com/codingchili/core/files)
 ||Testing|Helpers and mocks that can be used to write test when using the chili-core.|[com.codingchili.core.testing](https://github.com/codingchili/chili-core/tree/master/core/main/java/com/codingchili/core/testing)

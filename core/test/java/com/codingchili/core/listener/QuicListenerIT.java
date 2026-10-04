@@ -29,7 +29,7 @@ public class QuicListenerIT extends ListenerTestCases {
     private static final String PUSHED = "pushed";
 
     public QuicListenerIT() {
-        super(WireType.QUIC, QuicListener::new);
+        super(QuicListener::new);
     }
 
     @BeforeClass

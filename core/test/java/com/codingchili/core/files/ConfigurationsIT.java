@@ -1,5 +1,6 @@
 package com.codingchili.core.files;
 
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Assert;
@@ -8,6 +9,8 @@ import org.junit.runner.RunWith;
 
 import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.configuration.ConfigurableTest;
+import com.codingchili.core.configuration.system.SystemSettings;
+import com.codingchili.core.protocol.Serializer;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
@@ -39,6 +42,54 @@ public class ConfigurationsIT {
         config = Configurations.get(config.getPath(), ConfigurableTest.class);
 
         Assert.assertTrue(config.getData().equals(NEW_DATA));
+    }
+
+    @Test
+    public void changesOnDiskAreAppliedWhenReloadIsEnabled() {
+        Assert.assertTrue(Configurations.system().isConfigurationReload());
+
+        ConfigurableTest config = changeOnDisk();
+        Configurations.onChanged(config.getPath());
+
+        config = Configurations.get(config.getPath(), ConfigurableTest.class);
+        Assert.assertEquals(NEW_DATA, config.getData());
+    }
+
+    @Test
+    public void changesOnDiskAreIgnoredWhenReloadIsDisabled() {
+        Configurations.system().setConfigurationReload(false);
+        try {
+            ConfigurableTest config = changeOnDisk();
+            Configurations.onChanged(config.getPath());
+
+            config = Configurations.get(config.getPath(), ConfigurableTest.class);
+            Assert.assertEquals(TEST_DATA, config.getData());
+        } finally {
+            Configurations.system().setConfigurationReload(true);
+        }
+    }
+
+    @Test
+    public void reloadCanBeDisabledInTheConfigurationFile() {
+        SystemSettings system = Serializer.unpack(new JsonObject().put("configurationReload", false), SystemSettings.class);
+
+        Assert.assertFalse(system.isConfigurationReload());
+        Assert.assertTrue(new SystemSettings().isConfigurationReload());
+    }
+
+    /**
+     * Saves a changed copy of the configuration to disk, the copy in memory keeps the old data.
+     */
+    private ConfigurableTest changeOnDisk() {
+        ConfigurableTest config = new ConfigurableTest();
+
+        Configurations.save(config);
+        config = Configurations.get(config.getPath(), ConfigurableTest.class);
+
+        config.setData(NEW_DATA);
+        Configurations.save(config);
+        config.setData(TEST_DATA);    // restore memory copy
+        return config;
     }
 
     @Test

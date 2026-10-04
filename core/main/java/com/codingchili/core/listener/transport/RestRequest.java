@@ -18,7 +18,7 @@ import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_CONNECTION
 /**
  * HTTP/REST request object.
  */
-public class RestRequest implements Request {
+public class RestRequest extends AbstractRequest {
     private static final String HEADERS_SENT = "headersSent";
     private final HttpServerRequest request;
     private final ListenerSettings settings;

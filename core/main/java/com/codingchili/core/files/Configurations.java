@@ -49,11 +49,16 @@ public abstract class Configurations {
                 logger.onAlreadyInitialized();
             } else {
                 logger = core.logger(Configurations.class);
-                new FileWatcherBuilder(core)
-                        .rate(TimerSource.of(Configurations::getConfigurationPoll))
-                        .onDirectory(Paths.get(launcher().getConfigurationDirectory()).toString())
-                        .withListener(new ConfigurationFileWatcher())
-                        .build();
+
+                if (system().isConfigurationReload()) {
+                    new FileWatcherBuilder(core)
+                            .rate(TimerSource.of(Configurations::getConfigurationPoll))
+                            .onDirectory(Paths.get(launcher().getConfigurationDirectory()).toString())
+                            .withListener(new ConfigurationFileWatcher())
+                            .build();
+                } else {
+                    logger.onReloadDisabled(ID_CONFIGURATION);
+                }
 
                 initialized.set(true);
             }
@@ -215,6 +220,19 @@ public abstract class Configurations {
     }
 
     /**
+     * Reloads a configuration file that has been changed or removed on disk, unless reloading is disabled
+     * in the system settings. The setting is read from the loaded configuration, which means that once
+     * disabled it cannot be enabled again by changing the system configuration file.
+     *
+     * @param path of the configurable that changed.
+     */
+    static void onChanged(String path) {
+        if (system().isConfigurationReload()) {
+            reload(path);
+        }
+    }
+
+    /**
      * Saves a configuration to file without updating the cache.
      *
      * @param configurable the configurable to be written.
@@ -310,12 +328,12 @@ public abstract class Configurations {
     private static class ConfigurationFileWatcher implements FileStoreListener {
         @Override
         public void onFileModify(Path path) {
-            Configurations.reload(path.toString().replaceAll("\\\\", DIR_ROOT));
+            Configurations.onChanged(path.toString().replaceAll("\\\\", DIR_ROOT));
         }
 
         @Override
         public void onFileRemove(Path path) {
-            Configurations.reload(path.toString().replaceAll("\\\\", DIR_ROOT));
+            Configurations.onChanged(path.toString().replaceAll("\\\\", DIR_ROOT));
         }
     }
 

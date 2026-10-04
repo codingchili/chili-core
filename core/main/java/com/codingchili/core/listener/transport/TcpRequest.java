@@ -4,13 +4,13 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
 import com.codingchili.core.listener.ListenerSettings;
-import com.codingchili.core.listener.Request;
+import com.codingchili.core.listener.AbstractRequest;
 import com.codingchili.core.protocol.Response;
 
 /**
  * TCP request implementation.
  */
-public class TcpRequest implements Request {
+public class TcpRequest extends AbstractRequest {
     private final Connection connection;
     private final ListenerSettings settings;
     private final JsonObject data;

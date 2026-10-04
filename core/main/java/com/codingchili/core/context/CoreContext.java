@@ -18,6 +18,21 @@ import com.codingchili.core.metrics.MetricCollector;
  */
 public interface CoreContext {
     /**
+     * @return true when the context is shutting down or has been closed. Services that report if they are
+     * ready for traffic should report that they are not when this is true.
+     */
+    default boolean isShuttingDown() {
+        return false;
+    }
+
+    /**
+     * @return the number of blocking tasks submitted through the context that have not completed.
+     */
+    default int blockingTasks() {
+        return 0;
+    }
+
+    /**
      * @return the vertx instance.
      */
     Vertx vertx();

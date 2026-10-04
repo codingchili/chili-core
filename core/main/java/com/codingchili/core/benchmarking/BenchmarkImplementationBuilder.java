@@ -38,6 +38,28 @@ public class BenchmarkImplementationBuilder implements BenchmarkImplementation {
         return this;
     }
 
+    /**
+     * Adds a benchmark where each iteration performs a batch of operations, see
+     * {@link BenchmarkBuilder#setOperationsPerIteration(int)}.
+     *
+     * @param name                the name of the operation/benchmark.
+     * @param operationsPerIteration the number of operations performed by one call of the operation.
+     * @param operation           the operation to execute as a benchmark.
+     * @return fluent
+     */
+    public BenchmarkImplementation add(String name, int operationsPerIteration, BenchmarkOperation operation) {
+        Benchmark benchmark = new BenchmarkBuilder(name)
+                .setOperationsPerIteration(operationsPerIteration)
+                .setOperation(operation);
+
+        if (group != null) {
+            benchmark.setIterations(group.getIterations());
+        }
+
+        benchmarks.add(benchmark);
+        return this;
+    }
+
     @Override
     public Future<Void> initialize(CoreContext core) {
         return Future.succeededFuture();

@@ -120,6 +120,45 @@ public void handle(Request request) {
 
 This handles authorization and error handling internally within the protocol.
 
+### Typed routes (experimental)
+A route can take its input as a parameter and return its result, instead of reading the request and writing the response.
+
+```java
+record GetAccount(String id) {
+    GetAccount {
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("id is required");
+        }
+    }
+}
+
+record AccountView(String id, String name, int level) {}
+
+@Api
+public Future<AccountView> get(GetAccount input) {
+    return accounts.get(input.id()).map(AccountView::of);
+}
+```
+
+A method is a typed route when its first parameter is not a request. The protocol
+
+- deserializes the input from the data of the request. A record that validates itself in its constructor is answered with
+  `BAD` and the message of the `IllegalArgumentException`, a value of the wrong type with `BAD` and `invalid input: ...`.
+  The data of the request also contains the route, the target and the token, the input ignores what it doesn't declare,
+- writes the result when the returned `Future` succeeds, or the returned value. `void`, `Future<Void>` and null are answered with `ACCEPTED`,
+- answers failures as it does for any route: an exception that is thrown, or that fails the future, with the status of the
+  exception if it's an exception of the framework (`ValueMissingException` is `MISSING`), otherwise `ERROR`,
+- documents the route with the class of the input, see below.
+
+The request can be taken as a second parameter, for the token or the connection: `create(CreateAccount input, Request request)`.
+When the protocol is given a wrapper of the request, that is what the method receives. Roles work as for other routes,
+`@Api(RoleMap.ADMIN)`. Routes that read the request can be mixed with typed routes in the same handler.
+
+What it doesn't do (yet): a typed route answers with `ACCEPTED` when it succeeds, use the request to answer otherwise; the
+input is an object, not a list or a single value; unknown properties of the input are ignored; the type of the result is not
+part of the documentation. Reading the input costs about the same as `Serializer.unpack` in a route that reads the request
+(about 150 ns for a small record), the dispatch about 60 ns more. See `TypedRoute` and the sample in `TypedRouteTest`.
+
 ### Documenting the API
 Programmatically documenting
 

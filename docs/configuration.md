@@ -42,7 +42,22 @@ Configurations.put(ConfigurationClass.class);
 ```
 
 ### Reloading configuration
-Whenever configuration changes it will be reloaded in memory. Any configuration instances from `Configurations.get` will not be modified. Subsequent calls to `Configurations.get` will return the new configuration file.
+Whenever configuration changes it will be reloaded in memory (hot reload).
+
+Hot reload is enabled by default, which is convenient during development. **In production it is recommended to disable it**:
+anything that can write to the configuration directory can otherwise change the behavior of a running application
+(security settings, keystores, listeners and so on). Disable it in `conf/system/system.yaml`,
+
+```yaml
+configurationReload: false
+```
+
+or in code with `Configurations.system().setConfigurationReload(false)`. Configuration files are then read once, and
+changes on disk are ignored until the application is restarted. No file watcher is started, and the system
+configuration file is not watched either: once disabled, hot reload can't be enabled again without a restart. A
+message is logged at startup when hot reload is disabled.
+
+When hot reload is enabled, any configuration instances from `Configurations.get` will not be modified. Subsequent calls to `Configurations.get` will return the new configuration file.
 
 If the call to `Configurations.get` is cached, an additional O(1) map lookup can be avoided - with the implication that changes to the configuration on disk will not be visible. To limit the time configuration is cached, or to always retrieve the latest copy from the cache a wrapper is recommended. 
 
@@ -177,7 +192,10 @@ The system configuration contains properties used for the framework core functio
 |listeners| the number of listeners to deploy when deploying a listener. |
 |deployTimeout| time in milliseconds after which a deployment times out and fails. |
 |shutdownLogTimeout| time in milliseconds the shutdown hook will wait before terminating the application. |
+|shutdownHookTimeout| time in milliseconds that the whole shutdown may take, running blocking tasks are interrupted when it's up. |
+|shutdownDelay| time in milliseconds that services keep running after a shutdown has started and the context reports that it is shutting down (readiness fails), default 0. Must be less than the timeout. |
 |configurationPoll| how often the WatchService should be polled for file changes. |
+|configurationReload| boolean, default true. Set to false to disable reloading of configuration when files change. |
 |cachedFilePoll| how often the `CachedFileStore` should poll the WatchService. |
 |consoleLogging| boolean determines if logging events are printed to console out. |
 |workerPoolSize| the size of the worker pool. |

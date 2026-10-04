@@ -22,7 +22,7 @@ import static com.codingchili.core.protocol.ResponseStatus.ACCEPTED;
 public class RestListenerIT extends ListenerTestCases {
 
     public RestListenerIT() {
-        super(WireType.REST, RestListener::new);
+        super(RestListener::new);
     }
 
     @Test

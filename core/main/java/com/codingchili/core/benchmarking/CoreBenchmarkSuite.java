@@ -2,6 +2,7 @@ package com.codingchili.core.benchmarking;
 
 import io.vertx.core.Future;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -21,7 +22,9 @@ public class CoreBenchmarkSuite {
     private int iterations = 15;
 
     /**
-     * Creates a clustered vertx instance on which all registered benchmarks will run.
+     * Runs the benchmarks selected with the suite parameter ({@code --suite maps|protocol|all}, default maps)
+     * and creates a report. The map benchmarks run on a clustered vertx instance, the protocol benchmarks
+     * do not need one.
      *
      * @param executor executor to invoke this as a command.
      * @return future completed when the benchmarks are done and the report is created.
@@ -30,10 +33,33 @@ public class CoreBenchmarkSuite {
         executor.getProperty(PARAM_ITERATIONS).ifPresent(iterations ->
                 this.iterations = Integer.parseInt(iterations));
 
-        return SystemContext.clustered().compose(cluster ->
-                maps(cluster, new BenchmarkConsoleListener())
+        String suite = executor.getProperty(PARAM_SUITE).orElse(SUITE_MAPS);
+        BenchmarkListener listener = new BenchmarkConsoleListener();
+
+        switch (suite) {
+            case SUITE_MAPS:
+                return SystemContext.clustered().compose(cluster ->
+                        maps(cluster, listener)
+                                .map(result -> createReport(result, executor))
+                                .onComplete(done -> cluster.close()));
+            case SUITE_PROTOCOL:
+                CoreContext core = new SystemContext();
+                return protocol(core, listener)
                         .map(result -> createReport(result, executor))
-                        .onComplete(done -> cluster.close()));
+                        .onComplete(done -> core.close());
+            case SUITE_ALL:
+                return SystemContext.clustered().compose(cluster ->
+                        maps(cluster, listener)
+                                .compose(maps -> protocol(cluster, listener).map(protocol -> {
+                                    List<BenchmarkGroup> all = new ArrayList<>(maps);
+                                    all.addAll(protocol);
+                                    return all;
+                                }))
+                                .map(result -> createReport(result, executor))
+                                .onComplete(done -> cluster.close()));
+            default:
+                return Future.failedFuture(new IllegalArgumentException(getUnknownBenchmarkSuite(suite)));
+        }
     }
 
     private CommandResult createReport(List<BenchmarkGroup> result, CommandExecutor executor) {
@@ -48,6 +74,25 @@ public class CoreBenchmarkSuite {
         template.ifPresent(report::template);
         report.display();
         return LauncherCommandResult.SHUTDOWN;
+    }
+
+    /**
+     * Runs the benchmarks that compare how the protocol invokes the methods of a handler, see
+     * {@link ProtocolBenchmarkImplementation}. One iteration is {@link ProtocolBenchmarkImplementation#CALLS_PER_ITERATION}
+     * calls.
+     *
+     * @param context  the core context to run the benchmark on.
+     * @param listener benchmark listener to use.
+     * @return a future that is completed with the results of the benchmark.
+     */
+    public Future<List<BenchmarkGroup>> protocol(CoreContext context, BenchmarkListener listener) {
+        try {
+            return new BenchmarkExecutor(context)
+                    .setListener(listener)
+                    .start(ProtocolBenchmarkImplementation.group(iterations));
+        } catch (Throwable e) {
+            return Future.failedFuture(e);
+        }
     }
 
     /**

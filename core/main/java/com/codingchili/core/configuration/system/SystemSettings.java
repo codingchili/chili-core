@@ -22,10 +22,12 @@ public class SystemSettings implements Configurable {
     private int listeners = 1;
     private int deployTimeout = 3000;
     private int shutdownHookTimeout = 5000;
+    private int shutdownDelay = 0;
     private int configurationPoll = 1500;
+    private boolean configurationReload = true;
     private int cachedFilePoll = 1500;
     private boolean consoleLogging = true;
-    private boolean prettyEncoding = true;
+    private boolean prettyEncoding = false;
     private boolean unsafe = false;
     private int clusterTimeout = 3000;
     private long blockedThreadChecker = VertxOptions.DEFAULT_BLOCKED_THREAD_CHECK_INTERVAL;
@@ -100,6 +102,27 @@ public class SystemSettings implements Configurable {
      */
     public SystemSettings setShutdownHookTimeout(int shutdownHookTimeout) {
         this.shutdownHookTimeout = shutdownHookTimeout;
+        return this;
+    }
+
+    /**
+     * @return the time in MS that services keep running after a shutdown has started.
+     */
+    public int getShutdownDelay() {
+        return shutdownDelay;
+    }
+
+    /**
+     * When a shutdown starts the context reports that it is shutting down: a readiness check fails, which lets
+     * a load balancer stop sending traffic. Services are stopped after this delay, so that requests that are
+     * still being sent are served instead of failing. The delay counts towards the shutdown hook timeout, which
+     * should be set to more than the delay and the time it takes to stop the services. Default 0: no delay.
+     *
+     * @param shutdownDelay the time in MS to wait between marking the context as shutting down and stopping services.
+     * @return fluent
+     */
+    public SystemSettings setShutdownDelay(int shutdownDelay) {
+        this.shutdownDelay = shutdownDelay;
         return this;
     }
 
@@ -190,6 +213,29 @@ public class SystemSettings implements Configurable {
      */
     public SystemSettings setConfigurationPoll(int configurationPoll) {
         this.configurationPoll = configurationPoll;
+        return this;
+    }
+
+    /**
+     * @return true if configuration files are reloaded when they change on disk.
+     */
+    public boolean isConfigurationReload() {
+        return configurationReload;
+    }
+
+    /**
+     * Hot reloading of configuration is enabled by default. When disabled configuration files are read once,
+     * and changes on disk are ignored until the application is restarted: nothing that can write to the
+     * configuration directory can change the behavior of a running application. It is recommended to disable
+     * hot reload in production.
+     * <p>
+     * Once disabled, reloading cannot be enabled again at runtime, as changes to this setting on disk are ignored too.
+     *
+     * @param configurationReload false to disable reloading of configuration files when they change.
+     * @return fluent
+     */
+    public SystemSettings setConfigurationReload(boolean configurationReload) {
+        this.configurationReload = configurationReload;
         return this;
     }
 

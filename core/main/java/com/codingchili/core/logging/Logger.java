@@ -89,6 +89,13 @@ public interface Logger extends JsonLogger, StringLogger {
     void onCacheCleared(String component);
 
     /**
+     * Emit when configuration is not reloaded when files change, as it has been disabled.
+     *
+     * @param component the component that is not reloaded.
+     */
+    void onReloadDisabled(String component);
+
+    /**
      * Emit when a file has been saved to file.
      *
      * @param component the component that saved the file.

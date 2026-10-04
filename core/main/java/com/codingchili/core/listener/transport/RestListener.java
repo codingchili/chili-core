@@ -2,6 +2,7 @@ package com.codingchili.core.listener.transport;
 
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
+import io.vertx.core.http.HttpServerConfig;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -54,6 +55,11 @@ public class RestListener implements CoreListener {
     }
 
     @Override
+    public Class<?> configType() {
+        return HttpServerConfig.class;
+    }
+
+    @Override
     public CoreListener settings(ListenerSettings settings) {
         this.settings = settings;
         return this;
@@ -69,16 +75,16 @@ public class RestListener implements CoreListener {
     public void start(Promise<Void> start) {
         var handlerPromise = Promise.<Void>promise();
 
-        handlerPromise.future().onSuccess((v) -> {
-            core.vertx().createHttpServer(settings.getHttpOptions(), settings.getSecurity())
-                    .requestHandler(router)
-                    .exceptionHandler(logger::onError)
-                    .listen(settings.getPort(), getBindAddress())
-                    .onSuccess(result -> {
-                        settings.addListenPort(result.actualPort());
-                        start.complete();
-                    }).onFailure(start::fail);
-        }).onFailure(start::fail);
+        handlerPromise.future()
+                .compose(v -> core.vertx().createHttpServer(settings.getHttpOptions(), settings.getSecurity())
+                        .requestHandler(router)
+                        .exceptionHandler(logger::onError)
+                        .listen(settings.getPort(), getBindAddress()))
+                .onSuccess(result -> {
+                    settings.addListenPort(result.actualPort());
+                    start.complete();
+                })
+                .onFailure(start::fail);
 
         handler.start(handlerPromise);
     }

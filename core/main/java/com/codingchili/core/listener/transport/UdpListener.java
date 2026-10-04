@@ -12,6 +12,7 @@ import static com.codingchili.core.configuration.CoreStrings.getBindAddress;
 
 import io.vertx.core.Promise;
 import io.vertx.core.datagram.DatagramPacket;
+import io.vertx.core.datagram.DatagramSocketOptions;
 
 /**
  * UDP transport listener.
@@ -27,6 +28,11 @@ public class UdpListener implements CoreListener, DeploymentAware {
         this.core = core;
         this.logger = ListenerExceptionLogger.create(core, this, handler);
         handler.init(core);
+    }
+
+    @Override
+    public Class<?> configType() {
+        return DatagramSocketOptions.class;
     }
 
     @Override
@@ -46,15 +52,13 @@ public class UdpListener implements CoreListener, DeploymentAware {
         var handlerPromise = Promise.<Void>promise();
 
         handlerPromise.future()
-                .onSuccess((v) -> {
-                    core.vertx().createDatagramSocket()
-                            .listen(settings.getPort(), getBindAddress())
-                            .onSuccess(server -> {
-                                settings.addListenPort(server.localAddress().port());
-                                server.handler(this::handle)
-                                        .exceptionHandler(logger::onError);
-                                start.complete();
-                            }).onFailure(start::fail);
+                .compose(v -> core.vertx().createDatagramSocket(settings.getUdp())
+                        .listen(settings.getPort(), getBindAddress()))
+                .onSuccess(server -> {
+                    settings.addListenPort(server.localAddress().port());
+                    server.handler(this::handle)
+                            .exceptionHandler(logger::onError);
+                    start.complete();
                 })
                 .onFailure(start::fail);
 

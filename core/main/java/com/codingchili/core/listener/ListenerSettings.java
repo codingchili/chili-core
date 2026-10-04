@@ -1,12 +1,21 @@
 package com.codingchili.core.listener;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.vertx.core.datagram.DatagramSocketOptions;
 import io.vertx.core.http.HttpServerConfig;
+import io.vertx.core.json.JsonObject;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.SecuritySettings;
+import com.codingchili.core.context.CoreRuntimeException;
+import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.TrustAndKeyProvider;
 import io.vertx.core.http.HttpVersion;
 import io.vertx.core.net.QuicServerConfig;
@@ -19,22 +28,39 @@ import static com.codingchili.core.files.Configurations.security;
  * Settings for transport listeners.
  */
 public class ListenerSettings {
+
+    /**
+     * The http configuration has two setters for the versions, which cannot both be used to deserialize it.
+     */
+    private abstract static class HttpServerConfigMixin {
+        @JsonProperty("versions")
+        abstract HttpServerConfig setVersions(Set<HttpVersion> versions);
+
+        @JsonIgnore
+        abstract HttpServerConfig setVersions(HttpVersion... versions);
+    }
+
+    // unknown properties are rejected: a misspelled property in a configuration file is not silently ignored.
+    private static final ObjectMapper STRICT = Serializer.json.rebuild()
+            .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .addMixIn(HttpServerConfig.class, HttpServerConfigMixin.class)
+            .build();
     public static final int DEFAULT_TIMEOUT = 3000;
-    public static final int DEFAULT_MAX_REQUEST_BYTES = 1024;
+    public static final int DEFAULT_MAX_REQUEST_BYTES = 64 * 1024;
+    private JsonObject config = null;
     private HttpServerConfig httpOptions = null;
     private ServerSSLOptions security = null;
     private TcpServerConfig tcp = null;
     private QuicServerConfig quic = null;
     private String quicProtocol = CoreStrings.DEFAULT_QUIC_PROTOCOL;
     private Map<String, Endpoint> api = new HashMap<>();
-    private WireType type = WireType.REST;
     private final Set<Integer> actualPorts = new HashSet<>();
     private String defaultTarget = "default";
     private String keystore = CoreStrings.DEFAULT_KEYSTORE;
     private String basePath = null;
     private boolean binaryWebsockets = true;
     private boolean secure = true;
-    private boolean alpn = false;
+    private boolean alpn = true;
     private int port = 8080;
     private int timeout = DEFAULT_TIMEOUT;
     private int maxRequestBytes = DEFAULT_MAX_REQUEST_BYTES;
@@ -126,22 +152,6 @@ public class ListenerSettings {
     }
 
     /**
-     * @return the type of the listener, for example tcp or udp.
-     */
-    public WireType getType() {
-        return type;
-    }
-
-    /**
-     * @param type the type to set for the listener.
-     * @return fluent
-     */
-    public ListenerSettings setType(WireType type) {
-        this.type = type;
-        return this;
-    }
-
-    /**
      * @return the port the listener is to be activated on.
      */
     public int getPort() {
@@ -184,7 +194,7 @@ public class ListenerSettings {
     }
 
     /**
-     * @return true if ALPN is enabled - this is required to support HTTP/2.
+     * @return true if ALPN is enabled - this is required to support HTTP/2 over TLS, enabled by default.
      */
     public boolean isAlpn() {
         return alpn;
@@ -197,18 +207,79 @@ public class ListenerSettings {
         this.alpn = alpn;
     }
 
+    /**
+     * The configuration of the transport of the listener, in the format of the configuration class of the
+     * listener: {@link HttpServerConfig} for the REST and websocket listeners, {@link TcpServerConfig} for the TCP
+     * listener, {@link QuicServerConfig} for the QUIC listener and {@link DatagramSocketOptions} for the UDP listener,
+     * see {@link CoreListener#configType()}. A property that is not part of the configuration class is an error.
+     * <pre>{@code
+     * port: 8080
+     * secure: true
+     * config:
+     *   versions: [HTTP_1_1, HTTP_2, HTTP_3]
+     * }</pre>
+     * A configuration object that is set programmatically, for example with {@link #setHttpOptions(HttpServerConfig)},
+     * is used instead of this.
+     *
+     * @return the configuration of the listener as it is read from the configuration file, or null.
+     */
+    public JsonObject getConfig() {
+        return config;
+    }
+
+    /**
+     * @param config the configuration of the transport of the listener, see {@link #getConfig()}.
+     * @return fluent
+     */
+    public ListenerSettings setConfig(JsonObject config) {
+        this.config = config;
+        return this;
+    }
+
+    /**
+     * Reads the configuration of the transport of the listener.
+     *
+     * @param type     the configuration class of the listener, see {@link CoreListener#configType()}.
+     * @param defaults creates the default configuration, used when the listener has no configuration.
+     * @param <T>      the type of the configuration.
+     * @return the configuration, converted from {@link #getConfig()}.
+     * @throws CoreRuntimeException if the configuration has properties that are not part of the configuration class, or
+     *                              values that are not valid.
+     */
+    public <T> T config(Class<T> type, Supplier<T> defaults) {
+        if (config == null || config.isEmpty()) {
+            return defaults.get();
+        }
+        try {
+            return STRICT.readValue(config.encode(), type);
+        } catch (JacksonException e) {
+            throw new CoreRuntimeException(CoreStrings.getInvalidListenerConfig(type.getSimpleName(), e.getOriginalMessage()));
+        }
+    }
+
+    /**
+     * @return the configuration of the TCP listener.
+     */
     @JsonIgnore
     public TcpServerConfig getTcp() {
         if (tcp != null) {
             return tcp;
         } else {
-            return new TcpServerConfig();
+            return config(TcpServerConfig.class, TcpServerConfig::new);
         }
     }
 
     public ListenerSettings setTcp(TcpServerConfig tcp) {
         this.tcp = tcp;
         return this;
+    }
+
+    /**
+     * @return the configuration of the UDP listener.
+     */
+    @JsonIgnore
+    public DatagramSocketOptions getUdp() {
+        return config(DatagramSocketOptions.class, DatagramSocketOptions::new);
     }
 
     /**
@@ -219,7 +290,7 @@ public class ListenerSettings {
     @JsonIgnore
     public QuicServerConfig getQuic() {
         if (quic == null) {
-            quic = new QuicServerConfig();
+            quic = config(QuicServerConfig.class, QuicServerConfig::new);
         }
         return quic;
     }
@@ -251,16 +322,32 @@ public class ListenerSettings {
     }
 
     /**
+     * The configuration of the HTTP listeners. HTTP/1.1 and HTTP/2 are enabled by default. HTTP/3 is enabled as well
+     * when the listener is secure, as it requires TLS. HTTP/3 uses QUIC (UDP) and clients first connect with HTTP/1.1 or
+     * HTTP/2, and are told about HTTP/3. The versions that are enabled can be set in the
+     * configuration, in that case HTTP/3 is not added.
+     *
      * @return HttpOptions created from the listeners settings.
+     * @throws CoreRuntimeException if HTTP/3 is enabled and the listener is not secure.
      */
     @JsonIgnore
     public HttpServerConfig getHttpOptions() {
+        HttpServerConfig http = httpOptions;
 
-        if (httpOptions == null) {
-            httpOptions = new HttpServerConfig()
-                    .setVersions(secure ? HttpVersion.HTTP_3 : HttpVersion.HTTP_2);
+        if (http == null) {
+            http = config(HttpServerConfig.class, HttpServerConfig::new);
+
+            boolean versionsConfigured = config != null && config.containsKey("versions");
+            if (secure && !versionsConfigured) {
+                Set<HttpVersion> versions = EnumSet.copyOf(http.getVersions());
+                versions.add(HttpVersion.HTTP_3);
+                http.setVersions(versions);
+            }
         }
-        return httpOptions;
+        if (!secure && http.getVersions().contains(HttpVersion.HTTP_3)) {
+            throw new CoreRuntimeException(CoreStrings.getHttp3RequiresTls());
+        }
+        return http;
     }
 
     /**
@@ -272,13 +359,20 @@ public class ListenerSettings {
         return this;
     }
 
+    /**
+     * @return the TLS configuration of the listener: the options that have been set, or created from the keystore
+     * of the listener, null if the listener is not secure.
+     */
     @JsonIgnore
     public ServerSSLOptions getSecurity() {
-        if (secure) {
+        if (secure && security != null) {
+            return security;
+        } else if (secure) {
             ServerSSLOptions ssl = new ServerSSLOptions();
             TrustAndKeyProvider provider = security().getKeystore(keystore);
             ssl.setTrustOptions(provider.trustOptions())
-                    .setKeyCertOptions(provider.keyCertOptions());
+                    .setKeyCertOptions(provider.keyCertOptions())
+                    .setUseAlpn(alpn);
             return ssl;
         } else {
             // a non-null ssl options instance enables ssl on the server.
@@ -286,6 +380,10 @@ public class ListenerSettings {
         }
     }
 
+    /**
+     * @param ssl the TLS configuration to use instead of the keystore of the listener. The listener must be secure.
+     * @return fluent
+     */
     public ListenerSettings setSecurity(ServerSSLOptions ssl) {
         this.security = ssl;
         return this;

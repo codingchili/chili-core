@@ -14,7 +14,7 @@ import com.codingchili.core.listener.transport.TcpListener;
 public class TcpListenerIT extends ListenerTestCases {
 
     public TcpListenerIT() {
-        super(WireType.TCP, TcpListener::new);
+        super(TcpListener::new);
     }
 
     @Override
