@@ -59,7 +59,7 @@ public class ClusterListenerTest {
 
     @After
     public void tearDown(TestContext test) {
-        context.close(test.asyncAssertSuccess());
+        context.close().onComplete(test.asyncAssertSuccess());
     }
 
     @Test

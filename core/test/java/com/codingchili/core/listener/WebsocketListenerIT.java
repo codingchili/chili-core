@@ -21,7 +21,7 @@ public class WebsocketListenerIT extends ListenerTestCases {
 
     @Override
     public void sendRequest(ResponseListener listener, JsonObject data) {
-        context.vertx().createHttpClient().webSocket(port, HOST, CoreStrings.DIR_SEPARATOR, handler -> {
+        context.vertx().createWebSocketClient().connect(port, HOST, CoreStrings.DIR_SEPARATOR).onComplete(handler -> {
             if (handler.succeeded()) {
                 WebSocket webSocket = handler.result();
                 webSocket.handler(body -> handleBody(listener, body));

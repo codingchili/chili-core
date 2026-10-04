@@ -1,6 +1,5 @@
 package com.codingchili.core.storage;
 
-import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
@@ -19,18 +18,12 @@ public class HazelMapIT extends MapTestCases {
 
     @BeforeClass
     public static void beforeClass(TestContext test) {
-        Async async = test.async();
-
-        SystemContext.clustered(clustering -> {
-            test.assertTrue(clustering.succeeded());
-            context = clustering.result();
-            async.complete();
-        });
+        SystemContext.clustered().onComplete(test.asyncAssertSuccess(clustered -> context = clustered));
     }
 
     @AfterClass
     public static void afterClass(TestContext test) {
-        context.close(test.asyncAssertSuccess());
+        context.close().onComplete(test.asyncAssertSuccess());
     }
 
     @After

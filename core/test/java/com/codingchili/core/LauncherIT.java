@@ -40,7 +40,7 @@ public class LauncherIT {
     @After
     public void tearDown(TestContext test) {
         if (core != null)
-            core.close(test.asyncAssertSuccess());
+            core.close().onComplete(test.asyncAssertSuccess());
     }
 
     @Test

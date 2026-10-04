@@ -43,35 +43,25 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
         this.collection = context.collection();
         this.context = context;
 
-        addIndex(ID, done -> promise.complete(this));
+        createIndex(ID).onComplete(done -> promise.complete(this));
     }
 
     @Override
-    public void get(String key, Handler<AsyncResult<Value>> handler) {
-        client.findOne(collection, id(key), ALL_FIELDS).onComplete(query -> {
-            if (query.succeeded()) {
-                if (query.result() != null) {
-                    handler.handle(result(context.toValue(query.result())));
-                } else {
-                    handler.handle(error(new ValueMissingException(key)));
-                }
+    public Future<Value> get(String key) {
+        return client.findOne(collection, id(key), ALL_FIELDS).compose(document -> {
+            if (document != null) {
+                return result(context.toValue(document));
             } else {
-                handler.handle(error(query.cause()));
+                return error(new ValueMissingException(key));
             }
         });
     }
 
     @Override
-    public void put(Value value, Handler<AsyncResult<Void>> handler) {
-        client.replaceDocumentsWithOptions(collection, id(value.getId()), document(value),
+    public Future<Void> put(Value value) {
+        return client.replaceDocumentsWithOptions(collection, id(value.getId()), document(value),
                 new UpdateOptions().setUpsert(true))
-                .onComplete(update -> {
-                    if (update.succeeded()) {
-                        handler.handle(result());
-                    } else {
-                        handler.handle(error(update.cause()));
-                    }
-                });
+                .mapEmpty();
     }
 
     private JsonObject document(Value value) {
@@ -79,27 +69,23 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
-        client.insert(collection, document(value)).onComplete(put -> {
+    public Future<Void> putIfAbsent(Value value) {
+        return client.insert(collection, document(value)).transform(put -> {
             if (put.succeeded()) {
-                handler.handle(FutureHelper.result());
+                return FutureHelper.result();
             } else {
-                handler.handle(error(new ValueAlreadyPresentException(value.getId())));
+                return error(new ValueAlreadyPresentException(value.getId()));
             }
         });
     }
 
     @Override
-    public void remove(String key, Handler<AsyncResult<Void>> handler) {
-        client.removeDocument(collection, id(key)).onComplete(remove -> {
-            if (remove.succeeded()) {
-                if (remove.result().getRemovedCount() > 0) {
-                    handler.handle(FutureHelper.result());
-                } else {
-                    handler.handle(error(new NothingToRemoveException(key)));
-                }
+    public Future<Void> remove(String key) {
+        return client.removeDocument(collection, id(key)).compose(remove -> {
+            if (remove.getRemovedCount() > 0) {
+                return FutureHelper.result();
             } else {
-                handler.handle(error(remove.cause()));
+                return error(new NothingToRemoveException(key));
             }
         });
     }
@@ -113,65 +99,45 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public void update(Value value, Handler<AsyncResult<Void>> handler) {
-        client.replaceDocuments(collection, id(value), document(value)).onComplete(replace -> {
-            if (replace.succeeded()) {
-                if (replace.result().getDocModified() > 0) {
-                    handler.handle(FutureHelper.result());
-                } else {
-                    handler.handle(error(new NothingToUpdateException(value.getId())));
-                }
+    public Future<Void> update(Value value) {
+        return client.replaceDocuments(collection, id(value), document(value)).compose(replace -> {
+            if (replace.getDocModified() > 0) {
+                return FutureHelper.result();
             } else {
-                handler.handle(error(replace.cause()));
+                return error(new NothingToUpdateException(value.getId()));
             }
         });
     }
 
     @Override
-    public void values(Handler<AsyncResult<Stream<Value>>> handler) {
-        client.find(collection, new JsonObject()).onComplete(found -> {
-            if (found.succeeded()) {
-                handler.handle(result(found.result().stream().map(json -> context.toValue(json))));
-            } else {
-                handler.handle(Future.failedFuture(found.cause()));
-            }
-        });
+    public Future<Stream<Value>> values() {
+        return client.find(collection, new JsonObject())
+                .map(found -> found.stream().map(json -> context.toValue(json)));
     }
 
     @Override
-    public void clear(Handler<AsyncResult<Void>> handler) {
-        client.dropCollection(collection).onComplete(drop -> {
-            if (drop.succeeded()) {
-                handler.handle(FutureHelper.result());
-            } else {
-                handler.handle(error(drop.cause()));
-            }
-        });
+    public Future<Void> clear() {
+        return client.dropCollection(collection);
     }
 
     @Override
-    public void size(Handler<AsyncResult<Integer>> handler) {
-        client.count(collection, new JsonObject()).onComplete(result -> {
-            if (result.succeeded()) {
-                handler.handle(result(result.result().intValue()));
-            } else {
-                handler.handle(error(result.cause()));
-            }
-        });
+    public Future<Integer> size() {
+        return client.count(collection, new JsonObject()).map(Long::intValue);
     }
 
     @Override
     public void addIndex(String field) {
-        addIndex(field, (result) -> { });
+        createIndex(field);
     }
 
-    private void addIndex(String field, Handler<AsyncResult<Void>> handler) {
+    private Future<Void> createIndex(String field) {
         if (!indexed.contains(field)) {
             indexed.add(field);
             field = field.replace(STORAGE_ARRAY, "");
 
-            client.createIndex(context.collection(), new JsonObject().put(field, ""))
-                    .onComplete(handler);
+            return client.createIndex(context.collection(), new JsonObject().put(field, ""));
+        } else {
+            return FutureHelper.result();
         }
     }
 
@@ -261,16 +227,11 @@ public class MongoDBMap<Value extends Storable> implements AsyncStorage<Value> {
             }
 
             @Override
-            public void execute(Handler<AsyncResult<Collection<Value>>> handler) {
+            public Future<Collection<Value>> execute() {
                 apply();
 
-                client.findWithOptions(collection, new JsonObject().put(OR, statements), getOptions()).onComplete(find -> {
-                    if (find.succeeded()) {
-                        handler.handle(result(toList(find.result())));
-                    } else {
-                        handler.handle(error(find.cause()));
-                    }
-                });
+                return client.findWithOptions(collection, new JsonObject().put(OR, statements), getOptions())
+                        .map(found -> toList(found));
             }
 
             private FindOptions getOptions() {

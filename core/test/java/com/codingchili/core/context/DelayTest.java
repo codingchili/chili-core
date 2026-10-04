@@ -24,7 +24,7 @@ public class DelayTest {
 
     @AfterClass
     public static void tearDown(TestContext test) {
-        context.close(test.asyncAssertSuccess());
+        context.close().onComplete(test.asyncAssertSuccess());
     }
     @Test
     public void testDelayFuture(TestContext test) {

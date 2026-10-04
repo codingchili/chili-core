@@ -38,7 +38,7 @@ It's also possible to programmatically configure the hazelcast cluster using the
 
 Example of a clustered context
 ```java
-SystemContext.clustered(core -> {
+SystemContext.clustered().onSuccess(core -> {
     // core is a clustered context here - deploy some services.
     // the event bus is clustered and the Hazelcast distributed map available.
 });
@@ -91,8 +91,8 @@ any deployments it has made during it's lifetime. Usually deployments will live 
 
 Stopping the application, this will invoke the stop method of all core deployments.
 ```java
-core.close(() -> {
-    // invoked when the close operation has succeeded.
+core.close().onComplete(done -> {
+    // invoked when the close operation has completed.
 });
 ```
 

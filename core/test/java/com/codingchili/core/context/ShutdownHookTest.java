@@ -4,6 +4,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
@@ -20,6 +21,9 @@ import com.codingchili.core.listener.CoreService;
 public class ShutdownHookTest {
     private SystemContext context;
 
+    @Rule
+    public Timeout timeout = Timeout.seconds(10);
+
     @Before
     public void setUp() {
         context = new SystemContext();
@@ -27,7 +31,7 @@ public class ShutdownHookTest {
 
     @After
     public void tearDown(TestContext test) {
-        context.close(test.asyncAssertSuccess());
+        context.close().onComplete(test.asyncAssertSuccess());
     }
 
     @Test
@@ -110,7 +114,8 @@ public class ShutdownHookTest {
                     test.fail("Interrupted; should override timeout.");
                 }
                 stop.complete();
-                untilVertxClosed(async);
+                // poll off the event loop, blocking it here prevents vertx from closing.
+                new Thread(() -> untilVertxClosed(async)).start();
             }
         }).onComplete(done -> {
             if (done.succeeded()) {

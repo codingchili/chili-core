@@ -90,14 +90,12 @@ public class EntryWatcher<Value extends Storable> {
 
     private void execute() {
         QueryBuilder<Value> query = this.query.get();
-        query.execute(q -> {
-            if (q.succeeded()) {
-                consumer.accept(q.result());
-                context.onWatcherCompleted(query.name(), q.result().size());
-            } else {
-                context.onWatcherFailed(query.name(), q.cause().getMessage());
-            }
-        });
+        query.execute()
+                .onSuccess(result -> {
+                    consumer.accept(result);
+                    context.onWatcherCompleted(query.name(), result.size());
+                })
+                .onFailure(e -> context.onWatcherFailed(query.name(), e.getMessage()));
     }
 
     /**

@@ -36,7 +36,7 @@ public class ClusteredSessionTest {
 
     @After
     public void tearDown(TestContext test) {
-        core.close(test.asyncAssertSuccess());
+        core.close().onComplete(test.asyncAssertSuccess());
     }
 
     @Test

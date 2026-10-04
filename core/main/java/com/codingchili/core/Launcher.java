@@ -109,14 +109,12 @@ public class Launcher implements CoreService {
             var nodes = new ArrayList<>(context.services());
 
             if (launcher.settings().isClustered()) {
-                SystemContext.clustered(clustered -> {
-                    if (clustered.succeeded()) {
-                        start(clustered.result(), nodes);
-                    } else {
-                        logger.log(ERROR_LAUNCHER_STARTUP, Level.ERROR);
-                        exit();
-                    }
-                });
+                SystemContext.clustered()
+                        .onSuccess(clustered -> start(clustered, nodes))
+                        .onFailure(e -> {
+                            logger.log(ERROR_LAUNCHER_STARTUP, Level.ERROR);
+                            exit();
+                        });
             } else {
                 start(new SystemContext(), nodes);
             }

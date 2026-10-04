@@ -9,8 +9,7 @@ import com.codingchili.core.storage.exception.NothingToRemoveException;
 import com.codingchili.core.storage.exception.NothingToUpdateException;
 import com.codingchili.core.storage.exception.ValueAlreadyPresentException;
 import com.codingchili.core.storage.exception.ValueMissingException;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
+import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.WorkerExecutor;
 
@@ -93,75 +92,73 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public void get(String key, Handler<AsyncResult<Value>> handler) {
-        Optional<Value> value = get(key);
+    public Future<Value> get(String key) {
+        Optional<Value> value = find(key);
 
         if (value.isPresent()) {
-            handler.handle(result(value.get()));
+            return result(value.get());
         } else {
-            handler.handle(error(new ValueMissingException(key)));
+            return error(new ValueMissingException(key));
         }
     }
 
     @Override
-    public void contains(String key, Handler<AsyncResult<Boolean>> handler) {
-        handler.handle(result(db.containsKey(key)));
+    public Future<Boolean> contains(String key) {
+        return result(db.containsKey(key));
     }
 
     @Override
-    public void put(Value value, Handler<AsyncResult<Void>> handler) {
-        put(value);
-        handler.handle(FutureHelper.result());
+    public Future<Void> put(Value value) {
+        store(value);
+        return FutureHelper.result();
     }
 
     @Override
-    public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
-        Optional<Value> current = get(value.getId());
+    public Future<Void> putIfAbsent(Value value) {
+        Optional<Value> current = find(value.getId());
 
         if (current.isPresent()) {
-            handler.handle(error(new ValueAlreadyPresentException(value.getId())));
+            return error(new ValueAlreadyPresentException(value.getId()));
         } else {
-            put(value);
-            handler.handle(FutureHelper.result());
+            store(value);
+            return FutureHelper.result();
         }
     }
 
     @Override
-    public void remove(String key, Handler<AsyncResult<Void>> handler) {
-        Optional<Value> current = get(key);
+    public Future<Void> remove(String key) {
+        Optional<Value> current = find(key);
 
         if (current.isPresent()) {
-            remove(key);
-            handler.handle(FutureHelper.result());
-            dirty();
+            delete(key);
+            return FutureHelper.result();
         } else {
-            handler.handle(error(new NothingToRemoveException(key)));
+            return error(new NothingToRemoveException(key));
         }
     }
 
     @Override
-    public void update(Value value, Handler<AsyncResult<Void>> handler) {
-        Optional<Value> current = get(value.getId());
+    public Future<Void> update(Value value) {
+        Optional<Value> current = find(value.getId());
 
         if (current.isPresent()) {
-            put(value);
-            handler.handle(FutureHelper.result());
+            store(value);
+            return FutureHelper.result();
         } else {
-            handler.handle(error(new NothingToUpdateException(value.getId())));
+            return error(new NothingToUpdateException(value.getId()));
         }
     }
 
     @Override
-    public void values(Handler<AsyncResult<Stream<Value>>> handler) {
-        context.blocking(() -> db.stream().map(Map.Entry::getValue))
-                .onComplete(handler);
+    public Future<Stream<Value>> values() {
+        return context.blocking(() -> db.stream().map(Map.Entry::getValue));
     }
 
     @Override
-    public void clear(Handler<AsyncResult<Void>> handler) {
+    public Future<Void> clear() {
         db.clear();
-        handler.handle(FutureHelper.result());
         dirty();
+        return FutureHelper.result();
     }
 
     @Override
@@ -182,11 +179,11 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public void size(Handler<AsyncResult<Integer>> handler) {
-        handler.handle(result(db.size()));
+    public Future<Integer> size() {
+        return result(db.size());
     }
 
-    private Optional<Value> get(String key) {
+    private Optional<Value> find(String key) {
         Value value = db.get(key);
 
         if (value == null) {
@@ -196,12 +193,12 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
         }
     }
 
-    private void put(Value value) {
+    private void store(Value value) {
         db.put(value.getId(), value);
         dirty();
     }
 
-    private void remove(String key) {
+    private void delete(String key) {
         db.remove(key);
         dirty();
     }

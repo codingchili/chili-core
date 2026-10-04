@@ -15,7 +15,7 @@ public class MyService implements CoreService {
 
     // the main manifest can point to any file.
     public static void main(String[] args) {
-        SystemContext.clustered((core) -> {
+        SystemContext.clustered().onSuccess(core -> {
             // when clustering is complete - deploy the service.
             core.service(MyService::new);
         });    

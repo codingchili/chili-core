@@ -16,6 +16,7 @@ import com.hazelcast.query.Predicate;
 import com.hazelcast.query.Predicates;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.shareddata.AsyncMap;
 
@@ -68,97 +69,67 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public void get(String key, Handler<AsyncResult<Value>> handler) {
-        map.get(key).onComplete(get -> {
-            if (get.succeeded()) {
-                if (get.result() != null) {
-                    handler.handle(result(get.result()));
-                } else {
-                    handler.handle(error(new ValueMissingException(key)));
-                }
+    public Future<Value> get(String key) {
+        return map.get(key).compose(value -> {
+            if (value != null) {
+                return result(value);
             } else {
-                handler.handle(error(get.cause()));
+                return error(new ValueMissingException(key));
             }
         });
     }
 
     @Override
-    public void put(Value value, Handler<AsyncResult<Void>> handler) {
-        map.put(value.getId(), value).onComplete(handler);
+    public Future<Void> put(Value value) {
+        return map.put(value.getId(), value);
     }
 
     @Override
-    public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
-        map.putIfAbsent(value.getId(), value).onComplete(put -> {
-            if (put.succeeded()) {
-                if (put.result() == null) {
-                    handler.handle(FutureHelper.result());
-                } else {
-                    handler.handle(error(new ValueAlreadyPresentException(value.getId())));
-                }
+    public Future<Void> putIfAbsent(Value value) {
+        return map.putIfAbsent(value.getId(), value).compose(previous -> {
+            if (previous == null) {
+                return FutureHelper.result();
             } else {
-                handler.handle(error(put.cause()));
+                return error(new ValueAlreadyPresentException(value.getId()));
             }
         });
     }
 
     @Override
-    public void remove(String key, Handler<AsyncResult<Void>> handler) {
-        map.remove(key).onComplete(remove -> {
-            if (remove.succeeded()) {
-                if (remove.result() == null) {
-                    handler.handle(error(new NothingToRemoveException(key)));
-                } else {
-                    handler.handle(FutureHelper.result());
-                }
+    public Future<Void> remove(String key) {
+        return map.remove(key).compose(removed -> {
+            if (removed == null) {
+                return error(new NothingToRemoveException(key));
             } else {
-                handler.handle(error(remove.cause()));
+                return FutureHelper.result();
             }
         });
     }
 
     @Override
-    public void update(Value value, Handler<AsyncResult<Void>> handler) {
-        map.replace(value.getId(), value).onComplete(replace -> {
-            if (replace.succeeded()) {
-                if (replace.result() == null) {
-                    handler.handle(error(new NothingToUpdateException(value.getId())));
-                } else {
-                    handler.handle(FutureHelper.result());
-                }
+    public Future<Void> update(Value value) {
+        return map.replace(value.getId(), value).compose(replaced -> {
+            if (replaced == null) {
+                return error(new NothingToUpdateException(value.getId()));
             } else {
-                handler.handle(error(replace.cause()));
+                return FutureHelper.result();
             }
         });
     }
 
     @Override
-    public void values(Handler<AsyncResult<Stream<Value>>> handler) {
-        context.blocking(() -> imap.values().stream())
-                .onComplete(handler);
-
+    public Future<Stream<Value>> values() {
+        return context.blocking(() -> imap.values().stream());
     }
 
     @Override
-    public void clear(Handler<AsyncResult<Void>> handler) {
-        map.clear().onComplete(clear -> {
-            if (clear.succeeded()) {
-                handler.handle(FutureHelper.result());
-            } else {
-                handler.handle(error(clear.cause()));
-            }
-        });
+    public Future<Void> clear() {
+        return map.clear();
     }
 
     @Override
-    public void size(Handler<AsyncResult<Integer>> handler) {
-        map.size().onComplete(size -> {
-            if (size.succeeded()) {
-                handler.handle(result(size.result()));
-            } else {
-                handler.handle(error(size.cause()));
-            }
-        });
+    public Future<Integer> size() {
+        return map.size();
     }
 
     @Override
@@ -248,18 +219,10 @@ public class HazelMap<Value extends Storable> implements AsyncStorage<Value> {
             }
 
             @Override
-            public void execute(Handler<AsyncResult<Collection<Value>>> handler) {
+            public Future<Collection<Value>> execute() {
                 apply(operator, attribute());
 
-                context.<Collection<Value>>blocking(task -> {
-                    task.complete(imap.values(getPredicateWithPager()));
-                }, false, result -> {
-                    if (result.succeeded()) {
-                        handler.handle(result(result.result()));
-                    } else {
-                        handler.handle(error(result.cause()));
-                    }
-                });
+                return context.<Collection<Value>>blocking(() -> imap.values(getPredicateWithPager()), false);
             }
 
             private PagingPredicate<String, Value> getPredicateWithPager() {

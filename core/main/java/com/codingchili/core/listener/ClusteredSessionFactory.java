@@ -49,9 +49,7 @@ public class ClusteredSessionFactory implements SessionFactory<ClusteredSession>
 
     @Override
     public Future<Boolean> isActive(ClusteredSession session) {
-        Promise<Boolean> promise = Promise.promise();
-        sessions.contains(session.getId(), promise::handle);
-        return promise.future();
+        return sessions.contains(session.getId());
     }
 
     @Override
@@ -64,16 +62,12 @@ public class ClusteredSessionFactory implements SessionFactory<ClusteredSession>
 
     @Override
     public Future<Void> destroy(ClusteredSession session) {
-        Promise<Void> promise = Promise.promise();
-        sessions.remove(session.getId(), promise::handle);
-        return promise.future();
+        return sessions.remove(session.getId());
     }
 
     @Override
     public Future<Void> update(ClusteredSession session) {
-        Promise<Void> promise = Promise.promise();
-        sessions.put(session, promise::handle);
-        return promise.future();
+        return sessions.put(session);
     }
 
     @Override
@@ -106,7 +100,7 @@ public class ClusteredSessionFactory implements SessionFactory<ClusteredSession>
         new StorageLoader<ClusteredSession>(core)
                 .withPlugin(getPluginWithSelector())
                 .withValue(ClusteredSession.class)
-                .build(load -> {
+                .build().onComplete(load -> {
                     if (load.succeeded()) {
                         storage = new ClusteredSessionFactory(load.result());
                         promise.complete();

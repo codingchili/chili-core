@@ -38,7 +38,7 @@ public class JsonMapTest extends MapTestCases {
         Async async = test.async();
         StorageObject storable = new StorageObject("the_id", 21);
 
-        store.put(storable, result -> context.timer(500, event -> {
+        store.put(storable).onComplete(result -> context.timer(500, event -> {
             try {
                 JsonObject db = ConfigurationFactory.readObject(
                         Paths.get(getDBPath(getDBIdentifier(plugin.getSimpleName(), COLLECTION, ""))).toString());

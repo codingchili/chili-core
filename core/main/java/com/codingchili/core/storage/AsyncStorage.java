@@ -1,7 +1,6 @@
 package com.codingchili.core.storage;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
+import io.vertx.core.Future;
 
 import java.util.stream.Stream;
 
@@ -22,27 +21,25 @@ public interface AsyncStorage<Value extends Storable> {
      * get an entry with the given key, if the key does not match a value fails with
      * #{@link ValueMissingException}
      *
-     * @param key     a unique key identifying an entry
-     * @param handler callback
+     * @param key a unique key identifying an entry
+     * @return future completed with the value.
      */
-    void get(String key, Handler<AsyncResult<Value>> handler);
+    Future<Value> get(String key);
 
     /**
      * checks if an entry exists for the given key
      *
-     * @param key     the key to check if set
-     * @param handler callback
+     * @param key the key to check if set
+     * @return future completed with true if the key exists.
      */
-    default void contains(String key, Handler<AsyncResult<Boolean>> handler) {
-        get(key, done -> {
+    default Future<Boolean> contains(String key) {
+        return get(key).transform(done -> {
             if (done.succeeded()) {
-                handler.handle(result(true));
+                return result(true);
+            } else if (done.cause() instanceof ValueMissingException) {
+                return result(false);
             } else {
-                if (done.cause() instanceof ValueMissingException) {
-                    handler.handle(result(false));
-                } else {
-                    handler.handle(error(done.cause()));
-                }
+                return error(done.cause());
             }
         });
     }
@@ -50,10 +47,10 @@ public interface AsyncStorage<Value extends Storable> {
     /**
      * set the entry identified by the given key to the given value
      *
-     * @param value   the value to be set for the given key
-     * @param handler callback
+     * @param value the value to be set for the given key
+     * @return future completed when the value is set.
      */
-    void put(Value value, Handler<AsyncResult<Void>> handler);
+    Future<Void> put(Value value);
 
 
     /**
@@ -61,48 +58,48 @@ public interface AsyncStorage<Value extends Storable> {
      * #{@link com.codingchili.core.storage.exception.ValueAlreadyPresentException}
      * if the key already has a value.
      *
-     * @param value   the value to be set if the entry does not exist.
-     * @param handler callback
+     * @param value the value to be set if the entry does not exist.
+     * @return future completed when the value is set.
      */
-    void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler);
+    Future<Void> putIfAbsent(Value value);
 
     /**
      * Removes an entry by its key.
      *
-     * @param key     identifies the entry to be removed.
-     * @param handler callback
+     * @param key identifies the entry to be removed.
+     * @return future completed when the entry is removed.
      */
-    void remove(String key, Handler<AsyncResult<Void>> handler);
+    Future<Void> remove(String key);
 
     /**
      * updates the value of the given key if a value already exists.
      *
-     * @param value   the new value of the entry
-     * @param handler callback
+     * @param value the new value of the entry
+     * @return future completed when the entry is updated.
      */
-    void update(Value value, Handler<AsyncResult<Void>> handler);
+    Future<Void> update(Value value);
 
     /**
      * Get all values contained within the storage as a stream.
      * Not recommended to use on large maps.
      *
-     * @param handler callback
+     * @return future completed with a stream of all values.
      */
-    void values(Handler<AsyncResult<Stream<Value>>> handler);
+    Future<Stream<Value>> values();
 
     /**
      * removes all existing entries from the storage.
      *
-     * @param handler callback
+     * @return future completed when the storage is cleared.
      */
-    void clear(Handler<AsyncResult<Void>> handler);
+    Future<Void> clear();
 
     /**
      * returns the amount of entries in the storage.
      *
-     * @param handler callback
+     * @return future completed with the number of entries.
      */
-    void size(Handler<AsyncResult<Integer>> handler);
+    Future<Integer> size();
 
     /**
      * Get the context for the storage.

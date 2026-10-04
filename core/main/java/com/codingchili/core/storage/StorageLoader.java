@@ -6,9 +6,7 @@ import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.Level;
 import com.codingchili.core.logging.Logger;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
-import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.json.JsonObject;
 
@@ -162,12 +160,11 @@ public class StorageLoader<Value extends Storable> {
      * Loads the configured storage. Throws an exception if context,
      * class or plugin is unset.
      *
-     * @param handler completed when the storage is loaded.
+     * @return future completed when the storage is loaded.
      */
-    @SuppressWarnings("unchecked")
-    public void build(Handler<AsyncResult<AsyncStorage<Value>>> handler) {
+    public Future<AsyncStorage<Value>> build() {
         this.logger = context.logger(getClass());
-        this.load().onComplete(handler);
+        return this.load();
     }
 
     private void checkIsSet(Object object, String type) {

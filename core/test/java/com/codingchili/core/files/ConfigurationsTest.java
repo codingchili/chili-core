@@ -33,7 +33,7 @@ public class ConfigurationsTest {
 
     @After
     public void tearDown(TestContext test) {
-        context.close(test.asyncAssertSuccess());
+        context.close().onComplete(test.asyncAssertSuccess());
         Configurations.reset();
         Configurations.shutdown();
     }

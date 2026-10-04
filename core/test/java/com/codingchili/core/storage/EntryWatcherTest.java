@@ -1,18 +1,21 @@
 package com.codingchili.core.storage;
 
-import io.vertx.core.*;
+import com.codingchili.core.context.StorageContext;
+import com.codingchili.core.context.TimerSource;
+import com.codingchili.core.testing.StorageObject;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeUnit;
-
-import com.codingchili.core.context.StorageContext;
-import com.codingchili.core.context.TimerSource;
-import com.codingchili.core.testing.StorageObject;
 
 
 /**
@@ -44,14 +47,14 @@ public class EntryWatcherTest {
                 this.storage = result.result();
 
                 getQuery().poll(entry -> entry.forEach(item -> {
-                    storage.remove(item.getId(), removed -> {
+                    storage.remove(item.getId()).onComplete(removed -> {
                         if (removed.failed()) {
                             test.fail(removed.cause());
                         }
                     });
                 }), TimerSource.of(REMOVE_INTERVAL));
 
-                storage.put(object, put -> {
+                storage.put(object).onComplete(put -> {
                     test.assertTrue(put.succeeded());
                     async.complete();
                 });
@@ -71,23 +74,23 @@ public class EntryWatcherTest {
                 .withPlugin(JsonMap.class)
                 .withValue(StorageObject.class)
                 .withDB(DB, COLLECTION)
-                .build(future);
+                .build().onComplete(future);
     }
 
     @After
     public void tearDown(TestContext test) {
-        context.close(test.asyncAssertSuccess());
+        context.close().onComplete(test.asyncAssertSuccess());
     }
 
     private void setPersist() {
         object.setLevel(LEVEL_PERSIST);
-        storage.update(object, result -> {
+        storage.update(object).onComplete(result -> {
         });
     }
 
     private void setRemove(TestContext test) {
         object.setLevel(LEVEL_REMOVE);
-        storage.update(object, result -> {
+        storage.update(object).onComplete(result -> {
             if (result.failed()) {
                 test.fail(result.cause());
             }
@@ -99,7 +102,7 @@ public class EntryWatcherTest {
         Async async = test.async();
         setRemove(test);
 
-        context.timer(WAIT_MS, handler -> storage.get(TEST_NAME, event -> {
+        context.timer(WAIT_MS, handler -> storage.get(TEST_NAME).onComplete(event -> {
             test.assertFalse(event.succeeded());
             test.assertNull(event.result());
             async.complete();
@@ -107,14 +110,15 @@ public class EntryWatcherTest {
     }
 
     @Test
-    public void testRealmNotRemovedWhenNotStale(TestContext test) {
+    public void testItemKeptWhenFresh(TestContext test) {
         Async async = test.async();
         setPersist();
 
-        context.timer(WAIT_MS, handler -> storage.get(TEST_NAME, get -> {
-            test.assertTrue(get.succeeded());
-            test.assertNotNull(get.result());
-            async.complete();
-        }));
+        context.timer(WAIT_MS, handler -> storage.get(TEST_NAME)
+                .onComplete(get -> {
+                    test.assertTrue(get.succeeded());
+                    test.assertNotNull(get.result());
+                    async.complete();
+                }));
     }
 }

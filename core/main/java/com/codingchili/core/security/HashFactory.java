@@ -47,10 +47,10 @@ public class HashFactory {
      * @param plaintext the plaintext password to be hashed and compared to expected.
      */
     public void verify(Handler<AsyncResult<Void>> future, String expected, char[] plaintext) {
-        context.<Boolean>blocking(blocked -> {
-            blocked.complete(argon2.verify(expected, plaintext));
-        }, hashed -> {
-            if (hashed.result()) {
+        context.<Boolean>blocking(() -> argon2.verify(expected, plaintext)).onComplete(hashed -> {
+            if (hashed.failed()) {
+                future.handle(Future.failedFuture(hashed.cause()));
+            } else if (hashed.result()) {
                 future.handle(Future.succeededFuture());
             } else {
                 future.handle(Future.failedFuture(new HashMismatchException()));

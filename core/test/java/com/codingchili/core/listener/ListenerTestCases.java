@@ -55,7 +55,7 @@ public abstract class ListenerTestCases {
 
     @AfterClass
     public static void tearDown(TestContext test) {
-        context.close(test.asyncAssertSuccess());
+        context.close().onComplete(test.asyncAssertSuccess());
     }
 
     @Before

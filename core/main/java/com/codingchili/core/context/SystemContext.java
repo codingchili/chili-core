@@ -13,10 +13,10 @@ import io.vertx.core.eventbus.EventBus;
 
 import java.util.*;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import static com.codingchili.core.configuration.CoreStrings.getUnsupportedDeployment;
 
@@ -26,7 +26,7 @@ import static com.codingchili.core.configuration.CoreStrings.getUnsupportedDeplo
  */
 public class SystemContext implements CoreContext {
     private static final AtomicBoolean initialized = new AtomicBoolean(false);
-    private final Map<String, List<String>> deployments = new HashMap<>();
+    private final Set<String> deployments = ConcurrentHashMap.newKeySet();
     private MetricCollector metrics;
     private RemoteLogger logger;
     protected Vertx vertx;
@@ -60,12 +60,11 @@ public class SystemContext implements CoreContext {
     /**
      * Creates a clustered instance of a context.
      *
-     * @param handler called with the context on creation.
+     * @return future completed with the context when the cluster has been joined.
      */
-    public static void clustered(Handler<AsyncResult<CoreContext>> handler) {
-        Vertx.clusteredVertx(Configurations.system().getOptions())
-                .onSuccess(vertx -> handler.handle(Future.succeededFuture(new SystemContext(vertx))))
-                .onFailure(e -> handler.handle(Future.failedFuture(e)));
+    public static Future<CoreContext> clustered() {
+        return Vertx.clusteredVertx(Configurations.system().getOptions())
+                .map(SystemContext::new);
     }
 
     @Override
@@ -176,92 +175,67 @@ public class SystemContext implements CoreContext {
     }
 
     private Future<String> deployN(String verticle) {
-        return vertx.deployVerticle(verticle, new DeploymentOptions().setInstances(system().getHandlers()));
+        return track(vertx.deployVerticle(verticle, options(verticle)));
     }
 
     @Override
     public Future<String> handler(Supplier<CoreHandler> handler) {
         ListenerSettings settings = new ListenerSettings();
-        Promise<String> promise = Promise.promise();
-        deployN(() -> new ClusterListener()
+        return deployN(() -> new ClusterListener()
                 .settings(settings)
-                .handler(handler.get()), promise);
-        return promise.future();
+                .handler(handler.get()));
     }
 
     @Override
     public Future<String> listener(Supplier<CoreListener> listener) {
-        Promise<String> promise = Promise.promise();
-        deployN(listener::get, promise);
-        return promise.future();
+        return deployN(listener::get);
     }
 
     @Override
     public Future<String> service(Supplier<CoreService> service) {
-        Promise<String> promise = Promise.promise();
-        deployN(service::get, promise);
-        return promise.future();
+        return deployN(service::get);
     }
 
-    private void deployN(Supplier<CoreDeployment> supplier, Promise<String> done) {
-        CoreDeployment deployment = supplier.get();
-        int handlerCount = getHandlerCount(deployment);
-        CountDownLatch latch = new CountDownLatch(handlerCount);
-        String deploymentId = UUID.randomUUID().toString();
-        List<String> completed = new ArrayList<>();
+    private Future<String> deployN(Supplier<CoreDeployment> supplier) {
+        // the first instance determines the instance count, reuse it as the first deployed instance.
+        AtomicReference<CoreDeployment> first = new AtomicReference<>(supplier.get());
+        DeploymentOptions options = options(first.get());
 
-        for (int i = 0; i < handlerCount; i++) {
-            CoreVerticle verticle = new CoreVerticle(deployment, this);
-            vertx.deployVerticle(verticle)
-                    .onSuccess(id -> {
-                        completed.add(id);
-                        latch.countDown();
-                        if (latch.getCount() == 0) {
-                            done.complete(deploymentId);
-                            deployments.put(deploymentId, completed);
-                        }
-                    })
-                    .onFailure(done::tryFail);
-            if (i < getHandlerCount(deployment) - 1)
-                deployment = supplier.get();
-        }
+        return track(vertx.deployVerticle(() -> {
+            CoreDeployment deployment = first.getAndSet(null);
+            return new CoreVerticle((deployment == null) ? supplier.get() : deployment, this);
+        }, options));
     }
 
-    private int getHandlerCount(CoreDeployment deployable) {
-        if (deployable instanceof DeploymentAware) {
-            return ((DeploymentAware) deployable).instances();
-        } else if (deployable instanceof CoreListener) {
-            return system().getListeners();
-        } else if (deployable instanceof CoreService) {
-            return system().getServices();
-        } else {
-            return system().getHandlers();
-        }
+    private DeploymentOptions options(Object deployable) {
+        int instances = switch (deployable) {
+            case DeploymentAware aware -> aware.instances();
+            case CoreListener _ -> system().getListeners();
+            case CoreService _ -> system().getServices();
+            default -> system().getHandlers();
+        };
+        return new DeploymentOptions().setInstances(instances);
+    }
+
+    private Future<String> track(Future<String> deployment) {
+        return deployment.onSuccess(deployments::add);
     }
 
     @Override
     public Future<Void> stop(String deploymentId) {
-        if (deployments.containsKey(deploymentId)) {
-            var promises = new ArrayList<Future<?>>();
-            deployments.get(deploymentId).forEach(deployment -> {
-                promises.add(vertx.undeploy(deployment));
-            });
-            return Future.all(promises).mapEmpty();
-        } else {
-            return vertx.undeploy(deploymentId);
-        }
+        deployments.remove(deploymentId);
+        return vertx.undeploy(deploymentId);
     }
 
     @Override
-    public Future<CompositeFuture> stop() {
-        List<Future<?>> futures = deployments.values()
-                .stream()
-                .flatMap(Collection::stream)
-                .map((id) -> vertx.undeploy(id))
-                .collect(Collectors.toList());
-        return Future.all(futures);
+    public Future<Void> stop() {
+        List<Future<Void>> futures = deployments.stream()
+                .map(vertx::undeploy)
+                .toList();
+        // prevent undeploying the same verticles twice.
+        deployments.clear();
+        return Future.all(futures).mapEmpty();
     }
-
 
 
     public Future<Void> blocking(Runnable blocking) {
@@ -292,16 +266,10 @@ public class SystemContext implements CoreContext {
     }
 
     @Override
-    public void close() {
-        close(closed -> {
-
-        });
-    }
-
-    @Override
-    public void close(Handler<AsyncResult<Void>> handler) {
+    public Future<Void> close() {
         initialized.set(false);
-        vertx.close().onComplete((v) -> handler.handle(Future.succeededFuture()));
+        // closing is best effort, failures are not propagated.
+        return vertx.close().otherwiseEmpty();
     }
 
     @Override

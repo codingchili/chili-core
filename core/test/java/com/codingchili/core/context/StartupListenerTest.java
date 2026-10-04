@@ -17,7 +17,7 @@ public class StartupListenerTest {
     @After
     public void tearDown(TestContext test) {
         if (core != null) {
-            core.close(test.asyncAssertSuccess());
+            core.close().onComplete(test.asyncAssertSuccess());
         }
     }
 

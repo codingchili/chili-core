@@ -18,7 +18,7 @@ public class JsonStorableDeserializer extends StdDeserializer<JsonStorable> {
     };
 
     public JsonStorableDeserializer() {
-        this(null);
+        this(JsonStorable.class);
     }
 
     public JsonStorableDeserializer(final Class<?> type) {

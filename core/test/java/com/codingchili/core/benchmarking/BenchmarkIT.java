@@ -32,21 +32,12 @@ public class BenchmarkIT {
 
     @BeforeClass
     public static void setUp(TestContext test) {
-        Async async = test.async();
-
-        SystemContext.clustered(clustering -> {
-            if (clustering.succeeded()) {
-                context = clustering.result();
-                async.complete();
-            } else {
-                test.fail(clustering.cause());
-            }
-        });
+        SystemContext.clustered().onComplete(test.asyncAssertSuccess(clustered -> context = clustered));
     }
 
     @AfterClass
     public static void tearDown(TestContext test) {
-        context.close(test.asyncAssertSuccess());
+        context.close().onComplete(test.asyncAssertSuccess());
     }
 
     /* simple test case that runs all map benchmarks using mock implementations

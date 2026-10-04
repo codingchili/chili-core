@@ -1,7 +1,6 @@
 package com.codingchili.core.storage;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
+import io.vertx.core.Future;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -156,7 +155,7 @@ public class Query<Value extends Storable> implements QueryBuilder<Value> {
     }
 
     /**
-     * If intending to invoke either #{@link #execute(Handler)} or #{@link #poll(Consumer, TimerSource)}
+     * If intending to invoke either #{@link #execute()} or #{@link #poll(Consumer, TimerSource)}
      * this method must be called first.
      *
      * @param storage the storage to use if the standalone query is executed.
@@ -168,7 +167,7 @@ public class Query<Value extends Storable> implements QueryBuilder<Value> {
     }
 
     @Override
-    public void execute(Handler<AsyncResult<Collection<Value>>> handler) {
+    public Future<Collection<Value>> execute() {
         assertStorageIsSet();
 
         // allow calling execute multiple times.
@@ -177,16 +176,10 @@ public class Query<Value extends Storable> implements QueryBuilder<Value> {
             proxy.forEach(Runnable::run);
         }
 
-        builder.execute(execute -> {
-            if (execute.succeeded()) {
-                Collection<Value> result = execute.result();
-                result.forEach(mapper);
-                handler.handle(FutureHelper.result(result));
-            } else {
-                handler.handle(FutureHelper.error(execute.cause()));
-            }
+        return builder.execute().map(result -> {
+            result.forEach(mapper);
+            return result;
         });
-
     }
 
     /**

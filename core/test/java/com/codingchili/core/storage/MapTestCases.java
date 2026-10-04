@@ -68,7 +68,7 @@ public class MapTestCases {
 
     @After
     public void tearDown(TestContext test) {
-        context.close(test.asyncAssertSuccess());
+        context.close().onComplete(test.asyncAssertSuccess());
     }
 
     protected void setUp(TestContext test, Class<? extends AsyncStorage> plugin, CoreContext context) {
@@ -80,19 +80,22 @@ public class MapTestCases {
                 .withDB(plugin.getSimpleName(), COLLECTION)
                 .withValue(StorageObject.class)
                 .withPlugin(plugin)
-                .build(result -> {
+                .build().onComplete(result -> {
                     if (result.succeeded()) {
                         store = result.result();
-                        prepareStore(async);
+                        prepareStore(test, async);
                     } else {
                         test.fail(result.cause());
                     }
                 });
     }
 
-    private void prepareStore(Async async) {
-        store.clear(clear -> {
-            Assert.assertTrue(clear.succeeded());
+    private void prepareStore(TestContext test, Async async) {
+        store.clear().onComplete(clear -> {
+            if (clear.failed()) {
+                test.fail(clear.cause());
+                return;
+            }
             AtomicInteger inserted = new AtomicInteger(0);
 
             context.periodic(TimerSource.of(50).setName("startup timer"), handler -> {
@@ -110,12 +113,13 @@ public class MapTestCases {
                     object.getKeywords().add(SNOW_KEYWORD);
                 }
 
-                store.put(object, done -> {
-                    if (done.failed()) {
-                        throw new RuntimeException(done.cause());
+                store.put(object).onComplete(done -> {
+                    if (done.succeeded()) {
+                        inserted.incrementAndGet();
+                    } else {
+                        // fail fast: the startup timer would otherwise wait for the test timeout.
+                        test.fail(done.cause());
                     }
-                    Assert.assertTrue(errorText(done), done.succeeded());
-                    inserted.incrementAndGet();
                 });
             }
         });
@@ -136,7 +140,7 @@ public class MapTestCases {
     public void testGet(TestContext test) {
         Async async = test.async();
 
-        store.get(TWO, get -> {
+        store.get(TWO).onComplete(get -> {
             test.assertTrue(get.succeeded());
             test.assertEquals(OBJECT_TWO, get.result());
             async.complete();
@@ -147,7 +151,7 @@ public class MapTestCases {
     public void testGetMissing(TestContext test) {
         Async async = test.async();
 
-        store.get(NAME_MISSING, get -> {
+        store.get(NAME_MISSING).onComplete(get -> {
             test.assertTrue(get.failed());
             test.assertNull(get.result());
             test.assertEquals(ValueMissingException.class, get.cause().getClass());
@@ -159,12 +163,12 @@ public class MapTestCases {
     public void testPut(TestContext test) {
         Async async = test.async();
 
-        store.put(OBJECT_ONE, put -> {
+        store.put(OBJECT_ONE).onComplete(put -> {
             test.assertTrue(put.succeeded());
 
-            store.size(size -> {
+            store.size().onComplete(size -> {
                 test.assertEquals(TEST_ITEM_COUNT.intValue(), size.result());
-                store.get(ONE, get -> {
+                store.get(ONE).onComplete(get -> {
                     test.assertEquals(OBJECT_ONE, get.result());
                     test.assertTrue(get.succeeded());
                     async.complete();
@@ -177,10 +181,10 @@ public class MapTestCases {
     public void testContainsKey(TestContext test) {
         Async async = test.async();
 
-        store.contains(TWO, contains -> {
+        store.contains(TWO).onComplete(contains -> {
             test.assertTrue(contains.result());
 
-            store.contains(UUID.randomUUID().toString(), done -> {
+            store.contains(UUID.randomUUID().toString()).onComplete(done -> {
                 test.assertFalse(done.result());
                 async.complete();
             });
@@ -192,10 +196,10 @@ public class MapTestCases {
         Async async = test.async();
         StorageObject missing = new StorageObject(NAME_MISSING, 0);
 
-        store.putIfAbsent(missing, put -> {
+        store.putIfAbsent(missing).onComplete(put -> {
             test.assertTrue(put.succeeded(), errorText(put));
 
-            store.get(ONE, get -> {
+            store.get(ONE).onComplete(get -> {
                 test.assertTrue(get.succeeded());
                 async.complete();
             });
@@ -206,7 +210,7 @@ public class MapTestCases {
     public void testPutIfAbsentNotAbsent(TestContext test) {
         Async async = test.async();
 
-        store.putIfAbsent(OBJECT_TWO, put -> {
+        store.putIfAbsent(OBJECT_TWO).onComplete(put -> {
             test.assertTrue(put.failed());
             test.assertEquals(ValueAlreadyPresentException.class, put.cause().getClass());
             async.complete();
@@ -217,10 +221,10 @@ public class MapTestCases {
     public void testRemove(TestContext test) {
         Async async = test.async();
 
-        store.remove(TWO, remove -> {
+        store.remove(TWO).onComplete(remove -> {
             test.assertTrue(remove.succeeded());
 
-            store.get(TWO, query -> {
+            store.get(TWO).onComplete(query -> {
                 test.assertTrue(query.failed());
                 async.complete();
             });
@@ -231,7 +235,7 @@ public class MapTestCases {
     public void testRemoveNotPresent(TestContext test) {
         Async async = test.async();
 
-        store.remove(NAME_MISSING, remove -> {
+        store.remove(NAME_MISSING).onComplete(remove -> {
             test.assertTrue(remove.failed());
             test.assertEquals(NothingToRemoveException.class, remove.cause().getClass());
             async.complete();
@@ -242,19 +246,19 @@ public class MapTestCases {
     public void testUpdate(TestContext test) {
         Async async = test.async();
 
-        store.get(TWO, get -> {
+        store.get(TWO).onComplete(get -> {
             test.assertTrue(get.succeeded());
             StorageObject object = get.result();
             object.setLevel(1000);
 
-            store.update(object, done -> {
+            store.update(object).onComplete(done -> {
                 test.assertTrue(done.succeeded());
 
-                store.get(TWO, updated -> {
+                store.get(TWO).onComplete(updated -> {
                     test.assertTrue(updated.succeeded());
                     test.assertEquals(updated.result().getLevel(), 1000);
 
-                    store.size(size -> {
+                    store.size().onComplete(size -> {
                         test.assertEquals(TEST_ITEM_COUNT.intValue(), size.result());
                         async.complete();
                     });
@@ -269,7 +273,7 @@ public class MapTestCases {
         Async async = test.async();
         StorageObject object = new StorageObject(NAME_MISSING, 0);
 
-        store.update(object, replace -> {
+        store.update(object).onComplete(replace -> {
             test.assertTrue(replace.failed());
             test.assertEquals(NothingToUpdateException.class, replace.cause().getClass());
             async.complete();
@@ -280,10 +284,10 @@ public class MapTestCases {
     public void testClear(TestContext test) {
         Async async = test.async();
 
-        store.clear(clear -> {
+        store.clear().onComplete(clear -> {
             test.assertTrue(clear.succeeded(), errorText(clear));
 
-            store.size(size -> {
+            store.size().onComplete(size -> {
                 test.assertEquals(0, size.result());
                 test.assertTrue(size.succeeded());
                 async.complete();
@@ -295,7 +299,7 @@ public class MapTestCases {
     public void testSize(TestContext test) {
         Async async = test.async();
 
-        store.size(size -> {
+        store.size().onComplete(size -> {
             test.assertTrue(size.succeeded(), errorText(size));
             test.assertEquals(TEST_ITEM_COUNT.intValue(), size.result());
             async.complete();
@@ -306,7 +310,7 @@ public class MapTestCases {
     public void testQueryMatchNone(TestContext test) {
         Async async = test.async();
 
-        store.query(NAME).equalTo(NAME_MISSING).execute(query -> {
+        store.query(NAME).equalTo(NAME_MISSING).execute().onComplete(query -> {
             test.assertTrue(query.succeeded(), errorText(query));
             test.assertEquals(0, query.result().size());
             async.complete();
@@ -317,11 +321,11 @@ public class MapTestCases {
     public void testQueryLike(TestContext test) {
         Async async = test.async();
 
-        store.query(NAME).like("Snowflake").execute(query -> {
+        store.query(NAME).like("Snowflake").execute().onComplete(query -> {
             test.assertTrue(query.succeeded(), errorText(query));
             test.assertEquals(SNOWFLAKE_COUNT.intValue(), query.result().size());
 
-            store.query(NAME).like("flake0").execute(inner -> {
+            store.query(NAME).like("flake0").execute().onComplete(inner -> {
                 test.assertTrue(inner.succeeded());
                 test.assertEquals(1, inner.result().size());
                 async.complete();
@@ -333,7 +337,7 @@ public class MapTestCases {
     public void testRegexQuery(TestContext test) {
         Async async = test.async();
 
-        store.query(NAME).matches(".*flake[0]").execute(query -> {
+        store.query(NAME).matches(".*flake[0]").execute().onComplete(query -> {
             test.assertTrue(query.succeeded(), errorText(query));
             test.assertEquals(1, query.result().size());
             test.assertTrue(query.result().iterator().next().getId().contains("flake0"));
@@ -345,7 +349,7 @@ public class MapTestCases {
     public void testQueryRange(TestContext test) {
         Async async = test.async();
 
-        store.query(LEVEL).between(SNOWFLAKE_BASE_LEVEL, SNOWFLAKE_MAX_LEVEL).execute(query -> {
+        store.query(LEVEL).between(SNOWFLAKE_BASE_LEVEL, SNOWFLAKE_MAX_LEVEL).execute().onComplete(query -> {
             test.assertTrue(query.succeeded(), errorText(query));
             test.assertEquals(SNOWFLAKE_COUNT.intValue(), query.result().size());
 
@@ -363,7 +367,7 @@ public class MapTestCases {
     public void testQueryRangeNoMatches(TestContext test) {
         Async async = test.async();
 
-        store.query(LEVEL).between(-10L, -5L).execute(query -> {
+        store.query(LEVEL).between(-10L, -5L).execute().onComplete(query -> {
             test.assertTrue(query.succeeded(), errorText(query));
             test.assertEquals(0, query.result().size());
             async.complete();
@@ -375,7 +379,7 @@ public class MapTestCases {
         Async async = test.async();
         int pageSize = 4;
 
-        store.query(NAME).matches(REGEX_ALL).pageSize(pageSize).execute(query -> {
+        store.query(NAME).matches(REGEX_ALL).pageSize(pageSize).execute().onComplete(query -> {
             test.assertTrue(query.succeeded(), errorText(query));
             test.assertEquals(pageSize, query.result().size());
             async.complete();
@@ -414,7 +418,7 @@ public class MapTestCases {
                 .pageSize(pageSize)
                 .orderBy(LEVEL)
                 .order(mode)
-                .execute(query -> {
+                .execute().onComplete(query -> {
                     test.assertTrue(query.succeeded(), errorText(query));
                     test.assertEquals(pageSize, query.result().size());
                     handler.handle(Future.succeededFuture(query.result()));
@@ -447,7 +451,7 @@ public class MapTestCases {
                 .or(NAME)
                 .matches(REGEX_ALL)
                 .pageSize(TEST_ITEM_COUNT.intValue())
-                .execute(query -> {
+                .execute().onComplete(query -> {
                     test.assertTrue(query.succeeded(), errorText(query));
                     test.assertEquals(TEST_ITEM_COUNT.intValue(), query.result().size());
                     async.complete();
@@ -464,7 +468,7 @@ public class MapTestCases {
                 .equalTo(ONE)
                 .or(NAME)
                 .equalTo(TWO)
-                .execute(query -> {
+                .execute().onComplete(query -> {
                     test.assertTrue(query.succeeded(), errorText(query));
                     test.assertEquals(2, query.result().size());
                     async.complete();
@@ -479,7 +483,7 @@ public class MapTestCases {
                 .between(0L, 0L)
                 .or(LEVEL)
                 .between(5L, 5L)
-                .execute(query -> {
+                .execute().onComplete(query -> {
                     test.assertTrue(query.succeeded(), errorText(query));
                     test.assertNotEquals(0, query.result().size());
 
@@ -496,7 +500,7 @@ public class MapTestCases {
         Async async = test.async();
 
         store.query(NAME).startsWith(SNOWFLAKE_NAME_PREFIX)
-                .execute(query -> {
+                .execute().onComplete(query -> {
                     test.assertTrue(query.succeeded(), errorText(query));
                     test.assertEquals(SNOWFLAKE_COUNT.intValue(), query.result().size());
 
@@ -515,7 +519,7 @@ public class MapTestCases {
                 .matches(".*e0")
                 .and(NAME)
                 .matches(SNOWFLAKE_NAME_PREFIX + ".*")
-                .execute(query -> {
+                .execute().onComplete(query -> {
                     test.assertTrue(query.succeeded(), errorText(query));
                     test.assertNotEquals(0, query.result().size());
 
@@ -532,7 +536,7 @@ public class MapTestCases {
 
         store.query(NAME)
                 .in(ONE, TWO)
-                .execute(query -> {
+                .execute().onComplete(query -> {
                     test.assertTrue(query.succeeded(), errorText(query));
                     test.assertEquals(2, query.result().size());
 
@@ -553,7 +557,7 @@ public class MapTestCases {
                 .pageSize(LEVEL_BUCKET_SIZE)
                 .orderBy(LEVEL)
                 .order(SortOrder.ASCENDING)
-                .execute(query -> {
+                .execute().onComplete(query -> {
                     test.assertTrue(query.succeeded(), errorText(query));
                     test.assertNotEquals(0, query.result().size());
 
@@ -569,7 +573,7 @@ public class MapTestCases {
         Async async = test.async();
         int pageSize = 12;
 
-        store.query(NAME).matches(REGEX_ALL).pageSize(pageSize).execute(query -> {
+        store.query(NAME).matches(REGEX_ALL).pageSize(pageSize).execute().onComplete(query -> {
             test.assertTrue(query.succeeded(), errorText(query));
             test.assertEquals(pageSize, query.result().size());
             async.complete();
@@ -587,7 +591,7 @@ public class MapTestCases {
                 .or(NAME)
                 .startsWith(NAME)
                 .pageSize(TEST_ITEM_COUNT.intValue())
-                .execute(query -> {
+                .execute().onComplete(query -> {
                     test.assertTrue(query.succeeded(), errorText(query));
                     test.assertEquals(TEST_ITEM_COUNT.intValue(), query.result().size());
                     async.complete();
@@ -601,7 +605,7 @@ public class MapTestCases {
         store.query("nested.name")
                 .order(SortOrder.ASCENDING)
                 .matches(REGEX_ALL)
-                .execute(query -> {
+                .execute().onComplete(query -> {
                     test.assertTrue(query.succeeded(), errorText(query));
                     test.assertNotEquals(0, query.result().size());
 
@@ -618,7 +622,7 @@ public class MapTestCases {
     public void testQueryOnNestedField(TestContext test) {
         Async async = test.async();
 
-        store.query("nested.name").matches(StorageObject.NESTED_PREFIX + REGEX_ALL).execute(query -> {
+        store.query("nested.name").matches(StorageObject.NESTED_PREFIX + REGEX_ALL).execute().onComplete(query -> {
             test.assertTrue(query.succeeded(), errorText(query));
             test.assertNotEquals(0, query.result().size());
 
@@ -633,7 +637,7 @@ public class MapTestCases {
     public void testCaseSensitivityEqualsNotIgnored(TestContext test) {
         Async async = test.async();
 
-        store.query(NAME).equalTo(ONE.toUpperCase()).execute(query -> {
+        store.query(NAME).equalTo(ONE.toUpperCase()).execute().onComplete(query -> {
             test.assertTrue(query.succeeded(), errorText(query));
             test.assertEquals(0, query.result().size());
             async.complete();
@@ -645,7 +649,7 @@ public class MapTestCases {
         Async async = test.async();
 
         store.query(NAME).like(SNOWFLAKE_NAME_PREFIX.substring(1, SNOWFLAKE_NAME_PREFIX.length() - 2))
-                .execute(query -> {
+                .execute().onComplete(query -> {
                     test.assertTrue(query.succeeded(), errorText(query));
                     test.assertNotEquals(0, query.result().size());
                     async.complete();
@@ -657,10 +661,10 @@ public class MapTestCases {
         Async async = test.async();
         String upper = "UPPERcase";
         StorageObject item = new StorageObject(upper, 1);
-        store.put(item, done -> {
+        store.put(item).onComplete(done -> {
             test.assertTrue(done.succeeded());
 
-            store.query(ID_NAME).equalTo(upper).execute(query -> {
+            store.query(ID_NAME).equalTo(upper).execute().onComplete(query -> {
                 test.assertTrue(query.succeeded(), errorText(query));
                 test.assertEquals(1, query.result().size());
                 test.assertEquals(upper, query.result().iterator().next().getId());
@@ -673,7 +677,7 @@ public class MapTestCases {
     public void testQueryFlatArray(TestContext test) {
         Async async = test.async();
 
-        store.query("keywords[]").equalTo(SNOW_KEYWORD).execute(query -> {
+        store.query("keywords[]").equalTo(SNOW_KEYWORD).execute().onComplete(query -> {
             test.assertTrue(query.succeeded(), errorText(query));
             test.assertNotEquals(0, query.result().size());
 
@@ -688,7 +692,7 @@ public class MapTestCases {
     public void testQueryNestedArray(TestContext test) {
         Async async = test.async();
 
-        store.query("nested.numbers[]").in(7, 42).execute(query -> {
+        store.query("nested.numbers[]").in(7, 42).execute().onComplete(query -> {
             test.assertTrue(query.succeeded(), errorText(query));
             test.assertNotEquals(0, query.result().size());
 
@@ -705,7 +709,7 @@ public class MapTestCases {
         Async async = test.async();
         store.query("nested.numbers[]").between(10L, 42L)
                 .and("nested.numbers[]").between(0L, 10L)
-                .execute(query -> {
+                .execute().onComplete(query -> {
                     test.assertTrue(query.succeeded(), errorText(query));
                     test.assertNotEquals(0, query.result().size());
                     async.complete();
@@ -715,7 +719,7 @@ public class MapTestCases {
     @Test
     public void testGetValues(TestContext test) {
         Async async = test.async();
-        store.values(result -> {
+        store.values().onComplete(result -> {
             test.assertTrue(result.succeeded());
             test.assertEquals((int) result.result().count(),
                     TEST_ITEM_COUNT.intValue());
@@ -734,12 +738,12 @@ public class MapTestCases {
                 .page(1)
                 .pageSize(expectedHits); // important to verify that the pager is reset.
 
-        builder.execute(query -> {
+        builder.execute().onComplete(query -> {
             test.assertTrue(query.succeeded());
             test.assertEquals(expectedHits, query.result().size());
             StorageObject first = query.result().iterator().next();
 
-            builder.execute(inner -> {
+            builder.execute().onComplete(inner -> {
                 test.assertTrue(inner.succeeded());
                 test.assertEquals(expectedHits, inner.result().size());
                 test.assertEquals(first, inner.result().iterator().next());
@@ -786,10 +790,10 @@ public class MapTestCases {
                 .withDB(plugin.getSimpleName(), COLLECTION)
                 .withValue(StorageObject.class)
                 .withPlugin(plugin)
-                .build(result -> {
+                .build().onComplete(result -> {
                     AsyncStorage<StorageObject> newStorage = result.result();
-                    store.size(size -> {
-                        newStorage.size(newSize -> {
+                    store.size().onComplete(size -> {
+                        newStorage.size().onComplete(newSize -> {
                             test.assertEquals(size.result(), newSize.result());
                             test.assertEquals(newSize.result(), TEST_ITEM_COUNT.intValue());
                             async.complete();

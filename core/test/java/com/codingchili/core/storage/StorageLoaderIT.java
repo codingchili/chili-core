@@ -31,7 +31,7 @@ public class StorageLoaderIT {
 
     @AfterClass
     public static void tearDown(TestContext test) {
-        context.close(test.asyncAssertSuccess());
+        context.close().onComplete(test.asyncAssertSuccess());
     }
 
     @Test
@@ -40,7 +40,7 @@ public class StorageLoaderIT {
         new StorageLoader<>(context)
                 .withDB("", "")
                 .withValue(Storable.class)
-                .withPlugin("null").build(done -> {
+                .withPlugin("null").build().onComplete(done -> {
             if (done.failed()) {
                 async.complete();
             } else {
@@ -82,7 +82,8 @@ public class StorageLoaderIT {
                 .withPlugin(plugin)
                 .withDB(TEST_DB, UUID.randomUUID().toString())
                 .withValue(StorableString.class)
-                .build(promise::handle);
+                .build()
+                .onComplete(promise);
 
         promise.future().onComplete(done -> {
             if (done.succeeded()) {

@@ -6,8 +6,7 @@ import com.googlecode.cqengine.query.Query;
 import com.googlecode.cqengine.query.QueryFactory;
 import com.googlecode.cqengine.query.option.*;
 import com.googlecode.cqengine.resultset.ResultSet;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
+import io.vertx.core.Future;
 
 import java.util.*;
 import java.util.function.Function;
@@ -118,10 +117,10 @@ public class IndexedMapQuery<Value extends Storable> extends AbstractQueryBuilde
     private Function<Value, Value> mapper = (value) -> value;
 
     @Override
-    public void execute(Handler<AsyncResult<Collection<Value>>> handler) {
+    public Future<Collection<Value>> execute() {
         next();
 
-        storage.context.<Collection<Value>>blocking(() -> {
+        return storage.context.<Collection<Value>>blocking(() -> {
             try (ResultSet<Value> values = storage.db.retrieve(builder, getQueryOptions())) {
                 return StreamSupport.stream(values.spliterator(), false)
                         .skip(getPageSize() * getPage())
@@ -131,7 +130,7 @@ public class IndexedMapQuery<Value extends Storable> extends AbstractQueryBuilde
             } catch (Exception e) {
                 throw new CoreRuntimeException(e);
             }
-        }).onComplete(handler);
+        });
     }
 
     public IndexedMapQuery<Value> setMapper(Function<Value, Value> mapper) {

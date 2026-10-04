@@ -31,16 +31,16 @@ public class CoreBenchmarkSuite {
         executor.getProperty(PARAM_ITERATIONS).ifPresent(iterations ->
                 this.iterations = Integer.parseInt(iterations));
 
-        SystemContext.clustered(cluster -> {
-            maps(cluster.result(), new BenchmarkConsoleListener()).onComplete(done -> {
-                if (done.succeeded()) {
-                    createReport(promise, done.result(), executor);
-                } else {
-                    promise.fail(done.cause());
-                }
-                cluster.result().close();
-            });
-        });
+        SystemContext.clustered()
+                .onFailure(promise::fail)
+                .onSuccess(cluster -> maps(cluster, new BenchmarkConsoleListener()).onComplete(done -> {
+                    if (done.succeeded()) {
+                        createReport(promise, done.result(), executor);
+                    } else {
+                        promise.fail(done.cause());
+                    }
+                    cluster.close();
+                }));
         return null;
     }
 

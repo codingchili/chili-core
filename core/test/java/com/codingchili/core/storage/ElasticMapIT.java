@@ -41,10 +41,10 @@ public class ElasticMapIT extends MapTestCases {
     public void testClear(TestContext test) {
         Async async = test.async();
 
-        store.clear(clear -> {
+        store.clear().onComplete(clear -> {
             test.assertTrue(clear.succeeded());
 
-            context.timer(ELASTIC_REFRESH, event -> store.size(size -> {
+            context.timer(ELASTIC_REFRESH, event -> store.size().onComplete(size -> {
                 test.assertFalse(size.succeeded(), "should fail to count on missing index.");
                 async.complete();
             }));

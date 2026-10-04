@@ -120,7 +120,7 @@ public interface CoreContext {
     /**
      * @return stop the context.
      */
-    Future<CompositeFuture> stop();
+    Future<Void> stop();
 
     /**
      * Call to execute the given blocking handler on a worker thread that is
@@ -167,11 +167,8 @@ public interface CoreContext {
 
     /**
      * Shuts down the context and underlying pools and connections.
+     *
+     * @return future completed when the context has closed.
      */
-    void close();
-
-    /**
-     * @param handler called when the context has closed or failed closing.
-     */
-    void close(Handler<AsyncResult<Void>> handler);
+    Future<Void> close();
 }

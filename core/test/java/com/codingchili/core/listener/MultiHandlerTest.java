@@ -31,7 +31,7 @@ public class MultiHandlerTest {
 
     @AfterClass
     public static void tearDown(TestContext test) {
-        context.close(test.asyncAssertSuccess());
+        context.close().onComplete(test.asyncAssertSuccess());
     }
 
     @Test

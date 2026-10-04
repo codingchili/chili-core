@@ -1,7 +1,6 @@
 package com.codingchili.core.storage;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
+import io.vertx.core.Future;
 
 import java.util.Collection;
 import java.util.function.Consumer;
@@ -159,9 +158,9 @@ public interface QueryBuilder<Value extends Storable> {
     /**
      * Executes the constructed query asynchronously.
      *
-     * @param handler the handler to be invoked when the result is completed.
+     * @return future completed with the query results.
      */
-    void execute(Handler<AsyncResult<Collection<Value>>> handler);
+    Future<Collection<Value>> execute();
 
     /**
      * Executes the query periodically.

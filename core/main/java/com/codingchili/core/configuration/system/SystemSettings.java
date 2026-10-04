@@ -285,7 +285,7 @@ public class SystemSettings implements Configurable {
 
     public SystemSettings setPrettyEncoding(boolean prettyEncoding) {
         Serializer.json = Serializer.json.rebuild()
-                .configure(SerializationFeature.INDENT_OUTPUT, true)
+                .configure(SerializationFeature.INDENT_OUTPUT, prettyEncoding)
                 .build();
         this.prettyEncoding = prettyEncoding;
         return this;

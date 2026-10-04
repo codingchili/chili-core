@@ -28,7 +28,7 @@ public class QueryTest {
 
     @AfterClass
     public static void tearDown(TestContext test) {
-        context.close(test.asyncAssertSuccess());
+        context.close().onComplete(test.asyncAssertSuccess());
     }
 
     @Before
@@ -91,7 +91,7 @@ public class QueryTest {
     @Test
     public void testErrorWhenStorageNotSet(TestContext test) {
         try {
-            new Query<>().on("x").execute((done -> {
+            new Query<>().on("x").execute().onComplete((done -> {
             }));
             test.fail("did not throw exception when storage null");
         } catch (CoreRuntimeException e) {

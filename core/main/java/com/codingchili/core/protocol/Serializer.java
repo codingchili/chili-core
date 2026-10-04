@@ -7,12 +7,15 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.util.Pool;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.json.Json;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
-import tools.jackson.databind.JsonNode;
+import tools.jackson.core.json.JsonReadFeature;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.cfg.MapperBuilder;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.dataformat.yaml.YAMLMapper;
 import tools.jackson.dataformat.yaml.YAMLWriteFeature;
@@ -37,18 +40,32 @@ import static com.codingchili.core.configuration.CoreStrings.ID_COLLECTION;
  * Serializes objects to JSON or YAML and back. Utility methods for gzip and class definition generation.
  */
 public class Serializer {
+    private static final TypeReference<Map<String, Object>> MAP_TYPE = new TypeReference<>() {
+    };
     public static ObjectMapper json = createJsonMapper();
     public static ObjectMapper yaml = createYAMLMapper();
 
     public static JsonMapper createJsonMapper() {
-        return VertxSerializerModules.registerTypes(JsonMapper.builder()).build();
+        var json = JsonMapper.builder()
+                // pretty encoding is enabled by default, see SystemSettings#setPrettyEncoding.
+                .enable(SerializationFeature.INDENT_OUTPUT)
+                .enable(JsonReadFeature.ALLOW_JAVA_COMMENTS);
+
+        return VertxSerializerModules.registerTypes(configure(json)).build();
     }
 
     public static YAMLMapper createYAMLMapper() {
         var yaml = YAMLMapper.builder()
                 .configure(YAMLWriteFeature.LITERAL_BLOCK_STYLE, true);
 
-        return VertxSerializerModules.registerTypes(yaml).build();
+        return VertxSerializerModules.registerTypes(configure(yaml)).build();
+    }
+
+    private static <T extends ObjectMapper, B extends MapperBuilder<T, B>> B configure(B builder) {
+        return builder
+                .changeDefaultPropertyInclusion(include -> include.withValueInclusion(JsonInclude.Include.NON_NULL))
+                .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     }
 
     private static final Pool<Kryo> pool = new Pool<Kryo>(true, true, 128) {
@@ -144,7 +161,7 @@ public class Serializer {
         } else if (object instanceof Buffer) {
             return (Buffer) object;
         } else {
-            return Json.encodeToBuffer(object);
+            return Buffer.buffer(json.writeValueAsBytes(object));
         }
     }
 
@@ -221,7 +238,7 @@ public class Serializer {
                     .forEach(array::add);
             return new JsonObject().put(ID_COLLECTION, array);
         } else {
-            return JsonObject.mapFrom(object);
+            return new JsonObject(json.convertValue(object, MAP_TYPE));
         }
     }
 

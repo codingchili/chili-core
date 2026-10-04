@@ -1,8 +1,7 @@
 package com.codingchili.core.storage;
 
 import com.codingchili.core.context.StorageContext;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
+import io.vertx.core.Future;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -142,14 +141,13 @@ public class StreamQuery<Value extends Storable, Streaming> {
 
             @SuppressWarnings("unchecked")
             @Override
-            public void execute(Handler<AsyncResult<Collection<Value>>> handler) {
-                context.<Collection<Value>>blocking(() -> results().stream()
+            public Future<Collection<Value>> execute() {
+                return context.<Collection<Value>>blocking(() -> results().stream()
                                 .sorted(this::sortByAttribute)
                                 .skip(getPage() * getPageSize())
                                 .limit(getPageSize())
                                 .map(mapper)
-                                .collect(Collectors.toList()))
-                        .onComplete(handler);
+                                .collect(Collectors.toList()));
             }
 
             private Set<Streaming> results() {

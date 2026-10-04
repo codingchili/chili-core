@@ -35,74 +35,73 @@ public class PrivateMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     @Override
-    public void get(String key, Handler<AsyncResult<Value>> handler) {
+    public Future<Value> get(String key) {
         Value value = map.get(key);
 
         if (value == null) {
-            handler.handle(error(new ValueMissingException(key)));
+            return error(new ValueMissingException(key));
         } else {
-            handler.handle(result(value));
+            return result(value);
         }
     }
 
     @Override
-    public void contains(String key, Handler<AsyncResult<Boolean>> handler) {
-        handler.handle(result(map.containsKey(key)));
+    public Future<Boolean> contains(String key) {
+        return result(map.containsKey(key));
     }
 
     @Override
-    public void put(Value value, Handler<AsyncResult<Void>> handler) {
+    public Future<Void> put(Value value) {
         map.put(value.getId(), value);
-        handler.handle(FutureHelper.result());
+        return FutureHelper.result();
     }
 
     @Override
-    public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
+    public Future<Void> putIfAbsent(Value value) {
         if (map.containsKey(value.getId())) {
-            handler.handle(error(new ValueAlreadyPresentException(value.getId())));
+            return error(new ValueAlreadyPresentException(value.getId()));
         } else {
             map.put(value.getId(), value);
-            handler.handle(FutureHelper.result());
+            return FutureHelper.result();
         }
     }
 
     @Override
-    public void remove(String key, Handler<AsyncResult<Void>> handler) {
+    public Future<Void> remove(String key) {
         if (map.containsKey(key)) {
             map.remove(key);
-            handler.handle(FutureHelper.result());
+            return FutureHelper.result();
         } else {
-            handler.handle(error(new NothingToRemoveException(key)));
+            return error(new NothingToRemoveException(key));
         }
     }
 
     @Override
-    public void update(Value value, Handler<AsyncResult<Void>> handler) {
+    public Future<Void> update(Value value) {
         Value previous = map.get(value.getId());
 
         if (previous != null) {
             map.put(value.getId(), value);
-            handler.handle(FutureHelper.result());
+            return FutureHelper.result();
         } else {
-            handler.handle(error(new NothingToUpdateException(value.getId())));
+            return error(new NothingToUpdateException(value.getId()));
         }
     }
 
     @Override
-    public void values(Handler<AsyncResult<Stream<Value>>> handler) {
-        handler.handle(Future.succeededFuture(map.values().stream()));
-
+    public Future<Stream<Value>> values() {
+        return result(map.values().stream());
     }
 
     @Override
-    public void clear(Handler<AsyncResult<Void>> handler) {
+    public Future<Void> clear() {
         map.clear();
-        handler.handle(FutureHelper.result());
+        return FutureHelper.result();
     }
 
     @Override
-    public void size(Handler<AsyncResult<Integer>> handler) {
-        handler.handle(result(map.size()));
+    public Future<Integer> size() {
+        return result(map.size());
     }
 
     @Override

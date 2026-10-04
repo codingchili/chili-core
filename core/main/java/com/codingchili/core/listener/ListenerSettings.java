@@ -239,7 +239,8 @@ public class ListenerSettings {
                     .setKeyCertOptions(provider.keyCertOptions());
             return ssl;
         } else {
-            return new ServerSSLOptions();
+            // a non-null ssl options instance enables ssl on the server.
+            return null;
         }
     }
 

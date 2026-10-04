@@ -9,7 +9,7 @@ import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.attribute.SimpleAttribute;
 import com.googlecode.cqengine.resultset.ResultSet;
-import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.WorkerExecutor;
@@ -98,16 +98,13 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
         }
     }
 
-    protected <T> void blocking(Handler<Promise<T>> blocking, Handler<AsyncResult<T>> result) {
+    protected <T> Future<T> blocking(Handler<Promise<T>> blocking) {
         var inner = Promise.<T>promise();
-        executor.executeBlocking(() -> {
+        return executor.executeBlocking(() -> {
                     blocking.handle(inner);
                     return inner.future();
                 }, false)
-                .onComplete((outer) -> {
-                    var innerFuture = outer.result();
-                    innerFuture.onComplete(result);
-                });
+                .compose(outer -> outer);
     }
 
     /**
@@ -123,8 +120,8 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
     }
 
     @Override
-    public void get(String key, Handler<AsyncResult<Value>> handler) {
-        blocking(blocking -> {
+    public Future<Value> get(String key) {
+        return blocking(blocking -> {
             try (ResultSet<Value> result = db.retrieve(equal(FIELD_ID, key))) {
                 if (result.isNotEmpty()) {
                     blocking.complete(mapper.apply(result.iterator().next()));
@@ -132,12 +129,12 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
                     blocking.fail(new ValueMissingException(key));
                 }
             }
-        }, handler);
+        });
     }
 
     @Override
-    public void put(Value value, Handler<AsyncResult<Void>> handler) {
-        blocking(blocking -> {
+    public Future<Void> put(Value value) {
+        return blocking(blocking -> {
             try (ResultSet<Value> result = db.retrieve(equal(FIELD_ID, value.getId()))) {
                 if (result.isEmpty()) {
                     db.add(mapper.apply(value));
@@ -153,12 +150,12 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
                     }
                 }
             }
-        }, handler);
+        });
     }
 
     @Override
-    public void putIfAbsent(Value value, Handler<AsyncResult<Void>> handler) {
-        blocking(blocking -> {
+    public Future<Void> putIfAbsent(Value value) {
+        return blocking(blocking -> {
             try (ResultSet<Value> result = db.retrieve(equal(FIELD_ID, value.getId()))) {
                 if (result.isNotEmpty()) {
                     blocking.fail(new ValueAlreadyPresentException(value.getId()));
@@ -167,12 +164,12 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
                     blocking.complete();
                 }
             }
-        }, handler);
+        });
     }
 
     @Override
-    public void remove(String key, Handler<AsyncResult<Void>> handler) {
-        blocking(blocking -> {
+    public Future<Void> remove(String key) {
+        return blocking(blocking -> {
             try (ResultSet<Value> result = db.retrieve(equal(FIELD_ID, key))) {
                 if (result.isNotEmpty()) {
                     result.stream().forEach(entry -> {
@@ -185,12 +182,12 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
                     blocking.fail(new NothingToRemoveException(key));
                 }
             }
-        }, handler);
+        });
     }
 
     @Override
-    public void update(Value value, Handler<AsyncResult<Void>> handler) {
-        blocking(blocking -> {
+    public Future<Void> update(Value value) {
+        return blocking(blocking -> {
             try (ResultSet<Value> result = db.retrieve(equal(FIELD_ID, value.getId()))) {
                 if (result.isNotEmpty()) {
                     boolean updated = db.update(Collections.singleton(result.iterator().next()), Collections.singleton(mapper.apply(value)));
@@ -204,25 +201,25 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
                     blocking.fail(new NothingToUpdateException(value.getId()));
                 }
             }
-        }, handler);
+        });
     }
 
     @Override
-    public void values(Handler<AsyncResult<Stream<Value>>> handler) {
-        handler.handle(succeededFuture(db.stream()));
+    public Future<Stream<Value>> values() {
+        return succeededFuture(db.stream());
     }
 
     @Override
-    public void clear(Handler<AsyncResult<Void>> handler) {
-        blocking(blocking -> {
+    public Future<Void> clear() {
+        return blocking(blocking -> {
             db.clear();
             blocking.complete();
-        }, handler);
+        });
     }
 
     @Override
-    public void size(Handler<AsyncResult<Integer>> handler) {
-        blocking(blocking -> blocking.complete(db.size()), handler);
+    public Future<Integer> size() {
+        return blocking(blocking -> blocking.complete(db.size()));
     }
 
     @Override

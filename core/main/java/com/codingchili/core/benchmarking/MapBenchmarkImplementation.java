@@ -41,7 +41,7 @@ public class MapBenchmarkImplementation extends BenchmarkImplementationBuilder {
         new StorageLoader<StorageObject>(new StorageContext<>(core))
                 .withPlugin(plugin)
                 .withValue(StorageObject.class)
-                .withDB(DB, COLLECTION).build(store -> {
+                .withDB(DB, COLLECTION).build().onComplete(store -> {
             this.storage = store.result();
             handler.handle(Future.succeededFuture());
         });
@@ -55,12 +55,12 @@ public class MapBenchmarkImplementation extends BenchmarkImplementationBuilder {
 
     @Override
     public void reset(Handler<AsyncResult<Void>> future) {
-        storage.clear(future);
+        storage.clear().onComplete(future);
     }
 
     @Override
     public void shutdown(Promise<Void> promise) {
-        storage.clear(promise::handle);
+        storage.clear().onComplete(promise);
     }
 
     /**
@@ -68,7 +68,7 @@ public class MapBenchmarkImplementation extends BenchmarkImplementationBuilder {
      */
     private void putOne(Promise<Void> promise) {
         int id = counter.getAndIncrement();
-        storage.put(new StorageObject(getName(id), id), done -> promise.complete());
+        storage.put(new StorageObject(getName(id), id)).onComplete(done -> promise.complete());
     }
 
     private String getName(int id) {
@@ -79,7 +79,7 @@ public class MapBenchmarkImplementation extends BenchmarkImplementationBuilder {
      * Measures the time taken to get all entries one by one by their primary key.
      */
     private void getOne(Promise<Void> promise) {
-        storage.get(getName(counter.getAndIncrement()), done -> promise.complete());
+        storage.get(getName(counter.getAndIncrement())).onComplete(done -> promise.complete());
     }
 
     /**
@@ -90,7 +90,7 @@ public class MapBenchmarkImplementation extends BenchmarkImplementationBuilder {
         storage.query()
                 .on(ID_NAME)
                 .startsWith(counter.getAndIncrement() + "")
-                .execute(done -> promise.complete());
+                .execute().onComplete(done -> promise.complete());
     }
 
     /**
@@ -101,7 +101,7 @@ public class MapBenchmarkImplementation extends BenchmarkImplementationBuilder {
         storage.query()
                 .on(ID_NAME)
                 .equalTo(getName(counter.getAndIncrement()))
-                .execute(done -> promise.complete());
+                .execute().onComplete(done -> promise.complete());
     }
 
     /**
@@ -113,14 +113,14 @@ public class MapBenchmarkImplementation extends BenchmarkImplementationBuilder {
         storage.query()
                 .on(StorageObject.levelField)
                 .between((long) (low - 1), (long) (low + 1))
-                .execute(done -> promise.complete());
+                .execute().onComplete(done -> promise.complete());
     }
 
     /**
      * Measures the time taken to return all values stored in the map.
      */
     private void values(Promise<Void> promise) {
-        storage.values(done -> promise.complete());
+        storage.values().onComplete(done -> promise.complete());
     }
 
     /**
@@ -130,7 +130,7 @@ public class MapBenchmarkImplementation extends BenchmarkImplementationBuilder {
     private void regexpQuery(Promise<Void> promise) {
         storage.query()
                 .on(ID_NAME).matches(".*")
-                .execute(done -> promise.complete());
+                .execute().onComplete(done -> promise.complete());
     }
 
     /**
@@ -140,6 +140,6 @@ public class MapBenchmarkImplementation extends BenchmarkImplementationBuilder {
         storage.query()
                 .on(Storable.idField)
                 .equalTo(counter.getAndIncrement() + "")
-                .execute(done -> promise.complete());
+                .execute().onComplete(done -> promise.complete());
     }
 }

@@ -35,7 +35,7 @@ public class ProtocolProcessorTest {
 
     @After
     public void tearDown(TestContext test) {
-        mock.close(test.asyncAssertSuccess());
+        mock.close().onComplete(test.asyncAssertSuccess());
     }
 
     @Test

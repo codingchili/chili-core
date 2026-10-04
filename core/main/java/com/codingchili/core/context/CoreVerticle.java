@@ -9,8 +9,7 @@ import com.codingchili.core.logging.Logger;
  * A wrapper for the Vertx api to a deployable service/handler/listener in chili-core.
  * Avoids having to deal with vertx specifics where it is not required.
  */
-class CoreVerticle implements Verticle, CoreDeployment {
-    private Vertx vertx;
+class CoreVerticle extends VerticleBase {
     private final CoreContext core;
     private final CoreDeployment deployment;
     private final Logger logger;
@@ -22,58 +21,36 @@ class CoreVerticle implements Verticle, CoreDeployment {
     }
 
     @Override
-    public Vertx getVertx() {
-        return vertx;
-    }
-
-    @Override
-    public void init(Vertx vertx, Context vcon) {
-        this.vertx = vertx;
+    public void init(Vertx vertx, Context context) {
+        super.init(vertx, context);
         this.deployment.init(core);
     }
 
     @Override
-    public Future<?> deploy(Context context) throws Exception {
-        return Future.succeededFuture();
-    }
-
-    @Override
-    public void start(Promise<Void> start) {
+    public Future<?> start() {
         Promise<Void> promise = Promise.promise();
-
-        promise.future().onComplete(done -> {
-            if (done.succeeded()) {
-                if (deployment instanceof CoreService) {
-                    logger.onServiceStarted((CoreService) deployment);
-                } else if (deployment instanceof CoreListener) {
-                    logger.onListenerStarted((CoreListener) deployment);
-                }
-                start.complete();
-            } else {
-                start.fail(done.cause());
-            }
-        });
-
         deployment.start(promise);
+
+        return promise.future().onSuccess(done -> {
+            if (deployment instanceof CoreService) {
+                logger.onServiceStarted((CoreService) deployment);
+            } else if (deployment instanceof CoreListener) {
+                logger.onListenerStarted((CoreListener) deployment);
+            }
+        });
     }
 
     @Override
-    public void stop(Promise<Void> stop) {
+    public Future<?> stop() {
         Promise<Void> promise = Promise.promise();
+        deployment.stop(promise);
 
-        promise.future().onComplete(done -> {
-            if (done.succeeded()) {
-                if (deployment instanceof CoreService) {
-                    logger.onServiceStopped((CoreService) deployment);
-                } else if (deployment instanceof CoreListener) {
-                    logger.onListenerStopped((CoreListener) deployment);
-                }
-                stop.complete();
-            } else {
-                stop.fail(done.cause());
+        return promise.future().onSuccess(done -> {
+            if (deployment instanceof CoreService) {
+                logger.onServiceStopped((CoreService) deployment);
+            } else if (deployment instanceof CoreListener) {
+                logger.onListenerStopped((CoreListener) deployment);
             }
         });
-
-        deployment.stop(promise);
     }
 }

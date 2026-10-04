@@ -101,11 +101,11 @@ This can also be solved with some trickery using the `Serializer.getValueByPath`
 
 ### Storage API
 
-The storage API is modeled after a simple Map, all methods are asynchronous to avoid blocking the event loop. Some storage implementations that use in-memory and does not block can complete directly. This is an implementation detail and the API is always used asynchronously. This means `Future<T>` and `Handler<AsyncResult<T>>`, see the Vert.x documentation for more information on how these work.
+The storage API is modeled after a simple Map, all methods are asynchronous to avoid blocking the event loop. Some storage implementations that use in-memory and does not block can complete directly. This is an implementation detail and the API is always used asynchronously. All operations return a `Future<T>`, see the Vert.x documentation for more information on how these work.
 
 ```java
 // retrieve the object with the id of "key".
-get("key", (done) -> {
+get("key").onComplete(done -> {
     if (done.succeeded()) {
         Account account = done.result();
     } else {
@@ -114,15 +114,15 @@ get("key", (done) -> {
 });
 
 // put the account object but ignore the result.
-put(account, (done) -> {});
+put(account);
 
 // check if the storage contains an object with the given key.
-contains("key", (done) -> {
-    boolean exists = done.result();    
+contains("key").onSuccess(exists -> {
+    // exists is true if the key is set.
 });
 
 // adds the account if it does not already exist.
-putIfAbsent(account, (done) -> {
+putIfAbsent(account).onComplete(done -> {
     if (done.succeeded()) {
         // inserted successfully.
     } else {
@@ -132,30 +132,35 @@ putIfAbsent(account, (done) -> {
 });
 
 // updates the given value but only if it already exists.
-update(account, (done) -> {
+update(account).onComplete(done -> {
     if (done.succeeded()) {
         // the existing value was updated.
     } else {
-        // failed, if caused by ValueMissingException
+        // failed, if caused by NothingToUpdateException
         // the value didn't not previously exist.
     }
 });
 
 // retrieves all values in the store with a lazy stream.
-values(done -> {
-    // done.result() is a Stream<Value> lazily evaluated
+values().onSuccess(stream -> {
+    // stream is a Stream<Value> lazily evaluated
     // depending on the storage.
 });
 
 // remove all entries from the store.
-clear(done -> {
-    // if done.succeeded() all entires are cleared.
+clear().onSuccess(v -> {
+    // all entries are cleared.
 });
 
 // retrieve the current number of entries in the store.
-size((done) -> {
-    int count = done.result();
+size().onSuccess(count -> {
+    // count is the number of entries.
 });
+
+// futures compose, for example: insert and then read back the value.
+put(account)
+    .compose(v -> get(account.getId()))
+    .onSuccess(stored -> { /* ... */ });
 
 // add an index for a regular attribute {"petstore": {owner: "jess"}}
 addIndex("petstore.owner");
@@ -285,4 +290,4 @@ Aiming to keep up to the latest versions, current support is
 |Hazelcast|3.10.5|
 |CQEngine|3.4.0|
 
-Please submit a feature request with any ideas on how to improve the APIs or to request support for another storage.
+Please submit a feature request with any ideas on how to improve the APIs or to request support for another storage.

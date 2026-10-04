@@ -32,7 +32,7 @@ public class ClusteredSessionFactoryTest {
 
     @After
     public void tearDown(TestContext test) {
-        core.close(test.asyncAssertSuccess());
+        core.close().onComplete(test.asyncAssertSuccess());
     }
 
     @Test
@@ -83,7 +83,7 @@ public class ClusteredSessionFactoryTest {
             session.asJson().put("meow", true);
             session.update().onComplete(updated -> {
 
-                factory.query("data.meow").equalTo(true).execute(query -> {
+                factory.query("data.meow").equalTo(true).execute().onComplete(query -> {
                     if (query.failed()) {
                         test.fail(query.cause());
                     }
