@@ -166,6 +166,7 @@ public abstract class CoreStrings {
     public static final String LOG_MESSAGE = "message";
     public static final String LOG_LEVEL = "level";
     public static final String LOG_VERTX = "vertx";
+    public static final String LOG_SLF4J = "slf4j";
     public static final String LOG_METRICS = "metrics";
     public static final String LOG_STACKTRACE = "stacktrace";
     public static final String LOG_HANDLER_MISSING = "handler.missing";

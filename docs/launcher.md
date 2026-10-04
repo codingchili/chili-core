@@ -134,3 +134,24 @@ The types that can be returned from a `Command`
 |SHUTDOWN|The application will be terminated by the Launcher.|
 
 Note that it is possible to use the `CommandExecutor` implementations without the use of a `Launcher`. In this case it is up to the caller to interpret the result of the command execution.
+### JVM options
+
+Some dependencies require module access that is disabled by default on recent JDKs. The chili-core jar
+manifest enables this when started with `java -jar`. When chili-core is used as a library on the classpath,
+pass the options to the JVM of the application instead,
+
+```console
+--add-opens java.base/java.util=ALL-UNNAMED
+--add-opens java.base/java.lang=ALL-UNNAMED
+--add-opens java.base/sun.nio.ch=ALL-UNNAMED
+--add-opens java.management/sun.management=ALL-UNNAMED
+--add-opens jdk.management/com.sun.management.internal=ALL-UNNAMED
+--add-exports java.base/jdk.internal.ref=ALL-UNNAMED
+--enable-native-access=ALL-UNNAMED
+--enable-final-field-mutation=ALL-UNNAMED
+--sun-misc-unsafe-memory-access=allow
+```
+
+`java.util` is required by `IndexedMapPersisted` (Kryo serialization), the rest silences warnings from Hazelcast
+and jline. Dependencies that log with SLF4J are routed to the `ConsoleLogger`; if the application provides its own
+SLF4J backend, SLF4J will warn about multiple providers.

@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 import com.codingchili.core.context.CoreContext;
 import org.jline.jansi.Ansi;
 import org.jline.jansi.AnsiConsole;
+import org.jline.jansi.AnsiMode;
+import org.jline.terminal.Terminal;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
@@ -73,6 +75,17 @@ public class ConsoleLogger extends AbstractLogger implements StringLogger {
         super(context, aClass);
         logger = this;
         AnsiConsole.systemInstall();
+        enableDumbColors();
+    }
+
+    /**
+     * jline strips ansi codes on dumb terminals even when color support is detected,
+     * for example when running in an IDE console with redirected output.
+     */
+    private static void enableDumbColors() {
+        if (Terminal.TYPE_DUMB_COLOR.equals(AnsiConsole.getTerminal().getType())) {
+            AnsiConsole.out().setMode(AnsiMode.Force);
+        }
     }
 
     /**

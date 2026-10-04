@@ -1,5 +1,17 @@
 publishToMavenLocal.dependsOn jar
 
+// module access required by dependencies, see the jar manifest and forked JVMs below.
+def moduleOpens = [
+        'java.base/java.util',                          // cqengine: kryo serialization for disk persistence.
+        'java.base/java.lang',                          // hazelcast
+        'java.base/sun.nio.ch',                         // hazelcast
+        'java.management/sun.management',               // hazelcast
+        'jdk.management/com.sun.management.internal'    // hazelcast
+]
+def moduleExports = [
+        'java.base/jdk.internal.ref'                    // hazelcast
+]
+
 jar {
     /*from {
         (configurations.runtime).collect {
@@ -9,8 +21,23 @@ jar {
     manifest {
         attributes 'Implementation-Title': 'chili-core',
                 'Implementation-Version': project.version,
-                'Main-Class': 'com.codingchili.core.Launcher'
+                'Main-Class': 'com.codingchili.core.Launcher',
+                'Add-Opens': moduleOpens.join(' '),
+                'Add-Exports': moduleExports.join(' '),
+                // jline uses the FFM api for terminal access.
+                'Enable-Native-Access': 'ALL-UNNAMED',
+                // jline exec terminal provider mutates ProcessBuilder internals.
+                'Enable-Final-Field-Mutation': 'ALL-UNNAMED'
     }
+}
+
+// the manifest attributes only apply when launched with java -jar, so pass them to tests/JavaExec too.
+tasks.withType(JavaForkOptions).configureEach {
+    jvmArgs moduleOpens.collectMany { ['--add-opens', "$it=ALL-UNNAMED".toString()] }
+    jvmArgs moduleExports.collectMany { ['--add-exports', "$it=ALL-UNNAMED".toString()] }
+    jvmArgs '--enable-native-access=ALL-UNNAMED', '--enable-final-field-mutation=ALL-UNNAMED'
+    // hazelcast (shaded jctools) uses sun.misc.Unsafe, there is no manifest attribute for this.
+    jvmArgs '--sun-misc-unsafe-memory-access=allow'
 }
 
 task sourcesJar(type: Jar) {
@@ -76,11 +103,8 @@ dependencies {
     /* keep these in sync with cqengine, used internally. */
     implementation('com.esotericsoftware:kryo:5.2.0')
 
-    /* used to hide warnings about missing slf. */
-    //implementation('org.slf4j:slf4j-api:2.0.1')
-    //implementation('org.slf4j:slf4j-jdk14:2.0.0')
-    //implementation('org.apache.logging.log4j:log4j-to-slf4j:2.19.0')
-    //implementation('org.slf4j:slf4j-simple:1.7.32')
+    /* used by dropwizard metrics, routed to the ConsoleLogger by logging.Slf4jServiceProvider. */
+    implementation('org.slf4j:slf4j-api:2.0.17')
 
     testImplementation 'io.vertx:vertx-unit:5.2.0'
     testImplementation 'junit:junit:4.13.2'
