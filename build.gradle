@@ -49,7 +49,7 @@ subprojects {
 
     test {
         testLogging {
-            exceptionFormat "full"
+            exceptionFormat = "full"
         }
         reports.html.required = false
     }
