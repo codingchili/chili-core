@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Status</title>
+<style nonce="{{nonce}}">
+:root {
+    color-scheme: light dark;
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --text: #0b0b0b;
+    --text-2: #52514e;
+    --text-3: #6f6d68;
+    --grid: #e1e0d9;
+    --baseline: #c3c2b7;
+    --border: rgba(11, 11, 11, 0.10);
+    --accent: #2a78d6;
+    --track: #e8e7e1;
+    --good: #0b7a0b;
+    --bad: #c23030;
+    --warn: #8a5a00;
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --page: #0d0d0d;
+        --surface: #1a1a19;
+        --text: #ffffff;
+        --text-2: #c3c2b7;
+        --text-3: #a09f98;
+        --grid: #2c2c2a;
+        --baseline: #383835;
+        --border: rgba(255, 255, 255, 0.10);
+        --accent: #3987e5;
+        --track: #2c2c2a;
+        --good: #3fbf3f;
+        --bad: #ef6a6a;
+        --warn: #e0a830;
+    }
+}
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    background: var(--page);
+    color: var(--text);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+main { max-width: 1100px; margin: 0 auto; padding: 32px 24px 56px; }
+h1, h2 { margin: 0; font-weight: 600; letter-spacing: -0.01em; }
+h1 { font-size: 26px; }
+h2 { font-size: 15px; margin-bottom: 12px; }
+header { display: flex; flex-wrap: wrap; gap: 16px 24px; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; }
+.sub { color: var(--text-2); font-size: 13px; margin-top: 2px; }
+.controls { display: flex; align-items: center; gap: 12px; color: var(--text-2); font-size: 13px; }
+select, input {
+    font: inherit;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 8px;
+}
+.pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 14px; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--surface);
+    font-weight: 600; font-size: 14px;
+}
+.icon { font-weight: 700; }
+.ok .icon { color: var(--good); }
+.bad .icon { color: var(--bad); }
+.warn .icon { color: var(--warn); }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 12px; margin-top: 12px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; min-width: 0; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.kpi-label { color: var(--text-2); font-size: 13px; }
+.kpi-value { font-size: 24px; font-weight: 600; margin-top: 2px; }
+.kpi-note { color: var(--text-3); font-size: 12px; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { padding: 6px 8px; text-align: left; vertical-align: top; }
+th { color: var(--text-2); font-weight: 600; border-bottom: 1px solid var(--baseline); }
+td + td, th + th { text-align: right; }
+td.left, th.left { text-align: left; }
+tbody tr + tr td { border-top: 1px solid var(--grid); }
+td, .num { font-variant-numeric: tabular-nums; }
+td.name { overflow-wrap: anywhere; }
+.bar-row { margin-bottom: 14px; }
+.bar-head { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
+.bar-head span:first-child { color: var(--text-2); }
+.track { height: 12px; background: var(--track); border-radius: 0 4px 4px 0; border-left: 1px solid var(--baseline); }
+.fill { height: 12px; background: var(--accent); border-radius: 0 4px 4px 0; width: 0; }
+dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; margin: 0; font-size: 13px; }
+dt { color: var(--text-2); }
+dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; word-break: break-all; }
+.empty { color: var(--text-3); font-size: 13px; }
+.metrics-tools { margin-bottom: 8px; }
+.wide { grid-column: 1 / -1; }
+.scroll { max-height: 420px; overflow: auto; }
+footer { color: var(--text-3); font-size: 12px; margin-top: 24px; text-align: center; }
+</style>
+</head>
+<body>
+<main>
+    <header>
+        <div>
+            <h1>Status</h1>
+            <div class="sub" id="subtitle">loading</div>
+        </div>
+        <div class="controls">
+            <span id="state" class="pill warn" role="status"><span class="icon">&#8230;</span><span>Loading</span></span>
+            <label>Refresh
+                <select id="interval">
+                    <option value="2">2 s</option>
+                    <option value="5" selected>5 s</option>
+                    <option value="10">10 s</option>
+                    <option value="30">30 s</option>
+                    <option value="0">off</option>
+                </select>
+            </label>
+            <span id="updated">never updated</span>
+        </div>
+    </header>
+
+    <section class="kpis" id="kpis" aria-label="Summary"></section>
+
+    <section class="cards">
+        <div class="card wide"><h2>Readiness</h2><div id="readiness"></div></div>
+        <div class="card"><h2>Memory</h2><div id="memory"></div></div>
+        <div class="card"><h2>Garbage collection</h2><div id="gc"></div></div>
+        <div class="card"><h2>Vert.x</h2><dl id="vertx"></dl></div>
+        <div class="card"><h2>JVM and host</h2><dl id="jvm"></dl></div>
+        <div class="card"><h2>Settings</h2><dl id="settings"></dl></div>
+        <div class="card wide">
+            <h2>Metrics</h2>
+            <div class="metrics-tools"><input id="filter" type="search" placeholder="Filter metrics" aria-label="Filter metrics"></div>
+            <div class="scroll" id="metrics"></div>
+        </div>
+    </section>
+    <footer>Reads <code>status</code> from this server. Nothing is loaded from other sites.</footer>
+</main>
+<script nonce="{{nonce}}">
+(function () {
+    'use strict';
+    var timer = null;
+    var last = null;
+
+    function $(id) { return document.getElementById(id); }
+
+    // all text is set with textContent: names in the report are data, never markup.
+    function h(tag, className, text) {
+        var element = document.createElement(tag);
+        if (className) { element.className = className; }
+        if (text !== undefined && text !== null) { element.textContent = String(text); }
+        return element;
+    }
+
+    function clear(element) {
+        while (element.firstChild) { element.removeChild(element.firstChild); }
+    }
+
+    function fmt(value, digits) {
+        if (value === null || value === undefined) { return 'n/a'; }
+        if (typeof value === 'number') {
+            return value.toLocaleString(undefined, {maximumFractionDigits: digits === undefined ? 2 : digits});
+        }
+        return String(value);
+    }
+
+    function duration(ms) {
+        var s = Math.floor(ms / 1000);
+        var d = Math.floor(s / 86400); s -= d * 86400;
+        var hh = Math.floor(s / 3600); s -= hh * 3600;
+        var m = Math.floor(s / 60); s -= m * 60;
+        if (d > 0) { return d + 'd ' + hh + 'h'; }
+        if (hh > 0) { return hh + 'h ' + m + 'm'; }
+        if (m > 0) { return m + 'm ' + s + 's'; }
+        return s + 's';
+    }
+
+    function setState(kind, icon, label) {
+        var state = $('state');
+        state.className = 'pill ' + kind;
+        clear(state);
+        state.appendChild(h('span', 'icon', icon));
+        state.appendChild(h('span', '', label));
+    }
+
+    function kv(list, pairs) {
+        clear(list);
+        pairs.forEach(function (pair) {
+            list.appendChild(h('dt', '', pair[0]));
+            list.appendChild(h('dd', '', pair[1]));
+        });
+    }
+
+    function kpi(label, value, note) {
+        var card = h('div', 'card');
+        card.appendChild(h('div', 'kpi-label', label));
+        card.appendChild(h('div', 'kpi-value', value));
+        card.appendChild(h('div', 'kpi-note', note || ' '));
+        return card;
+    }
+
+    function bar(label, usedMb, committedMb, maxMb) {
+        var total = maxMb || committedMb || usedMb || 1;
+        var row = h('div', 'bar-row');
+        var head = h('div', 'bar-head');
+        head.appendChild(h('span', '', label));
+        head.appendChild(h('span', 'num', fmt(usedMb, 1) + ' MB of ' + (maxMb ? fmt(maxMb, 0) + ' MB max' : fmt(committedMb, 1) + ' MB committed')));
+        var track = h('div', 'track');
+        var fill = h('div', 'fill');
+        // set through the style object: inline style attributes are not allowed by the content security policy.
+        fill.style.width = Math.max(1, Math.min(100, usedMb / total * 100)) + '%';
+        track.appendChild(fill);
+        row.appendChild(head);
+        row.appendChild(track);
+        return row;
+    }
+
+    // the first column, and the columns in left, are aligned to the left: numbers are aligned to the right.
+    function table(headers, rows, left) {
+        var t = h('table');
+        var head = h('tr');
+        function isLeft(index) { return index === 0 || (left || []).indexOf(index) >= 0; }
+        headers.forEach(function (name, index) { head.appendChild(h('th', isLeft(index) ? 'left' : '', name)); });
+        t.appendChild(h('thead')).appendChild(head);
+        var body = h('tbody');
+        rows.forEach(function (cells) {
+            var tr = h('tr');
+            cells.forEach(function (cell, index) {
+                var td = h('td', index === 0 ? 'left name' : (isLeft(index) ? 'left' : ''));
+                if (cell instanceof Node) { td.appendChild(cell); } else { td.textContent = cell; }
+                tr.appendChild(td);
+            });
+            body.appendChild(tr);
+        });
+        t.appendChild(body);
+        return t;
+    }
+
+    function status(up) {
+        var element = h('span', up ? 'ok' : 'bad');
+        element.appendChild(h('span', 'icon', up ? '✓ ' : '✗ '));
+        element.appendChild(document.createTextNode(up ? 'UP' : 'DOWN'));
+        return element;
+    }
+
+    function flatten(object, prefix, out) {
+        Object.keys(object).forEach(function (key) {
+            var value = object[key];
+            var name = prefix ? prefix + '.' + key : key;
+            if (value !== null && typeof value === 'object') { flatten(value, name, out); } else { out.push([name, value]); }
+        });
+        return out;
+    }
+
+    function metrics() {
+        var target = $('metrics');
+        clear(target);
+        var rows = flatten((last && last.metrics) || {}, '', []);
+        if (rows.length === 0) {
+            target.appendChild(h('div', 'empty', 'No metrics. Enable them with metrics.enabled in system.yaml.'));
+            return;
+        }
+        var needle = $('filter').value.toLowerCase();
+        rows = rows.filter(function (row) { return row[0].toLowerCase().indexOf(needle) >= 0; })
+            .sort(function (a, b) { return a[0] < b[0] ? -1 : 1; })
+            .map(function (row) { return [row[0], fmt(row[1])]; });
+        target.appendChild(rows.length ? table(['Metric', 'Value'], rows) : h('div', 'empty', 'No metrics match the filter.'));
+    }
+
+    function render(report) {
+        last = report;
+        var app = report.application;
+        var heap = report.jvm.heap;
+        var cpu = report.jvm.os.processCpuLoad;
+
+        document.title = (report.ready ? 'Ready' : 'Not ready') + ' – status';
+        $('subtitle').textContent = app.hostname + ' · pid ' + app.pid + ' · version ' + app.version;
+        $('updated').textContent = 'updated ' + new Date().toLocaleTimeString();
+
+        if (report.state === 'SHUTTING_DOWN') { setState('warn', '⏻', 'Shutting down'); }
+        else if (report.ready) { setState('ok', '✓', 'Ready'); }
+        else { setState('bad', '✗', 'Not ready'); }
+
+        var kpis = $('kpis');
+        clear(kpis);
+        kpis.appendChild(kpi('Uptime', duration(app.uptimeMs), 'since ' + new Date(app.startTime).toLocaleString()));
+        kpis.appendChild(kpi('Heap', heap.maxMb ? fmt(heap.usedMb / heap.maxMb * 100, 0) + ' %' : fmt(heap.usedMb, 0) + ' MB', fmt(heap.usedMb, 0) + ' MB used'));
+        kpis.appendChild(kpi('Threads', fmt(report.jvm.threads.live, 0), 'peak ' + fmt(report.jvm.threads.peak, 0)));
+        kpis.appendChild(kpi('CPU (process)', (cpu === undefined || cpu < 0) ? 'n/a' : fmt(cpu * 100, 0) + ' %', report.jvm.os.processors + ' processors'));
+        kpis.appendChild(kpi('Deployments', fmt(report.vertx.deployments, 0), report.vertx.clustered ? 'clustered' : 'not clustered'));
+        kpis.appendChild(kpi('Blocking tasks', fmt(report.vertx.blockingTasks, 0), 'running'));
+
+        var checks = report.readiness.checks;
+        var rows = Object.keys(checks).sort().map(function (name) {
+            var check = checks[name];
+            return [name, status(check.status === 'UP'), fmt(check.ms) + ' ms', check.message || ''];
+        });
+        var readiness = $('readiness');
+        clear(readiness);
+        readiness.appendChild(table(['Check', 'Status', 'Time', 'Message'], rows, [1, 3]));
+
+        var memory = $('memory');
+        clear(memory);
+        memory.appendChild(bar('Heap', heap.usedMb, heap.committedMb, heap.maxMb));
+        memory.appendChild(bar('Non-heap', report.jvm.nonHeap.usedMb, report.jvm.nonHeap.committedMb, report.jvm.nonHeap.maxMb));
+
+        var gc = $('gc');
+        clear(gc);
+        gc.appendChild(table(['Collector', 'Collections', 'Time'], report.jvm.gc.map(function (c) {
+            return [c.name, fmt(c.collections, 0), fmt(c.timeMs, 0) + ' ms'];
+        })));
+
+        var v = report.vertx;
+        kv($('vertx'), [['Event loop threads', fmt(v.eventLoopPoolSize, 0)], ['Worker threads', fmt(v.workerPoolSize, 0)],
+            ['Deployments', fmt(v.deployments, 0)], ['Blocking tasks running', fmt(v.blockingTasks, 0)],
+            ['Clustered', String(v.clustered)], ['Native transport', String(v.nativeTransport)]]);
+
+        var j = report.jvm;
+        kv($('jvm'), [['Java', j.java], ['VM', j.vm], ['OS', j.os.name + ' (' + j.os.arch + ')'],
+            ['Processors', fmt(j.os.processors, 0)], ['Load average', j.os.loadAverage < 0 ? 'n/a' : fmt(j.os.loadAverage)],
+            ['Classes loaded', fmt(j.classesLoaded, 0)]]);
+
+        var s = report.settings;
+        kv($('settings'), [['Listeners / handlers / services', s.listeners + ' / ' + s.handlers + ' / ' + s.services],
+            ['Cluster timeout', fmt(s.clusterTimeoutMs, 0) + ' ms'], ['Shutdown timeout', fmt(s.shutdownHookTimeoutMs, 0) + ' ms'],
+            ['Shutdown delay', fmt(s.shutdownDelayMs, 0) + ' ms'], ['Configuration hot reload', String(s.configurationReload)],
+            ['Pretty encoding', String(s.prettyEncoding)], ['Metrics', s.metricsEnabled ? 'enabled' : 'disabled']]);
+
+        metrics();
+    }
+
+    function load() {
+        fetch(new URL('status', location.href), {cache: 'no-store', credentials: 'same-origin'})
+            .then(function (response) {
+                if (!response.ok) { throw new Error('HTTP ' + response.status); }
+                return response.json();
+            })
+            .then(render)
+            .catch(function () {
+                setState('bad', '!', 'Unreachable');
+                $('updated').textContent = 'last attempt ' + new Date().toLocaleTimeString();
+            });
+    }
+
+    function schedule() {
+        if (timer) { clearInterval(timer); timer = null; }
+        var seconds = parseInt($('interval').value, 10);
+        if (seconds > 0) { timer = setInterval(load, seconds * 1000); }
+    }
+
+    $('interval').addEventListener('change', schedule);
+    $('filter').addEventListener('input', metrics);
+    schedule();
+    load();
+})();
+</script>
+</body>
+</html>

@@ -1,5 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "lsp": true,
   "provider": {
     "ollama": {
       "npm": "@ai-sdk/openai-compatible",

@@ -3,6 +3,19 @@
 Orientation for AI agents and human contributors working on **chili-core**. For the user-facing
 introduction see [README.md](README.md); for full documentation see [docs/](docs/index.md).
 
+This is a Java project.
+
+IMPORTANT:
+- This repository is Java, not TypeScript.
+- Do NOT create .ts, .tsx, .js, or .jsx files.
+- Do NOT introduce Node.js, npm, or TypeScript.
+- Before modifying anything, inspect the existing implementation and build configuration.
+- Prefer modifying existing Java files.
+- Do not invent tools or commands.
+- Use the available OpenCode tools only.
+- When uncertain, inspect the repository before making changes.
+- Run ./gradlew tests or the appropriate Gradle task after code changes.
+
 ## What this project is
 
 chili-core is an opinionated Java framework for building microservices quickly. It wraps
