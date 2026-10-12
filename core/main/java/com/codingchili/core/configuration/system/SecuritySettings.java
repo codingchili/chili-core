@@ -71,7 +71,7 @@ public class SecuritySettings implements Configurable {
             Optional<KeyStoreReference> store = getByName(storeId);
 
             if (store.isPresent()) {
-                loadKeystore(store.get().setAlias(storeId));
+                loadKeystore(store.get());
             } else {
                 throw new MissingKeyStoreException(storeId);
             }
@@ -95,9 +95,10 @@ public class SecuritySettings implements Configurable {
     }
 
     private void loadKeystore(KeyStoreReference store) {
+        var id = store.getIdentifier();
         try {
-            var keystore = (store.isAuto()) ? generateSelfSigned(store.getIdentifier()) : TrustAndKeyProvider.of(store);
-            loadedKeyStores.put(store.getIdentifier(), keystore);
+            var keystore = (store.isAuto()) ? generateSelfSigned(id) : TrustAndKeyProvider.of(store);
+            loadedKeyStores.put(id, keystore);
         } catch (Throwable e) {
             // failed to load keystore due to wrong password or missing file etc.
             // cannot recover from this in a safe manner: shut down.
