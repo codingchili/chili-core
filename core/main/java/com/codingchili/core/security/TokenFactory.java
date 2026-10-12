@@ -14,6 +14,8 @@ import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.protocol.Serializer;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
 
 import static com.codingchili.core.configuration.CoreStrings.ERROR_TOKEN_FACTORY;
 import static io.vertx.core.json.impl.JsonUtil.*;
@@ -25,7 +27,11 @@ public class TokenFactory {
     private static final String CRYPTO_TYPE = "type";
     private static final String ALIAS = "alias";
     private final byte[] secret;
-    private CoreContext core;
+    private final CoreContext core;
+    private final ObjectMapper mapper = Serializer.json
+            .rebuild()
+            .configure(SerializationFeature.INDENT_OUTPUT, false)
+            .build();
 
     /**
      * @param core   the core context to run async operations on.
@@ -73,7 +79,7 @@ public class TokenFactory {
             try {
                 byte[] result = BASE64_ENCODER.encode(hmacKey(token));
                 if (ByteComparator.compare(result, token.getKey().getBytes())) {
-                   // success!
+                    // success!
                 } else {
                     throw new CoreRuntimeException("Failed to verify HMAC token.");
                 }
@@ -153,15 +159,13 @@ public class TokenFactory {
         if (alias == null) {
             promise.fail(String.format("token is missing property '%s' - unable to verify.", ALIAS));
         } else {
-            core.<Void>blocking(() -> {
+            core.blocking(() -> {
                 TrustAndKeyProvider provider = Configurations.security().getKeystore(alias);
                 try {
                     Signature signature = Signature.getInstance(Configurations.security().getSignatureAlgorithm());
                     signature.initVerify(provider.getPublicKey());
                     canonicalizeTokenWithCrypto(token, signature::update);
-                    if (signature.verify(BASE64_DECODER.decode(token.getKey()))) {
-                        // success!
-                    } else {
+                    if (!signature.verify(BASE64_DECODER.decode(token.getKey()))) {
                         throw new SignatureException("Failed to verify token signature.");
                     }
                 } catch (SignatureException | InvalidKeyException | NoSuchAlgorithmException e) {
@@ -181,8 +185,9 @@ public class TokenFactory {
      */
     private void canonicalizeTokenWithCrypto(Token token, CryptoFunction function) {
         try {
-            function.update(Serializer.buffer(token.getProperties()).getBytes());
+            function.update(mapper.writeValueAsBytes(token.getProperties()));
             function.update(token.getDomain().getBytes());
+            function.update(".".getBytes());
             function.update((token.getExpiry() + "").getBytes());
         } catch (SignatureException e) {
             throw new CoreRuntimeException(e.getMessage());
