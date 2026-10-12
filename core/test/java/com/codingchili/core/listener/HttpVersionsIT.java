@@ -1,5 +1,6 @@
 package com.codingchili.core.listener;
 
+import com.codingchili.core.files.Configurations;
 import io.vertx.core.Future;
 import io.vertx.core.http.*;
 import io.vertx.core.json.JsonObject;
@@ -37,6 +38,11 @@ public class HttpVersionsIT {
 
     @Before
     public void setUp() {
+        Configurations.security()
+                .addKeystore()
+                .setAuto()
+                .build();
+
         context = new ContextMock();
     }
 
@@ -159,7 +165,9 @@ public class HttpVersionsIT {
      * Secure with the default keystore, which does not exist: a certificate is generated.
      */
     private ListenerSettings secure() {
-        return new ListenerSettings().setPort(0).setSecure(true);
+        return new ListenerSettings()
+                .setPort(0)
+                .setSecure(true);
     }
 
     private Future<Integer> listen(ListenerSettings settings) {

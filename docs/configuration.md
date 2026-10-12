@@ -234,7 +234,7 @@ dependencies:
 keystores:
 - password: "flashcards"
   path: "keystore.jks"
-  shortName: "keystore.jks"
+  alias: "keystore.jks"
 argon:
   iterations: 1
   memory: 8192

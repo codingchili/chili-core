@@ -49,7 +49,7 @@ public class TestCertificate implements SelfSignedCertificate {
     }
 
     private static File write(String type, String label, byte[] der) throws IOException {
-        File file = Files.createTempFile("chili-" + type + "-", ".pem").toFile();
+        File file = Files.createTempFile("certificate-" + type + "-", ".pem").toFile();
         file.deleteOnExit();
 
         // the key is only readable by the owner, where the platform supports it.

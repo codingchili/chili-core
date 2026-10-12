@@ -2,7 +2,7 @@ package com.codingchili.core.configuration.system;
 
 
 import com.codingchili.core.configuration.Configurable;
-import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.configuration.exception.MissingKeyStoreException;
 import com.codingchili.core.context.StartupListener;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
@@ -71,9 +71,9 @@ public class SecuritySettings implements Configurable {
             Optional<KeyStoreReference> store = getByName(storeId);
 
             if (store.isPresent()) {
-                loadKeystore(store.get().setShortName(storeId));
+                loadKeystore(store.get().setAlias(storeId));
             } else {
-                loadedKeyStores.put(storeId, generateSelfSigned(storeId));
+                throw new MissingKeyStoreException(storeId);
             }
         }
         return loadedKeyStores.get(storeId);
@@ -82,12 +82,12 @@ public class SecuritySettings implements Configurable {
     /**
      * Retrieve a keystore given its short name (ID).
      *
-     * @param storeId the store id to retrieve.
+     * @param alias the store id to retrieve.
      * @return a keystore that matches the given id, empty otherwise.
      */
-    public Optional<KeyStoreReference> getByName(String storeId) {
+    public Optional<KeyStoreReference> getByName(String alias) {
         for (KeyStoreReference keystore : keystores) {
-            if (keystore.getShortName().equals(storeId)) {
+            if (keystore.getIdentifier().equals(alias)) {
                 return Optional.of(keystore);
             }
         }
@@ -96,17 +96,18 @@ public class SecuritySettings implements Configurable {
 
     private void loadKeystore(KeyStoreReference store) {
         try {
-            loadedKeyStores.put(store.getShortName(), TrustAndKeyProvider.of(store));
+            var keystore = (store.isAuto()) ? generateSelfSigned(store.getIdentifier()) : TrustAndKeyProvider.of(store);
+            loadedKeyStores.put(store.getIdentifier(), keystore);
         } catch (Throwable e) {
             // failed to load keystore due to wrong password or missing file etc.
             // cannot recover from this in a safe manner: shut down.
             logger.onError(e);
-            System.exit(0);
+            System.exit(1);
         }
     }
 
-    private TrustAndKeyProvider generateSelfSigned(String shortNameMissing) {
-        logger.event(LOG_SECURITY, Level.WARNING).send(getMissingKeyStore(shortNameMissing));
+    private TrustAndKeyProvider generateSelfSigned(String alias) {
+        logger.event(LOG_SECURITY, Level.WARNING).send(getKeystoreAutocreate(alias));
         return TrustAndKeyProvider.of(new TestCertificate(SELF_SIGNED_NAME));
     }
 

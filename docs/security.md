@@ -31,7 +31,7 @@ keystores:
   password: "changeit" 
 ```
 
-The keystore is then referenced by it's 'shortName'. If the short name
+The keystore is then referenced by it's 'alias'. If the short name
 is not set, it will be inferred from the path as the file name. In this
 case it would have been 'keystore.jks'. Keystores can be added in this way
 to configure TLS security for the TCP listeners.

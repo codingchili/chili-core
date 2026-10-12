@@ -77,7 +77,6 @@ public abstract class RestHelper {
                 //.putHeader("X-Content-Type-Options", "nosniff")
                 .add(HEADER_HSTS, HSTS_AGE)
                 .add(HEADER_DOWNLOAD_OPTIONS, DOWNLOAD_OPTIONS)
-                .add(HEADER_XSS_PROTECTION, XSS_PROTECTION)
                 .add(HEADER_X_FRAME, X_FRAME);
     }
 }

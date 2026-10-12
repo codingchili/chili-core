@@ -59,11 +59,20 @@ public class KeyStoreBuilder<E> {
     }
 
     /**
-     * @param shortName the keystore identifier to set.
+     * @param alias the keystore identifier to set.
      * @return fluent
      */
-    public KeyStoreBuilder<E> setShortName(String shortName) {
-        keystore.setShortName(shortName);
+    public KeyStoreBuilder<E> setAlias(String alias) {
+        keystore.setAlias(alias);
+        return this;
+    }
+
+    /**
+     * enable self signing of the certificate in-memory.
+     * @return fluent
+     */
+    public KeyStoreBuilder<E> setAuto() {
+        keystore.setAuto(true);
         return this;
     }
 

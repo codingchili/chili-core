@@ -81,7 +81,8 @@ public abstract class CoreStrings {
     public static final String PROTOCOL_LOGGING = "logging";
     public static final String PROTOCOL_DOCUMENTATION = "documentation";
     public static final String DEFAULT_KEYSTORE = "keystore.jks";
-    public static final String DEFAULT_QUIC_PROTOCOL = "chili";
+    public static final String DEFAULT_KEYSTORE_AUTO_ALIAS = "keystore-self-signed";
+    public static final String DEFAULT_QUIC_PROTOCOL = "default";
 
     // launcher commands.
     public static final String COMMAND_PREFIX = "--";
@@ -596,8 +597,12 @@ public abstract class CoreStrings {
         return "Error: could not get '" + key + "' in storage.";
     }
 
-    public static String getMissingKeyStore(String shortNameMissing) {
-        return String.format("Keystore '%s' not configured: generating self signed certificate.", shortNameMissing);
+    public static String getKeystoreAutocreate(String alias) {
+        return String.format("Keystore '%s' not configured: generating self signed certificate.", alias);
+    }
+
+    public static String getMissingKeyStore(String alias) {
+        return String.format("Keystore '%s' not configured.", alias);
     }
 
     public static String getEmptyKeyStore(String keystorePath) {

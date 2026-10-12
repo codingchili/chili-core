@@ -96,7 +96,7 @@ public class SecuritySettingsTest {
         test.assertTrue(security().getByName(KEY_JKS).isPresent());
         KeyStoreReference store = settings.getByName(KEY_JKS).get();
         test.assertEquals(KEYSTORE_JKS, store.getPath());
-        test.assertEquals(KEY_JKS, store.getShortName());
+        test.assertEquals(KEY_JKS, store.getAlias());
         test.assertEquals(PWD, store.getPassword());
     }
 }
