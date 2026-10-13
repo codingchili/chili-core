@@ -3,7 +3,6 @@ package com.codingchili.core.protocol;
 import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.Set;
@@ -47,6 +46,7 @@ public class Protocol<RequestType> {
     private Class<?> dataModel;
     private Logger logger = new ConsoleLogger(getClass());
     private String target = "";
+    private BindingProvider bindings = BindingProvider.REFLECTION;
 
     {
         StartupListener.subscribe(core -> {
@@ -64,6 +64,29 @@ public class Protocol<RequestType> {
      */
     public Protocol(Receiver<RequestType> handler) {
         annotated(handler);
+    }
+
+    /**
+     * Creates a protocol by mapping annotated methods using the given strategy to bind the methods.
+     *
+     * @param handler  contains methods to be mapped.
+     * @param bindings how the methods are bound, see {@link #bindings(BindingProvider)}.
+     */
+    public Protocol(Receiver<RequestType> handler, BindingProvider bindings) {
+        this.bindings = bindings;
+        annotated(handler);
+    }
+
+    /**
+     * Sets how annotated methods are bound to be invoked, by default {@link BindingProvider#REFLECTION}.
+     * Applies to handlers that are passed to {@link #annotated(Receiver)} after this call.
+     *
+     * @param bindings the provider that binds the methods.
+     * @return fluent
+     */
+    public Protocol<RequestType> bindings(BindingProvider bindings) {
+        this.bindings = bindings;
+        return this;
     }
 
     /**
@@ -145,10 +168,11 @@ public class Protocol<RequestType> {
         RouteMapper mapper = method.getAnnotation(RouteMapper.class);
 
         if (mapper != null) {
+            Binding binding = bindings.bind(method);
             this.routeMapper = (request) -> {
                 try {
-                    return (String) method.invoke(handler, request);
-                } catch (IllegalAccessException | InvocationTargetException e) {
+                    return (String) binding.invoke(handler, request);
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             };
@@ -160,10 +184,11 @@ public class Protocol<RequestType> {
         Authenticator authenticator = method.getAnnotation(Authenticator.class);
 
         if (authenticator != null) {
+            Binding binding = bindings.bind(method);
             this.authenticator = (request) -> {
                 try {
-                    return (Future<RoleType>) method.invoke(handler, request);
-                } catch (IllegalAccessException | InvocationTargetException e) {
+                    return (Future<RoleType>) binding.invoke(handler, request);
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             };
@@ -221,23 +246,27 @@ public class Protocol<RequestType> {
 
     private void wrap(String route, Receiver<RequestType> handler, Method method, RoleType[] role) {
         if (TypedRoute.applies(method)) {
-            use(route, TypedRoute.handler(handler, method), role);
+            use(route, TypedRoute.handler(handler, method, bindings.bind(method)), role);
             // the input of the route is documented by its type, @DataModel on the method overrides it.
             lastAddedRoute.setTemplate(TypedRoute.input(method));
         } else if (method.getParameterCount() == 0) {
-            use(route, request -> invokeMethod(method, handler), role);
+            Binding binding = bindings.bind(method);
+            use(route, request -> invokeMethod(binding, handler, null), role);
         } else {
-            use(route, request -> invokeMethod(method, handler, request), role);
+            Binding binding = bindings.bind(method);
+            use(route, request -> invokeMethod(binding, handler, request), role);
         }
     }
 
-    private void invokeMethod(Method method, Object instance, Object... arguments) {
+    private void invokeMethod(Binding binding, Object instance, Object request) {
         try {
-            method.invoke(instance, arguments);
-        } catch (InvocationTargetException e) {
-            throw throwAny(e.getCause()); // thrown inside throwAny method.
-        } catch (IllegalAccessException e) {
-            throw throwAny(e);
+            if (request == null) {
+                binding.invoke(instance);
+            } else {
+                binding.invoke(instance, request);
+            }
+        } catch (Exception e) {
+            throw throwAny(e); // thrown inside throwAny method.
         }
     }
 

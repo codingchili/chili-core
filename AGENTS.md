@@ -12,9 +12,8 @@ IMPORTANT:
 - Before modifying anything, inspect the existing implementation and build configuration.
 - Prefer modifying existing Java files.
 - Do not invent tools or commands.
-- Use the available OpenCode tools only.
 - When uncertain, inspect the repository before making changes.
-- Run ./gradlew tests or the appropriate Gradle task after code changes.
+- After code changes run `compileJava`/`compileTestJava` and only the affected tests (see Working efficiently).
 
 ## What this project is
 
@@ -27,7 +26,22 @@ chili-core is an opinionated Java framework for building microservices quickly, 
 - `core/main/java/...` sources and `core/test/java/...` tests (note: NOT `src/main/java`), base package `com.codingchili.core`.
 - `core/main/resources/`, `core/test/resources/`: configs, keystores, fixtures.
 - `docs/`: GitHub pages markdown + generated javadoc (never edit or read `docs/javadoc/`).
-- `CHANGELOG/*.md`: change log, see the memory note on keeping it updated.
+- `CHANGELOG/*.md`: change log, topic files (`upgrades.md`, `performance.md`, `security.md`, `simplify.md`, `future.md`); add a short `## ` section to the matching file for notable changes.
+
+## Architecture (big picture)
+
+- **Boot**: `Launcher` parses commands (`context/*CommandExecutor`) and deploys any `Verticle`, `CoreHandler`, `CoreService`
+  or `CoreListener` class by name. `CoreContext`/`ServiceContext`/`SystemContext` wrap the Vert.x instance, timers, blocking
+  work and the logger; `CoreVerticle` is the base for deployables.
+- **Request path**: a `CoreListener` (transports in `listener/transport`: Rest, Websocket, Tcp, Udp, Quic, Cluster) turns wire
+  data into a `Request` and hands it to a `CoreHandler`/`Receiver`. Handlers route via `protocol` annotations/classes
+  (`@Address`, `@Api`, `Route`, `RoleMap`, `Authenticator`); `Serializer` (de)serializes. `BusRouter`/`BusForwarder` link
+  handlers over the event bus; `ClusterHelper` handles clustering.
+- **Storage**: `AsyncStorage<V>` is the single interface; implementations (`IndexedMap*`, `JsonMap`, `HazelMap`, `MongoDBMap`,
+  `ElasticMap`, `SharedMap`, `PrivateMap`) are chosen by `StorageLoader` from `StorageContext` settings. Queries go through
+  `QueryBuilder`/`Query`; indexed attributes need `AttributeRegistry` registration.
+- **Config**: `Configurable`/`ServiceConfigurable` JSON files loaded via `configuration` (strings in `CoreStrings`); security
+  (`TokenFactory`, `KeyStoreBuilder`, `HashFactory`) reads its settings from there.
 
 ## Working efficiently (read this first)
 
@@ -76,6 +90,7 @@ Gradle wrapper, Java toolchain 27. On Windows use `.\gradlew.bat`.
 gradlew compileJava                                      # main sources only
 gradlew compileTestJava                                  # compile tests without running them
 gradlew test --tests "com.codingchili.core.listener.*"   # ALWAYS select tests, see above
+gradlew :core:test --tests "com.codingchili.core.storage.IndexedMapPersistedTest" -q   # single class
 ```
 
 Tests named `*IT` are integration tests; some need external services (MongoDB, Elasticsearch) or clustering, so expect

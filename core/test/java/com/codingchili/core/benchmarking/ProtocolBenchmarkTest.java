@@ -46,6 +46,7 @@ public class ProtocolBenchmarkTest {
                             .collect(Collectors.toList());
 
                     test.assertEquals(List.of("Method.invoke", "MethodHandle", "LambdaMetafactory",
+                            "BindingProvider.REFLECTION", "BindingProvider.METHOD_HANDLES", "BindingProvider.LAMBDAS",
                             "Direct call (baseline)", "Protocol.process (end to end)"), names);
 
                     groups.get(0).getImplementations().forEach(implementation -> {

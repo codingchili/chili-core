@@ -4,7 +4,6 @@ import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 import tools.jackson.core.JacksonException;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -61,10 +60,11 @@ final class TypedRoute {
      *
      * @param instance the handler that the route is a method of.
      * @param method   the method, must be a typed route and accessible.
+     * @param binding  invokes the method.
      * @param <R>      the type of the request that the protocol handles.
      * @return a request handler that reads the input, invokes the method and writes the result.
      */
-    static <R> RequestHandler<R> handler(Object instance, Method method) {
+    static <R> RequestHandler<R> handler(Object instance, Method method, Binding binding) {
         Class<?> input = input(method);
         boolean withRequest = method.getParameterCount() > 1;
 
@@ -79,14 +79,8 @@ final class TypedRoute {
             try {
                 Object parsed = read(request.data(), input);
                 // the request is passed as it was given to the protocol, which may be a wrapper of the request.
-                value = (withRequest) ? method.invoke(instance, parsed, wrapped) : method.invoke(instance, parsed);
-            } catch (InvocationTargetException e) {
-                request.error(e.getCause());
-                return;
-            } catch (RequestValidationException e) {
-                request.error(e);
-                return;
-            } catch (ReflectiveOperationException e) {
+                value = (withRequest) ? binding.invoke(instance, parsed, wrapped) : binding.invoke(instance, parsed);
+            } catch (Exception e) {
                 request.error(e);
                 return;
             }

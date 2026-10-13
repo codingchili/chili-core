@@ -3,6 +3,8 @@ package com.codingchili.core.benchmarking;
 import io.vertx.core.Future;
 
 import java.lang.reflect.Method;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import com.codingchili.core.listener.Receiver;
 import com.codingchili.core.listener.Request;
@@ -36,6 +38,14 @@ public class ProtocolBenchmarkImplementation extends BenchmarkImplementationBuil
      * The number of times the routes of a handler are bound by one iteration.
      */
     public static final int BINDS_PER_ITERATION = 20;
+    private static final Map<String, BindingProvider> PROVIDERS = new LinkedHashMap<>();
+
+    static {
+        PROVIDERS.put("BindingProvider.REFLECTION", BindingProvider.REFLECTION);
+        PROVIDERS.put("BindingProvider.METHOD_HANDLES", BindingProvider.METHOD_HANDLES);
+        PROVIDERS.put("BindingProvider.LAMBDAS", BindingProvider.LAMBDAS);
+    }
+
     public static final String WITH_REQUEST = "route with request";
     public static final String WITHOUT_REQUEST = "route without request";
     public static final String BIND = "register 2 routes";
@@ -117,6 +127,18 @@ public class ProtocolBenchmarkImplementation extends BenchmarkImplementationBuil
                     }));
         }
 
+        // the providers that the protocol binds routes with, which invoke with the instance on every call.
+        for (Map.Entry<String, BindingProvider> entry : PROVIDERS.entrySet()) {
+            BindingProvider provider = entry.getValue();
+            DispatchHandler handler = new DispatchHandler();
+            com.codingchili.core.protocol.Binding bound = provider.bind(withRequest);
+            com.codingchili.core.protocol.Binding boundWithout = provider.bind(withoutRequest);
+            group.add(new ProtocolBenchmarkImplementation(group, entry.getKey(), handler,
+                    request -> invoke(bound, handler, request),
+                    () -> invoke(boundWithout, handler, null),
+                    () -> new Object[]{provider.bind(withRequest), provider.bind(withoutRequest)}));
+        }
+
         DispatchHandler direct = new DispatchHandler();
         group.add(new ProtocolBenchmarkImplementation(group, "Direct call (baseline)", direct,
                 direct::withRequest, direct::withoutRequest,
@@ -140,6 +162,18 @@ public class ProtocolBenchmarkImplementation extends BenchmarkImplementationBuil
 
         prime(group);
         return group;
+    }
+
+    private static void invoke(com.codingchili.core.protocol.Binding binding, Object handler, Object request) {
+        try {
+            if (request == null) {
+                binding.invoke(handler);
+            } else {
+                binding.invoke(handler, request);
+            }
+        } catch (Exception e) {
+            throw Protocol.throwAny(e);
+        }
     }
 
     private static Method route(String name, Class<?>... parameters) throws NoSuchMethodException {
