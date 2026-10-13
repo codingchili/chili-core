@@ -279,6 +279,10 @@ public abstract class CoreStrings {
         return String.format("Requested handler '%s' not found.", handlerName);
     }
 
+    public static String getMessageTypeMismatch(String route, String expected, String actual) {
+        return String.format("Route '%s' expects a message of type %s but received %s.", route, expected, actual);
+    }
+
     /**
      * Converts a throwables stack trace element into text.
      *

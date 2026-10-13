@@ -18,6 +18,7 @@ import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
+import com.codingchili.core.protocol.exception.MessageTypeMismatchException;
 
 import static com.codingchili.core.configuration.CoreStrings.ANY;
 import static com.codingchili.core.protocol.RoleMap.*;
@@ -246,7 +247,7 @@ public class Protocol<RequestType> {
 
     private void wrap(String route, Receiver<RequestType> handler, Method method, RoleType[] role) {
         if (TypedRoute.applies(method)) {
-            use(route, TypedRoute.handler(handler, method, bindings.bind(method)), role);
+            use(route, TypedRoute.handler(route, handler, method, bindings.bind(method)), role);
             // the input of the route is documented by its type, @DataModel on the method overrides it.
             if (TypedRoute.input(method) != null) {
                 lastAddedRoute.setTemplate(TypedRoute.input(method));
@@ -257,7 +258,13 @@ public class Protocol<RequestType> {
             use(route, request -> invokeMethod(binding, handler, null), role);
         } else {
             Binding binding = bindings.bind(method);
-            use(route, request -> invokeMethod(binding, handler, request), role);
+            Class<?> expected = method.getParameterTypes()[0];
+            use(route, request -> {
+                if (!expected.isInstance(request)) {
+                    throw new MessageTypeMismatchException(route, expected, (request == null) ? null : request.getClass());
+                }
+                invokeMethod(binding, handler, request);
+            }, role);
         }
     }
 

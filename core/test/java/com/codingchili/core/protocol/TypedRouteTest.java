@@ -20,6 +20,7 @@ import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.listener.Receiver;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.listener.RequestWrapper;
+import com.codingchili.core.protocol.exception.MessageTypeMismatchException;
 import com.codingchili.core.storage.exception.ValueMissingException;
 import com.codingchili.core.testing.RequestMock;
 import com.codingchili.core.testing.ResponseListener;
@@ -367,6 +368,72 @@ public class TypedRouteTest {
         } catch (IllegalArgumentException e) {
             test.assertTrue(e.getMessage().contains("takes the input, and optionally the request"));
         }
+    }
+
+    record Ping(String id) {
+    }
+
+    /**
+     * A handler of messages that are not requests, with a typed route and a route that takes a request.
+     */
+    static class MessageHandler implements Receiver<Object> {
+        Ping received;
+
+        @Api
+        public void ping(Ping ping) {
+            received = ping;
+        }
+
+        @Api
+        public void raw(Request request) {
+        }
+
+        @Override
+        public void handle(Object message) {
+        }
+    }
+
+    @Test
+    public void testNonRequestMessageIsPassedThroughToTypedRoute(TestContext test) {
+        MessageHandler messages = new MessageHandler();
+        Protocol<Object> protocol = messageProtocol(messages);
+
+        protocol.get("ping").submit(new Ping("1"));
+
+        test.assertEquals(new Ping("1"), messages.received);
+    }
+
+    @Test
+    public void testMessageOfWrongTypeIsRejectedByTypedRoute(TestContext test) {
+        Protocol<Object> protocol = messageProtocol(new MessageHandler());
+
+        try {
+            protocol.get("ping").submit("not a ping");
+            test.fail("expected the message of the wrong type to be rejected.");
+        } catch (MessageTypeMismatchException e) {
+            test.assertTrue(e.getMessage().contains("ping"));
+            test.assertTrue(e.getMessage().contains(Ping.class.getName()));
+            test.assertTrue(e.getMessage().contains(String.class.getName()));
+        }
+    }
+
+    @Test
+    public void testNonRequestMessageIsRejectedByRouteTakingRequest(TestContext test) {
+        Protocol<Object> protocol = messageProtocol(new MessageHandler());
+
+        try {
+            protocol.get("raw").submit(new Ping("1"));
+            test.fail("expected a non-request message to be rejected by a route that takes a request.");
+        } catch (MessageTypeMismatchException e) {
+            test.assertTrue(e.getMessage().contains(Request.class.getName()));
+        }
+    }
+
+    private static Protocol<Object> messageProtocol(MessageHandler handler) {
+        Protocol<Object> protocol = new Protocol<>();
+        protocol.setRole(RoleMap.get(RoleMap.PUBLIC));
+        protocol.annotated(handler);
+        return protocol;
     }
 
     private void call(TestContext test, String route, JsonObject data, ResponseListener listener) {

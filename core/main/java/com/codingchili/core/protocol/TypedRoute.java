@@ -9,6 +9,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import com.codingchili.core.listener.Request;
+import com.codingchili.core.protocol.exception.MessageTypeMismatchException;
 import com.codingchili.core.protocol.exception.RequestValidationException;
 
 /**
@@ -63,13 +64,14 @@ final class TypedRoute {
     /**
      * Creates the handler of a typed route.
      *
+     * @param route    the name of the route, used in errors.
      * @param instance the handler that the route is a method of.
      * @param method   the method, must be a typed route and accessible.
      * @param binding  invokes the method.
      * @param <R>      the type of the request that the protocol handles.
      * @return a request handler that reads the input, invokes the method and writes the result.
      */
-    static <R> RequestHandler<R> handler(Object instance, Method method, Binding binding) {
+    static <R> RequestHandler<R> handler(String route, Object instance, Method method, Binding binding) {
         Class<?> input = input(method);
         boolean withRequest = method.getParameterCount() > 1;
 
@@ -78,12 +80,11 @@ final class TypedRoute {
         }
 
         return wrapped -> {
-            if (!(wrapped instanceof Request)) {
+            if (!(wrapped instanceof Request request)) {
                 // protocols that handle other messages than requests: pass the message through as the input.
-                passthrough(instance, binding, input, withRequest, wrapped);
+                passthrough(route, instance, binding, input, withRequest, wrapped);
                 return;
             }
-            Request request = (Request) wrapped;
             Object value;
 
             try {
@@ -102,7 +103,10 @@ final class TypedRoute {
         };
     }
 
-    private static void passthrough(Object instance, Binding binding, Class<?> input, boolean withRequest, Object message) {
+    private static void passthrough(String route, Object instance, Binding binding, Class<?> input, boolean withRequest, Object message) {
+        if (input != null && !input.isInstance(message)) {
+            throw new MessageTypeMismatchException(route, input, (message == null) ? null : message.getClass());
+        }
         try {
             if (input == null) {
                 binding.invoke(instance);
