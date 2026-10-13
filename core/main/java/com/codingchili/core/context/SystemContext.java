@@ -218,8 +218,8 @@ public class SystemContext implements CoreContext {
     private DeploymentOptions options(Object deployable) {
         int instances = switch (deployable) {
             case DeploymentAware aware -> aware.instances();
-            case CoreListener _ -> system().getListeners();
-            case CoreService _ -> system().getServices();
+            case CoreListener none1 -> system().getListeners();
+            case CoreService none2 -> system().getServices();
             default -> system().getHandlers();
         };
         return new DeploymentOptions().setInstances(instances);
