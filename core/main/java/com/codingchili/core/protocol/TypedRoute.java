@@ -78,6 +78,11 @@ final class TypedRoute {
         }
 
         return wrapped -> {
+            if (!(wrapped instanceof Request)) {
+                // protocols that handle other messages than requests: pass the message through as the input.
+                passthrough(instance, binding, input, withRequest, wrapped);
+                return;
+            }
             Request request = (Request) wrapped;
             Object value;
 
@@ -95,6 +100,22 @@ final class TypedRoute {
             }
             write(request, value);
         };
+    }
+
+    private static void passthrough(Object instance, Binding binding, Class<?> input, boolean withRequest, Object message) {
+        try {
+            if (input == null) {
+                binding.invoke(instance);
+            } else if (withRequest) {
+                binding.invoke(instance, message, null);
+            } else {
+                binding.invoke(instance, message);
+            }
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static void write(Request request, Object value) {
