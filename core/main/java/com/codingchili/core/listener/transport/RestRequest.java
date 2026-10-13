@@ -164,12 +164,12 @@ public class RestRequest extends AbstractRequest {
     }
 
     protected void send(ResponseStatus status, Throwable e) {
-        request.response().setStatusCode(HttpResponseStatus.OK.code())
+        request.response().setStatusCode(status.code())
                 .end(Response.error(target(), route(), status, e).encode());
     }
 
     protected void send(ResponseStatus status) {
-        request.response().setStatusCode(HttpResponseStatus.OK.code())
+        request.response().setStatusCode(status.code())
                 .end(Response.status(target(), route(), status).encode());
     }
 
