@@ -2,6 +2,7 @@ package com.codingchili.core.protocol;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.lang.reflect.Type;
 import java.util.Map;
 
 import com.codingchili.core.configuration.CoreStrings;
@@ -18,6 +19,11 @@ public class Route<T> {
     private RequestHandler<T> handler;
     private String description = CoreStrings.getDescriptionMissing();
     private Map<String, String> model;
+    private Map<String, String> output;
+    @JsonIgnore
+    private Class<?> inputType;
+    @JsonIgnore
+    private Type resultType;
     private RoleType[] roles;
     private String route;
 
@@ -126,8 +132,56 @@ public class Route<T> {
      * @return fluent
      */
     public Route<T> setTemplate(Class<?> template) {
+        this.inputType = template;
         this.model = Serializer.describe(template);
         return this;
+    }
+
+    /**
+     * @param result the type that the route returns, a future of a type is documented as the type.
+     *               Void is not documented.
+     * @return fluent
+     */
+    public Route<T> result(Type result) {
+        this.resultType = result;
+        this.output = null;
+        Class<?> raw = OpenAPIGenerator.rawType(result);
+        if (raw != null && raw != void.class && raw != Void.class) {
+            this.output = Serializer.describe(raw);
+        }
+        return this;
+    }
+
+    /**
+     * @return the fields of the object that the route returns mapped to their type, null if not documented.
+     */
+    public Map<String, String> getOutput() {
+        return output;
+    }
+
+    /**
+     * @param output a map of key value pairs as attribute name and type, describes the output of the api method.
+     * @return fluent
+     */
+    public Route<T> setOutput(Map<String, String> output) {
+        this.output = output;
+        return this;
+    }
+
+    /**
+     * @return the class of the input of the route, null if not documented. Not serialized.
+     */
+    @JsonIgnore
+    public Class<?> getInputType() {
+        return inputType;
+    }
+
+    /**
+     * @return the type that the route returns, null if not documented. Not serialized.
+     */
+    @JsonIgnore
+    public Type getResultType() {
+        return resultType;
     }
 
     /**

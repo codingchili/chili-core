@@ -248,7 +248,10 @@ public class Protocol<RequestType> {
         if (TypedRoute.applies(method)) {
             use(route, TypedRoute.handler(handler, method, bindings.bind(method)), role);
             // the input of the route is documented by its type, @DataModel on the method overrides it.
-            lastAddedRoute.setTemplate(TypedRoute.input(method));
+            if (TypedRoute.input(method) != null) {
+                lastAddedRoute.setTemplate(TypedRoute.input(method));
+            }
+            lastAddedRoute.result(TypedRoute.result(method));
         } else if (method.getParameterCount() == 0) {
             Binding binding = bindings.bind(method);
             use(route, request -> invokeMethod(binding, handler, null), role);

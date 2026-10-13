@@ -70,6 +70,9 @@ public class TypedRouteTest {
     record RenameAccount(String id, String name) {
     }
 
+    record AccountStats(int count) {
+    }
+
     record AccountView(String id, String name, int level) {
     }
 
@@ -116,6 +119,12 @@ public class TypedRouteTest {
         public Future<Void> purge(GetAccount input) {
             accounts.clear();
             return Future.succeededFuture();
+        }
+
+        // no input at all: a method without parameters that returns a value.
+        @Api
+        public AccountStats stats() {
+            return new AccountStats(accounts.size());
         }
 
         @Api
@@ -255,6 +264,17 @@ public class TypedRouteTest {
     public void testExceptionIsAnsweredAsAnError(TestContext test) {
         call(test, "explode", new JsonObject().put("id", "1"), (json, status) ->
                 test.assertEquals(ERROR, status));
+    }
+
+    @Test
+    public void testRouteWithoutInputReturnsAnObject(TestContext test) {
+        handler.accounts.put("a", new AccountView("a", "robin", 1));
+        handler.accounts.put("b", new AccountView("b", "alex", 2));
+
+        call(test, "stats", new JsonObject(), (json, status) -> {
+            test.assertEquals(ACCEPTED, status);
+            test.assertEquals(2, json.getInteger("count"));
+        });
     }
 
     @Test

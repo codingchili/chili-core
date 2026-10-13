@@ -20,8 +20,9 @@ import com.codingchili.core.protocol.exception.RequestValidationException;
  *     return accounts.get(input.id()).map(AccountView::of);
  * }
  * }</pre>
- * A method is a typed route when its first parameter is not a {@link Request}. The method may take the request as a
- * second parameter, for the token or the connection.
+ * A method is a typed route when its first parameter is not a {@link Request}, or when it takes no parameters and
+ * returns a value: a route without input. The method may take the request as a second parameter, for the token or the
+ * connection.
  * <ul>
  * <li>The input is deserialized from the data of the request. A record can validate itself in its constructor:
  * a constructor that throws {@link IllegalArgumentException} is answered with {@link ResponseStatus#BAD} and the
@@ -41,18 +42,22 @@ final class TypedRoute {
 
     /**
      * @param method a method annotated as a route.
-     * @return true if the method is a typed route.
+     * @return true if the method is a typed route: its first parameter is not a request, or it takes no parameters and
+     * returns a value.
      */
     static boolean applies(Method method) {
-        return method.getParameterCount() > 0 && !Request.class.isAssignableFrom(method.getParameterTypes()[0]);
+        if (method.getParameterCount() == 0) {
+            return method.getReturnType() != void.class;
+        }
+        return !Request.class.isAssignableFrom(method.getParameterTypes()[0]);
     }
 
     /**
      * @param method a typed route.
-     * @return the type of the input.
+     * @return the type of the input, null if the route takes no input.
      */
     static Class<?> input(Method method) {
-        return method.getParameterTypes()[0];
+        return (method.getParameterCount() == 0) ? null : method.getParameterTypes()[0];
     }
 
     /**
@@ -77,9 +82,13 @@ final class TypedRoute {
             Object value;
 
             try {
-                Object parsed = read(request.data(), input);
-                // the request is passed as it was given to the protocol, which may be a wrapper of the request.
-                value = (withRequest) ? binding.invoke(instance, parsed, wrapped) : binding.invoke(instance, parsed);
+                if (input == null) {
+                    value = binding.invoke(instance);
+                } else {
+                    Object parsed = read(request.data(), input);
+                    // the request is passed as it was given to the protocol, which may be a wrapper of the request.
+                    value = (withRequest) ? binding.invoke(instance, parsed, wrapped) : binding.invoke(instance, parsed);
+                }
             } catch (Exception e) {
                 request.error(e);
                 return;
