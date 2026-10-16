@@ -108,6 +108,25 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
     }
 
     /**
+     * Replaces an existing entry with a new version.
+     *
+     * @param current     the version that is currently stored.
+     * @param replacement the new version, with the mapper already applied.
+     * @return true if the entry was replaced.
+     */
+    protected boolean replace(Value current, Value replacement) {
+        return db.update(Collections.singleton(current), Collections.singleton(replacement));
+    }
+
+    /**
+     * @param entry the entry to remove from the collection.
+     * @return true if the entry was removed.
+     */
+    protected boolean discard(Value entry) {
+        return db.remove(entry);
+    }
+
+    /**
      * @param attribute the attribute to add an index for based on implementation.
      */
     protected abstract void addIndexesForAttribute(Attribute<Value, ?> attribute);
@@ -140,8 +159,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
                     db.add(mapper.apply(value));
                     blocking.complete();
                 } else {
-                    boolean updated = db.update(Collections.singleton(result.iterator().next()),
-                            Collections.singleton(mapper.apply(value)));
+                    boolean updated = replace(result.iterator().next(), mapper.apply(value));
 
                     if (updated) {
                         blocking.complete();
@@ -172,8 +190,9 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
         return blocking(blocking -> {
             try (ResultSet<Value> result = db.retrieve(equal(FIELD_ID, key))) {
                 if (result.isNotEmpty()) {
-                    result.stream().forEach(entry -> {
-                        if (!db.remove(entry)) {
+                    // collect first: the result must not be read while its rows are deleted.
+                    result.stream().toList().forEach(entry -> {
+                        if (!discard(entry)) {
                             blocking.tryFail(new NothingToRemoveException(key));
                         }
                     });
@@ -190,7 +209,7 @@ public abstract class IndexedMap<Value extends Storable> implements AsyncStorage
         return blocking(blocking -> {
             try (ResultSet<Value> result = db.retrieve(equal(FIELD_ID, value.getId()))) {
                 if (result.isNotEmpty()) {
-                    boolean updated = db.update(Collections.singleton(result.iterator().next()), Collections.singleton(mapper.apply(value)));
+                    boolean updated = replace(result.iterator().next(), mapper.apply(value));
 
                     if (updated) {
                         blocking.complete();
