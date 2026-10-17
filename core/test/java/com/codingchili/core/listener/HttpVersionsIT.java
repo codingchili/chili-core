@@ -1,5 +1,6 @@
 package com.codingchili.core.listener;
 
+import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.files.Configurations;
 import io.vertx.core.Future;
 import io.vertx.core.http.*;
@@ -59,6 +60,7 @@ public class HttpVersionsIT {
                 .onComplete(test.asyncAssertSuccess(response -> {
                     test.assertEquals(200, response.status);
                     test.assertEquals(HttpVersion.HTTP_1_1, response.version);
+                    test.assertNull(response.altSvc);
                 }));
     }
 
@@ -106,6 +108,19 @@ public class HttpVersionsIT {
                 .onComplete(test.asyncAssertSuccess(response -> {
                     test.assertEquals(200, response.status);
                     test.assertEquals(HttpVersion.HTTP_3, response.version);
+                    test.assertNull(response.altSvc);
+                }));
+    }
+
+    @Test
+    public void testHttp3IsAdvertisedOverHttp2(TestContext test) throws java.io.IOException {
+        int port = freePort();
+        ListenerSettings settings = secure().setPort(port);
+
+        listen(settings).compose(p -> get(client(true, HttpVersion.HTTP_2, HttpVersion.HTTP_1_1), p))
+                .onComplete(test.asyncAssertSuccess(response -> {
+                    test.assertEquals(HttpVersion.HTTP_2, response.version);
+                    test.assertEquals(String.format(CoreStrings.HTTP3_ALT_SVC, port), response.altSvc);
                 }));
     }
 
@@ -195,10 +210,11 @@ public class HttpVersionsIT {
         return client.request(HttpMethod.GET, port, HOST, PATH)
                 .compose(request -> request.send())
                 .compose(response -> response.body().map(body ->
-                        new Response(response.statusCode(), response.version())));
+                        new Response(response.statusCode(), response.version(),
+                                response.getHeader(HttpHeaders.ALT_SVC))));
     }
 
-    private record Response(int status, HttpVersion version) {
+    private record Response(int status, HttpVersion version, String altSvc) {
     }
 
     private static class AcceptingHandler implements CoreHandler<Request> {

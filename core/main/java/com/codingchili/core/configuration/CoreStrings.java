@@ -83,6 +83,7 @@ public abstract class CoreStrings {
     public static final String DEFAULT_KEYSTORE = "keystore.jks";
     public static final String DEFAULT_KEYSTORE_AUTO_ALIAS = "keystore-self-signed";
     public static final String DEFAULT_QUIC_PROTOCOL = "default";
+    public static final String HTTP3_ALT_SVC = "h3=\":%d\"; ma=86400";
 
     // launcher commands.
     public static final String COMMAND_PREFIX = "--";

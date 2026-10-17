@@ -2,7 +2,9 @@ package com.codingchili.core.listener.transport;
 
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
+import io.vertx.core.http.HttpHeaders;
 import io.vertx.core.http.HttpServerConfig;
+import io.vertx.core.http.HttpVersion;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -30,6 +32,10 @@ public class RestListener implements CoreListener {
         logger = ListenerExceptionLogger.create(core, this, handler);
         router = Router.router(core.vertx());
         RestHelper.addHeaders(router, settings.isSecure());
+
+        if (settings.getHttpOptions().getVersions().contains(HttpVersion.HTTP_3)) {
+            router.route().handler(this::advertiseHttp3);
+        }
 
         router.route()
                 .handler(
@@ -92,6 +98,19 @@ public class RestListener implements CoreListener {
     @Override
     public void stop(Promise<Void> stop) {
         handler.stop(stop);
+    }
+
+    /**
+     * Browsers connect with HTTP/1.1 or HTTP/2 first and only switch to HTTP/3 when it is advertised.
+     * The QUIC listener binds the same port as the TCP listener.
+     */
+    private void advertiseHttp3(RoutingContext context) {
+        var request = context.request();
+        if (request.version() != HttpVersion.HTTP_3) {
+            context.response().putHeader(HttpHeaders.ALT_SVC,
+                    String.format(HTTP3_ALT_SVC, request.localAddress().port()));
+        }
+        context.next();
     }
 
     private void packet(RoutingContext context) {
