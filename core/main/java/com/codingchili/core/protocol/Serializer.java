@@ -4,6 +4,7 @@ package com.codingchili.core.protocol;
 import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.protocol.exception.SerializerPayloadException;
 import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.SerializerFactory;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.util.Pool;
 import io.vertx.core.buffer.Buffer;
@@ -72,6 +73,12 @@ public class Serializer {
             Kryo kryo = new Kryo();
             // this instance should not be used for de-serializing arbitrary classes.
             kryo.setRegistrationRequired(false);
+
+            // kryo copies transient fields by default, skip them for all classes.
+            var config = new FieldSerializer.FieldSerializerConfig();
+            config.setCopyTransient(false);
+            config.setSerializeTransient(false);
+            kryo.setDefaultSerializer(new SerializerFactory.FieldSerializerFactory(config));
             return kryo;
         }
     };
