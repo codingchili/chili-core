@@ -38,7 +38,8 @@ public class FileWatcherBuilder {
     }
 
     /**
-     * The rate in which to poll the file change events.
+     * The time to wait for further changes before the listener is notified, changes to the
+     * same file within this time are reported once. Limited to {@link FileWatcher#MAX_DEBOUNCE_MS}.
      *
      * @param rate a timersource in milliseconds.
      * @return fluent

@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.TimerSource;
@@ -90,6 +91,48 @@ public class FileWatcherIT {
     }
 
     @Test
+    public void burstOfModificationsIsReportedOnce(TestContext test) {
+        Async async = test.async();
+        AtomicInteger notifications = new AtomicInteger();
+
+        ConfigurationFactory.writeObject(new JsonObject(), TOUCH_JSON);
+
+        listenFiles(new FileStoreListener() {
+            @Override
+            public void onFileModify(Path path) {
+                notifications.incrementAndGet();
+            }
+        });
+
+        for (int i = 0; i < 5; i++) {
+            ConfigurationFactory.writeObject(new JsonObject(), TOUCH_JSON);
+        }
+
+        context.timer(400, handler -> {
+            test.assertEquals(1, notifications.get());
+            async.complete();
+        });
+    }
+
+    @Test
+    public void notNotifiedAfterStopped(TestContext test) {
+        Async async = test.async();
+
+        ConfigurationFactory.writeObject(new JsonObject(), TOUCH_JSON);
+
+        listenFiles(new FileStoreListener() {
+            @Override
+            public void onFileModify(Path path) {
+                test.fail("Reacted to file modify event after the watcher was stopped.");
+            }
+        }).stop();
+
+        ConfigurationFactory.writeObject(new JsonObject(), TOUCH_JSON);
+
+        delayMS(async, 400);
+    }
+
+    @Test
     public void notNotifiedWhenOutsidePath(TestContext test) {
         Async async = test.async();
 
@@ -115,8 +158,8 @@ public class FileWatcherIT {
         context.timer(ms, handler -> async.complete());
     }
 
-    private void listenFiles(FileStoreListener listener) {
-        new FileWatcherBuilder(context)
+    private FileWatcher listenFiles(FileStoreListener listener) {
+        return new FileWatcherBuilder(context)
                 .onDirectory(CoreStrings.testDirectory(FILE_WATCHER_TEST))
                 .rate(TimerSource.of(25))
                 .withListener(listener)

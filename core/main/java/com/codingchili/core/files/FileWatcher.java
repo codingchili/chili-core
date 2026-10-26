@@ -3,24 +3,34 @@ package com.codingchili.core.files;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.concurrent.RejectedExecutionException;
 
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.TimerSource;
 import com.codingchili.core.logging.Logger;
 
-import static com.codingchili.core.configuration.CoreStrings.DIR_SEPARATOR;
 import static java.nio.file.StandardWatchEventKinds.*;
 
 /**
  * Watches changes to files in a registered directory and all its subdirectories.
+ * <p>
+ * All file watchers share a single thread that blocks on the {@link WatchService} and is woken by
+ * the operating system, an idle watcher does not poll and does not allocate. Changes are collected
+ * for a short time before the listener is notified so that a burst of events for one file, as
+ * emitted by most editors on save, results in a single notification.
  */
 public class FileWatcher {
-    private final HashMap<Path, WatchKey> keys = new HashMap<>();
+    /**
+     * the longest time that a change is held back before the listeners are notified.
+     */
+    static final int MAX_DEBOUNCE_MS = 500;
     private final CoreContext context;
-    private Logger logger;
-    private AtomicBoolean running = new AtomicBoolean(true);
+    private final Logger logger;
+    // only accessed by the watch thread.
+    private Map<Path, Boolean> changes = new LinkedHashMap<>();
+    private volatile boolean stopped = false;
     protected FileStoreListener listener;
     protected String directory;
     protected TimerSource rate;
@@ -44,58 +54,76 @@ public class FileWatcher {
      * Stops the filewatcher.
      */
     public void stop() {
-        running.set(false);
+        stopped = true;
+        WatchRegistry.unregister(this);
     }
 
     void initialize() {
         try {
-            WatchService watcher = FileSystems.getDefault().newWatchService();
             Path path = Paths.get(directory);
 
             if (path.toFile().exists()) {
                 Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attributes) throws IOException {
-                        keys.put(dir, dir.register(watcher, ENTRY_MODIFY, ENTRY_DELETE, ENTRY_CREATE));
+                        WatchRegistry.register(FileWatcher.this, dir);
                         return FileVisitResult.CONTINUE;
                     }
                 });
-                this.start();
             }
         } catch (IOException e) {
             logger.onError(e);
         }
     }
 
-    private void start() {
-        context.periodic(rate.setName(getClass().getSimpleName()), event -> {
-            if (running.get()) {
-                poll();
-            } else {
-                context.cancel(event);
+    /**
+     * Collects the pending events of the key, the most recent event of each file is kept.
+     * Called by the watch thread.
+     *
+     * @param key the key that was signalled, is reset once its events are collected.
+     */
+    void collect(WatchKey key) {
+        Path directory = (Path) key.watchable();
+
+        for (WatchEvent<?> event : key.pollEvents()) {
+            if (event.context() instanceof Path file) {
+                Path path = directory.resolve(file);
+                changes.remove(path);
+                changes.put(path, event.kind().equals(ENTRY_DELETE));
             }
-        });
+        }
+        key.reset();
     }
 
-    private void poll() {
-        for (Path path : keys.keySet()) {
-            WatchKey key = keys.get(path);
+    /**
+     * Notifies the listener of the collected changes on the context. Called by the watch thread.
+     */
+    void dispatch() {
+        Map<Path, Boolean> batch = changes;
+        changes = new LinkedHashMap<>();
 
-            key.pollEvents().stream()
-                    .filter(event -> !getPath(path, event).toFile().isDirectory())
-                    .forEach(event -> {
-                        if (event.kind().equals(ENTRY_DELETE)) {
-                            listener.onFileRemove(getPath(path, event));
-                        } else {
-                            listener.onFileModify(getPath(path, event));
-                        }
-                    });
-            key.reset();
+        if (stopped) {
+            return;
+        }
+        try {
+            context.vertx().runOnContext(done -> batch.forEach((path, removed) -> {
+                if (removed) {
+                    listener.onFileRemove(path);
+                } else if (!path.toFile().isDirectory()) {
+                    listener.onFileModify(path);
+                }
+            }));
+        } catch (RejectedExecutionException e) {
+            // the context was closed, there is nobody left to notify.
+            stop();
         }
     }
 
-    private Path getPath(Path path, WatchEvent event) {
-        return Paths.get(path + DIR_SEPARATOR + event.context());
+    /**
+     * @return the time in milliseconds to wait for more changes before notifying the listener.
+     */
+    int debounce() {
+        return Math.min(rate.getMS(), MAX_DEBOUNCE_MS);
     }
 
     void setRate(TimerSource rate) {

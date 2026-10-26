@@ -109,7 +109,7 @@ The `ConfigurationFactory` may be combined with a `com.codingchili.core.files.Fi
 Example of using the ConfigurationFactory with a FileWatcher
 
 ```java
-// creates a FileWatcher on the given directory that checks the WatchService each 1500ms.
+// creates a FileWatcher on the given directory, changes are collected for up to 500ms before the listener is called.
 FileWatcher.builder(core)
     .onDirectory('path/to/directory/')
     .rate(() -> 1500)
@@ -198,6 +198,7 @@ The system configuration contains properties used for the framework core functio
 |configurationReload| boolean, default true. Set to false to disable reloading of configuration when files change. |
 |cachedFilePoll| how often the `CachedFileStore` should poll the WatchService. |
 |consoleLogging| boolean determines if logging events are printed to console out. |
+|eventLoops| the number of event loop threads, defaults to half of the logical processors. |
 |workerPoolSize| the size of the worker pool. |
 |clusterTimeout| time in ms until clustered messages are timed out. |
 |blockedThreadChecker| how often to check for blocked threads in milliseconds. |

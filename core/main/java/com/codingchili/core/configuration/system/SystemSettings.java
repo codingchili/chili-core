@@ -15,6 +15,7 @@ import static com.codingchili.core.configuration.CoreStrings.PATH_SYSTEM;
  * Contains settings for the core system.
  */
 public class SystemSettings implements Configurable {
+    private static final int cores = Runtime.getRuntime().availableProcessors();
     private MetricSettings metrics = new MetricSettings();
     private VertxOptions options = null;
     private int services = 1;
@@ -32,9 +33,8 @@ public class SystemSettings implements Configurable {
     private int clusterTimeout = 3000;
     private long blockedThreadChecker = VertxOptions.DEFAULT_BLOCKED_THREAD_CHECK_INTERVAL;
     private long maxEventLoopExecuteTime = VertxOptions.DEFAULT_MAX_EVENT_LOOP_EXECUTE_TIME / (1000 * 1000);
-    private int workerPoolSize = Math.min(
-            Runtime.getRuntime().availableProcessors() * 8, // up to 8 core.
-            32 + Runtime.getRuntime().availableProcessors() * 4); // over 8 cores.
+    private int eventLoops = Math.max(1, cores / 2);
+    private int workerPoolSize = Math.max(1, cores / 2);
 
     {
         System.setProperty("kryo.unsafe", String.valueOf(unsafe));
@@ -168,6 +168,7 @@ public class SystemSettings implements Configurable {
         if (options == null) {
             options = new VertxOptions()
                     .setMetricsOptions(metrics.createVertxOptions())
+                    .setEventLoopPoolSize(eventLoops)
                     .setWorkerPoolSize(workerPoolSize)
                     .setBlockedThreadCheckInterval(blockedThreadChecker)
                     .setMaxEventLoopExecuteTime(maxEventLoopExecuteTime * 1000 * 1000);
@@ -252,6 +253,23 @@ public class SystemSettings implements Configurable {
      */
     public SystemSettings setCachedFilePoll(int cachedFilePoll) {
         this.cachedFilePoll = cachedFilePoll;
+        return this;
+    }
+
+    /**
+     * @return the number of event loop threads, defaults to half of the logical processors.
+     */
+    public int getEventLoops() {
+        return eventLoops;
+    }
+
+    /**
+     * @param eventLoops sets the number of event loop threads, handlers and listeners are spread over these.
+     *                   must be called before the launcher is invoked.
+     * @return fluent
+     */
+    public SystemSettings setEventLoops(int eventLoops) {
+        this.eventLoops = eventLoops;
         return this;
     }
 
