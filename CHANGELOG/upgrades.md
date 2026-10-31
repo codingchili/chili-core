@@ -621,6 +621,14 @@ the route itself (see the benchmark below), per extra call.
 - Verified: `gradlew --version`, `gradlew help` and `compileTestJava` all pass. The test suite hasn't been run against
   9.8.0.
 
+## Artifact coordinate: `com.github.codingchili:chili-core` (1.4.5)
+
+JitPack publishes single-module builds under the repo name, so `com.github.codingchili:core` (local
+`publishToMavenLocal`) and `com.github.codingchili.chili-core:core` (docs) never resolved from JitPack. The
+publication now uses `artifactId = 'chili-core'`: local and JitPack builds are both
+`com.github.codingchili:chili-core:<version>`. Consumers must update their dependency. Also fixed in this release:
+`alljavadoc` declared no dependency on the subprojects' compile outputs, which failed `publishToMavenLocal`.
+
 ## Verification status
 
 Latest runs (handler → future migration and QUIC listener), all passing:

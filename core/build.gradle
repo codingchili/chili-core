@@ -75,6 +75,8 @@ test {
 publishing {
     publications {
         maven(MavenPublication) {
+            // same artifactId as JitPack serves (it names single-module builds after the repo)
+            artifactId = 'chili-core'
             from components.java
             artifact tasks.sourcesJar
             artifact rootProject.tasks.javadocJar

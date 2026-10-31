@@ -66,7 +66,7 @@ An example on how to exclude all optionals
 
 ```groovy
 dependencies {
-    compile("com.github.codingchili.chili-core:core:$project.version") {
+    compile("com.github.codingchili:chili-core:$project.version") {
         exclude group: 'org.elasticsearch.client', module: 'elasticsearch-rest-high-level-client'
         exclude group: 'com.googlecode.cqengine', module: 'cqengine'
         exclude group: 'io.vertx', module: 'vertx-hazelcast'

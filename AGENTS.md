@@ -19,7 +19,7 @@ IMPORTANT:
 
 chili-core is an opinionated Java framework for building microservices quickly, wrapping
 [Vert.x](https://vertx.io/) 5 (event loop, event bus, networking). Published via JitPack as
-`com.github.codingchili.chili-core:core:<version>`. Entry point: `com.codingchili.core.Launcher`.
+`com.github.codingchili:chili-core:<version>`. Entry point: `com.codingchili.core.Launcher`.
 
 ## Repository layout
 
