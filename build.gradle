@@ -56,8 +56,10 @@ subprojects {
 }
 
 tasks.register('alljavadoc', Javadoc) {
-    source = subprojects.collect { it.tasks.named('javadoc').map { jt -> jt.source } }
-    classpath = files(subprojects.collect { it.tasks.named('javadoc').map { jt -> jt.classpath } })
+    // use the source sets directly: they carry the compileJava/processResources dependencies
+    def mains = subprojects.collect { it.sourceSets.main }
+    source = mains.collect { it.allJava }
+    classpath = files(mains.collect { it.compileClasspath + it.output })
 }
 
 tasks.register('copyJavadoc', Copy) {
