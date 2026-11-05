@@ -37,6 +37,7 @@ public abstract class ListenerTestCases {
     private static final int MAX_REQUEST_BYTES = 256;
     private static final String ONE_CHAR = "x";
     private static final String DATA = "data";
+    protected static final String ROUTE_CLOSE = "close";
     private Supplier<CoreListener> listener;
 
     @Rule
@@ -138,7 +139,12 @@ public abstract class ListenerTestCases {
 
         @Override
         public void handle(Request request) {
-            request.accept();
+            if (ROUTE_CLOSE.equals(request.route())) {
+                // the server closes the connection: the client sees it closed.
+                request.connection().close();
+            } else {
+                request.accept();
+            }
         }
 
         @Override

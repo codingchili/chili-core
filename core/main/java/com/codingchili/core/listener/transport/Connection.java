@@ -19,6 +19,8 @@ public class Connection implements Messageable {
     private final Map<String, Runnable> closeHandlers = new HashMap<>();
     private final Consumer<Object> writer;
     private BiConsumer<Consumer<Object>, Object> proxy;
+    private Runnable closer;
+    private boolean closed;
 
     /**
      * Creates a new stateful connection that properly implements the ID method.
@@ -101,8 +103,45 @@ public class Connection implements Messageable {
     }
 
     /**
+     * Sets how the underlying transport is closed: the listener that created the connection sets it, for example to
+     * close the websocket. Closing the transport fires its close event, which runs the close handlers.
+     *
+     * @param closer closes the underlying transport.
+     * @return fluent.
+     */
+    public Connection closer(Runnable closer) {
+        this.closer = closer;
+        return this;
+    }
+
+    /**
+     * Closes the connection, for example to disconnect a client from the server side. A connection over a
+     * stateful transport (websocket, tcp, quic) closes it, and the close handlers run when the transport reports the
+     * close. A connection without a transport to close (rest, cluster, udp) runs its close handlers. Calling it more
+     * than once does nothing.
+     */
+    public void close() {
+        if (closed) {
+            return;
+        }
+        closed = true;
+        if (closer == null) {
+            runCloseHandlers();
+        } else {
+            closer.run();
+        }
+    }
+
+    /**
+     * @return true if {@link #close()} was called.
+     */
+    public boolean isClosed() {
+        return closed;
+    }
+
+    /**
      * executes the close handlers registered on the connection. Does not actually
-     * close the connection itself. This method is primarily intended to be called by
+     * close the connection itself, see {@link #close()}. This method is primarily intended to be called by
      * the listener which created the connection.
      */
     public void runCloseHandlers() {

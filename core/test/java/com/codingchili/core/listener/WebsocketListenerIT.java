@@ -3,7 +3,10 @@ package com.codingchili.core.listener;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.WebSocket;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.codingchili.core.configuration.CoreStrings;
@@ -17,6 +20,17 @@ public class WebsocketListenerIT extends ListenerTestCases {
 
     public WebsocketListenerIT() {
         super(WebsocketListener::new);
+    }
+
+    @Test
+    public void testServerCloses(TestContext test) {
+        Async async = test.async();
+        context.vertx().createWebSocketClient().connect(port, HOST, CoreStrings.DIR_SEPARATOR).onComplete(test.asyncAssertSuccess(socket -> {
+            socket.closeHandler(closed -> async.complete());
+            socket.write(Buffer.buffer(new JsonObject()
+                    .put(CoreStrings.PROTOCOL_TARGET, NODE_ROUTER)
+                    .put(CoreStrings.PROTOCOL_ROUTE, ROUTE_CLOSE).encode()));
+        }));
     }
 
     @Override

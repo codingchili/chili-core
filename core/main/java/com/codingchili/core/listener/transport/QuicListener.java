@@ -104,6 +104,7 @@ public class QuicListener implements CoreListener, DeploymentAware {
 
     private void connected(QuicConnection quic) {
         Connection connection = new Connection(message -> push(quic, message), UUID.randomUUID().toString())
+                .closer(quic::close)
                 .setProperty(PROTOCOL_CONNECTION, quic.remoteAddress().host());
 
         quic.closeHandler(closed -> connection.runCloseHandlers());

@@ -629,6 +629,14 @@ publication now uses `artifactId = 'chili-core'`: local and JitPack builds are b
 `com.github.codingchili:chili-core:<version>`. Consumers must update their dependency. Also fixed in this release:
 `alljavadoc` declared no dependency on the subprojects' compile outputs, which failed `publishToMavenLocal`.
 
+## Connections can be closed from the server (1.4.6)
+
+`Connection.close()` closes a client connection from the server side, for example to disconnect a banned player.
+The listener that creates the connection sets how its transport closes (`Connection.closer`): the websocket, tcp and
+quic listeners close the socket (or the quic connection), and the transport's close event runs the close handlers as
+before. A connection without a transport to close (rest, cluster, udp) runs its close handlers. `close()` is
+idempotent, `isClosed()` reports it. Tests: `ConnectionTest`, `WebsocketListenerIT.testServerCloses`.
+
 ## Verification status
 
 Latest runs (handler → future migration and QUIC listener), all passing:

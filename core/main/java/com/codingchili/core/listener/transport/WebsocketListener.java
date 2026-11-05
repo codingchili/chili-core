@@ -119,6 +119,7 @@ public class WebsocketListener implements CoreListener {
                 }
             }
         }, UUID.randomUUID().toString())
+                .closer(socket::close)
                 .setProperty(PROTOCOL_CONNECTION, socket.remoteAddress().host());
     }
 
