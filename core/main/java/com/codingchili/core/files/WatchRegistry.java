@@ -5,7 +5,9 @@ import java.nio.file.*;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
 
 import static java.nio.file.StandardWatchEventKinds.*;
@@ -18,7 +20,8 @@ import static java.nio.file.StandardWatchEventKinds.*;
  * watcher is removed, and created again when a new watcher is added.
  */
 final class WatchRegistry {
-    private static final Map<WatchKey, FileWatcher> OWNERS = new ConcurrentHashMap<>();
+    // a directory that is registered again returns the same key: every file watcher of the directory is notified.
+    private static final Map<WatchKey, Set<FileWatcher>> OWNERS = new ConcurrentHashMap<>();
     private static WatchService service;
 
     private WatchRegistry() {
@@ -38,7 +41,8 @@ final class WatchRegistry {
             service = created;
             thread.start();
         }
-        OWNERS.put(directory.register(service, ENTRY_MODIFY, ENTRY_DELETE, ENTRY_CREATE), owner);
+        OWNERS.computeIfAbsent(directory.register(service, ENTRY_MODIFY, ENTRY_DELETE, ENTRY_CREATE),
+                key -> new CopyOnWriteArraySet<>()).add(owner);
     }
 
     /**
@@ -48,7 +52,9 @@ final class WatchRegistry {
      */
     static synchronized void unregister(FileWatcher owner) {
         OWNERS.entrySet().removeIf(entry -> {
-            if (entry.getValue() == owner) {
+            var owners = entry.getValue();
+            // the directory stays watched while another file watcher has it.
+            if (owners.remove(owner) && owners.isEmpty()) {
                 entry.getKey().cancel();
                 return true;
             }
@@ -74,13 +80,16 @@ final class WatchRegistry {
                 WatchKey key = due.isEmpty() ? watcher.take() : watcher.poll(untilNext(due), TimeUnit.NANOSECONDS);
 
                 if (key != null) {
-                    var owner = OWNERS.get(key);
-                    if (owner != null) {
-                        owner.collect(key);
-                        due.putIfAbsent(owner, System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(owner.debounce()));
-                    } else {
-                        key.pollEvents();
-                        key.reset();
+                    // the events are taken from the key once and passed to every file watcher of the directory.
+                    var events = key.pollEvents();
+                    key.reset();
+                    var owners = OWNERS.get(key);
+                    if (owners != null) {
+                        var directory = (Path) key.watchable();
+                        for (var owner : owners) {
+                            owner.collect(directory, events);
+                            due.putIfAbsent(owner, System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(owner.debounce()));
+                        }
                     }
                 }
                 deliver(due);

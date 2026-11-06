@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.RejectedExecutionException;
 
@@ -77,22 +78,20 @@ public class FileWatcher {
     }
 
     /**
-     * Collects the pending events of the key, the most recent event of each file is kept.
+     * Collects the events of a watched directory, the most recent event of each file is kept.
      * Called by the watch thread.
      *
-     * @param key the key that was signalled, is reset once its events are collected.
+     * @param directory the directory that the events are for.
+     * @param events    the events taken from its key, shared by all file watchers of the directory.
      */
-    void collect(WatchKey key) {
-        Path directory = (Path) key.watchable();
-
-        for (WatchEvent<?> event : key.pollEvents()) {
+    void collect(Path directory, List<WatchEvent<?>> events) {
+        for (WatchEvent<?> event : events) {
             if (event.context() instanceof Path file) {
                 Path path = directory.resolve(file);
                 changes.remove(path);
                 changes.put(path, event.kind().equals(ENTRY_DELETE));
             }
         }
-        key.reset();
     }
 
     /**

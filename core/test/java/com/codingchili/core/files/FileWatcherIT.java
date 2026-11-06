@@ -9,6 +9,8 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -29,6 +31,8 @@ public class FileWatcherIT {
     @Rule
     public Timeout timeout = new Timeout(10, TimeUnit.SECONDS);
     private ContextMock context;
+    // a watcher of an earlier test would still be notified of the files of the next one.
+    private final List<FileWatcher> watchers = new ArrayList<>();
 
     @Before
     public void setUp() {
@@ -37,6 +41,7 @@ public class FileWatcherIT {
 
     @After
     public void tearDown(TestContext test) {
+        watchers.forEach(FileWatcher::stop);
         context.close().onComplete(test.asyncAssertSuccess());
     }
 
@@ -133,6 +138,51 @@ public class FileWatcherIT {
     }
 
     @Test
+    public void everyWatcherOfADirectoryIsNotified(TestContext test) {
+        Async first = test.async();
+        Async second = test.async();
+
+        ConfigurationFactory.writeObject(new JsonObject(), TOUCH_JSON);
+
+        listenFiles(new FileStoreListener() {
+            @Override
+            public void onFileModify(Path path) {
+                first.complete();
+            }
+        });
+        listenFiles(new FileStoreListener() {
+            @Override
+            public void onFileModify(Path path) {
+                second.complete();
+            }
+        });
+
+        ConfigurationFactory.writeObject(new JsonObject(), TOUCH_JSON);
+    }
+
+    @Test
+    public void stoppedWatcherDoesNotStopTheOthers(TestContext test) {
+        Async async = test.async();
+
+        ConfigurationFactory.writeObject(new JsonObject(), TOUCH_JSON);
+
+        listenFiles(new FileStoreListener() {
+            @Override
+            public void onFileModify(Path path) {
+                async.complete();
+            }
+        });
+        listenFiles(new FileStoreListener() {
+            @Override
+            public void onFileModify(Path path) {
+                test.fail("Reacted to file modify event after the watcher was stopped.");
+            }
+        }).stop();
+
+        ConfigurationFactory.writeObject(new JsonObject(), TOUCH_JSON);
+    }
+
+    @Test
     public void notNotifiedWhenOutsidePath(TestContext test) {
         Async async = test.async();
 
@@ -159,10 +209,12 @@ public class FileWatcherIT {
     }
 
     private FileWatcher listenFiles(FileStoreListener listener) {
-        return new FileWatcherBuilder(context)
+        var watcher = new FileWatcherBuilder(context)
                 .onDirectory(CoreStrings.testDirectory(FILE_WATCHER_TEST))
                 .rate(TimerSource.of(25))
                 .withListener(listener)
                 .build();
+        watchers.add(watcher);
+        return watcher;
     }
 }

@@ -637,6 +637,14 @@ quic listeners close the socket (or the quic connection), and the transport's cl
 before. A connection without a transport to close (rest, cluster, udp) runs its close handlers. `close()` is
 idempotent, `isClosed()` reports it. Tests: `ConnectionTest`, `WebsocketListenerIT.testServerCloses`.
 
+## File watchers of the same directory are all notified
+
+A directory registered again on the shared `WatchService` returns the same `WatchKey`: `WatchRegistry` kept one file
+watcher per key, so the last watcher of a directory took its events from the others (two services in one JVM that
+watch the same configuration files: only one of them reloaded). The registry keeps the watchers of each key, takes the
+events of a key once and passes them to each (`FileWatcher.collect(directory, events)`), and cancels the key with its
+last watcher. Tests: `FileWatcherIT.everyWatcherOfADirectoryIsNotified`, `stoppedWatcherDoesNotStopTheOthers`.
+
 ## Verification status
 
 Latest runs (handler → future migration and QUIC listener), all passing:
