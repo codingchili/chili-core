@@ -64,6 +64,29 @@ public abstract class CoreStrings {
 
     // generate --rotate: new values for every secret, preshared key, key pair and token (revokes the old ones).
     public static final String GENERATE_ROTATE = "--rotate";
+    // generate --store <dir>: the generated values are read from and written to a secrets store, not the configuration.
+    public static final String GENERATE_STORE = "--store";
+    // generate --encrypt: the generated values are written encrypted (enc:) to the nodes that read each file.
+    public static final String GENERATE_ENCRYPT = "--encrypt";
+    // generate --encrypt --nodes <dir>: the public keys of the nodes, <host>.pub (default <store>/nodes).
+    public static final String GENERATE_NODES = "--nodes";
+    // the folders and files of a secrets store: the public keys of the nodes, the encrypted values, the nodes they
+    // were encrypted to.
+    public static final String DIR_NODES = "nodes";
+    public static final String DIR_ENCRYPTED = "encrypted";
+    public static final String NODES_RECORD = "nodes.txt";
+    // keygen [--force]: writes the key of this node.
+    public static final String KEYGEN = "keygen";
+    public static final String KEYGEN_FORCE = "--force";
+    // bake [--store <dir>] [--out <dir>] [--blocks a,b]: the configuration files with the secrets of a store.
+    public static final String BAKE = "bake";
+    public static final String BAKE_OUT = "--out";
+    public static final String BAKE_BLOCKS = "--blocks";
+    public static final String BAKE_OUT_DEFAULT = "baked";
+    // the key file of this node, which opens the encrypted configuration values (enc:).
+    public static final String PROPERTY_NODE_KEY = "chili.node.key";
+    public static final String ENV_NODE_KEY = "CHILI_NODE_KEY";
+    public static final String PATH_NODE_KEY = "conf/system/node.key";
     // a key pair of the security dependencies is written as <name>PrivateKey and <name>PublicKey.
     public static final String PRIVATE_KEY_SUFFIX = "PrivateKey";
     public static final String PUBLIC_KEY_SUFFIX = "PublicKey";
@@ -461,6 +484,131 @@ public abstract class CoreStrings {
                 paths + " is kept ..";
     }
 
+    public static String getNoRecipients(String path, boolean store) {
+        return "[Warning] no node runs a block that reads " + path + ((store) ?
+                ": it has no encrypted values, a bake leaves it without secrets .." :
+                ": its values are not encrypted ..");
+    }
+
+    public static String getEncryptedTo(String path, Collection<String> hosts) {
+        return "[Encrypted] " + path + " to " + hosts + " ..";
+    }
+
+    public static String getEncryptionRemoved(String directory) {
+        return "[Removed] the encrypted values of " + directory + ": generate without " + GENERATE_ENCRYPT +
+                ", a bake uses the plain values ..";
+    }
+
+    public static String getStoreSaved(int files, String store, boolean encrypted) {
+        return "[Saved] the secrets of " + files + " configuration files to " + store +
+                ((encrypted) ? " (plain) and " + DIR_ENCRYPTED + "/ (encrypted)" : "") + " ..";
+    }
+
+    public static String getStoreEncrypted(String file, String key) {
+        return file + ": '" + key + "' is encrypted (enc:), a secrets store holds the plain values (generate " +
+                GENERATE_STORE + " writes encrypted values to " + DIR_ENCRYPTED + "/ only).";
+    }
+
+    public static String getNoNodeKeys(String directory) {
+        return "no node public keys in " + directory + ": run '" + KEYGEN + "' on each node and save the public key " +
+                "it prints as " + directory + "/<host>.pub.";
+    }
+
+    public static String getNodeWithoutBlock(String host, String file, Collection<String> blocks) {
+        return "the node '" + host + "' (" + file + ") runs no block: name the file as a block " + blocks +
+                " or map the host to its block in the launcher's hosts.";
+    }
+
+    public static String getNodeKeyUnreadable(String path, String reason) {
+        return "can't read the node key " + path + ": " + reason;
+    }
+
+    public static String getNodeKeyExists(String path) {
+        return "the node key " + path + " exists: '" + KEYGEN + " " + KEYGEN_FORCE + "' replaces it (the values " +
+                "encrypted to the old key can't be opened with the new one: generate " + GENERATE_ENCRYPT + " again).";
+    }
+
+    public static String getNodeKeyWritten(String path) {
+        return "[Written] the node key " + path + " (private: keep it on this node). Its public key, for the " +
+                "build machine's store (nodes/<host>.pub):";
+    }
+
+    public static String getNodePublicKeyInvalid(String text) {
+        return "not a node public key (x25519:<base64>): '" + text + "'";
+    }
+
+    public static String getEncryptedValueFormat() {
+        return "not an encrypted value (enc:v1:<base64>)";
+    }
+
+    public static String getEncryptedValueVersion(String value) {
+        int end = value.indexOf(':', 4);
+        return "an encrypted value of an unsupported format version '" +
+                ((end > 0) ? value.substring(4, end) : value.substring(0, Math.min(value.length(), 8))) +
+                "' (this build reads v1)";
+    }
+
+    public static String getEncryptedValueNotRecipient(String fingerprint, int recipients) {
+        return "this node's key can't open it: the key " + fingerprint + " is not one of its " + recipients +
+                " recipients (generate " + GENERATE_ENCRYPT + " encrypts a file to the nodes that run its services)";
+    }
+
+    public static String getEncryptedValueNoKey(String path) {
+        return "this node's key can't open it: there is no node key (" + path + ", or " + ENV_NODE_KEY + " / -D" +
+                PROPERTY_NODE_KEY + " naming the key file)";
+    }
+
+    public static String getEncryptedValueTampered() {
+        return "the value was changed after it was encrypted, or it is corrupt";
+    }
+
+    public static String getEncryptedConfigurationError(String file, String key, String reason) {
+        return file + ": can't open the encrypted value of '" + key + "': " + reason + ".";
+    }
+
+    public static String getEncryptedConfigurationNotSaved(String file) {
+        return "[Skipped] saving " + file + ": it was loaded with encrypted values, its decrypted values are never " +
+                "written ..";
+    }
+
+    public static String getBaked(int files, String out, String mode) {
+        return "[Baked] " + files + " configuration files (" + mode + ") to " + out + " ..";
+    }
+
+    public static String getBakedBlock(String block, Collection<String> files) {
+        return "[Baked] block '" + block + "': " + files + " ..";
+    }
+
+    public static String getBakeWithoutSecrets(String path) {
+        return "[Warning] " + path + " is baked without secrets: no node runs a block that reads it ..";
+    }
+
+    public static String getBakeMissing(String path, Collection<String> keys, String store) {
+        return "the store " + store + " has no " + keys + " for " + path + ": run generate " + GENERATE_STORE +
+                " (it keeps the existing secrets and adds the missing ones).";
+    }
+
+    public static String getBakeNodesChanged(String store) {
+        return "the nodes or the files they read changed since the values in " + store + "/" + DIR_ENCRYPTED +
+                " were encrypted (" + DIR_NODES + "/*.pub, the launcher's blocks, hosts or configs, or a new " +
+                "configuration file): run generate " + GENERATE_STORE + " " + GENERATE_ENCRYPT + " again.";
+    }
+
+    public static String getBakeUnmapped(String block, Collection<String> deployables) {
+        return "[Warning] block '" + block + "': no configuration files (launcher configs) for " + deployables + " ..";
+    }
+
+    public static String getKeygenDescription() {
+        return "writes a new key for this node (" + PATH_NODE_KEY + ", or " + ENV_NODE_KEY + ") and prints its " +
+                "public key; " + KEYGEN_FORCE + " replaces an existing key.";
+    }
+
+    public static String getBakeDescription() {
+        return "writes the configuration files with the secrets of a store: " + GENERATE_STORE + " <dir> (none: " +
+                "without secrets), " + BAKE_OUT + " <dir> (default " + BAKE_OUT_DEFAULT + "), " + BAKE_BLOCKS +
+                " a,b (the files of each block, default every block).";
+    }
+
     public static String getInvalidKey(String reason) {
         return "Invalid key for a key pair token factory: " + reason;
     }
@@ -611,7 +759,9 @@ public abstract class CoreStrings {
     public static String getGenerateAllDescription() {
         return "generates the missing secrets, preshared keys, key pairs and tokens and keeps existing ones " +
                 "(reissues tokens that are invalid or expire soon). " + GENERATE_ROTATE + ": new values for all " +
-                "of them, the old ones are not kept: every token issued before is rejected (restart the services).";
+                "of them, the old ones are not kept: every token issued before is rejected (restart the services). " +
+                GENERATE_STORE + " <dir>: the values of a secrets store, not of the configuration. " + GENERATE_ENCRYPT +
+                ": encrypted (enc:) to the nodes that read each file (" + GENERATE_NODES + " <dir>, <host>.pub).";
     }
 
     public static String getCommandExecutorHelpDescription() {
@@ -729,6 +879,10 @@ public abstract class CoreStrings {
     }
 
     public static String getAbsolutePath(String relative) {
+        if (Paths.get(relative).isAbsolute()) {
+            // an absolute path (a secrets store outside the application) is used as it is.
+            return Paths.get(relative).normalize().toString();
+        }
         return FileSystems.getDefault().getPath(
                 currentPath() + CoreStrings.DIR_SEPARATOR + relative).toString();
     }

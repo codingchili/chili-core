@@ -22,6 +22,7 @@ public class LauncherSettings implements Configurable {
     private ClusterSettings cluster = new ClusterSettings();
     private HashMap<String, List<String>> blocks = defaultBlockConfiguration();
     private HashMap<String, String> hosts = defaultHostConfiguration();
+    private HashMap<String, List<String>> configs = new HashMap<>();
 
     @Override
     public String getPath() {
@@ -130,6 +131,35 @@ public class LauncherSettings implements Configurable {
         } else {
             throw new IllegalArgumentException(getBlockNotConfigured(block));
         }
+        return this;
+    }
+
+    /**
+     * @return the configuration files each deployable reads, by its class name: path patterns relative to the
+     * configuration directory without the extension, as the keys of the security dependencies (for example
+     * {@code service/authentication} or {@code realm/[^/]*}). {@code generate --encrypt} encrypts the secrets of a
+     * file to the nodes that run a block with a deployable that reads it, {@code bake} writes the files of each block.
+     */
+    public HashMap<String, List<String>> getConfigs() {
+        return configs;
+    }
+
+    /**
+     * @param configs the configuration files of each deployable, see {@link #getConfigs()}.
+     * @return fluent
+     */
+    public LauncherSettings setConfigs(HashMap<String, List<String>> configs) {
+        this.configs = configs;
+        return this;
+    }
+
+    /**
+     * @param deployable the class name of a deployable.
+     * @param patterns   the configuration files it reads, see {@link #getConfigs()}.
+     * @return fluent
+     */
+    public LauncherSettings addConfigs(String deployable, String... patterns) {
+        configs.put(deployable, new ArrayList<>(List.of(patterns)));
         return this;
     }
 

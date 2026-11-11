@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
@@ -22,6 +23,7 @@ import com.codingchili.core.files.exception.*;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.security.EncryptedValue;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
@@ -32,6 +34,8 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 public abstract class Configurations {
     private static final ConcurrentHashMap<String, ConfigEntry> configs = new ConcurrentHashMap<>();
     private static final AtomicBoolean initialized = new AtomicBoolean(false);
+    // the files that were loaded with encrypted values: never saved, that would write the decrypted values.
+    private static final Set<String> encrypted = ConcurrentHashMap.newKeySet();
     private static Logger logger = new ConsoleLogger(Configurations.class);
 
     /*
@@ -151,6 +155,11 @@ public abstract class Configurations {
         if (ConfigurationFactory.exists(path)) {
             try {
                 JsonObject json = ConfigurationFactory.readObject(path);
+                // values written as enc:... are opened with the key of this node; a value it can't open fails the
+                // load of this file (naming the file and key), files of services that don't run here aren't loaded.
+                if (EncryptedValue.open(path, json)) {
+                    encrypted.add(path);
+                }
                 config = Serializer.unpack(json, clazz);
             } catch (NoSuchResourceException e) {
                 logger.onFileLoadError(CoreStrings.getFileReadError(path));
@@ -183,6 +192,7 @@ public abstract class Configurations {
 
     public static void reset() {
         configs.clear();
+        encrypted.clear();
         init();
         saveAll();
     }
@@ -238,6 +248,10 @@ public abstract class Configurations {
      * @param configurable the configurable to be written.
      */
     static void save(Configurable configurable) {
+        if (encrypted.contains(configurable.getPath())) {
+            logger.log(CoreStrings.getEncryptedConfigurationNotSaved(configurable.getPath()));
+            return;
+        }
         ConfigurationFactory.writeObject(configurable.serialize(), configurable.getPath());
         logger.onFileSaved(ID_CONFIGURATION, configurable.getPath());
     }

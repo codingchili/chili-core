@@ -151,6 +151,7 @@ The launcher configuration  allows for configuration of the following properties
 | version| used for logging, the version of the application.|
 | blocks | A list of services to deploy when the Launcher is started, can be referenced by name.|
 | hosts | used to determine which block of services to deploy.|
+| configs | the configuration files each deployable reads: class name to path patterns relative to `configurationDirectory`, without the extension (as the keys of the security dependencies), e.g. `com.example.Realm: [service/realms, realm/[^/]*]`. Used by `generate --encrypt` (who may open a file's secrets) and `bake` (the files of each block), see [Secrets store, encryption, bake](#secrets-store-encryption-bake).|
 
 Without a block on the command line (`deploy`), the block of the host is deployed: a `hosts` entry for the hostname, a
 block named as the hostname (a container with `hostname: realm` deploys the block `realm`), or a `hosts` entry for an
@@ -320,6 +321,34 @@ Each run reads every configuration file once, computes everything in memory and 
 end; a file is replaced atomically (written to a hidden temporary file next to it, then moved over it), so a hot
 reload never reads half a file. A failure writes nothing, closes the generator's context and makes the launcher exit
 with status 1.
+
+#### Secrets store, encryption, bake
+
+For a release that carries its secrets (an image built on a build machine), the generated values live outside the
+configuration, in a secrets store, and are merged in at build time:
+
+|command|what it does|
+|---|---|
+|`generate --store <dir> [--rotate]`| reads the generated keys from `<dir>/<path in conf>` (e.g. `<dir>/service/auth.yaml`, plain, only the generated keys) instead of the configuration files, whose own values (development secrets) are never used; fills (or rotates) and writes them back to the store (files 600, folders 700). The configuration files are not written. |
+|`generate ... --encrypt [--nodes <dir>]`| also writes every generated value but the public keys as an encrypted value (below) to the nodes that read the file. With `--store` they go to `<dir>/encrypted/` (the store keeps the plain values the next run needs; a run without `--encrypt` removes `encrypted/`), without a store into the configuration files themselves. The public keys of the nodes: `<nodes>/<host>.pub` (default `<store>/nodes`, or `conf/system/nodes`), the text `keygen` printed. A host runs its `hosts` block, or the block named as the host; a file is encrypted to every node whose block has a deployable whose `configs` match the file. A file no node reads gets no encrypted values (a warning). |
+|`bake [--store <dir>] [--out <dir>] [--blocks a,b]`| writes every configuration file that has security dependencies to `<out>/<path in conf>` without its generated keys and with the values of the store (`encrypted/` when present, else the plain ones; no store: no secrets at all), and the files each block reads to `<out>/blocks/<block>/<path in conf>` (an image per block). Fails when the store misses a value (run `generate --store` again) or when the nodes changed since `generate --encrypt` (recorded in `encrypted/nodes.txt`). |
+|`keygen [--force]`| writes a new X25519 key for this node to `conf/system/node.key` (or the file named by `CHILI_NODE_KEY` / `-Dchili.node.key`), readable by its owner only, and prints its public key (`x25519:<base64>`). Refuses to replace an existing key without `--force`. |
+
+**Encrypted values (opt-in per value).** A configuration value written as `enc:v1:<base64>` is decrypted when
+`Configurations` loads the file, with the key of this node; every other value is used as it is. A file with a value
+this node can not open (no key file, the key is not a recipient, or the value was changed) fails to load with an
+`EncryptedValueException` that names the file and the key (`... can't open the encrypted value of 'bankSecret': this
+node's key can't open it ...`); files are loaded by the services that use them, so the files of services that run
+elsewhere do not stop a node from starting. A file loaded with encrypted values is never saved back (that would write
+the decrypted values). An empty key file (e.g. `/dev/null` mounted in its place) means no key.
+
+Format v1 (`EncryptedValue`, JDK algorithms only): the value as JSON (`{"v": value}`, so tokens and other objects
+work too) is encrypted with a random 32 byte data key (ChaCha20-Poly1305, random nonce, the header as AAD); the data key
+is wrapped once per recipient with a key from HKDF-SHA256 over the X25519 agreement of a key pair made for this value
+with the recipient's public key (salt: both public keys). Layout: version (1), ephemeral public key (32), recipient
+count (1), per recipient key id (8, the start of the SHA-256 of its public key) and wrapped key (48), nonce (12),
+ciphertext and tag (16). Any changed byte fails the authentication; another version prefix (`enc:v2:`) fails with the
+version named.
 
 ### Storage
 Contains settings for storage implementations, these can be any of the included or a custom implementation.

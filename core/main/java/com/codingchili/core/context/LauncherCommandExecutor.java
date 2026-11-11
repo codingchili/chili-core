@@ -2,6 +2,8 @@ package com.codingchili.core.context;
 
 import io.vertx.core.Future;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
 
@@ -9,6 +11,8 @@ import com.codingchili.core.benchmarking.CoreBenchmarkSuite;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.security.AuthenticationGenerator;
+import com.codingchili.core.security.NodeKey;
+import com.codingchili.core.security.SecretBaker;
 import org.jline.jansi.Ansi;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
@@ -45,6 +49,9 @@ public class LauncherCommandExecutor extends DefaultCommandExecutor {
         generator(AuthenticationGenerator::tokens, GENERATE_TOKENS, getGenerateTokensDescription());
         generator(AuthenticationGenerator::all, GENERATE, getGenerateAllDescription());
 
+        super.addAsync(this::keygen, KEYGEN, getKeygenDescription());
+        super.addAsync(this::bake, BAKE, getBakeDescription());
+
         addAsync(suite::execute, BENCHMARK, getBenchmarkDescription());
         add(this::help, HELP, getCommandExecutorHelpDescription());
     }
@@ -56,10 +63,14 @@ public class LauncherCommandExecutor extends DefaultCommandExecutor {
         super.addAsync((executor) -> {
             var mode = executor.hasProperty(GENERATE_ROTATE) ?
                     AuthenticationGenerator.Mode.ROTATE : AuthenticationGenerator.Mode.FILL;
-            CoreContext core = new SystemContext();
             Future<Void> generated;
+            CoreContext core = new SystemContext();
             try {
-                generated = function.apply(new AuthenticationGenerator(core).setMode(mode));
+                var generator = new AuthenticationGenerator(core).setMode(mode)
+                        .setStore(executor.getProperty(GENERATE_STORE).map(Paths::get).orElse(null))
+                        .setNodes(executor.getProperty(GENERATE_NODES).map(Paths::get).orElse(null))
+                        .setEncrypt(executor.hasProperty(GENERATE_ENCRYPT));
+                generated = function.apply(generator);
             } catch (Throwable e) {
                 generated = Future.failedFuture(e);
             }
@@ -68,6 +79,35 @@ public class LauncherCommandExecutor extends DefaultCommandExecutor {
                             Future.succeededFuture(LauncherCommandResult.SHUTDOWN) :
                             Future.<CommandResult>failedFuture(done.cause())));
         }, name, description);
+    }
+
+    // keygen [--force]: a new key for this node, prints its public key.
+    private Future<CommandResult> keygen(CommandExecutor executor) {
+        try {
+            Path path = NodeKey.path();
+            NodeKey key = NodeKey.generate();
+            key.write(path, executor.hasProperty(KEYGEN_FORCE));
+            logger.log(getNodeKeyWritten(path.toString()));
+            // alone on its line for scripts and copying.
+            System.out.println(key.publicKey());
+            return Future.succeededFuture(LauncherCommandResult.SHUTDOWN);
+        } catch (Throwable e) {
+            return Future.failedFuture(e);
+        }
+    }
+
+    // bake [--store <dir>] [--out <dir>] [--blocks a,b]: the configuration with the secrets of a store.
+    private Future<CommandResult> bake(CommandExecutor executor) {
+        try {
+            new SecretBaker(Configurations.launcher().getConfigurationDirectory())
+                    .setStore(executor.getProperty(GENERATE_STORE).map(Paths::get).orElse(null))
+                    .setOut(Paths.get(executor.getProperty(BAKE_OUT).orElse(BAKE_OUT_DEFAULT)))
+                    .setBlocks(executor.hasProperty(BAKE_BLOCKS) ? executor.getAllProperties(BAKE_BLOCKS) : null)
+                    .bake();
+            return Future.succeededFuture(LauncherCommandResult.SHUTDOWN);
+        } catch (Throwable e) {
+            return Future.failedFuture(e);
+        }
     }
 
     /* helper method to support methods that does not implement Consumer<CommandExecutor> */

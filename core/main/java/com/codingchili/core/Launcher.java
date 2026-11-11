@@ -29,6 +29,8 @@ public class Launcher implements CoreService {
     private LaunchContext context;
     private CoreContext core;
     private Future<CommandResult> status;
+    // completed when a service of the deployed block failed to deploy (the launcher has shut down).
+    private final Promise<Void> failed = Promise.promise();
 
 
     /**
@@ -38,7 +40,14 @@ public class Launcher implements CoreService {
      */
     public static void main(String[] args) {
         // a failed command (after the launcher logged it and closed) exits with a non-zero status for scripts.
-        new Launcher(new LaunchContext(args)).status.onFailure(e -> System.exit(1));
+        var launcher = new Launcher(new LaunchContext(args));
+        launcher.status.onFailure(e -> System.exit(1));
+        // a service that failed to deploy (a missing class, a configuration it can't load): exits with the status 1
+        // once the context is closed, so that scripts and container runtimes see the failure.
+        launcher.failed.future().onSuccess(v -> {
+            Future<Void> closed = (launcher.core == null) ? Future.succeededFuture() : launcher.core.close();
+            closed.onComplete(done -> System.exit(1));
+        });
     }
 
     /**
@@ -166,6 +175,7 @@ public class Launcher implements CoreService {
                     }
                 }
                 exit();
+                failed.tryComplete();
             }
         });
     }

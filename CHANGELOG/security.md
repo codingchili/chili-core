@@ -55,3 +55,22 @@ Findings come from reading the code; no exploit tests have been written and noth
 - Jackson has no default typing enabled, so there are no polymorphic-deserialization gadgets.
 - `SecretFactory` uses `SecureRandom`; defaults are HmacSHA512 and 64-byte secrets.
 - Request body size limits apply on REST and WebSocket.
+
+## Encrypted configuration values, secrets store, bake, node keys (1.4.9)
+
+- `enc:v1:` values (`EncryptedValue`): X25519 + HKDF-SHA256 + ChaCha20-Poly1305 (JDK only), the data key wrapped once
+  per recipient node; decrypted by `Configurations` on load with the node key (`NodeKey`, `conf/system/node.key`,
+  `CHILI_NODE_KEY`, `-Dchili.node.key`). A value this node can't open fails the load of that file only, naming the
+  file and key; tampering fails the authentication. Files loaded with encrypted values are never saved back.
+- `generate --store <dir>` keeps the generated values outside the configuration (the configuration's own values are
+  ignored); `--encrypt` writes them encrypted to the nodes that read each file (launcher `configs`, `blocks`, `hosts`,
+  `<nodes>/<host>.pub`); `bake` merges a store into the configuration, per block too; `keygen` writes a node key (600)
+  and prints its public key, refuses to replace one without `--force`.
+- `Launcher.main` exits with status 1 when a service of the block fails to deploy (was 0: container runtimes and
+  scripts saw no failure). `CoreStrings.getAbsolutePath` keeps an absolute path (it was prefixed with the working
+  directory, so files outside the application, a secrets store, could not be read).
+- Tests: `EncryptedValueTest` (round trip for 1 and 3 recipients, non-recipient, tampering of every byte, versions,
+  configuration load, missing key fails only the used file, key file), `SecretStoreTest` (store, per-file recipients,
+  the private key only for its signer's nodes, bake plain/encrypted/none/per block, missing values, changed nodes),
+  `LauncherCommandExecutorTest` (keygen refuses to overwrite).
+

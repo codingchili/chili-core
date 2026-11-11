@@ -3,7 +3,9 @@ package com.codingchili.core.security;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 
-import java.nio.file.Paths;
+import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.security.KeyPair;
 import java.time.Instant;
 import java.util.*;
@@ -15,6 +17,7 @@ import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.system.AuthenticationDependency;
 import com.codingchili.core.configuration.system.SecuritySettings;
 import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.files.ConfigurationFactory;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.files.exception.NoSuchResourceException;
@@ -24,6 +27,7 @@ import com.codingchili.core.protocol.Serializer;
 import com.codingchili.core.security.exception.SecurityMissingDependencyException;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
+import static com.codingchili.core.files.Configurations.launcher;
 import static com.codingchili.core.files.Configurations.security;
 import static com.codingchili.core.protocol.Serializer.json;
 import static io.vertx.core.json.impl.JsonUtil.BASE64_DECODER;
@@ -45,6 +49,21 @@ import static io.vertx.core.json.impl.JsonUtil.BASE64_DECODER;
  * Every configuration file is read once, all values are computed in memory and each changed file is written once
  * at the end (atomically, see {@link ConfigurationFactory#writeObject(JsonObject, String)}): a file is never read
  * while it is being written. Any failure fails the returned future and writes nothing.
+ * <p>
+ * A secrets store ({@link #setStore(Path)}, {@code generate --store <dir>}) keeps the generated values apart from
+ * the configuration: {@code <store>/<path in the configuration directory>} (for example
+ * {@code <store>/service/authentication.yaml}) holds only the generated keys of that file, plain. The values of the
+ * configuration files themselves (development secrets) are never used then, and the configuration files are not
+ * written: the values are read from the store and written back to it. {@code bake} merges a store into the
+ * configuration of a release.
+ * <p>
+ * Encryption ({@link #setEncrypt(boolean)}, {@code generate --encrypt}): the secrets, preshared keys, private keys and
+ * tokens are written as encrypted values ({@link EncryptedValue}, {@code enc:v1:...}), public keys stay plain. The
+ * values of a file are encrypted to the nodes that run a block that reads the file, see {@link SecretRecipients}
+ * (the public keys in {@link #setNodes(Path)}, by default {@code <store>/nodes}, or {@code conf/system/nodes}
+ * without a store). With a store the encrypted values go to {@code <store>/encrypted/} and the store keeps the plain
+ * values (the generator needs them for the next run); without {@code --encrypt} that folder is removed. Without a
+ * store the configuration files get the encrypted values; values encrypted before are opened with this node's key.
  */
 public class AuthenticationGenerator {
     // a token issued for longer than the configured lifetime (and this margin) is reissued.
@@ -53,6 +72,9 @@ public class AuthenticationGenerator {
     private final CoreContext core;
     private final String directory;
     private Mode mode = Mode.FILL;
+    private Path store;
+    private Path nodes;
+    private boolean encrypt = false;
 
     /**
      * What the generator does with the secrets, preshared keys, key pairs and tokens that already exist.
@@ -91,6 +113,34 @@ public class AuthenticationGenerator {
      */
     public AuthenticationGenerator setMode(Mode mode) {
         this.mode = mode;
+        return this;
+    }
+
+    /**
+     * @param store the secrets store to read the values from and write them to, null for the configuration files.
+     * @return fluent
+     */
+    public AuthenticationGenerator setStore(Path store) {
+        this.store = store;
+        return this;
+    }
+
+    /**
+     * @param encrypt true: writes the values as encrypted values to the nodes that read each file.
+     * @return fluent
+     */
+    public AuthenticationGenerator setEncrypt(boolean encrypt) {
+        this.encrypt = encrypt;
+        return this;
+    }
+
+    /**
+     * @param nodes the directory with the public keys of the nodes ({@code <host>.pub}), null for the default:
+     *              {@code <store>/nodes}, or {@code conf/system/nodes} without a store.
+     * @return fluent
+     */
+    public AuthenticationGenerator setNodes(Path nodes) {
+        this.nodes = nodes;
         return this;
     }
 
@@ -144,6 +194,8 @@ public class AuthenticationGenerator {
     private Future<Void> run(boolean secrets, boolean preshare, boolean tokens) {
         try {
             Instant now = Instant.now();
+            // the nodes first: a missing public key fails before anything is generated.
+            SecretRecipients recipients = (encrypt) ? new SecretRecipients(launcher(), directory, nodes()) : null;
             List<ConfigFile> files = load();
 
             if (mode == Mode.ROTATE) {
@@ -157,7 +209,7 @@ public class AuthenticationGenerator {
                 preshare(files);
             }
             return (tokens ? tokens(files, now) : Future.<Void>succeededFuture())
-                    .compose(done -> save(files));
+                    .compose(done -> save(files, recipients));
         } catch (Throwable e) {
             return Future.failedFuture(e);
         }
@@ -370,10 +422,149 @@ public class AuthenticationGenerator {
         }
     }
 
-    private Future<Void> save(List<ConfigFile> files) {
-        return core.blocking(() -> files.stream()
-                .filter(ConfigFile::changed)
-                .forEach(file -> ConfigurationFactory.writeObject(file.json, file.path)));
+    private Future<Void> save(List<ConfigFile> files, SecretRecipients recipients) {
+        return core.blocking(() -> {
+            if (store != null) {
+                saveStore(files, recipients);
+            } else {
+                files.stream()
+                        .filter(file -> encrypt || file.changed())
+                        .forEach(file -> {
+                            JsonObject json = file.json;
+                            if (encrypt) {
+                                List<NodeKey.Public> keys = recipients.keys(file.path);
+                                if (keys.isEmpty()) {
+                                    logger.log(getNoRecipients(file.path, false));
+                                    if (!file.changed()) {
+                                        return;
+                                    }
+                                } else {
+                                    json = seal(file, json.copy(), keys);
+                                }
+                            }
+                            ConfigurationFactory.writeObject(json, file.path);
+                        });
+            }
+        });
+    }
+
+    // the plain values to the store, the encrypted ones (--encrypt) to <store>/encrypted; the configuration is not
+    // written.
+    private void saveStore(List<ConfigFile> files, SecretRecipients recipients) {
+        Path encrypted = store.resolve(DIR_ENCRYPTED);
+        try {
+            if (!Files.exists(store)) {
+                Files.createDirectories(store);
+                permissions(store, "rwx------");
+            }
+        } catch (IOException e) {
+            throw new CoreRuntimeException(e);
+        }
+        for (ConfigFile file : files) {
+            JsonObject values = file.generated();
+            String relative = SecretRecipients.relative(directory, file.path);
+            writePrivate(values, store.resolve(relative));
+
+            if (encrypt) {
+                List<NodeKey.Public> keys = recipients.keys(file.path);
+                if (keys.isEmpty()) {
+                    logger.log(getNoRecipients(file.path, true));
+                    deleteIfExists(encrypted.resolve(relative));
+                } else {
+                    logger.log(getEncryptedTo(file.path, recipients.hosts(file.path)));
+                    writePrivate(seal(file, values, keys), encrypted.resolve(relative));
+                }
+            }
+        }
+        if (encrypt) {
+            writeText(encrypted.resolve(NODES_RECORD), recipients.record(files.stream().map(file -> file.path).toList()));
+        } else if (Files.exists(encrypted)) {
+            delete(encrypted);
+            logger.log(getEncryptionRemoved(encrypted.toString()));
+        }
+        logger.log(getStoreSaved(files.size(), store.toString(), encrypt));
+    }
+
+    // the values to encrypt: everything generated but the public keys.
+    private static JsonObject seal(ConfigFile file, JsonObject json, List<NodeKey.Public> keys) {
+        file.secretKeys().forEach(key -> {
+            Object value = json.getValue(key);
+            if (value != null && !EncryptedValue.isEncrypted(value)) {
+                json.put(key, EncryptedValue.encrypt(value, keys));
+            }
+        });
+        return json;
+    }
+
+    private Path nodes() {
+        if (nodes != null) {
+            return nodes;
+        } else if (store != null) {
+            return store.resolve(DIR_NODES);
+        } else {
+            return Paths.get(directory, "system", DIR_NODES);
+        }
+    }
+
+    /**
+     * Writes a file that holds secrets: created readable by its owner only where the file system supports it, its
+     * directories too, then written atomically (which keeps the permissions).
+     *
+     * @param json the values to write.
+     * @param path the file.
+     */
+    static void writePrivate(JsonObject json, Path path) {
+        try {
+            createPrivate(path);
+            ConfigurationFactory.writeObject(json, path.toString());
+        } catch (IOException e) {
+            throw new CoreRuntimeException(e);
+        }
+    }
+
+    static void writeText(Path path, String text) {
+        try {
+            createPrivate(path);
+            Files.writeString(path, text);
+        } catch (IOException e) {
+            throw new CoreRuntimeException(e);
+        }
+    }
+
+    private static void createPrivate(Path path) throws IOException {
+        Path parent = path.toAbsolutePath().getParent();
+        if (!Files.exists(parent)) {
+            Files.createDirectories(parent);
+            permissions(parent, "rwx------");
+        }
+        if (!Files.exists(path)) {
+            Files.createFile(path);
+            permissions(path, "rw-------");
+        }
+    }
+
+    private static void permissions(Path path, String permissions) throws IOException {
+        try {
+            Files.setPosixFilePermissions(path, PosixFilePermissions.fromString(permissions));
+        } catch (UnsupportedOperationException e) {
+            // not a POSIX file system: the permissions of the parent apply.
+        }
+    }
+
+    private static void deleteIfExists(Path path) {
+        try {
+            Files.deleteIfExists(path);
+        } catch (IOException e) {
+            throw new CoreRuntimeException(e);
+        }
+    }
+
+    static void delete(Path directory) {
+        try (var walk = Files.walk(directory)) {
+            walk.sorted(Comparator.reverseOrder()).forEach(AuthenticationGenerator::deleteIfExists);
+        } catch (IOException e) {
+            throw new CoreRuntimeException(e);
+        }
     }
 
     private List<ConfigFile> load() {
@@ -382,12 +573,63 @@ public class AuthenticationGenerator {
 
         getConfigurationsReferencedBySecurity(settings).forEach(path -> {
             try {
-                files.add(new ConfigFile(path, ConfigurationFactory.readObject(path),
-                        andPathMatchesKeyRegex(settings, path)));
+                var dependencies = andPathMatchesKeyRegex(settings, path);
+                JsonObject json = ConfigurationFactory.readObject(path);
+
+                if (store != null) {
+                    // the values of the store only: the configuration's own (development) values are never kept.
+                    generatedKeys(dependencies).forEach(json::remove);
+                    Path saved = store.resolve(SecretRecipients.relative(directory, path));
+                    if (Files.exists(saved)) {
+                        JsonObject values = ConfigurationFactory.readObject(saved.toString());
+                        values.forEach(entry -> {
+                            if (EncryptedValue.isEncrypted(entry.getValue())) {
+                                throw new CoreRuntimeException(getStoreEncrypted(saved.toString(), entry.getKey()));
+                            }
+                        });
+                        json.mergeIn(values);
+                    }
+                } else {
+                    // values encrypted by an earlier run: opened with the key of this node, or the run fails.
+                    EncryptedValue.open(path, json);
+                }
+                files.add(new ConfigFile(path, json, dependencies));
             } catch (NoSuchResourceException e) {
                 logger.onError(e);
             }
         });
+        return files;
+    }
+
+    /**
+     * @param dependencies the security dependencies of a file.
+     * @return the keys the generator writes into the file: secrets, preshared keys, tokens and the keys of key pairs.
+     */
+    static Set<String> generatedKeys(Collection<AuthenticationDependency> dependencies) {
+        Set<String> keys = new TreeSet<>();
+        dependencies.forEach(dependency -> {
+            keys.addAll(dependency.getSecrets());
+            keys.addAll(dependency.getPreshare());
+            keys.addAll(dependency.getTokens().keySet());
+            dependency.getKeypairs().forEach(name -> {
+                keys.add(name + PRIVATE_KEY_SUFFIX);
+                keys.add(name + PUBLIC_KEY_SUFFIX);
+            });
+            dependency.getPublickeys().forEach(name -> keys.add(name + PUBLIC_KEY_SUFFIX));
+        });
+        return keys;
+    }
+
+    /**
+     * @param directory the configuration directory.
+     * @return the configuration files that have security dependencies, sorted, with their dependencies.
+     */
+    static Map<String, List<AuthenticationDependency>> referenced(String directory) {
+        var settings = security().getDependencies();
+        var generator = new AuthenticationGenerator(null, directory);
+        Map<String, List<AuthenticationDependency>> files = new LinkedHashMap<>();
+        generator.getConfigurationsReferencedBySecurity(settings)
+                .forEach(path -> files.put(path, generator.andPathMatchesKeyRegex(settings, path)));
         return files;
     }
 
@@ -520,6 +762,27 @@ public class AuthenticationGenerator {
 
         boolean changed() {
             return !json.equals(original);
+        }
+
+        // the generated keys of the file that are set, with their values.
+        JsonObject generated() {
+            JsonObject values = new JsonObject();
+            generatedKeys(dependencies).forEach(key -> {
+                if (json.containsKey(key)) {
+                    values.put(key, json.getValue(key));
+                }
+            });
+            return values;
+        }
+
+        // the generated keys that are secret: all but the public keys.
+        Set<String> secretKeys() {
+            Set<String> keys = generatedKeys(dependencies);
+            dependencies.forEach(dependency -> {
+                dependency.getKeypairs().forEach(name -> keys.remove(name + PUBLIC_KEY_SUFFIX));
+                dependency.getPublickeys().forEach(name -> keys.remove(name + PUBLIC_KEY_SUFFIX));
+            });
+            return keys;
         }
     }
 }

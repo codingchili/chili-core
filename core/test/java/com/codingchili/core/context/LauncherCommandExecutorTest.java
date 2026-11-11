@@ -102,6 +102,32 @@ public class LauncherCommandExecutorTest {
     }
 
     @Test
+    public void testKeygenRefusesToReplaceAKeyWithoutForce(TestContext test) throws Exception {
+        var path = java.nio.file.Files.createTempDirectory("keygen").resolve("node.key");
+        System.setProperty(PROPERTY_NODE_KEY, path.toString());
+        var executor = new LauncherCommandExecutor(new LaunchContextMock((line) -> {}).logger());
+
+        executor.execute(KEYGEN).compose(written -> {
+            String first = com.codingchili.core.security.NodeKey.read(path).publicKey();
+            return new LauncherCommandExecutor(new LaunchContextMock((line) -> {}).logger()).execute(KEYGEN)
+                    .transform(refused -> {
+                        test.assertTrue(refused.failed());
+                        test.assertTrue(refused.cause().getMessage().contains(KEYGEN_FORCE));
+                        test.assertEquals(first, com.codingchili.core.security.NodeKey.read(path).publicKey());
+                        return new LauncherCommandExecutor(new LaunchContextMock((line) -> {}).logger())
+                                .execute(KEYGEN, KEYGEN_FORCE);
+                    }).map(forced -> {
+                        test.assertNotEquals(first, com.codingchili.core.security.NodeKey.read(path).publicKey());
+                        return forced;
+                    });
+        }).onComplete(test.asyncAssertSuccess(done -> {
+            System.clearProperty(PROPERTY_NODE_KEY);
+            path.toFile().delete();
+            path.getParent().toFile().delete();
+        }));
+    }
+
+    @Test
     public void testConfiguredBlocksListed(TestContext test) {
         System.err.println(getOutput(HELP));
         test.assertTrue(getOutput(HELP).contains(BLOCK_1));
