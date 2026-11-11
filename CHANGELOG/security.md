@@ -74,3 +74,17 @@ Findings come from reading the code; no exploit tests have been written and noth
   the private key only for its signer's nodes, bake plain/encrypted/none/per block, missing values, changed nodes),
   `LauncherCommandExecutorTest` (keygen refuses to overwrite).
 
+
+## Configuration files by name, store renames, strict configuration guard (1.4.9)
+
+- **By name (`ServiceFiles`):** a deployable in the package `<...>.<name>` reads `service/<name>.yaml`,
+  `service/<name>/**` and `<name>/**` (e.g. `realm/` of `com.example.realm.Service`). `bake` (the files of each block)
+  and `generate --encrypt` (the recipients of a file) derive it from the block's class names; the launcher's
+  `configs` map, `SecretRecipients.unmapped` and its bake warning are removed (`configs` in a file is ignored).
+- **Store renames:** security `renames` (old path to new, e.g. `service/routing: service/router`): `generate --store`
+  and `bake --store` move the saved values (plain, `encrypted/`, the line of `encrypted/nodes.txt`) once, with a log
+  line; both present: a warning, the new one is kept (`SecretStoreRenames`).
+- **Guard (`ConfigurationGuard`):** `Configurations` records each loaded file and the classes that loaded it; after
+  the launcher deployed its block, and on later loads, a file with generated secrets that no service of the JVM owns
+  by name is a warning naming the loading service, the file and the fix. System `strict` (or `-Dchili.strict`,
+  `CHILI_STRICT`) fails the start instead (exit 1); a later load is an error log.

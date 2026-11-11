@@ -85,6 +85,8 @@ public abstract class CoreStrings {
     public static final String BAKE_OUT_DEFAULT = "baked";
     // the key file of this node, which opens the encrypted configuration values (enc:).
     public static final String PROPERTY_NODE_KEY = "chili.node.key";
+    public static final String PROPERTY_STRICT = "chili.strict";
+    public static final String ENV_STRICT = "CHILI_STRICT";
     public static final String ENV_NODE_KEY = "CHILI_NODE_KEY";
     public static final String PATH_NODE_KEY = "conf/system/node.key";
     // a key pair of the security dependencies is written as <name>PrivateKey and <name>PublicKey.
@@ -590,12 +592,29 @@ public abstract class CoreStrings {
 
     public static String getBakeNodesChanged(String store) {
         return "the nodes or the files they read changed since the values in " + store + "/" + DIR_ENCRYPTED +
-                " were encrypted (" + DIR_NODES + "/*.pub, the launcher's blocks, hosts or configs, or a new " +
+                " were encrypted (" + DIR_NODES + "/*.pub, the launcher's blocks or hosts, or a new " +
                 "configuration file): run generate " + GENERATE_STORE + " " + GENERATE_ENCRYPT + " again.";
     }
 
-    public static String getBakeUnmapped(String block, Collection<String> deployables) {
-        return "[Warning] block '" + block + "': no configuration files (launcher configs) for " + deployables + " ..";
+    public static String getStoreRenamed(String from, String to) {
+        return "[Store] moved " + from + " to " + to + " (renamed configuration file, security renames) ..";
+    }
+
+    public static String getStoreRenameConflict(String from, String to) {
+        return "[Warning] the store has both " + from + " and " + to + " (security renames): kept " + to +
+                ", remove " + from + " ..";
+    }
+
+    public static String getConfigurationNotOwned(String path, Collection<String> keys, String loader,
+                                                  Collection<String> deployed, Collection<String> files) {
+        return path + " has generated secrets " + keys + " but no service deployed here owns it (" + deployed +
+                " read " + files + "); loaded by " + loader + ". An image per block carries only the files named as " +
+                "its services: give the service its own settings in its file (" + DIR_SERVICES +
+                "<service>.yaml, config file = service name), or deploy the service the file is named after.";
+    }
+
+    public static String getConfigurationNotOwnedStrict(Collection<String> violations) {
+        return "refusing to start (system.yaml strict, " + ENV_STRICT + "): " + String.join(" ", violations);
     }
 
     public static String getKeygenDescription() {

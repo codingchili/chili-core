@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.context.*;
+import com.codingchili.core.files.ConfigurationGuard;
 import com.codingchili.core.listener.*;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Level;
@@ -163,7 +164,19 @@ public class Launcher implements CoreService {
             }
         }
         Future.all(deployments).onComplete(deployed -> {
-            if (deployed.failed()) {
+            if (deployed.succeeded()) {
+                // the configuration files the services loaded: a file of a service not deployed here is reported,
+                // in strict mode the start fails (ConfigurationGuard).
+                try {
+                    ConfigurationGuard.deployed(nodes);
+                } catch (Throwable e) {
+                    logger.event(LOG_SERVICE_FAIL, Level.SEVERE)
+                            .put(LOG_ERROR, e.getMessage())
+                            .send();
+                    exit();
+                    failed.tryComplete();
+                }
+            } else {
                 for (var i = 0; i < deployments.size(); i++) {
                     var future = deployments.get(i);
 

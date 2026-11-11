@@ -36,7 +36,7 @@ public class SecretStoreTest {
     private static final Path OUT = Paths.get("build/tmp/SecretStore/out");
     private static final String DEV = "ZGV2ZWxvcG1lbnQgc2VjcmV0";
     private static final String LOGGING = "logging", AUTH = "auth", SOCIAL = "social", BANK = "bank",
-            REALM_1 = "realm1", REALM_2 = "realm2", ARENA = "arena", DESIGNER = "designer";
+            REALM_1 = "realm1", REALM_2 = "realm2", ARENA = "arena", DESIGNER = "designer", PVP = "pvp";
     private static final String HUB = "hub", REALM = "realm";
     private final Map<String, NodeKey> nodes = new HashMap<>();
     private SystemContext context;
@@ -70,13 +70,13 @@ public class SecretStoreTest {
         security.setPath(PATH_SECURITY);
         security.setSecretBytes(32);
         var dependencies = new HashMap<String, AuthenticationDependency>();
-        dependencies.put("[^/]*", new AuthenticationDependency().addToken(LOGGING, LOGGING, "loggingSecret"));
+        dependencies.put("[^/]*", new AuthenticationDependency().addToken(LOGGING, "service/" + LOGGING, "loggingSecret"));
         dependencies.put(LOGGING, new AuthenticationDependency().addSecret("loggingSecret"));
         dependencies.put(AUTH, new AuthenticationDependency().addKeypair("client"));
         dependencies.put(SOCIAL, new AuthenticationDependency().addPublickey("client"));
         dependencies.put(BANK, new AuthenticationDependency().addSecret("bankSecret"));
         dependencies.put("realm[^/]*", new AuthenticationDependency().addPreshare("global").addSecret("secret")
-                .addToken(BANK, BANK, "bankSecret"));
+                .addToken(BANK, "service/" + BANK, "bankSecret"));
         security.setDependencies(dependencies);
         return security;
     }
@@ -84,15 +84,13 @@ public class SecretStoreTest {
     private static LauncherSettings launcher() {
         var launcher = new LauncherSettings();
         var blocks = new HashMap<String, List<String>>();
-        blocks.put(HUB, List.of("Logging", "Auth", "Social", "Bank"));
-        blocks.put(REALM, List.of("Realm"));
-        blocks.put(ARENA, List.of("Arena"));
-        blocks.put("designer", List.of("Designer"));
+        // the files of each deployable are named after its package (ServiceFiles): service/<name>, <name>/.
+        blocks.put(HUB, List.of(service(LOGGING), service(AUTH), service(SOCIAL), service(BANK)));
+        blocks.put(REALM, List.of(service(REALM)));
+        blocks.put(ARENA, List.of(service(ARENA)));
+        blocks.put("designer", List.of(service(DESIGNER)));
         launcher.setBlocks(blocks);
         launcher.setHosts(new HashMap<>(Map.of("node-a", REALM)));
-        launcher.addConfigs("Logging", LOGGING).addConfigs("Auth", AUTH).addConfigs("Social", SOCIAL)
-                .addConfigs("Bank", BANK).addConfigs("Realm", "realm[^/]*").addConfigs("Arena", ARENA)
-                .addConfigs("Designer", DESIGNER);
         return launcher;
     }
 
@@ -143,7 +141,7 @@ public class SecretStoreTest {
             notRecipient(realm, "secret", HUB);
             test.assertEquals(store(ARENA).getJsonObject(LOGGING), open(encrypted(ARENA), LOGGING, ARENA));
             // no node runs the designer: no encrypted values.
-            test.assertFalse(Files.exists(STORE.resolve(DIR_ENCRYPTED).resolve(DESIGNER + ".json")));
+            test.assertFalse(Files.exists(STORE.resolve(DIR_ENCRYPTED).resolve(file(DESIGNER))));
             test.assertTrue(Files.exists(STORE.resolve(DIR_ENCRYPTED).resolve(NODES_RECORD)));
             // the store keeps the plain values.
             test.assertFalse(EncryptedValue.isEncrypted(store(AUTH).getString("clientPrivateKey")));
@@ -158,7 +156,7 @@ public class SecretStoreTest {
     public void encryptWithoutNodeKeysFailsAndWritesNothing(TestContext test) {
         generate(FILL, true).onComplete(test.asyncAssertFailure(e -> {
             test.assertTrue(e.getMessage().contains("keygen"), e.getMessage());
-            test.assertFalse(Files.exists(STORE.resolve(LOGGING + ".json")));
+            test.assertFalse(Files.exists(STORE.resolve(file(LOGGING))));
         }));
     }
 
@@ -180,9 +178,11 @@ public class SecretStoreTest {
             Assert.assertEquals(SecretBaker.Secrets.PLAIN, baker(STORE).bake());
             Assert.assertEquals(store(REALM_1).getString("secret"), baked(REALM_1).getString("secret"));
             Assert.assertEquals(REALM_1, baked(REALM_1).getString("name"));
-            Assert.assertEquals(Set.of("realm1.json", "realm2.json"), files(REALM));
-            Assert.assertEquals(Set.of("logging.json", "auth.json", "social.json", "bank.json"), files(HUB));
-            Assert.assertEquals(Set.of("arena.json"), files(ARENA));
+            Assert.assertEquals(Set.of("realm/realm1.json", "realm/realm2.json"), files(REALM));
+            Assert.assertEquals(Set.of("service/logging.json", "service/auth.json", "service/social.json",
+                    "service/bank.json"), files(HUB));
+            Assert.assertEquals(Set.of("service/arena.json"), files(ARENA));
+            Assert.assertEquals(Set.of("service/designer.json"), files("designer"));
             return v;
         }).onComplete(test.asyncAssertSuccess());
     }
@@ -197,15 +197,15 @@ public class SecretStoreTest {
             Assert.assertEquals(store(REALM_1).getString("secret"), open(realm, "secret", REALM));
             // no node reads the designer's file: without secrets.
             Assert.assertFalse(baked(DESIGNER).containsKey(LOGGING));
-            // the arena reads the realms too since (launcher configs): encrypt again.
-            Configurations.launcher().addConfigs("Arena", ARENA, "realm[^/]*");
+            // the arena block runs the realm service too since: it reads the realm files, encrypt again.
+            Configurations.launcher().getBlocks().put(ARENA, List.of(service(ARENA), service(REALM)));
             try {
                 baker(STORE).bake();
                 Assert.fail("the configs changed");
             } catch (CoreRuntimeException e) {
                 Assert.assertTrue(e.getMessage(), e.getMessage().contains(GENERATE_ENCRYPT));
             }
-            Configurations.launcher().addConfigs("Arena", ARENA);
+            Configurations.launcher().getBlocks().put(ARENA, List.of(service(ARENA)));
             Assert.assertEquals(SecretBaker.Secrets.ENCRYPTED, baker(STORE).bake());
             // a node added since: encrypt again.
             keys("node-a");
@@ -217,6 +217,50 @@ public class SecretStoreTest {
             }
             return v;
         }).onComplete(test.asyncAssertSuccess());
+    }
+
+    @Test
+    public void renamedFileKeepsItsValuesInTheStore(TestContext test) {
+        keys(HUB, REALM, ARENA);
+        generate(FILL, true).compose(v -> {
+            var saved = store(ARENA);
+            var sealed = encrypted(ARENA);
+            // a release renames the arena service and its file (config file = service name).
+            Path from = Paths.get(DIR + file(ARENA));
+            try {
+                Files.move(from, Paths.get(DIR + file(PVP)));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            Configurations.launcher().getBlocks().put(ARENA, List.of(service(PVP)));
+            Configurations.security().setRenames(Map.of("service/" + ARENA, "service/" + PVP));
+            // the bake moves the values once: the record of the encrypted values still matches, nothing to encrypt.
+            Assert.assertEquals(SecretBaker.Secrets.ENCRYPTED, baker(STORE).bake());
+            Assert.assertFalse(Files.exists(STORE.resolve(file(ARENA))));
+            Assert.assertFalse(Files.exists(STORE.resolve(DIR_ENCRYPTED).resolve(file(ARENA))));
+            Assert.assertEquals(saved, store(PVP));
+            Assert.assertEquals(sealed, encrypted(PVP));
+            Assert.assertEquals(store(PVP).getJsonObject(LOGGING), open(baked(PVP), LOGGING, ARENA));
+            Assert.assertEquals(0, SecretStoreRenames.apply(STORE, Configurations.security().getRenames(),
+                    new com.codingchili.core.logging.ConsoleLogger(getClass())));
+            // generate keeps the moved values (the token of the old file is still valid).
+            return generate(FILL, true).map(again -> {
+                test.assertEquals(saved, store(PVP));
+                return again;
+            });
+        }).onComplete(test.asyncAssertSuccess());
+    }
+
+    @Test
+    public void renamedFileInTheStoreWithANewFileKeepsTheNewOne() {
+        write(PVP, new JsonObject().put("name", PVP));
+        AuthenticationGenerator.writePrivate(new JsonObject().put("old", true), STORE.resolve(file(ARENA)));
+        AuthenticationGenerator.writePrivate(new JsonObject().put("new", true), STORE.resolve(file(PVP)));
+        int moved = SecretStoreRenames.apply(STORE, Map.of("service/" + ARENA, "service/" + PVP),
+                new com.codingchili.core.logging.ConsoleLogger(getClass()));
+        Assert.assertEquals(0, moved);
+        Assert.assertTrue(store(PVP).getBoolean("new"));
+        Assert.assertTrue(store(ARENA).getBoolean("old"));
     }
 
     @Test
@@ -282,9 +326,21 @@ public class SecretStoreTest {
         }
     }
 
+    // the deployable class of a name: its files are service/<name> and <name>/ (ServiceFiles).
+    private static String service(String name) {
+        return "test." + name + ".Service";
+    }
+
+    // the file of a name in the configuration directory: realm/<realm> for the realms, else service/<name>.
+    private static String file(String name) {
+        return (name.startsWith(REALM) ? "realm/" : "service/") + name + ".json";
+    }
+
     private static Set<String> files(String block) {
-        try (var list = Files.list(OUT.resolve(SecretBaker.DIR_BLOCKS).resolve(block))) {
-            return new HashSet<>(list.map(path -> path.getFileName().toString()).toList());
+        Path root = OUT.resolve(SecretBaker.DIR_BLOCKS).resolve(block);
+        try (var list = Files.walk(root)) {
+            return new HashSet<>(list.filter(Files::isRegularFile)
+                    .map(path -> root.relativize(path).toString().replace('\\', '/')).toList());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -303,23 +359,23 @@ public class SecretStoreTest {
     }
 
     private static JsonObject read(String name) {
-        return ConfigurationFactory.readObject(DIR + name + ".json");
+        return ConfigurationFactory.readObject(DIR + file(name));
     }
 
     private static JsonObject store(String name) {
-        return ConfigurationFactory.readObject(STORE.resolve(name + ".json").toString());
+        return ConfigurationFactory.readObject(STORE.resolve(file(name)).toString());
     }
 
     private static JsonObject encrypted(String name) {
-        return ConfigurationFactory.readObject(STORE.resolve(DIR_ENCRYPTED).resolve(name + ".json").toString());
+        return ConfigurationFactory.readObject(STORE.resolve(DIR_ENCRYPTED).resolve(file(name)).toString());
     }
 
     private static JsonObject baked(String name) {
-        return ConfigurationFactory.readObject(OUT.resolve(name + ".json").toString());
+        return ConfigurationFactory.readObject(OUT.resolve(file(name)).toString());
     }
 
     private static void write(String name, JsonObject json) {
-        ConfigurationFactory.writeObject(json, DIR + name + ".json");
+        ConfigurationFactory.writeObject(json, DIR + file(name));
     }
 
     private static void delete(Path path) {

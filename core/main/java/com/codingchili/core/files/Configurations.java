@@ -150,6 +150,7 @@ public abstract class Configurations {
      */
     private static <T extends Configurable> T load(String path, Class<T> clazz) {
         boolean defaultsLoaded = false;
+        JsonObject fields = null;
         T config;
 
         if (ConfigurationFactory.exists(path)) {
@@ -160,6 +161,7 @@ public abstract class Configurations {
                 if (EncryptedValue.open(path, json)) {
                     encrypted.add(path);
                 }
+                fields = json;
                 config = Serializer.unpack(json, clazz);
             } catch (NoSuchResourceException e) {
                 logger.onFileLoadError(CoreStrings.getFileReadError(path));
@@ -177,6 +179,11 @@ public abstract class Configurations {
         config.setPath(path);
         configs.put(path, new ConfigEntry(config, clazz));
 
+        if (fields != null) {
+            // which files the services of this JVM load: a file of another service with secrets is reported.
+            ConfigurationGuard.loaded(path, fields.fieldNames());
+        }
+
         if (defaultsLoaded) {
             if (!clazz.getName().equals(LauncherSettings.class.getName())) {
                 // we cannot warn if the launcher defaults are loaded.
@@ -193,6 +200,7 @@ public abstract class Configurations {
     public static void reset() {
         configs.clear();
         encrypted.clear();
+        ConfigurationGuard.reset();
         init();
         saveAll();
     }

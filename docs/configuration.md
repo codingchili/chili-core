@@ -151,7 +151,14 @@ The launcher configuration  allows for configuration of the following properties
 | version| used for logging, the version of the application.|
 | blocks | A list of services to deploy when the Launcher is started, can be referenced by name.|
 | hosts | used to determine which block of services to deploy.|
-| configs | the configuration files each deployable reads: class name to path patterns relative to `configurationDirectory`, without the extension (as the keys of the security dependencies), e.g. `com.example.Realm: [service/realms, realm/[^/]*]`. Used by `generate --encrypt` (who may open a file's secrets) and `bake` (the files of each block), see [Secrets store, encryption, bake](#secrets-store-encryption-bake).|
+
+**Configuration files by name.** Each deployable reads the configuration files named after it (`ServiceFiles`): a
+deployable in the package `<...>.<name>` (e.g. `com.example.realm.Service`, name `realm`) reads `service/<name>.yaml`,
+the files in `service/<name>/` and in `<name>/` (relative to `configurationDirectory`; e.g. `conf/realm/` with a file
+per realm). `generate --encrypt` (who may open a file's secrets) and `bake` (the files of each block) use it, see
+[Secrets store, encryption, bake](#secrets-store-encryption-bake); a service that loads a file with secrets outside
+of the files of the services in its JVM is reported (`ConfigurationGuard`, see [System](#system) `strict`). The
+`configs` map of before 1.4.9 is ignored: name the file as the service instead.
 
 Without a block on the command line (`deploy`), the block of the host is deployed: a `hosts` entry for the hostname, a
 block named as the hostname (a container with `hostname: realm` deploys the block `realm`), or a `hosts` entry for an
@@ -245,6 +252,7 @@ The system configuration contains properties used for the framework core functio
 |clusterTimeout| time in ms until clustered messages are timed out. |
 |blockedThreadChecker| how often to check for blocked threads in milliseconds. |
 |maxEventLoopExecuteTime| the maximum number of milliseconds the event loop may block until a warning is generated, in milliseconds. |
+|strict| boolean, default false (development). Once the launcher deployed its block, a loaded configuration file with generated secrets (security dependencies) that is not a file of the services deployed in the JVM ([by name](#launcher)) is a warning naming the service that loaded it, the file and the fix; strict (production) fails the start instead, and a later load is logged as an error. Overridden by `-Dchili.strict` or `CHILI_STRICT` (true/false), e.g. set in an image. |
 
 The event bus host and port of a cluster are in the launcher's [cluster](#cluster) settings.
 
@@ -260,6 +268,7 @@ Controls internal security configuration.
 |keyPairAlgorithm|algorithm of the key pairs that `generate` creates and key pair token factories sign and verify with, default `Ed25519`.|
 |secretBytes|the length of generated pre-shared secrets from `SecretFactory`.|
 |tokenttl|seconds that a `Token` without an expiry is valid (the tokens that services issue at runtime, such as user sessions, default 7 days).|
+|renames|renamed configuration files, old path to new, relative to the configuration directory without the extension (e.g. `service/routing: service/router`): `generate --store` and `bake --store` move the saved values of the old file in the store (plain, `encrypted/` and its record) to the new name, once, with a log line.|
 |serviceTokenttl|seconds that the tokens issued by `generate` (the `tokens` of the dependencies) are valid, default `tokenttl`; `generate` reissues them in their last quarter. `0`: they never expire (`Token.NEVER`, 9999-12-31) and are revoked by `--rotate`; `generate` reissues them only when missing or no longer verifying (or once, when issued with a lifetime).|
 
 Sample configuration
@@ -330,7 +339,7 @@ configuration, in a secrets store, and are merged in at build time:
 |command|what it does|
 |---|---|
 |`generate --store <dir> [--rotate]`| reads the generated keys from `<dir>/<path in conf>` (e.g. `<dir>/service/auth.yaml`, plain, only the generated keys) instead of the configuration files, whose own values (development secrets) are never used; fills (or rotates) and writes them back to the store (files 600, folders 700). The configuration files are not written. |
-|`generate ... --encrypt [--nodes <dir>]`| also writes every generated value but the public keys as an encrypted value (below) to the nodes that read the file. With `--store` they go to `<dir>/encrypted/` (the store keeps the plain values the next run needs; a run without `--encrypt` removes `encrypted/`), without a store into the configuration files themselves. The public keys of the nodes: `<nodes>/<host>.pub` (default `<store>/nodes`, or `conf/system/nodes`), the text `keygen` printed. A host runs its `hosts` block, or the block named as the host; a file is encrypted to every node whose block has a deployable whose `configs` match the file. A file no node reads gets no encrypted values (a warning). |
+|`generate ... --encrypt [--nodes <dir>]`| also writes every generated value but the public keys as an encrypted value (below) to the nodes that read the file. With `--store` they go to `<dir>/encrypted/` (the store keeps the plain values the next run needs; a run without `--encrypt` removes `encrypted/`), without a store into the configuration files themselves. The public keys of the nodes: `<nodes>/<host>.pub` (default `<store>/nodes`, or `conf/system/nodes`), the text `keygen` printed. A host runs its `hosts` block, or the block named as the host; a file is encrypted to every node whose block has a deployable that reads the file ([by name](#launcher)). A file no node reads gets no encrypted values (a warning). |
 |`bake [--store <dir>] [--out <dir>] [--blocks a,b]`| writes every configuration file that has security dependencies to `<out>/<path in conf>` without its generated keys and with the values of the store (`encrypted/` when present, else the plain ones; no store: no secrets at all), and the files each block reads to `<out>/blocks/<block>/<path in conf>` (an image per block). Fails when the store misses a value (run `generate --store` again) or when the nodes changed since `generate --encrypt` (recorded in `encrypted/nodes.txt`). |
 |`keygen [--force]`| writes a new X25519 key for this node to `conf/system/node.key` (or the file named by `CHILI_NODE_KEY` / `-Dchili.node.key`), readable by its owner only, and prints its public key (`x25519:<base64>`). Refuses to replace an existing key without `--force`. |
 

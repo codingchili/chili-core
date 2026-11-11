@@ -4,13 +4,11 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.codingchili.core.configuration.system.LauncherSettings;
 import com.codingchili.core.context.CoreRuntimeException;
-import com.codingchili.core.files.ConfigurationFactory;
+import com.codingchili.core.files.ServiceFiles;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
@@ -18,9 +16,8 @@ import static com.codingchili.core.configuration.CoreStrings.*;
  * Who may open the secrets of a configuration file ({@code generate --encrypt}), and which files a block reads
  * ({@code bake}), from the launcher settings:
  * <ul>
- *     <li>{@code configs}: the configuration files of each deployable (class name to path patterns relative to the
- *     configuration directory, without the extension),</li>
- *     <li>{@code blocks}: the deployables of each block,</li>
+ *     <li>{@code blocks}: the deployables of each block, each reads the configuration files of its name
+ *     ({@link ServiceFiles}),</li>
  *     <li>{@code hosts}: the block of a host; a host named as a block runs that block,</li>
  * </ul>
  * and the public keys of the nodes: one file per host, {@code <nodes>/<host>.pub}, holding the public key that
@@ -35,7 +32,7 @@ public class SecretRecipients {
     private final Map<String, String> blocks = new TreeMap<>();
 
     /**
-     * @param launcher  the launcher settings: configs, blocks and hosts.
+     * @param launcher  the launcher settings: blocks and hosts.
      * @param directory the configuration directory the paths are relative to, for example {@code conf/}.
      * @param nodes     the directory with the public keys of the nodes, {@code <host>.pub}.
      * @throws CoreRuntimeException when there is no public key, a key is invalid or a host runs no block.
@@ -113,24 +110,10 @@ public class SecretRecipients {
      * @param directory the configuration directory.
      * @param block     the name of a block.
      * @param path      a configuration file.
-     * @return true when a deployable of the block reads the file (launcher settings configs).
+     * @return true when a deployable of the block reads the file ({@link ServiceFiles}).
      */
     public static boolean reads(LauncherSettings launcher, String directory, String block, String path) {
-        String relative = relative(directory, path);
-        return launcher.getBlocks().getOrDefault(block, List.of()).stream()
-                .flatMap(deployable -> launcher.getConfigs().getOrDefault(deployable, List.of()).stream())
-                .anyMatch(pattern -> matches(pattern, relative));
-    }
-
-    /**
-     * @param launcher the launcher settings.
-     * @param block    the name of a block.
-     * @return the deployables of the block that have no configuration files in the launcher settings configs.
-     */
-    public static List<String> unmapped(LauncherSettings launcher, String block) {
-        return launcher.getBlocks().getOrDefault(block, List.of()).stream()
-                .filter(deployable -> !launcher.getConfigs().containsKey(deployable))
-                .toList();
+        return ServiceFiles.reads(launcher.getBlocks().getOrDefault(block, List.of()), relative(directory, path));
     }
 
     /**
@@ -142,13 +125,5 @@ public class SecretRecipients {
         return Paths.get(directory).toAbsolutePath().normalize()
                 .relativize(Paths.get(path).toAbsolutePath().normalize())
                 .toString().replace('\\', '/');
-    }
-
-    // a pattern of configs: the whole relative path without its extension.
-    private static boolean matches(String pattern, String relative) {
-        String extensions = ConfigurationFactory.supported().stream()
-                .map(Pattern::quote)
-                .collect(Collectors.joining("|"));
-        return Pattern.compile(pattern + "(" + extensions + ")").matcher(relative).matches();
     }
 }

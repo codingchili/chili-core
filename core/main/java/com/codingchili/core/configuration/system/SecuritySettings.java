@@ -39,6 +39,7 @@ public class SecuritySettings implements Configurable {
     private int secretBytes = 64;
     private int tokenttl = 3600 * 24 * 7;
     private Integer serviceTokenttl = null;
+    private Map<String, String> renames = new LinkedHashMap<>();
 
     static {
         StartupListener.subscribe(core -> logger = core.logger(SecuritySettings.class));
@@ -208,6 +209,25 @@ public class SecuritySettings implements Configurable {
      */
     public void setHmacAlgorithm(String hmacAlgorithm) {
         this.hmacAlgorithm = hmacAlgorithm;
+    }
+
+    /**
+     * @return configuration files that were renamed: the old path to the new one, relative to the configuration
+     * directory and without the extension (for example {@code service/routing: service/router}). {@code generate}
+     * and {@code bake} move the saved values of an old file in a secrets store to the new name, once, so that the
+     * store keeps its keys.
+     */
+    public Map<String, String> getRenames() {
+        return renames;
+    }
+
+    /**
+     * @param renames the renamed configuration files, see {@link #getRenames()}.
+     * @return fluent
+     */
+    public SecuritySettings setRenames(Map<String, String> renames) {
+        this.renames = renames;
+        return this;
     }
 
     /**

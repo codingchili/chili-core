@@ -194,6 +194,8 @@ public class AuthenticationGenerator {
     private Future<Void> run(boolean secrets, boolean preshare, boolean tokens) {
         try {
             Instant now = Instant.now();
+            // a store made before a configuration file was renamed: its values move to the new name first.
+            SecretStoreRenames.apply(store, security().getRenames(), logger);
             // the nodes first: a missing public key fails before anything is generated.
             SecretRecipients recipients = (encrypt) ? new SecretRecipients(launcher(), directory, nodes()) : null;
             List<ConfigFile> files = load();
@@ -618,6 +620,16 @@ public class AuthenticationGenerator {
             dependency.getPublickeys().forEach(name -> keys.add(name + PUBLIC_KEY_SUFFIX));
         });
         return keys;
+    }
+
+    /**
+     * @param path a configuration file.
+     * @return the keys the generator writes into the file by the security dependencies, empty when it has none.
+     */
+    public static Set<String> generatedKeys(String path) {
+        var settings = security().getDependencies();
+        var generator = new AuthenticationGenerator(null, DIR_CONFIG);
+        return generatedKeys(generator.andPathMatchesKeyRegex(settings, path));
     }
 
     /**

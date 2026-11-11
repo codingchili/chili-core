@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import tools.jackson.databind.SerializationFeature;
 import io.vertx.core.VertxOptions;
 
+import java.util.Locale;
+import java.util.Set;
+
 import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.configuration.CoreStrings;
 
@@ -30,6 +33,7 @@ public class SystemSettings implements Configurable {
     private boolean consoleLogging = true;
     private boolean prettyEncoding = false;
     private boolean unsafe = false;
+    private boolean strict = false;
     private int clusterTimeout = 3000;
     private long blockedThreadChecker = VertxOptions.DEFAULT_BLOCKED_THREAD_CHECK_INTERVAL;
     private long maxEventLoopExecuteTime = VertxOptions.DEFAULT_MAX_EVENT_LOOP_EXECUTE_TIME / (1000 * 1000);
@@ -351,5 +355,38 @@ public class SystemSettings implements Configurable {
                 .build();
         this.prettyEncoding = prettyEncoding;
         return this;
+    }
+
+    /**
+     * @return true when a service may only load the configuration files named as the services deployed in its JVM
+     * ({@link com.codingchili.core.files.ServiceFiles}): a file with generated secrets loaded outside of them fails
+     * the start instead of a warning ({@link com.codingchili.core.files.ConfigurationGuard}). As configured, see
+     * {@link #strict()} for the value in effect.
+     */
+    public boolean isStrict() {
+        return strict;
+    }
+
+    /**
+     * @param strict see {@link #isStrict()}, for production (the baked images set {@value CoreStrings#ENV_STRICT}).
+     * @return fluent
+     */
+    public SystemSettings setStrict(boolean strict) {
+        this.strict = strict;
+        return this;
+    }
+
+    /**
+     * @return the strict mode in effect: the system property {@value CoreStrings#PROPERTY_STRICT} or the
+     * environment variable {@value CoreStrings#ENV_STRICT} (true/false) when set, else {@link #isStrict()}.
+     */
+    @JsonIgnore
+    public boolean strict() {
+        for (String value : new String[]{System.getProperty(PROPERTY_STRICT), System.getenv(ENV_STRICT)}) {
+            if (value != null && !value.isBlank()) {
+                return Set.of("true", "on", "yes", "1").contains(value.trim().toLowerCase(Locale.ROOT));
+            }
+        }
+        return strict;
     }
 }

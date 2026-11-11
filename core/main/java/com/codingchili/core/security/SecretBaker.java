@@ -15,14 +15,15 @@ import com.codingchili.core.logging.Logger;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.files.Configurations.launcher;
+import static com.codingchili.core.files.Configurations.security;
 
 /**
  * Writes the configuration files that have security dependencies with the secrets of a store ({@code bake}), for a
  * release (an image) that carries its secrets:
  * <ul>
  *     <li>{@code <out>/<path in the configuration directory>}: every file,</li>
- *     <li>{@code <out>/blocks/<block>/<path in the configuration directory>}: the files each block reads (launcher
- *     settings {@code configs}), for an image per block.</li>
+ *     <li>{@code <out>/blocks/<block>/<path in the configuration directory>}: the files each block reads (the files
+ *     named as its deployables, {@link com.codingchili.core.files.ServiceFiles}), for an image per block.</li>
  * </ul>
  * The generated keys of the configuration (development secrets) are removed, the values of the store take their
  * place: the encrypted values ({@code <store>/encrypted}) when the store has them, else the plain ones. Without a
@@ -105,6 +106,9 @@ public class SecretBaker {
      */
     public Secrets bake() {
         LauncherSettings launcher = launcher();
+        if (store != null) {
+            SecretStoreRenames.apply(store, security().getRenames(), logger);
+        }
         Secrets mode = mode();
         Path source = (mode == Secrets.ENCRYPTED) ? store.resolve(DIR_ENCRYPTED) : store;
         SecretRecipients recipients = null;
@@ -160,10 +164,6 @@ public class SecretBaker {
                     files.add(relative);
                 }
             });
-            List<String> unmapped = SecretRecipients.unmapped(launcher, block);
-            if (!unmapped.isEmpty()) {
-                logger.log(getBakeUnmapped(block, unmapped));
-            }
             logger.log(getBakedBlock(block, files));
         }
         logger.log(getBaked(baked.size(), out.toString(), mode.toString()));
