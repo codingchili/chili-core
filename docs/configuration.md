@@ -203,6 +203,12 @@ The system configuration contains properties used for the framework core functio
 |clusterTimeout| time in ms until clustered messages are timed out. |
 |blockedThreadChecker| how often to check for blocked threads in milliseconds. |
 |maxEventLoopExecuteTime| the maximum number of milliseconds the event loop may block until a warning is generated, in milliseconds. |
+|eventBusHost| the host (interface) the clustered event bus binds to, e.g. `0.0.0.0`. Unset (default): the cluster manager's (Hazelcast's) member address. Overridden by the system property `chili.eventbus.host` or the environment variable `CHILI_EVENTBUS_HOST`. |
+|eventBusPublicHost| the address other cluster members use to reach this node's event bus (NAT, containers on separate hosts). Unset (default): the bind host if set, otherwise Hazelcast's public address. Overridden by `chili.eventbus.publicHost` or `CHILI_EVENTBUS_PUBLIC_HOST`. |
+|eventBusPort| a fixed port for the clustered event bus, to open in a firewall or map from a container. Default 0: a random port. Overridden by `chili.eventbus.port` or `CHILI_EVENTBUS_PORT`. |
+
+The event bus settings only matter when clustered; each is read from its system property, then its environment
+variable, then `system.yaml` (blank values are ignored). See [clustering across hosts](context.md#clustering-across-hosts).
 
 ### Security
 Controls internal security configuration.

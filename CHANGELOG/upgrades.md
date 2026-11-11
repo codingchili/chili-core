@@ -645,6 +645,18 @@ watch the same configuration files: only one of them reloaded). The registry kee
 events of a key once and passes them to each (`FileWatcher.collect(directory, events)`), and cancels the key with its
 last watcher. Tests: `FileWatcherIT.everyWatcherOfADirectoryIsNotified`, `stoppedWatcherDoesNotStopTheOthers`.
 
+## Clustered event bus across hosts (1.4.9)
+
+The event bus host was always `InetAddress.getLocalHost()`, which Vert.x also advertises to the other members: across
+hosts that is a container IP, `127.0.1.1` or a random interface, so Hazelcast joined but event bus messages to the
+member were lost. The host is now left unset unless configured, and Vert.x 5 takes it from vertx-hazelcast: the bind
+host is `hazelcast.local.localAddress` or the Hazelcast member address, the advertised host is Hazelcast's public
+address (`<public-address>` or `hazelcast.local.publicAddress`) or the bind host. New optional `system.yaml` settings
+`eventBusHost` (bind), `eventBusPublicHost` (advertised) and `eventBusPort` (fixed port, default random), each
+overridable by the system properties `chili.eventbus.host|publicHost|port` and the environment variables
+`CHILI_EVENTBUS_HOST|PUBLIC_HOST|PORT`. Existing configs work unchanged. Tests: `SystemSettingsTest`, `HazelMapIT`,
+`ClusterListenerTest`.
+
 ## Verification status
 
 Latest runs (handler → future migration and QUIC listener), all passing:

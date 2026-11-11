@@ -44,6 +44,14 @@ public abstract class CoreStrings {
     public static final String PATH_STORAGE = "conf/system/storage.yaml";
     public static final String PATH_VALIDATOR = "conf/system/validator.json";
 
+    // overrides of the clustered event bus settings in system.yaml: a system property, then an environment variable.
+    public static final String PROPERTY_EVENTBUS_HOST = "chili.eventbus.host";
+    public static final String PROPERTY_EVENTBUS_PUBLIC_HOST = "chili.eventbus.publicHost";
+    public static final String PROPERTY_EVENTBUS_PORT = "chili.eventbus.port";
+    public static final String ENV_EVENTBUS_HOST = "CHILI_EVENTBUS_HOST";
+    public static final String ENV_EVENTBUS_PUBLIC_HOST = "CHILI_EVENTBUS_PUBLIC_HOST";
+    public static final String ENV_EVENTBUS_PORT = "CHILI_EVENTBUS_PORT";
+
     // common directories.
     public static final String DIR_ROOT = "/";
     public static final String DIR_CURRENT = "./";

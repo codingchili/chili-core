@@ -44,6 +44,23 @@ SystemContext.clustered().onSuccess(core -> {
 });
 ```
 
+##### Clustering across hosts
+Hazelcast finds the members; the event bus of Vert.x then connects to each member directly, at the host and port
+that the member advertises. Unless configured, Vert.x binds the event bus to Hazelcast's member address on a random
+port and advertises that address, or Hazelcast's public address when one is set (`<public-address>` in cluster.xml,
+or the system property `hazelcast.local.publicAddress`). That works when the members share a network. When they
+don't (containers on separate hosts, NAT), set the address that the other hosts can reach:
+
+```console
+java -Dhazelcast.local.publicAddress=203.0.113.7 \
+     -Dchili.eventbus.host=0.0.0.0 -Dchili.eventbus.publicHost=203.0.113.7 -Dchili.eventbus.port=5702 ...
+```
+
+and open Hazelcast's port (5701) and the event bus port between the hosts. A wildcard bind host needs a public host,
+otherwise the wildcard is advertised. The same settings are `eventBusHost`, `eventBusPublicHost` and `eventBusPort`
+in `conf/system/system.yaml`, or the environment variables `CHILI_EVENTBUS_HOST`, `CHILI_EVENTBUS_PUBLIC_HOST`,
+`CHILI_EVENTBUS_PORT`.
+
 ##### Deploying
 Deploying a service that may in turn issue more deployments.
 
