@@ -16,6 +16,7 @@ import java.util.UUID;
 import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.configuration.RestHelper;
 import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.listener.*;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.*;
@@ -58,6 +59,13 @@ public class WebsocketListener implements CoreListener {
 
     @Override
     public void start(Promise<Void> start) {
+        try {
+            // fails the deployment when a trusted proxy is not valid.
+            settings.proxies();
+        } catch (CoreRuntimeException e) {
+            start.fail(e);
+            return;
+        }
         listen(start);
     }
 
@@ -120,7 +128,8 @@ public class WebsocketListener implements CoreListener {
             }
         }, UUID.randomUUID().toString())
                 .closer(socket::close)
-                .setProperty(PROTOCOL_CONNECTION, socket.remoteAddress().host());
+                .setProperty(PROTOCOL_CONNECTION, settings.proxies().client(
+                        socket.remoteAddress().host(), socket.headers().getAll(PROTOCOL_FORWARDED_FOR)));
     }
 
     private void handle(Connection connection, Buffer buffer) {

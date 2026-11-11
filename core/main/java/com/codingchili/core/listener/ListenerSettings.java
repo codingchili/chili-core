@@ -54,6 +54,8 @@ public class ListenerSettings {
     private QuicServerConfig quic = null;
     private String quicProtocol = CoreStrings.DEFAULT_QUIC_PROTOCOL;
     private Map<String, Endpoint> api = new HashMap<>();
+    private List<String> proxies = new ArrayList<>();
+    private Proxies trusted = null;
     private final Set<Integer> actualPorts = new HashSet<>();
     private String defaultTarget = "default";
     private String keystore = CoreStrings.DEFAULT_KEYSTORE;
@@ -191,6 +193,44 @@ public class ListenerSettings {
     public ListenerSettings addApi(String route, Endpoint api) {
         this.api.put(route, api);
         return this;
+    }
+
+    /**
+     * The proxies (load balancers) that are trusted to forward the address of the client in the X-Forwarded-For
+     * header. When the peer of a request is one of them, the address of the client of the request
+     * ({@link com.codingchili.core.listener.transport.Connection#remote()}) is the rightmost address of the header
+     * that is not a trusted proxy; from any other peer the header is ignored. Empty (the default) trusts no proxy.
+     * Read by the REST and websocket listeners (HTTP/1.1, HTTP/2, HTTP/3), the TCP, UDP and QUIC listeners have
+     * no headers.
+     * <pre>{@code
+     * proxies: ["10.0.0.1", "172.16.0.0/12", "fd00::/8"]
+     * }</pre>
+     *
+     * @return the trusted proxies: IP addresses or CIDR ranges.
+     */
+    public List<String> getProxies() {
+        return proxies;
+    }
+
+    /**
+     * @param proxies the trusted proxies: IP addresses or CIDR ranges, see {@link #getProxies()}.
+     * @return fluent
+     */
+    public ListenerSettings setProxies(List<String> proxies) {
+        this.proxies = (proxies == null) ? new ArrayList<>() : proxies;
+        this.trusted = null;
+        return this;
+    }
+
+    /**
+     * @return the trusted proxies of {@link #getProxies()}, parsed.
+     * @throws CoreRuntimeException when a proxy is not an IP address or a CIDR range.
+     */
+    public Proxies proxies() {
+        if (trusted == null) {
+            trusted = new Proxies(proxies);
+        }
+        return trusted;
     }
 
     /**

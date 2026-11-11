@@ -14,6 +14,7 @@ import com.codingchili.core.protocol.Response;
 import com.codingchili.core.protocol.ResponseStatus;
 
 import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_CONNECTION;
+import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_FORWARDED_FOR;
 
 /**
  * HTTP/REST request object.
@@ -58,7 +59,8 @@ public class RestRequest extends AbstractRequest {
                 // write data without calling end - supports long polling.
                 request.response().write(Response.buffer(object));
             }, UUID.randomUUID().toString())
-                    .setProperty(PROTOCOL_CONNECTION, request.connection().remoteAddress().host());
+                    .setProperty(PROTOCOL_CONNECTION, settings.proxies().client(
+                            request.connection().remoteAddress().host(), request.headers().getAll(PROTOCOL_FORWARDED_FOR)));
         }
 
         return connection;

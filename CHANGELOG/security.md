@@ -88,3 +88,14 @@ Findings come from reading the code; no exploit tests have been written and noth
   the launcher deployed its block, and on later loads, a file with generated secrets that no service of the JVM owns
   by name is a warning naming the loading service, the file and the fix. System `strict` (or `-Dchili.strict`,
   `CHILI_STRICT`) fails the start instead (exit 1); a later load is an error log.
+
+
+## Trusted proxies: the client address of X-Forwarded-For (1.4.9)
+
+- `ListenerSettings.proxies` (IP addresses or CIDR ranges, `Proxies`): when the peer is a trusted proxy, the REST and
+  websocket listeners set `Connection.remote()` to the rightmost `X-Forwarded-For` address that is not a trusted proxy;
+  from other peers the header is ignored (no spoofing of bans and rate limits). Empty (the default) is the old
+  behaviour. IP literals only (no DNS), IPv4-mapped IPv6 as IPv4, an invalid entry fails the listener's deployment.
+  TCP, UDP and QUIC are unchanged (no headers).
+- Tests: `ProxiesTest` (trusted/untrusted peer, chains, spoofed hops, ranges, IPv6, invalid entries, configuration),
+  `ProxiesIT` (REST and websocket listeners: trusted, untrusted, no proxies, chain, invalid entry).

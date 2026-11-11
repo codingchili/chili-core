@@ -11,6 +11,7 @@ import io.vertx.ext.web.handler.BodyHandler;
 
 import com.codingchili.core.configuration.RestHelper;
 import com.codingchili.core.context.CoreContext;
+import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.listener.*;
 import com.codingchili.core.logging.Logger;
 
@@ -79,6 +80,13 @@ public class RestListener implements CoreListener {
 
     @Override
     public void start(Promise<Void> start) {
+        try {
+            // fails the deployment when a trusted proxy is not valid.
+            settings.proxies();
+        } catch (CoreRuntimeException e) {
+            start.fail(e);
+            return;
+        }
         var handlerPromise = Promise.<Void>promise();
 
         handlerPromise.future()

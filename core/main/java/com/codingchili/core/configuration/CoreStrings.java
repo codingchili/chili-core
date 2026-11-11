@@ -125,6 +125,7 @@ public abstract class CoreStrings {
 
     // protocol constants.
     public static final String PROTOCOL_REAL_IP = "X-Real-IP";
+    public static final String PROTOCOL_FORWARDED_FOR = "X-Forwarded-For";
     public static final String PROTOCOL_CONNECTION = "connection";
     public static final String PROTOCOL_ROUTES = "routes";
     public static final String PROTOCOL_STATUS = "status";
@@ -302,6 +303,11 @@ public abstract class CoreStrings {
 
     public static String getRequestTooLarge(int maxRequestBytes) {
         return String.format("Maximum request size of %d bytes exceeded.", maxRequestBytes);
+    }
+
+    public static String getInvalidProxy(String proxy) {
+        return String.format("Invalid proxy '%s' in the listener settings, expected an IP address or a CIDR range " +
+                "such as 10.0.0.0/8.", proxy);
     }
 
     public static String getInvalidListenerConfig(String type, String reason) {

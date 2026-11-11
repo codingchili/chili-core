@@ -80,6 +80,24 @@ new ListenerSettings()
     .setSecurity(sslOptions); // TLS options to use instead of the keystore.
 ```
 
+### Behind a load balancer
+Behind a load balancer or reverse proxy every request comes from the address of the proxy, so anything keyed on
+`request.connection().remote()` (rate limits, bans, logs) sees one client. List the proxies in `proxies` (IP addresses
+or CIDR ranges) and the `RestListener` and `WebsocketListener` take the address of the client from the `X-Forwarded-For`
+header, but only when the peer is one of them:
+
+```yaml
+port: 6969
+proxies: ["10.0.0.0/24"]   # the network of the load balancer, empty (the default) trusts no proxy.
+```
+
+The header is read from the right: the client is the rightmost address that is not a trusted proxy, so a chain of
+proxies works when all of them are listed. Addresses to the left of it were sent by the client and are ignored, and
+from a peer that is not trusted the header is ignored as a whole: otherwise any client could choose its own address.
+List only the proxies themselves, never a range that clients connect from. The proxy must set or append the header
+(Traefik does by default, nginx with `$proxy_add_x_forwarded_for`, HAProxy with `option forwardfor`). An entry that is not an address or a
+range fails the deployment of the listener. The TCP, UDP and QUIC listeners have no headers and always use the peer.
+
 ### QUIC
 The `QuicListener` uses QUIC directly, without HTTP/3. Each request is sent on its own bidirectional stream:
 the client writes the JSON request and ends its side of the stream, and the response is written back on the same
