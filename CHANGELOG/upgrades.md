@@ -657,6 +657,21 @@ overridable by the system properties `chili.eventbus.host|publicHost|port` and t
 `CHILI_EVENTBUS_HOST|PUBLIC_HOST|PORT`. Existing configs work unchanged. Tests: `SystemSettingsTest`, `HazelMapIT`,
 `ClusterListenerTest`.
 
+## `generate` keeps existing secrets; rotation without a restart (1.4.9)
+
+`generate` overwrote every secret, preshared key and token, so running it again (a release that adds a realm) logged
+everyone out. It now fills in only what is missing: existing secrets and preshared keys are kept (a preshared key a
+file lacks takes the value of the files that have it, the most common value when they disagree), tokens are kept
+while they verify with their issuer's current secret and have more than a quarter of `tokenttl` left.
+`generate --rotate` makes new values for everything and keeps the old secrets and preshared keys as `<key>Previous`;
+`generate --retire` removes those. `TokenFactory` follows the rotation (`SecretRollover`, registered when a
+configuration file is loaded or hot reloaded): it signs with the current value and accepts the current or previous
+one, also in factories created before the rotation, so a running node picks up rotated secrets without a restart and
+old tokens stay valid until retired. Also: the generator's token domain for a config without `node` was `undefined`
+on the first run and `undefined.node` after, and the committed fixture `AuthenticationGenerator/service2.json` was
+corrupt (made `testGenerateWithBrokenReferenceFails` fail); `testGenerateAll` did not wait for the generator.
+Tests: `SecretRotationTest` (7), `AuthenticationGeneratorIT`, `TokenFactoryTest`.
+
 ## Verification status
 
 Latest runs (handler → future migration and QUIC listener), all passing:

@@ -40,22 +40,30 @@ public class LauncherCommandExecutor extends DefaultCommandExecutor {
         super.add((executor) -> LauncherCommandResult.CONTINUE, DEPLOY, getDeployDescription());
         add(Configurations::reset, RECONFIGURE, getReconfigureDescription());
 
-        add(generator(AuthenticationGenerator::preshare), GENERATE_PRESHARED, getGeneratePresharedDescription());
-        add(generator(AuthenticationGenerator::secrets), GENERATE_SECRETS, getGenerateSecretsDescription());
-        add(generator(AuthenticationGenerator::tokens), GENERATE_TOKENS, getGenerateTokensDescription());
-        add(generator(AuthenticationGenerator::all), GENERATE, getGenerateAllDescription());
+        generator(AuthenticationGenerator::preshare, GENERATE_PRESHARED, getGeneratePresharedDescription());
+        generator(AuthenticationGenerator::secrets, GENERATE_SECRETS, getGenerateSecretsDescription());
+        generator(AuthenticationGenerator::tokens, GENERATE_TOKENS, getGenerateTokensDescription());
+        generator(AuthenticationGenerator::all, GENERATE, getGenerateAllDescription());
 
         addAsync(suite::execute, BENCHMARK, getBenchmarkDescription());
         add(this::help, HELP, getCommandExecutorHelpDescription());
     }
 
-    private Runnable generator(Function<AuthenticationGenerator, Future<Void>> function) {
-        return () -> {
+    // generate [--rotate|--retire]: keeps existing values unless rotating, see AuthenticationGenerator.Mode.
+    private void generator(Function<AuthenticationGenerator, Future<Void>> function, String name, String description) {
+        super.add((executor) -> {
+            var mode = AuthenticationGenerator.Mode.FILL;
+            if (executor.hasProperty(GENERATE_ROTATE)) {
+                mode = AuthenticationGenerator.Mode.ROTATE;
+            } else if (executor.hasProperty(GENERATE_RETIRE)) {
+                mode = AuthenticationGenerator.Mode.RETIRE;
+            }
             CoreContext core = new SystemContext();
-            function.apply(new AuthenticationGenerator(core)).onComplete(done -> {
+            function.apply(new AuthenticationGenerator(core).setMode(mode)).onComplete(done -> {
                 core.close();
             });
-        };
+            return LauncherCommandResult.SHUTDOWN;
+        }, name, description);
     }
 
     /* helper method to support methods that does not implement Consumer<CommandExecutor> */

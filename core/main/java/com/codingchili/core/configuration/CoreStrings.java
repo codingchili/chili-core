@@ -52,6 +52,11 @@ public abstract class CoreStrings {
     public static final String ENV_EVENTBUS_PUBLIC_HOST = "CHILI_EVENTBUS_PUBLIC_HOST";
     public static final String ENV_EVENTBUS_PORT = "CHILI_EVENTBUS_PORT";
 
+    // secret rotation: the previous value of a secret key is kept under the key with this suffix.
+    public static final String SECRET_PREVIOUS_SUFFIX = "Previous";
+    public static final String GENERATE_ROTATE = "--rotate";
+    public static final String GENERATE_RETIRE = "--retire";
+
     // common directories.
     public static final String DIR_ROOT = "/";
     public static final String DIR_CURRENT = "./";
@@ -413,6 +418,23 @@ public abstract class CoreStrings {
         return "[Generated] token '" + owner + "/" + secret + "' for " + service + " ..";
     }
 
+    public static String getKeptSecret(String key, String path) {
+        return "[Kept] '" + key + "' in " + path + " ..";
+    }
+
+    public static String getRotatedSecret(String key, String path) {
+        return "[Rotated] '" + key + "' in " + path + ", the old value is kept as '" + key + SECRET_PREVIOUS_SUFFIX + "' ..";
+    }
+
+    public static String getRetiredSecret(String key, String path) {
+        return "[Retired] '" + key + "' in " + path + " ..";
+    }
+
+    public static String getPreshareConflict(String key, Collection<String> paths) {
+        return "[Warning] preshared key '" + key + "' differs between files, keeping the most common value: " +
+                "replaced in " + paths + " ..";
+    }
+
     public static String getGeneratingShared(String key, String path) {
         return "[Generated] preshared key '" + key + "' for " + path + " ..";
     }
@@ -544,7 +566,9 @@ public abstract class CoreStrings {
     }
 
     public static String getGenerateAllDescription() {
-        return "generates secrets, tokens and preshared keys..";
+        return "generates the missing secrets, preshared keys and tokens, keeps existing ones (reissues tokens " +
+                "that are invalid or expire soon). " + GENERATE_ROTATE + ": new values for all of them, the old " +
+                "secrets kept as previous (still accepted). " + GENERATE_RETIRE + ": removes the previous secrets.";
     }
 
     public static String getCommandExecutorHelpDescription() {

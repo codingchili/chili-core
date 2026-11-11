@@ -150,8 +150,8 @@ public class AuthenticationGeneratorIT {
     }
 
     @Test
-    public void testGenerateAll() {
-        generator.all();
+    public void testGenerateAll(TestContext test) {
+        generator.all().onComplete(test.asyncAssertSuccess());
     }
 
     private JsonObject getService1() {

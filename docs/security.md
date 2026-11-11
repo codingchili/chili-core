@@ -145,6 +145,10 @@ The validator also supports nested objects and validating arrays of objects. Str
 ### TokenFactory
 The token factory is used to generate tokens, signed or using a keyed hash.
 
+When the secret is, or was, the value of a key in a loaded configuration file that has a previous value
+(`<key>Previous`, written by `generate --rotate`), the factory signs with the current value and verifies with the current
+or previous value, see [secret rotation](configuration.md#security).
+
 ```java
 TokenFactory factory = new TokenFactory(context, "secret".getBytes());
 

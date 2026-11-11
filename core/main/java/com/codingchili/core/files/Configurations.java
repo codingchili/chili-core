@@ -22,6 +22,7 @@ import com.codingchili.core.files.exception.*;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.Serializer;
+import com.codingchili.core.security.SecretRollover;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
@@ -151,6 +152,7 @@ public abstract class Configurations {
         if (ConfigurationFactory.exists(path)) {
             try {
                 JsonObject json = ConfigurationFactory.readObject(path);
+                SecretRollover.register(path, json);
                 config = Serializer.unpack(json, clazz);
             } catch (NoSuchResourceException e) {
                 logger.onFileLoadError(CoreStrings.getFileReadError(path));
@@ -183,6 +185,7 @@ public abstract class Configurations {
 
     public static void reset() {
         configs.clear();
+        SecretRollover.clear();
         init();
         saveAll();
     }

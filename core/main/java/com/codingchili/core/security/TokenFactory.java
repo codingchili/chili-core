@@ -7,6 +7,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.*;
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
 
 import com.codingchili.core.configuration.system.SecuritySettings;
@@ -27,6 +28,7 @@ public class TokenFactory {
     private static final String CRYPTO_TYPE = "type";
     private static final String ALIAS = "alias";
     private final byte[] secret;
+    private final boolean rollover;
     private final CoreContext core;
     private final ObjectMapper mapper = Serializer.json
             .rebuild()
@@ -34,13 +36,31 @@ public class TokenFactory {
             .build();
 
     /**
+     * Creates a token factory that follows the rotation of its secret: when the secret is, or was, the value of a
+     * secret key in a loaded configuration file, HMAC tokens are signed with the current value of that key and
+     * verified with its current or previous value, see {@link SecretRollover}.
+     *
      * @param core   the core context to run async operations on.
      * @param secret the secret to use to generate HMAC tokens, must not be null.
      */
     public TokenFactory(CoreContext core, byte[] secret) {
+        this(core, secret, true);
+    }
+
+    private TokenFactory(CoreContext core, byte[] secret, boolean rollover) {
         Objects.requireNonNull(secret, "Cannot create TokenFactory with 'null' secret.");
         this.secret = secret;
+        this.rollover = rollover;
         this.core = core;
+    }
+
+    /**
+     * @param core   the core context to run async operations on.
+     * @param secret the only secret that signs and verifies HMAC tokens, ignoring secret rollover.
+     * @return a token factory that uses exactly the given secret.
+     */
+    static TokenFactory strict(CoreContext core, byte[] secret) {
+        return new TokenFactory(core, secret, false);
     }
 
     /**
@@ -77,19 +97,20 @@ public class TokenFactory {
     private Future<Void> verifyHmac(Token token) {
         return core.blocking(() -> {
             try {
-                byte[] result = BASE64_ENCODER.encode(hmacKey(token));
-                if (ByteComparator.compare(result, token.getKey().getBytes())) {
-                    // success!
-                } else {
-                    throw new CoreRuntimeException("Failed to verify HMAC token.");
+                byte[] key = token.getKey().getBytes();
+                for (byte[] accepted : rollover ? SecretRollover.verifying(secret) : List.of(secret)) {
+                    if (ByteComparator.compare(BASE64_ENCODER.encode(hmacKey(token, accepted)), key)) {
+                        return; // success!
+                    }
                 }
             } catch (Exception e) {
                 throw new CoreRuntimeException(e);
             }
+            throw new CoreRuntimeException("Failed to verify HMAC token.");
         });
     }
 
-    private byte[] hmacKey(Token token) throws NoSuchAlgorithmException, InvalidKeyException {
+    private byte[] hmacKey(Token token, byte[] secret) throws NoSuchAlgorithmException, InvalidKeyException {
         String algorithm = Configurations.security().getHmacAlgorithm();
         Mac mac = Mac.getInstance(algorithm);
 
@@ -110,7 +131,8 @@ public class TokenFactory {
         return core.blocking(() -> {
             try {
                 token.addProperty(CRYPTO_TYPE, Configurations.security().getHmacAlgorithm());
-                token.setKey(BASE64_ENCODER.encodeToString(hmacKey(token)));
+                byte[] signing = rollover ? SecretRollover.signing(secret) : secret;
+                token.setKey(BASE64_ENCODER.encodeToString(hmacKey(token, signing)));
             } catch (InvalidKeyException | NoSuchAlgorithmException e) {
                 throw new CoreRuntimeException(ERROR_TOKEN_FACTORY);
             }
