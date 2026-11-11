@@ -5,9 +5,6 @@ import com.codingchili.core.protocol.Serializer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import tools.jackson.databind.SerializationFeature;
 import io.vertx.core.VertxOptions;
-import io.vertx.core.eventbus.EventBusOptions;
-
-import java.util.function.UnaryOperator;
 
 import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.configuration.CoreStrings;
@@ -38,9 +35,6 @@ public class SystemSettings implements Configurable {
     private long maxEventLoopExecuteTime = VertxOptions.DEFAULT_MAX_EVENT_LOOP_EXECUTE_TIME / (1000 * 1000);
     private int eventLoops = Math.max(1, cores / 2);
     private int workerPoolSize = Math.max(1, cores / 2);
-    private String eventBusHost = null;
-    private String eventBusPublicHost = null;
-    private int eventBusPort = 0;
 
     {
         System.setProperty("kryo.unsafe", String.valueOf(unsafe));
@@ -178,117 +172,8 @@ public class SystemSettings implements Configurable {
                     .setWorkerPoolSize(workerPoolSize)
                     .setBlockedThreadCheckInterval(blockedThreadChecker)
                     .setMaxEventLoopExecuteTime(maxEventLoopExecuteTime * 1000 * 1000);
-
-            applyEventBus(options.getEventBusOptions(), System::getenv);
         }
         return options;
-    }
-
-    /**
-     * Applies the clustered event bus settings to the given options. Each setting is read from its system
-     * property, then its environment variable, then this configuration; a setting that is not set anywhere is
-     * left unset, so that Vert.x takes it from the cluster manager: Hazelcast's member address (or its public
-     * address) for the hosts, and a random port. The event bus is only reachable from other nodes when clustered.
-     *
-     * @param eventBus    the event bus options to apply the settings to.
-     * @param environment looks up environment variables, {@link System#getenv(String)} outside of tests.
-     */
-    void applyEventBus(EventBusOptions eventBus, UnaryOperator<String> environment) {
-        String host = resolve(PROPERTY_EVENTBUS_HOST, ENV_EVENTBUS_HOST, eventBusHost, environment);
-        String publicHost = resolve(PROPERTY_EVENTBUS_PUBLIC_HOST, ENV_EVENTBUS_PUBLIC_HOST, eventBusPublicHost, environment);
-        String port = resolve(PROPERTY_EVENTBUS_PORT, ENV_EVENTBUS_PORT,
-                (eventBusPort > 0) ? Integer.toString(eventBusPort) : null, environment);
-
-        if (host != null) {
-            eventBus.setHost(host);
-        }
-        if (publicHost != null) {
-            eventBus.setClusterPublicHost(publicHost);
-        }
-        if (port != null) {
-            try {
-                eventBus.setPort(Integer.parseInt(port));
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException(
-                        String.format("event bus port '%s' (%s/%s) is not a number.",
-                                port, PROPERTY_EVENTBUS_PORT, ENV_EVENTBUS_PORT), e);
-            }
-        }
-    }
-
-    private static String resolve(String property, String env, String configured, UnaryOperator<String> environment) {
-        for (String value : new String[]{System.getProperty(property), environment.apply(env), configured}) {
-            if (value != null && !value.isBlank()) {
-                return value.trim();
-            }
-        }
-        return null;
-    }
-
-    /**
-     * @return the host that the clustered event bus binds to, null when not set.
-     */
-    public String getEventBusHost() {
-        return eventBusHost;
-    }
-
-    /**
-     * Sets the host (interface) that the clustered event bus binds to, for example 0.0.0.0 for every interface.
-     * Unset: Vert.x uses the cluster manager's (Hazelcast's) member address. When set and no public host is
-     * set, this host is also the address that other nodes use, so a wildcard address requires a public host.
-     * Overridden by the system property {@value CoreStrings#PROPERTY_EVENTBUS_HOST} and the environment variable
-     * {@value CoreStrings#ENV_EVENTBUS_HOST}.
-     *
-     * @param eventBusHost the bind host of the clustered event bus, null to let the cluster manager decide.
-     * @return fluent
-     */
-    public SystemSettings setEventBusHost(String eventBusHost) {
-        this.eventBusHost = eventBusHost;
-        return this;
-    }
-
-    /**
-     * @return the host that the clustered event bus advertises to other nodes, null when not set.
-     */
-    public String getEventBusPublicHost() {
-        return eventBusPublicHost;
-    }
-
-    /**
-     * Sets the address that other cluster nodes use to reach the event bus of this node, when it is not an address
-     * of this machine: NAT, containers on separate hosts. Unset: the bind host if set, otherwise the cluster
-     * manager's public address (Hazelcast's public-address or the system property hazelcast.local.publicAddress),
-     * otherwise the bind host that Vert.x chose. Overridden by the system property
-     * {@value CoreStrings#PROPERTY_EVENTBUS_PUBLIC_HOST} and the environment variable
-     * {@value CoreStrings#ENV_EVENTBUS_PUBLIC_HOST}.
-     *
-     * @param eventBusPublicHost the advertised host of the clustered event bus.
-     * @return fluent
-     */
-    public SystemSettings setEventBusPublicHost(String eventBusPublicHost) {
-        this.eventBusPublicHost = eventBusPublicHost;
-        return this;
-    }
-
-    /**
-     * @return the port of the clustered event bus, 0 for a random port.
-     */
-    public int getEventBusPort() {
-        return eventBusPort;
-    }
-
-    /**
-     * Sets a fixed port for the clustered event bus, so that it can be opened in a firewall or mapped by a
-     * container runtime. Other nodes connect to the same port. Default 0: a random port.
-     * Overridden by the system property {@value CoreStrings#PROPERTY_EVENTBUS_PORT} and the environment variable
-     * {@value CoreStrings#ENV_EVENTBUS_PORT}.
-     *
-     * @param eventBusPort the port of the clustered event bus, 0 for a random port.
-     * @return fluent
-     */
-    public SystemSettings setEventBusPort(int eventBusPort) {
-        this.eventBusPort = eventBusPort;
-        return this;
     }
 
     @JsonIgnore

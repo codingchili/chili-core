@@ -32,9 +32,11 @@ When a deploy operation has succeeded, a deployment ID is returned. If the servi
 or restarted later, this ID needs to be stored. 
 
 ##### Clustering
-A clustered context will attempt to join  the Hazelcast cluster configured in the cluster.xml on the classpath.
-
-It's also possible to programmatically configure the hazelcast cluster using the `VertxOptions` in the `Configurations.system()` settings.
+A clustered context joins a Hazelcast cluster. The Hazelcast config is loaded as vertx-hazelcast does (the system
+property `vertx.hazelcast.config`, else `cluster.xml` on the classpath: chili-core ships one), then the launcher's
+[cluster settings](configuration.md#cluster) are applied: the cluster name (default the application name), the join
+(multicast and cloud auto-detection, or TCP/IP to `members`) and the advertised `host`. On a LAN members join by
+starting with the same cluster name. Hazelcast logs through chili-core's logger, see [logging](logging.md).
 
 Example of a clustered context
 ```java
@@ -47,19 +49,18 @@ SystemContext.clustered().onSuccess(core -> {
 ##### Clustering across hosts
 Hazelcast finds the members; the event bus of Vert.x then connects to each member directly, at the host and port
 that the member advertises. Unless configured, Vert.x binds the event bus to Hazelcast's member address on a random
-port and advertises that address, or Hazelcast's public address when one is set (`<public-address>` in cluster.xml,
-or the system property `hazelcast.local.publicAddress`). That works when the members share a network. When they
-don't (containers on separate hosts, NAT), set the address that the other hosts can reach:
+port and advertises that address. That works when the members share a network (a LAN, one Docker network). When
+they don't (containers on separate hosts, NAT, no multicast), list the members and set the address that the other
+hosts can reach:
 
 ```console
-java -Dhazelcast.local.publicAddress=203.0.113.7 \
-     -Dchili.eventbus.host=0.0.0.0 -Dchili.eventbus.publicHost=203.0.113.7 -Dchili.eventbus.port=5702 ...
+java -Dchili.cluster.members=203.0.113.7,203.0.113.8 -Dchili.cluster.host=203.0.113.7 -Dchili.cluster.port=5801 ...
 ```
 
-and open Hazelcast's port (5701) and the event bus port between the hosts. A wildcard bind host needs a public host,
-otherwise the wildcard is advertised. The same settings are `eventBusHost`, `eventBusPublicHost` and `eventBusPort`
-in `conf/system/system.yaml`, or the environment variables `CHILI_EVENTBUS_HOST`, `CHILI_EVENTBUS_PUBLIC_HOST`,
-`CHILI_EVENTBUS_PORT`.
+`host` is Hazelcast's public address and the event bus's advertised host, and the event bus then listens on every
+interface (`bind` to change it). Open Hazelcast's port (5701) and the event bus port between the hosts. The same
+settings are `cluster.members`, `cluster.host`, `cluster.port` in `conf/system/launcher.yaml`, or the environment
+variables `CHILI_CLUSTER_MEMBERS`, `CHILI_CLUSTER_HOST`, `CHILI_CLUSTER_PORT`.
 
 ##### Deploying
 Deploying a service that may in turn issue more deployments.

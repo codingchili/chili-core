@@ -162,12 +162,18 @@ public abstract class AbstractLogger extends Handler implements Logger {
 
     @Override
     public void publish(LogRecord record) {
-        LogMessage message = event(LOG_VERTX, Level.valueOf(record.getLevel().getName()));
+        // JUL records of dependencies: Vert.x (vertx-default-jul-logging.properties) and anything else using JUL.
+        LogMessage message = event(DependencyLogs.event(record.getLoggerName(), LOG_VERTX),
+                DependencyLogs.level(record.getLevel()));
+
+        if (record.getLoggerName() != null) {
+            message.put(LOG_SOURCE, DependencyLogs.source(record.getLoggerName()));
+        }
 
         if (record.getThrown() != null) {
             message.put(LOG_STACKTRACE, throwableToString(record.getThrown()));
         }
-        message.send(record.getMessage());
+        message.send(DependencyLogs.compact(DependencyLogs.message(record)));
     }
 
     @Override

@@ -13,7 +13,8 @@ public enum Level implements LogLevel {
     SPECIAL(Ansi.Color.MAGENTA),
     RESERVED(Ansi.Color.BLUE),
     NONE(Ansi.Color.WHITE),
-    SEVERE(Ansi.Color.RED);
+    SEVERE(Ansi.Color.RED),
+    DEBUG(Ansi.Color.WHITE);
 
     private Ansi.Color color;
 

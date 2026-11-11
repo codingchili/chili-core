@@ -651,11 +651,35 @@ The event bus host was always `InetAddress.getLocalHost()`, which Vert.x also ad
 hosts that is a container IP, `127.0.1.1` or a random interface, so Hazelcast joined but event bus messages to the
 member were lost. The host is now left unset unless configured, and Vert.x 5 takes it from vertx-hazelcast: the bind
 host is `hazelcast.local.localAddress` or the Hazelcast member address, the advertised host is Hazelcast's public
-address (`<public-address>` or `hazelcast.local.publicAddress`) or the bind host. New optional `system.yaml` settings
-`eventBusHost` (bind), `eventBusPublicHost` (advertised) and `eventBusPort` (fixed port, default random), each
-overridable by the system properties `chili.eventbus.host|publicHost|port` and the environment variables
-`CHILI_EVENTBUS_HOST|PUBLIC_HOST|PORT`. Existing configs work unchanged. Tests: `SystemSettingsTest`, `HazelMapIT`,
-`ClusterListenerTest`.
+address (`<public-address>` or `hazelcast.local.publicAddress`) or the bind host. The bind host, advertised host
+and port are configurable: since the next section in the launcher's `cluster` object (`bind`, `host`, `port`), the
+`system.yaml` settings `eventBusHost|PublicHost|Port` of the first version were removed before a release.
+
+## Launcher `cluster` settings: LAN discovery, cluster name; Hazelcast logs through chili-core (1.4.9)
+
+- `launcher.yaml` has a `cluster` object (`ClusterSettings`): `enabled`, `name` (default: `application`),
+  `multicast` and `cloud` (both default true), `members`, `host`, `bind`, `port`. `SystemContext.clustered()` loads
+  the Hazelcast config as vertx-hazelcast does (`vertx.hazelcast.config`, else `cluster.xml`), applies the name, the
+  join and the public address, and builds Vert.x with that `HazelcastClusterManager` (Vert.x 5 builder); the event
+  bus gets `host`/`bind`/`port`. Join: `members` → TCP/IP only; else `cloud` → Hazelcast auto-detection, which uses a
+  detected cloud's discovery and falls back to multicast (Hazelcast ignores auto-detection while multicast is
+  enabled, so only one is turned on); `cloud` off → multicast only; both off → cluster.xml's join. So on a LAN members
+  join by starting with the same name, no member list.
+- Overrides: system property `chili.cluster.<key>`, then environment `CHILI_CLUSTER_<KEY>`; members by an override
+  also enable clustering. Replaces the `system.yaml` event bus settings and their `chili.eventbus.*` /
+  `CHILI_EVENTBUS_*` overrides (unreleased). `clustered: true` (top level) is still read as `cluster.enabled`
+  (deprecated `setClustered`); `isClustered()` applies the overrides.
+- Consumers: a `cluster.xml` with its own `<cluster-name>` or join is overridden by the defaults (the application
+  name, auto-detection): set `cluster.name`, or `multicast: false` and `cloud: false` to keep the XML's join.
+  chili-core's `cluster.xml` also merges split clusters after 15 s (`hazelcast.merge.*.delay.seconds`).
+- Logging: `HazelcastLoggerFactory` (set as `hazelcast.logging.class` before Hazelcast starts unless
+  `hazelcast.logging.class|type` is configured): event `hazelcast`, the class as source, Hazelcast's
+  `[host]:port [cluster] [version]` prefix removed, multi-line messages (the member list) on one line, levels from the
+  JUL logger of the category (INFO default, FINE shown as the new `Level.DEBUG`), the logo and hints about disabled
+  features treated as FINE. JUL records (`AbstractLogger.publish`, Vert.x) and SLF4J records (Netty) now name the
+  library as the event and the class as the source, are joined to one line, and JUL levels below INFO no longer
+  throw (`Level.valueOf("FINE")`). A failed clustered launch logs its cause.
+- Tests: `ClusterSettingsTest`, `HazelcastLoggerFactoryTest`, `ClusterManagerTest`; `HazelMapIT` (single node).
 
 ## `generate` keeps existing secrets; rotation without a restart (1.4.9)
 

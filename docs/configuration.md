@@ -144,7 +144,7 @@ The launcher configuration  allows for configuration of the following properties
 
 |property|description|
 |---|---|
-| clustered | indicates if we are starting up a Hazelcast cluster with discovery.|
+| cluster | clustering: an object, see [Cluster](#cluster). `clustered: true` (deprecated) is read as `cluster.enabled`.|
 | configurationDirectory| set the base directory where configuration is loaded from.|
 | wanOnDefaultsLoaded| warn when configuration defaults are loaded using `Configurations.get(..)`.|
 | application| used for logging, the name of the application.|
@@ -158,7 +158,8 @@ Sample configuration file
 ```yaml
 version: CORE-1.0.5-PR
 application: prototype
-clustered: false
+cluster:
+  enabled: false
 warnOnDefaultsLoaded: true
 blocks:
   services:
@@ -178,6 +179,42 @@ If the `Launcher` is used to deploy the application the hostname will determine 
 Note: it is recommended to not set the base directory to the same as the application root, as this will force the WatchService to potentially watch a great number of files. Defaults to storing configuration in `./conf`.
 
 Note: clustering is required for the HazelMap storage implementation.
+
+#### Cluster
+`cluster` in the launcher configuration: whether the launcher starts a clustered Vert.x, and how members find each
+other. Applied to the Hazelcast config (cluster.xml) and the event bus options when chili-core starts a clustered
+Vert.x (`SystemContext.clustered()`).
+
+|property|description|
+|---|---|
+| enabled | start a clustered Vert.x, default false. |
+| name | the Hazelcast cluster name: members only join a cluster with the same name. Default: the launcher's `application`. |
+| multicast | find members by multicast (a LAN), default true. |
+| cloud | Hazelcast's auto-detection: the discovery of a detected cloud (AWS, GCP, Azure, Kubernetes), default true. |
+| members | hosts to join by TCP/IP (`host` or `host:port`, an entry may hold `a,b,c`), for networks without multicast. Set: TCP/IP only. |
+| host | the address other members reach this one at (NAT, separate hosts): Hazelcast's public address and the event bus's advertised host. |
+| bind | the address the event bus listens on. Default: every interface when `host` is set, otherwise Hazelcast's member address. |
+| port | the event bus port, default 0: random. Fixed to open it in a firewall or publish it from a container. |
+
+Discovery: with `members`, TCP/IP to those hosts. Otherwise with `cloud` on, Hazelcast's auto-detection: a cloud's
+discovery when it detects one, else multicast (Hazelcast's fallback), so a LAN works with `multicast` either way.
+With `cloud` off and `multicast` on: multicast only, no cloud probes. Both off: the join of cluster.xml as written.
+Hazelcast does not use auto-detection while multicast is enabled in its config, so chili-core enables only one.
+
+Every property is overridden by a system property `chili.cluster.<property>`, then an environment variable
+`CHILI_CLUSTER_<PROPERTY>` (`chili.cluster.members` / `CHILI_CLUSTER_MEMBERS`, ...); blank values are ignored.
+`enabled` takes on/off, true/false, yes/no, 1/0. Members given by an override also enable clustering, unless
+`enabled` is overridden too.
+
+```yaml
+cluster:
+  enabled: true
+  name: my-game
+  # members: [10.0.0.1, 10.0.0.2]   # TCP/IP instead of discovery
+```
+
+Security: open-source Hazelcast has no join authentication, anything that reaches the members with the cluster
+name can join. Keep clustered nodes on a private network (LAN, VPN).
 
 ### System
 The system configuration contains properties used for the framework core functions.
@@ -203,12 +240,8 @@ The system configuration contains properties used for the framework core functio
 |clusterTimeout| time in ms until clustered messages are timed out. |
 |blockedThreadChecker| how often to check for blocked threads in milliseconds. |
 |maxEventLoopExecuteTime| the maximum number of milliseconds the event loop may block until a warning is generated, in milliseconds. |
-|eventBusHost| the host (interface) the clustered event bus binds to, e.g. `0.0.0.0`. Unset (default): the cluster manager's (Hazelcast's) member address. Overridden by the system property `chili.eventbus.host` or the environment variable `CHILI_EVENTBUS_HOST`. |
-|eventBusPublicHost| the address other cluster members use to reach this node's event bus (NAT, containers on separate hosts). Unset (default): the bind host if set, otherwise Hazelcast's public address. Overridden by `chili.eventbus.publicHost` or `CHILI_EVENTBUS_PUBLIC_HOST`. |
-|eventBusPort| a fixed port for the clustered event bus, to open in a firewall or map from a container. Default 0: a random port. Overridden by `chili.eventbus.port` or `CHILI_EVENTBUS_PORT`. |
 
-The event bus settings only matter when clustered; each is read from its system property, then its environment
-variable, then `system.yaml` (blank values are ignored). See [clustering across hosts](context.md#clustering-across-hosts).
+The event bus host and port of a cluster are in the launcher's [cluster](#cluster) settings.
 
 ### Security
 Controls internal security configuration.

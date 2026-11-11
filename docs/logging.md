@@ -40,6 +40,26 @@ public static void main(String[] args) {
 }
 ```
 
+##### Dependencies: Vert.x, Netty, Hazelcast
+
+The logging of the libraries goes to the console logger, one line per record, with the library as the event
+(`vertx`, `netty`, `hazelcast`) and the class as the source:
+
+```
+INFO	[18:48:56.534] hazelcast       [Node           ] Using Multicast discovery
+INFO	[18:48:58.882] hazelcast       [ClusterService ] Members {size:2, ver:2} [Member [172.18.0.2]:5701 - 6c1f.. this, Member [172.18.0.3]:5701 - 9a0e..]
+```
+
+- Vert.x logs through JUL: chili-core's `vertx-default-jul-logging.properties` makes the `ConsoleLogger` the JUL
+  handler (`com.hazelcast.level=INFO`), so other JUL records arrive too.
+- Netty and other SLF4J users: chili-core's SLF4J provider (`Slf4jLogger`), debug and trace off.
+- Hazelcast: `HazelcastLoggerFactory`, set as `hazelcast.logging.class` when chili-core starts a clustered Vert.x,
+  unless `hazelcast.logging.class` or `hazelcast.logging.type` is set (system property, or the type in the Hazelcast
+  config). Hazelcast's message prefix (`[host]:port [cluster] [version]`) is removed and multi-line messages such as
+  the member list are joined. A record is logged when the JUL logger of its category logs its level (INFO by
+  default: `com.hazelcast.level=FINE` in a JUL configuration shows FINE as DEBUG); a few chatty startup categories
+  and messages (the logo, hints about disabled features) are treated as FINE. SEVERE is logged as ERROR.
+
 ### Examples
 
 Logging an event is easy

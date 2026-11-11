@@ -1,6 +1,7 @@
 package com.codingchili.core.configuration.system;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.*;
 
@@ -18,7 +19,7 @@ public class LauncherSettings implements Configurable {
     private String author = CoreStrings.AUTHOR;
     private boolean warnOnDefaultsLoaded = false;
     private String configurationDirectory = CoreStrings.DIR_CONFIG;
-    private boolean clustered;
+    private ClusterSettings cluster = new ClusterSettings();
     private HashMap<String, List<String>> blocks = defaultBlockConfiguration();
     private HashMap<String, String> hosts = defaultHostConfiguration();
 
@@ -209,18 +210,40 @@ public class LauncherSettings implements Configurable {
     }
 
     /**
-     * @return true if clustering is enabled.
+     * @return the clustering settings: whether to cluster, the cluster name, discovery and the advertised address.
      */
+    public ClusterSettings getCluster() {
+        return cluster;
+    }
+
+    /**
+     * @param cluster the clustering settings.
+     * @return fluent
+     */
+    public LauncherSettings setCluster(ClusterSettings cluster) {
+        this.cluster = (cluster == null) ? new ClusterSettings() : cluster;
+        return this;
+    }
+
+    /**
+     * @return true if the launcher starts a clustered Vert.x: {@link ClusterSettings#isActive()}, which applies
+     * the system property and environment overrides.
+     */
+    @JsonIgnore
     public boolean isClustered() {
-        return clustered;
+        return cluster.isActive();
     }
 
     /**
      * @param clustering enables or disables clustering.
      * @return fluent
+     * @deprecated use {@code cluster.enabled}: {@link #getCluster()} and {@link ClusterSettings#setEnabled(boolean)}.
+     * Still read from configuration files as the top level key {@code clustered}.
      */
+    @Deprecated
+    @JsonProperty("clustered")
     public LauncherSettings setClustered(boolean clustering) {
-        this.clustered = clustering;
+        cluster.setEnabled(clustering);
         return this;
     }
 

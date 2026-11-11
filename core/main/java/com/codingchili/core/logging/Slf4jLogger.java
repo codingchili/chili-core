@@ -81,12 +81,12 @@ public class Slf4jLogger extends LegacyAbstractLogger {
     @Override
     protected void handleNormalizedLoggingCall(org.slf4j.event.Level level, Marker marker, String pattern,
                                                Object[] arguments, Throwable throwable) {
-        LogMessage message = logger.event(LOG_SLF4J, toLevel(level));
+        LogMessage message = logger.event(DependencyLogs.event(name, LOG_SLF4J), toLevel(level));
 
         if (throwable != null) {
             message.put(LOG_STACKTRACE, throwableToString(throwable));
         }
-        message.send(MessageFormatter.basicArrayFormat(pattern, arguments));
+        message.send(DependencyLogs.compact(MessageFormatter.basicArrayFormat(pattern, arguments)));
     }
 
     private static Level toLevel(org.slf4j.event.Level level) {

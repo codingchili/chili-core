@@ -44,13 +44,23 @@ public abstract class CoreStrings {
     public static final String PATH_STORAGE = "conf/system/storage.yaml";
     public static final String PATH_VALIDATOR = "conf/system/validator.json";
 
-    // overrides of the clustered event bus settings in system.yaml: a system property, then an environment variable.
-    public static final String PROPERTY_EVENTBUS_HOST = "chili.eventbus.host";
-    public static final String PROPERTY_EVENTBUS_PUBLIC_HOST = "chili.eventbus.publicHost";
-    public static final String PROPERTY_EVENTBUS_PORT = "chili.eventbus.port";
-    public static final String ENV_EVENTBUS_HOST = "CHILI_EVENTBUS_HOST";
-    public static final String ENV_EVENTBUS_PUBLIC_HOST = "CHILI_EVENTBUS_PUBLIC_HOST";
-    public static final String ENV_EVENTBUS_PORT = "CHILI_EVENTBUS_PORT";
+    // overrides of the cluster settings in launcher.yaml (ClusterSettings): a system property, then an environment variable.
+    public static final String PROPERTY_CLUSTER_ENABLED = "chili.cluster.enabled";
+    public static final String PROPERTY_CLUSTER_NAME = "chili.cluster.name";
+    public static final String PROPERTY_CLUSTER_MULTICAST = "chili.cluster.multicast";
+    public static final String PROPERTY_CLUSTER_CLOUD = "chili.cluster.cloud";
+    public static final String PROPERTY_CLUSTER_MEMBERS = "chili.cluster.members";
+    public static final String PROPERTY_CLUSTER_HOST = "chili.cluster.host";
+    public static final String PROPERTY_CLUSTER_BIND = "chili.cluster.bind";
+    public static final String PROPERTY_CLUSTER_PORT = "chili.cluster.port";
+    public static final String ENV_CLUSTER_ENABLED = "CHILI_CLUSTER_ENABLED";
+    public static final String ENV_CLUSTER_NAME = "CHILI_CLUSTER_NAME";
+    public static final String ENV_CLUSTER_MULTICAST = "CHILI_CLUSTER_MULTICAST";
+    public static final String ENV_CLUSTER_CLOUD = "CHILI_CLUSTER_CLOUD";
+    public static final String ENV_CLUSTER_MEMBERS = "CHILI_CLUSTER_MEMBERS";
+    public static final String ENV_CLUSTER_HOST = "CHILI_CLUSTER_HOST";
+    public static final String ENV_CLUSTER_BIND = "CHILI_CLUSTER_BIND";
+    public static final String ENV_CLUSTER_PORT = "CHILI_CLUSTER_PORT";
 
     // secret rotation: the previous value of a secret key is kept under the key with this suffix.
     public static final String SECRET_PREVIOUS_SUFFIX = "Previous";

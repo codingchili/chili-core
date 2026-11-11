@@ -113,6 +113,7 @@ public class Launcher implements CoreService {
                 SystemContext.clustered()
                         .onSuccess(clustered -> start(clustered, nodes))
                         .onFailure(e -> {
+                            logger.onError(e);
                             logger.log(ERROR_LAUNCHER_STARTUP, Level.ERROR);
                             exit();
                         });

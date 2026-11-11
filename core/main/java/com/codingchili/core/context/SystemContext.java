@@ -4,12 +4,16 @@ import com.codingchili.core.configuration.system.SystemSettings;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.listener.*;
 import com.codingchili.core.listener.transport.ClusterListener;
+import com.codingchili.core.logging.HazelcastLoggerFactory;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.logging.RemoteLogger;
 import com.codingchili.core.metrics.MetricCollector;
 import com.codingchili.core.metrics.MetricSettings;
 import io.vertx.core.*;
 import io.vertx.core.eventbus.EventBus;
+import io.vertx.spi.cluster.hazelcast.ConfigUtil;
+import io.vertx.spi.cluster.hazelcast.HazelcastClusterManager;
+import com.hazelcast.config.Config;
 
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -66,13 +70,42 @@ public class SystemContext implements CoreContext {
     }
 
     /**
-     * Creates a clustered instance of a context.
+     * Creates a clustered instance of a context. The Hazelcast config is loaded as vertx-hazelcast does (the system
+     * property vertx.hazelcast.config, cluster.xml on the classpath) and the cluster settings of the launcher are
+     * applied to it: the name, the join and the advertised address (launcher.yaml, cluster). Hazelcast logs
+     * through chili-core's logger unless its logging is configured ({@link HazelcastLoggerFactory}).
      *
      * @return future completed with the context when the cluster has been joined.
      */
     public static Future<CoreContext> clustered() {
-        return Vertx.clusteredVertx(Configurations.system().getOptions())
-                .map(SystemContext::new);
+        try {
+            VertxOptions options = new VertxOptions(Configurations.system().getOptions());
+            Configurations.launcher().getCluster().apply(options.getEventBusOptions());
+
+            return Vertx.builder()
+                    .with(options)
+                    .withClusterManager(clusterManager())
+                    .buildClustered()
+                    .map(SystemContext::new);
+        } catch (Throwable e) {
+            return Future.failedFuture(e);
+        }
+    }
+
+    /**
+     * @return a Hazelcast cluster manager with the config of vertx-hazelcast (the system property
+     * vertx.hazelcast.config, else cluster.xml on the classpath) and the cluster settings of the launcher applied.
+     */
+    static HazelcastClusterManager clusterManager() {
+        // set before Hazelcast logs anything; undone if the config picks a logging type.
+        boolean installed = HazelcastLoggerFactory.install(null);
+        Config config = ConfigUtil.loadConfig();
+
+        if (installed && config.getProperty(HazelcastLoggerFactory.PROPERTY_LOGGING_TYPE) != null) {
+            System.clearProperty(HazelcastLoggerFactory.PROPERTY_LOGGING_CLASS);
+        }
+        Configurations.launcher().getCluster().apply(config, Configurations.launcher().getApplication());
+        return new HazelcastClusterManager(config);
     }
 
     @Override
