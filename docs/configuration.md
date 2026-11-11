@@ -220,7 +220,8 @@ Controls internal security configuration.
 | argon | configuration for hashing, 'iterations', 'memory', 'parallelism', 'hashLength', saltLength.|
 |hmacAlgorithm|algorithm used to sign tokens.|
 |secretBytes|the length of generated pre-shared secrets from `SecretFactory`.|
-|tokenttl|how long tokens generated from the `TokenFactory` are valid.|
+|tokenttl|seconds that a `Token` without an expiry is valid (the tokens that services issue at runtime, such as user sessions, default 7 days); also the retire window of a secret rotation.|
+|serviceTokenttl|seconds that the tokens issued by `generate` (the `tokens` of the dependencies) are valid, default `tokenttl`; `generate` reissues them in their last quarter. `0`: they never expire (`Token.NEVER`, 9999-12-31) and are revoked by `--rotate`; `generate` reissues them only when missing or no longer verifying (or once, when issued with a lifetime).|
 
 Sample configuration
 ```yaml
@@ -252,6 +253,7 @@ hmacAlgorithm: "HmacSHA512"
 signatureAlgorithm: "SHA256withRSA"
 secretBytes: 64
 tokenttl: 604800
+serviceTokenttl: 0
 ```
 
 Dependencies are used to instantiate configuration in multiple separate files.
@@ -265,16 +267,29 @@ The launcher command `generate` (and `generate-secrets`, `generate-preshared`, `
 
 |command|what it does|
 |---|---|
-|`generate`| fills in what is missing and keeps the rest: existing secrets and preshared keys are kept; a preshared key that some files lack gets the value of the files that have it (when files disagree the most common value wins, a warning names the replaced files); a token is kept while it verifies with the current secret of its issuer, belongs to the node and has more than a quarter of `tokenttl` left, otherwise it is reissued. Safe to run on every deploy: a new service or realm config gets its keys, nobody else is affected. |
-|`generate --rotate`| new values for every secret, preshared key and token. The old value of each secret and preshared key is kept next to it as `<key>Previous` (`clientSecret` and `clientSecretPrevious`); a running rotation replaces an earlier previous value. |
-|`generate --retire`| removes the `<key>Previous` values, nothing else. |
+|`generate`| fills in what is missing and keeps the rest: existing secrets and preshared keys are kept; a preshared key that some files lack gets the value of the files that have it (when files disagree the most common value wins, a warning names the replaced files); a token is kept while it verifies with the current secret of its issuer, belongs to the node and has more than a quarter of `serviceTokenttl` left (and not more than `serviceTokenttl`), otherwise it is reissued for `serviceTokenttl` (with `serviceTokenttl: 0` tokens never expire and are not reissued for age). Retires the previous values of the last rotate once its retire window has passed. Safe to run on every deploy: a new service or realm config gets its keys, nobody else is affected. |
+|`generate --rotate`| new values for every secret, preshared key and token. The old value of each secret and preshared key is kept next to it as `<key>Previous` (`clientSecret` and `clientSecretPrevious`), and the time of the rotate as `secretsRotated` (epoch seconds) in each file. Refused while the previous rotate is in its retire window, unless `--force` (which replaces the earlier previous values: tokens signed with them are rejected). |
+|`generate --retire`| removes the `<key>Previous` values and `secretsRotated`, nothing else. Refused inside the retire window, unless `--force`. |
+|`generate --revoke`| emergency rotation for a leaked key: new values for every secret, preshared key and token, **no** `<key>Previous` kept (existing ones and `secretsRotated` are removed too), not bound to the retire window. Every token signed before is rejected once the services have the new files: restart them (a running factory that was created with a secret that never had a previous value keeps it until then). Everyone logs in again. |
 
 A `TokenFactory` follows the rotation of its secret (`SecretRollover`): configuration files register their
 `<key>`/`<key>Previous` pairs when they are loaded or reloaded (hot reload), and a factory created with the current or
 an earlier value of a key signs with the current value and accepts tokens signed with the current or the previous one.
 A node with hot reload enabled therefore picks up rotated secrets without a restart, even where it keeps a factory
-from its startup, and tokens signed before the rotation stay valid until `--retire` (or the next rotation) or their
-expiry (`tokenttl`): retiring earlier than `tokenttl` after a rotation rejects the tokens issued before it.
+from its startup, and tokens signed before the rotation stay valid until their expiry.
+
+**Retire window.** A token signed with a previous secret lives at most `tokenttl` (the lifetime of the tokens that the
+services issue; tokens issued by `generate` are reissued by the rotate itself). So the previous values are kept for
+one `tokenttl` after `secretsRotated`: `--retire` and another `--rotate` refuse before then (exit status 1, with the
+time the window ends), and `generate` retires them once it has passed. Previous values without `secretsRotated`
+(rotated by an older version) get the time of the next `generate`, which starts their window. With services that renew
+their users' tokens before half of `tokenttl` has passed (sliding sessions), nobody who is active is logged out by
+a rotation or the retire that follows it.
+
+Each run reads every configuration file once, computes everything in memory and writes each changed file once at the
+end; a file is replaced atomically (written to a hidden temporary file next to it, then moved over it), so a hot
+reload never reads half a file. A failure writes nothing, closes the generator's context and makes the launcher exit
+with status 1.
 
 ### Storage
 Contains settings for storage implementations, these can be any of the included or a custom implementation.

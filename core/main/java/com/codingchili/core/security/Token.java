@@ -17,6 +17,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * Used to authenticate requests between services and with clients.
  */
 public class Token implements Serializable {
+    /**
+     * The expiry of a token that never expires: 9999-12-31T23:59:59Z in epoch seconds (the largest that every
+     * client, Java's Instant and a JavaScript Date included, handles).
+     */
+    public static final long NEVER = 253402300799L;
     private Map<String, Object> properties = new HashMap<>();
     private String domain = UUID.randomUUID().toString();
     private String key = "";
@@ -81,7 +86,8 @@ public class Token implements Serializable {
      * @return fluent.
      */
     public Token expires(long value, TimeUnit unit) {
-        this.expiry = System.currentTimeMillis() + (unit.toMillis(value));
+        // the expiry is in epoch seconds (was set in milliseconds: a token never expired).
+        this.expiry = Instant.now().getEpochSecond() + unit.toSeconds(value);
         return this;
     }
 

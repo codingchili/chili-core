@@ -32,12 +32,13 @@ public class Launcher implements CoreService {
 
 
     /**
-     * Starts the launcher with the given arguments.
+     * Starts the launcher with the given arguments. When the command fails the JVM exits with the status 1.
      *
      * @param args specifies which commands the launcher will execute.
      */
     public static void main(String[] args) {
-        new Launcher(new LaunchContext(args));
+        // a failed command (after the launcher logged it and closed) exits with a non-zero status for scripts.
+        new Launcher(new LaunchContext(args)).status.onFailure(e -> System.exit(1));
     }
 
     /**

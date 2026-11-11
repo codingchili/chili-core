@@ -22,6 +22,7 @@ import com.codingchili.core.security.exception.SecurityMissingDependencyExceptio
 import com.codingchili.core.testing.ContextMock;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
+import static io.vertx.core.json.impl.JsonUtil.BASE64_DECODER;
 
 /**
  * Tests for the generation of secrets and tokens in configuration files.
@@ -90,50 +91,34 @@ public class AuthenticationGeneratorIT {
 
     @Test
     public void testGenerateSecrets(TestContext test) throws IOException {
-        generator.secrets();
-
-        test.assertNotNull(getService1().getString(LOCAL));
-        test.assertNotNull(getService2().getString(LOCAL));
-        test.assertNotEquals(getService1().getString(LOCAL), getService2().getString(LOCAL));
-        test.assertNotNull(getService1().getString(SERVICE_1_SECRET));
-        test.assertNull(getService2().getString(SERVICE_1_SECRET));
+        generator.secrets().onComplete(test.asyncAssertSuccess(done -> {
+            test.assertNotNull(getService1().getString(LOCAL));
+            test.assertNotNull(getService2().getString(LOCAL));
+            test.assertNotEquals(getService1().getString(LOCAL), getService2().getString(LOCAL));
+            test.assertNotNull(getService1().getString(SERVICE_1_SECRET));
+            test.assertNull(getService2().getString(SERVICE_1_SECRET));
+        }));
     }
 
     @Test
     public void testGeneratePreshared(TestContext test) {
-        generator.preshare();
-        test.assertEquals(getService1().getString(GLOBAL), getService2().getString(GLOBAL));
+        generator.preshare().onComplete(test.asyncAssertSuccess(done ->
+                test.assertEquals(getService1().getString(GLOBAL), getService2().getString(GLOBAL))));
     }
 
     @Test
-    @Ignore("file/test based race conditions.")
     public void testGenerateTokens(TestContext test) {
-        Async async = test.async();
-        generator.all().onComplete(done -> {
-            test.assertTrue(done.succeeded());
-
-            byte[] service1secret = getService1().getBinary(SERVICE_1_SECRET);
-            byte[] service2secret = getService2().getBinary(LOCAL);
-
-            TokenFactory service1factory = new TokenFactory(context, service1secret);
-            TokenFactory service2factory = new TokenFactory(context, service2secret);
+        generator.all().compose(done -> {
+            byte[] service1secret = BASE64_DECODER.decode(getService1().getString(SERVICE_1_SECRET));
+            byte[] service2secret = BASE64_DECODER.decode(getService2().getString(LOCAL));
 
             Token service1token = Serializer.unpack(getService1().getJsonObject(SERVICE_1_TOKEN), Token.class);
             Token service2token = Serializer.unpack(getService2().getJsonObject(SERVICE_2_TOKEN), Token.class);
 
-            service1factory.verify(service2token).onComplete(verify -> {
-                if (!verify.succeeded()) {
-                    throw new CoreRuntimeException(verify.cause());
-                }
-
-                service2factory.verify(service1token).onComplete(verify2 -> {
-                    if (!verify.succeeded()) {
-                        throw new CoreRuntimeException(verify.cause());
-                    }
-                    async.complete();
-                });
-            });
-        });
+            // service1token is signed with the local secret of service2, service2token with service1secret.
+            return new TokenFactory(context, service1secret).verify(service2token)
+                    .compose(verified -> new TokenFactory(context, service2secret).verify(service1token));
+        }).onComplete(test.asyncAssertSuccess());
     }
 
     @Test
@@ -142,11 +127,8 @@ public class AuthenticationGeneratorIT {
         String missingName = "mising-target-secret";
         SecuritySettings settings = Configurations.get(PATH_SECURITY, SecuritySettings.class);
         settings.getDependencies().get(SERVICE_1).addToken(tokenName, SERVICE_2, missingName);
-        try {
-            generator.all();
-            test.fail("Generation did not fail when missing a secret dependency.");
-        } catch (SecurityMissingDependencyException ignored) {
-        }
+        generator.all().onComplete(test.asyncAssertFailure(e ->
+                test.assertTrue(e instanceof SecurityMissingDependencyException, String.valueOf(e))));
     }
 
     @Test

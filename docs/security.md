@@ -154,7 +154,7 @@ TokenFactory factory = new TokenFactory(context, "secret".getBytes());
 
 Token token = new Token()
     .setDomain("username")
-    .setExpiry(System.currentTimeMillis() + 5000) // in 5 seconds.
+    .expires(5, TimeUnit.SECONDS) // the expiry is in epoch seconds.
     .addProperty("admin", false);
 
 // async operation - no crypto stuff on the event loop.

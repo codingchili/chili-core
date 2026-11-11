@@ -49,20 +49,32 @@ public class LauncherCommandExecutor extends DefaultCommandExecutor {
         add(this::help, HELP, getCommandExecutorHelpDescription());
     }
 
-    // generate [--rotate|--retire]: keeps existing values unless rotating, see AuthenticationGenerator.Mode.
+    // generate [--rotate|--retire|--revoke] [--force]: keeps existing values unless rotating, see AuthenticationGenerator.
+    // completes when the files are written and the context of the generator is closed: a failure (or a refusal)
+    // fails the command, which makes the launcher exit with a non-zero status.
     private void generator(Function<AuthenticationGenerator, Future<Void>> function, String name, String description) {
-        super.add((executor) -> {
+        super.addAsync((executor) -> {
             var mode = AuthenticationGenerator.Mode.FILL;
-            if (executor.hasProperty(GENERATE_ROTATE)) {
+            if (executor.hasProperty(GENERATE_REVOKE)) {
+                mode = AuthenticationGenerator.Mode.REVOKE;
+            } else if (executor.hasProperty(GENERATE_ROTATE)) {
                 mode = AuthenticationGenerator.Mode.ROTATE;
             } else if (executor.hasProperty(GENERATE_RETIRE)) {
                 mode = AuthenticationGenerator.Mode.RETIRE;
             }
             CoreContext core = new SystemContext();
-            function.apply(new AuthenticationGenerator(core).setMode(mode)).onComplete(done -> {
-                core.close();
-            });
-            return LauncherCommandResult.SHUTDOWN;
+            Future<Void> generated;
+            try {
+                generated = function.apply(new AuthenticationGenerator(core)
+                        .setMode(mode)
+                        .setForce(executor.hasProperty(GENERATE_FORCE)));
+            } catch (Throwable e) {
+                generated = Future.failedFuture(e);
+            }
+            return generated.transform(done -> core.close()
+                    .transform(closed -> done.succeeded() ?
+                            Future.succeededFuture(LauncherCommandResult.SHUTDOWN) :
+                            Future.<CommandResult>failedFuture(done.cause())));
         }, name, description);
     }
 

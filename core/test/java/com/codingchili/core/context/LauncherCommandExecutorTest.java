@@ -10,11 +10,14 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 
+import com.codingchili.core.configuration.system.AuthenticationDependency;
 import com.codingchili.core.configuration.system.LauncherSettings;
+import com.codingchili.core.files.ConfigurationFactory;
+import com.codingchili.core.security.exception.SecurityMissingDependencyException;
 import com.codingchili.core.files.Configurations;
 import com.codingchili.core.testing.MockLogListener;
 
-import static com.codingchili.core.configuration.CoreStrings.HELP;
+import static com.codingchili.core.configuration.CoreStrings.*;
 import static com.codingchili.core.context.LauncherCommandResult.SHUTDOWN;
 
 /**
@@ -68,6 +71,27 @@ public class LauncherCommandExecutorTest {
                 .onComplete(test.asyncAssertFailure(e -> {
                     test.assertTrue(e.getMessage().contains(HELP));
                     test.assertTrue(e.getMessage().contains(MISSING_COMMAND));
+                }));
+    }
+
+    @Test
+    public void testFailedGenerateFailsTheCommandAndWritesNothing(TestContext test) {
+        // a token whose issuer has no such secret: the generator fails before it writes anything.
+        var security = Configurations.security();
+        String dependency = "system/launcher";
+        String file = PATH_LAUNCHER;
+        String before = ConfigurationFactory.exists(file) ? ConfigurationFactory.readObject(file).encode() : null;
+        security.getDependencies().put(dependency,
+                new AuthenticationDependency().addToken("token", "missing-service", "missing-secret"));
+
+        new LauncherCommandExecutor(new LaunchContextMock((line) -> {}).logger())
+                .execute(GENERATE)
+                .onComplete(test.asyncAssertFailure(e -> {
+                    security.getDependencies().remove(dependency);
+                    test.assertTrue(e instanceof SecurityMissingDependencyException, String.valueOf(e));
+                    if (before != null) {
+                        test.assertEquals(before, ConfigurationFactory.readObject(file).encode());
+                    }
                 }));
     }
 

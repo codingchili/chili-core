@@ -4,8 +4,12 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
@@ -152,7 +156,10 @@ public class ConfigurationFactory {
     }
 
     /**
-     * Writes a json-object to the given path.
+     * Writes a json-object to the given path. The file is replaced at once: the object is written to a temporary
+     * file next to it (a hidden file, ignored by {@link #readDirectory(String)}) which is then moved over the target,
+     * so that a reader, such as a configuration reload, never reads half a file. Where the target cannot be
+     * replaced by a move (a file mounted on its own), it is written in place.
      *
      * @param json   the json-object to write.
      * @param target the path to where the json-object is written to.
@@ -163,9 +170,38 @@ public class ConfigurationFactory {
         boolean pathExists = path.getParent().toFile().exists() || path.getParent().toFile().mkdirs();
 
         if (pathExists) {
-            get(target).writeObject(json, path);
+            FileStore store = get(target);
+            Path temporary = path.resolveSibling("." + path.getFileName() + "." + UUID.randomUUID() + ".tmp");
+            try {
+                store.writeObject(json, temporary);
+                keepPermissions(path, temporary);
+                replace(temporary, path);
+            } catch (IOException | CoreRuntimeException e) {
+                store.writeObject(json, path);
+            } finally {
+                temporary.toFile().delete();
+            }
         } else {
             throw new CoreRuntimeException(CoreStrings.getErrorCreateDirectory(target));
+        }
+    }
+
+    // the replaced file keeps the permissions of the file it replaces (configuration files may hold secrets).
+    private static void keepPermissions(Path existing, Path replacement) {
+        try {
+            if (Files.exists(existing)) {
+                Files.setPosixFilePermissions(replacement, Files.getPosixFilePermissions(existing));
+            }
+        } catch (UnsupportedOperationException | IOException ignored) {
+            // not a posix file system: the default permissions.
+        }
+    }
+
+    private static void replace(Path source, Path target) throws IOException {
+        try {
+            Files.move(source, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+        } catch (AtomicMoveNotSupportedException e) {
+            Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
         }
     }
 

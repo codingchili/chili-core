@@ -672,6 +672,33 @@ on the first run and `undefined.node` after, and the committed fixture `Authenti
 corrupt (made `testGenerateWithBrokenReferenceFails` fail); `testGenerateAll` did not wait for the generator.
 Tests: `SecretRotationTest` (7), `AuthenticationGeneratorIT`, `TokenFactoryTest`.
 
+## Token lifetimes, retire window, generator writes once (1.4.9)
+
+- **`serviceTokenttl`** (security, seconds, default `tokenttl`): the lifetime of the tokens `generate` issues; they
+  are reissued in their last quarter, and also when issued for longer than configured (a lowered lifetime applies on
+  the next run). `0`: service tokens never expire (`Token.NEVER`, 9999-12-31T23:59:59Z) and are revoked by
+  `--rotate`; `generate` reissues them only when missing or no longer verifying, and once when issued with a
+  lifetime. `tokenttl` stays the lifetime of tokens without an expiry (the ones services issue at runtime).
+- **Retire window:** `--rotate` writes `secretsRotated` (epoch seconds) next to the `<key>Previous` values. `--retire`
+  and a second `--rotate` refuse until one `tokenttl` has passed since then (`SecretRotationRefusedException`, exit
+  status 1), unless `--force`; plain `generate` retires the previous values by itself once it has passed, and gives
+  previous values without a time (an older rotate) the current time.
+- **`generate --revoke`** (`Mode.REVOKE`): the emergency rotation when a key leaked: new values for everything and
+  no `<key>Previous` (existing previous values and `secretsRotated` are dropped), not bound to the window, so every
+  earlier token stops verifying once the services have the new files (restart them to be sure).
+- **Generator race:** `generate` saved files from async token callbacks while it read other files (as token issuers),
+  and loaded every file into `Configurations`, so its own file watcher reloaded them: a file could be read half
+  written (`ConfigurationParseException ... end-of-input`), and the failure was thrown past the command, which never
+  closed its Vert.x (the JVM did not exit). Now every file is read once, all values are computed in memory, each
+  changed file is written once at the end, and `ConfigurationFactory.writeObject` replaces files atomically (hidden
+  temporary file + move, keeps the permissions; falls back to an in-place write where a move is not possible). The
+  generate commands are async: a failure fails the command after closing the generator's context, and
+  `Launcher.main` exits with status 1 when a command fails.
+- `Token.expires(value, unit)` set the expiry in milliseconds (epoch seconds expected: the token never expired).
+- Tests: `SecretRotationTest` (+13: window refused/forced/allowed, unknown time, rotate in the window, auto-retire,
+  service token lifetime, service tokens that never expire, revoke, nothing written on failure, a reader never sees half a file: fails with in-place writes),
+  `AuthenticationGeneratorIT` (async, `testGenerateTokens` no longer ignored), `LauncherCommandExecutorTest`.
+
 ## Verification status
 
 Latest runs (handler → future migration and QUIC listener), all passing:

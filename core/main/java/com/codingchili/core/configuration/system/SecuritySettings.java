@@ -37,6 +37,7 @@ public class SecuritySettings implements Configurable {
     private String signatureAlgorithm = "SHA256withRSA";
     private int secretBytes = 64;
     private int tokenttl = 3600 * 24 * 7;
+    private Integer serviceTokenttl = null;
 
     static {
         StartupListener.subscribe(core -> logger = core.logger(SecuritySettings.class));
@@ -230,18 +231,41 @@ public class SecuritySettings implements Configurable {
     }
 
     /**
-     * @return the time to live for generated tokens in seconds.
+     * @return the time to live in seconds of the tokens that a {@link com.codingchili.core.security.Token} gets
+     * when no expiry is set: the tokens that services issue at runtime, such as the sessions of users. It is also
+     * the retire window of a secret rotation: the previous secrets are accepted for this long after a rotate.
      */
     public int getTokenttl() {
         return tokenttl;
     }
 
     /**
-     * @param tokenttl the time to live for generated tokens in seconds.
+     * @param tokenttl the time to live in seconds of tokens without an expiry, see {@link #getTokenttl()}.
      * @return fluent.
      */
     public SecuritySettings setTokenttl(int tokenttl) {
         this.tokenttl = tokenttl;
+        return this;
+    }
+
+    /**
+     * @return the time to live in seconds of the service tokens that the
+     * {@link com.codingchili.core.security.AuthenticationGenerator} issues (the tokens of the dependencies),
+     * {@link #getTokenttl()} when not set; 0 (or less): they never expire
+     * ({@link com.codingchili.core.security.Token#NEVER}) and are revoked by rotating the secrets. With a lifetime the
+     * generator reissues a token in its last quarter, without one only when it is missing or no longer verifies.
+     */
+    public int getServiceTokenttl() {
+        return (serviceTokenttl == null) ? tokenttl : serviceTokenttl;
+    }
+
+    /**
+     * @param serviceTokenttl the time to live of generated service tokens in seconds, null for {@link #getTokenttl()},
+     *                        0 for tokens that never expire.
+     * @return fluent.
+     */
+    public SecuritySettings setServiceTokenttl(Integer serviceTokenttl) {
+        this.serviceTokenttl = serviceTokenttl;
         return this;
     }
 }
