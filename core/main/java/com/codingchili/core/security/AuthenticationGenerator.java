@@ -4,6 +4,7 @@ import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 
 import java.nio.file.Paths;
+import java.security.KeyPair;
 import java.time.Instant;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -20,7 +21,6 @@ import com.codingchili.core.files.exception.NoSuchResourceException;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.Serializer;
-import com.codingchili.core.security.exception.SecretRotationRefusedException;
 import com.codingchili.core.security.exception.SecurityMissingDependencyException;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
@@ -31,20 +31,16 @@ import static io.vertx.core.json.impl.JsonUtil.BASE64_DECODER;
 /**
  * Generates service security configuration based on system security mappings.
  * <p>
- * By default ({@link Mode#FILL}) existing secrets and preshared keys are kept and only missing ones are generated;
- * tokens are kept while they verify with the current secret of their issuer and are not close to expiry (they are
- * issued for {@link SecuritySettings#getServiceTokenttl()} and reissued in their last quarter; with a service token
- * lifetime of 0 they never expire and are reissued only when missing or no longer valid).
- * {@link Mode#ROTATE} generates new values for everything and keeps the old secrets and preshared keys under the
- * key with the suffix {@value CoreStrings#SECRET_PREVIOUS_SUFFIX}, which token factories still accept (see
- * {@link SecretRollover}); {@link Mode#RETIRE} removes those previous values. {@link Mode#REVOKE} is the emergency
- * rotation for a leaked key: new values for everything and no previous values at all, so tokens signed with the old
- * secrets stop verifying as soon as the services have the new files (restart them to be sure).
+ * By default ({@link Mode#FILL}) existing secrets, preshared keys and key pairs are kept and only missing ones are
+ * generated; tokens are kept while they verify with the current secret of their issuer and are not close to expiry
+ * (they are issued for {@link SecuritySettings#getServiceTokenttl()} and reissued in their last quarter; with a
+ * service token lifetime of 0 they never expire and are reissued only when missing or no longer valid).
+ * {@link Mode#ROTATE} generates new values for everything and keeps nothing old: every token issued before is
+ * rejected once the services have the new files (restart them).
  * <p>
- * The retire window: a rotate writes its time ({@value CoreStrings#SECRETS_ROTATED}, epoch seconds) next to the
- * previous values. Until {@link SecuritySettings#getTokenttl()} has passed since then, tokens signed with the
- * previous secrets may still be in use: {@link Mode#RETIRE} and another {@link Mode#ROTATE} refuse unless forced,
- * and once it has passed {@link Mode#FILL} retires the previous values by itself.
+ * Key pairs ({@code keypairs} and {@code publickeys} of a dependency): the files that sign get the private and the
+ * public key ({@code <name>PrivateKey}, {@code <name>PublicKey}), the files that verify only the public key, see
+ * {@link TokenFactory#signer} and {@link TokenFactory#verifier}.
  * <p>
  * Every configuration file is read once, all values are computed in memory and each changed file is written once
  * at the end (atomically, see {@link ConfigurationFactory#writeObject(JsonObject, String)}): a file is never read
@@ -57,31 +53,19 @@ public class AuthenticationGenerator {
     private final CoreContext core;
     private final String directory;
     private Mode mode = Mode.FILL;
-    private boolean force = false;
 
     /**
-     * What the generator does with the secrets, preshared keys and tokens that already exist.
+     * What the generator does with the secrets, preshared keys, key pairs and tokens that already exist.
      */
     public enum Mode {
         /**
-         * keeps existing secrets, preshared keys and valid tokens, generates the missing ones; retires the previous
-         * values of a rotate once its retire window has passed.
+         * keeps existing secrets, preshared keys, key pairs and valid tokens, generates the missing ones.
          */
         FILL,
         /**
-         * generates new values for everything, the old secrets and preshared keys are kept as previous values.
+         * generates new values for everything, nothing old is kept: revokes every token issued before.
          */
-        ROTATE,
-        /**
-         * removes the previous values of the secrets and preshared keys, changes nothing else.
-         */
-        RETIRE,
-        /**
-         * a key leaked: generates new values for everything like {@link #ROTATE}, but keeps no previous values and
-         * drops the existing ones (and the time of the last rotate): every token signed before is rejected.
-         * Not bound to the retire window.
-         */
-        REVOKE
+        ROTATE
     }
 
     /**
@@ -118,18 +102,8 @@ public class AuthenticationGenerator {
     }
 
     /**
-     * @param force true to retire or rotate inside the retire window of the last rotate: tokens signed with the
-     *              secrets that are replaced or removed are no longer accepted.
-     * @return fluent
-     */
-    public AuthenticationGenerator setForce(boolean force) {
-        this.force = force;
-        return this;
-    }
-
-    /**
-     * Generates secrets, preshared secrets and tokens based on the system security configuration, as the
-     * mode of the generator says; in {@link Mode#RETIRE} removes the previous secrets.
+     * Generates secrets, preshared secrets, key pairs and tokens based on the system security configuration, as
+     * the mode of the generator says.
      *
      * @return completed when the files are written, failed when nothing was written.
      */
@@ -148,7 +122,7 @@ public class AuthenticationGenerator {
     }
 
     /**
-     * Generates secrets based on the system security configuration.
+     * Generates secrets and key pairs based on the system security configuration.
      *
      * @return completed when the files are written.
      */
@@ -167,53 +141,20 @@ public class AuthenticationGenerator {
         return run(false, false, true);
     }
 
-    /**
-     * Removes the previous values of the secrets and preshared keys that a rotation kept, unless inside the
-     * retire window of the rotate and not forced.
-     *
-     * @return completed when the files are written.
-     */
-    public Future<Void> retire() {
-        return setMode(Mode.RETIRE).all();
-    }
-
     private Future<Void> run(boolean secrets, boolean preshare, boolean tokens) {
         try {
             Instant now = Instant.now();
             List<ConfigFile> files = load();
-            Rotation rotation = rotation(files);
 
-            if (mode == Mode.RETIRE) {
-                if (!rotation.hasPrevious()) {
-                    logger.log(getNothingToRetire());
-                } else if (rotation.inWindow(now) && !force) {
-                    throw new SecretRotationRefusedException(getRetireRefused(rotation.rotated, rotation.until()));
-                } else {
-                    retirePrevious(files);
-                }
-                return save(files);
+            if (mode == Mode.ROTATE) {
+                removePrevious(files);
             }
-
-            if (mode == Mode.REVOKE) {
-                // nothing old stays accepted: the previous values of an earlier rotate go too.
-                retirePrevious(files);
-            } else if (rotation.hasPrevious()) {
-                if (mode == Mode.ROTATE && rotation.inWindow(now) && !force) {
-                    throw new SecretRotationRefusedException(getRotateRefused(rotation.rotated, rotation.until()));
-                } else if (mode == Mode.FILL && rotation.rotated == null) {
-                    logger.log(getRotationStamped(now));
-                    rotation.files.forEach(file -> file.json.put(SECRETS_ROTATED, now.getEpochSecond()));
-                } else if (mode == Mode.FILL && !rotation.inWindow(now)) {
-                    logger.log(getAutoRetire(rotation.rotated, rotation.window));
-                    retirePrevious(files);
-                }
-            }
-
             if (secrets) {
-                secrets(files, now);
+                secrets(files);
+                keypairs(files);
             }
             if (preshare) {
-                preshare(files, now);
+                preshare(files);
             }
             return (tokens ? tokens(files, now) : Future.<Void>succeededFuture())
                     .compose(done -> save(files));
@@ -222,7 +163,7 @@ public class AuthenticationGenerator {
         }
     }
 
-    private void secrets(List<ConfigFile> files, Instant now) {
+    private void secrets(List<ConfigFile> files) {
         files.forEach(file -> file.secrets().forEach(entry -> {
             JsonObject config = file.json;
 
@@ -230,9 +171,7 @@ public class AuthenticationGenerator {
                 logger.log(getKeptSecret(entry, file.path));
             } else {
                 if (mode == Mode.ROTATE && isSet(config, entry)) {
-                    keepPrevious(file, entry, config.getString(entry), now);
-                } else if (mode == Mode.REVOKE && isSet(config, entry)) {
-                    logger.log(getRevokedSecret(entry, file.path));
+                    logger.log(getRotatedSecret(entry, file.path));
                 } else {
                     logger.log(getGeneratingSecret(entry, file.path));
                 }
@@ -241,7 +180,7 @@ public class AuthenticationGenerator {
         }));
     }
 
-    private void preshare(List<ConfigFile> files, Instant now) {
+    private void preshare(List<ConfigFile> files) {
         // the existing values of each preshared key, in the order of the files.
         Map<String, Map<String, String>> existing = new HashMap<>();
 
@@ -253,13 +192,11 @@ public class AuthenticationGenerator {
         }));
 
         Map<String, String> chosen = new HashMap<>();
-        Map<String, String> previous = new HashMap<>();
 
         existing.forEach((key, values) -> {
             Optional<String> common = mostCommon(values.values());
-            if (mode == Mode.ROTATE || mode == Mode.REVOKE) {
+            if (mode == Mode.ROTATE) {
                 chosen.put(key, SecretFactory.generate(security().getSecretBytes()));
-                common.ifPresent(value -> previous.put(key, value));
             } else {
                 chosen.put(key, common.orElseGet(() -> SecretFactory.generate(security().getSecretBytes())));
                 common.ifPresent(value -> {
@@ -277,10 +214,8 @@ public class AuthenticationGenerator {
         files.forEach(file -> file.preshared().forEach(key -> {
             String value = chosen.get(key);
 
-            if (mode == Mode.ROTATE && previous.containsKey(key)) {
-                keepPrevious(file, key, previous.get(key), now);
-            } else if (mode == Mode.REVOKE && isSet(file.json, key)) {
-                logger.log(getRevokedSecret(key, file.path));
+            if (mode == Mode.ROTATE && isSet(file.json, key)) {
+                logger.log(getRotatedSecret(key, file.path));
             } else if (value.equals(file.json.getValue(key))) {
                 logger.log(getKeptSecret(key, file.path));
             } else {
@@ -290,22 +225,69 @@ public class AuthenticationGenerator {
         }));
     }
 
-    // a rotate keeps the replaced value as the previous one and records when.
-    private void keepPrevious(ConfigFile file, String key, String value, Instant now) {
-        file.json.put(key + SECRET_PREVIOUS_SUFFIX, value);
-        file.json.put(SECRETS_ROTATED, now.getEpochSecond());
-        logger.log(getRotatedSecret(key, file.path));
-    }
-
-    private void retirePrevious(List<ConfigFile> files) {
+    // values that an earlier 1.4.9 generator kept for its rollover: a rotate removes them.
+    private void removePrevious(List<ConfigFile> files) {
         files.forEach(file -> {
             file.rotatable().forEach(key -> {
                 if (file.json.remove(key + SECRET_PREVIOUS_SUFFIX) != null) {
-                    logger.log(getRetiredSecret(key + SECRET_PREVIOUS_SUFFIX, file.path));
+                    logger.log(getRemovedPrevious(key + SECRET_PREVIOUS_SUFFIX, file.path));
                 }
             });
             file.json.remove(SECRETS_ROTATED);
         });
+    }
+
+    // a key pair: generated once for the files that sign with it (private and public key), the files that verify get
+    // its public key. Kept unless rotating.
+    private void keypairs(List<ConfigFile> files) {
+        Set<String> names = new TreeSet<>();
+        files.forEach(file -> {
+            names.addAll(file.keypairs());
+            names.addAll(file.publickeys());
+        });
+
+        for (String name : names) {
+            String privateKey = name + PRIVATE_KEY_SUFFIX;
+            String publicKey = name + PUBLIC_KEY_SUFFIX;
+            var signers = files.stream().filter(file -> file.keypairs().contains(name)).toList();
+            var verifiers = files.stream()
+                    .filter(file -> file.publickeys().contains(name) && !file.keypairs().contains(name))
+                    .toList();
+
+            if (signers.isEmpty()) {
+                // no private key here: the public key of the verifiers is kept as it is.
+                logger.log(getKeyPairWithoutSigner(name, verifiers.stream().map(file -> file.path).toList()));
+                continue;
+            }
+            Optional<ConfigFile> existing = signers.stream()
+                    .filter(file -> isSet(file.json, privateKey) && isSet(file.json, publicKey))
+                    .findFirst();
+            String chosenPrivate;
+            String chosenPublic;
+
+            if (mode == Mode.FILL && existing.isPresent()) {
+                chosenPrivate = existing.get().json.getString(privateKey);
+                chosenPublic = existing.get().json.getString(publicKey);
+            } else {
+                KeyPair pair = SecretFactory.keyPair();
+                chosenPrivate = SecretFactory.encode(pair.getPrivate());
+                chosenPublic = SecretFactory.encode(pair.getPublic());
+            }
+            signers.forEach(file -> {
+                boolean changed = !chosenPrivate.equals(file.json.getValue(privateKey)) ||
+                        !chosenPublic.equals(file.json.getValue(publicKey));
+                logger.log(changed ? getGeneratingKeyPair(name, file.path, true) : getKeptSecret(privateKey, file.path));
+                file.json.put(privateKey, chosenPrivate);
+                file.json.put(publicKey, chosenPublic);
+            });
+            verifiers.forEach(file -> {
+                boolean changed = !chosenPublic.equals(file.json.getValue(publicKey));
+                logger.log(changed ? getGeneratingKeyPair(name, file.path, false) : getKeptSecret(publicKey, file.path));
+                file.json.put(publicKey, chosenPublic);
+                // a verifier never holds the private key.
+                file.json.remove(privateKey);
+            });
+        }
     }
 
     private Future<Void> tokens(List<ConfigFile> files, Instant now) {
@@ -342,7 +324,7 @@ public class AuthenticationGenerator {
 
     // succeeds when the existing token is kept, fails when a token must be issued.
     private Future<Void> keep(TokenFactory factory, JsonObject config, String key, String identity, Instant now) {
-        if (mode == Mode.ROTATE || mode == Mode.REVOKE || !(config.getValue(key) instanceof JsonObject existing)) {
+        if (mode == Mode.ROTATE || !(config.getValue(key) instanceof JsonObject existing)) {
             return Future.failedFuture("issue");
         }
         try {
@@ -382,29 +364,10 @@ public class AuthenticationGenerator {
         if (isSet(issuer, identifier.getSecret())) {
             byte[] secret = BASE64_DECODER.decode(issuer.getString(identifier.getSecret()));
             // the generator signs and verifies with the current secret only.
-            return Optional.of(TokenFactory.strict(core, secret));
+            return Optional.of(new TokenFactory(core, secret));
         } else {
             return Optional.empty();
         }
-    }
-
-    private Rotation rotation(List<ConfigFile> files) {
-        var rotated = files.stream()
-                .filter(ConfigFile::hasPrevious)
-                .collect(Collectors.toList());
-        Instant last = null;
-
-        for (ConfigFile file : rotated) {
-            if (file.json.getValue(SECRETS_ROTATED) instanceof Number stamp) {
-                Instant time = Instant.ofEpochSecond(stamp.longValue());
-                last = (last == null || time.isAfter(last)) ? time : last;
-            } else {
-                // a file rotated by an older version: the time is unknown.
-                last = null;
-                break;
-            }
-        }
-        return new Rotation(rotated, last, security().getTokenttl());
     }
 
     private Future<Void> save(List<ConfigFile> files) {
@@ -537,40 +500,26 @@ public class AuthenticationGenerator {
             return keys;
         }
 
+        Set<String> keypairs() {
+            Set<String> keys = new TreeSet<>();
+            dependencies.forEach(dependency -> keys.addAll(dependency.getKeypairs()));
+            return keys;
+        }
+
+        Set<String> publickeys() {
+            Set<String> keys = new TreeSet<>();
+            dependencies.forEach(dependency -> keys.addAll(dependency.getPublickeys()));
+            return keys;
+        }
+
         Set<String> rotatable() {
             Set<String> keys = secrets();
             keys.addAll(preshared());
             return keys;
         }
 
-        boolean hasPrevious() {
-            return rotatable().stream().anyMatch(key -> json.containsKey(key + SECRET_PREVIOUS_SUFFIX));
-        }
-
         boolean changed() {
             return !json.equals(original);
-        }
-    }
-
-    /**
-     * The previous values of the last rotate.
-     *
-     * @param files   the files with previous values.
-     * @param rotated the time of the rotate, null when unknown (a file without the time).
-     * @param window  the retire window in seconds.
-     */
-    private record Rotation(List<ConfigFile> files, Instant rotated, long window) {
-        boolean hasPrevious() {
-            return !files.isEmpty();
-        }
-
-        // an unknown time is inside the window.
-        boolean inWindow(Instant now) {
-            return rotated == null || now.isBefore(until());
-        }
-
-        Instant until() {
-            return (rotated == null) ? null : rotated.plusSeconds(window);
         }
     }
 }

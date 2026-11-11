@@ -35,6 +35,7 @@ public class SecuritySettings implements Configurable {
     private ArgonSettings argon = new ArgonSettings();
     private String hmacAlgorithm = "HmacSHA512";
     private String signatureAlgorithm = "SHA256withRSA";
+    private String keyPairAlgorithm = "Ed25519";
     private int secretBytes = 64;
     private int tokenttl = 3600 * 24 * 7;
     private Integer serviceTokenttl = null;
@@ -179,6 +180,22 @@ public class SecuritySettings implements Configurable {
     }
 
     /**
+     * @return the algorithm of the key pairs that the generator creates ({@code keypairs} of the dependencies) and
+     * that key pair token factories sign and verify with, default Ed25519.
+     */
+    public String getKeyPairAlgorithm() {
+        return keyPairAlgorithm;
+    }
+
+    /**
+     * @param keyPairAlgorithm the algorithm of generated key pairs and key pair tokens, a JDK Signature and
+     *                         KeyPairGenerator name.
+     */
+    public void setKeyPairAlgorithm(String keyPairAlgorithm) {
+        this.keyPairAlgorithm = keyPairAlgorithm;
+    }
+
+    /**
      * @return the HMAC algorithm identifier used to create HMAC tokens.
      */
     public String getHmacAlgorithm() {
@@ -232,8 +249,7 @@ public class SecuritySettings implements Configurable {
 
     /**
      * @return the time to live in seconds of the tokens that a {@link com.codingchili.core.security.Token} gets
-     * when no expiry is set: the tokens that services issue at runtime, such as the sessions of users. It is also
-     * the retire window of a secret rotation: the previous secrets are accepted for this long after a rotate.
+     * when no expiry is set: the tokens that services issue at runtime, such as the sessions of users.
      */
     public int getTokenttl() {
         return tokenttl;
@@ -252,7 +268,7 @@ public class SecuritySettings implements Configurable {
      * @return the time to live in seconds of the service tokens that the
      * {@link com.codingchili.core.security.AuthenticationGenerator} issues (the tokens of the dependencies),
      * {@link #getTokenttl()} when not set; 0 (or less): they never expire
-     * ({@link com.codingchili.core.security.Token#NEVER}) and are revoked by rotating the secrets. With a lifetime the
+     * ({@link com.codingchili.core.security.Token#NEVER}) and are revoked by a rotate. With a lifetime the
      * generator reissues a token in its last quarter, without one only when it is missing or no longer verifies.
      */
     public int getServiceTokenttl() {

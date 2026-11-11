@@ -196,4 +196,78 @@ public class TokenFactoryTest {
                 .addProperty("roles", Arrays.asList("programmer", "tester"))
                 .setDomain("asd");
     }
+
+    // key pair mode: the private key signs, a verifier with only the public key verifies and cannot sign.
+    private static TokenFactory[] keyPair() {
+        var pair = SecretFactory.keyPair();
+        byte[] privateKey = pair.getPrivate().getEncoded();
+        byte[] publicKey = pair.getPublic().getEncoded();
+        return new TokenFactory[]{
+                TokenFactory.signer(context, privateKey, publicKey), TokenFactory.verifier(context, publicKey)};
+    }
+
+    @Test
+    public void keyPairSignedTokenVerifiesWithThePublicKey(TestContext test) {
+        var factories = keyPair();
+        var token = new Token(domain).addProperty("admin", false);
+        factories[0].sign(token)
+                .compose(signed -> {
+                    test.assertEquals("Ed25519", token.getProperty("type"));
+                    return factories[1].verify(Serializer.unpack(Serializer.json(token), Token.class));
+                })
+                .compose(verified -> factories[0].verify(token))
+                .onComplete(test.asyncAssertSuccess());
+    }
+
+    @Test
+    public void keyPairVerifierCannotSign(TestContext test) {
+        var verifier = keyPair()[1];
+        test.assertFalse(verifier.canSign());
+        verifier.sign(new Token(domain)).onComplete(test.asyncAssertFailure(e -> {
+            test.assertTrue(e.getMessage().contains("cannot sign"), e.getMessage());
+            verifier.hmac(new Token(domain)).onComplete(test.asyncAssertFailure());
+        }));
+    }
+
+    @Test
+    public void keyPairOtherKeyRejected(TestContext test) {
+        var token = new Token(domain);
+        keyPair()[0].sign(token).onComplete(test.asyncAssertSuccess(signed ->
+                keyPair()[1].verify(token).onComplete(test.asyncAssertFailure())));
+    }
+
+    @Test
+    public void keyPairTamperedTokenRejected(TestContext test) {
+        var factories = keyPair();
+        var token = new Token(domain).addProperty("admin", false);
+        factories[0].sign(token).onComplete(test.asyncAssertSuccess(signed -> {
+            var domainChanged = Serializer.unpack(Serializer.json(token), Token.class).setDomain("other");
+            var propertyChanged = Serializer.unpack(Serializer.json(token), Token.class).addProperty("admin", true);
+            var expiryChanged = Serializer.unpack(Serializer.json(token), Token.class).setExpiry(token.getExpiry() + 1);
+            factories[1].verify(domainChanged).onComplete(test.asyncAssertFailure(e1 ->
+                    factories[1].verify(propertyChanged).onComplete(test.asyncAssertFailure(e2 ->
+                            factories[1].verify(expiryChanged).onComplete(test.asyncAssertFailure())))));
+        }));
+    }
+
+    @Test
+    public void keyPairExpiredTokenRejected(TestContext test) {
+        var factories = keyPair();
+        var token = new Token(domain).setExpiry(Instant.now().getEpochSecond() - 1);
+        factories[0].sign(token).onComplete(test.asyncAssertSuccess(signed ->
+                factories[1].verify(token).onComplete(test.asyncAssertFailure())));
+    }
+
+    @Test
+    public void keyPairAndHmacModesDoNotMix(TestContext test) {
+        var factories = keyPair();
+        var hmac = new Token(domain);
+        var signed = new Token(domain);
+        // an HMAC token is not accepted by a verifier, a key pair token not by an HMAC factory.
+        tokenFactory.hmac(hmac)
+                .compose(v -> factories[0].sign(signed))
+                .onComplete(test.asyncAssertSuccess(v ->
+                        factories[1].verify(hmac).onComplete(test.asyncAssertFailure(e ->
+                                tokenFactory.verify(signed).onComplete(test.asyncAssertFailure())))));
+    }
 }

@@ -145,9 +145,11 @@ The validator also supports nested objects and validating arrays of objects. Str
 ### TokenFactory
 The token factory is used to generate tokens, signed or using a keyed hash.
 
-When the secret is, or was, the value of a key in a loaded configuration file that has a previous value
-(`<key>Previous`, written by `generate --rotate`), the factory signs with the current value and verifies with the current
-or previous value, see [secret rotation](configuration.md#security).
+It works with a shared secret (HMAC: whoever verifies can also sign, for services that trust each other) or with a
+key pair (`TokenFactory.signer(core, privateKey, publicKey)` signs with `sign(token)`, by default Ed25519;
+`TokenFactory.verifier(core, publicKey)` only verifies: its `sign` and `hmac` fail). Use a key pair when many services
+verify the tokens of one issuer, such as user logins: a compromised verifier cannot forge a token. The generator
+creates the pair, see [dependencies](configuration.md#security) (`keypairs`, `publickeys`).
 
 ```java
 TokenFactory factory = new TokenFactory(context, "secret".getBytes());

@@ -13,6 +13,8 @@ public class AuthenticationDependency {
     private HashSet<String> preshare = new HashSet<>();
     private HashSet<String> secrets = new HashSet<>();
     private HashMap<String, TokenIdentifier> tokens = new HashMap<>();
+    private HashSet<String> keypairs = new HashSet<>();
+    private HashSet<String> publickeys = new HashSet<>();
 
     public HashSet<String> getPreshare() {
         return preshare;
@@ -36,6 +38,40 @@ public class AuthenticationDependency {
 
     public void setTokens(HashMap<String, TokenIdentifier> tokens) {
         this.tokens = tokens;
+    }
+
+    /**
+     * @return the key pairs that the matching files sign with: they get the private and the public key
+     * (written as {@code <name>PrivateKey} and {@code <name>PublicKey}).
+     */
+    public HashSet<String> getKeypairs() {
+        return keypairs;
+    }
+
+    public void setKeypairs(HashSet<String> keypairs) {
+        this.keypairs = keypairs;
+    }
+
+    /**
+     * @return the key pairs that the matching files verify with: they get only the public key
+     * ({@code <name>PublicKey}) and cannot sign.
+     */
+    public HashSet<String> getPublickeys() {
+        return publickeys;
+    }
+
+    public void setPublickeys(HashSet<String> publickeys) {
+        this.publickeys = publickeys;
+    }
+
+    public AuthenticationDependency addKeypair(String name) {
+        keypairs.add(name);
+        return this;
+    }
+
+    public AuthenticationDependency addPublickey(String name) {
+        publickeys.add(name);
+        return this;
     }
 
     public AuthenticationDependency addPreshare(String name) {

@@ -62,15 +62,13 @@ public abstract class CoreStrings {
     public static final String ENV_CLUSTER_BIND = "CHILI_CLUSTER_BIND";
     public static final String ENV_CLUSTER_PORT = "CHILI_CLUSTER_PORT";
 
-    // secret rotation: the previous value of a secret key is kept under the key with this suffix.
-    public static final String SECRET_PREVIOUS_SUFFIX = "Previous";
+    // generate --rotate: new values for every secret, preshared key, key pair and token (revokes the old ones).
     public static final String GENERATE_ROTATE = "--rotate";
-    public static final String GENERATE_RETIRE = "--retire";
-    // retires or rotates inside the retire window, see AuthenticationGenerator.
-    public static final String GENERATE_FORCE = "--force";
-    // emergency rotation (a key leaked): new values, no previous values kept, every earlier token rejected.
-    public static final String GENERATE_REVOKE = "--revoke";
-    // the time of the last rotate in epoch seconds, kept next to the previous values of the rotated keys.
+    // a key pair of the security dependencies is written as <name>PrivateKey and <name>PublicKey.
+    public static final String PRIVATE_KEY_SUFFIX = "PrivateKey";
+    public static final String PUBLIC_KEY_SUFFIX = "PublicKey";
+    // written by an earlier 1.4.9 build of the generator (rollover), removed by a rotate.
+    public static final String SECRET_PREVIOUS_SUFFIX = "Previous";
     public static final String SECRETS_ROTATED = "secretsRotated";
 
     // common directories.
@@ -446,48 +444,33 @@ public abstract class CoreStrings {
     }
 
     public static String getRotatedSecret(String key, String path) {
-        return "[Rotated] '" + key + "' in " + path + ", the old value is kept as '" + key + SECRET_PREVIOUS_SUFFIX + "' ..";
+        return "[Rotated] '" + key + "' in " + path + ": replaced, the old value is not kept ..";
     }
 
-    public static String getRetiredSecret(String key, String path) {
-        return "[Retired] '" + key + "' in " + path + " ..";
+    public static String getRemovedPrevious(String key, String path) {
+        return "[Removed] '" + key + "' in " + path + " (a previous value of an earlier generator) ..";
     }
 
-    public static String getRevokedSecret(String key, String path) {
-        return "[Revoked] '" + key + "' in " + path + ": replaced, the old value is not kept ..";
+    public static String getGeneratingKeyPair(String name, String path, boolean signer) {
+        return "[Generated] key pair '" + name + "' for " + path + ((signer) ? " (private and public key)" :
+                " (public key)") + " ..";
     }
 
-    public static String getAutoRetire(Instant rotated, long window) {
-        return "[Retire] the previous secrets of the rotate at " + rotated + " are retired: the retire window of " +
-                window + " s (security tokenttl, one session lifetime) has passed ..";
+    public static String getKeyPairWithoutSigner(String name, Collection<String> paths) {
+        return "[Warning] key pair '" + name + "' has no file with its private key (keypairs), the public key of " +
+                paths + " is kept ..";
     }
 
-    public static String getRotationStamped(Instant now) {
-        return "[Retire] previous secrets without the time of their rotate (rotated by an older version): the retire " +
-                "window starts now, " + now + " ..";
+    public static String getInvalidKey(String reason) {
+        return "Invalid key for a key pair token factory: " + reason;
     }
 
-    public static String getNothingToRetire() {
-        return "[Retire] there are no previous secrets to retire ..";
+    public static String getTokenFactoryVerifyOnly() {
+        return "This token factory has no private key: it verifies tokens and cannot sign them.";
     }
 
-    public static String getRetireRefused(Instant rotated, Instant until) {
-        if (rotated == null) {
-            return "Refused: the previous secrets have no time of rotate (rotated by an older version), so tokens " +
-                    "signed with them may still be valid. Run 'generate' once to start the retire window, or add " +
-                    GENERATE_FORCE + " to retire them now (users who logged in before that rotate log in again).";
-        }
-        return "Refused: the previous secrets of the rotate at " + rotated + " still verify tokens that are in use " +
-                "until " + until + " (security tokenttl after the rotate). 'generate' retires them automatically " +
-                "after that time; " + GENERATE_FORCE + " retires them now (users who logged in before that rotate " +
-                "and have not renewed their token log in again).";
-    }
-
-    public static String getRotateRefused(Instant rotated, Instant until) {
-        return "Refused: the previous rotate" + ((rotated == null) ? "" : " at " + rotated) + " is still in its " +
-                "retire window" + ((until == null) ? "" : " until " + until) + ": rotating again replaces its " +
-                "previous secrets, which still verify tokens that are in use. Wait until then, or add " +
-                GENERATE_FORCE + " (users with tokens from before the previous rotate log in again).";
+    public static String getTokenFactoryNoSecret() {
+        return "This token factory has no secret: a key pair factory signs with sign(token), not hmac.";
     }
 
     public static String getPreshareConflict(String key, Collection<String> paths) {
@@ -626,12 +609,9 @@ public abstract class CoreStrings {
     }
 
     public static String getGenerateAllDescription() {
-        return "generates the missing secrets, preshared keys and tokens, keeps existing ones (reissues tokens " +
-                "that are invalid or expire soon) and retires the previous secrets once one tokenttl has passed " +
-                "since the rotate. " + GENERATE_ROTATE + ": new values for all of them, the old secrets kept as " +
-                "previous (still accepted). " + GENERATE_RETIRE + ": removes the previous secrets. Both refuse " +
-                "inside the retire window of the last rotate unless " + GENERATE_FORCE + ". " + GENERATE_REVOKE + ": a key " +
-                "leaked, new values for all of them and no previous values: every earlier token is rejected.";
+        return "generates the missing secrets, preshared keys, key pairs and tokens and keeps existing ones " +
+                "(reissues tokens that are invalid or expire soon). " + GENERATE_ROTATE + ": new values for all " +
+                "of them, the old ones are not kept: every token issued before is rejected (restart the services).";
     }
 
     public static String getCommandExecutorHelpDescription() {

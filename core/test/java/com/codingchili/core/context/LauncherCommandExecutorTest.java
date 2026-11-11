@@ -80,7 +80,12 @@ public class LauncherCommandExecutorTest {
         var security = Configurations.security();
         String dependency = "system/launcher";
         String file = PATH_LAUNCHER;
-        String before = ConfigurationFactory.exists(file) ? ConfigurationFactory.readObject(file).encode() : null;
+        // the file must exist for the dependency to match it (a fresh checkout has no conf/ yet).
+        boolean created = !ConfigurationFactory.exists(file);
+        if (created) {
+            ConfigurationFactory.writeObject(Configurations.launcher().serialize(), file);
+        }
+        String before = ConfigurationFactory.readObject(file).encode();
         security.getDependencies().put(dependency,
                 new AuthenticationDependency().addToken("token", "missing-service", "missing-secret"));
 
@@ -89,8 +94,9 @@ public class LauncherCommandExecutorTest {
                 .onComplete(test.asyncAssertFailure(e -> {
                     security.getDependencies().remove(dependency);
                     test.assertTrue(e instanceof SecurityMissingDependencyException, String.valueOf(e));
-                    if (before != null) {
-                        test.assertEquals(before, ConfigurationFactory.readObject(file).encode());
+                    test.assertEquals(before, ConfigurationFactory.readObject(file).encode());
+                    if (created) {
+                        ConfigurationFactory.delete(file);
                     }
                 }));
     }

@@ -702,25 +702,30 @@ while they verify with their issuer's current secret and have more than a quarte
 `generate --retire` removes those. `TokenFactory` follows the rotation (`SecretRollover`, registered when a
 configuration file is loaded or hot reloaded): it signs with the current value and accepts the current or previous
 one, also in factories created before the rotation, so a running node picks up rotated secrets without a restart and
-old tokens stay valid until retired. Also: the generator's token domain for a config without `node` was `undefined`
+old tokens stay valid until retired (replaced before release by revoke-only rotation, see the next entry). Also: the generator's token domain for a config without `node` was `undefined`
 on the first run and `undefined.node` after, and the committed fixture `AuthenticationGenerator/service2.json` was
 corrupt (made `testGenerateWithBrokenReferenceFails` fail); `testGenerateAll` did not wait for the generator.
 Tests: `SecretRotationTest` (7), `AuthenticationGeneratorIT`, `TokenFactoryTest`.
 
-## Token lifetimes, retire window, generator writes once (1.4.9)
+## Key pair tokens, revoke-only rotation, service token lifetimes, generator writes once (1.4.9)
 
+- **Key pair tokens:** `TokenFactory.signer(core, privateKey, publicKey)` signs with `sign(token)` (Ed25519,
+  `SecuritySettings.keyPairAlgorithm`), `TokenFactory.verifier(core, publicKey)` only verifies (`sign`/`hmac` fail,
+  `canSign()` false). A factory accepts only its own mode (an HMAC factory never accepts a key pair token and the
+  other way around); keystore-signed tokens unchanged. The generator creates pairs from the dependencies:
+  `keypairs: [name]` (the signer's files get `<name>PrivateKey` and `<name>PublicKey`), `publickeys: [name]` (the
+  verifiers get `<name>PublicKey` only). `SecretFactory.keyPair()`, `TokenFactory.decodeKey`.
+- **Revoke-only rotation (replaces the rollover of the previous entry, never released):** `SecretRollover`, the
+  `<key>Previous` values, `--retire`, the retire window and `SecretRotationRefusedException` are removed;
+  `TokenFactory` uses exactly its secret again. `generate --rotate` makes new values for everything (secrets,
+  preshared keys, key pairs, tokens) and keeps nothing old, so every earlier token is rejected once the services run
+  on the new files (restart them); it also removes `<key>Previous`/`secretsRotated` left by the earlier build.
+  Configuration hot reload is unchanged.
 - **`serviceTokenttl`** (security, seconds, default `tokenttl`): the lifetime of the tokens `generate` issues; they
-  are reissued in their last quarter, and also when issued for longer than configured (a lowered lifetime applies on
-  the next run). `0`: service tokens never expire (`Token.NEVER`, 9999-12-31T23:59:59Z) and are revoked by
-  `--rotate`; `generate` reissues them only when missing or no longer verifying, and once when issued with a
-  lifetime. `tokenttl` stays the lifetime of tokens without an expiry (the ones services issue at runtime).
-- **Retire window:** `--rotate` writes `secretsRotated` (epoch seconds) next to the `<key>Previous` values. `--retire`
-  and a second `--rotate` refuse until one `tokenttl` has passed since then (`SecretRotationRefusedException`, exit
-  status 1), unless `--force`; plain `generate` retires the previous values by itself once it has passed, and gives
-  previous values without a time (an older rotate) the current time.
-- **`generate --revoke`** (`Mode.REVOKE`): the emergency rotation when a key leaked: new values for everything and
-  no `<key>Previous` (existing previous values and `secretsRotated` are dropped), not bound to the window, so every
-  earlier token stops verifying once the services have the new files (restart them to be sure).
+  are reissued in their last quarter, and also when issued for longer than configured. `0`: service tokens never
+  expire (`Token.NEVER`, 9999-12-31T23:59:59Z), `generate` reissues them only when missing or no longer verifying
+  (and once when issued with a lifetime); a rotate replaces them. `tokenttl` stays the lifetime of tokens without
+  an expiry (the ones services issue at runtime).
 - **Generator race:** `generate` saved files from async token callbacks while it read other files (as token issuers),
   and loaded every file into `Configurations`, so its own file watcher reloaded them: a file could be read half
   written (`ConfigurationParseException ... end-of-input`), and the failure was thrown past the command, which never
@@ -730,9 +735,11 @@ Tests: `SecretRotationTest` (7), `AuthenticationGeneratorIT`, `TokenFactoryTest`
   generate commands are async: a failure fails the command after closing the generator's context, and
   `Launcher.main` exits with status 1 when a command fails.
 - `Token.expires(value, unit)` set the expiry in milliseconds (epoch seconds expected: the token never expired).
-- Tests: `SecretRotationTest` (+13: window refused/forced/allowed, unknown time, rotate in the window, auto-retire,
-  service token lifetime, service tokens that never expire, revoke, nothing written on failure, a reader never sees half a file: fails with in-place writes),
-  `AuthenticationGeneratorIT` (async, `testGenerateTokens` no longer ignored), `LauncherCommandExecutorTest`.
+- Tests: `SecretRotationTest` (fill, rotate revokes and removes old previous values, key pairs: private key only
+  for the signer, service token lifetimes and never expiring tokens, nothing written on failure, a reader never sees
+  half a file: fails with in-place writes), `TokenFactoryTest` (+6 key pair: sign/verify, verifier cannot sign,
+  other key, tampered domain/property/expiry, expired, modes do not mix), `AuthenticationGeneratorIT` (async,
+  `testGenerateTokens` no longer ignored), `LauncherCommandExecutorTest`.
 
 ## Verification status
 
