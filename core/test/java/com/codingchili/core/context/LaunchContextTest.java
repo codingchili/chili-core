@@ -6,6 +6,7 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 
 import com.codingchili.core.configuration.Environment;
+import com.codingchili.core.configuration.exception.BlockNotConfiguredException;
 import com.codingchili.core.configuration.exception.NoServicesConfiguredForBlock;
 import com.codingchili.core.configuration.exception.RemoteBlockNotConfiguredException;
 
@@ -38,9 +39,11 @@ public class LaunchContextTest {
 
     @Test
     public void testGetMissingBlock() throws CoreException {
+        // a block that is not configured fails, it never deploys the default block.
         try {
-            Assert.assertTrue(context.service(BLOCK_NULL).isEmpty());
-        } catch (NoServicesConfiguredForBlock e) {
+            context.service(BLOCK_NULL);
+            Assert.fail("a block that is not configured must fail");
+        } catch (BlockNotConfiguredException e) {
             Assert.assertTrue(e.getMessage().contains(BLOCK_NULL));
         }
     }

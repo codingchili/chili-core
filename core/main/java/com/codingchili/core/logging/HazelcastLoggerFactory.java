@@ -26,7 +26,7 @@ import static com.codingchili.core.configuration.CoreStrings.throwableToString;
  * <p>
  * Levels: a record is logged when the JUL logger of its category logs the level, INFO by default; for example
  * {@code com.hazelcast.level=FINE} in a JUL configuration shows the FINE records. A few chatty startup categories
- * (the logo, hints about disabled features) are treated as FINE. SEVERE is logged as ERROR, below INFO as DEBUG.
+ * (the logo, hints about disabled features, connections, partitions) are treated as FINE. SEVERE is logged as ERROR, below INFO as DEBUG.
  */
 public class HazelcastLoggerFactory implements LoggerFactory {
     /**
@@ -42,7 +42,11 @@ public class HazelcastLoggerFactory implements LoggerFactory {
     private static final Set<String> QUIET = Set.of(
             "com.hazelcast.system.logo",
             "com.hazelcast.system.security",
-            "com.hazelcast.internal.diagnostics"
+            "com.hazelcast.internal.diagnostics",
+            // every connection opened, closed or refused; failures that matter are warnings.
+            "com.hazelcast.internal.server.tcp",
+            "com.hazelcast.internal.partition",
+            "com.hazelcast.transaction"
     );
     // INFO messages about features that are off by design, treated as FINE.
     private static final Set<String> QUIET_MESSAGES = Set.of(

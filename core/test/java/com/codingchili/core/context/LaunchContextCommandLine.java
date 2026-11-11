@@ -79,8 +79,12 @@ public class LaunchContextCommandLine {
                 .addBlock(BLOCK_2, List.of(SERVICE_2))
                 .addBlock(BLOCK_3, List.of(SERVICE_3))
                 .addBlock(BLOCK_DEFAULT, List.of(SERVICE_DEFAULT))
-                .addBlock(BLOCK_REMOTE, List.of(SERVICE_REMOTE))
-                .addHost(matchHost ? Environment.hostname().orElse("failed to get hostname") : "null", BLOCK_REMOTE);
+                .addBlock(BLOCK_REMOTE, List.of(SERVICE_REMOTE));
+
+        // with hosts configured, a host that matches none of them fails: only without hosts 'default' is deployed.
+        if (matchHost) {
+            Configurations.launcher().addHost(Environment.hostname().orElse("failed to get hostname"), BLOCK_REMOTE);
+        }
 
         var promise = Promise.<List<String>>promise();
         var context = new LaunchContext(line);

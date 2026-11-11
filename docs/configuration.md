@@ -152,7 +152,11 @@ The launcher configuration  allows for configuration of the following properties
 | blocks | A list of services to deploy when the Launcher is started, can be referenced by name.|
 | hosts | used to determine which block of services to deploy.|
 
-If there is no matching host and a block has not been explicitly specified a block named `default` will be deployed.
+Without a block on the command line (`deploy`), the block of the host is deployed: a `hosts` entry for the hostname, a
+block named as the hostname (a container with `hostname: realm` deploys the block `realm`), or a `hosts` entry for an
+address of the host or `localhost`. When `hosts` is configured and none of them matches, the launcher fails and names
+the hostname and the configured hosts and blocks; only without `hosts` the block `default` is deployed. A block that is
+not configured always fails (`BlockNotConfiguredException`), it never deploys `default`.
 
 Sample configuration file
 ```yaml

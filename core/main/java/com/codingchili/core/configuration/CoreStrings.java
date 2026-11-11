@@ -399,6 +399,13 @@ public abstract class CoreStrings {
         return "Error: host block '" + remote + "' or launcher block '" + block + "' not found in " + PATH_LAUNCHER;
     }
 
+    public static String getHostNotConfigured(String hostname, java.util.Collection<String> hosts,
+                                              java.util.Collection<String> blocks) {
+        return "Error: no block for host '" + hostname + "' in " + PATH_LAUNCHER + ": the hostname is not a block " +
+                new java.util.TreeSet<>(blocks) + " and neither it nor an address of this host is in hosts " +
+                new java.util.TreeSet<>(hosts) + ". Name the block: deploy <block>.";
+    }
+
     public static String getBlockNotConfigured(String block) {
         return "Error: Service block '" + block + "' missing in " + PATH_LAUNCHER;
     }

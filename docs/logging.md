@@ -58,7 +58,7 @@ INFO	[18:48:58.882] hazelcast       [ClusterService ] Members {size:2, ver:2} [M
   config). Hazelcast's message prefix (`[host]:port [cluster] [version]`) is removed and multi-line messages such as
   the member list are joined. A record is logged when the JUL logger of its category logs its level (INFO by
   default: `com.hazelcast.level=FINE` in a JUL configuration shows FINE as DEBUG); a few chatty startup categories
-  and messages (the logo, hints about disabled features) are treated as FINE. SEVERE is logged as ERROR.
+  and messages (the logo, hints about disabled features, connections, partitions) are treated as FINE. SEVERE is logged as ERROR.
 
 ### Examples
 

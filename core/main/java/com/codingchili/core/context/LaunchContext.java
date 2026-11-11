@@ -12,7 +12,6 @@ import com.codingchili.core.files.Configurations;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
 
-import static com.codingchili.core.configuration.CoreStrings.ID_DEFAULT;
 
 /**
  * Provides context for the Launcher system, passed to the launcher when starting an application
@@ -66,11 +65,8 @@ public class LaunchContext {
         if (isBlockConfigured(block)) {
             return settings().getBlocks().get(block);
         } else {
-            if (isBlockConfigured(ID_DEFAULT)) {
-                return settings().getBlocks().get(ID_DEFAULT);
-            } else {
-                throw new BlockNotConfiguredException(ID_DEFAULT);
-            }
+            // never the default block for a block that is not configured: a typo would deploy the wrong services.
+            throw new BlockNotConfiguredException(block);
         }
     }
 
@@ -120,21 +116,25 @@ public class LaunchContext {
 
     /**
      * Retrieves a block of services that should be deployed. If no block is explicitly set as the second
-     * argument then the block is inferred from the host-to-block mappings. if there is no such mapping
-     * the 'default' block is deployed, if one is specified.
+     * argument then the block is inferred from the host, see {@link #blockNames()}.
      *
      * @return a list of services to be deployed for the given arguments.
-     * @throws CoreException when the specified block does not exist or when no blocks are specified
-     *                       that match the host and the 'default' block is missing.
+     * @throws CoreException when a specified block does not exist, when hosts are configured and none matches
+     *                       this host, or when no hosts are configured and the 'default' block is missing.
      */
     public List<String> services() throws CoreException {
         return services(blockNames());
     }
 
     /**
-     * @return the name of the block being deployed.
+     * The blocks of the deploy command, or without one the block of this host: a hosts entry for the hostname, a
+     * block named as the hostname, a hosts entry for an address of the host or localhost, and only when no hosts
+     * are configured the 'default' block.
+     *
+     * @return the names of the blocks being deployed.
+     * @throws HostNotConfiguredException when hosts are configured and none matches this host.
      */
-    public List<String> blockNames() {
+    public List<String> blockNames() throws HostNotConfiguredException {
         List<String> blocks = executor.getAllProperties("deploy");
         if (blocks.size() == 0) {
             return List.of(findBlockByEnvironment());
@@ -147,13 +147,15 @@ public class LaunchContext {
      * Attempts to identify a remote block to use by looking at the hostname and the
      * ip addresses available on the network interfaces.
      *
-     * @return a chosen remote or local block.
+     * @return a hosts entry or a block name.
+     * @throws HostNotConfiguredException when hosts are configured and none matches this host.
      */
-    private String findBlockByEnvironment() {
+    private String findBlockByEnvironment() throws HostNotConfiguredException {
         Optional<String> hostname = Environment.hostname();
 
         // prefer hostname match as network interface enumeration is slow. (~200ms)
-        if (hostname.isPresent() && isRemoteBlock(hostname.get())) {
+        if (hostname.isPresent() && (isRemoteBlock(hostname.get()) || isBlockConfigured(hostname.get()))) {
+            // a hosts entry wins over a block of the same name: services() checks the hosts first.
             return hostname.get();
         } else {
             // guard against checking network interfaces if there are no remotes configured.
@@ -168,6 +170,9 @@ public class LaunchContext {
                         return address;
                     }
                 }
+                // with hosts configured, a host that is not in them is an error: not the 'default' block.
+                throw new HostNotConfiguredException(hostname.orElse(null),
+                        settings().getHosts().keySet(), settings().getBlocks().keySet());
             }
         }
         return BLOCK_DEFAULT;

@@ -681,6 +681,17 @@ and port are configurable: since the next section in the launcher's `cluster` ob
   throw (`Level.valueOf("FINE")`). A failed clustered launch logs its cause.
 - Tests: `ClusterSettingsTest`, `HazelcastLoggerFactoryTest`, `ClusterManagerTest`; `HazelMapIT` (single node).
 
+## Launcher: block by hostname, no silent fallback to `default` (1.4.9)
+
+- `deploy` without a block: a `hosts` entry for the hostname, then a block named as the hostname (a container with
+  `hostname: realm` deploys block `realm`, no `hosts` entry needed), then a `hosts` entry for an address or
+  `localhost`. With `hosts` configured and no match: `HostNotConfiguredException` naming the hostname, the hosts and
+  the blocks (was: `default`). Without `hosts`: `default` as before. `blockNames()` now throws it.
+- An unknown block name fails with `BlockNotConfiguredException` naming that block (was: `default` deployed, so a typo
+  deployed every service).
+- Hazelcast logging also treats INFO of connections (`internal.server.tcp`), partitions and transactions as FINE.
+- Tests: `LaunchContextBlockTest`; `LaunchContextTest`, `LaunchContextCommandLine` updated.
+
 ## `generate` keeps existing secrets; rotation without a restart (1.4.9)
 
 `generate` overwrote every secret, preshared key and token, so running it again (a release that adds a realm) logged

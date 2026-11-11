@@ -13,6 +13,9 @@ See: `com.codingchili.core.Launcher` and `com.codingchili.core.context`.
 A deployment block contains a set of deployable services. When the `com.codingchili.core.Launcher` is set as the main class
 these blocks can be deployed by passing the block name for the launcher option `--deploy <blockName>`. Using hosts mapping we can specify
 the block using the hostname of the deploying machine, no block name should then be specified for the deploy command.
+A block named as the hostname is deployed too, without a hosts entry; a hosts entry for the hostname wins over it.
+With hosts configured, a host that matches none of them (hostname, addresses, `localhost`) fails instead of deploying
+`default`, and an unknown block name always fails: only without hosts the block `default` is the fallback.
 
 Example launcher configuration in YAML.
 ```yaml
@@ -51,7 +54,7 @@ Breakdown
 |---|---|
 |version|The running version of the application, used for logging etc.|
 |application|The name of the running application, used for logging etc.|
-|clustered|Indicates if a Hazelcast cluster should be joined.|
+|cluster|clustering: `enabled`, `name`, `multicast`, `cloud`, `members`, `host`, `bind`, `port`, see [configuration](configuration.md#cluster). `clustered: true` is read as `cluster.enabled` (deprecated).|
 |warnOnDefaultsLoaded|Warns whenever configuration is missing on disk and defaults are loaded from the java class.|
 |blocks|a list of name:services pair to be deployed when passing the --deploy option.|
 |hosts|a list of hosts which has a specific default block to deploy.|
