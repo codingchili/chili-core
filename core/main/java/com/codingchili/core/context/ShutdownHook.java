@@ -90,14 +90,14 @@ public class ShutdownHook extends Thread {
             forget(this);
             return;
         }
-        long timeout = system().getShutdownHookTimeout();
+        long timeout = system().getShutdownHookTimeout().toMillis();
         long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeout);
         CountDownLatch closed = new CountDownLatch(1);
 
         logger.log(LAUNCHER_SHUTDOWN_STARTED, Level.WARNING);
 
         // services keep running while the context reports that it's shutting down, to let traffic move away.
-        delay(Math.min(system().getShutdownDelay(), remainingMS(deadline)))
+        delay(Math.min(system().getShutdownDelay().toMillis(), remainingMS(deadline)))
                 // emit the shutdown event before closing, a failing subscriber or service does not prevent the shutdown.
                 .compose(done -> ShutdownListener.publish(context))
                 .otherwise(this::failed)

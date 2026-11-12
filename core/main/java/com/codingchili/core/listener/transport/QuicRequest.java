@@ -4,6 +4,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.QuicStream;
 
+import com.codingchili.core.configuration.Durations;
 import com.codingchili.core.listener.ListenerSettings;
 import com.codingchili.core.listener.AbstractRequest;
 import com.codingchili.core.protocol.Response;
@@ -65,7 +66,7 @@ public class QuicRequest extends AbstractRequest {
 
     @Override
     public int timeout() {
-        return settings.getTimeout();
+        return Durations.millis(settings.getTimeout());
     }
 
     @Override

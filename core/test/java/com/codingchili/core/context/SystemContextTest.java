@@ -8,6 +8,7 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -33,7 +34,7 @@ public class SystemContextTest {
     public void setUp() {
         this.settings = Configurations.system();
 
-        settings.getMetrics().setRate(100);
+        settings.getMetrics().setRate(Duration.ofMillis(100));
         settings.getMetrics().setEnabled(true);
 
         this.context = new ContextMock() {
@@ -72,20 +73,20 @@ public class SystemContextTest {
         settings.getMetrics().setEnabled(false);
         this.listener = metrics -> test.fail("Metrics was not disabled.");
 
-        delayMS(async, settings.getMetrics().getRate() * 2);
+        delayMS(async, (int) settings.getMetrics().getRate().toMillis() * 2);
     }
 
     @Test
     public void testCancelTimer(TestContext test) {
         Async async = test.async();
 
-        long id = context.timer(settings.getMetrics().getRate(), handler -> {
+        long id = context.timer(settings.getMetrics().getRate().toMillis(), handler -> {
             test.fail("The timer was not cancelled.");
         });
 
         context.cancel(id);
 
-        delayMS(async, settings.getMetrics().getRate() * 2);
+        delayMS(async, (int) settings.getMetrics().getRate().toMillis() * 2);
     }
 
     @Test

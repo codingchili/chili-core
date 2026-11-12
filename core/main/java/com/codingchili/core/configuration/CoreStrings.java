@@ -894,6 +894,15 @@ public abstract class CoreStrings {
         return "Error: no validator exists with the name '" + name + "'.";
     }
 
+    /**
+     * @param text a configuration value that is not a duration.
+     * @return the error message of {@link Durations#parse(String)}, naming the value.
+     */
+    public static String getInvalidDuration(String text) {
+        return ("'%s' is not a duration: use a number with ms, s, m, h or d, combinable " +
+                "(7d, 10m, 1h30m), or a plain number of milliseconds.").formatted(text);
+    }
+
     public static String getSemaphoreTimeout(int timeoutMS) {
         return "Error: semaphore timed out after waiting for " + timeoutMS + " ms.";
     }

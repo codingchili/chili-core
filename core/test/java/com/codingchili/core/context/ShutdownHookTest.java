@@ -9,6 +9,7 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
+import java.time.Duration;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -30,7 +31,7 @@ public class ShutdownHookTest {
     @Before
     public void setUp() {
         // the system settings are shared by all tests.
-        Configurations.system().setShutdownHookTimeout(5000);
+        Configurations.system().setShutdownHookTimeout(Duration.ofMillis(5000));
         context = new SystemContext();
     }
 
@@ -70,7 +71,7 @@ public class ShutdownHookTest {
 
     @Test
     public void blockingPoolAwaited(TestContext test) {
-        Configurations.system().setShutdownHookTimeout(500);
+        Configurations.system().setShutdownHookTimeout(Duration.ofMillis(500));
         Async async = test.async();
         context.blocking(() -> {
             try {
@@ -91,7 +92,7 @@ public class ShutdownHookTest {
 
     @Test
     public void onBlockingPoolTimeoutForcefulExit(TestContext test) {
-        Configurations.system().setShutdownHookTimeout(25);
+        Configurations.system().setShutdownHookTimeout(Duration.ofMillis(25));
         Async async = test.async();
         context.blocking(() -> {
             try {
@@ -108,7 +109,7 @@ public class ShutdownHookTest {
     @Test
     public void serviceStopOverridesTimeout(TestContext test) {
         Async async = test.async();
-        Configurations.system().setShutdownHookTimeout(25);
+        Configurations.system().setShutdownHookTimeout(Duration.ofMillis(25));
 
         context.service(() -> new CoreService() {
             @Override
@@ -133,7 +134,7 @@ public class ShutdownHookTest {
 
     @Test
     public void shutdownCompletesWithoutWaitingForTheTimeout(TestContext test) throws InterruptedException {
-        Configurations.system().setShutdownHookTimeout(5000);
+        Configurations.system().setShutdownHookTimeout(Duration.ofMillis(5000));
         ShutdownHook hook = new ShutdownHook(context);
         long start = System.nanoTime();
 
@@ -171,7 +172,7 @@ public class ShutdownHookTest {
 
     @Test
     public void servicesKeepRunningDuringTheShutdownDelay(TestContext test) throws InterruptedException {
-        Configurations.system().setShutdownDelay(400);
+        Configurations.system().setShutdownDelay(Duration.ofMillis(400));
         try {
             AtomicBoolean stopped = new AtomicBoolean(false);
             Async deployed = test.async();
@@ -198,7 +199,7 @@ public class ShutdownHookTest {
             test.assertTrue(stopped.get());
             test.assertTrue((System.nanoTime() - start) / 1_000_000 >= 400);
         } finally {
-            Configurations.system().setShutdownDelay(0);
+            Configurations.system().setShutdownDelay(Duration.ofMillis(0));
         }
     }
 

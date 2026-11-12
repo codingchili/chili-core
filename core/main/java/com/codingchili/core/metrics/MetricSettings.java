@@ -3,10 +3,14 @@ package com.codingchili.core.metrics;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.metrics.MetricsOptions;
 import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.function.Consumer;
 
+import com.codingchili.core.configuration.Durations;
 import com.codingchili.core.files.Configurations;
 
 /**
@@ -19,7 +23,9 @@ public class MetricSettings {
     private List<JvmMetric> jvm = new ArrayList<>();
     private boolean overhead;
     private boolean enabled = false;
-    private int rate = 15000;
+    @JsonDeserialize(using = Durations.Read.class)
+    @JsonSerialize(using = Durations.Write.class)
+    private Duration rate = Duration.ofSeconds(15);
 
     /**
      * @return true if metrics should be collected.
@@ -60,17 +66,17 @@ public class MetricSettings {
     }
 
     /**
-     * @return the rate in ms at which metrics are collected.
+     * @return the interval in which metrics are collected.
      */
-    public int getRate() {
+    public Duration getRate() {
         return rate;
     }
 
     /**
-     * @param rate in milliseconds.
+     * @param rate the interval in which metrics are collected (config: 15s; a plain number is ms).
      * @return fluent.
      */
-    public MetricSettings setRate(int rate) {
+    public MetricSettings setRate(Duration rate) {
         this.rate = rate;
         return this;
     }

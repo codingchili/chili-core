@@ -10,6 +10,7 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
+import java.time.Duration;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -47,7 +48,7 @@ public class BusRouterTest {
     @Before
     public void setUp() {
         core = new SystemContext();
-        system().setClusterTimeout(500);
+        system().setClusterTimeout(Duration.ofMillis(500));
         router = new BusRouter() {
             @Override
             public void onNodeTimeout(Request request) {
@@ -121,7 +122,7 @@ public class BusRouterTest {
 
         handle(NODE_1, ((response, status) -> {
             test.assertEquals(ResponseStatus.ERROR, status);
-            test.assertTrue(response.getString(PROTOCOL_MESSAGE).contains(system().getClusterTimeout() + ""));
+            test.assertTrue(response.getString(PROTOCOL_MESSAGE).contains(system().getClusterTimeout().toMillis() + ""));
             async.complete();
         }));
     }

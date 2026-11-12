@@ -64,7 +64,7 @@ public class Token implements Serializable {
     public long getExpiry() {
         if (expiry == null) {
             expiry = Instant.now().getEpochSecond() +
-                    Configurations.security().getTokenttl();
+                    Configurations.security().getTokenttl().toSeconds();
         }
         return expiry;
     }

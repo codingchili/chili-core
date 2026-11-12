@@ -80,6 +80,33 @@ myConfiguration.save();
 
 Whenever the application is shutdown gracefully, a hook is executed to save all configuration to disk.
 
+### Durations
+Time settings are `java.time.Duration`s, written short in the configuration files: a number with a unit, `ms`, `s`,
+`m`, `h` or `d`, combinable with the largest unit first: `250ms`, `45s`, `10m`, `1h30m`, `7d`. A plain number is
+milliseconds, or the unit the setting held before it became a duration (the token lifetimes read plain numbers as
+seconds), so older configuration files keep their meaning. Anything else (`1.5h`, `PT10M`, `-5m`, `7 d`) fails the
+load with an error that names the value. Configuration that is written (`save`, the defaults) uses the short form.
+
+`com.codingchili.core.configuration.Durations` parses and formats the form, and has the Jackson (de)serializers for
+fields of your own configuration classes; annotations on the field apply to its getter and setter as well.
+
+```java
+public class MySettings implements Configurable {
+    @JsonDeserialize(using = Durations.Read.class)          // plain numbers are ms
+    @JsonSerialize(using = Durations.Write.class)
+    private Duration expiry = Duration.ofDays(7);
+
+    @JsonDeserialize(using = Durations.ReadSeconds.class)   // plain numbers are seconds (ReadDays: days)
+    @JsonSerialize(using = Durations.Write.class)
+    private Duration lifetime = Duration.ofHours(1);
+    // getters and setters of Duration ...
+}
+
+Durations.parse("1h30m");                  // PT1H30M
+Durations.format(Duration.ofMillis(1500)); // 1s500ms
+Durations.millis(settings.getTimeout());   // an int of milliseconds (capped), for TimerSource and Request.timeout()
+```
+
 ## Configuration Factory
 The configuration factory allows more granular control of the loading/unloading of configuration. It can be used to add support for new configuration file formats in the `Configurations` implementation.
 
@@ -229,29 +256,28 @@ Security: open-source Hazelcast has no join authentication, anything that reache
 name can join. Keep clustered nodes on a private network (LAN, VPN).
 
 ### System
-The system configuration contains properties used for the framework core functions.
+The system configuration contains properties used for the framework core functions. Times are
+[durations](#durations), a plain number is milliseconds.
 
 |property|description|
 |---|---|
 |options| a [VertxOption](https://vertx.io/docs/apidocs/io/vertx/core/VertxOptions.html) object.  |
-|metrics| boolean indicates if metrics should be captured or not. |
-|metricRate| how often to capture metrics in milliseconds, default 15s. |
+|metrics| metric settings: `enabled` (boolean, if metrics should be captured), `rate` (how often to capture metrics, default `15s`), filters. |
 |services| the number of services to deploy when deploying a service. |
 |handlers| the number of handlers to deploy when deploying a handler. |
 |listeners| the number of listeners to deploy when deploying a listener. |
-|deployTimeout| time in milliseconds after which a deployment times out and fails. |
-|shutdownLogTimeout| time in milliseconds the shutdown hook will wait before terminating the application. |
-|shutdownHookTimeout| time in milliseconds that the whole shutdown may take, running blocking tasks are interrupted when it's up. |
-|shutdownDelay| time in milliseconds that services keep running after a shutdown has started and the context reports that it is shutting down (readiness fails), default 0. Must be less than the timeout. |
-|configurationPoll| how often the WatchService should be polled for file changes. |
+|deployTimeout| time after which a deployment times out and fails, default `3s`. |
+|shutdownHookTimeout| time that the whole shutdown may take, running blocking tasks are interrupted when it's up, default `5s`. |
+|shutdownDelay| time that services keep running after a shutdown has started and the context reports that it is shutting down (readiness fails), default `0s`. Must be less than the timeout. |
+|configurationPoll| how often the WatchService should be polled for file changes, default `1s500ms`. |
 |configurationReload| boolean, default true. Set to false to disable reloading of configuration when files change. |
-|cachedFilePoll| how often the `CachedFileStore` should poll the WatchService. |
+|cachedFilePoll| how often the `CachedFileStore` should poll the WatchService, default `1s500ms`. |
 |consoleLogging| boolean determines if logging events are printed to console out. |
 |eventLoops| the number of event loop threads, defaults to half of the logical processors. |
 |workerPoolSize| the size of the worker pool. |
-|clusterTimeout| time in ms until clustered messages are timed out. |
-|blockedThreadChecker| how often to check for blocked threads in milliseconds. |
-|maxEventLoopExecuteTime| the maximum number of milliseconds the event loop may block until a warning is generated, in milliseconds. |
+|clusterTimeout| time until clustered messages are timed out, default `3s`. |
+|blockedThreadChecker| how often to check for blocked threads, default `1s`. |
+|maxEventLoopExecuteTime| the time the event loop may block until a warning is generated, default `2s`. |
 |strict| boolean, default false (development). Once the launcher deployed its block, a loaded configuration file with generated secrets (security dependencies) that is not a file of the services deployed in the JVM ([by name](#launcher)) is a warning naming the service that loaded it, the file and the fix; strict (production) fails the start instead, and a later load is logged as an error. Overridden by `-Dchili.strict` or `CHILI_STRICT` (true/false), e.g. set in an image. |
 
 The event bus host and port of a cluster are in the launcher's [cluster](#cluster) settings.
@@ -267,9 +293,9 @@ Controls internal security configuration.
 |hmacAlgorithm|algorithm used to sign tokens.|
 |keyPairAlgorithm|algorithm of the key pairs that `generate` creates and key pair token factories sign and verify with, default `Ed25519`.|
 |secretBytes|the length of generated pre-shared secrets from `SecretFactory`.|
-|tokenttl|seconds that a `Token` without an expiry is valid (the tokens that services issue at runtime, such as user sessions, default 7 days).|
+|tokenttl|how long a `Token` without an expiry is valid (the tokens that services issue at runtime, such as user sessions), a [duration](#durations), default `7d`; a plain number is seconds.|
 |renames|renamed configuration files, old path to new, relative to the configuration directory without the extension (e.g. `service/routing: service/router`): `generate --store` and `bake --store` move the saved values of the old file in the store (plain, `encrypted/` and its record) to the new name, once, with a log line.|
-|serviceTokenttl|seconds that the tokens issued by `generate` (the `tokens` of the dependencies) are valid, default `tokenttl`; `generate` reissues them in their last quarter. `0`: they never expire (`Token.NEVER`, 9999-12-31) and are revoked by `--rotate`; `generate` reissues them only when missing or no longer verifying (or once, when issued with a lifetime).|
+|serviceTokenttl|how long the tokens issued by `generate` (the `tokens` of the dependencies) are valid, a [duration](#durations) (a plain number is seconds), default `tokenttl`; `generate` reissues them in their last quarter. `0s`: they never expire (`Token.NEVER`, 9999-12-31) and are revoked by `--rotate`; `generate` reissues them only when missing or no longer verifying (or once, when issued with a lifetime).|
 
 Sample configuration
 ```yaml
@@ -305,8 +331,8 @@ argon:
 hmacAlgorithm: "HmacSHA512"
 signatureAlgorithm: "SHA256withRSA"
 secretBytes: 64
-tokenttl: 604800
-serviceTokenttl: 0
+tokenttl: 7d
+serviceTokenttl: 0s
 ```
 
 Dependencies are used to instantiate configuration in multiple separate files.
@@ -323,7 +349,7 @@ The launcher command `generate` (and `generate-secrets`, `generate-preshared`, `
 
 |command|what it does|
 |---|---|
-|`generate`| fills in what is missing and keeps the rest: existing secrets, preshared keys and key pairs are kept; a preshared key that some files lack gets the value of the files that have it (when files disagree the most common value wins, a warning names the replaced files); the files that verify with a key pair get the public key of the files that sign with it; a token is kept while it verifies with the current secret of its issuer, belongs to the node and has more than a quarter of `serviceTokenttl` left (and not more than `serviceTokenttl`), otherwise it is reissued for `serviceTokenttl` (with `serviceTokenttl: 0` tokens never expire and are not reissued for age). Safe to run on every deploy: a new service or realm config gets its keys, nobody else is affected. |
+|`generate`| fills in what is missing and keeps the rest: existing secrets, preshared keys and key pairs are kept; a preshared key that some files lack gets the value of the files that have it (when files disagree the most common value wins, a warning names the replaced files); the files that verify with a key pair get the public key of the files that sign with it; a token is kept while it verifies with the current secret of its issuer, belongs to the node and has more than a quarter of `serviceTokenttl` left (and not more than `serviceTokenttl`), otherwise it is reissued for `serviceTokenttl` (with `serviceTokenttl: 0s` tokens never expire and are not reissued for age). Safe to run on every deploy: a new service or realm config gets its keys, nobody else is affected. |
 |`generate --rotate`| new values for every secret, preshared key, key pair and token, nothing old is kept: every token issued before is rejected once the services have the new files. Restart the services (a running service may keep a factory with the old key). Use it when a key leaked. |
 
 Each run reads every configuration file once, computes everything in memory and writes each changed file once at the
@@ -383,7 +409,7 @@ A remote storage configuration contains the following properties
 |port|the port of the database, if applicable.|
 |database|the name of the storage file on disk, a collection or a database/schema.|
 |persisted|some implementations support both in-memory and persisted mode.|
-|persistInterval|some implementations that support persistence will persist at this interval.|
+|persistInterval|some implementations that support persistence will persist at this interval, a [duration](#durations), default `3s`.|
 |properties|storage configuration per-implementation extra options.|
 
 Sample configuration

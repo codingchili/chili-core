@@ -1,5 +1,6 @@
 package com.codingchili.core.listener.transport;
 
+import com.codingchili.core.configuration.Durations;
 import com.codingchili.core.protocol.ResponseStatus;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.Message;
@@ -19,7 +20,7 @@ import static com.codingchili.core.configuration.CoreStrings.*;
 public class ClusterRequest extends AbstractRequest {
     private Connection connection;
     private final Message message;
-    private int timeout = Configurations.system().getClusterTimeout();
+    private int timeout = Durations.millis(Configurations.system().getClusterTimeout());
     private Buffer buffer;
     private JsonObject json;
 

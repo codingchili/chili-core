@@ -9,6 +9,7 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.io.File;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
@@ -69,8 +70,8 @@ public class SecretRotationTest {
         var dependencies = new HashMap<String, AuthenticationDependency>();
         security.setPath(PATH_SECURITY);
         security.setSecretBytes(32);
-        security.setTokenttl(TTL);
-        security.setServiceTokenttl(SERVICE_TTL);
+        security.setTokenttl(Duration.ofSeconds(TTL));
+        security.setServiceTokenttl(Duration.ofSeconds(SERVICE_TTL));
 
         dependencies.put("service.*", new AuthenticationDependency().addPreshare(GLOBAL).addSecret(LOCAL));
         dependencies.put("service1", new AuthenticationDependency()
@@ -232,7 +233,7 @@ public class SecretRotationTest {
 
     @Test
     public void serviceTokensWithoutLifetimeNeverExpire(TestContext test) {
-        Configurations.security().setServiceTokenttl(0);
+        Configurations.security().setServiceTokenttl(Duration.ZERO);
         long now = Instant.now().getEpochSecond();
 
         // a token issued with a lifetime (an earlier setting) is replaced once by one that never expires.

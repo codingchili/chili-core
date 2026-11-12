@@ -741,6 +741,23 @@ Tests: `SecretRotationTest` (7), `AuthenticationGeneratorIT`, `TokenFactoryTest`
   other key, tampered domain/property/expiry, expired, modes do not mix), `AuthenticationGeneratorIT` (async,
   `testGenerateTokens` no longer ignored), `LauncherCommandExecutorTest`.
 
+## Durations in configuration files: `7d`, `10m`, `1h30m`, `250ms` (1.4.9)
+
+- `com.codingchili.core.configuration.Durations` (from the Mutable Bunnies server): `parse` (units ms, s, m, h, d,
+  combinable; a plain number is ms; anything else fails naming the value, message `CoreStrings.getInvalidDuration`),
+  `format` (short form, largest unit first), `millis` (int ms, capped, for `TimerSource`/`Request.timeout()`), and the
+  Jackson 3 (de)serializers `Read` (plain numbers ms), `ReadSeconds`, `ReadDays` and `Write`. Docs: configuration.md
+  "Durations".
+- **API change:** the framework's time settings are `java.time.Duration` (getters return, setters take a `Duration`;
+  the void setters of `SystemSettings` are fluent now). Old config files keep their meaning (a plain number keeps its
+  old unit) and are written back in the short form:
+  `SystemSettings` `deployTimeout`, `shutdownHookTimeout`, `shutdownDelay`, `configurationPoll`, `cachedFilePoll`,
+  `clusterTimeout`, `blockedThreadChecker`, `maxEventLoopExecuteTime` (ms; Vert.x options get the value with an
+  explicit `TimeUnit`), `MetricSettings.rate` (ms), `ListenerSettings.timeout` (ms; `DEFAULT_TIMEOUT` stays an int of
+  ms), `RemoteStorage.persistInterval` (ms), `SecuritySettings.tokenttl`/`serviceTokenttl` (seconds, `0s` never
+  expires). `Request.timeout()` and `TimerSource` stay int ms; the status report keeps its `*Ms` numbers.
+- Tests: `DurationsTest` (14: parsing, formatting, the old numbers of every converted setting, the Vert.x options).
+
 ## Verification status
 
 Latest runs (handler → future migration and QUIC listener), all passing:

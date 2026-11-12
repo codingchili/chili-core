@@ -141,9 +141,9 @@ public class StatusReport {
                 .put("listeners", system.getListeners())
                 .put("handlers", system.getHandlers())
                 .put("services", system.getServices())
-                .put("clusterTimeoutMs", system.getClusterTimeout())
-                .put("shutdownHookTimeoutMs", system.getShutdownHookTimeout())
-                .put("shutdownDelayMs", system.getShutdownDelay())
+                .put("clusterTimeoutMs", system.getClusterTimeout().toMillis())
+                .put("shutdownHookTimeoutMs", system.getShutdownHookTimeout().toMillis())
+                .put("shutdownDelayMs", system.getShutdownDelay().toMillis())
                 .put("configurationReload", system.isConfigurationReload())
                 .put("prettyEncoding", system.isPrettyEncoding())
                 .put("metricsEnabled", system.getMetrics().isEnabled());

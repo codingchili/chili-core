@@ -9,6 +9,7 @@ import io.vertx.ext.web.RoutingContext;
 import java.util.*;
 
 import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.configuration.Durations;
 import com.codingchili.core.listener.*;
 import com.codingchili.core.protocol.Response;
 import com.codingchili.core.protocol.ResponseStatus;
@@ -152,7 +153,7 @@ public class RestRequest extends AbstractRequest {
 
     @Override
     public int timeout() {
-        return settings.getTimeout();
+        return Durations.millis(settings.getTimeout());
     }
 
     @Override

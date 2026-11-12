@@ -359,7 +359,7 @@ public class AuthenticationGenerator {
                     issued.add(keep(factory, file.json, key, identity, now).<Runnable>map(kept ->
                             () -> logger.log(getKeptSecret(key, file.path))
                     ).recover(invalid -> {
-                        long lifetime = security().getServiceTokenttl();
+                        long lifetime = security().getServiceTokenttl().toSeconds();
                         Token token = new Token(identity)
                                 .setExpiry((lifetime > 0) ? now.getEpochSecond() + lifetime : Token.NEVER);
 
@@ -384,7 +384,7 @@ public class AuthenticationGenerator {
         try {
             Token token = Serializer.unpack(existing, Token.class);
             long remaining = token.getExpiry() - now.getEpochSecond();
-            long lifetime = security().getServiceTokenttl();
+            long lifetime = security().getServiceTokenttl().toSeconds();
 
             if (!identity.equals(token.getDomain())) {
                 return Future.failedFuture("domain");

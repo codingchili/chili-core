@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.codingchili.core.configuration.CachedFileStoreSettings;
@@ -33,7 +34,7 @@ public class CachedFileStoreTest {
 
     @Before
     public void setUp() {
-        Configurations.system().setCachedFilePoll(20);
+        Configurations.system().setCachedFilePoll(Duration.ofMillis(20));
         CachedFileStore.reset();
         context = new SystemContext();
     }

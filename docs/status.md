@@ -65,8 +65,8 @@ Configure the delay in `system.yaml`, so that a load balancer has time to notice
 it stops serving requests,
 
 ```yaml
-shutdownDelay: 5000         # services keep running for 5 seconds after readiness fails, default 0.
-shutdownHookTimeout: 30000  # the whole shutdown, including the delay. Running blocking tasks are interrupted when it's up.
+shutdownDelay: 5s           # services keep running for 5 seconds after readiness fails, default 0s.
+shutdownHookTimeout: 30s    # the whole shutdown, including the delay. Running blocking tasks are interrupted when it's up.
 ```
 
 ### The status report

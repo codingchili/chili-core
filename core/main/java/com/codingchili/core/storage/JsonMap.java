@@ -1,5 +1,6 @@
 package com.codingchili.core.storage;
 
+import com.codingchili.core.configuration.Durations;
 import com.codingchili.core.context.FutureHelper;
 import com.codingchili.core.context.StorageContext;
 import com.codingchili.core.context.TimerSource;
@@ -80,7 +81,7 @@ public class JsonMap<Value extends Storable> implements AsyncStorage<Value> {
     }
 
     private void enableSave() {
-        TimerSource timer = TimerSource.of(context.storage()::getPersistInterval)
+        TimerSource timer = TimerSource.of(() -> Durations.millis(context.storage().getPersistInterval()))
                 .setName(context.identifier());
 
         context.periodic(timer, event -> {

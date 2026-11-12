@@ -5,6 +5,7 @@ import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
 
 import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.configuration.Durations;
 import com.codingchili.core.configuration.Environment;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.TimerSource;
@@ -45,7 +46,7 @@ public class MetricCollector {
         this.logger = core.logger(getClass());
         this.registry = SharedMetricRegistries.getOrCreate(registryName);
 
-        var timer = TimerSource.of(settings::getRate)
+        var timer = TimerSource.of(() -> Durations.millis(settings.getRate()))
                 .setName(CoreStrings.LOG_METRICS);
 
         core.periodic(timer, handler -> {

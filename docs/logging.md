@@ -178,10 +178,10 @@ In the visualization platform these messages will have the event type of `metric
 Enabling performance monitoring
 ```java
     SystemSettings settings = Configurations.system();
-    settings.setMetrics(true);
+    settings.getMetrics().setEnabled(true);
     
-    // defaults is 15s.
-    settings.setMetricRate(25000); // 25s
+    // defaults is 15s, in system.yaml: metrics.rate: 25s
+    settings.getMetrics().setRate(Duration.ofSeconds(25));
 ```
 
 Metrics and rate can be modified while the application is running.

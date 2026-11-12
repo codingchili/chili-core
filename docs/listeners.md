@@ -40,7 +40,8 @@ a message that says so. ALPN is enabled by default and can be turned off with `s
 The versions can be chosen with the configuration of the listener, see below. When `versions` is set, HTTP/3 is not added to it.
 
 ### Configuring the transport
-`ListenerSettings` has the properties of a listener that all listeners share (port, TLS, request size). The settings of the
+`ListenerSettings` has the properties of a listener that all listeners share (port, TLS, request size, the `timeout` of
+requests: a [duration](configuration#durations), default `3s`, a plain number is milliseconds). The settings of the
 transport itself are the `config` property. It is read as the configuration class of Vert.x that the listener
 declares in `configType()`, and the properties are those of that class,
 
@@ -56,6 +57,7 @@ declares in `configType()`, and the properties are those of that class,
 port: 8080
 secure: true
 keystore: main
+timeout: 10s
 config:
   versions: [HTTP_1_1, HTTP_2, HTTP_3]
   idleTimeout: PT60S

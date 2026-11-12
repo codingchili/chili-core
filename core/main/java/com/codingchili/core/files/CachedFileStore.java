@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.codingchili.core.configuration.CachedFileStoreSettings;
 import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.configuration.Durations;
 import com.codingchili.core.configuration.exception.ConfigurationMismatchException;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.context.TimerSource;
@@ -80,7 +81,7 @@ public final class CachedFileStore implements FileStoreListener {
     private void watchDirectory() {
         new FileWatcherBuilder(context)
                 .onDirectory(settings.getDirectory())
-                .rate(TimerSource.of(context.system()::getCachedFilePoll))
+                .rate(TimerSource.of(() -> Durations.millis(context.system().getCachedFilePoll())))
                 .withListener(this)
                 .build();
     }

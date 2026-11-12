@@ -9,10 +9,12 @@ import tools.jackson.core.JacksonException;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.ObjectMapper;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.function.Supplier;
 
 import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.configuration.Durations;
 import com.codingchili.core.configuration.system.SecuritySettings;
 import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.protocol.Serializer;
@@ -21,6 +23,8 @@ import io.vertx.core.http.HttpVersion;
 import io.vertx.core.net.QuicServerConfig;
 import io.vertx.core.net.ServerSSLOptions;
 import io.vertx.core.net.TcpServerConfig;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 
 import static com.codingchili.core.files.Configurations.security;
 
@@ -64,21 +68,23 @@ public class ListenerSettings {
     private boolean secure = true;
     private boolean alpn = true;
     private int port = 8080;
-    private int timeout = DEFAULT_TIMEOUT;
+    @JsonDeserialize(using = Durations.Read.class)
+    @JsonSerialize(using = Durations.Write.class)
+    private Duration timeout = Duration.ofMillis(DEFAULT_TIMEOUT);
     private int maxRequestBytes = DEFAULT_MAX_REQUEST_BYTES;
 
     /**
-     * @return timeout in MS after the router times out the request.
+     * @return the time after which the router times out the request (config: 3s; a plain number is ms).
      */
-    public int getTimeout() {
+    public Duration getTimeout() {
         return timeout;
     }
 
     /**
-     * @param timeout the timeout in MS which the router times out the request.
+     * @param timeout the time after which the router times out the request.
      * @return fluent
      */
-    public ListenerSettings setTimeout(int timeout) {
+    public ListenerSettings setTimeout(Duration timeout) {
         this.timeout = timeout;
         return this;
     }

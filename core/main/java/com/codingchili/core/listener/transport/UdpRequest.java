@@ -4,6 +4,7 @@ import io.vertx.core.datagram.DatagramPacket;
 import io.vertx.core.datagram.DatagramSocket;
 import io.vertx.core.json.JsonObject;
 
+import com.codingchili.core.configuration.Durations;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.listener.ListenerSettings;
 import com.codingchili.core.listener.AbstractRequest;
@@ -70,7 +71,7 @@ public class UdpRequest extends AbstractRequest {
 
     @Override
     public int timeout() {
-        return settings.getTimeout();
+        return Durations.millis(settings.getTimeout());
     }
 
     @Override

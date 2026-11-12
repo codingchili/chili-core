@@ -5,12 +5,17 @@ import com.codingchili.core.protocol.Serializer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import tools.jackson.databind.SerializationFeature;
 import io.vertx.core.VertxOptions;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 
+import java.time.Duration;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.configuration.Durations;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
 
@@ -24,19 +29,35 @@ public class SystemSettings implements Configurable {
     private int services = 1;
     private int handlers = 1;
     private int listeners = 1;
-    private int deployTimeout = 3000;
-    private int shutdownHookTimeout = 5000;
-    private int shutdownDelay = 0;
-    private int configurationPoll = 1500;
+    @JsonDeserialize(using = Durations.Read.class)
+    @JsonSerialize(using = Durations.Write.class)
+    private Duration deployTimeout = Duration.ofSeconds(3);
+    @JsonDeserialize(using = Durations.Read.class)
+    @JsonSerialize(using = Durations.Write.class)
+    private Duration shutdownHookTimeout = Duration.ofSeconds(5);
+    @JsonDeserialize(using = Durations.Read.class)
+    @JsonSerialize(using = Durations.Write.class)
+    private Duration shutdownDelay = Duration.ZERO;
+    @JsonDeserialize(using = Durations.Read.class)
+    @JsonSerialize(using = Durations.Write.class)
+    private Duration configurationPoll = Duration.ofMillis(1500);
     private boolean configurationReload = true;
-    private int cachedFilePoll = 1500;
+    @JsonDeserialize(using = Durations.Read.class)
+    @JsonSerialize(using = Durations.Write.class)
+    private Duration cachedFilePoll = Duration.ofMillis(1500);
     private boolean consoleLogging = true;
     private boolean prettyEncoding = false;
     private boolean unsafe = false;
     private boolean strict = false;
-    private int clusterTimeout = 3000;
-    private long blockedThreadChecker = VertxOptions.DEFAULT_BLOCKED_THREAD_CHECK_INTERVAL;
-    private long maxEventLoopExecuteTime = VertxOptions.DEFAULT_MAX_EVENT_LOOP_EXECUTE_TIME / (1000 * 1000);
+    @JsonDeserialize(using = Durations.Read.class)
+    @JsonSerialize(using = Durations.Write.class)
+    private Duration clusterTimeout = Duration.ofSeconds(3);
+    @JsonDeserialize(using = Durations.Read.class)
+    @JsonSerialize(using = Durations.Write.class)
+    private Duration blockedThreadChecker = Duration.ofMillis(VertxOptions.DEFAULT_BLOCKED_THREAD_CHECK_INTERVAL);
+    @JsonDeserialize(using = Durations.Read.class)
+    @JsonSerialize(using = Durations.Write.class)
+    private Duration maxEventLoopExecuteTime = Duration.ofNanos(VertxOptions.DEFAULT_MAX_EVENT_LOOP_EXECUTE_TIME);
     private int eventLoops = Math.max(1, cores / 2);
     private int workerPoolSize = Math.max(1, cores / 2);
 
@@ -78,41 +99,41 @@ public class SystemSettings implements Configurable {
     }
 
     /**
-     * @return the time in MS for a deploy to time out and fail.
+     * @return the time for a deploy to time out and fail (config: 3s; a plain number is ms).
      */
-    public int getDeployTimeout() {
+    public Duration getDeployTimeout() {
         return deployTimeout;
     }
 
     /**
-     * @param deployTimeout the time in MS for a deploy to time out and fail.
+     * @param deployTimeout the time for a deploy to time out and fail.
      * @return fluent
      */
-    public SystemSettings setDeployTimeout(int deployTimeout) {
+    public SystemSettings setDeployTimeout(Duration deployTimeout) {
         this.deployTimeout = deployTimeout;
         return this;
     }
 
     /**
-     * @return get the total timeout in MS for the shutdown-hook to complete.
+     * @return the total time for the shutdown-hook to complete.
      */
-    public int getShutdownHookTimeout() {
+    public Duration getShutdownHookTimeout() {
         return shutdownHookTimeout;
     }
 
     /**
-     * @param shutdownHookTimeout set the shutdown hook timeout in MS.
+     * @param shutdownHookTimeout the total time for the shutdown-hook to complete.
      * @return fluent
      */
-    public SystemSettings setShutdownHookTimeout(int shutdownHookTimeout) {
+    public SystemSettings setShutdownHookTimeout(Duration shutdownHookTimeout) {
         this.shutdownHookTimeout = shutdownHookTimeout;
         return this;
     }
 
     /**
-     * @return the time in MS that services keep running after a shutdown has started.
+     * @return the time that services keep running after a shutdown has started.
      */
-    public int getShutdownDelay() {
+    public Duration getShutdownDelay() {
         return shutdownDelay;
     }
 
@@ -122,43 +143,47 @@ public class SystemSettings implements Configurable {
      * still being sent are served instead of failing. The delay counts towards the shutdown hook timeout, which
      * should be set to more than the delay and the time it takes to stop the services. Default 0: no delay.
      *
-     * @param shutdownDelay the time in MS to wait between marking the context as shutting down and stopping services.
+     * @param shutdownDelay the time to wait between marking the context as shutting down and stopping services.
      * @return fluent
      */
-    public SystemSettings setShutdownDelay(int shutdownDelay) {
+    public SystemSettings setShutdownDelay(Duration shutdownDelay) {
         this.shutdownDelay = shutdownDelay;
         return this;
     }
 
     /**
-     * @return the number of milliseconds to wait before logging an error if an event
+     * @return the interval in which the blocked thread checker checks if an event
      * loop thread is blocked.
      */
-    public long getBlockedThreadChecker() {
+    public Duration getBlockedThreadChecker() {
         return blockedThreadChecker;
     }
 
     /**
-     * @param blockedThreadChecker sets the number of milliseconds to wait before logging an
-     *                             error if an event loop thread is blocked.
+     * @param blockedThreadChecker sets the interval in which the blocked thread checker checks if an
+     *                             event loop thread is blocked.
+     * @return fluent
      */
-    public void setBlockedThreadChecker(long blockedThreadChecker) {
+    public SystemSettings setBlockedThreadChecker(Duration blockedThreadChecker) {
         this.blockedThreadChecker = blockedThreadChecker;
+        return this;
     }
 
     /**
-     * @return the max event loop execute time the blocked thread checker uses in milliseconds.
+     * @return the max event loop execute time the blocked thread checker uses.
      */
-    public long getMaxEventLoopExecuteTime() {
+    public Duration getMaxEventLoopExecuteTime() {
         return maxEventLoopExecuteTime;
     }
 
     /**
-     * @param maxEventLoopExecuteTime the number of milliseconds the event loop can block without
+     * @param maxEventLoopExecuteTime the time the event loop can block without
      *                                having the blocked-thread-checker generate warning.
+     * @return fluent
      */
-    public void setMaxEventLoopExecuteTime(long maxEventLoopExecuteTime) {
+    public SystemSettings setMaxEventLoopExecuteTime(Duration maxEventLoopExecuteTime) {
         this.maxEventLoopExecuteTime = maxEventLoopExecuteTime;
+        return this;
     }
 
     /**
@@ -174,8 +199,10 @@ public class SystemSettings implements Configurable {
                     .setMetricsOptions(metrics.createVertxOptions())
                     .setEventLoopPoolSize(eventLoops)
                     .setWorkerPoolSize(workerPoolSize)
-                    .setBlockedThreadCheckInterval(blockedThreadChecker)
-                    .setMaxEventLoopExecuteTime(maxEventLoopExecuteTime * 1000 * 1000);
+                    .setBlockedThreadCheckInterval(blockedThreadChecker.toMillis())
+                    .setBlockedThreadCheckIntervalUnit(TimeUnit.MILLISECONDS)
+                    .setMaxEventLoopExecuteTime(maxEventLoopExecuteTime.toNanos())
+                    .setMaxEventLoopExecuteTimeUnit(TimeUnit.NANOSECONDS);
         }
         return options;
     }
@@ -204,17 +231,17 @@ public class SystemSettings implements Configurable {
     }
 
     /**
-     * @return get the interval in MS in which configurations are checked for changes.
+     * @return the interval in which configurations are checked for changes.
      */
-    public int getConfigurationPoll() {
+    public Duration getConfigurationPoll() {
         return configurationPoll;
     }
 
     /**
-     * @param configurationPoll set the interval time in MS which configuration files are checked for changes.
+     * @param configurationPoll the interval in which configuration files are checked for changes.
      * @return fluent
      */
-    public SystemSettings setConfigurationPoll(int configurationPoll) {
+    public SystemSettings setConfigurationPoll(Duration configurationPoll) {
         this.configurationPoll = configurationPoll;
         return this;
     }
@@ -243,17 +270,17 @@ public class SystemSettings implements Configurable {
     }
 
     /**
-     * @return get the interval in MS for which files that are cached are refreshed.
+     * @return the interval in which files that are cached are refreshed.
      */
-    public int getCachedFilePoll() {
+    public Duration getCachedFilePoll() {
         return cachedFilePoll;
     }
 
     /**
-     * @param cachedFilePoll set the time in ms for which files that are cached are refreshed.
+     * @param cachedFilePoll the interval in which files that are cached are refreshed.
      * @return fluent
      */
-    public SystemSettings setCachedFilePoll(int cachedFilePoll) {
+    public SystemSettings setCachedFilePoll(Duration cachedFilePoll) {
         this.cachedFilePoll = cachedFilePoll;
         return this;
     }
@@ -292,15 +319,18 @@ public class SystemSettings implements Configurable {
         return this;
     }
 
-    public int getClusterTimeout() {
+    /**
+     * @return the time until requests over the cluster time out.
+     */
+    public Duration getClusterTimeout() {
         return clusterTimeout;
     }
 
     /**
-     * @param clusterTimeout cluster timeout in seconds
+     * @param clusterTimeout the time until requests over the cluster time out.
      * @return fluent
      */
-    public SystemSettings setClusterTimeout(int clusterTimeout) {
+    public SystemSettings setClusterTimeout(Duration clusterTimeout) {
         this.clusterTimeout = clusterTimeout;
         return this;
     }

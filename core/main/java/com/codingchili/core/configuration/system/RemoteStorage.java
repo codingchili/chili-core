@@ -1,8 +1,13 @@
 package com.codingchili.core.configuration.system;
 
 import io.vertx.core.json.JsonObject;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
+
+import java.time.Duration;
 
 import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.configuration.Durations;
 
 /**
  * configuration settings for a remote storage.
@@ -12,7 +17,9 @@ public class RemoteStorage {
     private String host = CoreStrings.LOCALHOST;
     private String database = CoreStrings.DEFAULT_DB;
     private Integer port = 27017;
-    private int persistInterval = 3000;
+    @JsonDeserialize(using = Durations.Read.class)
+    @JsonSerialize(using = Durations.Write.class)
+    private Duration persistInterval = Duration.ofSeconds(3);
     private boolean persisted = false;
     private boolean secure = false;
 
@@ -100,20 +107,20 @@ public class RemoteStorage {
     }
 
     /**
-     * @return the interval in MS which a database should be persisted for non-disk
-     * storages. Only applies if persist is set. May not be supported.
+     * @return the interval in which a database should be persisted for non-disk
+     * storages (config: 3s; a plain number is ms). Only applies if persist is set. May not be supported.
      */
-    public int getPersistInterval() {
+    public Duration getPersistInterval() {
         return persistInterval;
     }
 
     /**
-     * @param persistInterval sets the interval in ms which a database should be persisted for
+     * @param persistInterval sets the interval in which a database should be persisted for
      *                        non-disk storages. Only applies if persist is set.
      *                        May not be supported.
      * @return fluent.
      */
-    public RemoteStorage setPersistInterval(int persistInterval) {
+    public RemoteStorage setPersistInterval(Duration persistInterval) {
         this.persistInterval = persistInterval;
         return this;
     }

@@ -12,6 +12,7 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
 import org.junit.runner.RunWith;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -65,7 +66,7 @@ public abstract class ListenerTestCases {
                 .setMaxRequestBytes(MAX_REQUEST_BYTES)
                 .setPort(0)
                 .setSecure(false)
-                .setTimeout(7000)
+                .setTimeout(Duration.ofSeconds(7))
                 .setDefaultTarget(NODE_WEBSERVER)
                 .setHttpOptions(new HttpServerConfig().setCompressionConfig(new CompressionConfig().setCompressionEnabled(false)))
                 .addMapping(PATCHING_ROOT, new Endpoint(NODE_PATCHING));

@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import com.codingchili.core.configuration.Configurable;
 import com.codingchili.core.configuration.CoreStrings;
+import com.codingchili.core.configuration.Durations;
 import com.codingchili.core.configuration.exception.InvalidConfigurableException;
 import com.codingchili.core.configuration.system.*;
 import com.codingchili.core.context.StartupListener;
@@ -81,7 +82,7 @@ public abstract class Configurations {
     }
 
     private static int getConfigurationPoll() {
-        return system().getConfigurationPoll();
+        return Durations.millis(system().getConfigurationPoll());
     }
 
     /**
