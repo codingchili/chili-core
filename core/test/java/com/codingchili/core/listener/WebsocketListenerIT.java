@@ -33,6 +33,30 @@ public class WebsocketListenerIT extends ListenerTestCases {
         }));
     }
 
+    @Test
+    public void malformedMessagesAreAnsweredAndTheConnectionStays(TestContext test) {
+        // not json and json nested beyond the parser's limit: answered BAD, the next message is handled.
+        Async async = test.async();
+        var client = context.vertx().createWebSocketClient();
+        var answers = new java.util.ArrayList<JsonObject>();
+        client.connect(port, HOST, CoreStrings.DIR_SEPARATOR).onComplete(test.asyncAssertSuccess(socket -> {
+            socket.handler(body -> {
+                answers.add(body.toJsonObject());
+                if (answers.size() == 3) {
+                    test.assertEquals("BAD", answers.get(0).getString(CoreStrings.PROTOCOL_STATUS));
+                    test.assertEquals("BAD", answers.get(1).getString(CoreStrings.PROTOCOL_STATUS));
+                    test.assertEquals("ACCEPTED", answers.get(2).getString(CoreStrings.PROTOCOL_STATUS));
+                    test.assertNotNull(client, "kept for the length of the test");
+                    async.complete();
+                }
+            });
+            socket.write(Buffer.buffer("not json"));
+            socket.write(Buffer.buffer("{\"a\":".repeat(2000) + "1" + "}".repeat(2000)));
+            socket.write(Buffer.buffer(new JsonObject().put(CoreStrings.PROTOCOL_TARGET, NODE_ROUTER)
+                    .put(CoreStrings.PROTOCOL_ROUTE, "hello").encode()));
+        }));
+    }
+
     @Override
     public void sendRequest(ResponseListener listener, JsonObject data) {
         context.vertx().createWebSocketClient().connect(port, HOST, CoreStrings.DIR_SEPARATOR).onComplete(handler -> {

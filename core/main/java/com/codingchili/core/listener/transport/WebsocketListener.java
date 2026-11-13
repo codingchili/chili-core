@@ -20,6 +20,8 @@ import com.codingchili.core.context.CoreRuntimeException;
 import com.codingchili.core.listener.*;
 import com.codingchili.core.logging.Logger;
 import com.codingchili.core.protocol.*;
+import com.codingchili.core.protocol.Response;
+import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.protocol.exception.RequestPayloadSizeException;
 
 import static com.codingchili.core.configuration.CoreStrings.*;
@@ -133,13 +135,21 @@ public class WebsocketListener implements CoreListener {
     }
 
     private void handle(Connection connection, Buffer buffer) {
-        var request = new WebsocketRequest(connection, buffer, settings);
-
-        if (buffer.length() <= settings.getMaxRequestBytes()) {
-            handler.handle(request);
-        } else {
-            request.error(new RequestPayloadSizeException(settings.getMaxRequestBytes()));
+        if (buffer.length() > settings.getMaxRequestBytes()) {
+            // not decoded: answered from the size alone.
+            connection.write(Response.error(null, null, ResponseStatus.BAD,
+                    new RequestPayloadSizeException(settings.getMaxRequestBytes())));
+            return;
         }
+        WebsocketRequest request;
+        try {
+            request = new WebsocketRequest(connection, buffer, settings);
+        } catch (RuntimeException e) {
+            // not json, or nested beyond the parser's limit: the client's mistake, answered and not logged.
+            connection.write(Response.error(null, null, ResponseStatus.BAD, e));
+            return;
+        }
+        handler.handle(request);
     }
 
     @Override

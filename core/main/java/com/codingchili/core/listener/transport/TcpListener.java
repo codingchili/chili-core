@@ -5,6 +5,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetSocket;
 import io.vertx.core.net.TcpServerConfig;
 
+import com.codingchili.core.protocol.ResponseStatus;
 import com.codingchili.core.context.CoreContext;
 import com.codingchili.core.listener.*;
 import com.codingchili.core.logging.Logger;
@@ -81,7 +82,15 @@ public class TcpListener implements CoreListener {
     }
 
     private void packet(Connection connection, Buffer data) {
-        handler.handle(new TcpRequest(connection, data, settings));
+        TcpRequest request;
+        try {
+            request = new TcpRequest(connection, data, settings);
+        } catch (RuntimeException e) {
+            // not json, or nested beyond the parser's limit: the client's mistake, answered and not logged.
+            connection.write(Response.buffer(Response.error(null, null, ResponseStatus.BAD, e)));
+            return;
+        }
+        handler.handle(request);
     }
 
     @Override

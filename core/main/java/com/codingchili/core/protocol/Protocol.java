@@ -11,16 +11,20 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.codingchili.core.configuration.CoreStrings;
+import io.vertx.core.json.DecodeException;
 import com.codingchili.core.context.StartupListener;
 import com.codingchili.core.listener.Receiver;
 import com.codingchili.core.listener.Request;
 import com.codingchili.core.logging.ConsoleLogger;
 import com.codingchili.core.logging.Logger;
+import com.codingchili.core.logging.Level;
 import com.codingchili.core.protocol.exception.AuthorizationRequiredException;
 import com.codingchili.core.protocol.exception.HandlerMissingException;
 import com.codingchili.core.protocol.exception.MessageTypeMismatchException;
 
 import static com.codingchili.core.configuration.CoreStrings.ANY;
+import static com.codingchili.core.configuration.CoreStrings.LOG_REQUEST_REFUSED;
+import static com.codingchili.core.configuration.CoreStrings.PROTOCOL_ROUTE;
 import static com.codingchili.core.protocol.RoleMap.*;
 
 /**
@@ -397,17 +401,47 @@ public class Protocol<RequestType> {
                     try {
                         get(routeMapper.apply(request), done.result()).submit((RequestType) request);
                     } catch (Throwable e) {
-                        logger.onError(e);
-                        request.error(e);
+                        failed(request, e);
                     }
                 } else {
-                    logger.onError(done.cause());
-                    request.error(done.cause());
+                    failed(request, done.cause());
                 }
             });
         } catch (Throwable e) {
+            failed(request, e);
+        }
+    }
+
+    /**
+     * Answers a request that failed. What a client can cause at will (a route that does not exist, a route it is
+     * not authorized for, a message of the wrong type or that does not decode) is logged at DEBUG: anyone who can
+     * reach a listener must not be able to fill the error log. Anything else is a fault and logged as an error.
+     */
+    private void failed(Request request, Throwable e) {
+        if (refusal(e)) {
+            logger.event(LOG_REQUEST_REFUSED, Level.DEBUG)
+                    .put(PROTOCOL_ROUTE, safeRoute(request))
+                    .send(e.getClass().getSimpleName() + ": " + e.getMessage());
+        } else {
             logger.onError(e);
-            request.error(e);
+        }
+        request.error(e);
+    }
+
+    /**
+     * @param e a failure of a request.
+     * @return true if a client can cause it at will: answered, not a fault of the server.
+     */
+    static boolean refusal(Throwable e) {
+        return e instanceof AuthorizationRequiredException || e instanceof HandlerMissingException
+                || e instanceof MessageTypeMismatchException || e instanceof DecodeException;
+    }
+
+    private static String safeRoute(Request request) {
+        try {
+            return request.route();
+        } catch (RuntimeException e) {
+            return null;
         }
     }
 

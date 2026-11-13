@@ -56,6 +56,17 @@ Findings come from reading the code; no exploit tests have been written and noth
 - `SecretFactory` uses `SecureRandom`; defaults are HmacSHA512 and 64-byte secrets.
 - Request body size limits apply on REST and WebSocket.
 
+## Client refusals are not errors (log flooding)
+
+Found with a game client probing a server: anyone who could reach a listener filled its error log, one ERROR per
+message, without logging in (a route it is not authorized for, a route that does not exist, a message that is not
+json). `Protocol.process` now logs those refusals (`AuthorizationRequiredException`, `HandlerMissingException`,
+`MessageTypeMismatchException`, `DecodeException`) at DEBUG as `request.refused` and still answers them; faults stay
+errors. The websocket and TCP listeners answer a message that does not decode (or is nested beyond the parser's
+limit) with BAD instead of letting the exception reach the context, and the websocket listener checks the size before
+decoding. Tests: `ProtocolRefusalTest`, `WebsocketListenerIT.malformedMessagesAreAnsweredAndTheConnectionStays`.
+A per-connection message rate is the application's (the game server adds one).
+
 ## Encrypted configuration values, secrets store, bake, node keys (1.4.9)
 
 - `enc:v1:` values (`EncryptedValue`): X25519 + HKDF-SHA256 + ChaCha20-Poly1305 (JDK only), the data key wrapped once

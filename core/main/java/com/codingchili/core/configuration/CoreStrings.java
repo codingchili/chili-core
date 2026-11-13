@@ -204,6 +204,7 @@ public abstract class CoreStrings {
     public static final String DEFAULT_DB = "db";
 
     // logging constants
+    public static final String LOG_REQUEST_REFUSED = "request.refused";
     public static final String LOG_APPLICATION = "application";
     public static final String LOG_AT = "@";
     public static final String LOG_EVENT = "event";
