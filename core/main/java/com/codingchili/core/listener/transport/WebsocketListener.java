@@ -92,13 +92,13 @@ public class WebsocketListener implements CoreListener {
         var handlerPromise = Promise.<Void>promise();
         handlerPromise.future()
                 .compose(v -> core.vertx().createHttpServer(settings.getHttpOptions(), settings.getSecurity())
-                        .exceptionHandler(logger::onError)
+                        .exceptionHandler(ListenerExceptionLogger.handler(logger))
                         .webSocketHandler(socket -> {
                             Connection connection = connected(socket);
 
                             socket.handler(data -> handle(connection, data));
                             socket.closeHandler(closed -> connection.runCloseHandlers());
-                            socket.exceptionHandler(logger::onError);
+                            socket.exceptionHandler(ListenerExceptionLogger.handler(logger));
 
                         }).requestHandler(router)
                         .listen(settings.getPort(), getBindAddress()))

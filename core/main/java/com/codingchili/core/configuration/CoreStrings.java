@@ -205,6 +205,7 @@ public abstract class CoreStrings {
 
     // logging constants
     public static final String LOG_REQUEST_REFUSED = "request.refused";
+    public static final String LOG_CONNECTION_FAILED = "connection.failed";
     public static final String LOG_APPLICATION = "application";
     public static final String LOG_AT = "@";
     public static final String LOG_EVENT = "event";

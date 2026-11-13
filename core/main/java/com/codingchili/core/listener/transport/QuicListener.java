@@ -96,7 +96,7 @@ public class QuicListener implements CoreListener, DeploymentAware {
                 .setApplicationLayerProtocols(List.of(settings.getQuicProtocol()));
 
         server = core.vertx().createQuicServer(settings.getQuic(), ssl)
-                .exceptionHandler(logger::onError)
+                .exceptionHandler(ListenerExceptionLogger.handler(logger))
                 .connectHandler(this::connected);
 
         return server.listen(settings.getPort(), getBindAddress());
@@ -126,7 +126,7 @@ public class QuicListener implements CoreListener, DeploymentAware {
         Buffer body = Buffer.buffer();
         AtomicBoolean rejected = new AtomicBoolean(false);
 
-        stream.exceptionHandler(logger::onError);
+        stream.exceptionHandler(ListenerExceptionLogger.handler(logger));
         stream.handler(data -> {
             if (rejected.get()) {
                 return;

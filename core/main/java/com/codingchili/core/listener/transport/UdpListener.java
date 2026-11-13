@@ -57,7 +57,7 @@ public class UdpListener implements CoreListener, DeploymentAware {
                 .onSuccess(server -> {
                     settings.addListenPort(server.localAddress().port());
                     server.handler(this::handle)
-                            .exceptionHandler(logger::onError);
+                            .exceptionHandler(ListenerExceptionLogger.handler(logger));
                     start.complete();
                 })
                 .onFailure(start::fail);

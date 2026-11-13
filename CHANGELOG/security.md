@@ -65,7 +65,9 @@ json). `Protocol.process` now logs those refusals (`AuthorizationRequiredExcepti
 errors. The websocket and TCP listeners answer a message that does not decode (or is nested beyond the parser's
 limit) with BAD instead of letting the exception reach the context, and the websocket listener checks the size before
 decoding. Tests: `ProtocolRefusalTest`, `WebsocketListenerIT.malformedMessagesAreAnsweredAndTheConnectionStays`.
-A per-connection message rate is the application's (the game server adds one).
+The listeners' exception handlers (`ListenerExceptionLogger.handler`) log what the peer causes (a closed connection,
+a corrupt or oversized websocket frame, a reset) at DEBUG as `connection.failed`; other exceptions stay errors
+(`ListenerExceptionLoggerTest`). A per-connection message rate is the application's (the game server adds one).
 
 ## Encrypted configuration values, secrets store, bake, node keys (1.4.9)
 

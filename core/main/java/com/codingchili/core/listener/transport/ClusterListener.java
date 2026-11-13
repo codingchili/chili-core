@@ -45,7 +45,7 @@ public class ClusterListener implements CoreListener, DeploymentAware {
             Stream.of(handler.address().split(","))
                     .forEach(address -> {
                         core.bus().consumer(address)
-                                .exceptionHandler(logger::onError)
+                                .exceptionHandler(ListenerExceptionLogger.handler(logger))
                                 .handler(message -> handler.handle(new ClusterRequest(message)));
                     });
         });

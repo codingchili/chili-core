@@ -52,13 +52,13 @@ public class TcpListener implements CoreListener {
 
         handlerPromise.future()
                 .compose(v -> core.vertx().createNetServer(settings.getTcp(), settings.getSecurity())
-                        .exceptionHandler(logger::onError)
+                        .exceptionHandler(ListenerExceptionLogger.handler(logger))
                         .connectHandler(socket -> {
                             Connection connection = connected(socket);
 
                             socket.handler(data -> packet(connection, data));
                             socket.closeHandler((close) -> connection.runCloseHandlers());
-                            socket.exceptionHandler(logger::onError);
+                            socket.exceptionHandler(ListenerExceptionLogger.handler(logger));
 
                         }).listen(settings.getPort(), getBindAddress()))
                 .onSuccess(result -> {

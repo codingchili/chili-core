@@ -92,7 +92,7 @@ public class RestListener implements CoreListener {
         handlerPromise.future()
                 .compose(v -> core.vertx().createHttpServer(settings.getHttpOptions(), settings.getSecurity())
                         .requestHandler(router)
-                        .exceptionHandler(logger::onError)
+                        .exceptionHandler(ListenerExceptionLogger.handler(logger))
                         .listen(settings.getPort(), getBindAddress()))
                 .onSuccess(result -> {
                     settings.addListenPort(result.actualPort());
