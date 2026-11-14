@@ -21,6 +21,8 @@ public class Connection implements Messageable {
     private BiConsumer<Consumer<Object>, Object> proxy;
     private Runnable closer;
     private boolean closed;
+    // the largest message the listener accepts from this connection, checked before decoding; 0 = the listener's.
+    private volatile int maxRequestBytes;
 
     /**
      * Creates a new stateful connection that properly implements the ID method.
@@ -154,6 +156,35 @@ public class Connection implements Messageable {
      * @param key the property to retrieve.
      * @return an optional of the property value.
      */
+    /**
+     * @return the largest message in bytes that the listener accepts from this connection before decoding it, 0 when
+     * the listener's maxRequestBytes applies.
+     */
+    public int maxRequestBytes() {
+        return maxRequestBytes;
+    }
+
+    /**
+     * Sets the limit of this connection, e.g. raised for an authenticated admin or lowered for a player: the
+     * listener checks it before a message is decoded, so an oversized message costs no parsing.
+     *
+     * @param maxRequestBytes the largest message in bytes, 0 for the listener's maxRequestBytes.
+     * @return fluent.
+     */
+    public Connection maxRequestBytes(int maxRequestBytes) {
+        this.maxRequestBytes = maxRequestBytes;
+        return this;
+    }
+
+    /**
+     * @param fallback the limit of the listener.
+     * @return the limit of this connection, or the fallback when it has none.
+     */
+    public int maxRequestBytesOr(int fallback) {
+        var limit = maxRequestBytes;
+        return (limit > 0) ? limit : fallback;
+    }
+
     public Optional<String> getProperty(String key) {
         return Optional.ofNullable(properties.getOrDefault(key, null));
     }

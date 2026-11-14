@@ -135,10 +135,10 @@ public class WebsocketListener implements CoreListener {
     }
 
     private void handle(Connection connection, Buffer buffer) {
-        if (buffer.length() > settings.getMaxRequestBytes()) {
-            // not decoded: answered from the size alone.
-            connection.write(Response.error(null, null, ResponseStatus.BAD,
-                    new RequestPayloadSizeException(settings.getMaxRequestBytes())));
+        var limit = connection.maxRequestBytesOr(settings.getMaxRequestBytes());
+        if (buffer.length() > limit) {
+            // not decoded: answered from the size alone (the connection's limit, else the listener's).
+            connection.write(Response.error(null, null, ResponseStatus.BAD, new RequestPayloadSizeException(limit)));
             return;
         }
         WebsocketRequest request;

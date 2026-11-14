@@ -67,7 +67,9 @@ limit) with BAD instead of letting the exception reach the context, and the webs
 decoding. Tests: `ProtocolRefusalTest`, `WebsocketListenerIT.malformedMessagesAreAnsweredAndTheConnectionStays`.
 The listeners' exception handlers (`ListenerExceptionLogger.handler`) log what the peer causes (a closed connection,
 a corrupt or oversized websocket frame, a reset) at DEBUG as `connection.failed`; other exceptions stay errors
-(`ListenerExceptionLoggerTest`). A per-connection message rate is the application's (the game server adds one).
+(`ListenerExceptionLoggerTest`). A connection can carry its own limit (`Connection.maxRequestBytes(int)`, e.g. raised for an authenticated admin):
+the websocket listener checks it before decoding, falling back to the listener's `maxRequestBytes`
+(`WebsocketListenerIT.theLimitOfAConnectionIsCheckedBeforeDecoding`). A per-connection message rate is the application's (the game server adds one).
 
 ## Encrypted configuration values, secrets store, bake, node keys (1.4.9)
 

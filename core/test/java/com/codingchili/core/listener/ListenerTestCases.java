@@ -39,6 +39,8 @@ public abstract class ListenerTestCases {
     private static final String ONE_CHAR = "x";
     private static final String DATA = "data";
     protected static final String ROUTE_CLOSE = "close";
+    protected static final String ROUTE_LIMIT = "limit";
+    protected static final int LIMIT_BYTES = 64;
     private Supplier<CoreListener> listener;
 
     @Rule
@@ -143,6 +145,10 @@ public abstract class ListenerTestCases {
             if (ROUTE_CLOSE.equals(request.route())) {
                 // the server closes the connection: the client sees it closed.
                 request.connection().close();
+            } else if (ROUTE_LIMIT.equals(request.route())) {
+                // lowers the limit of this connection: a larger message is refused before it is decoded.
+                request.connection().maxRequestBytes(LIMIT_BYTES);
+                request.accept();
             } else {
                 request.accept();
             }

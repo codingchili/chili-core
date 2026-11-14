@@ -57,6 +57,33 @@ public class WebsocketListenerIT extends ListenerTestCases {
         }));
     }
 
+    @Test
+    public void theLimitOfAConnectionIsCheckedBeforeDecoding(TestContext test) {
+        // the handler lowers the limit of its connection to 64 bytes: a larger message is answered BAD by the listener,
+        // a smaller one still reaches the handler.
+        Async async = test.async();
+        var client = context.vertx().createWebSocketClient();
+        var answers = new java.util.ArrayList<JsonObject>();
+        client.connect(port, HOST, CoreStrings.DIR_SEPARATOR).onComplete(test.asyncAssertSuccess(socket -> {
+            socket.handler(body -> {
+                answers.add(body.toJsonObject());
+                if (answers.size() == 1) {
+                    test.assertEquals("ACCEPTED", answers.get(0).getString(CoreStrings.PROTOCOL_STATUS));
+                    socket.write(Buffer.buffer(new JsonObject().put(CoreStrings.PROTOCOL_TARGET, NODE_ROUTER)
+                            .put(CoreStrings.PROTOCOL_ROUTE, "hello").put("padding", "x".repeat(LIMIT_BYTES)).encode()));
+                    socket.write(Buffer.buffer(new JsonObject().put(CoreStrings.PROTOCOL_ROUTE, "hi").encode()));
+                } else if (answers.size() == 3) {
+                    test.assertEquals("BAD", answers.get(1).getString(CoreStrings.PROTOCOL_STATUS));
+                    test.assertEquals("ACCEPTED", answers.get(2).getString(CoreStrings.PROTOCOL_STATUS));
+                    test.assertNotNull(client, "kept for the length of the test");
+                    async.complete();
+                }
+            });
+            socket.write(Buffer.buffer(new JsonObject().put(CoreStrings.PROTOCOL_TARGET, NODE_ROUTER)
+                    .put(CoreStrings.PROTOCOL_ROUTE, ROUTE_LIMIT).encode()));
+        }));
+    }
+
     @Override
     public void sendRequest(ResponseListener listener, JsonObject data) {
         context.vertx().createWebSocketClient().connect(port, HOST, CoreStrings.DIR_SEPARATOR).onComplete(handler -> {
