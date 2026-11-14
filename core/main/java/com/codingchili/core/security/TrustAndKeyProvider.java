@@ -34,8 +34,6 @@ public class TrustAndKeyProvider {
      * @param reference options with trust and/or key configuration.
      */
     private TrustAndKeyProvider(KeyStoreReference reference) {
-        this.trust = reference;
-        this.keyCert = reference;
         this.path = reference.getPath();
         try {
             KeyStore store = KeyStore.getInstance(reference.getType());
@@ -60,6 +58,18 @@ public class TrustAndKeyProvider {
             } else {
                 throw new NoSuchElementException(CoreStrings.getEmptyKeyStore(reference.getPath()));
             }
+
+            // the alias of the reference is the name of the keystore in the configuration (the file name by
+            // default), Vert.x reads getAlias() as the entry to use and fails unless the entry has that name.
+            // the store has one entry: Vert.x gets options without an alias.
+            KeyStoreOptions options = new KeyStoreOptions()
+                    .setType(reference.getType())
+                    .setProvider(reference.getProvider())
+                    .setPassword(reference.getPassword())
+                    .setAliasPassword(reference.getAliasPassword())
+                    .setValue(reference.getValue());
+            this.trust = options;
+            this.keyCert = options;
 
             // attempt to load the public key if available.
             if (store.isCertificateEntry(alias)) {

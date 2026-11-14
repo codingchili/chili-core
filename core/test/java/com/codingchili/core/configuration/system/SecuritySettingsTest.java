@@ -1,6 +1,7 @@
 package com.codingchili.core.configuration.system;
 
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.net.*;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.*;
@@ -70,6 +71,31 @@ public class SecuritySettingsTest {
         // verify that the public key is loaded - if we know the private key
         // the public key should always be available in the keystore as well.
         test.assertEquals(provider.getPublicKey().getAlgorithm(), ALGORITHM_RSA);
+    }
+
+    @Test
+    public void keyStoreServesTlsWhenItsNameIsNotTheNameOfItsEntry(TestContext test) {
+        // the keystore is named after its file (test_key.jks), its one entry is named test_only. Vert.x read the
+        // name of the keystore as the entry to use: "alias does not exist in the keystore: test_key.jks".
+        getKeyStoreBuilder(KEYSTORE_JKS).build();
+        TrustAndKeyProvider provider = security().getKeystore(KEY_JKS);
+        String host = CoreStrings.getLoopbackAddress();
+        NetServer server = context.vertx().createNetServer(new NetServerOptions()
+                .setSsl(true)
+                .setKeyCertOptions(provider.keyCertOptions()));
+        NetClient client = context.vertx().createNetClient(new NetClientOptions()
+                .setSsl(true)
+                .setTrustAll(true)
+                .setHostnameVerificationAlgorithm(""));
+
+        server.connectHandler(socket -> {})
+                .listen(0, host)
+                .compose(listening -> client.connect(listening.actualPort(), host))
+                .compose(socket -> {
+                    test.assertTrue(socket.isSsl());
+                    return client.close().compose(closed -> server.close());
+                })
+                .onComplete(test.asyncAssertSuccess());
     }
 
     @Test
