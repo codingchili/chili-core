@@ -1,11 +1,11 @@
 package com.codingchili.core.listener;
 
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.CompressionConfig;
 import io.vertx.core.http.HttpServerConfig;
-import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.Timeout;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -13,7 +13,10 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.time.Duration;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.codingchili.core.configuration.CoreStrings;
@@ -41,6 +44,9 @@ public abstract class ListenerTestCases {
     protected static final String ROUTE_CLOSE = "close";
     protected static final String ROUTE_LIMIT = "limit";
     protected static final int LIMIT_BYTES = 64;
+    protected static final String CLOSED_BEFORE_RESPONSE = "the connection closed before the response";
+    private final List<Supplier<Future<?>>> clients = new CopyOnWriteArrayList<>();
+    private final List<String> deployments = new CopyOnWriteArrayList<>();
     private Supplier<CoreListener> listener;
 
     @Rule
@@ -62,8 +68,6 @@ public abstract class ListenerTestCases {
 
     @Before
     public void setUp(TestContext test) {
-        Async async = test.async();
-
         ListenerSettings settings = new ListenerSettings()
                 .setMaxRequestBytes(MAX_REQUEST_BYTES)
                 .setPort(0)
@@ -74,41 +78,66 @@ public abstract class ListenerTestCases {
                 .addMapping(PATCHING_ROOT, new Endpoint(NODE_PATCHING));
         configure(settings);
 
-        context.listener(() -> listener.get().settings(settings).handler(new TestHandler())).onComplete(deploy -> {
-            if (deploy.failed()) {
-                deploy.cause().printStackTrace();
-                test.fail(deploy.cause());
-            }
+        // a failed deploy fails the test with its cause, the port is only read from a listener that listens.
+        deploy(() -> listener.get().settings(settings).handler(new TestHandler()))
+                .onComplete(test.asyncAssertSuccess(deployment ->
+                        this.port = settings.getListenPorts().iterator().next()));
+    }
 
-            this.port = settings.getListenPorts().iterator().next();
-            test.assertTrue(deploy.succeeded());
-            async.complete();
-        });
+    @After
+    public void tearDownTest(TestContext test) {
+        // the clients of the test first, then the listeners it deployed: the next test starts without them.
+        List<Future<?>> closing = clients.stream().<Future<?>>map(Supplier::get).toList();
+        List<String> deployed = List.copyOf(deployments);
+        clients.clear();
+        deployments.clear();
+
+        Future.join(closing)
+                .transform(closed -> Future.join(deployed.stream().<Future<?>>map(context::stop).toList()))
+                .onComplete(test.asyncAssertSuccess());
+    }
+
+    /**
+     * Deploys a listener that is undeployed after the test.
+     *
+     * @param listener creates the listener to deploy.
+     * @return the deployment id.
+     */
+    protected Future<String> deploy(Supplier<CoreListener> listener) {
+        return context.listener(listener).onSuccess(deployments::add);
+    }
+
+    /**
+     * Keeps a client for the length of the test and closes it after. Vert.x closes a client that is garbage
+     * collected, with its connections: a client only referenced from a callback loses the response in flight.
+     *
+     * @param client the client to keep.
+     * @param close  closes the client.
+     * @param <T>    the type of client.
+     * @return the client.
+     */
+    protected <T> T keep(T client, Function<T, Future<?>> close) {
+        clients.add(() -> close.apply(client));
+        return client;
     }
 
     @Test
     @Ignore("Needs to be reconsidered/redesigned.")
     public void testLargePacketRejected(TestContext test) {
-        Async async = test.async();
-
-        sendRequest((result, status) -> {
-            test.assertEquals(ResponseStatus.BAD, status);
-            async.complete();
-        }, new JsonObject()
+        sendRequest(new JsonObject()
                 .put(DATA, new String(new byte[MAX_REQUEST_BYTES]).replace("\0", ONE_CHAR))
-                .put(CoreStrings.PROTOCOL_TARGET, NODE_ROUTER));
+                .put(CoreStrings.PROTOCOL_TARGET, NODE_ROUTER))
+                .onComplete(test.asyncAssertSuccess(response ->
+                        test.assertEquals(ResponseStatus.BAD, status(response))));
     }
 
     @Test
     public void testAccepted(TestContext test) {
-        Async async = test.async();
-
-        sendRequest((result, status) -> {
-            test.assertEquals(ResponseStatus.ACCEPTED, status);
-            async.complete();
-        }, new JsonObject()
+        sendRequest(new JsonObject()
                 .put(CoreStrings.PROTOCOL_TARGET, NODE_ROUTER)
-                .put(CoreStrings.PROTOCOL_ROUTE, CoreStrings.ID_PING));
+                .put(CoreStrings.PROTOCOL_ROUTE, CoreStrings.ID_PING))
+                .onComplete(test.asyncAssertSuccess(response ->
+                        test.assertEquals(ResponseStatus.ACCEPTED, status(response))));
     }
 
     /**
@@ -120,21 +149,29 @@ public abstract class ListenerTestCases {
     }
 
     /**
-     * Implementing class must provide transport specific implementation.
+     * Implementing class must provide transport specific implementation. Keep the client with {@link #keep}.
      *
-     * @param listener invoked with the request response
-     * @param data     the request data with route and target.
+     * @param data the request data with route and target.
+     * @return the response, failed when the request fails: the connection fails or closes before the response.
      */
-    public abstract void sendRequest(ResponseListener listener, JsonObject data);
+    public abstract Future<JsonObject> sendRequest(JsonObject data);
 
-    protected void handleBody(ResponseListener listener, Buffer body) {
-        ResponseStatus status = ResponseStatus.valueOf(body.toJsonObject().getString(CoreStrings.PROTOCOL_STATUS));
-        listener.handle(body.toJsonObject(), status);
+    /**
+     * Completes the promise with a message that is a whole response, fails it if the message is not json.
+     *
+     * @param response the promise to complete.
+     * @param message  a whole response.
+     */
+    protected static void complete(Promise<JsonObject> response, Buffer message) {
+        try {
+            response.tryComplete(message.toJsonObject());
+        } catch (RuntimeException e) {
+            response.tryFail(e);
+        }
     }
 
-    @FunctionalInterface
-    public interface ResponseListener {
-        void handle(JsonObject result, ResponseStatus status);
+    protected static ResponseStatus status(JsonObject response) {
+        return ResponseStatus.valueOf(response.getString(CoreStrings.PROTOCOL_STATUS));
     }
 
     public class TestHandler implements CoreHandler<Request> {

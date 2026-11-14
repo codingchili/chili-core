@@ -47,8 +47,8 @@ public class QuicListenerIT extends ListenerTestCases {
     }
 
     @Override
-    public void sendRequest(ResponseListener listener, JsonObject data) {
-        send(data.toBuffer()).onSuccess(body -> handleBody(listener, body));
+    public Future<JsonObject> sendRequest(JsonObject data) {
+        return send(data.toBuffer()).map(Buffer::toJsonObject);
     }
 
     private QuicClient client(String protocol) {
@@ -58,10 +58,10 @@ public class QuicListenerIT extends ListenerTestCases {
                         .setInitialMaxStreamsUni(16)
                         .setInitialMaxStreamDataUni(65_536));
 
-        return context.vertx().createQuicClient(config, new ClientSSLOptions()
+        return keep(context.vertx().createQuicClient(config, new ClientSSLOptions()
                 .setTrustAll(true)
                 .setHostnameVerificationAlgorithm("")
-                .setApplicationLayerProtocols(List.of(protocol)));
+                .setApplicationLayerProtocols(List.of(protocol))), QuicClient::close);
     }
 
     private Future<QuicConnection> connect() {
@@ -83,6 +83,7 @@ public class QuicListenerIT extends ListenerTestCases {
             Promise<Buffer> promise = Promise.promise();
             stream.handler(response::appendBuffer);
             stream.endHandler(end -> promise.tryComplete(response));
+            stream.closeHandler(closed -> promise.tryFail(CLOSED_BEFORE_RESPONSE));
             // the server sends STOP_SENDING for rejected requests, writes may fail.
             stream.exceptionHandler(e -> {});
             stream.end(request);
@@ -141,7 +142,7 @@ public class QuicListenerIT extends ListenerTestCases {
                 .setPort(0)
                 .setSecure(false);
 
-        context.listener(() -> new QuicListener().settings(settings).handler(new TestHandler()))
+        deploy(() -> new QuicListener().settings(settings).handler(new TestHandler()))
                 .onComplete(test.asyncAssertFailure(e ->
                         test.assertTrue(e.getMessage().contains("QUIC requires TLS"))));
     }
@@ -161,7 +162,7 @@ public class QuicListenerIT extends ListenerTestCases {
             }
         };
 
-        context.listener(() -> new QuicListener().settings(settings).handler(pushing))
+        deploy(() -> new QuicListener().settings(settings).handler(pushing))
                 .compose(deployed -> client(CoreStrings.DEFAULT_QUIC_PROTOCOL)
                         .connect(settings.getListenPorts().iterator().next(), HOST))
                 .onComplete(test.asyncAssertSuccess(connection -> {

@@ -758,6 +758,25 @@ Tests: `SecretRotationTest` (7), `AuthenticationGeneratorIT`, `TokenFactoryTest`
   expires). `Request.timeout()` and `TimerSource` stay int ms; the status report keeps its `*Ms` numbers.
 - Tests: `DurationsTest` (14: parsing, formatting, the old numbers of every converted setting, the Vert.x options).
 
+## Listener ITs no longer flaky; TLS with a keystore whose entry is not named after the file (1.4.9)
+
+- **Fix (main code):** `KeyStoreReference.getAlias()` (the name of the keystore in the configuration, by default its
+  file name) overrides Vert.x's `KeyStoreOptionsBase.getAlias()` (the entry to use), so Vert.x 5.2 failed every TLS
+  server with a file keystore whose entry has another name: "alias does not exist in the keystore: test_key.jks".
+  `TrustAndKeyProvider` now gives Vert.x plain `KeyStoreOptions` (type, provider, password, bytes, no alias). This is
+  why `QuicListenerIT` failed 7 of 8 tests in every run. The Mutable Bunnies keystore names its entry `keystore.jks`,
+  like its file, so it was not affected. Test: `SecuritySettingsTest.keyStoreServesTlsWhenItsNameIsNotTheNameOfItsEntry`.
+- **Flaky tests:** Vert.x 5 closes a `NetClient`, `WebSocketClient`, `HttpClient`, `QuicClient` or `DatagramSocket`
+  that is garbage collected, with its connections. The listener ITs created one per request and only referenced it
+  from callbacks: a GC while the response was pending lost it, and the test timed out (shown with a forced GC: TCP and
+  websocket timed out every time). `ListenerTestCases` now keeps the clients (`keep`) and closes them after each test,
+  undeploys each test's listeners (`deploy`), reports a failed deploy before reading the port, and `sendRequest`
+  returns a `Future` that fails on a failed connect or a connection closed before the response, instead of throwing
+  in a callback (a timeout). The TCP test reads until the bytes are a whole JSON object (responses are not framed).
+- Verified: each listener IT 5 runs on its own and the five together 3 runs, all green (before: QUIC 5 of 5 runs failed;
+  TCP, UDP, websocket and REST passed 5 of 5 idle, the GC made TCP and websocket fail).
+- Open: `QuicListenerIT.testAlpnMismatchFails` takes about 4 s (the QUIC client sees the channel closed only then).
+
 ## Verification status
 
 Latest runs (handler → future migration and QUIC listener), all passing:

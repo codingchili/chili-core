@@ -1,9 +1,12 @@
 package com.codingchili.core.listener;
 
+import io.vertx.core.Future;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
+import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.JsonObject;
-import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.Test;
@@ -27,25 +30,23 @@ public class RestListenerIT extends ListenerTestCases {
 
     @Test
     public void testListenerSupportsGet(TestContext test) {
-        Async async = test.async();
-
-        sendGetRequest(String.format("/?%s=%s&%s=%s", PROTOCOL_ROUTE, ID_PING, PROTOCOL_TARGET, NODE_ROUTER),
-                (result, status) -> {
-                    test.assertEquals(ACCEPTED, status);
-                    async.complete();
-                });
+        sendGetRequest(String.format("/?%s=%s&%s=%s", PROTOCOL_ROUTE, ID_PING, PROTOCOL_TARGET, NODE_ROUTER))
+                .onComplete(test.asyncAssertSuccess(response -> test.assertEquals(ACCEPTED, status(response))));
     }
 
-    private void sendGetRequest(String action, ResponseListener listener) {
-        context.vertx().createHttpClient().request(HttpMethod.GET, port, HOST, action).onComplete(handler -> {
-            handler.result().send().onComplete(response -> {
-                response.result().bodyHandler(body -> handleBody(listener, body));
-            });
-        });
+    private HttpClient client() {
+        return keep(context.vertx().createHttpClient(), HttpClient::close);
+    }
+
+    private Future<JsonObject> sendGetRequest(String action) {
+        return client().request(HttpMethod.GET, port, HOST, action)
+                .compose(HttpClientRequest::send)
+                .compose(HttpClientResponse::body)
+                .map(Buffer::toJsonObject);
     }
 
     @Override
-    public void sendRequest(ResponseListener listener, JsonObject data) {
+    public Future<JsonObject> sendRequest(JsonObject data) {
         String target = data.getString(PROTOCOL_ROUTE);
 
         if (target == null) {
@@ -57,14 +58,9 @@ public class RestListenerIT extends ListenerTestCases {
             data.remove(PROTOCOL_ROUTE);
         }
 
-        context.vertx().createHttpClient().request(HttpMethod.POST, port, HOST, target).onComplete(handler -> {
-            HttpClientRequest request = handler.result();
-
-            request.end(data.encode());
-
-            request.response().onComplete(response -> {
-                response.result().bodyHandler(body -> handleBody(listener, body));
-            });
-        });
+        return client().request(HttpMethod.POST, port, HOST, target)
+                .compose(request -> request.send(data.encode()))
+                .compose(HttpClientResponse::body)
+                .map(Buffer::toJsonObject);
     }
 }

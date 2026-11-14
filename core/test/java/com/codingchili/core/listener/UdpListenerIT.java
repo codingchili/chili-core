@@ -1,5 +1,7 @@
 package com.codingchili.core.listener;
 
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.datagram.DatagramSocket;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -18,10 +20,13 @@ public class UdpListenerIT extends ListenerTestCases {
     }
 
     @Override
-    public void sendRequest(ResponseListener listener, JsonObject data) {
-        DatagramSocket socket = context.vertx().createDatagramSocket();
+    public Future<JsonObject> sendRequest(JsonObject data) {
+        DatagramSocket socket = keep(context.vertx().createDatagramSocket(), DatagramSocket::close);
+        Promise<JsonObject> response = Promise.promise();
 
-        socket.handler(packet -> handleBody(listener, packet.data()));
-        socket.send(data.encode(), port, HOST);
+        // a datagram is a whole response.
+        socket.handler(packet -> complete(response, packet.data()));
+        socket.exceptionHandler(response::tryFail);
+        return socket.send(data.encode(), port, HOST).compose(sent -> response.future());
     }
 }

@@ -1,7 +1,9 @@
 package com.codingchili.core.listener;
 
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.WebSocket;
+import io.vertx.core.http.WebSocketClient;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -13,7 +15,7 @@ import com.codingchili.core.configuration.CoreStrings;
 import com.codingchili.core.listener.transport.WebsocketListener;
 
 /**
- * Test cases for HTTP/REST transport.
+ * Test cases for the websocket transport.
  */
 @RunWith(VertxUnitRunner.class)
 public class WebsocketListenerIT extends ListenerTestCases {
@@ -25,7 +27,7 @@ public class WebsocketListenerIT extends ListenerTestCases {
     @Test
     public void testServerCloses(TestContext test) {
         Async async = test.async();
-        context.vertx().createWebSocketClient().connect(port, HOST, CoreStrings.DIR_SEPARATOR).onComplete(test.asyncAssertSuccess(socket -> {
+        client().connect(port, HOST, CoreStrings.DIR_SEPARATOR).onComplete(test.asyncAssertSuccess(socket -> {
             socket.closeHandler(closed -> async.complete());
             socket.write(Buffer.buffer(new JsonObject()
                     .put(CoreStrings.PROTOCOL_TARGET, NODE_ROUTER)
@@ -37,7 +39,7 @@ public class WebsocketListenerIT extends ListenerTestCases {
     public void malformedMessagesAreAnsweredAndTheConnectionStays(TestContext test) {
         // not json and json nested beyond the parser's limit: answered BAD, the next message is handled.
         Async async = test.async();
-        var client = context.vertx().createWebSocketClient();
+        var client = client();
         var answers = new java.util.ArrayList<JsonObject>();
         client.connect(port, HOST, CoreStrings.DIR_SEPARATOR).onComplete(test.asyncAssertSuccess(socket -> {
             socket.handler(body -> {
@@ -46,7 +48,6 @@ public class WebsocketListenerIT extends ListenerTestCases {
                     test.assertEquals("BAD", answers.get(0).getString(CoreStrings.PROTOCOL_STATUS));
                     test.assertEquals("BAD", answers.get(1).getString(CoreStrings.PROTOCOL_STATUS));
                     test.assertEquals("ACCEPTED", answers.get(2).getString(CoreStrings.PROTOCOL_STATUS));
-                    test.assertNotNull(client, "kept for the length of the test");
                     async.complete();
                 }
             });
@@ -62,7 +63,7 @@ public class WebsocketListenerIT extends ListenerTestCases {
         // the handler lowers the limit of its connection to 64 bytes: a larger message is answered BAD by the listener,
         // a smaller one still reaches the handler.
         Async async = test.async();
-        var client = context.vertx().createWebSocketClient();
+        var client = client();
         var answers = new java.util.ArrayList<JsonObject>();
         client.connect(port, HOST, CoreStrings.DIR_SEPARATOR).onComplete(test.asyncAssertSuccess(socket -> {
             socket.handler(body -> {
@@ -75,7 +76,6 @@ public class WebsocketListenerIT extends ListenerTestCases {
                 } else if (answers.size() == 3) {
                     test.assertEquals("BAD", answers.get(1).getString(CoreStrings.PROTOCOL_STATUS));
                     test.assertEquals("ACCEPTED", answers.get(2).getString(CoreStrings.PROTOCOL_STATUS));
-                    test.assertNotNull(client, "kept for the length of the test");
                     async.complete();
                 }
             });
@@ -84,16 +84,21 @@ public class WebsocketListenerIT extends ListenerTestCases {
         }));
     }
 
+    private WebSocketClient client() {
+        return keep(context.vertx().createWebSocketClient(), WebSocketClient::close);
+    }
+
     @Override
-    public void sendRequest(ResponseListener listener, JsonObject data) {
-        context.vertx().createWebSocketClient().connect(port, HOST, CoreStrings.DIR_SEPARATOR).onComplete(handler -> {
-            if (handler.succeeded()) {
-                WebSocket webSocket = handler.result();
-                webSocket.handler(body -> handleBody(listener, body));
-                webSocket.write(Buffer.buffer(data.encode()));
-            } else {
-                throw new RuntimeException(handler.cause());
-            }
+    public Future<JsonObject> sendRequest(JsonObject data) {
+        return client().connect(port, HOST, CoreStrings.DIR_SEPARATOR).compose(socket -> {
+            Promise<JsonObject> response = Promise.promise();
+
+            // a websocket message is a whole response.
+            socket.handler(body -> complete(response, body));
+            socket.closeHandler(closed -> response.tryFail(CLOSED_BEFORE_RESPONSE));
+            socket.exceptionHandler(response::tryFail);
+            socket.write(Buffer.buffer(data.encode())).onFailure(response::tryFail);
+            return response.future();
         });
     }
 }
